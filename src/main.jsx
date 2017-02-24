@@ -4,7 +4,7 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Button from 'react-bootstrap/lib/Button';
-import { hashHistory } from 'react-router'
+import { hashHistory as history } from 'react-router'
 import mapDefinitions from './mapDefinitions';
 
 export default class Main extends React.Component {
@@ -12,31 +12,40 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
 
-    const mapType = props.params.mapType || 'T';
-    const zoom = parseInt(props.params.zoom) || 8;
-    const lat = parseFloat(props.params.lat) || 48.70714;
-    const lon = parseFloat(props.params.lon) || 19.4995;
+    const { zoom, lat, lon, mapType } = props.params;
 
     this.state = {
-      mapType,
-      center: L.latLng(lat, lon),
-      zoom,
+      mapType: mapType || 'T',
+      lat: parseFloat(lat) || 48.70714,
+      lon: parseFloat(lon) || 19.4995,
+      zoom: parseInt(zoom) || 8,
       searchQuery: '',
       searchResults: []
     };
   }
 
-  componentDidUpdate() {
-    const {zoom, center: { lat, lng: lon }, mapType } = this.state;
-    const p = this.props.params;
+  componentWillReceiveProps(newProps) {
+    const { zoom, lat, lon, mapType } = newProps.params;
 
-    if (Math.abs(p.lat - lat) > 0.000001 || Math.abs(p.lon - lon) > 0.000001 || p.zoom != zoom || p.mapType !== mapType) {
-      hashHistory.push(`/${mapType}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
-    }
+    this.setState({
+      mapType: mapType || 'T',
+      lat: parseFloat(lat) || 48.70714,
+      lon: parseFloat(lon) || 19.4995,
+      zoom: parseInt(zoom) || 8
+    });
+
   }
 
   handleMapMoveend(e) {
-    this.setState({ center: e.target.getCenter() });
+    const center = e.target.getCenter();
+    this.setState({ lat: center.lat, lon: center.lng }, () => {
+      const { zoom, lat, lon } = this.state;
+      const p = this.props.params;
+
+      if (Math.abs(p.lat - lat) > 0.000001 || Math.abs(p.lon - lon) > 0.000001 || p.zoom != zoom) {
+        this.updateUrl();
+      }
+    });
   }
 
   handleMapZoom(e) {
@@ -44,7 +53,16 @@ export default class Main extends React.Component {
   }
 
   handleMapChange(mapType) {
-    this.setState({ mapType });
+    if (this.state.mapType !== mapType) {
+      this.setState({ mapType }, () => {
+        this.updateUrl();
+      });
+    }
+  }
+
+  updateUrl() {
+    const { zoom, lat, lon, mapType } = this.state;
+    history.replace(`/${mapType}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
   }
 
   updateSearchQuery(e) {
@@ -52,14 +70,14 @@ export default class Main extends React.Component {
   }
 
   doSearch() {
-    const { center: { lat, lng: lon }, searchQuery: q } = this.state;
+    const { lat, lon, searchQuery: q } = this.state;
     fetch(`http://www.freemap.sk/api/0.1/q/${encodeURIComponent(q)}&lat=${lat}&lon=${lon}`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
       const searchResults = data.map((d, id) => ({id, lat: d.lat, lon: d.lon, name: d.name}));
       if (searchResults.length) {
         const { lat, lon } = searchResults[0];
-        this.setState({ searchResults, center: L.latLng(lat, lon), zoom: 14  });
+        this.setState({ searchResults, lat, lon, zoom: 14  });
       } else {
         this.setState({ searchResults });
       }
@@ -67,7 +85,7 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { center, zoom, mapType, searchQuery, searchResults } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -93,7 +111,7 @@ export default class Main extends React.Component {
             </Navbar.Form>
           </Navbar.Collapse>
         </Navbar>
-        <Map ref="map" style={{ width: '100%', height: 'calc(100vh - 50px)' }} center={center} zoom={zoom}
+        <Map ref="map" style={{ width: '100%', height: 'calc(100vh - 50px)' }} center={[ lat, lon ]} zoom={zoom}
           onMoveend={b(this.handleMapMoveend)}
           onZoom={b(this.handleMapZoom)}>
 

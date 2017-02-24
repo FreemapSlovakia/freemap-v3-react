@@ -17,11 +17,6 @@ module.exports = {
         options: {
           presets: [ 'react', 'es2015' ]
         }
-      },
-      {
-        test: /\bi18n\/.*\.txt$/,
-        exclude: /node_modules/,
-        loader: 'raw-loader'
       }
     ]
   },
