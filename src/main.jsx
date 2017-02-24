@@ -67,7 +67,9 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const {center, zoom, mapType} = this.state;
+    const { center, zoom, mapType, searchQuery, searchResults } = this.state;
+
+    const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
       <div>
@@ -78,13 +80,13 @@ export default class Main extends React.Component {
           </Navbar.Header>
           <Navbar.Collapse>
             <Navbar.Form pullLeft>
-              <form onSubmit={this.doSearch.bind(this)}>
+              <form onSubmit={b(this.doSearch)}>
                 <FormGroup>
-                  <FormControl type="text" value={this.state.searchQuery} placeholder="Brusno"
-                    onChange={this.updateSearchQuery.bind(this)}/>
+                  <FormControl type="text" value={searchQuery} placeholder="Brusno"
+                    onChange={b(this.updateSearchQuery)}/>
                 </FormGroup>
                 {' '}
-                <Button type="submit" disabled={!this.state.searchQuery.length}>
+                <Button type="submit" disabled={!searchQuery.length}>
                   Hľadaj
                 </Button>
               </form>
@@ -92,22 +94,22 @@ export default class Main extends React.Component {
           </Navbar.Collapse>
         </Navbar>
         <Map ref="map" style={{ width: '100%', height: 'calc(100vh - 50px)' }} center={center} zoom={zoom}
-          onMoveend={this.handleMapMoveend.bind(this)}
-          onZoom={this.handleMapZoom.bind(this)}>
+          onMoveend={b(this.handleMapMoveend)}
+          onZoom={b(this.handleMapZoom)}>
 
           <LayersControl position="topright">
             {
               mapDefinitions.map(({ name, type, url, attribution, maxZoom, minZoom }) => (
                 <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
                   <TileLayer attribution={attribution} url={url}
-                    onAdd={this.handleMapChange.bind(this, type)}
+                    onAdd={b(this.handleMapChange, type)}
                     maxZoom={maxZoom} minZoom={minZoom}/>
                 </LayersControl.BaseLayer>
               ))
             }
           </LayersControl>
 
-        {this.state.searchResults.map(({ id, lat, lon, name }) =>
+        {searchResults.map(({ id, lat, lon, name }) =>
           <Marker key={id} position={[ lat, lon ]} title={name}/>
         )}
         </Map>
