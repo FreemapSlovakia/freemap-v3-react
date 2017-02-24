@@ -7,7 +7,7 @@ module.exports = {
     filename: 'build/app.js',
     path: __dirname
   },
-  devtool: 'cheap-module-eval-source-map',
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
   module: {
     rules: [
       {
