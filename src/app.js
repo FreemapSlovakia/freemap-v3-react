@@ -5,7 +5,7 @@ import { hashHistory, Router, Route } from 'react-router'
 
 ReactDOM.render((
   <Router history={hashHistory}>
-    <Route path="/:mapType/:zoom/:lat/:lon" component={Main}></Route>
+    <Route path="/:mapType/:zoom/:lat/:lon" component={Main}/>
     <Route path="/" component={Main}></Route>
   </Router>
 ), document.getElementById('app'))

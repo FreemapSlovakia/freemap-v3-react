@@ -2,9 +2,12 @@ const webpack = require('webpack');
 
 module.exports = {
   context: __dirname + '/src',
+  entry: './app.js',
   output: {
+    filename: 'build/app.js',
     path: __dirname
   },
+  devtool: 'cheap-module-eval-source-map',
   module: {
     rules: [
       {

@@ -1,13 +1,12 @@
-# Toposcope Maker
+# Freemap 3
 
-Web app for making toposcopes.
+Freemap Portal.
 
 ## Compiling and running in the dev mode
 ```
 sudo npm i -g webpack
 npm i
-webpack --config webpack-app.config.js --watch
-# for library: webpack --config webpack-library.config.js --watch
+webpack --watch
 ```
 
 ## Compiling for the production
@@ -15,11 +14,5 @@ webpack --config webpack-app.config.js --watch
 ```
 sudo npm i -g webpack
 npm i
-NODE_ENV=production webpack --config webpack-app.config.js
-NODE_ENV=production webpack --config webpack-library.config.js
+NODE_ENV=production webpack
 ```
-
-## Library
-
-If compiled with `webpack-library.config.js` then you can include toposcope as a library to your code with `<script src="build/library.js"></script>`.
-See `library-demo.html` for reference usage.
