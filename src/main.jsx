@@ -34,7 +34,6 @@ export default class Main extends React.Component {
       map: 'OpenStreetMap Mapnik',
       center: L.latLng(0, 0),
       zoom: 1,
-      mode: '',
       fetching: false,
       language,
       messages: readMessages(language)
@@ -43,10 +42,8 @@ export default class Main extends React.Component {
   }
 
   componentDidUpdate() {
-    const toSave = {};
-    [ 'map', 'center', 'zoom', 'language' ]
-      .forEach(prop => toSave[prop] = this.state[prop]);
-    localStorage.setItem('freemap3', JSON.stringify(toSave));
+    var lat = this.state['center'].lat
+    var lon = this.state['center'].lon
   }
 
   handleMapMove(e) {

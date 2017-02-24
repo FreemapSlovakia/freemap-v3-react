@@ -29097,7 +29097,6 @@ var Main = function (_React$Component) {
       map: 'OpenStreetMap Mapnik',
       center: L.latLng(0, 0),
       zoom: 1,
-      mode: '',
       fetching: false,
       language: language,
       messages: (0, _i18n.readMessages)(language)
@@ -29109,13 +29108,8 @@ var Main = function (_React$Component) {
   _createClass(Main, [{
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
-      var _this2 = this;
-
-      var toSave = {};
-      ['map', 'center', 'zoom', 'language'].forEach(function (prop) {
-        return toSave[prop] = _this2.state[prop];
-      });
-      localStorage.setItem('freemap3', JSON.stringify(toSave));
+      var lat = this.state['center'].lat;
+      var lon = this.state['center'].lon;
     }
   }, {
     key: 'handleMapMove',
@@ -29145,7 +29139,7 @@ var Main = function (_React$Component) {
   }, {
     key: 'render',
     value: function render() {
-      var _this3 = this;
+      var _this2 = this;
 
       var _state = this.state,
           fetching = _state.fetching,
@@ -29199,7 +29193,7 @@ var Main = function (_React$Component) {
                 Object.keys(_i18n.languages).map(function (code) {
                   return _react2.default.createElement(
                     _MenuItem2.default,
-                    { onClick: _this3.handleSetLanguage.bind(_this3, code), key: code },
+                    { onClick: _this2.handleSetLanguage.bind(_this2, code), key: code },
                     _i18n.languages[code],
                     language === code ? ' ✓' : ''
                   );
@@ -29238,7 +29232,7 @@ var Main = function (_React$Component) {
                       return _react2.default.createElement(
                         _reactLeaflet.LayersControl.BaseLayer,
                         { key: name, name: name, checked: map === name },
-                        _react2.default.createElement(_reactLeaflet.TileLayer, { attribution: attribution, url: url, onAdd: _this3.handleMapChange.bind(_this3, name),
+                        _react2.default.createElement(_reactLeaflet.TileLayer, { attribution: attribution, url: url, onAdd: _this2.handleMapChange.bind(_this2, name),
                           maxZoom: maxZoom, minZoom: minZoom })
                       );
                     })
