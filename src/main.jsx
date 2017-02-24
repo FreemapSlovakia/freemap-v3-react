@@ -14,8 +14,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
-import { Router, Route, browserHistory } from 'react-router';
-
+import { hashHistory } from 'react-router'
 import createMarker from './markers.js';
 import { languages, getBrowserLanguage, readMessages } from './i18n.js';
 import mapDefinitions from './mapDefinitions';
@@ -29,11 +28,16 @@ export default class Main extends React.Component {
     super(props);
 
     const language = 'sk'
+    //var mapType = 
+    var zoom = parseInt(props.params.zoom) || 8
+    var lat = props.params.lat || 48.70714
+    var lon = props.params.lon || 19.4995
+
 
     this.state = Object.assign({}, cleanState, {
       map: 'OpenStreetMap Mapnik',
-      center: L.latLng(0, 0),
-      zoom: 1,
+      center: L.latLng(lat, lon),
+      zoom: zoom,
       language,
       messages: readMessages(language)
     }, {});
@@ -41,10 +45,13 @@ export default class Main extends React.Component {
   }
 
   componentDidUpdate() {
+    var zoom = this.state['zoom']
     var lat = this.state['center'].lat.toFixed(5)
     var lon = this.state['center'].lng.toFixed(5)
-    browserHistory.push('/#/'+lat+'/'+lon)
+    if(this.props.params.lat != lat || this.props.params.lon != lon || this.props.params.zoom != zoom)
+      hashHistory.push('/T/'+zoom+'/'+lat+'/'+lon)
   }
+
 
   handleMapMove(e) {
     this.setState({ center: e.target.getCenter() });

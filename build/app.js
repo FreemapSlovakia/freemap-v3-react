@@ -29090,11 +29090,15 @@ var Main = function (_React$Component) {
     var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
 
     var language = 'sk';
+    //var mapType = 
+    var zoom = parseInt(props.params.zoom) || 8;
+    var lat = props.params.lat || 48.70714;
+    var lon = props.params.lon || 19.4995;
 
     _this.state = Object.assign({}, cleanState, {
       map: 'OpenStreetMap Mapnik',
-      center: L.latLng(0, 0),
-      zoom: 1,
+      center: L.latLng(lat, lon),
+      zoom: zoom,
       language: language,
       messages: (0, _i18n.readMessages)(language)
     }, {});
@@ -29105,9 +29109,10 @@ var Main = function (_React$Component) {
   _createClass(Main, [{
     key: 'componentDidUpdate',
     value: function componentDidUpdate() {
+      var zoom = this.state['zoom'];
       var lat = this.state['center'].lat.toFixed(5);
       var lon = this.state['center'].lng.toFixed(5);
-      _reactRouter.browserHistory.push('/#/' + lat + '/' + lon);
+      if (this.props.params.lat != lat || this.props.params.lon != lon || this.props.params.zoom != zoom) _reactRouter.hashHistory.push('/T/' + zoom + '/' + lat + '/' + lon);
     }
   }, {
     key: 'handleMapMove',
@@ -52947,9 +52952,20 @@ var _reactDom = __webpack_require__(18);
 
 var _reactDom2 = _interopRequireDefault(_reactDom);
 
+var _reactRouter = __webpack_require__(658);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-_reactDom2.default.render(_react2.default.createElement(_main2.default, null), document.getElementById('main'));
+var Locations = _reactRouter.Router.Locations;
+var Location = _reactRouter.Router.Location;
+
+
+_reactDom2.default.render(_react2.default.createElement(
+  _reactRouter.Router,
+  { history: _reactRouter.hashHistory },
+  _react2.default.createElement(_reactRouter.Route, { path: '/:mapType/:zoom/:lat/:lon', component: _main2.default }),
+  _react2.default.createElement(_reactRouter.Route, { path: '/', component: _main2.default })
+), document.getElementById('app'));
 
 /***/ }),
 /* 611 */
