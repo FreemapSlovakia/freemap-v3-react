@@ -30829,8 +30829,8 @@ var Main = function (_React$Component) {
       if (p.lat != lat || p.lon != lon || p.zoom != zoom || p.mapType != mapType) _reactRouter.hashHistory.push('/' + mapType + '/' + zoom + '/' + lat + '/' + lon);
     }
   }, {
-    key: 'handleMapMove',
-    value: function handleMapMove(e) {
+    key: 'handleMapMoveend',
+    value: function handleMapMoveend(e) {
       this.setState({ center: e.target.getCenter() });
     }
   }, {
@@ -30896,7 +30896,7 @@ var Main = function (_React$Component) {
                 _react2.default.createElement(
                   _reactLeaflet.Map,
                   { ref: 'map', style: { width: '100%', height: '500px' }, center: center, zoom: zoom,
-                    onMove: this.handleMapMove.bind(this),
+                    onMoveend: this.handleMapMoveend.bind(this),
                     onClick: this.handleMapClick.bind(this),
                     onZoom: this.handleMapZoom.bind(this) },
                   _react2.default.createElement(

@@ -49,7 +49,7 @@ export default class Main extends React.Component {
   }
 
 
-  handleMapMove(e) {
+  handleMapMoveend(e) {
     this.setState({ center: e.target.getCenter() });
   }
 
@@ -87,7 +87,7 @@ export default class Main extends React.Component {
             <div className="col-md-6">
               <Panel className="map-panel">
                 <Map ref="map" style={{ width: '100%', height: '500px' }} center={center} zoom={zoom}
-                    onMove={this.handleMapMove.bind(this)}
+                    onMoveend={this.handleMapMoveend.bind(this)}
                     onClick={this.handleMapClick.bind(this)}
                     onZoom={this.handleMapZoom.bind(this)}>
 
