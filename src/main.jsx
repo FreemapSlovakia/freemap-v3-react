@@ -15,8 +15,6 @@ import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import { hashHistory } from 'react-router'
-import createMarker from './markers.js';
-import { languages, getBrowserLanguage, readMessages } from './i18n.js';
 import mapDefinitions from './mapDefinitions';
 
 const cleanState = {
@@ -27,19 +25,15 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
 
-    const language = 'sk'
     var mapType = props.params.mapType || 'T'
     var zoom = parseInt(props.params.zoom) || 8
     var lat = props.params.lat || 48.70714
     var lon = props.params.lon || 19.4995
 
-
     this.state = Object.assign({}, cleanState, {
       map: mapType,
       center: L.latLng(lat, lon),
-      zoom: zoom,
-      language,
-      messages: readMessages(language)
+      zoom: zoom
     }, {});
 
   }
@@ -73,12 +67,8 @@ export default class Main extends React.Component {
     this.setState({ map });
   }
 
-  handleSetLanguage(language) {
-    this.setState({ language, messages: readMessages(language) });
-  }
-
   render() {
-    const {center, zoom, map, messages, language} = this.state;
+    const {center, zoom, map} = this.state;
 
     const t = key => messages[key] || key;
 
@@ -90,15 +80,6 @@ export default class Main extends React.Component {
             <Navbar.Toggle/>
           </Navbar.Header>
           <Navbar.Collapse>
-            <Nav>
-              <NavDropdown title={<span><Glyphicon glyph="globe"/> {t('language')}</span>} id="basic-nav-dropdown">
-                {Object.keys(languages).map(code =>
-                  <MenuItem onClick={this.handleSetLanguage.bind(this, code)} key={code}>
-                    {languages[code]}{language === code ? ' ✓' : ''}
-                  </MenuItem>)
-                }
-              </NavDropdown>
-            </Nav>
           </Navbar.Collapse>
         </Navbar>
         <div className="container">

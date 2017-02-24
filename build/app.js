@@ -25076,48 +25076,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 
 
 /***/ }),
-/* 173 */
-/***/ (function(module, exports) {
-
-module.exports = {
-	"innerCircleRadius": "Inner circle radius",
-	"loadPoiMaxDistance": "Max distance of loaded POIs",
-	"observer": "Observer",
-	"loadPois": "Load POIs",
-	"addPoi": "Add POI",
-	"movePoi": "Move",
-	"deletePoi": "Delete",
-	"setObserver": "Set Observer",
-	"language": "Language",
-	"saveToposcope": "Save Image",
-	"label": "Label",
-	"labelPlaceholder": "Name, {d} km",
-	"labelObserverPlaceholder": "Name\n{lat}\n{lon}",
-	"osmAttribution": "© OpenStreetMap contributors",
-	"east": "E",
-	"south": "S",
-	"west": "W",
-	"north": "N",
-	"inscription": "Inscription",
-	"help": "Help",
-	"close": "Close",
-	"fontSize": "Font size",
-	"addLineBreaks": "Add line break after loaded POI elevation",
-	"preventUpturnedText": "Prevent text upside down",
-	"project": "Project",
-	"newProject": "New",
-	"loadProject": "Load",
-	"saveProject": "Save",
-	"importError": "Loading error.",
-	"save": "Save",
-	"cancel": "Cancel",
-	"settings": "Settings",
-	"onlyNearest": "Use only the nearest POI found",
-	"flipText": "Flip text",
-	"flipTextDisabled": "Disabled because of active \"Prevent text upside down\""
-};
-
-/***/ }),
+/* 173 */,
 /* 174 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -30823,12 +30782,6 @@ var _Button2 = _interopRequireDefault(_Button);
 
 var _reactRouter = __webpack_require__(172);
 
-var _markers = __webpack_require__(269);
-
-var _markers2 = _interopRequireDefault(_markers);
-
-var _i18n = __webpack_require__(267);
-
 var _mapDefinitions = __webpack_require__(268);
 
 var _mapDefinitions2 = _interopRequireDefault(_mapDefinitions);
@@ -30851,7 +30804,6 @@ var Main = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
 
-    var language = 'sk';
     var mapType = props.params.mapType || 'T';
     var zoom = parseInt(props.params.zoom) || 8;
     var lat = props.params.lat || 48.70714;
@@ -30860,9 +30812,7 @@ var Main = function (_React$Component) {
     _this.state = Object.assign({}, cleanState, {
       map: mapType,
       center: L.latLng(lat, lon),
-      zoom: zoom,
-      language: language,
-      messages: (0, _i18n.readMessages)(language)
+      zoom: zoom
     }, {});
 
     return _this;
@@ -30899,11 +30849,6 @@ var Main = function (_React$Component) {
       this.setState({ map: map });
     }
   }, {
-    key: 'handleSetLanguage',
-    value: function handleSetLanguage(language) {
-      this.setState({ language: language, messages: (0, _i18n.readMessages)(language) });
-    }
-  }, {
     key: 'render',
     value: function render() {
       var _this2 = this;
@@ -30911,9 +30856,7 @@ var Main = function (_React$Component) {
       var _state = this.state,
           center = _state.center,
           zoom = _state.zoom,
-          map = _state.map,
-          messages = _state.messages,
-          language = _state.language;
+          map = _state.map;
 
 
       var t = function t(key) {
@@ -30936,32 +30879,7 @@ var Main = function (_React$Component) {
             ),
             _react2.default.createElement(_Navbar2.default.Toggle, null)
           ),
-          _react2.default.createElement(
-            _Navbar2.default.Collapse,
-            null,
-            _react2.default.createElement(
-              _Nav2.default,
-              null,
-              _react2.default.createElement(
-                _NavDropdown2.default,
-                { title: _react2.default.createElement(
-                    'span',
-                    null,
-                    _react2.default.createElement(_Glyphicon2.default, { glyph: 'globe' }),
-                    ' ',
-                    t('language')
-                  ), id: 'basic-nav-dropdown' },
-                Object.keys(_i18n.languages).map(function (code) {
-                  return _react2.default.createElement(
-                    _MenuItem2.default,
-                    { onClick: _this2.handleSetLanguage.bind(_this2, code), key: code },
-                    _i18n.languages[code],
-                    language === code ? ' ✓' : ''
-                  );
-                })
-              )
-            )
-          )
+          _react2.default.createElement(_Navbar2.default.Collapse, null)
         ),
         _react2.default.createElement(
           'div',
@@ -31014,149 +30932,10 @@ var Main = function (_React$Component) {
 exports.default = Main;
 
 /***/ }),
-/* 264 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var map = {
-	"./cs.json": 265,
-	"./en.json": 173,
-	"./sk.json": 266
-};
-function webpackContext(req) {
-	return __webpack_require__(webpackContextResolve(req));
-};
-function webpackContextResolve(req) {
-	var id = map[req];
-	if(!(id + 1)) // check for number
-		throw new Error("Cannot find module '" + req + "'.");
-	return id;
-};
-webpackContext.keys = function webpackContextKeys() {
-	return Object.keys(map);
-};
-webpackContext.resolve = webpackContextResolve;
-module.exports = webpackContext;
-webpackContext.id = 264;
-
-
-/***/ }),
-/* 265 */
-/***/ (function(module, exports) {
-
-module.exports = {
-	"innerCircleRadius": "Poloměr vnitřní kružnice",
-	"loadPoiMaxDistance": "Maximální vzdálenost pro načtení bodů",
-	"observer": "Pozorovatel",
-	"loadPois": "Načítání bodů",
-	"addPoi": "Přidávání POI",
-	"movePoi": "Posun",
-	"deletePoi": "Mazání",
-	"setObserver": "Zadávání pozorovatele",
-	"language": "Jazyk",
-	"saveToposcope": "Stáhni obrázek",
-	"label": "Text",
-	"labelPlaceholder": "Název, {d} km",
-	"labelObserverPlaceholder": "Název\n{lat}\n{lon}",
-	"osmAttribution": "© přispěvatelé OpenStreetMap",
-	"east": "V",
-	"south": "J",
-	"west": "Z",
-	"north": "S",
-	"inscription": "Vlastní text",
-	"help": "Pomoc",
-	"close": "Zavři",
-	"fontSize": "Velikost písma",
-	"addLineBreaks": "Zalomit řádek za nadmořskou výškou načteného bodu",
-	"preventUpturnedText": "Zabránit textu vzhůru nohama",
-	"project": "Projekt",
-	"newProject": "Nový",
-	"loadProject": "Načti",
-	"saveProject": "Ulož",
-	"importError": "Chyba načtení.",
-	"save": "Ulož",
-	"cancel": "Zruš",
-	"settings": "Nastavení",
-	"onlyNearest": "Použij pouze nejblížší nalezený bod",
-	"flipText": "Otoč text",
-	"flipTextDisabled": "Blokováno, protože je aktivní \"Zabránit textu vzhůru nohama\""
-};
-
-/***/ }),
-/* 266 */
-/***/ (function(module, exports) {
-
-module.exports = {
-	"innerCircleRadius": "Polomer vnútornej kružnice",
-	"loadPoiMaxDistance": "Maximálna vzdialenosť načítania bodov",
-	"observer": "Pozorovateľ",
-	"loadPois": "Načítavanie bodov",
-	"addPoi": "Pridávanie POI",
-	"movePoi": "Posun",
-	"deletePoi": "Mazanie",
-	"setObserver": "Zadávanie pozorovateľa",
-	"language": "Jazyk",
-	"saveToposcope": "Stiahni obrázok",
-	"label": "Text",
-	"labelPlaceholder": "Názov, {d} km",
-	"labelObserverPlaceholder": "Názov\n{lat}\n{lon}",
-	"osmAttribution": "© prispievatelia OpenStreetMap",
-	"east": "V",
-	"south": "J",
-	"west": "Z",
-	"north": "S",
-	"inscription": "Vlastný text",
-	"help": "Pomoc",
-	"close": "Zavri",
-	"fontSize": "Veľkosť textu",
-	"addLineBreaks": "Zalom riadok za nadmorskou výškou načítaneho bodu",
-	"preventUpturnedText": "Zabráň textu dole hlavou",
-	"project": "Projekt",
-	"newProject": "Nový",
-	"loadProject": "Načítaj",
-	"saveProject": "Ulož",
-	"importError": "Chyba načítania.",
-	"save": "Ulož",
-	"cancel": "Zruš",
-	"settings": "Nastavenia",
-	"onlyNearest": "Použi iba najbližšie nájdený bod",
-	"flipText": "Otoč text",
-	"flipTextDisabled": "Blokované, pretože je aktívne \"Zabráň textu dole hlavou\""
-};
-
-/***/ }),
-/* 267 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.getBrowserLanguage = getBrowserLanguage;
-exports.readMessages = readMessages;
-var languages = exports.languages = { en: 'English', sk: 'Slovensky', cs: 'Česky' };
-
-function getBrowserLanguage(language) {
-  return language && languages[language] ? language : navigator.languages.map(function (language) {
-    return language.split('-')[0];
-  }).find(function (language) {
-    return languages[language];
-  }) || 'en';
-}
-
-function readMessages(language) {
-  var messages = Object.assign({}, __webpack_require__(173), __webpack_require__(264)("./" + language + '.json'));
-  Object.keys(messages).forEach(function (key) {
-    var message = messages[key];
-    if (Array.isArray(message)) {
-      messages[key] = message.join('\n');
-    }
-  });
-  return messages;
-}
-
-/***/ }),
+/* 264 */,
+/* 265 */,
+/* 266 */,
+/* 267 */,
 /* 268 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -31187,21 +30966,7 @@ exports.default = [].concat(_toConsumableArray([['A', 'Automapa'], ['T', 'Turist
 })));
 
 /***/ }),
-/* 269 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = createMarker;
-function createMarker(color) {
-  return L.divIcon({ html: "<svg version=\"1.1\" id=\"Layer_1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\" x=\"0px\" y=\"0px\"\n  \t viewBox=\"0 0 365 560\" enable-background=\"new 0 0 365 560\" xml:space=\"preserve\">\n  <g>\n  \t<path fill=\"" + color + "\" stroke=\"black\" stroke-width=\"20\" stroke-linecap=\"butt\" d=\"M182.9,551.7c0,0.1,0.2,0.3,0.2,0.3S358.3,283,358.3,194.6c0-130.1-88.8-186.7-175.4-186.9\n  \t\tC96.3,7.9,7.5,64.5,7.5,194.6c0,88.4,175.3,357.4,175.3,357.4S182.9,551.7,182.9,551.7z M122.2,187.2c0-33.6,27.2-60.8,60.8-60.8\n  \t\tc33.6,0,60.8,27.2,60.8,60.8S216.5,248,182.9,248C149.4,248,122.2,220.8,122.2,187.2z\"/>\n  </g>\n  </svg>", iconAnchor: [10, 30], iconSize: [20, 20] });
-}
-
-/***/ }),
+/* 269 */,
 /* 270 */
 /***/ (function(module, exports, __webpack_require__) {
 
