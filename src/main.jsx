@@ -15,11 +15,9 @@ import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 
-import Toposcope from './toposcope.jsx';
 import Help from './help.jsx';
 import Hourglass from './hourglass.jsx';
 import createMarker from './markers.js';
-import loadPois from './poiLoader.js';
 import { languages, getBrowserLanguage, readMessages } from './i18n.js';
 import mapDefinitions from './mapDefinitions';
 
@@ -27,8 +25,6 @@ const poiIcon = createMarker('#ddf');
 const observerIcon = createMarker('#f88');
 const activeObserverIcon = createMarker('#f00');
 const activePoiIcon = createMarker('#66f');
-
-const localStorageName = 'toposcope1';
 
 const cleanState = {
   pois: [],
@@ -41,17 +37,7 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
 
-    let toposcope;
-    try {
-      toposcope = JSON.parse(localStorage.getItem(localStorageName));
-    } catch (e) {
-      toposcope = null;
-    }
-    if (!toposcope || typeof toposcope !== 'object') {
-      toposcope = {};
-    }
-    const language = getBrowserLanguage(toposcope && toposcope.language);
-    delete toposcope.language;
+    const language = 'sk'
 
     this.state = Object.assign({}, cleanState, {
       map: 'OpenStreetMap Mapnik',
@@ -61,24 +47,16 @@ export default class Main extends React.Component {
       fetching: false,
       language,
       messages: readMessages(language),
-      showHelp: false,
-      showSettings: false,
-      loadPoiMaxDistance: 1000,
-      onlyNearest: true,
-      innerCircleRadius: 25,
-      addLineBreaks: false,
-      fontSize: 3.5
-    }, toposcope || {});
+      showHelp: false
+    }, {});
 
-    this.nextId = this.state.pois.reduce((a, { id }) => Math.min(a, id), 0) - 1;
   }
 
   componentDidUpdate() {
     const toSave = {};
-    [ 'pois', 'activePoiId', 'inscriptions', 'map', 'center', 'zoom', 'mode', 'language', 'loadPoiMaxDistance', 'onlyNearest',
-      'preventUpturnedText', 'addLineBreaks', 'innerCircleRadius', 'fontSize' ]
+    [ 'map', 'center', 'zoom', 'language' ]
       .forEach(prop => toSave[prop] = this.state[prop]);
-    localStorage.setItem(localStorageName, JSON.stringify(toSave));
+    localStorage.setItem('freemap3', JSON.stringify(toSave));
   }
 
   handleMapMove(e) {
@@ -129,21 +107,14 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { pois, activePoiId, mode, fetching, center, zoom, map, messages, language,
-      inscriptions, showHelp, showSettings, innerCircleRadius, loadPoiMaxDistance, onlyNearest,
-      fontSize, addLineBreaks, preventUpturnedText } = this.state;
+    const {fetching, center, zoom, map, messages, language,
+      showHelp } = this.state;
 
-    const activePoi = pois.find(({ id }) => id === activePoiId);
-    const observerPoi = pois.find(({ observer }) => observer);
     const t = key => messages[key] || key;
-    const icr = parseFloat(innerCircleRadius);
 
     return (
       <Hourglass active={fetching}>
         <style>{`
-          .leaflet-container {
-            cursor: ${[ 'setObserver', 'addPoi', 'loadPois' ].indexOf(mode) !== -1 ? 'crosshair' : ''};
-          }
         `}</style>
 
       <Help onClose={this.handleHelpVisibility.bind(this, false)} show={showHelp} messages={messages} language={language}/>
@@ -152,7 +123,7 @@ export default class Main extends React.Component {
 
         <Navbar>
           <Navbar.Header>
-            <Navbar.Brand>Toposcope Maker</Navbar.Brand>
+            <Navbar.Brand>Freemap3 React</Navbar.Brand>
             <Navbar.Toggle/>
           </Navbar.Header>
           <Navbar.Collapse>

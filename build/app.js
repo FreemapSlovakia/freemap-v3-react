@@ -29214,8 +29214,6 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj; };
-
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 var _react = __webpack_require__(1);
@@ -29280,10 +29278,6 @@ var _Button = __webpack_require__(134);
 
 var _Button2 = _interopRequireDefault(_Button);
 
-var _toposcope = __webpack_require__(262);
-
-var _toposcope2 = _interopRequireDefault(_toposcope);
-
 var _help = __webpack_require__(257);
 
 var _help2 = _interopRequireDefault(_help);
@@ -29295,10 +29289,6 @@ var _hourglass2 = _interopRequireDefault(_hourglass);
 var _markers = __webpack_require__(260);
 
 var _markers2 = _interopRequireDefault(_markers);
-
-var _poiLoader = __webpack_require__(261);
-
-var _poiLoader2 = _interopRequireDefault(_poiLoader);
 
 var _i18n = __webpack_require__(161);
 
@@ -29319,8 +29309,6 @@ var observerIcon = (0, _markers2.default)('#f88');
 var activeObserverIcon = (0, _markers2.default)('#f00');
 var activePoiIcon = (0, _markers2.default)('#66f');
 
-var localStorageName = 'toposcope1';
-
 var cleanState = {
   pois: [],
   activePoiId: null,
@@ -29335,17 +29323,7 @@ var Main = function (_React$Component) {
 
     var _this = _possibleConstructorReturn(this, (Main.__proto__ || Object.getPrototypeOf(Main)).call(this, props));
 
-    var toposcope = void 0;
-    try {
-      toposcope = JSON.parse(localStorage.getItem(localStorageName));
-    } catch (e) {
-      toposcope = null;
-    }
-    if (!toposcope || (typeof toposcope === 'undefined' ? 'undefined' : _typeof(toposcope)) !== 'object') {
-      toposcope = {};
-    }
-    var language = (0, _i18n.getBrowserLanguage)(toposcope && toposcope.language);
-    delete toposcope.language;
+    var language = 'sk';
 
     _this.state = Object.assign({}, cleanState, {
       map: 'OpenStreetMap Mapnik',
@@ -29355,19 +29333,9 @@ var Main = function (_React$Component) {
       fetching: false,
       language: language,
       messages: (0, _i18n.readMessages)(language),
-      showHelp: false,
-      showSettings: false,
-      loadPoiMaxDistance: 1000,
-      onlyNearest: true,
-      innerCircleRadius: 25,
-      addLineBreaks: false,
-      fontSize: 3.5
-    }, toposcope || {});
+      showHelp: false
+    }, {});
 
-    _this.nextId = _this.state.pois.reduce(function (a, _ref) {
-      var id = _ref.id;
-      return Math.min(a, id);
-    }, 0) - 1;
     return _this;
   }
 
@@ -29377,10 +29345,10 @@ var Main = function (_React$Component) {
       var _this2 = this;
 
       var toSave = {};
-      ['pois', 'activePoiId', 'inscriptions', 'map', 'center', 'zoom', 'mode', 'language', 'loadPoiMaxDistance', 'onlyNearest', 'preventUpturnedText', 'addLineBreaks', 'innerCircleRadius', 'fontSize'].forEach(function (prop) {
+      ['map', 'center', 'zoom', 'language'].forEach(function (prop) {
         return toSave[prop] = _this2.state[prop];
       });
-      localStorage.setItem(localStorageName, JSON.stringify(toSave));
+      localStorage.setItem('freemap3', JSON.stringify(toSave));
     }
   }, {
     key: 'handleMapMove',
@@ -29442,38 +29410,18 @@ var Main = function (_React$Component) {
       var _this4 = this;
 
       var _state = this.state,
-          pois = _state.pois,
-          activePoiId = _state.activePoiId,
-          mode = _state.mode,
           fetching = _state.fetching,
           center = _state.center,
           zoom = _state.zoom,
           map = _state.map,
           messages = _state.messages,
           language = _state.language,
-          inscriptions = _state.inscriptions,
-          showHelp = _state.showHelp,
-          showSettings = _state.showSettings,
-          innerCircleRadius = _state.innerCircleRadius,
-          loadPoiMaxDistance = _state.loadPoiMaxDistance,
-          onlyNearest = _state.onlyNearest,
-          fontSize = _state.fontSize,
-          addLineBreaks = _state.addLineBreaks,
-          preventUpturnedText = _state.preventUpturnedText;
+          showHelp = _state.showHelp;
 
 
-      var activePoi = pois.find(function (_ref2) {
-        var id = _ref2.id;
-        return id === activePoiId;
-      });
-      var observerPoi = pois.find(function (_ref3) {
-        var observer = _ref3.observer;
-        return observer;
-      });
       var t = function t(key) {
         return messages[key] || key;
       };
-      var icr = parseFloat(innerCircleRadius);
 
       return _react2.default.createElement(
         _hourglass2.default,
@@ -29481,7 +29429,7 @@ var Main = function (_React$Component) {
         _react2.default.createElement(
           'style',
           null,
-          '\n          .leaflet-container {\n            cursor: ' + (['setObserver', 'addPoi', 'loadPois'].indexOf(mode) !== -1 ? 'crosshair' : '') + ';\n          }\n        '
+          '\n        '
         ),
         _react2.default.createElement(_help2.default, { onClose: this.handleHelpVisibility.bind(this, false), show: showHelp, messages: messages, language: language }),
         _react2.default.createElement('input', { type: 'file', ref: 'file', onChange: this.load.bind(this), style: { display: 'none' } }),
@@ -29494,7 +29442,7 @@ var Main = function (_React$Component) {
             _react2.default.createElement(
               _Navbar2.default.Brand,
               null,
-              'Toposcope Maker'
+              'Freemap3 React'
             ),
             _react2.default.createElement(_Navbar2.default.Toggle, null)
           ),
@@ -29553,12 +29501,12 @@ var Main = function (_React$Component) {
                   _react2.default.createElement(
                     _reactLeaflet.LayersControl,
                     { position: 'topright' },
-                    _mapDefinitions2.default.map(function (_ref4) {
-                      var name = _ref4.name,
-                          url = _ref4.url,
-                          attribution = _ref4.attribution,
-                          maxZoom = _ref4.maxZoom,
-                          minZoom = _ref4.minZoom;
+                    _mapDefinitions2.default.map(function (_ref) {
+                      var name = _ref.name,
+                          url = _ref.url,
+                          attribution = _ref.attribution,
+                          maxZoom = _ref.maxZoom,
+                          minZoom = _ref.minZoom;
                       return _react2.default.createElement(
                         _reactLeaflet.LayersControl.BaseLayer,
                         { key: name, name: name, checked: map === name },
@@ -29718,45 +29666,7 @@ module.exports = {
 };
 
 /***/ }),
-/* 256 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.formatGpsCoord = formatGpsCoord;
-exports.distance = distance;
-exports.bearing = bearing;
-exports.toRad = toRad;
-var PI2 = 2 * Math.PI;
-
-function formatGpsCoord(angle) {
-  var degrees = Math.floor(angle);
-  var minutes = Math.floor((angle - degrees) * 60);
-  var seconds = Math.round((angle - degrees - minutes / 60) * 3600);
-  return degrees + "\xB0 " + minutes + "' " + seconds + "\"";
-}
-
-function distance(lat1, lng1, lat2, lng2) {
-  var a = 0.5 - Math.cos(lat2 - lat1) / 2 + Math.cos(lat1) * Math.cos(lat2) * (1 - Math.cos(lng2 - lng1)) / 2;
-  return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
-}
-
-function bearing(lat1, lng1, lat2, lng2) {
-  var dLon = lng2 - lng1;
-  var y = Math.sin(dLon) * Math.cos(lat2);
-  var x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-  return PI2 - (Math.atan2(y, x) + PI2) % PI2;
-}
-
-function toRad(deg) {
-  return deg * Math.PI / 180;
-}
-
-/***/ }),
+/* 256 */,
 /* 257 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -29907,265 +29817,8 @@ function createMarker(color) {
 }
 
 /***/ }),
-/* 261 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = loadPeaks;
-function loadPeaks(lat, lng) {
-  var distance = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : 5000;
-  var language = arguments[3];
-  var addLineBreaks = arguments[4];
-  var onlyNearest = arguments[5];
-
-  var query = '[out:json][timeout:25];\n    (\n      node["natural"="peak"](around:' + distance + ',' + lat + ',' + lng + ');\n      node["place"~"city|town|village"](around:' + distance + ',' + lat + ',' + lng + ');\n    );\n    out body;\n    >;\n    out skel qt;';
-
-  var nf = typeof Intl !== 'undefined' ? new Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 1 }) : null;
-
-  function formatEle(e) {
-    return nf ? nf.format(e) : e;
-  }
-
-  return fetch('https://overpass-api.de/api/interpreter', {
-    method: 'POST',
-    body: 'data=' + encodeURIComponent(query)
-  }).then(function (res) {
-    return res.json();
-  }).then(function (data) {
-    var items = data.elements;
-    if (onlyNearest && items.length > 1) {
-      var center = L.latLng(lat, lng);
-      var distances = items.map(function (_ref) {
-        var lat = _ref.lat,
-            lng = _ref.lon;
-        return L.latLng(lat, lng).distanceTo(center);
-      });
-      var min = distances.reduce(function (a, b) {
-        return Math.min(a, b);
-      });
-      items = [items[distances.indexOf(min)]];
-    }
-    return items.map(function (_ref2) {
-      var id = _ref2.id,
-          lat = _ref2.lat,
-          lon = _ref2.lon,
-          _ref2$tags = _ref2.tags,
-          name = _ref2$tags.name,
-          ele = _ref2$tags.ele;
-      return { id: id, lat: lat, lng: lon, observer: false, flipText: false,
-        text: '' + (name || '???') + (ele ? ' (' + formatEle(ele) + ' m)' : '') + (addLineBreaks ? '\n' : ', ') + '{d} km' };
-    });
-  });
-}
-
-/***/ }),
-/* 262 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
-exports.default = Toposcope;
-
-var _react = __webpack_require__(1);
-
-var _react2 = _interopRequireDefault(_react);
-
-var _i18n = __webpack_require__(161);
-
-var _geoutils = __webpack_require__(256);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-function Toposcope(_ref) {
-  var _ref$pois = _ref.pois,
-      pois = _ref$pois === undefined ? [] : _ref$pois,
-      _ref$innerCircleRadiu = _ref.innerCircleRadius,
-      innerCircleRadius = _ref$innerCircleRadiu === undefined ? 25 : _ref$innerCircleRadiu,
-      _ref$outerCircleRadiu = _ref.outerCircleRadius,
-      outerCircleRadius = _ref$outerCircleRadiu === undefined ? 90 : _ref$outerCircleRadiu,
-      _ref$inscriptions = _ref.inscriptions,
-      inscriptions = _ref$inscriptions === undefined ? [] : _ref$inscriptions,
-      _ref$language = _ref.language,
-      language = _ref$language === undefined ? 'en' : _ref$language,
-      _ref$fontSize = _ref.fontSize,
-      fontSize = _ref$fontSize === undefined ? 3.5 : _ref$fontSize,
-      _ref$preventUpturnedT = _ref.preventUpturnedText,
-      preventUpturnedText = _ref$preventUpturnedT === undefined ? false : _ref$preventUpturnedT,
-      _ref$onClick = _ref.onClick,
-      onClick = _ref$onClick === undefined ? function () {} : _ref$onClick,
-      _ref$activePoiId = _ref.activePoiId,
-      activePoiId = _ref$activePoiId === undefined ? null : _ref$activePoiId;
-
-
-  var messages = (0, _i18n.readMessages)(language);
-
-  var t = function t(key) {
-    return messages[key] || key;
-  };
-  var observerPoi = pois.find(function (_ref2) {
-    var observer = _ref2.observer;
-    return observer;
-  });
-
-  if (!observerPoi) {
-    throw new Error('no observer found');
-  }
-
-  var poisAround = pois.filter(function (poi) {
-    return poi !== observerPoi;
-  }).map(function (poi) {
-    return Object.assign({}, poi);
-  });
-  var nf = typeof Intl !== 'undefined' ? new Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 }) : null;
-
-  function formatDistance(d) {
-    return nf ? nf.format(d / 1000) : Math.round(d / 100) / 10;
-  }
-
-  var innerTexts = observerPoi.text.replace('{lat}', (observerPoi.lat > 0 ? 'N' : 'S') + ' ' + (0, _geoutils.formatGpsCoord)(Math.abs(observerPoi.lat))).replace('{lon}', (observerPoi.lng < 0 ? 'W' : 'E') + ' ' + (0, _geoutils.formatGpsCoord)(Math.abs(observerPoi.lng))).split('\n').map(function (line) {
-    return line.trim();
-  }).filter(function (line) {
-    return line;
-  });
-
-  return _react2.default.createElement(
-    'svg',
-    { xmlns: 'http://www.w3.org/2000/svg', viewBox: '-100 -100 200 200' },
-    _react2.default.createElement(
-      'style',
-      null,
-      '\n        .line {\n          stroke: #000000;\n          stroke-width: 0.3;\n          stroke-linecap: round;\n          fill: none;\n        }\n\n        .lineText {\n          font-family: Arial;\n          font-size: ' + fontSize + 'px;\n        }\n      '
-    ),
-    _react2.default.createElement('path', { id: 'outerCircle', d: 'M 99,0 A 99,99 0 0 1 0,99 99,99 0 0 1 -99,0 99,99 0 0 1 0,-99 99,99 0 0 1 99,0 Z', className: 'line' }),
-    inscriptions.map(function (inscription, i) {
-      return _react2.default.createElement(
-        'text',
-        { dy: '6.0', className: 'lineText', key: i },
-        _react2.default.createElement(
-          'textPath',
-          { xlinkHref: '#outerCircle', startOffset: i * 25 + 12.5 + '%', textAnchor: 'middle' },
-          inscription.replace('{a}', t('osmAttribution'))
-        )
-      );
-    }),
-    [t('east'), t('south'), t('west'), t('north')].map(function (x, i) {
-      return _react2.default.createElement(
-        'text',
-        { key: i, dy: '6', className: 'lineText' },
-        _react2.default.createElement(
-          'textPath',
-          { xlinkHref: '#outerCircle', startOffset: i * 25 + '%', textAnchor: 'middle' },
-          x
-        )
-      );
-    }),
-    poisAround.map(function (poi) {
-      var id = poi.id,
-          lat = poi.lat,
-          lng = poi.lng;
-
-      var b = Math.PI + (0, _geoutils.bearing)((0, _geoutils.toRad)(observerPoi.lat), (0, _geoutils.toRad)(observerPoi.lng), (0, _geoutils.toRad)(lat), (0, _geoutils.toRad)(lng));
-      var p1 = Math.sin(b) * innerCircleRadius + ' ' + Math.cos(b) * innerCircleRadius;
-      var p2 = Math.sin(b) * outerCircleRadius + ' ' + Math.cos(b) * outerCircleRadius;
-      if (preventUpturnedText ? !(b > 2 * Math.PI) : poi.flipText) {
-        var _ref3 = [p2, p1];
-        p1 = _ref3[0];
-        p2 = _ref3[1];
-
-        poi.reversed = true;
-      }
-      return _react2.default.createElement('path', { id: 'p' + id, key: id, d: 'M ' + p1 + ' L ' + p2,
-        className: 'line clickable ' + (id === activePoiId ? 'poi-active-line' : ''),
-        onClick: onClick.bind(null, id) });
-    }),
-    poisAround.map(function (_ref4) {
-      var id = _ref4.id,
-          lat = _ref4.lat,
-          lng = _ref4.lng,
-          text = _ref4.text,
-          reversed = _ref4.reversed;
-
-      var lines = text.replace('{d}', formatDistance((0, _geoutils.distance)((0, _geoutils.toRad)(lat), (0, _geoutils.toRad)(lng), (0, _geoutils.toRad)(observerPoi.lat), (0, _geoutils.toRad)(observerPoi.lng)))).split('\n');
-      var clickHandler = onClick.bind(null, id);
-      var className = 'lineText clickable ' + (id === activePoiId ? 'poi-active-text' : '');
-      return [_react2.default.createElement(
-        'text',
-        { key: 'x' + id, className: className, onClick: clickHandler },
-        _react2.default.createElement(
-          'textPath',
-          { xlinkHref: '#p' + id, startOffset: reversed ? '0%' : '100%', textAnchor: reversed ? 'start' : 'end' },
-          _react2.default.createElement(
-            'tspan',
-            { x: '0', dy: '-2', xmlSpace: 'preserve' },
-            '\xA0\xA0\xA0\xA0',
-            lines[0],
-            '\xA0\xA0\xA0\xA0'
-          )
-        )
-      ), lines[1] ? _react2.default.createElement(
-        'text',
-        { key: id, className: className, onClick: clickHandler },
-        _react2.default.createElement(
-          'textPath',
-          { xlinkHref: '#p' + id, startOffset: reversed ? '0%' : '100%', textAnchor: reversed ? 'start' : 'end' },
-          _react2.default.createElement(
-            'tspan',
-            { x: '0', dy: '5', xmlSpace: 'preserve' },
-            '\xA0\xA0\xA0\xA0',
-            lines[1],
-            '\xA0\xA0\xA0\xA0'
-          )
-        )
-      ) : undefined];
-    }),
-    _react2.default.createElement('circle', { cx: '0', cy: '0', r: outerCircleRadius, className: 'line' }),
-    _react2.default.createElement('circle', { cx: '0', cy: '0', r: innerCircleRadius, className: 'line' }),
-    _react2.default.createElement(
-      'text',
-      { x: '0', y: -1 - innerTexts.length * 3, className: 'lineText clickable ' + (observerPoi.id === activePoiId ? 'poi-active-text' : ''),
-        onClick: onClick.bind(null, observerPoi.id) },
-      innerTexts.map(function (line, i) {
-        return _react2.default.createElement(
-          'tspan',
-          { key: i, textAnchor: 'middle', x: '0', dy: '6' },
-          line
-        );
-      })
-    )
-  );
-}
-
-Toposcope.propTypes = {
-  activePoiId: _react.PropTypes.number,
-  innerCircleRadius: _react.PropTypes.number,
-  outerCircleRadius: _react.PropTypes.number,
-  fontSize: _react.PropTypes.number,
-  inscriptions: _react.PropTypes.arrayOf(_react.PropTypes.string),
-  messages: _react.PropTypes.object,
-  pois: _react.PropTypes.arrayOf(_react.PropTypes.shape({
-    id: _react.PropTypes.number.isRequired,
-    lat: _react.PropTypes.number.isRequired,
-    lng: _react.PropTypes.number.isRequired,
-    text: _react.PropTypes.string.isRequired,
-    observer: _react.PropTypes.bool,
-    flipText: _react.PropTypes.bool
-  })),
-  title: _react.PropTypes.string,
-  language: _react.PropTypes.oneOf(Object.keys(_i18n.languages)),
-  preventUpturnedText: _react.PropTypes.bool,
-  onClick: _react.PropTypes.func
-};
-
-/***/ }),
+/* 261 */,
+/* 262 */,
 /* 263 */
 /***/ (function(module, exports, __webpack_require__) {
 
