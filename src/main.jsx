@@ -1,7 +1,7 @@
 import React from 'react';
 import { Map, TileLayer, Marker, LayersControl } from 'react-leaflet';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import Form from 'react-bootstrap/lib/Form';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Button from 'react-bootstrap/lib/Button';
 import { hashHistory } from 'react-router'
@@ -77,17 +77,18 @@ export default class Main extends React.Component {
             <Navbar.Toggle/>
           </Navbar.Header>
           <Navbar.Collapse>
-            <Form inline style={{ marginTop: '8px'}}>
-              <FormControl
-                type="text"
-                value={this.state.searchQuery}
-                placeholder="Brusno"
-                onChange={this.updateSearchQuery.bind(this)}
-              />
-              <Button disabled={!this.state.searchQuery.length} onClick={this.doSearch.bind(this)}>
-                Hľadaj
-              </Button>
-            </Form>
+            <Navbar.Form pullLeft>
+              <form onSubmit={this.doSearch.bind(this)}>
+                <FormGroup>
+                  <FormControl type="text" value={this.state.searchQuery} placeholder="Brusno"
+                    onChange={this.updateSearchQuery.bind(this)}/>
+                </FormGroup>
+                {' '}
+                <Button type="submit" disabled={!this.state.searchQuery.length}>
+                  Hľadaj
+                </Button>
+              </form>
+            </Navbar.Form>
           </Navbar.Collapse>
         </Navbar>
         <Map ref="map" style={{ width: '100%', height: 'calc(100vh - 50px)' }} center={center} zoom={zoom}
