@@ -1,0 +1,36 @@
+<p>
+  Nástroj slouží pro vytváření <a href='https://en.wikipedia.org/wiki/Toposcope' target='_blank'>výhledových růžic</a>.
+  Projekt najdete na <a href='https://github.com/FreemapSlovakia/toposcope-maker' target='_blank'>GitHubu</a>.
+</p>
+
+<p>Nástroje:</p>
+<ul>
+  <li><span class="glyphicon glyphicon-eye-open"></span> <u>Zadávání pozorovatele</u> - kliknutím do mapy určíte pozici pozorovatele (výhledové růžice)</li>
+  <li><span class="glyphicon glyphicon-map-marker"></span> <u>Přidávání POI</u> - kliknutím do mapy přidáte nový bod</li>
+  <li><span class="glyphicon glyphicon-record"></span> <u>Načítání bodů</u> - kliknutím do mapy určíte pozici, kolem které se načtou body z databáze OpenStreetMap</li>
+  <li><span class="glyphicon glyphicon-move"></span> <u>Posun</u> - umožní tažením posouvat body v mapě</li>
+  <li><span class="glyphicon glyphicon-remove"></span> <u>Mazání</u> - vymaže bod na který bylo kliknuto</li>
+</ul>
+
+<p>Vlastnosti bodu:</p>
+<ul>
+  <li>
+    <u>Text</u> - popis bodu;
+    <mark>{d}</mark> v textu bude nahrazeno vzdáleností bodu od pozorovatele v km;
+    <mark>{lat}</mark> a <mark>{lon}</mark> zeměpisnou šířkou a výškou (jenom pro pozorovatele)
+  </li>
+</ul>
+
+<p>Vlastnosti výhledové růžice:</p>
+<ul>
+  <li><u>Poloměr vnitřní kružnice</u> - poloměr vnitřní kružnice ve výhledové růžici</li>
+  <li><u>Velikost písma</u> - velikost písma veškerého textu výhledové růžice</li>
+  <li><u>Zabránit textu vzhůru nohama</u> - text na růžici bude orientován pouze nahoru a do stran</li>
+</ul>
+
+<p>Nastavení:</p>
+<ul>
+  <li><u>Maximální vzdálenost pro načtení bodů</u> - maximální vzdálenost načtení bodů od místa kliknutí na mapu v režimu "Načtení bodů"</li>
+  <li><u>Použij pouze nejblížší nalezený bod</u> - přidá pouze jeden, nejbližší bod od místa kliknutí</li>
+  <li><u>Zalomit řádek za nadmořskou výškou načteného bodu</u> - vzdálenost bodu od pozorovatele bude na dalším řádku (pod čarou)</li>
+</ul>

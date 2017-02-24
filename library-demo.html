@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <title>Toposcope Library Demo</title>
+
+    <meta charset="UTF-8">
+    <meta name="description" content="Example of the toposcope library.">
+    <meta name="author" content="Martin Ždila">
+
+    <script src="build/library.js"></script>
+  </head>
+
+  <body>
+    <div id="main" style="width: 600px; height: 600px"></div>
+
+    <script>
+      toposcope.render(document.getElementById('main'), {
+        innerCircleRadius: 25,
+        outerCircleRadius: 90,
+        inscriptions: [ 'text 3', '{a}', 'text 1', 'text 2' ],
+        language: 'en',
+        fontSize: 3.5,
+        preventUpturnedText: false,
+        pois: [
+          {
+            id: 1,
+            observer: true,
+            lat: 48.435,
+            lng: 20.321,
+            text: 'Observer\n{lat}\n{lon}',
+          },
+          {
+            id: 2,
+            lat: 47.360,
+            lng: 21.337,
+            text: 'Example POI, {d} km',
+            flipText: false
+          }
+        ]
+      });
+    </script>
+  </body>
+
+</html>
