@@ -14,8 +14,8 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
+import { Router, Route, browserHistory } from 'react-router';
 
-import Hourglass from './hourglass.jsx';
 import createMarker from './markers.js';
 import { languages, getBrowserLanguage, readMessages } from './i18n.js';
 import mapDefinitions from './mapDefinitions';
@@ -34,7 +34,6 @@ export default class Main extends React.Component {
       map: 'OpenStreetMap Mapnik',
       center: L.latLng(0, 0),
       zoom: 1,
-      fetching: false,
       language,
       messages: readMessages(language)
     }, {});
@@ -42,8 +41,9 @@ export default class Main extends React.Component {
   }
 
   componentDidUpdate() {
-    var lat = this.state['center'].lat
-    var lon = this.state['center'].lon
+    var lat = this.state['center'].lat.toFixed(5)
+    var lon = this.state['center'].lng.toFixed(5)
+    browserHistory.push('/#/'+lat+'/'+lon)
   }
 
   handleMapMove(e) {
@@ -69,15 +69,12 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const {fetching, center, zoom, map, messages, language} = this.state;
+    const {center, zoom, map, messages, language} = this.state;
 
     const t = key => messages[key] || key;
 
     return (
-      <Hourglass active={fetching}>
-        <style>{`
-        `}</style>
-
+      <div>
         <Navbar>
           <Navbar.Header>
             <Navbar.Brand>Freemap3 React</Navbar.Brand>
@@ -119,7 +116,7 @@ export default class Main extends React.Component {
             </div>
           </div>
         </div>
-      </Hourglass>
+      </div>
     );
   }
 }
