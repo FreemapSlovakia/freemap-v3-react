@@ -3,51 +3,10 @@
   border: 0;
 }
 
-.hourglass {
-  position: relative;
-}
-
-.hourglass-active:after {
-  content: '';
-  display: block;
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 0;
-  bottom: 0;
-  cursor: progress;
-  background-color: white;
-  opacity: 0.5;
-  z-index: 1000;
-}
-
 .modal {
   display: block;
 }
 
 .dropdown-menu {
   z-index: 10000;
-}
-
-.clickable {
-  cursor: pointer;
-}
-
-.poi-active-text {
-  fill: #c00 !important;
-}
-
-.poi-active-line {
-  stroke: #c00 !important;
-}
-
-.map-panel {
-  position: relative;
-}
-
-.tool-buttons {
-  position: absolute;
-  z-index: 1010;
-  top: 100px;
-  left: 25px;
 }
