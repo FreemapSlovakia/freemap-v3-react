@@ -28,14 +28,14 @@ export default class Main extends React.Component {
     super(props);
 
     const language = 'sk'
-    //var mapType = 
+    var mapType = props.params.mapType || 'T'
     var zoom = parseInt(props.params.zoom) || 8
     var lat = props.params.lat || 48.70714
     var lon = props.params.lon || 19.4995
 
 
     this.state = Object.assign({}, cleanState, {
-      map: 'OpenStreetMap Mapnik',
+      map: mapType,
       center: L.latLng(lat, lon),
       zoom: zoom,
       language,
@@ -48,8 +48,10 @@ export default class Main extends React.Component {
     var zoom = this.state['zoom']
     var lat = this.state['center'].lat.toFixed(5)
     var lon = this.state['center'].lng.toFixed(5)
-    if(this.props.params.lat != lat || this.props.params.lon != lon || this.props.params.zoom != zoom)
-      hashHistory.push('/T/'+zoom+'/'+lat+'/'+lon)
+    var mapType = this.state['map']
+    var p = this.props.params
+    if(p.lat != lat || p.lon != lon || p.zoom != zoom || p.mapType != mapType)
+      hashHistory.push('/'+mapType+'/'+zoom+'/'+lat+'/'+lon)
   }
 
 
@@ -110,9 +112,9 @@ export default class Main extends React.Component {
 
                   <LayersControl position="topright">
                     {
-                      mapDefinitions.map(({ name, url, attribution, maxZoom, minZoom }) =>
-                        <LayersControl.BaseLayer key={name} name={name} checked={map === name}>
-                          <TileLayer attribution={attribution} url={url} onAdd={this.handleMapChange.bind(this, name)}
+                      mapDefinitions.map(({ name, type, url, attribution, maxZoom, minZoom }) =>
+                        <LayersControl.BaseLayer key={type} name={name} checked={map === type}>
+                          <TileLayer attribution={attribution} url={url} onAdd={this.handleMapChange.bind(this, type)}
                             maxZoom={maxZoom} minZoom={minZoom}/>
                         </LayersControl.BaseLayer>
                       )
