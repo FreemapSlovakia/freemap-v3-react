@@ -15,21 +15,12 @@ import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 
-import Help from './help.jsx';
 import Hourglass from './hourglass.jsx';
 import createMarker from './markers.js';
 import { languages, getBrowserLanguage, readMessages } from './i18n.js';
 import mapDefinitions from './mapDefinitions';
 
-const poiIcon = createMarker('#ddf');
-const observerIcon = createMarker('#f88');
-const activeObserverIcon = createMarker('#f00');
-const activePoiIcon = createMarker('#66f');
-
 const cleanState = {
-  pois: [],
-  activePoiId: null,
-  inscriptions: [ '', '{a}', '', '' ]
 };
 
 export default class Main extends React.Component {
@@ -46,8 +37,7 @@ export default class Main extends React.Component {
       mode: '',
       fetching: false,
       language,
-      messages: readMessages(language),
-      showHelp: false
+      messages: readMessages(language)
     }, {});
 
   }
@@ -81,34 +71,8 @@ export default class Main extends React.Component {
     this.setState({ language, messages: readMessages(language) });
   }
 
-
-  handleHelpVisibility(showHelp) {
-    this.setState({ showHelp });
-  }
-
-  handleSettingsVisibility(showSettings) {
-    this.setState({ showSettings });
-  }
-
-  load() {
-    const file = this.refs.file.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = e => {
-        try {
-          this.setState(JSON.parse(e.target.result));
-          this.refs.file.value = null;
-        } catch (e) {
-          window.alert(this.state.messages['importError']);
-        }
-      };
-      reader.readAsText(file);
-    }
-  }
-
   render() {
-    const {fetching, center, zoom, map, messages, language,
-      showHelp } = this.state;
+    const {fetching, center, zoom, map, messages, language} = this.state;
 
     const t = key => messages[key] || key;
 
@@ -117,10 +81,6 @@ export default class Main extends React.Component {
         <style>{`
         `}</style>
 
-      <Help onClose={this.handleHelpVisibility.bind(this, false)} show={showHelp} messages={messages} language={language}/>
-
-        <input type="file" ref="file" onChange={this.load.bind(this)} style={{ display: 'none' }}/>
-
         <Navbar>
           <Navbar.Header>
             <Navbar.Brand>Freemap3 React</Navbar.Brand>
@@ -128,7 +88,6 @@ export default class Main extends React.Component {
           </Navbar.Header>
           <Navbar.Collapse>
             <Nav>
-              <NavItem onClick={this.handleHelpVisibility.bind(this, true)}><Glyphicon glyph="question-sign"/> {t('help')}</NavItem>
               <NavDropdown title={<span><Glyphicon glyph="globe"/> {t('language')}</span>} id="basic-nav-dropdown">
                 {Object.keys(languages).map(code =>
                   <MenuItem onClick={this.handleSetLanguage.bind(this, code)} key={code}>
