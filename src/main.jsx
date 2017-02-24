@@ -69,7 +69,9 @@ export default class Main extends React.Component {
     this.setState({ searchQuery: e.target.value });
   }
 
-  doSearch() {
+  doSearch(e) {
+    e.preventDefault();
+    
     const { lat, lon, searchQuery: q } = this.state;
     fetch(`http://www.freemap.sk/api/0.1/q/${encodeURIComponent(q)}&lat=${lat}&lon=${lon}`, {
       method: 'GET'
