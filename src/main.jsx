@@ -6,6 +6,7 @@ import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import Form from 'react-bootstrap/lib/Form';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -33,7 +34,9 @@ export default class Main extends React.Component {
     this.state = Object.assign({}, cleanState, {
       map: mapType,
       center: L.latLng(lat, lon),
-      zoom: zoom
+      zoom: zoom,
+      searchQuery: '',
+      searchResults: []
     }, {});
 
   }
@@ -67,6 +70,34 @@ export default class Main extends React.Component {
     this.setState({ map });
   }
 
+  updateSearchQuery(e){
+    this.setState({ searchQuery: e.target.value });
+  }
+
+  doSearch(){
+    var q = this.state['searchQuery']
+    var lat = this.state['lat']
+    var lon = this.state['lon']
+    var url = 'http://www.freemap.sk/api/0.1/q/'+q+'&lat='+lat+'&lon='+lat
+    var that = this
+    fetch(url, {
+        method: 'GET'
+      }).then(res => res.json()).then(data => {
+        var counter = 1
+        var results = data.map((d) => {
+          counter++
+          return {id: counter, lat : d.lat, lon: d.lon, name: d.name}
+        })
+        if(results.length > 0){
+          var firstResult = results[0]
+          this.setState({ searchResults: results, center: L.latLng(firstResult.lat, firstResult.lon) , zoom: 14  });
+        } else {
+          this.setState({ searchResults: results });
+        }
+        
+      });
+  }
+
   render() {
     const {center, zoom, map} = this.state;
 
@@ -80,6 +111,15 @@ export default class Main extends React.Component {
             <Navbar.Toggle/>
           </Navbar.Header>
           <Navbar.Collapse>
+            <Form inline>
+              <FormControl
+                type="text"
+                value={this.state.searchQuery}
+                placeholder="Brusno"
+                onChange={this.updateSearchQuery.bind(this)}
+              />
+              <Button onClick={this.doSearch.bind(this)}>Hľadaj</Button>
+            </Form>
           </Navbar.Collapse>
         </Navbar>
         <div className="container">
@@ -101,6 +141,10 @@ export default class Main extends React.Component {
                       )
                     }
                   </LayersControl>
+
+                  {this.state['searchResults'].map(({id, lat, lon, name}) =>
+                    <Marker key={id} position={[ lat, lon ]} title={name} />
+                  )}
                 </Map>
               </Panel>
             </div>
