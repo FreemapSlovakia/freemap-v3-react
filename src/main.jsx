@@ -30,7 +30,7 @@ export default class Main extends React.Component {
     const {zoom, center: { lat, lng: lon }, mapType } = this.state;
     const p = this.props.params;
 
-    if (Math.abs(p.lat - lat) > 0.000001 || Math.abs(p.lon - lon) > 0.000001 || p.zoom !== zoom || p.mapType !== mapType) {
+    if (Math.abs(p.lat - lat) > 0.000001 || Math.abs(p.lon - lon) > 0.000001 || p.zoom != zoom || p.mapType !== mapType) {
       hashHistory.push(`/${mapType}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
     }
   }
