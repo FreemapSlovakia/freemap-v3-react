@@ -32,7 +32,7 @@ export default class Main extends React.Component {
     var lon = props.params.lon || 19.4995
 
     this.state = Object.assign({}, cleanState, {
-      map: mapType,
+      map: mapType, // TODO: rename attribute name from map to mapType!!
       center: L.latLng(lat, lon),
       zoom: zoom,
       searchQuery: '',
