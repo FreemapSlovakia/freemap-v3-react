@@ -4,6 +4,8 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Button from 'react-bootstrap/lib/Button';
+import Row from 'react-bootstrap/lib/Row';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import { hashHistory as history } from 'react-router'
 import mapDefinitions from './mapDefinitions';
 
@@ -71,7 +73,7 @@ export default class Main extends React.Component {
 
   doSearch(e) {
     e.preventDefault();
-    
+
     const { lat, lon, searchQuery: q } = this.state;
     fetch(`http://www.freemap.sk/api/0.1/q/${encodeURIComponent(q)}&lat=${lat}&lon=${lon}`, {
       method: 'GET'
@@ -92,47 +94,49 @@ export default class Main extends React.Component {
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
-      <div>
-        <Navbar style={{ marginBottom: 0 }}>
-          <Navbar.Header>
-            <Navbar.Brand>Freemap3 React</Navbar.Brand>
-            <Navbar.Toggle/>
-          </Navbar.Header>
-          <Navbar.Collapse>
-            <Navbar.Form pullLeft>
-              <form onSubmit={b(this.doSearch)}>
-                <FormGroup>
-                  <FormControl type="text" value={searchQuery} placeholder="Brusno"
-                    onChange={b(this.updateSearchQuery)}/>
-                </FormGroup>
-                {' '}
-                <Button type="submit" disabled={!searchQuery.length}>
-                  Hľadaj
-                </Button>
-              </form>
-            </Navbar.Form>
-          </Navbar.Collapse>
-        </Navbar>
-        <Map ref="map" style={{ width: '100%', height: 'calc(100vh - 50px)' }} center={[ lat, lon ]} zoom={zoom}
-          onMoveend={b(this.handleMapMoveend)}
-          onZoom={b(this.handleMapZoom)}>
+      <div className="container-fluid">
+        <Row>
+          <Navbar fluid style={{ marginBottom: 0 }}>
+            <Navbar.Header>
+              <Navbar.Brand>Freemap3 React</Navbar.Brand>
+              <Navbar.Toggle/>
+            </Navbar.Header>
+            <Navbar.Collapse>
+              <Navbar.Form pullLeft>
+                <form onSubmit={b(this.doSearch)}>
+                  <FormGroup>
+                    <FormControl type="text" value={searchQuery} placeholder="Brusno"
+                      onChange={b(this.updateSearchQuery)}/>
+                  </FormGroup>
+                  {' '}
+                  <Button type="submit" disabled={!searchQuery.length}>
+                    <Glyphicon glyph="search"/>
+                  </Button>
+                </form>
+              </Navbar.Form>
+            </Navbar.Collapse>
+          </Navbar>
+          <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={[ lat, lon ]} zoom={zoom}
+            onMoveend={b(this.handleMapMoveend)}
+            onZoom={b(this.handleMapZoom)}>
 
-          <LayersControl position="topright">
-            {
-              mapDefinitions.map(({ name, type, url, attribution, maxZoom, minZoom }) => (
-                <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
-                  <TileLayer attribution={attribution} url={url}
-                    onAdd={b(this.handleMapChange, type)}
-                    maxZoom={maxZoom} minZoom={minZoom}/>
-                </LayersControl.BaseLayer>
-              ))
-            }
-          </LayersControl>
+            <LayersControl position="topright">
+              {
+                mapDefinitions.map(({ name, type, url, attribution, maxZoom, minZoom }) => (
+                  <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
+                    <TileLayer attribution={attribution} url={url}
+                      onAdd={b(this.handleMapChange, type)}
+                      maxZoom={maxZoom} minZoom={minZoom}/>
+                  </LayersControl.BaseLayer>
+                ))
+              }
+            </LayersControl>
 
-        {searchResults.map(({ id, lat, lon, name }) =>
-          <Marker key={id} position={[ lat, lon ]} title={name}/>
-        )}
-        </Map>
+          {searchResults.map(({ id, lat, lon, name }) =>
+            <Marker key={id} position={[ lat, lon ]} title={name}/>
+          )}
+          </Map>
+        </Row>
       </div>
     );
   }
