@@ -1,7 +1,7 @@
 import React from 'react';
 import { hashHistory as history } from 'react-router'
 
-import { Map, Marker, Popup, Tooltip, Polyline } from 'react-leaflet';
+import { Map, Marker, Popup } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
@@ -14,11 +14,11 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
-import { distance } from '../geoutils';
 import { toHtml } from '../poiTypes';
 
 import ObjectsModal from './objectsModal.jsx';
 import Layers from './layers.jsx';
+import Measurement from './measurement.jsx';
 
 export default class Main extends React.Component {
 
@@ -140,11 +140,6 @@ export default class Main extends React.Component {
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
-    let prev = null;
-    let dist = 0;
-
-    const km = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-
     return (
       <div className="container-fluid">
         {objectsModalShown && <ObjectsModal onClose={b(this.showObjects)}/>}
@@ -192,23 +187,7 @@ export default class Main extends React.Component {
               );
             })}
 
-            {lengthMeasurePoints.map((p, i) => {
-              if (prev) {
-                dist += distance(p.lat, p.lon, prev.lat, prev.lon);
-              }
-              prev = p;
-
-              const m = (
-                <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={b(this.handleMeasureMarkerDrag, i)}>
-                  <Tooltip permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
-                </Marker>
-              );
-
-              return m;
-            })}
-
-            {lengthMeasurePoints.length > 1 && <Polyline positions={lengthMeasurePoints.map(({ lat, lon }) => [lat, lon])}/>}
-
+            <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
           </Map>
         </Row>
       </div>
