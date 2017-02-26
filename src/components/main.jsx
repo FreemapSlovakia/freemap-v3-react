@@ -1,6 +1,6 @@
 import React from 'react';
 import update from 'react-addons-update';
-import { hashHistory as history } from 'react-router'
+import { hashHistory as history } from 'react-router';
 import { Map, Marker, Popup } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -127,21 +127,24 @@ export default class Main extends React.Component {
     if (this.state.tool === 'measure') {
       this.setState({ lengthMeasurePoints: [ ...this.state.lengthMeasurePoints, { lat, lon } ] });
     }
-    if(this.state.tool == 'route-planner'){
-      const pointType = this.state.routePlannerPickMode
-      let newRoutePlannerPoints = null
 
-      if(pointType == 'start')
+    if (this.state.tool === 'route-planner') {
+      const pointType = this.state.routePlannerPickMode;
+      let newRoutePlannerPoints = null;
+
+      if (pointType === 'start') {
         newRoutePlannerPoints = update(this.state.routePlannerPoints, {
           start: { lat: {$set: lat.toFixed(6) }, lon: {$set: lon.toFixed(6) }}
         });
-      else if(pointType == 'finish')
+      } else if (pointType === 'finish') {
         newRoutePlannerPoints = update(this.state.routePlannerPoints, {
           finish: { lat: {$set: lat.toFixed(6) }, lon: {$set: lon.toFixed(6) }} // TODO: how to use key name (start/finish) from variable here to avoid repeating the same code?
         });
-      
-      if(newRoutePlannerPoints)
+      }
+
+      if (newRoutePlannerPoints) {
         this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
+      }
     }
   }
 
@@ -153,16 +156,17 @@ export default class Main extends React.Component {
 
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
-    const mainNavigationIsHidden = tool === 'route-planner'
+    const mainNavigationIsHidden = tool === 'route-planner';
     this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, finish: {}}, routePlannerPickMode: null});
   }
 
-  setRoutePlannerPointPickMode(routePlannerPickMode){
-    this.setState({routePlannerPickMode})
+  setRoutePlannerPointPickMode(routePlannerPickMode) {
+    this.setState({routePlannerPickMode});
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool, mainNavigationIsHidden, routePlannerPoints, routePlannerPickMode } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool,
+      mainNavigationIsHidden, routePlannerPoints, routePlannerPickMode } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 

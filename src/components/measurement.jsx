@@ -26,7 +26,7 @@ export default function Measurement({ lengthMeasurePoints, onMeasureMarkerDrag }
         return m;
       })}
 
-      {lengthMeasurePoints.length > 1 && <Polyline positions={lengthMeasurePoints.map(({ lat, lon }) => [lat, lon])}/>}
+      {lengthMeasurePoints.length > 1 && <Polyline positions={lengthMeasurePoints.map(({ lat, lon }) => [ lat, lon ])}/>}
     </div>
   );
 }

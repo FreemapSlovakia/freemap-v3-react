@@ -14,7 +14,7 @@ export default class ObjectsModal extends React.Component {
 
     this.state = {
       selections: new Set()
-    }
+    };
   }
 
   showObjects() {

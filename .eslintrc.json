@@ -2,7 +2,8 @@
   "env": {
     "browser": true,
     "commonjs": true,
-    "es6": true
+    "es6": true,
+    "node": true
   },
   "plugins": [
     "react"
@@ -20,6 +21,11 @@
     }
   },
   "rules": {
+    "array-bracket-spacing": [ "warn", "always" ],
+    "semi": [ "warn", "always" ],
+    "space-before-blocks": "warn",
+    "keyword-spacing": "warn",
+    "curly": "warn"
   },
   "globals": {
     "L": true
