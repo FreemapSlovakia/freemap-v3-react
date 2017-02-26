@@ -17,6 +17,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import mapDefinitions from './mapDefinitions';
 import ObjectsModal from './components/objectsModal.jsx';
 import { distance } from './geoutils';
+import { toHtml } from './poiTypes';
 
 export default class Main extends React.Component {
 
@@ -87,10 +88,12 @@ export default class Main extends React.Component {
 
     const { lat, lon, searchQuery, zoom } = this.state;
     // fetch(`http://www.freemap.sk/api/0.1/q/${encodeURIComponent(q)}&lat=${lat}&lon=${lon}`, {
-    fetch(`http://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}?format=json&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
+    fetch(`http://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
+        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
-      const searchResults = data.map((d, id) => ({id, lat: d.lat, lon: d.lon, name: d.name}));
+      // TODO map type to tag
+      const searchResults = data.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: { name: d.namedetails.name} }));
       if (searchResults.length) {
         const { lat, lon } = searchResults[0];
         this.setState({ searchResults, lat, lon, zoom: 14, lengthMeasurePoints: [], tool: null });
@@ -121,7 +124,7 @@ export default class Main extends React.Component {
       body: `data=${encodeURIComponent(query)}`
     }).then(res => res.json()).then(data => {
       this.setState({
-        searchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, name: d.tags.name })),
+        searchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags })),
         lengthMeasurePoints: [],
         tool: null
       });
@@ -185,7 +188,7 @@ export default class Main extends React.Component {
           </Navbar>
         </Row>
         <Row>
-          <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={[ lat, lon ]} zoom={zoom}
+          <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={L.latLng(lat, lon)} zoom={zoom}
             onMoveend={b(this.handleMapMoveend)}
             onZoom={b(this.handleMapZoom)}
             onClick={b(this.handleMapClick)}>
@@ -202,11 +205,15 @@ export default class Main extends React.Component {
               }
             </LayersControl>
 
-            {searchResults.map(({ id, lat, lon, name }) =>
-              <Marker key={id} position={[ lat, lon ]} title={name}>
-                <Popup><span>{name}</span></Popup>
-              </Marker>
-            )}
+            {searchResults.map(({ id, lat, lon, tags }) => {
+              const __html = toHtml(tags);
+
+              return (
+                <Marker key={id} position={L.latLng(lat, lon)}>
+                  {__html && <Popup><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
+                </Marker>
+              );
+            })}
 
             {lengthMeasurePoints.map((p, i) => {
               if (prev) {
@@ -215,7 +222,7 @@ export default class Main extends React.Component {
               prev = p;
 
               const m = (
-                <Marker key={i} position={[ p.lat, p.lon ]} draggable onDrag={b(this.handleMeasureMarkerDrag, i)}>
+                <Marker key={i} position={L.latLng(lat, lon)} draggable onDrag={b(this.handleMeasureMarkerDrag, i)}>
                   <Tooltip permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
                 </Marker>
               );

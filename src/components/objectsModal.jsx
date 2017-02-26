@@ -5,16 +5,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Accordion from 'react-bootstrap/lib/Accordion';
 import Panel from 'react-bootstrap/lib/Panel';
 
-const groups = [
-  { id: 'nature', title: 'Príroda' },
-  { id: 'shop', title: 'Obchody' }
-];
-
-const types = [
-  { title: 'Vrchol', key: 'natural', value: 'peak', group: 'nature' },
-  { title: 'Prameň', key: 'natural', value: 'spring', group: 'nature' },
-  { title: 'Potraviny', key: 'shop', value: 'convenience', group: 'shop' }
-];
+import { poiTypeGroups, poiTypes } from '../poiTypes';
 
 export default class ObjectsModal extends React.Component {
 
@@ -28,7 +19,7 @@ export default class ObjectsModal extends React.Component {
 
   showObjects() {
     this.props.onClose([ ...this.state.selections ]
-      .map(i => types[i])
+      .map(i => poiTypes[i])
       .map(({ key, value }) => `node["${key}"="${value}"]`));
   }
 
@@ -56,9 +47,9 @@ export default class ObjectsModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Accordion>
-            {groups.map(({ id, title }, i) => (
+            {poiTypeGroups.map(({ id, title }, i) => (
               <Panel key={i} eventKey={i} header={title} expanded={false}>
-                {types.map(({ group, title }, i) =>
+                {poiTypes.map(({ group, title }, i) =>
                   group === id && <Checkbox key={i} onClick={b(this.select, i)} checked={selections.has(i)}>{title}</Checkbox>)
                 }
               </Panel>
