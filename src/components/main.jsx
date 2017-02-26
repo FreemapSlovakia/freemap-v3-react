@@ -1,7 +1,7 @@
 import React from 'react';
 import { hashHistory as history } from 'react-router'
 
-import { Map, TileLayer, Marker, LayersControl, Popup, Tooltip, Polyline } from 'react-leaflet';
+import { Map, Marker, Popup, Tooltip, Polyline } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
@@ -14,7 +14,6 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
-import mapDefinitions from '../mapDefinitions';
 import { distance } from '../geoutils';
 import { toHtml } from '../poiTypes';
 
