@@ -1,6 +1,6 @@
 import React from 'react';
+import update from 'react-addons-update';
 import { hashHistory as history } from 'react-router'
-
 import { Map, Marker, Popup } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -20,6 +20,7 @@ import ObjectsModal from './objectsModal.jsx';
 import Layers from './layers.jsx';
 import Measurement from './measurement.jsx';
 import RoutePlanner from './routePlanner.jsx';
+import RoutePlannerResults from './routePlannerResults.jsx';
 
 export default class Main extends React.Component {
 
@@ -31,6 +32,8 @@ export default class Main extends React.Component {
       searchResults: [],
       lengthMeasurePoints: [],
       tool: null,
+      routePlannerPoints: {start: {}, finish: {}},
+      routePlannerIsPickingPointType: null,
       mainNavigationIsHidden: false
     }, toMapState(props.params));
   }
@@ -124,6 +127,22 @@ export default class Main extends React.Component {
     if (this.state.tool === 'measure') {
       this.setState({ lengthMeasurePoints: [ ...this.state.lengthMeasurePoints, { lat, lon } ] });
     }
+    if(this.state.tool == 'route-planner'){
+      const pointType = this.state.routePlannerIsPickingPointType
+      let newRoutePlannerPoints = null
+
+      if(pointType == 'start')
+        newRoutePlannerPoints = update(this.state.routePlannerPoints, {
+          start: { lat: {$set: lat.toFixed(6) }, lon: {$set: lon.toFixed(6) }}
+        });
+      else if(pointType == 'finish')
+        newRoutePlannerPoints = update(this.state.routePlannerPoints, {
+          finish: { lat: {$set: lat.toFixed(6) }, lon: {$set: lon.toFixed(6) }} // TODO: how to use key name (start/finish) from variable here to avoid repeating the same code?
+        });
+      
+      if(newRoutePlannerPoints)
+        this.setState({ routePlannerIsPickingPointType: null, routePlannerPoints: newRoutePlannerPoints});
+    }
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
@@ -135,11 +154,15 @@ export default class Main extends React.Component {
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner'
-    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [] });
+    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, finish: {}}, routePlannerIsPickingPointType: null});
+  }
+
+  setRoutePlannerPointPickMode(routePlannerIsPickingPointType){
+    this.setState({routePlannerIsPickingPointType})
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool, mainNavigationIsHidden } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool, mainNavigationIsHidden, routePlannerPoints } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -170,7 +193,7 @@ export default class Main extends React.Component {
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                 <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
               </Nav>
-              { tool === 'route-planner' ? <RoutePlanner onCancel={b(this.setTool, null)} /> : null }
+              { tool === 'route-planner' ? <RoutePlanner routePlannerPoints={routePlannerPoints} onPickPointMode={b(this.setRoutePlannerPointPickMode)} onCancel={b(this.setTool, null)} /> : null }
             </Navbar.Collapse>
           </Navbar>
         </Row>
@@ -193,6 +216,7 @@ export default class Main extends React.Component {
             })}
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+            <RoutePlannerResults routePlannerPoints={routePlannerPoints}/>
           </Map>
         </Row>
       </div>
