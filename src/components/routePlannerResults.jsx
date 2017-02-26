@@ -33,7 +33,6 @@ export default class RoutePlannerResults extends React.Component {
       method: 'GET'
     }).then(res => res.text()).then(data => {
       xml2js(data, (error, json) => {
-        console.log(error)
         const rawPointsWithMess = json.osmRoute.wkt[0]
         const rawPoints =  rawPointsWithMess.substring(14, rawPointsWithMess.length - 3)
         const points = rawPoints.split(', ').map((lonlat) => {
@@ -53,7 +52,7 @@ export default class RoutePlannerResults extends React.Component {
         <div>
           {p.start.lat && <Marker key="routePlannerStart" position={L.latLng(p.start.lat, p.start.lon)} />}
           {p.finish.lat && <Marker key="routePlannerEnd" position={L.latLng(p.finish.lat, p.finish.lon)} />}
-          <Polyline positions={routeShapePoints}/>
+          <Polyline positions={routeShapePoints} color="blue" weight="10" opacity="0.4"/>
         </div>
     )
   }

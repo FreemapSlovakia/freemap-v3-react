@@ -33,7 +33,7 @@ export default class Main extends React.Component {
       lengthMeasurePoints: [],
       tool: null,
       routePlannerPoints: {start: {}, finish: {}},
-      routePlannerIsPickingPointType: null,
+      routePlannerPickMode: null,
       mainNavigationIsHidden: false
     }, toMapState(props.params));
   }
@@ -128,7 +128,7 @@ export default class Main extends React.Component {
       this.setState({ lengthMeasurePoints: [ ...this.state.lengthMeasurePoints, { lat, lon } ] });
     }
     if(this.state.tool == 'route-planner'){
-      const pointType = this.state.routePlannerIsPickingPointType
+      const pointType = this.state.routePlannerPickMode
       let newRoutePlannerPoints = null
 
       if(pointType == 'start')
@@ -141,7 +141,7 @@ export default class Main extends React.Component {
         });
       
       if(newRoutePlannerPoints)
-        this.setState({ routePlannerIsPickingPointType: null, routePlannerPoints: newRoutePlannerPoints});
+        this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
     }
   }
 
@@ -154,15 +154,15 @@ export default class Main extends React.Component {
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner'
-    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, finish: {}}, routePlannerIsPickingPointType: null});
+    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, finish: {}}, routePlannerPickMode: null});
   }
 
-  setRoutePlannerPointPickMode(routePlannerIsPickingPointType){
-    this.setState({routePlannerIsPickingPointType})
+  setRoutePlannerPointPickMode(routePlannerPickMode){
+    this.setState({routePlannerPickMode})
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool, mainNavigationIsHidden, routePlannerPoints } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool, mainNavigationIsHidden, routePlannerPoints, routePlannerPickMode } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -193,7 +193,7 @@ export default class Main extends React.Component {
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                 <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
               </Nav>
-              { tool === 'route-planner' ? <RoutePlanner routePlannerPoints={routePlannerPoints} onPickPointMode={b(this.setRoutePlannerPointPickMode)} onCancel={b(this.setTool, null)} /> : null }
+              { tool === 'route-planner' ? <RoutePlanner routePlannerPoints={routePlannerPoints} pickPointMode={routePlannerPickMode} onChangePickPointMode={b(this.setRoutePlannerPointPickMode)} onCancel={b(this.setTool, null)} /> : null }
             </Navbar.Collapse>
           </Navbar>
         </Row>
