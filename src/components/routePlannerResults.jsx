@@ -1,6 +1,6 @@
 import React from 'react';
 import { Marker, Polyline} from 'react-leaflet';
-const xml2js = require('xml2js').parseString;
+import { parseString as xml2js } from 'xml2js';
 
 export default class RoutePlannerResults extends React.Component {
   constructor(props) {
@@ -23,10 +23,8 @@ export default class RoutePlannerResults extends React.Component {
     }
   }
 
-  computeNewRoute(routePlannerPoints) {
-    const p = routePlannerPoints;
-
-    const url = `http://www.freemap.sk/api/0.1/r/${p.start.lat}%7C${p.start.lon}/${p.finish.lat}%7C${p.finish.lon}/motorcar/fastest&Ajax=`;
+  computeNewRoute({ start, finish }) {
+    const url = `http://www.freemap.sk/api/0.1/r/${start.lat}%7C${start.lon}/${finish.lat}%7C${finish.lon}/motorcar/fastest&Ajax=`;
     fetch(url, {
       method: 'GET'
     }).then(res => res.text()).then(data => {

@@ -22,7 +22,7 @@ export default function RoutePlanner({ pickPointMode, routePlannerPoints: { star
 
 RoutePlanner.propTypes = {
   pickPointMode: React.PropTypes.string,
-  routePlannerPoints: React.PropTypes.object,
+  routePlannerPoints: React.PropTypes.object.isRequired,
   onChangePickPointMode: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired
 };
