@@ -199,7 +199,7 @@ export default class Main extends React.Component {
               prev = p;
 
               const m = (
-                <Marker key={i} position={L.latLng(lat, lon)} draggable onDrag={b(this.handleMeasureMarkerDrag, i)}>
+                <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={b(this.handleMeasureMarkerDrag, i)}>
                   <Tooltip permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
                 </Marker>
               );
