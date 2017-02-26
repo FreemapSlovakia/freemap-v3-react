@@ -1,13 +1,18 @@
 import React from 'react';
-import { Map, TileLayer, Marker, LayersControl } from 'react-leaflet';
+import { Map, TileLayer, Marker, LayersControl, Popup } from 'react-leaflet';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Button from 'react-bootstrap/lib/Button';
 import Row from 'react-bootstrap/lib/Row';
+import NavDropdown from 'react-bootstrap/lib/NavDropdown';
+import Nav from 'react-bootstrap/lib/Nav';
+import NavItem from 'react-bootstrap/lib/NavItem';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import { hashHistory as history } from 'react-router'
 import mapDefinitions from './mapDefinitions';
+import ObjectsModal from './components/objectsModal.jsx';
 
 export default class Main extends React.Component {
 
@@ -89,25 +94,50 @@ export default class Main extends React.Component {
     });
   }
 
+  showObjectsModal(objectsModalShown) {
+    this.setState({ objectsModalShown });
+  }
+
+  showObjects(filter) {
+    this.setState({ objectsModalShown: false });
+
+    if (!filter.length) {
+      return;
+    }
+
+    const b = this.refs.map.leafletElement.getBounds();
+
+    const bbox = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
+    const query = `[out:json][timeout:60]; (${filter.map(f => `${f}${bbox};`).join('')}); out qt;`;
+
+    return fetch('https://overpass-api.de/api/interpreter', {
+      method: 'POST',
+      body: `data=${encodeURIComponent(query)}`
+    }).then(res => res.json()).then(data => {
+      this.setState({ searchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, name: d.tags.name })) });
+    });
+  }
+
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
       <div className="container-fluid">
+        {objectsModalShown && <ObjectsModal onClose={b(this.showObjects)}/>}
+
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
             <Navbar.Header>
-              <Navbar.Brand>Freemap3 React</Navbar.Brand>
+              <Navbar.Brand>Freemap</Navbar.Brand>
               <Navbar.Toggle/>
             </Navbar.Header>
             <Navbar.Collapse>
               <Navbar.Form pullLeft>
                 <form onSubmit={b(this.doSearch)}>
                   <FormGroup>
-                    <FormControl type="text" value={searchQuery} placeholder="Brusno"
-                      onChange={b(this.updateSearchQuery)}/>
+                    <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
                   </FormGroup>
                   {' '}
                   <Button type="submit" disabled={!searchQuery.length}>
@@ -115,8 +145,13 @@ export default class Main extends React.Component {
                   </Button>
                 </form>
               </Navbar.Form>
+              <Nav>
+                <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
+              </Nav>
             </Navbar.Collapse>
           </Navbar>
+        </Row>
+        <Row>
           <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={[ lat, lon ]} zoom={zoom}
             onMoveend={b(this.handleMapMoveend)}
             onZoom={b(this.handleMapZoom)}>
@@ -134,7 +169,9 @@ export default class Main extends React.Component {
             </LayersControl>
 
           {searchResults.map(({ id, lat, lon, name }) =>
-            <Marker key={id} position={[ lat, lon ]} title={name}/>
+            <Marker key={id} position={[ lat, lon ]} title={name}>
+              <Popup><span>{name}</span></Popup>
+            </Marker>
           )}
           </Map>
         </Row>
