@@ -210,7 +210,7 @@ export default class Main extends React.Component {
 
               return (
                 <Marker key={id} position={L.latLng(lat, lon)}>
-                  {__html && <Popup><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
+                  {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
                 </Marker>
               );
             })}
