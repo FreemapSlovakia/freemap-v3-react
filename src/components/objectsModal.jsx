@@ -2,10 +2,18 @@ import React from 'react';
 import Modal from 'react-bootstrap/lib/Modal';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 import Button from 'react-bootstrap/lib/Button';
+import Accordion from 'react-bootstrap/lib/Accordion';
+import Panel from 'react-bootstrap/lib/Panel';
+
+const groups = [
+  { id: 'nature', title: 'Príroda' },
+  { id: 'shop', title: 'Obchody' }
+];
 
 const types = [
-  { title: 'Vrchol', key: 'natural', value: 'peak' },
-  { title: 'Prameň', key: 'natural', value: 'spring' }
+  { title: 'Vrchol', key: 'natural', value: 'peak', group: 'nature' },
+  { title: 'Prameň', key: 'natural', value: 'spring', group: 'nature' },
+  { title: 'Potraviny', key: 'shop', value: 'convenience', group: 'shop' }
 ];
 
 export default class ObjectsModal extends React.Component {
@@ -47,9 +55,15 @@ export default class ObjectsModal extends React.Component {
           <Modal.Title>Objekty</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {
-            types.map(({ title }, i) => <Checkbox key={i} onClick={b(this.select, i)} checked={selections.has(i)}>{title}</Checkbox>)
-          }
+          <Accordion>
+            {groups.map(({ id, title }, i) => (
+              <Panel eventKey={i} header={title} expanded={false}>
+                {types.map(({ group, title }, i) =>
+                  group === id && <Checkbox key={i} onClick={b(this.select, i)} checked={selections.has(i)}>{title}</Checkbox>)
+                }
+              </Panel>
+            ))}
+          </Accordion>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={b(this.showObjects)}>Zobraz</Button>
