@@ -1,7 +1,8 @@
-import Main from './main.jsx';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { hashHistory, Router, Route } from 'react-router'
+
+import Main from './components/main.jsx';
 
 ReactDOM.render((
   <Router history={hashHistory}>

@@ -14,10 +14,11 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
-import mapDefinitions from './mapDefinitions';
-import ObjectsModal from './components/objectsModal.jsx';
-import { distance } from './geoutils';
-import { toHtml } from './poiTypes';
+import mapDefinitions from '../mapDefinitions';
+import { distance } from '../geoutils';
+import { toHtml } from '../poiTypes';
+
+import ObjectsModal from './objectsModal.jsx';
 
 export default class Main extends React.Component {
 
@@ -47,7 +48,6 @@ export default class Main extends React.Component {
       lon: parseFloat(lon) || 19.4995,
       zoom: parseInt(zoom) || 8
     });
-
   }
 
   handleMapMoveend(e) {
