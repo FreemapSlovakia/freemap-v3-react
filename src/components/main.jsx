@@ -19,6 +19,7 @@ import { distance } from '../geoutils';
 import { toHtml } from '../poiTypes';
 
 import ObjectsModal from './objectsModal.jsx';
+import Layers from './layers.jsx';
 
 export default class Main extends React.Component {
 
@@ -176,21 +177,11 @@ export default class Main extends React.Component {
         </Row>
         <Row>
           <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={L.latLng(lat, lon)} zoom={zoom}
-            onMoveend={b(this.handleMapMoveend)}
-            onZoom={b(this.handleMapZoom)}
-            onClick={b(this.handleMapClick)}>
+              onMoveend={b(this.handleMapMoveend)}
+              onZoom={b(this.handleMapZoom)}
+              onClick={b(this.handleMapClick)}>
 
-            <LayersControl position="topright">
-              {
-                mapDefinitions.map(({ name, type, url, attribution, maxZoom, minZoom }) => (
-                  <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
-                    <TileLayer attribution={attribution} url={url}
-                      onAdd={b(this.handleMapChange, type)}
-                      maxZoom={maxZoom} minZoom={minZoom}/>
-                  </LayersControl.BaseLayer>
-                ))
-              }
-            </LayersControl>
+            <Layers onMapChange={b(this.handleMapChange)} mapType={mapType}/>
 
             {searchResults.map(({ id, lat, lon, tags }) => {
               const __html = toHtml(tags);
