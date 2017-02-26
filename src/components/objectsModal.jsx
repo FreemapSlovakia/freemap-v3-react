@@ -57,7 +57,7 @@ export default class ObjectsModal extends React.Component {
         <Modal.Body>
           <Accordion>
             {groups.map(({ id, title }, i) => (
-              <Panel eventKey={i} header={title} expanded={false}>
+              <Panel key={i} eventKey={i} header={title} expanded={false}>
                 {types.map(({ group, title }, i) =>
                   group === id && <Checkbox key={i} onClick={b(this.select, i)} checked={selections.has(i)}>{title}</Checkbox>)
                 }
@@ -66,7 +66,7 @@ export default class ObjectsModal extends React.Component {
           </Accordion>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={b(this.showObjects)}>Zobraz</Button>
+          <Button onClick={b(this.showObjects)} disabled={!selections.size}>Zobraz</Button>
           <Button onClick={b(onClose)}>Zavri</Button>
         </Modal.Footer>
       </Modal>

@@ -1,18 +1,22 @@
 import React from 'react';
-import { Map, TileLayer, Marker, LayersControl, Popup } from 'react-leaflet';
+import { hashHistory as history } from 'react-router'
+
+import { Map, TileLayer, Marker, LayersControl, Popup, Tooltip, Polyline } from 'react-leaflet';
+
 import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Button from 'react-bootstrap/lib/Button';
 import Row from 'react-bootstrap/lib/Row';
-import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import { hashHistory as history } from 'react-router'
+// import MenuItem from 'react-bootstrap/lib/MenuItem';
+// import NavDropdown from 'react-bootstrap/lib/NavDropdown';
+
 import mapDefinitions from './mapDefinitions';
 import ObjectsModal from './components/objectsModal.jsx';
+import { distance } from './geoutils';
 
 export default class Main extends React.Component {
 
@@ -27,7 +31,9 @@ export default class Main extends React.Component {
       lon: parseFloat(lon) || 19.4995,
       zoom: parseInt(zoom) || 8,
       searchQuery: '',
-      searchResults: []
+      searchResults: [],
+      lengthMeasurePoints: [],
+      tool: null
     };
   }
 
@@ -87,9 +93,9 @@ export default class Main extends React.Component {
       const searchResults = data.map((d, id) => ({id, lat: d.lat, lon: d.lon, name: d.name}));
       if (searchResults.length) {
         const { lat, lon } = searchResults[0];
-        this.setState({ searchResults, lat, lon, zoom: 14  });
+        this.setState({ searchResults, lat, lon, zoom: 14, lengthMeasurePoints: [], tool: null });
       } else {
-        this.setState({ searchResults });
+        this.setState({ searchResults, lengthMeasurePoints: [], tool: null });
       }
     });
   }
@@ -114,14 +120,40 @@ export default class Main extends React.Component {
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`
     }).then(res => res.json()).then(data => {
-      this.setState({ searchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, name: d.tags.name })) });
+      this.setState({
+        searchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, name: d.tags.name })),
+        lengthMeasurePoints: [],
+        tool: null
+      });
     });
   }
 
+  handleMapClick({ latlng: { lat, lng: lon }}) {
+    if (this.state.tool === 'measure') {
+      this.setState({ lengthMeasurePoints: [ ...this.state.lengthMeasurePoints, { lat, lon } ] });
+    }
+  }
+
+  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
+    const lengthMeasurePoints = [ ...this.state.lengthMeasurePoints ];
+    lengthMeasurePoints[i] = { lat, lon };
+    this.setState({ lengthMeasurePoints });
+  }
+
+  setTool(t) {
+    const tool = t === this.state.tool ? null : t;
+    this.setState({ tool, searchResults: [], lengthMeasurePoints: [] });
+  }
+
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
+
+    let prev = null;
+    let dist = 0;
+
+    const km = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
     return (
       <div className="container-fluid">
@@ -147,6 +179,7 @@ export default class Main extends React.Component {
               </Navbar.Form>
               <Nav>
                 <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
+                <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
               </Nav>
             </Navbar.Collapse>
           </Navbar>
@@ -154,7 +187,8 @@ export default class Main extends React.Component {
         <Row>
           <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={[ lat, lon ]} zoom={zoom}
             onMoveend={b(this.handleMapMoveend)}
-            onZoom={b(this.handleMapZoom)}>
+            onZoom={b(this.handleMapZoom)}
+            onClick={b(this.handleMapClick)}>
 
             <LayersControl position="topright">
               {
@@ -168,11 +202,29 @@ export default class Main extends React.Component {
               }
             </LayersControl>
 
-          {searchResults.map(({ id, lat, lon, name }) =>
-            <Marker key={id} position={[ lat, lon ]} title={name}>
-              <Popup><span>{name}</span></Popup>
-            </Marker>
-          )}
+            {searchResults.map(({ id, lat, lon, name }) =>
+              <Marker key={id} position={[ lat, lon ]} title={name}>
+                <Popup><span>{name}</span></Popup>
+              </Marker>
+            )}
+
+            {lengthMeasurePoints.map((p, i) => {
+              if (prev) {
+                dist += distance(p.lat, p.lon, prev.lat, prev.lon);
+              }
+              prev = p;
+
+              const m = (
+                <Marker key={i} position={[ p.lat, p.lon ]} draggable onDrag={b(this.handleMeasureMarkerDrag, i)}>
+                  <Tooltip permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
+                </Marker>
+              );
+
+              return m;
+            })}
+
+            {lengthMeasurePoints.length > 1 && <Polyline positions={lengthMeasurePoints.map(({ lat, lon }) => [lat, lon])}/>}
+
           </Map>
         </Row>
       </div>
