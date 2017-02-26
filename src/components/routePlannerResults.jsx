@@ -20,18 +20,20 @@ export default class RoutePlannerResults extends React.Component {
     if(changed){
       this.setState({ routePlannerPoints: p, routeShapePoints: [] })
       if(p.start.lat && p.finish.lat)
-        this.computeNewRoute()
+        this.computeNewRoute(p)
     }
   }
 
-  computeNewRoute(){
+  computeNewRoute(routePlannerPoints){
     const that = this
+    const p = routePlannerPoints
 
     const url = `http://www.freemap.sk/api/0.1/r/${p.start.lat}%7C${p.start.lon}/${p.finish.lat}%7C${p.finish.lon}/motorcar/fastest&Ajax=`
     fetch(url, {
       method: 'GET'
     }).then(res => res.text()).then(data => {
       xml2js(data, (error, json) => {
+        console.log(error)
         const rawPointsWithMess = json.osmRoute.wkt[0]
         const rawPoints =  rawPointsWithMess.substring(14, rawPointsWithMess.length - 3)
         const points = rawPoints.split(', ').map((lonlat) => {
