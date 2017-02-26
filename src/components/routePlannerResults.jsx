@@ -12,15 +12,13 @@ export default class RoutePlannerResults extends React.Component {
     };
   }
 
-  componentWillReceiveProps(newProps) {
-    let p = newProps.routePlannerPoints;
-
+  componentWillReceiveProps({ routePlannerPoints }) {
     // FIXME: there must be some nicer way to do this
-    const changed = JSON.stringify(p) !== JSON.stringify(this.state.routePlannerPoints);
+    const changed = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
     if (changed) {
-      this.setState({ routePlannerPoints: p, routeShapePoints: [] });
-      if (p.start.lat && p.finish.lat) {
-        this.computeNewRoute(p);
+      this.setState({ routePlannerPoints, routeShapePoints: [] });
+      if (routePlannerPoints.start.lat && routePlannerPoints.finish.lat) {
+        this.computeNewRoute(routePlannerPoints);
       }
     }
   }
