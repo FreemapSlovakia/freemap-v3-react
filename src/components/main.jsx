@@ -19,6 +19,7 @@ import { toHtml } from '../poiTypes';
 import ObjectsModal from './objectsModal.jsx';
 import Layers from './layers.jsx';
 import Measurement from './measurement.jsx';
+import RoutePlanner from './routePlanner.jsx';
 
 export default class Main extends React.Component {
 
@@ -29,7 +30,8 @@ export default class Main extends React.Component {
       searchQuery: '',
       searchResults: [],
       lengthMeasurePoints: [],
-      tool: null
+      tool: null,
+      mainNavigationIsHidden: false
     }, toMapState(props.params));
   }
 
@@ -132,11 +134,12 @@ export default class Main extends React.Component {
 
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
-    this.setState({ tool, searchResults: [], lengthMeasurePoints: [] });
+    const mainNavigationIsHidden = tool === 'route-planner'
+    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [] });
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool } = this.state;
+    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool, mainNavigationIsHidden } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -151,7 +154,7 @@ export default class Main extends React.Component {
               <Navbar.Toggle/>
             </Navbar.Header>
             <Navbar.Collapse>
-              <Navbar.Form pullLeft>
+              <Navbar.Form pullLeft className={mainNavigationIsHidden ? 'hidden' : ''}>
                 <form onSubmit={b(this.doSearch)}>
                   <FormGroup>
                     <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
@@ -162,10 +165,12 @@ export default class Main extends React.Component {
                   </Button>
                 </form>
               </Navbar.Form>
-              <Nav>
+              <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
                 <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
+                <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
               </Nav>
+              { tool === 'route-planner' ? <RoutePlanner onCancel={b(this.setTool, null)} /> : null }
             </Navbar.Collapse>
           </Navbar>
         </Row>
