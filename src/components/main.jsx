@@ -25,29 +25,16 @@ export default class Main extends React.Component {
   constructor(props) {
     super(props);
 
-    const { zoom, lat, lon, mapType } = props.params;
-
-    this.state = {
-      mapType: mapType || 'T',
-      lat: parseFloat(lat) || 48.70714,
-      lon: parseFloat(lon) || 19.4995,
-      zoom: parseInt(zoom) || 8,
+    this.state = Object.assign({
       searchQuery: '',
       searchResults: [],
       lengthMeasurePoints: [],
       tool: null
-    };
+    }, toMapState(props.params));
   }
 
   componentWillReceiveProps(newProps) {
-    const { zoom, lat, lon, mapType } = newProps.params;
-
-    this.setState({
-      mapType: mapType || 'T',
-      lat: parseFloat(lat) || 48.70714,
-      lon: parseFloat(lon) || 19.4995,
-      zoom: parseInt(zoom) || 8
-    });
+    this.setState(toMapState(newProps.params));
   }
 
   handleMapMoveend(e) {
@@ -241,4 +228,13 @@ export default class Main extends React.Component {
 
 Main.propTypes = {
   params: React.PropTypes.object
+};
+
+function toMapState({ zoom, lat, lon, mapType }) {
+  return {
+    mapType: mapType || 'T',
+    lat: parseFloat(lat) || 48.70714,
+    lon: parseFloat(lon) || 19.4995,
+    zoom: parseInt(zoom) || 8
+  };
 }
