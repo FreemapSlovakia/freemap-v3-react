@@ -6,6 +6,7 @@ import { Map, Marker, Popup } from 'react-leaflet';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
@@ -198,18 +199,22 @@ export default class Main extends React.Component {
               <Navbar.Brand>Freemap</Navbar.Brand>
               <Navbar.Toggle/>
             </Navbar.Header>
+
             <Navbar.Collapse>
-              <Navbar.Form pullLeft className={mainNavigationIsHidden ? 'hidden' : ''}>
-                <form onSubmit={b(this.doSearch)}>
+              <form onSubmit={b(this.doSearch)}>
+                <Navbar.Form pullLeft className={mainNavigationIsHidden ? 'hidden' : ''}>
                   <FormGroup>
-                    <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
+                    <InputGroup>
+                      <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
+                      <InputGroup.Button>
+                        <Button type="submit" disabled={!searchQuery.length}>
+                          <Glyphicon glyph="search"/>
+                        </Button>
+                      </InputGroup.Button>
+                    </InputGroup>
                   </FormGroup>
-                  {' '}
-                  <Button type="submit" disabled={!searchQuery.length}>
-                    <Glyphicon glyph="search"/>
-                  </Button>
-                </form>
-              </Navbar.Form>
+                </Navbar.Form>
+              </form>
               <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
                 <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
