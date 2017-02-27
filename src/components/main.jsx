@@ -134,11 +134,11 @@ export default class Main extends React.Component {
 
       if (pointType === 'start') {
         newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-          start: { lat: {$set: lat.toFixed(6) }, lon: {$set: lon.toFixed(6) }}
+          start: { lat: {$set: lat }, lon: {$set: lon }}
         });
       } else if (pointType === 'finish') {
         newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-          finish: { lat: {$set: lat.toFixed(6) }, lon: {$set: lon.toFixed(6) }} // TODO: how to use key name (start/finish) from variable here to avoid repeating the same code?
+          finish: { lat: {$set: lat }, lon: {$set: lon }} // TODO: how to use key name (start/finish) from variable here to avoid repeating the same code?
         });
       }
 
