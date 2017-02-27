@@ -7,17 +7,17 @@ export default function RoutePlanner({ pickPointMode, routePlannerPoints: { star
   return (  
     <Nav>
       <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť plánovač</NavItem>
-      <NavItem onClick={onChangePickPointMode.bind(null, 'start')} active={pickPointMode === 'start'}>
+      <NavItem onClick={onChangePickPointMode.bind(null, 'start')} active={pickPointMode === 'start'}  disabled={!!start.lat}>
         <Glyphicon glyph="triangle-right" style={{color: '#32CD32'}}/>
-        {start.lat ? ' Zmeniť' : ' Pridať'} štart
+        &nbsp;Pridať štart
       </NavItem>
       <NavItem onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
         <Glyphicon glyph="flag" style={{color: 'grey'}}/>
         &nbsp;Pridať zastávku
       </NavItem>
-      <NavItem onClick={onChangePickPointMode.bind(null, 'finish')} active={pickPointMode === 'finish'}>
-          <Glyphicon glyph="record" style={{color: '#FF6347'}}/>
-        {finish.lat ? ' Zmeniť' : ' Pridať'} cieľ
+      <NavItem onClick={onChangePickPointMode.bind(null, 'finish')} active={pickPointMode === 'finish'} disabled={!!finish.lat}>
+        <Glyphicon glyph="record" style={{color: '#FF6347'}}/>
+        &nbsp;Pridať cieľ
       </NavItem>
     </Nav>
   );
