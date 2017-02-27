@@ -158,6 +158,16 @@ export default class Main extends React.Component {
     this.setState({routePlannerPickMode});
   }
 
+  onRouteMarkerDragend(pointType, event) {
+    const lat = event.target._latlng.lat
+    const lon = event.target._latlng.lng
+    const newRoutePlannerPoints = update(this.state.routePlannerPoints, {
+      [pointType]: { lat: {$set: lat }, lon: {$set: lon }}
+    });
+
+    this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
+  }
+
   render() {
     const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerPickMode } = this.state;
@@ -214,7 +224,7 @@ export default class Main extends React.Component {
             })}
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
-            <RoutePlannerResults routePlannerPoints={routePlannerPoints}/>
+            <RoutePlannerResults routePlannerPoints={routePlannerPoints} onRouteMarkerDragend={b(this.onRouteMarkerDragend)}/>
           </Map>
         </Row>
       </div>
