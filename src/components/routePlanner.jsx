@@ -2,6 +2,8 @@ import React from 'react';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import Button from 'react-bootstrap/lib/Button';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
 export default function RoutePlanner({ pickPointMode, transportType, onChangeTransportType, routePlannerPoints: { start, finish }, onChangePickPointMode, onCancel }) {
   return (  
@@ -18,17 +20,17 @@ export default function RoutePlanner({ pickPointMode, transportType, onChangeTra
           <Glyphicon glyph="record" style={{color: '#FF6347'}}/> Pridať cieľ
         </NavItem>
       </Nav>
-      <Nav pullRight={true}>
-        <NavItem active={transportType === 'car'} onClick={onChangeTransportType.bind(null, 'car')}>
+      <ButtonGroup>
+        <Button className="navbar-btn" active={transportType === 'car'} onClick={onChangeTransportType.bind(null, 'car')}>
           <i className="fa fa-car" aria-hidden="true"></i>
-        </NavItem>
-        <NavItem active={transportType === 'walk'} onClick={onChangeTransportType.bind(null, 'walk')}>
+        </Button>
+        <Button className="navbar-btn" active={transportType === 'walk'} onClick={onChangeTransportType.bind(null, 'walk')}>
           <i className="fa fa-male" aria-hidden="true"></i>
-        </NavItem>
-        <NavItem active={transportType === 'bicycle'} onClick={onChangeTransportType.bind(null, 'bicycle')}>
+        </Button>
+        <Button className="navbar-btn" active={transportType === 'bicycle'} onClick={onChangeTransportType.bind(null, 'bicycle')}>
           <i className="fa fa-bicycle" aria-hidden="true"></i>
-        </NavItem>
-      </Nav>
+        </Button>
+        </ButtonGroup>
     </div>
   );
 }
