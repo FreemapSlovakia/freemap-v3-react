@@ -32,7 +32,7 @@ export default class Main extends React.Component {
       searchResults: [],
       lengthMeasurePoints: [],
       tool: null,
-      routePlannerPoints: {start: {}, finish: {}},
+      routePlannerPoints: {start: {}, midpoints: [], finish: {}},
       routePlannerPickMode: null,
       mainNavigationIsHidden: false
     }, toMapState(props.params));
@@ -130,13 +130,17 @@ export default class Main extends React.Component {
     }
 
     if (this.state.tool === 'route-planner') {
-      const pointType = this.state.routePlannerPickMode;
+      const addedPointType = this.state.routePlannerPickMode;
       let newRoutePlannerPoints = null;
 
-      if (pointType === 'start' || pointType === 'finish') {
-        newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-          [pointType]: { lat: {$set: lat }, lon: {$set: lon }}
-        });
+      if (addedPointType) {
+        if (addedPointType === 'start' || addedPointType === 'finish') {
+          newRoutePlannerPoints = update(this.state.routePlannerPoints, {
+            [addedPointType]: { lat: {$set: lat }, lon: {$set: lon }}
+          });
+        } else if (addedPointType == 'midpoint') {
+          newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});        
+        }
 
         this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
       }
@@ -151,19 +155,24 @@ export default class Main extends React.Component {
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
-    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, finish: {}}, routePlannerPickMode: null});
+    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null});
   }
 
   setRoutePlannerPointPickMode(routePlannerPickMode) {
     this.setState({routePlannerPickMode});
   }
 
-  onRouteMarkerDragend(pointType, event) {
+  onRouteMarkerDragend(movedPointType, position, event) {
     const lat = event.target._latlng.lat
     const lon = event.target._latlng.lng
-    const newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-      [pointType]: { lat: {$set: lat }, lon: {$set: lon }}
-    });
+    let newRoutePlannerPoints;
+    if (movedPointType == 'start' || movedPointType == 'finish') {
+      newRoutePlannerPoints = update(this.state.routePlannerPoints, {
+        [movedPointType]: { lat: {$set: lat }, lon: {$set: lon }}
+      });
+    } else {
+      newRoutePlannerPoints = update(this.state.routePlannerPoints, {midpoints : {[position]: { $merge: { lat, lon } } }});
+    }
 
     this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
   }

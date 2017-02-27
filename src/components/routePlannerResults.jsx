@@ -25,9 +25,18 @@ export default class RoutePlannerResults extends React.Component {
   }
 
   updateRoute(routePlannerPoints) {
-    const p = routePlannerPoints
+    const p = routePlannerPoints;
     if (p.start.lat && p.finish.lat) {
-      const url = `http://www.freemap.sk/api/0.1/r/${p.start.lat}%7C${p.start.lon}/${p.finish.lat}%7C${p.finish.lon}/motorcar/fastest&Ajax=`;
+      const midpointsForBackend = p.midpoints.map(mp => {
+        return [ mp.lat, mp.lon ].join('%7C');
+      });
+      const allPoints = [ 
+        [ p.start.lat, p.start.lon ].join('%7C'), 
+        ...midpointsForBackend, 
+        [ p.finish.lat, p.finish.lon ].join('%7C') 
+      ];
+
+      const url = `http://www.freemap.sk/api/0.1/r/${allPoints.join('/')}/motorcar/fastest&Ajax=`;
       fetch(url, {
         method: 'GET'
       }).then(res => res.text()).then(data => {
@@ -48,14 +57,20 @@ export default class RoutePlannerResults extends React.Component {
   }
 
   render() {
-    const { routePlannerPoints: { start, finish }, routeShapePoints, time, distance } = this.state;
-    const b = (fn, ...args) => fn.bind(this, ...args);
+    const { routePlannerPoints: { start, midpoints, finish }, routeShapePoints, time, distance } = this.state;
 
     const startIcon = new L.Icon({ 
       iconSize: [23, 37],
       iconUrl: 'images/marker-icon-green.png', 
       iconRetinaUrl: 'images/marker-icon-2x-green.png'
     })
+
+    const midPointIcon = new L.Icon({ 
+      iconSize: [23, 37],
+      iconUrl: 'images/marker-icon-grey.png', 
+      iconRetinaUrl: 'images/marker-icon-2x-grey.png'
+    }) 
+
     const finishIcon = new L.Icon({ 
       iconSize: [23, 37],
       iconUrl: 'images/marker-icon-red.png', 
@@ -68,13 +83,26 @@ export default class RoutePlannerResults extends React.Component {
           <Marker 
             icon={startIcon}
             draggable
-            onDragend={this.props.onRouteMarkerDragend.bind(null, 'start')}
+            onDragend={this.props.onRouteMarkerDragend.bind(null, 'start', null)}
             position={L.latLng(start.lat, start.lon)} />}
+
+            {midpoints.map(({ lat, lon}, i) => {
+              return (
+                <Marker 
+                  icon={midPointIcon} 
+                  draggable
+                  onDragend={this.props.onRouteMarkerDragend.bind(null, 'midpoint', i)}
+                  key={i} 
+                  position={L.latLng(lat, lon)}>
+                </Marker>
+              );
+            })}
+            
         {finish.lat && 
           <Marker 
             icon={finishIcon}
             draggable
-            onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish')}
+            onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish', null)}
             position={L.latLng(finish.lat, finish.lon)}>
               <Tooltip offset={new L.Point(10,0)} direction="right" permanent><span>{distance}, {time}</span></Tooltip>
             </Marker>}
