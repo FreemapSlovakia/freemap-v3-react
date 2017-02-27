@@ -133,17 +133,11 @@ export default class Main extends React.Component {
       const pointType = this.state.routePlannerPickMode;
       let newRoutePlannerPoints = null;
 
-      if (pointType === 'start') {
+      if (pointType === 'start' || pointType === 'finish') {
         newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-          start: { lat: {$set: lat }, lon: {$set: lon }}
+          [pointType]: { lat: {$set: lat }, lon: {$set: lon }}
         });
-      } else if (pointType === 'finish') {
-        newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-          finish: { lat: {$set: lat }, lon: {$set: lon }} // TODO: how to use key name (start/finish) from variable here to avoid repeating the same code?
-        });
-      }
 
-      if (newRoutePlannerPoints) {
         this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
       }
     }
