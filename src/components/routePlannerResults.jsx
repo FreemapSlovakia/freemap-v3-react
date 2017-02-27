@@ -8,6 +8,7 @@ export default class RoutePlannerResults extends React.Component {
     super(props);
 
     this.state = {
+      transportType: this.props.transportType,
       routePlannerPoints: this.props.routePlannerPoints,
       routeShapePoints: [],
       distance: '0 km',
@@ -15,16 +16,17 @@ export default class RoutePlannerResults extends React.Component {
     };
   }
 
-  componentWillReceiveProps({ routePlannerPoints }) {
+  componentWillReceiveProps({ routePlannerPoints, transportType }) {
     // FIXME: there must be some nicer way to do this
-    const changed = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
-    if (changed) {
-      this.setState({ routePlannerPoints, routeShapePoints: [], distance: '0 km', time: '0 min.'  });
-      this.updateRoute(routePlannerPoints);
+    const pointChanged = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints)
+    const transportChanged =  transportType !== this.state.transportType;
+    if (pointChanged || transportChanged) {
+      this.setState({ routePlannerPoints, routeShapePoints: [], distance: '0 km', time: '0 min.', transportType  });
+      this.updateRoute(routePlannerPoints, transportType);
     }
   }
 
-  updateRoute(routePlannerPoints) {
+  updateRoute(routePlannerPoints, transportType) {
     const p = routePlannerPoints;
     if (p.start.lat && p.finish.lat) {
       const midpointsForBackend = p.midpoints.map(mp => {
@@ -36,7 +38,13 @@ export default class RoutePlannerResults extends React.Component {
         [ p.finish.lat, p.finish.lon ].join('%7C') 
       ];
 
-      const url = `http://www.freemap.sk/api/0.1/r/${allPoints.join('/')}/motorcar/fastest&Ajax=`;
+      const freemapTransportTypes = {
+        'car': 'motorcar',
+        'walk': 'hiking',
+        'bicycle': 'bicycle'
+      };
+      const freemapTransportType = freemapTransportTypes[transportType];
+      const url = `http://www.freemap.sk/api/0.1/r/${allPoints.join('/')}/${freemapTransportType}/fastest&Ajax=`;
       fetch(url, {
         method: 'GET'
       }).then(res => res.text()).then(data => {
@@ -114,5 +122,6 @@ export default class RoutePlannerResults extends React.Component {
 
 RoutePlannerResults.propTypes = {
   routePlannerPoints: React.PropTypes.object,
-  onRouteMarkerDragend: React.PropTypes.func.isRequired
+  onRouteMarkerDragend: React.PropTypes.func.isRequired,
+  transportType: React.PropTypes.string
 };
