@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Marker, Polyline} from 'react-leaflet';
+import { Marker, Polyline, Tooltip} from 'react-leaflet';
 import { parseString as xml2js } from 'xml2js';
 
 export default class RoutePlannerResults extends React.Component {
@@ -9,7 +9,9 @@ export default class RoutePlannerResults extends React.Component {
 
     this.state = {
       routePlannerPoints: this.props.routePlannerPoints,
-      routeShapePoints: []
+      routeShapePoints: [],
+      distance: '0 km',
+      time: '0 min.'
     };
   }
 
@@ -17,7 +19,7 @@ export default class RoutePlannerResults extends React.Component {
     // FIXME: there must be some nicer way to do this
     const changed = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
     if (changed) {
-      this.setState({ routePlannerPoints, routeShapePoints: [] });
+      this.setState({ routePlannerPoints, routeShapePoints: [], distance: '0 km', time: '0 min.'  });
       this.updateRoute(routePlannerPoints);
     }
   }
@@ -30,6 +32,8 @@ export default class RoutePlannerResults extends React.Component {
         method: 'GET'
       }).then(res => res.text()).then(data => {
         xml2js(data, (error, json) => {
+          const distance = json.osmRoute.length[0]
+          const time = json.osmRoute.time[0]
           const rawPointsWithMess = json.osmRoute.wkt[0];
           const rawPoints =  rawPointsWithMess.substring(14, rawPointsWithMess.length - 3);
           const points = rawPoints.split(', ').map((lonlat) => {
@@ -37,14 +41,14 @@ export default class RoutePlannerResults extends React.Component {
             return [ parseFloat(lonlatArray[1]), parseFloat(lonlatArray[0]) ];
           });
 
-          this.setState({ routeShapePoints: points });
+          this.setState({ routeShapePoints: points, distance, time });
         });
       });
     }
   }
 
   render() {
-    const { routePlannerPoints: { start, finish }, routeShapePoints } = this.state;
+    const { routePlannerPoints: { start, finish }, routeShapePoints, time, distance } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     const startIcon = new L.Icon({ 
@@ -71,7 +75,9 @@ export default class RoutePlannerResults extends React.Component {
             icon={finishIcon}
             draggable
             onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish')}
-            position={L.latLng(finish.lat, finish.lon)}/>}
+            position={L.latLng(finish.lat, finish.lon)}>
+              <Tooltip offset={new L.Point(10,0)} direction="right" permanent><span>{distance}, {time}</span></Tooltip>
+            </Marker>}
         <Polyline positions={routeShapePoints} color="#2F4F4F" weight="8" opacity="0.6"/>
       </div>
     );
