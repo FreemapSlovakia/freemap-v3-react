@@ -1,5 +1,5 @@
 import React from 'react';
-import update from 'react-addons-update';
+import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
 import { Map, Marker, Popup } from 'react-leaflet';
 
@@ -125,7 +125,8 @@ export default class Main extends React.Component {
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
     if (this.state.tool === 'measure') {
-      this.setState({ lengthMeasurePoints: [ ...this.state.lengthMeasurePoints, { lat, lon } ] });
+      const newLMPoints = update(this.state.lengthMeasurePoints, {$push: [ { lat, lon } ] });
+      this.setState({ lengthMeasurePoints: newLMPoints });
     }
 
     if (this.state.tool === 'route-planner') {
@@ -149,9 +150,8 @@ export default class Main extends React.Component {
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    const lengthMeasurePoints = [ ...this.state.lengthMeasurePoints ];
-    lengthMeasurePoints[i] = { lat, lon };
-    this.setState({ lengthMeasurePoints });
+    const newLMPoints = update(this.state.lengthMeasurePoints, {[i]: { $merge: { lat, lon } } });
+    this.setState({ lengthMeasurePoints: newLMPoints });
   }
 
   setTool(t) {
