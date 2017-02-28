@@ -1,5 +1,11 @@
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+
+const extractSass = new ExtractTextPlugin({
+  filename: 'dist/[name].[contenthash].css',
+  disable: process.env.NODE_ENV !== 'production'
+});
 
 module.exports = {
   context: __dirname + '/src',
@@ -34,6 +40,14 @@ module.exports = {
         options:  {
           limit: 10000
         }
+      },
+      {
+        test: /\.scss$/,
+        loader: extractSass.extract({
+            loader: [ { loader: "css-loader" }, { loader: "sass-loader" } ],
+            // use style-loader in development
+            fallbackLoader: 'style-loader'
+        })
       }
     ]
   },
@@ -50,7 +64,7 @@ module.exports = {
 module.exports.plugins.push(
   new CopyWebpackPlugin([
     { from: 'index.html', to: 'dist/index.html' },
-    { from: 'favicon.ico', to: 'dist/favicon.ico' },
-    { from: 'styles/page.css', to: 'dist/app.css' },
-  ])
+    { from: 'favicon.ico', to: 'dist/favicon.ico' }
+  ]),
+  extractSass
 );
