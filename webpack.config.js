@@ -12,7 +12,7 @@ module.exports = {
     rules: [
       {
         enforce: "pre",
-        test: /\.jsx?$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         loader: "eslint-loader",
         options: {
@@ -20,7 +20,7 @@ module.exports = {
         }
       },
       {
-        test: /\.jsx?$/,
+        test: /\.js$/,
         exclude: /node_modules/,
         loader: 'babel-loader',
         options: {

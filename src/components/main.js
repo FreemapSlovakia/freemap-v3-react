@@ -17,11 +17,11 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { toHtml } from '../poiTypes';
 
-import ObjectsModal from './objectsModal.jsx';
-import Layers from './layers.jsx';
-import Measurement from './measurement.jsx';
-import RoutePlanner from './routePlanner.jsx';
-import RoutePlannerResults from './routePlannerResults.jsx';
+import ObjectsModal from './objectsModal';
+import Layers from './layers';
+import Measurement from './measurement';
+import RoutePlanner from './routePlanner';
+import RoutePlannerResults from './routePlannerResults';
 
 export default class Main extends React.Component {
 
@@ -141,7 +141,7 @@ export default class Main extends React.Component {
             [addedPointType]: { lat: {$set: lat }, lon: {$set: lon }}
           });
         } else if (addedPointType == 'midpoint') {
-          newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});        
+          newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});
         }
 
         this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
@@ -220,13 +220,13 @@ export default class Main extends React.Component {
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                 <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
               </Nav>
-              { tool === 'route-planner' ? 
-              <RoutePlanner 
+              { tool === 'route-planner' ?
+              <RoutePlanner
                 transportType={routePlannerTransportType}
                 onChangeTransportType={b(this.changeRoutePlannerTransportType)}
-                routePlannerPoints={routePlannerPoints} 
-                pickPointMode={routePlannerPickMode} 
-                onChangePickPointMode={b(this.setRoutePlannerPointPickMode)} 
+                routePlannerPoints={routePlannerPoints}
+                pickPointMode={routePlannerPickMode}
+                onChangePickPointMode={b(this.setRoutePlannerPointPickMode)}
                 onCancel={b(this.setTool, null)} /> : null }
             </Navbar.Collapse>
           </Navbar>
@@ -250,8 +250,8 @@ export default class Main extends React.Component {
             })}
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
-            <RoutePlannerResults 
-              routePlannerPoints={routePlannerPoints} 
+            <RoutePlannerResults
+              routePlannerPoints={routePlannerPoints}
               onRouteMarkerDragend={b(this.onRouteMarkerDragend)}
               transportType={routePlannerTransportType} />
           </Map>
