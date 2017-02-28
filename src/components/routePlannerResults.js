@@ -44,7 +44,7 @@ export default class RoutePlannerResults extends React.Component {
         'bicycle': 'bicycle'
       };
       const freemapTransportType = freemapTransportTypes[transportType];
-      const url = `http://www.freemap.sk/api/0.1/r/${allPoints.join('/')}/${freemapTransportType}/fastest&Ajax=`;
+      const url = `https://www.freemap.sk/api/0.1/r/${allPoints.join('/')}/${freemapTransportType}/fastest&Ajax=`;
       fetch(url, {
         method: 'GET'
       }).then(res => res.text()).then(data => {

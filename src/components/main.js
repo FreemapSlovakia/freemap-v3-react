@@ -81,8 +81,8 @@ export default class Main extends React.Component {
     e.preventDefault();
 
     const { lat, lon, searchQuery, zoom } = this.state;
-    // fetch(`http://www.freemap.sk/api/0.1/q/${encodeURIComponent(q)}&lat=${lat}&lon=${lon}`, {
-    fetch(`http://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
+    // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
+    fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
