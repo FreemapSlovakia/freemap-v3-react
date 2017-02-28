@@ -18,7 +18,7 @@ export default class RoutePlannerResults extends React.Component {
 
   componentWillReceiveProps({ routePlannerPoints, transportType }) {
     // FIXME: there must be some nicer way to do this
-    const pointChanged = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints)
+    const pointChanged = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
     const transportChanged =  transportType !== this.state.transportType;
     if (pointChanged || transportChanged) {
       this.setState({ routePlannerPoints, routeShapePoints: [], distance: '0 km', time: '0 min.', transportType  });
@@ -49,8 +49,8 @@ export default class RoutePlannerResults extends React.Component {
         method: 'GET'
       }).then(res => res.text()).then(data => {
         xml2js(data, (error, json) => {
-          const distance = json.osmRoute.length[0]
-          const time = json.osmRoute.time[0]
+          const distance = json.osmRoute.length[0];
+          const time = json.osmRoute.time[0];
           const rawPointsWithMess = json.osmRoute.wkt[0];
           const rawPoints =  rawPointsWithMess.substring(14, rawPointsWithMess.length - 3);
           const points = rawPoints.split(', ').map((lonlat) => {
@@ -68,22 +68,22 @@ export default class RoutePlannerResults extends React.Component {
     const { routePlannerPoints: { start, midpoints, finish }, routeShapePoints, time, distance } = this.state;
 
     const startIcon = new L.Icon({ 
-      iconSize: [23, 37],
+      iconSize: [ 23, 37 ],
       iconUrl: 'images/marker-icon-green.png', 
       iconRetinaUrl: 'images/marker-icon-2x-green.png'
-    })
+    });
 
     const midPointIcon = new L.Icon({ 
-      iconSize: [23, 37],
+      iconSize: [ 23, 37 ],
       iconUrl: 'images/marker-icon-grey.png', 
       iconRetinaUrl: 'images/marker-icon-2x-grey.png'
-    }) 
+    }); 
 
     const finishIcon = new L.Icon({ 
-      iconSize: [23, 37],
+      iconSize: [ 23, 37 ],
       iconUrl: 'images/marker-icon-red.png', 
       iconRetinaUrl: 'images/marker-icon-2x-red.png'
-    }) 
+    }); 
 
     return (
       <div>

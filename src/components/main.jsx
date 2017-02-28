@@ -169,8 +169,8 @@ export default class Main extends React.Component {
   }
 
   onRouteMarkerDragend(movedPointType, position, event) {
-    const lat = event.target._latlng.lat
-    const lon = event.target._latlng.lng
+    const lat = event.target._latlng.lat;
+    const lon = event.target._latlng.lng;
     let newRoutePlannerPoints;
     if (movedPointType == 'start' || movedPointType == 'finish') {
       newRoutePlannerPoints = update(this.state.routePlannerPoints, {
