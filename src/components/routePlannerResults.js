@@ -32,10 +32,10 @@ export default class RoutePlannerResults extends React.Component {
       const midpointsForBackend = p.midpoints.map(mp => {
         return [ mp.lat, mp.lon ].join('%7C');
       });
-      const allPoints = [ 
-        [ p.start.lat, p.start.lon ].join('%7C'), 
-        ...midpointsForBackend, 
-        [ p.finish.lat, p.finish.lon ].join('%7C') 
+      const allPoints = [
+        [ p.start.lat, p.start.lon ].join('%7C'),
+        ...midpointsForBackend,
+        [ p.finish.lat, p.finish.lon ].join('%7C')
       ];
 
       const freemapTransportTypes = {
@@ -67,28 +67,28 @@ export default class RoutePlannerResults extends React.Component {
   render() {
     const { routePlannerPoints: { start, midpoints, finish }, routeShapePoints, time, distance } = this.state;
 
-    const startIcon = new L.Icon({ 
+    const startIcon = new L.Icon({
       iconSize: [ 23, 37 ],
-      iconUrl: 'images/marker-icon-green.png', 
-      iconRetinaUrl: 'images/marker-icon-2x-green.png'
+      iconUrl: require('../images/marker-icon-green.png'),
+      iconRetinaUrl: require('../images/marker-icon-2x-green.png')
     });
 
-    const midPointIcon = new L.Icon({ 
+    const midPointIcon = new L.Icon({
       iconSize: [ 23, 37 ],
-      iconUrl: 'images/marker-icon-grey.png', 
-      iconRetinaUrl: 'images/marker-icon-2x-grey.png'
-    }); 
+      iconUrl: require('../images/marker-icon-grey.png'),
+      iconRetinaUrl: require('../images/marker-icon-2x-grey.png')
+    });
 
-    const finishIcon = new L.Icon({ 
+    const finishIcon = new L.Icon({
       iconSize: [ 23, 37 ],
-      iconUrl: 'images/marker-icon-red.png', 
-      iconRetinaUrl: 'images/marker-icon-2x-red.png'
-    }); 
+      iconUrl: require('../images/marker-icon-red.png'),
+      iconRetinaUrl: require('../images/marker-icon-2x-red.png')
+    });
 
     return (
       <div>
-        {start.lat && 
-          <Marker 
+        {start.lat &&
+          <Marker
             icon={startIcon}
             draggable
             onDragend={this.props.onRouteMarkerDragend.bind(null, 'start', null)}
@@ -96,18 +96,18 @@ export default class RoutePlannerResults extends React.Component {
 
             {midpoints.map(({ lat, lon}, i) => {
               return (
-                <Marker 
-                  icon={midPointIcon} 
+                <Marker
+                  icon={midPointIcon}
                   draggable
                   onDragend={this.props.onRouteMarkerDragend.bind(null, 'midpoint', i)}
-                  key={i} 
+                  key={i}
                   position={L.latLng(lat, lon)}>
                 </Marker>
               );
             })}
-            
-        {finish.lat && 
-          <Marker 
+
+        {finish.lat &&
+          <Marker
             icon={finishIcon}
             draggable
             onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish', null)}
