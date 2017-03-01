@@ -68,9 +68,15 @@ export default class Main extends React.Component {
     }
   }
 
+  handleOverlayChange(overlays) {
+    this.setState({ overlays }, () => {
+      this.updateUrl();
+    });
+  }
+
   updateUrl() {
-    const { zoom, lat, lon, mapType } = this.state;
-    history.replace(`/${mapType}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
+    const { zoom, lat, lon, mapType, overlays } = this.state;
+    history.replace(`/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
   }
 
   updateSearchQuery(e) {
@@ -184,7 +190,7 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool,
+    const { lat, lon, zoom, mapType, overlays, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
@@ -237,7 +243,9 @@ export default class Main extends React.Component {
               onZoom={b(this.handleMapZoom)}
               onClick={b(this.handleMapClick)}>
 
-            <Layers onMapChange={b(this.handleMapChange)} mapType={mapType}/>
+            <Layers
+              mapType={mapType} onMapChange={b(this.handleMapChange)}
+              overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
             {searchResults.map(({ id, lat, lon, tags }) => {
               const __html = toHtml(tags);
@@ -267,9 +275,10 @@ Main.propTypes = {
 
 function toMapState({ zoom, lat, lon, mapType }) {
   return {
-    mapType: mapType || 'T',
+    mapType: mapType && mapType.charAt(0) || 'T',
     lat: parseFloat(lat) || 48.70714,
     lon: parseFloat(lon) || 19.4995,
-    zoom: parseInt(zoom) || 8
+    zoom: parseInt(zoom) || 8,
+    overlays: mapType && mapType.substring(1).split('') || []
   };
 }
