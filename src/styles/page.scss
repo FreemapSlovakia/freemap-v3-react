@@ -26,3 +26,13 @@
 .nav-tabs {
   margin-bottom: 0;
 }
+
+.bootstrap-typeahead {
+  padding-right: 15px !important;
+}
+
+.bootstrap-typeahead button.close.bootstrap-typeahead-clear-button {
+  position: absolute;
+  top: 5px;
+  right: -4px;
+}

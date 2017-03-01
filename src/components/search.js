@@ -1,17 +1,13 @@
 import React from 'react';
-
+import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import Button from 'react-bootstrap/lib/Button';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 export default class Search extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      searchResults: [],
       searchQuery: '',
       lat: this.props.lat, 
       lon: this.props.lon,
@@ -19,42 +15,59 @@ export default class Search extends React.Component {
     };
   }
 
-  doSearch(e) {
-    e.preventDefault();
+  doSearch(searchQuery) {
+    if (!searchQuery) {
+      return;
+    }
+    this.setState({searchQuery});   
 
-    const { lat, lon, searchQuery, zoom } = this.state;
+    const { lat, lon, zoom } = this.state;
     // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
     fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
-      const searchResults = data.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: { name: d.namedetails.name} }));
-      this.props.onSearchResultsUpdate(searchResults);
+      const searchResults = data.map((d, id) => {
+        const name = d.namedetails.name;
+        const tags = { name, type: d.type };
+        return { id, label: name, lat: d.lat, lon: d.lon, tags  };
+      });
+      this.setState({searchResults});  
     });
   }
 
-  updateSearchQuery(e) {
-    this.setState({ searchQuery: e.target.value });
+  clearSearch() {
+    this.setState({ searchQuery: null, searchResults: []  });
+  } 
+
+  searchResultSelected(result) {
+    console.log(result);
   }
 
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
-    const {searchQuery} = this.state;
     return (
-      <form onSubmit={b(this.doSearch)}>
-        <Navbar.Form pullLeft>
-          <FormGroup>
-            <InputGroup>
-              <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
-              <InputGroup.Button>
-                <Button type="submit" disabled={!searchQuery.length}>
-                  <Glyphicon glyph="search"/>
-                </Button>
-              </InputGroup.Button>
-            </InputGroup>
-          </FormGroup>
-        </Navbar.Form>
-      </form>
+      <Navbar.Form pullLeft>
+          <AsyncTypeahead
+            labelKey="label"
+            useCache={false}
+            minLength={3}
+            delay={500}
+            ignoreDiacritics={true}
+            onSearch={b(this.doSearch)}
+            options={this.state.searchResults}
+            searchText="Hľadám ..."
+            placeholder="Brusno"
+            clearButton={true}
+            emptyLabel={'Nenašli sme žiadne výsledky' + this.state.searchResults.length}
+            renderMenuItemChildren={(result) => (
+              <div key={result.label + result.id} onClick={b(this.searchResultSelected, result)}>
+                <span>{result.tags.name} </span><br/>
+                <span>({result.tags.type})</span>
+              </div>
+            )}
+          />
+      </Navbar.Form>
     );
   }
 }
