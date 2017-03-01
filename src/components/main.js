@@ -121,7 +121,10 @@ export default class Main extends React.Component {
           newRoutePlannerPoints = null;
         }
 
-        this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
+        this.setState({
+          routePlannerPickMode: routePlannerPickMode === 'start' ? 'finish' : routePlannerPickMode === 'finish' ? 'midpoint' : 'midpoint',
+          routePlannerPoints: newRoutePlannerPoints
+        });
       }
     }
   }
@@ -134,7 +137,7 @@ export default class Main extends React.Component {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
     this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {
-      start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null
+      start: {}, midpoints: [], finish: {}}, routePlannerPickMode: 'start'
     });
   }
 
@@ -210,7 +213,11 @@ export default class Main extends React.Component {
           </Navbar>
         </Row>
         <Row>
-          <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={L.latLng(lat, lon)} zoom={zoom}
+          <Map
+              ref="map"
+              className={`tool-${tool || 'none'}`}
+              center={L.latLng(lat, lon)}
+              zoom={zoom}
               onMoveend={b(this.handleMapMoveend)}
               onZoom={b(this.handleMapZoom)}
               onClick={b(this.handleMapClick)}>

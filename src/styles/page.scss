@@ -26,3 +26,11 @@
 .nav-tabs {
   margin-bottom: 0;
 }
+
+.leaflet-container {
+  height: calc(100vh - 52px);
+}
+
+.tool-route-planner, .tool-measure {
+  cursor: crosshair;
+}
