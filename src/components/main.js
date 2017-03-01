@@ -137,7 +137,7 @@ export default class Main extends React.Component {
       start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null
     });
   }
-  
+
   onSearchResultsUpdate(searchResults) {
     if (searchResults.length) {
       const { lat, lon } = searchResults[0];
@@ -187,18 +187,16 @@ export default class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              <div className={mainNavigationIsHidden ? 'hidden' : ''}>
-                <Search
-                  onSearchResultsUpdate={b(this.onSearchResultsUpdate)}
-                  lat={String(lat)}
-                  lon={String(lon)}
-                  zoom={zoom} />
-              </div>
-              <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
-                <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
-                <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
-                <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
-              </Nav>
+              {!mainNavigationIsHidden &&
+                <div>
+                  <Search onSearchResultsUpdate={b(this.onSearchResultsUpdate)} lat={lat} lon={lon} zoom={zoom} />
+                  <Nav>
+                    <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
+                    <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
+                    <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                  </Nav>
+                </div>
+              }
               {
                 tool === 'route-planner' && <RoutePlanner
                   transportType={routePlannerTransportType}

@@ -12,17 +12,16 @@ export default class Search extends React.Component {
     super(props);
 
     this.state = {
-      searchQuery: '',
-      lat: this.props.lat, 
-      lon: this.props.lon,
-      zoom: this.props.zoom,      
+      searchQuery: ''
     };
   }
 
   doSearch(e) {
     e.preventDefault();
 
-    const { lat, lon, searchQuery, zoom } = this.state;
+    const { searchQuery } = this.state;
+    const { lat, lon, zoom } = this.props;
+
     // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
     fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
@@ -39,7 +38,8 @@ export default class Search extends React.Component {
 
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
-    const {searchQuery} = this.state;
+    const { searchQuery } = this.state;
+
     return (
       <form onSubmit={b(this.doSearch)}>
         <Navbar.Form pullLeft>
@@ -60,8 +60,8 @@ export default class Search extends React.Component {
 }
 
 Search.propTypes = {
-  lat: React.PropTypes.string,
-  lon: React.PropTypes.string,
+  lat: React.PropTypes.number,
+  lon: React.PropTypes.number,
   zoom: React.PropTypes.number,
   onSearchResultsUpdate: React.PropTypes.func.isRequired
 };
