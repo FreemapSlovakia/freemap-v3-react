@@ -59,15 +59,17 @@ export default class Main extends React.Component {
 
   handleMapChange(mapType) {
     if (this.state.mapType !== mapType) {
-      this.setState({ mapType }, () => {
-        this.updateUrl();
-      });
+      this.setState({ mapType }, this.updateUrl.bind(this));
     }
   }
 
+  handleOverlayChange(overlays) {
+    this.setState({ overlays }, this.updateUrl.bind(this));
+  }
+
   updateUrl() {
-    const { zoom, lat, lon, mapType } = this.state;
-    history.replace(`/${mapType}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
+    const { zoom, lat, lon, mapType, overlays } = this.state;
+    history.replace(`/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
   }
 
   showObjectsModal(objectsModalShown) {
@@ -99,22 +101,24 @@ export default class Main extends React.Component {
   }
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
-    if (this.state.tool === 'measure') {
-      const newLMPoints = update(this.state.lengthMeasurePoints, {$push: [ { lat, lon } ] });
-      this.setState({ lengthMeasurePoints: newLMPoints });
-    }
+    const { tool } = this.state;
 
-    if (this.state.tool === 'route-planner') {
-      const addedPointType = this.state.routePlannerPickMode;
-      let newRoutePlannerPoints = null;
+    if (tool === 'measure') {
+      this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, {$push: [ { lat, lon } ] }) });
+    } else if (tool === 'route-planner') {
+      const { routePlannerPickMode, routePlannerPoints } = this.state;
 
-      if (addedPointType) {
-        if (addedPointType === 'start' || addedPointType === 'finish') {
-          newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-            [addedPointType]: { lat: {$set: lat }, lon: {$set: lon }}
+      if (routePlannerPickMode) {
+        let newRoutePlannerPoints;
+
+        if (routePlannerPickMode === 'start' || routePlannerPickMode === 'finish') {
+          newRoutePlannerPoints = update(routePlannerPoints, {
+            [ routePlannerPickMode ]: { lat: {$set: lat }, lon: {$set: lon }}
           });
-        } else if (addedPointType == 'midpoint') {
-          newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});
+        } else if (routePlannerPickMode == 'midpoint') {
+          newRoutePlannerPoints = update(routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});
+        } else {
+          newRoutePlannerPoints = null;
         }
 
         this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
@@ -123,14 +127,15 @@ export default class Main extends React.Component {
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    const newLMPoints = update(this.state.lengthMeasurePoints, {[i]: { $merge: { lat, lon } } });
-    this.setState({ lengthMeasurePoints: newLMPoints });
+    this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, { [ i ]: { $merge: { lat, lon } } }) });
   }
 
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
-    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null});
+    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {
+      start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null
+    });
   }
   
   onSearchResultsUpdate(searchResults) {
@@ -143,30 +148,29 @@ export default class Main extends React.Component {
   }
 
   setRoutePlannerPointPickMode(routePlannerPickMode) {
-    this.setState({routePlannerPickMode});
+    this.setState({ routePlannerPickMode });
   }
 
   changeRoutePlannerTransportType(routePlannerTransportType) {
-    this.setState({routePlannerTransportType});
+    this.setState({ routePlannerTransportType });
   }
 
   onRouteMarkerDragend(movedPointType, position, event) {
-    const lat = event.target._latlng.lat;
-    const lon = event.target._latlng.lng;
+    const { lat, lng: lon } = event.target._latlng;
     let newRoutePlannerPoints;
     if (movedPointType == 'start' || movedPointType == 'finish') {
       newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-        [movedPointType]: { lat: {$set: lat }, lon: {$set: lon }}
+        [ movedPointType ]: { lat: { $set: lat }, lon: { $set: lon } }
       });
     } else {
-      newRoutePlannerPoints = update(this.state.routePlannerPoints, {midpoints : {[position]: { $merge: { lat, lon } } }});
+      newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : {[position]: { $merge: { lat, lon } } } });
     }
 
-    this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
+    this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints });
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchResults, objectsModalShown, lengthMeasurePoints, tool,
+    const { lat, lon, zoom, mapType, overlays, searchResults, objectsModalShown, lengthMeasurePoints, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
@@ -195,14 +199,15 @@ export default class Main extends React.Component {
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                 <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
               </Nav>
-              { tool === 'route-planner' ?
-              <RoutePlanner
-                transportType={routePlannerTransportType}
-                onChangeTransportType={b(this.changeRoutePlannerTransportType)}
-                routePlannerPoints={routePlannerPoints}
-                pickPointMode={routePlannerPickMode}
-                onChangePickPointMode={b(this.setRoutePlannerPointPickMode)}
-                onCancel={b(this.setTool, null)} /> : null }
+              {
+                tool === 'route-planner' && <RoutePlanner
+                  transportType={routePlannerTransportType}
+                  onChangeTransportType={b(this.changeRoutePlannerTransportType)}
+                  routePlannerPoints={routePlannerPoints}
+                  pickPointMode={routePlannerPickMode}
+                  onChangePickPointMode={b(this.setRoutePlannerPointPickMode)}
+                  onCancel={b(this.setTool, null)} />
+              }
             </Navbar.Collapse>
           </Navbar>
         </Row>
@@ -212,7 +217,9 @@ export default class Main extends React.Component {
               onZoom={b(this.handleMapZoom)}
               onClick={b(this.handleMapClick)}>
 
-            <Layers onMapChange={b(this.handleMapChange)} mapType={mapType}/>
+            <Layers
+              mapType={mapType} onMapChange={b(this.handleMapChange)}
+              overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
             {searchResults.map(({ id, lat, lon, tags }) => {
               const __html = toHtml(tags);
@@ -225,6 +232,7 @@ export default class Main extends React.Component {
             })}
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+
             <RoutePlannerResults
               routePlannerPoints={routePlannerPoints}
               onRouteMarkerDragend={b(this.onRouteMarkerDragend)}
@@ -242,9 +250,10 @@ Main.propTypes = {
 
 function toMapState({ zoom, lat, lon, mapType }) {
   return {
-    mapType: mapType || 'T',
+    mapType: mapType && mapType.charAt(0) || 'T',
     lat: parseFloat(lat) || 48.70714,
     lon: parseFloat(lon) || 19.4995,
-    zoom: parseInt(zoom) || 8
+    zoom: parseInt(zoom) || 8,
+    overlays: mapType && mapType.substring(1).split('') || []
   };
 }
