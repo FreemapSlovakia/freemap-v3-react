@@ -57,14 +57,14 @@ export default class RoutePlannerResults extends React.Component {
         method: 'GET'
       }).then(res => res.text()).then(data => {
         xml2js(data, (error, json) => {
-          const distance = json.osmRoute.length[0];
-          const time = json.osmRoute.time[0];
           const rawPointsWithMess = json.osmRoute.wkt[0];
           const rawPoints = rawPointsWithMess.substring(14, rawPointsWithMess.length - 3).trim();
           const routeShapePoints = rawPoints ? rawPoints.split(', ').map((lonlat) => {
             const lonlatArray = lonlat.split(' ');
             return [ parseFloat(lonlatArray[1]), parseFloat(lonlatArray[0]) ];
           }) : [];
+          const distance = rawPoints ? json.osmRoute.length[0] : null;
+          const time = rawPoints ? json.osmRoute.time[0] : null;
           this.setState({ routeShapePoints, distance, time });
         });
       });
