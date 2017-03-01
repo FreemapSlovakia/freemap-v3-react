@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
 export default function RoutePlanner({ pickPointMode, transportType, onChangeTransportType, routePlannerPoints: { start, finish }, onChangePickPointMode, onCancel }) {
-  return (  
+  return (
     <div>
       <Nav>
         <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť plánovač</NavItem>
@@ -30,7 +30,7 @@ export default function RoutePlanner({ pickPointMode, transportType, onChangeTra
         <Button className="navbar-btn" active={transportType === 'bicycle'} onClick={onChangeTransportType.bind(null, 'bicycle')}>
           <i className="fa fa-bicycle" aria-hidden="true"></i>
         </Button>
-        </ButtonGroup>
+      </ButtonGroup>
     </div>
   );
 }

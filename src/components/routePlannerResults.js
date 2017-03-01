@@ -11,8 +11,8 @@ export default class RoutePlannerResults extends React.Component {
       transportType: this.props.transportType,
       routePlannerPoints: this.props.routePlannerPoints,
       routeShapePoints: [],
-      distance: '0 km',
-      time: '0 min.'
+      distance: null,
+      time: null
     };
   }
 
@@ -21,7 +21,7 @@ export default class RoutePlannerResults extends React.Component {
     const pointChanged = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
     const transportChanged =  transportType !== this.state.transportType;
     if (pointChanged || transportChanged) {
-      this.setState({ routePlannerPoints, routeShapePoints: [], distance: '0 km', time: '0 min.', transportType  });
+      this.setState({ routePlannerPoints, routeShapePoints: [], distance: null, time: null, transportType  });
       this.updateRoute(routePlannerPoints, transportType);
     }
   }
@@ -29,14 +29,11 @@ export default class RoutePlannerResults extends React.Component {
   updateRoute(routePlannerPoints, transportType) {
     const p = routePlannerPoints;
     if (p.start.lat && p.finish.lat) {
-      const midpointsForBackend = p.midpoints.map(mp => {
-        return [ mp.lat, mp.lon ].join('%7C');
-      });
       const allPoints = [
         [ p.start.lat, p.start.lon ].join('%7C'),
-        ...midpointsForBackend,
+        ...p.midpoints.map(mp => [ mp.lat, mp.lon ].join('%7C')),
         [ p.finish.lat, p.finish.lon ].join('%7C')
-      ];
+      ].join('/');
 
       const freemapTransportTypes = {
         'car': 'motorcar',
@@ -44,7 +41,7 @@ export default class RoutePlannerResults extends React.Component {
         'bicycle': 'bicycle'
       };
       const freemapTransportType = freemapTransportTypes[transportType];
-      const url = `https://www.freemap.sk/api/0.1/r/${allPoints.join('/')}/${freemapTransportType}/fastest&Ajax=`;
+      const url = `https://www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportType}/fastest&Ajax=`;
       fetch(url, {
         method: 'GET'
       }).then(res => res.text()).then(data => {
@@ -94,8 +91,7 @@ export default class RoutePlannerResults extends React.Component {
             onDragend={this.props.onRouteMarkerDragend.bind(null, 'start', null)}
             position={L.latLng(start.lat, start.lon)} />}
 
-            {midpoints.map(({ lat, lon}, i) => {
-              return (
+            {midpoints.map(({ lat, lon}, i) => (
                 <Marker
                   icon={midPointIcon}
                   draggable
@@ -103,17 +99,23 @@ export default class RoutePlannerResults extends React.Component {
                   key={i}
                   position={L.latLng(lat, lon)}>
                 </Marker>
-              );
-            })}
+              )
+            )}
 
         {finish.lat &&
           <Marker
-            icon={finishIcon}
-            draggable
-            onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish', null)}
-            position={L.latLng(finish.lat, finish.lon)}>
-              <Tooltip offset={new L.Point(10,0)} direction="right" permanent><span>{distance}, {time}</span></Tooltip>
-            </Marker>}
+              icon={finishIcon}
+              draggable
+              onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish', null)}
+              position={L.latLng(finish.lat, finish.lon)}>
+
+            {distance !== null && time !== null &&
+              <Tooltip offset={new L.Point(10,0)} direction="right" permanent>
+                <span>{distance}, {time}</span>
+              </Tooltip>
+            }
+          </Marker>
+        }
         <Polyline positions={routeShapePoints} color="#2F4F4F" weight="8" opacity="0.6"/>
       </div>
     );
