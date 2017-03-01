@@ -102,7 +102,7 @@ export default class RoutePlannerResults extends React.Component {
               position={L.latLng(finish.lat, finish.lon)}>
 
             {distance !== null && time !== null &&
-              <Tooltip direction="right" permanent>
+              <Tooltip offset={new L.Point(14, -25)} direction="right" permanent>
                 <span>{distance}, {time}</span>
               </Tooltip>
             }
