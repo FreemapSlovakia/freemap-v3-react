@@ -104,7 +104,7 @@ export default class Main extends React.Component {
     const { tool } = this.state;
 
     if (tool === 'measure') {
-      this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, {$push: [ { lat, lon } ] }) });
+      this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, { $push: [ { lat, lon } ] }) });
     } else if (tool === 'route-planner') {
       const { routePlannerPickMode, routePlannerPoints } = this.state;
 
@@ -158,7 +158,7 @@ export default class Main extends React.Component {
     this.setState({ routePlannerTransportType });
   }
 
-  onRouteMarkerDragend(movedPointType, position, event) {
+  handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
     let newRoutePlannerPoints;
     if (movedPointType == 'start' || movedPointType == 'finish') {
@@ -240,7 +240,7 @@ export default class Main extends React.Component {
 
             <RoutePlannerResults
               routePlannerPoints={routePlannerPoints}
-              onRouteMarkerDragend={b(this.onRouteMarkerDragend)}
+              onRouteMarkerDragend={b(this.handleRouteMarkerDragend)}
               transportType={routePlannerTransportType} />
           </Map>
         </Row>

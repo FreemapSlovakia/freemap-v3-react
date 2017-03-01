@@ -3,6 +3,25 @@ import React from 'react';
 import { Marker, Polyline, Tooltip} from 'react-leaflet';
 import { parseString as xml2js } from 'xml2js';
 
+function createIcon(color) {
+  return new L.Icon({
+    iconSize: [ 23, 37 ],
+    iconAnchor: [ 12, 37 ],
+    iconUrl: require(`../images/marker-icon-${color}.png`),
+    iconRetinaUrl: require(`../images/marker-icon-2x-${color}.png`)
+  });
+}
+
+const startIcon = createIcon('green');
+const midPointIcon = createIcon('grey');
+const finishIcon = createIcon('red');
+
+const freemapTransportTypes = {
+  'car': 'motorcar',
+  'walk': 'hiking',
+  'bicycle': 'bicycle'
+};
+
 export default class RoutePlannerResults extends React.Component {
   constructor(props) {
     super(props);
@@ -19,30 +38,22 @@ export default class RoutePlannerResults extends React.Component {
   componentWillReceiveProps({ routePlannerPoints, transportType }) {
     // FIXME: there must be some nicer way to do this
     const pointChanged = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
-    const transportChanged =  transportType !== this.state.transportType;
+    const transportChanged = transportType !== this.state.transportType;
     if (pointChanged || transportChanged) {
       this.setState({ routePlannerPoints, routeShapePoints: [], distance: null, time: null, transportType  });
       this.updateRoute(routePlannerPoints, transportType);
     }
   }
 
-  updateRoute(routePlannerPoints, transportType) {
-    const p = routePlannerPoints;
-    if (p.start.lat && p.finish.lat) {
+  updateRoute({ start, midpoints, finish }, transportType) {
+    if (start.lat && finish.lat) {
       const allPoints = [
-        [ p.start.lat, p.start.lon ].join('%7C'),
-        ...p.midpoints.map(mp => [ mp.lat, mp.lon ].join('%7C')),
-        [ p.finish.lat, p.finish.lon ].join('%7C')
+        [ start.lat, start.lon ].join('%7C'),
+        ...midpoints.map(mp => [ mp.lat, mp.lon ].join('%7C')),
+        [ finish.lat, finish.lon ].join('%7C')
       ].join('/');
 
-      const freemapTransportTypes = {
-        'car': 'motorcar',
-        'walk': 'hiking',
-        'bicycle': 'bicycle'
-      };
-      const freemapTransportType = freemapTransportTypes[transportType];
-      const url = `https://www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportType}/fastest&Ajax=`;
-      fetch(url, {
+      fetch(`https://www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportTypes[transportType]}/fastest&Ajax=`, {
         method: 'GET'
       }).then(res => res.text()).then(data => {
         xml2js(data, (error, json) => {
@@ -50,12 +61,12 @@ export default class RoutePlannerResults extends React.Component {
           const time = json.osmRoute.time[0];
           const rawPointsWithMess = json.osmRoute.wkt[0];
           const rawPoints =  rawPointsWithMess.substring(14, rawPointsWithMess.length - 3);
-          const points = rawPoints.split(', ').map((lonlat) => {
+          const routeShapePoints = rawPoints.split(', ').map((lonlat) => {
             const lonlatArray = lonlat.split(' ');
             return [ parseFloat(lonlatArray[1]), parseFloat(lonlatArray[0]) ];
           });
 
-          this.setState({ routeShapePoints: points, distance, time });
+          this.setState({ routeShapePoints, distance, time });
         });
       });
     }
@@ -64,24 +75,6 @@ export default class RoutePlannerResults extends React.Component {
   render() {
     const { routePlannerPoints: { start, midpoints, finish }, routeShapePoints, time, distance } = this.state;
 
-    const startIcon = new L.Icon({
-      iconSize: [ 23, 37 ],
-      iconUrl: require('../images/marker-icon-green.png'),
-      iconRetinaUrl: require('../images/marker-icon-2x-green.png')
-    });
-
-    const midPointIcon = new L.Icon({
-      iconSize: [ 23, 37 ],
-      iconUrl: require('../images/marker-icon-grey.png'),
-      iconRetinaUrl: require('../images/marker-icon-2x-grey.png')
-    });
-
-    const finishIcon = new L.Icon({
-      iconSize: [ 23, 37 ],
-      iconUrl: require('../images/marker-icon-red.png'),
-      iconRetinaUrl: require('../images/marker-icon-2x-red.png')
-    });
-
     return (
       <div>
         {start.lat &&
@@ -89,7 +82,7 @@ export default class RoutePlannerResults extends React.Component {
             icon={startIcon}
             draggable
             onDragend={this.props.onRouteMarkerDragend.bind(null, 'start', null)}
-            position={L.latLng(start.lat, start.lon)} />}
+            position={L.latLng(start.lat, start.lon)}/>}
 
             {midpoints.map(({ lat, lon}, i) => (
                 <Marker
