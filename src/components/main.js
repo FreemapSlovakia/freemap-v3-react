@@ -4,19 +4,17 @@ import { hashHistory as history } from 'react-router';
 import { Map, Marker, Popup } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import Button from 'react-bootstrap/lib/Button';
+
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
 import { toHtml } from '../poiTypes';
 
+import Search from './search';
 import ObjectsModal from './objectsModal';
 import Layers from './layers';
 import Measurement from './measurement';
@@ -29,7 +27,6 @@ export default class Main extends React.Component {
     super(props);
 
     this.state = Object.assign({
-      searchQuery: '',
       searchResults: [],
       lengthMeasurePoints: [],
       tool: null,
@@ -71,30 +68,6 @@ export default class Main extends React.Component {
   updateUrl() {
     const { zoom, lat, lon, mapType } = this.state;
     history.replace(`/${mapType}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
-  }
-
-  updateSearchQuery(e) {
-    this.setState({ searchQuery: e.target.value });
-  }
-
-  doSearch(e) {
-    e.preventDefault();
-
-    const { lat, lon, searchQuery, zoom } = this.state;
-    // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
-    fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
-        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
-      method: 'GET'
-    }).then(res => res.json()).then(data => {
-      // TODO map type to tag
-      const searchResults = data.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: { name: d.namedetails.name} }));
-      if (searchResults.length) {
-        const { lat, lon } = searchResults[0];
-        this.setState({ searchResults, lat, lon, zoom: 14, lengthMeasurePoints: [], tool: null });
-      } else {
-        this.setState({ searchResults, lengthMeasurePoints: [], tool: null });
-      }
-    });
   }
 
   showObjectsModal(objectsModalShown) {
@@ -159,6 +132,15 @@ export default class Main extends React.Component {
     const mainNavigationIsHidden = tool === 'route-planner';
     this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null});
   }
+  
+  onSearchResultsUpdate(searchResults) {
+    if (searchResults.length) {
+      const { lat, lon } = searchResults[0];
+      this.setState({ searchResults, lat, lon, zoom: 14, lengthMeasurePoints: [], tool: null });
+    } else {
+      this.setState({ searchResults, lengthMeasurePoints: [], tool: null });
+    }
+  }
 
   setRoutePlannerPointPickMode(routePlannerPickMode) {
     this.setState({routePlannerPickMode});
@@ -184,7 +166,7 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { lat, lon, zoom, mapType, searchQuery, searchResults, objectsModalShown, lengthMeasurePoints, tool,
+    const { lat, lon, zoom, mapType, searchResults, objectsModalShown, lengthMeasurePoints, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
@@ -201,20 +183,13 @@ export default class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              <form onSubmit={b(this.doSearch)}>
-                <Navbar.Form pullLeft className={mainNavigationIsHidden ? 'hidden' : ''}>
-                  <FormGroup>
-                    <InputGroup>
-                      <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
-                      <InputGroup.Button>
-                        <Button type="submit" disabled={!searchQuery.length}>
-                          <Glyphicon glyph="search"/>
-                        </Button>
-                      </InputGroup.Button>
-                    </InputGroup>
-                  </FormGroup>
-                </Navbar.Form>
-              </form>
+              <div className={mainNavigationIsHidden ? 'hidden' : ''}>
+                <Search
+                  onSearchResultsUpdate={b(this.onSearchResultsUpdate)}
+                  lat={String(lat)}
+                  lon={String(lon)}
+                  zoom={zoom} />
+              </div>
               <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
                 <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
                 <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
