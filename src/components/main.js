@@ -30,7 +30,7 @@ export default class Main extends React.Component {
       searchResults: [],
       lengthMeasurePoints: [],
       tool: null,
-      routePlannerPoints: {start: {}, midpoints: [], finish: {}},
+      routePlannerPoints: { start: {}, midpoints: [], finish: {} },
       routePlannerTransportType: 'car',
       routePlannerPickMode: null,
       mainNavigationIsHidden: false
@@ -109,21 +109,21 @@ export default class Main extends React.Component {
       const { routePlannerPickMode, routePlannerPoints } = this.state;
 
       if (routePlannerPickMode) {
-        let newRoutePlannerPoints;
+        let newPoints;
 
         if (routePlannerPickMode === 'start' || routePlannerPickMode === 'finish') {
-          newRoutePlannerPoints = update(routePlannerPoints, {
-            [ routePlannerPickMode ]: { lat: {$set: lat }, lon: {$set: lon }}
+          newPoints = update(routePlannerPoints, {
+            [ routePlannerPickMode ]: { lat: { $set: lat }, lon: { $set: lon } }
           });
         } else if (routePlannerPickMode == 'midpoint') {
-          newRoutePlannerPoints = update(routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});
+          newPoints = update(routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] } });
         } else {
-          newRoutePlannerPoints = null;
+          return; // unexpected
         }
 
         this.setState({
-          routePlannerPickMode: routePlannerPickMode === 'start' ? 'finish' : routePlannerPickMode === 'finish' ? 'midpoint' : 'midpoint',
-          routePlannerPoints: newRoutePlannerPoints
+          routePlannerPickMode: newPoints.start.lat ? (newPoints.finish.lat ? 'midpoint' : 'finish') : 'start',
+          routePlannerPoints: newPoints
         });
       }
     }
@@ -137,7 +137,7 @@ export default class Main extends React.Component {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
     this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {
-      start: {}, midpoints: [], finish: {}}, routePlannerPickMode: 'start'
+      start: {}, midpoints: [], finish: {} }, routePlannerPickMode: 'start'
     });
   }
 
