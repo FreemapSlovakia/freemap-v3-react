@@ -1,9 +1,9 @@
 import React from 'react';
 import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Button from 'react-bootstrap/lib/Button';
-import Accordion from 'react-bootstrap/lib/Accordion';
-import Panel from 'react-bootstrap/lib/Panel';
+import Tab from 'react-bootstrap/lib/Tab';
+import Tabs from 'react-bootstrap/lib/Tabs';
 
 import { poiTypeGroups, poiTypes } from '../poiTypes';
 
@@ -13,7 +13,8 @@ export default class ObjectsModal extends React.Component {
     super(props);
 
     this.state = {
-      selections: new Set()
+      selections: new Set(),
+      group: 0
     };
   }
 
@@ -34,6 +35,10 @@ export default class ObjectsModal extends React.Component {
     this.setState({ selections: s });
   }
 
+  handleGroupSelect(group) {
+    this.setState({ group });
+  }
+
   render() {
     const { onClose } = this.props;
     const { selections } = this.state;
@@ -46,15 +51,17 @@ export default class ObjectsModal extends React.Component {
           <Modal.Title>Objekty</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Accordion>
+          <Tabs activeKey={this.state.group} id="groupTabs" onSelect={b(this.handleGroupSelect)} animation={false}>
             {poiTypeGroups.map(({ id, title }, i) => (
-              <Panel key={i} eventKey={i} header={title} expanded={false}>
-                {poiTypes.map(({ group, title }, i) =>
-                  group === id && <Checkbox key={i} onClick={b(this.select, i)} checked={selections.has(i)}>{title}</Checkbox>)
-                }
-              </Panel>
+              <Tab key={i} eventKey={i} title={title}>
+                <ButtonToolbar>
+                  {poiTypes.map(({ group, title }, i) =>
+                    group === id && <Button key={i} onClick={b(this.select, i)} bsStyle={selections.has(i) ? 'primary' : undefined}>{title}</Button>)
+                  }
+                </ButtonToolbar>
+              </Tab>
             ))}
-          </Accordion>
+          </Tabs>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={b(this.showObjects)} disabled={!selections.size}>Zobraz</Button>
