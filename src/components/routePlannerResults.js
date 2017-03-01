@@ -46,7 +46,7 @@ export default class RoutePlannerResults extends React.Component {
   }
 
   updateRoute({ start, midpoints, finish }, transportType) {
-    if (start.lat && finish.lat) {
+    if (start && finish) {
       const allPoints = [
         [ start.lat, start.lon ].join('%7C'),
         ...midpoints.map(mp => [ mp.lat, mp.lon ].join('%7C')),
@@ -60,12 +60,11 @@ export default class RoutePlannerResults extends React.Component {
           const distance = json.osmRoute.length[0];
           const time = json.osmRoute.time[0];
           const rawPointsWithMess = json.osmRoute.wkt[0];
-          const rawPoints =  rawPointsWithMess.substring(14, rawPointsWithMess.length - 3);
-          const routeShapePoints = rawPoints.split(', ').map((lonlat) => {
+          const rawPoints = rawPointsWithMess.substring(14, rawPointsWithMess.length - 3).trim();
+          const routeShapePoints = rawPoints ? rawPoints.split(', ').map((lonlat) => {
             const lonlatArray = lonlat.split(' ');
             return [ parseFloat(lonlatArray[1]), parseFloat(lonlatArray[0]) ];
-          });
-
+          }) : [];
           this.setState({ routeShapePoints, distance, time });
         });
       });
@@ -77,7 +76,7 @@ export default class RoutePlannerResults extends React.Component {
 
     return (
       <div>
-        {start.lat &&
+        {start &&
           <Marker
             icon={startIcon}
             draggable
@@ -95,7 +94,7 @@ export default class RoutePlannerResults extends React.Component {
               )
             )}
 
-        {finish.lat &&
+        {finish &&
           <Marker
               icon={finishIcon}
               draggable

@@ -30,7 +30,7 @@ export default class Main extends React.Component {
       searchResults: [],
       lengthMeasurePoints: [],
       tool: null,
-      routePlannerPoints: { start: {}, midpoints: [], finish: {} },
+      routePlannerPoints: { start: null, midpoints: [], finish: null },
       routePlannerTransportType: 'car',
       routePlannerPickMode: null,
       mainNavigationIsHidden: false
@@ -104,40 +104,32 @@ export default class Main extends React.Component {
     const { tool } = this.state;
 
     if (tool === 'measure') {
-      this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, { $push: [ { lat, lon } ] }) });
+      this.setState(update(this.state, { lengthMeasurePoints: { $push: [ { lat, lon } ] } }));
     } else if (tool === 'route-planner') {
-      const { routePlannerPickMode, routePlannerPoints } = this.state;
+      const { routePlannerPickMode: mode, routePlannerPoints: { start, finish } } = this.state;
 
-      if (routePlannerPickMode) {
-        let newPoints;
-
-        if (routePlannerPickMode === 'start' || routePlannerPickMode === 'finish') {
-          newPoints = update(routePlannerPoints, {
-            [ routePlannerPickMode ]: { lat: { $set: lat }, lon: { $set: lon } }
-          });
-        } else if (routePlannerPickMode == 'midpoint') {
-          newPoints = update(routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] } });
-        } else {
-          return; // unexpected
-        }
-
-        this.setState({
-          routePlannerPickMode: newPoints.start.lat ? (newPoints.finish.lat ? 'midpoint' : 'finish') : 'start',
-          routePlannerPoints: newPoints
+      if (mode === 'start' || mode === 'finish') {
+        const u = update(this.state, {
+          routePlannerPickMode: { $set: (start || mode === 'start') ? ((finish || mode === 'finish') ? 'midpoint' : 'finish') : 'start' },
+          routePlannerPoints: { [ mode ]: { $set: { lat, lon } } }
         });
+
+        this.setState(u);
+      } else if (mode == 'midpoint') {
+        this.setState(update(this.state, { routePlannerPoints: { midpoints : { $push: [ { lat, lon } ] } } }));
       }
     }
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, { [ i ]: { $merge: { lat, lon } } }) });
+    this.setState(update(this.state, { lengthMeasurePoints: { [ i ]: { $set: { lat, lon } } } }));
   }
 
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
     this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {
-      start: {}, midpoints: [], finish: {} }, routePlannerPickMode: 'start'
+      start: null, midpoints: [], finish: null }, routePlannerPickMode: 'start'
     });
   }
 
@@ -160,16 +152,15 @@ export default class Main extends React.Component {
 
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
-    let newRoutePlannerPoints;
-    if (movedPointType == 'start' || movedPointType == 'finish') {
-      newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-        [ movedPointType ]: { lat: { $set: lat }, lon: { $set: lon } }
-      });
+    if (movedPointType === 'start' || movedPointType === 'finish') {
+      this.setState(update(this.state, {
+        routePlannerPoints: { [ movedPointType ]: { $set: { lat, lon } } }
+      }));
     } else {
-      newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : {[position]: { $merge: { lat, lon } } } });
+      this.setState(update(this.state, {
+        routePlannerPoints: { midpoints: { [ position ]: { $set: { lat, lon } } } }
+      }));
     }
-
-    this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints });
   }
 
   render() {
