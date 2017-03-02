@@ -1,60 +1,81 @@
 import React from 'react';
-
+import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import Button from 'react-bootstrap/lib/Button';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 export default class Search extends React.Component {
   constructor(props) {
     super(props);
 
     this.state = {
+      searchSuggestions: [],
       searchQuery: ''
     };
   }
 
-  doSearch(e) {
-    e.preventDefault();
+  doSearch(searchQuery) {
+    if (!searchQuery) {
+      return;
+    }
+    this.setState({ searchQuery });
 
-    const { searchQuery } = this.state;
     const { lat, lon, zoom } = this.props;
 
     // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
     fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
-        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
+        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
-      const searchResults = data.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: { name: d.namedetails.name} }));
-      this.props.onSearchResultsUpdate(searchResults);
+      const searchSuggestions = data.map((d, id) => {
+        const name = d.namedetails.name;
+        const tags = { name, type: d.type };
+        return { id, label: name, lat: d.lat, lon: d.lon, tags };
+      });
+      this.setState({ searchSuggestions });
     });
   }
 
-  updateSearchQuery(e) {
-    this.setState({ searchQuery: e.target.value });
+  onSelectionChange(selectedResults) {
+    this.props.onSelectSearchResult(selectedResults[0]);
+  }
+
+  onSuggestionHighlightChange(result) {
+    if (result && result.lat) {
+      result.lat = parseFloat(result.lat);
+    }
+    if (result && result.lon) {
+      result.lon = parseFloat(result.lon);
+    }
+    this.props.onSearchSuggestionHighlightChange(result);
   }
 
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
-    const { searchQuery } = this.state;
 
     return (
-      <form onSubmit={b(this.doSearch)}>
-        <Navbar.Form pullLeft>
-          <FormGroup>
-            <InputGroup>
-              <FormControl type="text" value={searchQuery} placeholder="Brusno" onChange={b(this.updateSearchQuery)}/>
-              <InputGroup.Button>
-                <Button type="submit" disabled={!searchQuery.length}>
-                  <Glyphicon glyph="search"/>
-                </Button>
-              </InputGroup.Button>
-            </InputGroup>
-          </FormGroup>
-        </Navbar.Form>
-      </form>
+      <Navbar.Form pullLeft>
+          <AsyncTypeahead
+            labelKey="label"
+            useCache={false}
+            minLength={3}
+            delay={500}
+            ignoreDiacritics={true}
+            onSearch={b(this.doSearch)}
+            options={this.state.searchSuggestions}
+            searchText="Hľadám ..."
+            placeholder="Brusno"
+            clearButton={true}
+            onChange={b(this.onSelectionChange)}
+            emptyLabel={'Nenašli sme žiadne výsledky'}
+            renderMenuItemChildren={(result) => (
+              <div key={result.label + result.id}
+                  onMouseEnter={b(this.onSuggestionHighlightChange, result)}
+                  onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
+                <span>{result.tags.name} </span><br/>
+                <span>({result.tags.type})</span>
+              </div>
+            )}
+          />
+      </Navbar.Form>
     );
   }
 }
@@ -63,5 +84,6 @@ Search.propTypes = {
   lat: React.PropTypes.number,
   lon: React.PropTypes.number,
   zoom: React.PropTypes.number,
-  onSearchResultsUpdate: React.PropTypes.func.isRequired
+  onSearchSuggestionHighlightChange: React.PropTypes.func.isRequired,
+  onSelectSearchResult: React.PropTypes.func.isRequired
 };
