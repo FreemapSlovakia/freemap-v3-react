@@ -7,7 +7,7 @@ export default class Search extends React.Component {
     super(props);
 
     this.state = {
-      searchResults: [],
+      searchSuggestions: [],
       searchQuery: '',
       lat: this.props.lat, 
       lon: this.props.lon,
@@ -27,21 +27,17 @@ export default class Search extends React.Component {
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
-      const searchResults = data.map((d, id) => {
+      const searchSuggestions = data.map((d, id) => {
         const name = d.namedetails.name;
         const tags = { name, type: d.type };
         return { id, label: name, lat: d.lat, lon: d.lon, tags  };
       });
-      this.setState({searchResults});  
+      this.setState({searchSuggestions});  
     });
   }
 
-  clearSearch() {
-    this.setState({ searchQuery: null, searchResults: []  });
-  } 
-
-  searchResultSelected(result) {
-    console.log(result);
+  onSelectionChange(selectedResults) {
+    this.props.onSearchResultsUpdate(selectedResults);
   }
 
   render() {
@@ -55,13 +51,14 @@ export default class Search extends React.Component {
             delay={500}
             ignoreDiacritics={true}
             onSearch={b(this.doSearch)}
-            options={this.state.searchResults}
+            options={this.state.searchSuggestions}
             searchText="Hľadám ..."
             placeholder="Brusno"
             clearButton={true}
-            emptyLabel={'Nenašli sme žiadne výsledky' + this.state.searchResults.length}
+            onChange={b(this.onSelectionChange)}
+            emptyLabel={'Nenašli sme žiadne výsledky'}
             renderMenuItemChildren={(result) => (
-              <div key={result.label + result.id} onClick={b(this.searchResultSelected, result)}>
+              <div key={result.label + result.id}>
                 <span>{result.tags.name} </span><br/>
                 <span>({result.tags.type})</span>
               </div>
