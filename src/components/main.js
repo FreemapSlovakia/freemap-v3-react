@@ -1,7 +1,8 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
-import { Map} from 'react-leaflet';
+
+import { Map, Marker, Popup} from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 
@@ -12,7 +13,7 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
-
+import { toHtml } from '../poiTypes';
 import Search from './search';
 import SearchResults from './searchResults';
 import ObjectsModal from './objectsModal';
@@ -27,8 +28,9 @@ export default class Main extends React.Component {
     super(props);
 
     this.state = Object.assign({
-      searchResults: [],
+      poiSearchResults: [],
       lengthMeasurePoints: [],
+      selectedSearchResult: null,
       highlightedSearchSuggestion: null,
       tool: null,
       routePlannerPoints: {start: {}, midpoints: [], finish: {}},
@@ -94,8 +96,9 @@ export default class Main extends React.Component {
       body: `data=${encodeURIComponent(query)}`
     }).then(res => res.json()).then(data => {
       this.setState({
-        searchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags })),
+        poiSearchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags })),
         lengthMeasurePoints: [],
+        selectedSearchResult: null,
         tool: null
       });
     });
@@ -134,8 +137,14 @@ export default class Main extends React.Component {
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
-    this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {
-      start: {}, midpoints: [], finish: {}}, routePlannerPickMode: null
+    this.setState({ 
+      tool, 
+      mainNavigationIsHidden, 
+      selectedSearchResult: null,
+      poiSearchResults: [], 
+      lengthMeasurePoints: [], 
+      routePlannerPoints: { start: {}, midpoints: [], finish: {}}, 
+      routePlannerPickMode: null
     });
   }
   
@@ -143,8 +152,8 @@ export default class Main extends React.Component {
     this.setState({highlightedSearchSuggestion : s});
   }
 
-  onSearchResultsUpdate(searchResults) {
-    this.setState({ searchResults, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null });
+  onSelectSearchResult(selectedSearchResult) {
+    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null, poiSearchResults: [] });
   }
 
   refocusMap(lat, lon, zoom) {
@@ -176,7 +185,7 @@ export default class Main extends React.Component {
   render() {
     const { lat, lon, zoom, mapType, overlays, objectsModalShown, lengthMeasurePoints, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode,
-      searchResults, highlightedSearchSuggestion} = this.state;
+      poiSearchResults, selectedSearchResult, highlightedSearchSuggestion} = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -195,7 +204,7 @@ export default class Main extends React.Component {
               <div className={mainNavigationIsHidden ? 'hidden' : ''}>
                 <Search
                   onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
-                  onSearchResultsUpdate={b(this.onSearchResultsUpdate)}
+                  onSelectSearchResult={b(this.onSelectSearchResult)}
                   lat={String(lat)}
                   lon={String(lon)}
                   zoom={zoom} />
@@ -229,9 +238,19 @@ export default class Main extends React.Component {
 
             <SearchResults 
               highlightedSearchSuggestion={highlightedSearchSuggestion} 
-              searchResults={searchResults}
+              selectedSearchResult={selectedSearchResult}
               doMapRefocus={b(this.refocusMap)}
               map={this.refs.map}/>
+
+            {poiSearchResults.map(({ id, lat, lon, tags }) => {
+              const __html = toHtml(tags);
+
+              return (
+                <Marker key={id} position={L.latLng(lat, lon)}>
+                  {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
+                </Marker>
+              );
+            })}
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
 

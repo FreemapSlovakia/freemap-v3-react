@@ -37,7 +37,7 @@ export default class Search extends React.Component {
   }
 
   onSelectionChange(selectedResults) {
-    this.props.onSearchResultsUpdate(selectedResults);
+    this.props.onSelectSearchResult(selectedResults[0]);
   }
 
   onSuggestionHighlightChange(result) {
@@ -80,5 +80,5 @@ Search.propTypes = {
   lon: React.PropTypes.string,
   zoom: React.PropTypes.number,
   onSearchSuggestionHighlightChange: React.PropTypes.func.isRequired,
-  onSearchResultsUpdate: React.PropTypes.func.isRequired
+  onSelectSearchResult: React.PropTypes.func.isRequired
 };
