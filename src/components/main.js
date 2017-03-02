@@ -1,7 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
-import { Map, Marker, Popup } from 'react-leaflet';
+import { Map, Marker, Popup, Tooltip } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 
@@ -33,7 +33,9 @@ export default class Main extends React.Component {
       routePlannerPoints: { start: null, midpoints: [], finish: null },
       routePlannerTransportType: 'car',
       routePlannerPickMode: null,
-      mainNavigationIsHidden: false
+      mainNavigationIsHidden: false,
+      elePoi: null,
+      ele: null,
     }, toMapState(props.params));
   }
 
@@ -105,6 +107,9 @@ export default class Main extends React.Component {
 
     if (tool === 'measure') {
       this.setState(update(this.state, { lengthMeasurePoints: { $push: [ { lat, lon } ] } }));
+    } else if (tool === 'measure-ele') {
+      this.setState({ ele: null, elePoi: { lat, lon } });
+      this.findEle();
     } else if (tool === 'route-planner') {
       const { routePlannerPickMode: mode, routePlannerPoints: { start, finish } } = this.state;
 
@@ -121,15 +126,32 @@ export default class Main extends React.Component {
     }
   }
 
+  findEle() {
+    const { lat, lon } = this.state.elePoi;
+    fetch(`https://www.freemap.sk/api/0.1/elevation/${lat}%7C${lon}`, {
+      method: 'GET'
+    }).then(res => res.json()).then(data => {
+      this.setState({ ele: parseFloat(data.ele), elePoi: { lat: parseFloat(data.lat), lon: parseFloat(data.lon) } });
+    });
+  }
+
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
     this.setState(update(this.state, { lengthMeasurePoints: { [ i ]: { $set: { lat, lon } } } }));
+  }
+
+  handleEleMeasureMarkerDrag({ latlng: { lat, lng: lon } }) {
+    this.setState({ elePoi: { lat, lon }, ele: null });
+  }
+
+  handleEleMeasureMarkerDragEnd() {
+    this.findEle();
   }
 
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
     this.setState({ tool, mainNavigationIsHidden, searchResults: [], lengthMeasurePoints: [], routePlannerPoints: {
-      start: null, midpoints: [], finish: null }, routePlannerPickMode: 'start'
+      start: null, midpoints: [], finish: null }, routePlannerPickMode: 'start', ele: null, elePoi: null
     });
   }
 
@@ -165,7 +187,7 @@ export default class Main extends React.Component {
 
   render() {
     const { lat, lon, zoom, mapType, overlays, searchResults, objectsModalShown, lengthMeasurePoints, tool,
-      mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode } = this.state;
+      mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode, elePoi, ele } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -188,6 +210,7 @@ export default class Main extends React.Component {
                     <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
                     <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                     <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                    <NavItem onClick={b(this.setTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
                   </Nav>
                 </div>
               }
@@ -227,12 +250,24 @@ export default class Main extends React.Component {
               );
             })}
 
-            <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+            {tool === 'route-planner' &&
+              <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+            }
 
+            {tool === 'route-planner' &&
             <RoutePlannerResults
               routePlannerPoints={routePlannerPoints}
               onRouteMarkerDragend={b(this.handleRouteMarkerDragend)}
               transportType={routePlannerTransportType} />
+            }
+
+            {tool === 'measure-ele' && elePoi &&
+              <Marker position={L.latLng(elePoi.lat, elePoi.lon)} draggable
+                  onDrag={b(this.handleEleMeasureMarkerDrag)}
+                  onDragend={b(this.handleEleMeasureMarkerDragEnd)}>
+                {typeof ele === 'number' && <Tooltip direction="right" permanent><span>{ele} m</span></Tooltip>}
+              </Marker>
+            }
           </Map>
         </Row>
       </div>
