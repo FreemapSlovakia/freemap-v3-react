@@ -1,6 +1,6 @@
 import React from 'react';
 import { toHtml } from '../poiTypes';
-import { Marker, Popup } from 'react-leaflet';
+import { Marker, Tooltip } from 'react-leaflet';
 
 export default class SearchResults extends React.Component {
   componentWillReceiveProps(newProps) {
@@ -40,7 +40,7 @@ export default class SearchResults extends React.Component {
 
           return (
             <Marker key={id} position={L.latLng(lat, lon)}>
-              {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
+              <Tooltip><span dangerouslySetInnerHTML={{ __html }}/></Tooltip>
             </Marker>
           );
         })}
