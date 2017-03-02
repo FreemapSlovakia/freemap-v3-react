@@ -208,8 +208,8 @@ export default class Main extends React.Component {
                   <Search onSearchResultsUpdate={b(this.onSearchResultsUpdate)} lat={lat} lon={lon} zoom={zoom} />
                   <Nav>
                     <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
-                    <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                     <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                    <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                     <NavItem onClick={b(this.setTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
                   </Nav>
                 </div>
@@ -251,14 +251,14 @@ export default class Main extends React.Component {
             })}
 
             {tool === 'route-planner' &&
-              <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+              <RoutePlannerResults
+                routePlannerPoints={routePlannerPoints}
+                onRouteMarkerDragend={b(this.handleRouteMarkerDragend)}
+                transportType={routePlannerTransportType} />
             }
 
-            {tool === 'route-planner' &&
-            <RoutePlannerResults
-              routePlannerPoints={routePlannerPoints}
-              onRouteMarkerDragend={b(this.handleRouteMarkerDragend)}
-              transportType={routePlannerTransportType} />
+            {tool === 'measure' &&
+              <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
             }
 
             {tool === 'measure-ele' && elePoi &&
