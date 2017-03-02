@@ -40,7 +40,7 @@ export default class SearchResults extends React.Component {
 
           return (
             <Marker key={id} position={L.latLng(lat, lon)}>
-              <Tooltip><span dangerouslySetInnerHTML={{ __html }}/></Tooltip>
+              <Tooltip opacity={1.0}><span dangerouslySetInnerHTML={{ __html }}/></Tooltip>
             </Marker>
           );
         })}
