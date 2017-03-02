@@ -28,7 +28,7 @@ export default class Search extends React.Component {
       const searchSuggestions = data.map((d, id) => {
         const name = d.namedetails.name;
         const tags = { name, type: d.type };
-        return { id, label: name, lat: d.lat, lon: d.lon, tags };
+        return { id, label: name, lat: parseFloat(d.lat), lon: parseFloat(d.lon), tags };
       });
       this.setState({ searchSuggestions });
     });
@@ -39,12 +39,6 @@ export default class Search extends React.Component {
   }
 
   onSuggestionHighlightChange(result) {
-    if (result && result.lat) {
-      result.lat = parseFloat(result.lat);
-    }
-    if (result && result.lon) {
-      result.lon = parseFloat(result.lon);
-    }
     this.props.onSearchSuggestionHighlightChange(result);
   }
 
