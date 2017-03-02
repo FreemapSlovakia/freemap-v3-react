@@ -3,6 +3,29 @@ import { toHtml } from '../poiTypes';
 import { Marker, Popup } from 'react-leaflet';
 
 export default class SearchResults extends React.Component {
+  componentWillReceiveProps(newProps) {
+    const highlightChanged = JSON.stringify(newProps.highlightedSearchSuggestion) != JSON.stringify(this.props.highlightedSearchSuggestion);
+    const resultsChanged = JSON.stringify(newProps.searchResults) != JSON.stringify(this.props.searchResults);
+    if (highlightChanged || resultsChanged) {
+      this.refocusMapIfNeeded(newProps);
+    }
+  }
+
+  refocusMapIfNeeded(newProps) {
+    const mapBound = this.props.map.getBounds();
+    const mapZoom = this.props.map.getZoom();
+    if (newProps.highlightedSearchSuggestion) {
+      const h = newProps.highlightedSearchSuggestion;
+      const hLatLon = L.latLng(h.lat, h.lon);
+      if (mapZoom < 13 || !mapBound.contains(hLatLon)) {
+        this.props.doMapRefocus(h.lat, h.lon, 13);
+      }
+    } else if (newProps.searchResults.length) {
+      const p = newProps.searchResults[0];
+      this.props.doMapRefocus(p.lat, p.lon, 13);
+    }
+  }
+
   render() {
     const {searchResults, highlightedSearchSuggestion} = this.props;
     const suggestionIcon = new L.Icon({
@@ -36,5 +59,7 @@ export default class SearchResults extends React.Component {
 
 SearchResults.propTypes = {
   highlightedSearchSuggestion: React.PropTypes.any,
-  searchResults: React.PropTypes.array
+  searchResults: React.PropTypes.array,
+  doMapRefocus: React.PropTypes.func.isRequired,
+  map: React.PropTypes.any
 };

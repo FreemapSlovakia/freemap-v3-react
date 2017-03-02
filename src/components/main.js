@@ -144,12 +144,11 @@ export default class Main extends React.Component {
   }
 
   onSearchResultsUpdate(searchResults) {
-    if (searchResults.length) {
-      const { lat, lon } = searchResults[0];
-      this.setState({ searchResults, lat, lon, zoom: 14, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null });
-    } else {
-      this.setState({ searchResults, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null });
-    }
+    this.setState({ searchResults, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null });
+  }
+
+  refocusMap(lat, lon, zoom) {
+    this.setState({lat, lon, zoom});
   }
 
   setRoutePlannerPointPickMode(routePlannerPickMode) {
@@ -230,7 +229,9 @@ export default class Main extends React.Component {
 
             <SearchResults 
               highlightedSearchSuggestion={highlightedSearchSuggestion} 
-              searchResults={searchResults}/>
+              searchResults={searchResults}
+              doMapRefocus={b(this.refocusMap)}
+              map={this.refs.map}/>
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
 
