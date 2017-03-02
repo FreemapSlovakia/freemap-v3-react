@@ -39,7 +39,7 @@ export default class SearchResults extends React.Component {
     }
     return (
       <div>
-        {s && 
+        {s &&
           <Marker position={L.latLng(s.lat, s.lon)}>
             <Tooltip opacity={1.0}>
               <span dangerouslySetInnerHTML={{__html: tooltipContent}}/>
@@ -48,7 +48,7 @@ export default class SearchResults extends React.Component {
         }
 
         {h &&
-          <Marker 
+          <Marker
             key={h.id}
             position={L.latLng(h.lat, h.lon)}
             icon={suggestionIcon}>

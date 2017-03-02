@@ -8,10 +8,7 @@ export default class Search extends React.Component {
 
     this.state = {
       searchSuggestions: [],
-      searchQuery: '',
-      lat: this.props.lat, 
-      lon: this.props.lon,
-      zoom: this.props.zoom,      
+      searchQuery: ''
     };
   }
 
@@ -19,9 +16,10 @@ export default class Search extends React.Component {
     if (!searchQuery) {
       return;
     }
-    this.setState({searchQuery});   
+    this.setState({ searchQuery });
 
-    const { lat, lon, zoom } = this.state;
+    const { lat, lon, zoom } = this.props;
+
     // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
     fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK`, {
@@ -30,9 +28,9 @@ export default class Search extends React.Component {
       const searchSuggestions = data.map((d, id) => {
         const name = d.namedetails.name;
         const tags = { name, type: d.type };
-        return { id, label: name, lat: d.lat, lon: d.lon, tags  };
+        return { id, label: name, lat: d.lat, lon: d.lon, tags };
       });
-      this.setState({searchSuggestions});  
+      this.setState({ searchSuggestions });
     });
   }
 
@@ -41,11 +39,18 @@ export default class Search extends React.Component {
   }
 
   onSuggestionHighlightChange(result) {
+    if (result && result.lat) {
+      result.lat = parseFloat(result.lat);
+    }
+    if (result && result.lon) {
+      result.lon = parseFloat(result.lon);
+    }
     this.props.onSearchSuggestionHighlightChange(result);
   }
 
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
+
     return (
       <Navbar.Form pullLeft>
           <AsyncTypeahead
@@ -62,9 +67,9 @@ export default class Search extends React.Component {
             onChange={b(this.onSelectionChange)}
             emptyLabel={'Nenašli sme žiadne výsledky'}
             renderMenuItemChildren={(result) => (
-              <div key={result.label + result.id} 
-              onMouseEnter={b(this.onSuggestionHighlightChange, result)}
-              onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
+              <div key={result.label + result.id}
+                  onMouseEnter={b(this.onSuggestionHighlightChange, result)}
+                  onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
                 <span>{result.tags.name} </span><br/>
                 <span>({result.tags.type})</span>
               </div>
@@ -76,8 +81,8 @@ export default class Search extends React.Component {
 }
 
 Search.propTypes = {
-  lat: React.PropTypes.string,
-  lon: React.PropTypes.string,
+  lat: React.PropTypes.number,
+  lon: React.PropTypes.number,
   zoom: React.PropTypes.number,
   onSearchSuggestionHighlightChange: React.PropTypes.func.isRequired,
   onSelectSearchResult: React.PropTypes.func.isRequired

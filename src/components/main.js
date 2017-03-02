@@ -1,8 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
-
-import { Map, Marker, Popup} from 'react-leaflet';
+import { Map, Marker, Popup, Tooltip } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 
@@ -33,10 +32,12 @@ export default class Main extends React.Component {
       selectedSearchResult: null,
       highlightedSearchSuggestion: null,
       tool: null,
-      routePlannerPoints: {start: {}, midpoints: [], finish: {}},
+      routePlannerPoints: { start: null, midpoints: [], finish: null },
       routePlannerTransportType: 'car',
       routePlannerPickMode: null,
-      mainNavigationIsHidden: false
+      mainNavigationIsHidden: false,
+      elePoi: null,
+      ele: null,
     }, toMapState(props.params));
   }
 
@@ -108,48 +109,64 @@ export default class Main extends React.Component {
     const { tool } = this.state;
 
     if (tool === 'measure') {
-      this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, {$push: [ { lat, lon } ] }) });
+      this.setState(update(this.state, { lengthMeasurePoints: { $push: [ { lat, lon } ] } }));
+    } else if (tool === 'measure-ele') {
+      this.setState({ ele: null, elePoi: { lat, lon } });
+      this.findEle();
     } else if (tool === 'route-planner') {
-      const { routePlannerPickMode, routePlannerPoints } = this.state;
+      const { routePlannerPickMode: mode, routePlannerPoints: { start, finish } } = this.state;
 
-      if (routePlannerPickMode) {
-        let newRoutePlannerPoints;
+      if (mode === 'start' || mode === 'finish') {
+        const u = update(this.state, {
+          routePlannerPickMode: { $set: (start || mode === 'start') ? ((finish || mode === 'finish') ? 'midpoint' : 'finish') : 'start' },
+          routePlannerPoints: { [ mode ]: { $set: { lat, lon } } }
+        });
 
-        if (routePlannerPickMode === 'start' || routePlannerPickMode === 'finish') {
-          newRoutePlannerPoints = update(routePlannerPoints, {
-            [ routePlannerPickMode ]: { lat: {$set: lat }, lon: {$set: lon }}
-          });
-        } else if (routePlannerPickMode == 'midpoint') {
-          newRoutePlannerPoints = update(routePlannerPoints, { midpoints : { $push: [ { lat, lon } ] }});
-        } else {
-          newRoutePlannerPoints = null;
-        }
-
-        this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints});
+        this.setState(u);
+      } else if (mode == 'midpoint') {
+        this.setState(update(this.state, { routePlannerPoints: { midpoints : { $push: [ { lat, lon } ] } } }));
       }
     }
   }
 
+  findEle() {
+    const { lat, lon } = this.state.elePoi;
+    fetch(`https://www.freemap.sk/api/0.1/elevation/${lat}%7C${lon}`, {
+      method: 'GET'
+    }).then(res => res.json()).then(data => {
+      this.setState({ ele: parseFloat(data.ele), elePoi: { lat: parseFloat(data.lat), lon: parseFloat(data.lon) } });
+    });
+  }
+
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    this.setState({ lengthMeasurePoints: update(this.state.lengthMeasurePoints, { [ i ]: { $merge: { lat, lon } } }) });
+    this.setState(update(this.state, { lengthMeasurePoints: { [ i ]: { $set: { lat, lon } } } }));
+  }
+
+  handleEleMeasureMarkerDrag({ latlng: { lat, lng: lon } }) {
+    this.setState({ elePoi: { lat, lon }, ele: null });
+  }
+
+  handleEleMeasureMarkerDragEnd() {
+    this.findEle();
   }
 
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
-    this.setState({ 
-      tool, 
-      mainNavigationIsHidden, 
+
+    this.setState({
+      tool,
+      mainNavigationIsHidden,
       selectedSearchResult: null,
-      poiSearchResults: [], 
-      lengthMeasurePoints: [], 
-      routePlannerPoints: { start: {}, midpoints: [], finish: {}}, 
+      poiSearchResults: [],
+      lengthMeasurePoints: [],
+      routePlannerPoints: { start: {}, midpoints: [], finish: {} },
       routePlannerPickMode: null
     });
   }
-  
-  onSearchSuggestionHighlightChange(s) {
-    this.setState({highlightedSearchSuggestion : s});
+
+  onSearchSuggestionHighlightChange(highlightedSearchSuggestion) {
+    this.setState({ highlightedSearchSuggestion });
   }
 
   onSelectSearchResult(selectedSearchResult) {
@@ -157,7 +174,7 @@ export default class Main extends React.Component {
   }
 
   refocusMap(lat, lon, zoom) {
-    this.setState({lat, lon, zoom});
+    this.setState({ lat, lon, zoom });
   }
 
   setRoutePlannerPointPickMode(routePlannerPickMode) {
@@ -168,24 +185,23 @@ export default class Main extends React.Component {
     this.setState({ routePlannerTransportType });
   }
 
-  onRouteMarkerDragend(movedPointType, position, event) {
+  handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
-    let newRoutePlannerPoints;
-    if (movedPointType == 'start' || movedPointType == 'finish') {
-      newRoutePlannerPoints = update(this.state.routePlannerPoints, {
-        [ movedPointType ]: { lat: { $set: lat }, lon: { $set: lon } }
-      });
+    if (movedPointType === 'start' || movedPointType === 'finish') {
+      this.setState(update(this.state, {
+        routePlannerPoints: { [ movedPointType ]: { $set: { lat, lon } } }
+      }));
     } else {
-      newRoutePlannerPoints = update(this.state.routePlannerPoints, { midpoints : {[position]: { $merge: { lat, lon } } } });
+      this.setState(update(this.state, {
+        routePlannerPoints: { midpoints: { [ position ]: { $set: { lat, lon } } } }
+      }));
     }
-
-    this.setState({ routePlannerPickMode: null, routePlannerPoints: newRoutePlannerPoints });
   }
 
   render() {
     const { lat, lon, zoom, mapType, overlays, objectsModalShown, lengthMeasurePoints, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode,
-      poiSearchResults, selectedSearchResult, highlightedSearchSuggestion} = this.state;
+      poiSearchResults, selectedSearchResult, highlightedSearchSuggestion, elePoi, ele } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -201,19 +217,23 @@ export default class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              <div className={mainNavigationIsHidden ? 'hidden' : ''}>
-                <Search
-                  onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
-                  onSelectSearchResult={b(this.onSelectSearchResult)}
-                  lat={String(lat)}
-                  lon={String(lon)}
-                  zoom={zoom} />
-              </div>
-              <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
-                <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
-                <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
-                <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
-              </Nav>
+              {!mainNavigationIsHidden &&
+                <div>
+                  <Search
+                    onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
+                    onSelectSearchResult={b(this.onSelectSearchResult)}
+                    lat={lat}
+                    lon={lon}
+                    zoom={zoom}/>
+
+                  <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
+                    <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
+                    <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
+                    <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                    <NavItem onClick={b(this.setTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
+                  </Nav>
+                </div>
+              }
               {
                 tool === 'route-planner' && <RoutePlanner
                   transportType={routePlannerTransportType}
@@ -227,7 +247,11 @@ export default class Main extends React.Component {
           </Navbar>
         </Row>
         <Row>
-          <Map ref="map" style={{ height: 'calc(100vh - 52px)' }} center={L.latLng(lat, lon)} zoom={zoom}
+          <Map
+              ref="map"
+              className={`tool-${tool || 'none'}`}
+              center={L.latLng(lat, lon)}
+              zoom={zoom}
               onMoveend={b(this.handleMapMoveend)}
               onZoom={b(this.handleMapZoom)}
               onClick={b(this.handleMapClick)}>
@@ -236,8 +260,8 @@ export default class Main extends React.Component {
               mapType={mapType} onMapChange={b(this.handleMapChange)}
               overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
-            <SearchResults 
-              highlightedSearchSuggestion={highlightedSearchSuggestion} 
+            <SearchResults
+              highlightedSearchSuggestion={highlightedSearchSuggestion}
               selectedSearchResult={selectedSearchResult}
               doMapRefocus={b(this.refocusMap)}
               map={this.refs.map}/>
@@ -252,12 +276,24 @@ export default class Main extends React.Component {
               );
             })}
 
-            <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+            {tool === 'route-planner' &&
+              <RoutePlannerResults
+                routePlannerPoints={routePlannerPoints}
+                onRouteMarkerDragend={b(this.handleRouteMarkerDragend)}
+                transportType={routePlannerTransportType} />
+            }
 
-            <RoutePlannerResults
-              routePlannerPoints={routePlannerPoints}
-              onRouteMarkerDragend={b(this.onRouteMarkerDragend)}
-              transportType={routePlannerTransportType} />
+            {tool === 'measure' &&
+              <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+            }
+
+            {tool === 'measure-ele' && elePoi &&
+              <Marker position={L.latLng(elePoi.lat, elePoi.lon)} draggable
+                  onDrag={b(this.handleEleMeasureMarkerDrag)}
+                  onDragend={b(this.handleEleMeasureMarkerDragEnd)}>
+                {typeof ele === 'number' && <Tooltip direction="right" permanent><span>{ele} m</span></Tooltip>}
+              </Marker>
+            }
           </Map>
         </Row>
       </div>

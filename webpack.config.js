@@ -4,7 +4,7 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 
 const extractSass = new ExtractTextPlugin({
   filename: 'dist/[name].[contenthash].css',
-  disable: process.env.NODE_ENV !== 'production'
+  disable: true // FIXME map will not show in production: process.env.NODE_ENV !== 'production'
 });
 
 module.exports = {

@@ -19,7 +19,7 @@ export default function Measurement({ lengthMeasurePoints, onMeasureMarkerDrag }
 
         const m = (
           <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={onMeasureMarkerDrag.bind(null, i)}>
-            <Tooltip permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
+            <Tooltip direction="right" permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
           </Marker>
         );
 
