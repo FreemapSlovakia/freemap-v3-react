@@ -24,7 +24,7 @@ export default class Search extends React.Component {
     const { lat, lon, zoom } = this.state;
     // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
     fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
-        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1`, {
+        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK`, {
       method: 'GET'
     }).then(res => res.json()).then(data => {
       const searchSuggestions = data.map((d, id) => {
