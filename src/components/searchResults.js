@@ -3,21 +3,8 @@ import { toHtml } from '../poiTypes';
 import { Marker, Popup } from 'react-leaflet';
 
 export default class SearchResults extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      highlightedSearchSuggestion: this.props.highlightedSearchSuggestion,
-      searchResults: this.props.searchResults, 
-    };
-  }
-
-componentWillReceiveProps(newProps) {
-  this.setState(newProps);
-}
-
   render() {
-    const {searchResults, highlightedSearchSuggestion} = this.state;
+    const {searchResults, highlightedSearchSuggestion} = this.props;
     const suggestionIcon = new L.Icon({
       iconSize: [ 23, 37 ],
       iconUrl: require('../images/marker-icon-grey.png'),
