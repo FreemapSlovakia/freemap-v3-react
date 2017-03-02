@@ -40,6 +40,10 @@ export default class Search extends React.Component {
     this.props.onSearchResultsUpdate(selectedResults);
   }
 
+  onSuggestionHighlightChange(result) {
+    this.props.onSearchSuggestionHighlightChange(result);
+  }
+
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
     return (
@@ -58,7 +62,9 @@ export default class Search extends React.Component {
             onChange={b(this.onSelectionChange)}
             emptyLabel={'Nenašli sme žiadne výsledky'}
             renderMenuItemChildren={(result) => (
-              <div key={result.label + result.id}>
+              <div key={result.label + result.id} 
+              onMouseEnter={b(this.onSuggestionHighlightChange, result)}
+              onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
                 <span>{result.tags.name} </span><br/>
                 <span>({result.tags.type})</span>
               </div>
@@ -73,5 +79,6 @@ Search.propTypes = {
   lat: React.PropTypes.string,
   lon: React.PropTypes.string,
   zoom: React.PropTypes.number,
+  onSearchSuggestionHighlightChange: React.PropTypes.func.isRequired,
   onSearchResultsUpdate: React.PropTypes.func.isRequired
 };

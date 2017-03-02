@@ -1,7 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
-import { Map, Marker, Popup } from 'react-leaflet';
+import { Map} from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 
@@ -12,9 +12,9 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
-import { toHtml } from '../poiTypes';
 
 import Search from './search';
+import SearchResults from './searchResults';
 import ObjectsModal from './objectsModal';
 import Layers from './layers';
 import Measurement from './measurement';
@@ -29,6 +29,7 @@ export default class Main extends React.Component {
     this.state = Object.assign({
       searchResults: [],
       lengthMeasurePoints: [],
+      highlightedSearchSuggestion: null,
       tool: null,
       routePlannerPoints: {start: {}, midpoints: [], finish: {}},
       routePlannerTransportType: 'car',
@@ -138,12 +139,16 @@ export default class Main extends React.Component {
     });
   }
   
+  onSearchSuggestionHighlightChange(s) {
+    this.setState({highlightedSearchSuggestion : s});
+  }
+
   onSearchResultsUpdate(searchResults) {
     if (searchResults.length) {
       const { lat, lon } = searchResults[0];
-      this.setState({ searchResults, lat, lon, zoom: 14, lengthMeasurePoints: [], tool: null });
+      this.setState({ searchResults, lat, lon, zoom: 14, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null });
     } else {
-      this.setState({ searchResults, lengthMeasurePoints: [], tool: null });
+      this.setState({ searchResults, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null });
     }
   }
 
@@ -170,8 +175,9 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { lat, lon, zoom, mapType, overlays, searchResults, objectsModalShown, lengthMeasurePoints, tool,
-      mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode } = this.state;
+    const { lat, lon, zoom, mapType, overlays, objectsModalShown, lengthMeasurePoints, tool,
+      mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode,
+      searchResults, highlightedSearchSuggestion} = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -189,6 +195,7 @@ export default class Main extends React.Component {
             <Navbar.Collapse>
               <div className={mainNavigationIsHidden ? 'hidden' : ''}>
                 <Search
+                  onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
                   onSearchResultsUpdate={b(this.onSearchResultsUpdate)}
                   lat={String(lat)}
                   lon={String(lon)}
@@ -221,15 +228,9 @@ export default class Main extends React.Component {
               mapType={mapType} onMapChange={b(this.handleMapChange)}
               overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
-            {searchResults.map(({ id, lat, lon, tags }) => {
-              const __html = toHtml(tags);
-
-              return (
-                <Marker key={id} position={L.latLng(lat, lon)}>
-                  {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
-                </Marker>
-              );
-            })}
+            <SearchResults 
+              highlightedSearchSuggestion={highlightedSearchSuggestion} 
+              searchResults={searchResults}/>
 
             <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
 
