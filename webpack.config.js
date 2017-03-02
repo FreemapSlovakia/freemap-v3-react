@@ -14,7 +14,9 @@ module.exports = {
     filename: 'dist/app.js',
     path: __dirname
   },
-  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'cheap-module-eval-source-map',
+  // more info:https://webpack.github.io/docs/build-performance.html#sourcemaps and https://webpack.github.io/docs/configuration.html#devtool
+  // #cheap-module-eval-source-map doesn't work - see https://github.com/webpack/webpack/issues/2145
+  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
       {
