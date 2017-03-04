@@ -2,6 +2,8 @@ import React from 'react';
 import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
 
+import '../styles/search.scss';
+
 export default class Search extends React.Component {
   constructor(props) {
     super(props);
@@ -46,7 +48,7 @@ export default class Search extends React.Component {
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
-      <Navbar.Form pullLeft>
+      <Navbar.Form pullLeft id="search">
           <AsyncTypeahead
             labelKey="label"
             useCache={false}
