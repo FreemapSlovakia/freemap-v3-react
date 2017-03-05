@@ -15,7 +15,7 @@ export default createLogic({
     'SET_ROUTE_PLANNER_MIDPOINT',
     'SET_ROUTE_PLANNER_TRANSPORT_TYPE'
   ],
-  process({ getState, action }, dispatch, done) {
+  process({ getState }, dispatch, done) {
     const { start, finish, midpoints, transportType } = getState().routePlanner;
     if (start && finish) {
       const allPoints = [

@@ -13,7 +13,7 @@ const initialState = {
 };
 
 
-export default function lenghtMeasurement(state = initialState, action) {
+export default function routePlanner(state = initialState, action) {
   switch (action.type) {
     case 'SET_ROUTE_PLANNER_START':
       return update(state, { start: { $set: action.start } } );

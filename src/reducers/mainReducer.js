@@ -5,7 +5,7 @@ const initialState = {
 };
 
 
-export default function lenghtMeasurement(state = initialState, action) {
+export default function main(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
       return update(state, { tool: { $set: action.tool } } );

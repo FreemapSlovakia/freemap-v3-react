@@ -21,13 +21,7 @@ class RoutePlannerResults extends React.Component {
 
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
-    if (movedPointType === 'start') {
-      this.props.onSetStart({ lat, lon });
-    } else if (movedPointType === 'finish') {
-      this.props.onSetFinish({ lat, lon });
-    } else {
-      this.props.setMidpoint(position, { lat, lon });
-    }
+    this.handlePointAdded({ lat, lon });
   }
 
   handlePointAdded({ lat, lon }) {

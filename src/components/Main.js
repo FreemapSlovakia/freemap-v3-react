@@ -14,7 +14,7 @@ import SearchResults from 'fm3/components/SearchResults';
 import ObjectsModal from 'fm3/components/ObjectsModal';
 import Layers from 'fm3/components/Layers';
 import Measurement from 'fm3/components/Measurement';
-import EleMeasurement from 'fm3/components/EleMeasurement';
+import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import { setTool } from 'fm3/actions/mainActions';
@@ -98,8 +98,8 @@ class Main extends React.Component {
       this.measurement.handlePointAdded({ lat, lon });
     }
 
-    if (this.eleMeasurement) {
-      this.eleMeasurement.handlePointAdded({ lat, lon });
+    if (this.elevationMeasurement) {
+      this.elevationMeasurement.getWrappedInstance().handlePointAdded({ lat, lon });
     }
 
     if (this.routePlanner) {
@@ -193,7 +193,7 @@ class Main extends React.Component {
 
             {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
 
-            {tool === 'measure-ele' && <EleMeasurement ref={e => this.eleMeasurement = e}/>}
+            {tool === 'measure-ele' && <ElevationMeasurement ref={e => this.elevationMeasurement = e}/>}
           </Map>
         </Row>
       </div>
