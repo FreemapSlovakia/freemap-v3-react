@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Tab from 'react-bootstrap/lib/Tab';
 import Tabs from 'react-bootstrap/lib/Tabs';
 
-import { poiTypeGroups, poiTypes } from '../poiTypes';
+import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 
 export default class ObjectsModal extends React.Component {
 

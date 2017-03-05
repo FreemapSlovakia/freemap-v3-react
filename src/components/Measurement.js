@@ -1,7 +1,7 @@
 import React from 'react';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
-import { distance } from '../geoutils';
+import { distance } from 'fm3/geoutils';
 
 const km = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 

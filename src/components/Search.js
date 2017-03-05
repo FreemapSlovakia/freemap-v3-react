@@ -2,7 +2,7 @@ import React from 'react';
 import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
 
-import '../styles/search.scss';
+import 'fm3/styles/search.scss';
 
 export default class Search extends React.Component {
   constructor(props) {

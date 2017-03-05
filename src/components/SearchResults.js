@@ -28,8 +28,8 @@ export default class SearchResults extends React.Component {
   render() {
     const suggestionIcon = new L.Icon({
       iconSize: [ 23, 37 ],
-      iconUrl: require('../images/marker-icon-grey.png'),
-      iconRetinaUrl: require('../images/marker-icon-2x-grey.png')
+      iconUrl: require('fm3/images/marker-icon-grey.png'),
+      iconRetinaUrl: require('fm3/images/marker-icon-2x-grey.png')
     });
     const s = this.props.selectedSearchResult;
     const h = this.props.highlightedSearchSuggestion;
