@@ -7,6 +7,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
 import { setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
+import { setTool } from 'fm3/actions/mainActions';
 
 class RoutePlanner extends React.Component {
 
@@ -67,6 +68,9 @@ export default connect(
       },
       onChangePickPointMode(pickMode) {
         dispatch(setPickMode(pickMode));
+      },
+      onCancel() {
+        dispatch(setTool(null));
       }
     };
   }

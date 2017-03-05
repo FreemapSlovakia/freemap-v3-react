@@ -1,9 +1,9 @@
 import React from 'react';
 import { hashHistory as history } from 'react-router';
 import { Map, Marker, Popup } from 'react-leaflet';
+import { connect } from 'react-redux';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
-
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
@@ -17,8 +17,9 @@ import Measurement from 'fm3/components/Measurement';
 import EleMeasurement from 'fm3/components/EleMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
+import { setTool } from 'fm3/actions/mainActions';
 
-export default class Main extends React.Component {
+class Main extends React.Component {
 
   constructor(props) {
     super(props);
@@ -26,9 +27,7 @@ export default class Main extends React.Component {
     this.state = Object.assign({
       poiSearchResults: [],
       selectedSearchResult: null,
-      highlightedSearchSuggestion: null,
-      tool: null,
-      mainNavigationIsHidden: false,
+      highlightedSearchSuggestion: null
     }, toMapState(props.params));
   }
 
@@ -74,7 +73,7 @@ export default class Main extends React.Component {
   showObjects(filter) {
     this.setState({ objectsModalShown: false });
 
-    if (!filter.length) {
+    if (!filter || !filter.length) {
       return;
     }
 
@@ -89,8 +88,7 @@ export default class Main extends React.Component {
     }).then(res => res.json()).then(data => {
       this.setState({
         poiSearchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags })),
-        selectedSearchResult: null,
-        tool: null
+        selectedSearchResult: null
       });
     });
   }
@@ -109,24 +107,12 @@ export default class Main extends React.Component {
     }
   }
 
-  setTool(t) {
-    const tool = t === this.state.tool ? null : t;
-    const mainNavigationIsHidden = tool === 'route-planner';
-
-    this.setState({
-      tool,
-      mainNavigationIsHidden,
-      selectedSearchResult: null,
-      poiSearchResults: [],
-    });
-  }
-
   onSearchSuggestionHighlightChange(highlightedSearchSuggestion) {
     this.setState({ highlightedSearchSuggestion });
   }
 
   onSelectSearchResult(selectedSearchResult) {
-    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, tool: null, poiSearchResults: [] });
+    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, poiSearchResults: [] });
   }
 
   refocusMap(lat, lon, zoom) {
@@ -134,8 +120,9 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { lat, lon, zoom, mapType, overlays, objectsModalShown, tool, mainNavigationIsHidden,
-      poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
+    const { tool, onSetTool } = this.props;
+
+    const { lat, lon, zoom, mapType, overlays, objectsModalShown, poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -151,26 +138,24 @@ export default class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {!mainNavigationIsHidden &&
+              {tool !== 'route-planner' &&
                 <div>
                   <Search
                     onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
                     onSelectSearchResult={b(this.onSelectSearchResult)}
                     lat={lat}
                     lon={lon}
-                    zoom={zoom}/>
-
-                  <Nav className={mainNavigationIsHidden ? 'hidden' : ''}>
+                    zoom={zoom}
+                  />
+                  <Nav>
                     <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
-                    <NavItem onClick={b(this.setTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
-                    <NavItem onClick={b(this.setTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
-                    <NavItem onClick={b(this.setTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
+                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
                   </Nav>
                 </div>
               }
-              {
-                tool === 'route-planner' && <RoutePlanner onCancel={b(this.setTool, null)}/>
-              }
+              {tool === 'route-planner' && <RoutePlanner/>}
             </Navbar.Collapse>
           </Navbar>
         </Row>
@@ -217,8 +202,23 @@ export default class Main extends React.Component {
 }
 
 Main.propTypes = {
-  params: React.PropTypes.object
+  params: React.PropTypes.object,
+  tool: React.PropTypes.string,
+  onSetTool: React.PropTypes.func.isRequired
 };
+
+export default connect(function (state) {
+  return {
+    tool: state.main.tool
+  };
+},
+function (dispatch) {
+  return {
+    onSetTool: function(tool) {
+      dispatch(setTool(tool));
+    }
+  };
+})(Main);
 
 function toMapState({ zoom, lat, lon, mapType }) {
   return {
