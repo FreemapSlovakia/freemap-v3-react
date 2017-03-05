@@ -16,9 +16,9 @@ const initialState = {
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
     case 'SET_ROUTE_PLANNER_START':
-      return update(state, { start: { $set: action.start } } );
+      return update(state, { start: { $set: action.start }, pickMode: { $set: state.finish ? 'midpoint' : 'finish' } } );
     case 'SET_ROUTE_PLANNER_FINISH':
-      return update(state, { finish: { $set: action.finish } } );
+      return update(state, { finish: { $set: action.finish }, pickMode: { $set: state.start ? 'midpoint' : 'finish' } } );
     case 'ADD_ROUTE_PLANNER_MIDPOINT':
       return update(state, { midpoints: { $push: [ action.midpoint ] } });
     case 'SET_ROUTE_PLANNER_MIDPOINT':
