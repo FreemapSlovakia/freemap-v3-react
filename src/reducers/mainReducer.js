@@ -8,7 +8,7 @@ const initialState = {
 export default function main(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
-      return update(state, { tool: { $set: action.tool } } );
+      return update(state, { tool: { $set: action.tool === state.tool ? null : action.tool } } );
     default:
       return state;
   }

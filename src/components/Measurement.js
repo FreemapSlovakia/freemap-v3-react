@@ -1,31 +1,24 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
-import update from 'immutability-helper';
 
+import { addPoint, updatePoint } from 'fm3/actions/measurementActions';
 import { distance } from 'fm3/geoutils';
 
 const km = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
-export default class Measurement extends React.Component {
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      points: []
-    };
-  }
+class Measurement extends React.Component {
 
   handlePointAdded({ lat, lon }) {
-    this.setState({ points: update(this.state.points, { $push: [ { lat, lon } ] }) });
+    this.props.onPointAdd({ lat, lon });
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    this.setState({ points: update(this.state.points, { i: { $set: { lat, lon } } }) });
+    this.props.onPointUpdate(i, { lat, lon });
   }
 
   render() {
-    const { points } = this.state;
+    const { points } = this.props;
 
     let prev = null;
     let dist = 0;
@@ -53,3 +46,29 @@ export default class Measurement extends React.Component {
   }
 
 }
+
+Measurement.propTypes = {
+  points: React.PropTypes.array,
+  onPointAdd: React.PropTypes.func.isRequired,
+  onPointUpdate: React.PropTypes.func.isRequired
+};
+
+export default connect(
+  function (state) {
+    return {
+      points: state.measurement.points
+    };
+  },
+  function (dispatch) {
+    return {
+      onPointAdd(point) {
+        dispatch(addPoint(point));
+      },
+      onPointUpdate(i, point) {
+        dispatch(updatePoint(i, point));
+      }
+    };
+  },
+  null,
+  { withRef: true }
+)(Measurement);

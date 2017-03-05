@@ -95,7 +95,7 @@ class Main extends React.Component {
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
     if (this.measurement) {
-      this.measurement.handlePointAdded({ lat, lon });
+      this.measurement.getWrappedInstance().handlePointAdded({ lat, lon });
     }
 
     if (this.elevationMeasurement) {
