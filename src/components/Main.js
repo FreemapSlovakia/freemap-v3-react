@@ -1,7 +1,7 @@
 import React from 'react';
 import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
-import { Map, Marker, Popup, Tooltip } from 'react-leaflet';
+import { Map, Marker, Popup } from 'react-leaflet';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 
@@ -9,15 +9,13 @@ import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 
-// import MenuItem from 'react-bootstrap/lib/MenuItem';
-// import NavDropdown from 'react-bootstrap/lib/NavDropdown';
-
 import { toHtml } from 'fm3/poiTypes';
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
 import ObjectsModal from 'fm3/components/ObjectsModal';
 import Layers from 'fm3/components/Layers';
 import Measurement from 'fm3/components/Measurement';
+import EleMeasurement from 'fm3/components/EleMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 
@@ -28,7 +26,6 @@ export default class Main extends React.Component {
 
     this.state = Object.assign({
       poiSearchResults: [],
-      lengthMeasurePoints: [],
       selectedSearchResult: null,
       highlightedSearchSuggestion: null,
       tool: null,
@@ -36,8 +33,6 @@ export default class Main extends React.Component {
       routePlannerTransportType: 'car',
       routePlannerPickMode: null,
       mainNavigationIsHidden: false,
-      elePoi: null,
-      ele: null,
     }, toMapState(props.params));
   }
 
@@ -98,7 +93,6 @@ export default class Main extends React.Component {
     }).then(res => res.json()).then(data => {
       this.setState({
         poiSearchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags })),
-        lengthMeasurePoints: [],
         selectedSearchResult: null,
         tool: null
       });
@@ -106,14 +100,21 @@ export default class Main extends React.Component {
   }
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
+    // const evt = new Event('mapClicked');
+    // evt.latlng = { lat, lon };
+    // globalEventTarget.dispatch(evt);
+
     const { tool } = this.state;
 
-    if (tool === 'measure') {
-      this.setState(update(this.state, { lengthMeasurePoints: { $push: [ { lat, lon } ] } }));
-    } else if (tool === 'measure-ele') {
-      this.setState({ ele: null, elePoi: { lat, lon } });
-      this.findEle();
-    } else if (tool === 'route-planner') {
+    if (this.measurement) {
+      this.measurement.handlePointAdded({ lat, lon });
+    }
+
+    if (this.eleMeasurement) {
+      this.eleMeasurement.handlePointAdded({ lat, lon });
+    }
+
+    if (tool === 'route-planner') {
       const { routePlannerPickMode: mode, routePlannerPoints: { start, finish } } = this.state;
 
       if (mode === 'start' || mode === 'finish') {
@@ -129,27 +130,6 @@ export default class Main extends React.Component {
     }
   }
 
-  findEle() {
-    const { lat, lon } = this.state.elePoi;
-    fetch(`https://www.freemap.sk/api/0.1/elevation/${lat}%7C${lon}`, {
-      method: 'GET'
-    }).then(res => res.json()).then(data => {
-      this.setState({ ele: parseFloat(data.ele), elePoi: { lat: parseFloat(data.lat), lon: parseFloat(data.lon) } });
-    });
-  }
-
-  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    this.setState(update(this.state, { lengthMeasurePoints: { [ i ]: { $set: { lat, lon } } } }));
-  }
-
-  handleEleMeasureMarkerDrag({ latlng: { lat, lng: lon } }) {
-    this.setState({ elePoi: { lat, lon }, ele: null });
-  }
-
-  handleEleMeasureMarkerDragEnd() {
-    this.findEle();
-  }
-
   setTool(t) {
     const tool = t === this.state.tool ? null : t;
     const mainNavigationIsHidden = tool === 'route-planner';
@@ -159,9 +139,8 @@ export default class Main extends React.Component {
       mainNavigationIsHidden,
       selectedSearchResult: null,
       poiSearchResults: [],
-      lengthMeasurePoints: [],
-      routePlannerPoints: { start: {}, midpoints: [], finish: {} },
-      routePlannerPickMode: null
+      routePlannerPoints: { start: null, midpoints: [], finish: null },
+      routePlannerPickMode: 'start'
     });
   }
 
@@ -170,7 +149,7 @@ export default class Main extends React.Component {
   }
 
   onSelectSearchResult(selectedSearchResult) {
-    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, lengthMeasurePoints: [], tool: null, poiSearchResults: [] });
+    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, tool: null, poiSearchResults: [] });
   }
 
   refocusMap(lat, lon, zoom) {
@@ -199,9 +178,9 @@ export default class Main extends React.Component {
   }
 
   render() {
-    const { lat, lon, zoom, mapType, overlays, objectsModalShown, lengthMeasurePoints, tool,
+    const { lat, lon, zoom, mapType, overlays, objectsModalShown, tool,
       mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode,
-      poiSearchResults, selectedSearchResult, highlightedSearchSuggestion, elePoi, ele } = this.state;
+      poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -284,15 +263,11 @@ export default class Main extends React.Component {
             }
 
             {tool === 'measure' &&
-              <Measurement lengthMeasurePoints={lengthMeasurePoints} onMeasureMarkerDrag={b(this.handleMeasureMarkerDrag)}/>
+              <Measurement ref={e => this.measurement = e}/>
             }
 
-            {tool === 'measure-ele' && elePoi &&
-              <Marker position={L.latLng(elePoi.lat, elePoi.lon)} draggable
-                  onDrag={b(this.handleEleMeasureMarkerDrag)}
-                  onDragend={b(this.handleEleMeasureMarkerDragEnd)}>
-                {typeof ele === 'number' && <Tooltip direction="right" permanent><span>{ele} m</span></Tooltip>}
-              </Marker>
+            {tool === 'measure-ele' &&
+              <EleMeasurement ref={e => this.eleMeasurement = e}/>
             }
           </Map>
         </Row>
