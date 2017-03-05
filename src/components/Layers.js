@@ -1,7 +1,7 @@
 import React from 'react';
 import { TileLayer, LayersControl } from 'react-leaflet';
 
-import { baseLayers, overlayLayers } from '../mapDefinitions';
+import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 
 export default function Layers({ mapType, onMapChange, onOverlaysChange, overlays }) {
 

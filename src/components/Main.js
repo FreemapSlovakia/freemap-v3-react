@@ -12,14 +12,14 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 // import MenuItem from 'react-bootstrap/lib/MenuItem';
 // import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 
-import { toHtml } from '../poiTypes';
-import Search from './search';
-import SearchResults from './searchResults';
-import ObjectsModal from './objectsModal';
-import Layers from './layers';
-import Measurement from './measurement';
-import RoutePlanner from './routePlanner';
-import RoutePlannerResults from './routePlannerResults';
+import { toHtml } from 'fm3/poiTypes';
+import Search from 'fm3/components/Search';
+import SearchResults from 'fm3/components/SearchResults';
+import ObjectsModal from 'fm3/components/ObjectsModal';
+import Layers from 'fm3/components/Layers';
+import Measurement from 'fm3/components/Measurement';
+import RoutePlanner from 'fm3/components/RoutePlanner';
+import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 
 export default class Main extends React.Component {
 

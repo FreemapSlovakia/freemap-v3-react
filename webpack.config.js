@@ -1,3 +1,4 @@
+const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
@@ -8,11 +9,16 @@ const extractSass = new ExtractTextPlugin({
 });
 
 module.exports = {
-  context: __dirname + '/src',
+  context: path.resolve(__dirname, 'src'),
   entry: './app.js',
   output: {
     filename: 'dist/app.js',
     path: __dirname
+  },
+  resolve: {
+    alias: {
+      fm3: path.resolve(__dirname, 'src')
+    }
   },
   // more info:https://webpack.github.io/docs/build-performance.html#sourcemaps and https://webpack.github.io/docs/configuration.html#devtool
   // #cheap-module-eval-source-map doesn't work - see https://github.com/webpack/webpack/issues/2145

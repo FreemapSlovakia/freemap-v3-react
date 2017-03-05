@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { hashHistory, Router, Route } from 'react-router';
 
-import Main from './components/main';
+import Main from 'fm3/components/Main';
 
-import './styles/page.scss';
+import 'fm3/styles/page.scss';
 
 ReactDOM.render((
   <Router history={hashHistory}>
