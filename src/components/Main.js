@@ -1,5 +1,4 @@
 import React from 'react';
-import update from 'immutability-helper';
 import { hashHistory as history } from 'react-router';
 import { Map, Marker, Popup } from 'react-leaflet';
 
@@ -29,9 +28,6 @@ export default class Main extends React.Component {
       selectedSearchResult: null,
       highlightedSearchSuggestion: null,
       tool: null,
-      routePlannerPoints: { start: null, midpoints: [], finish: null },
-      routePlannerTransportType: 'car',
-      routePlannerPickMode: null,
       mainNavigationIsHidden: false,
     }, toMapState(props.params));
   }
@@ -100,12 +96,6 @@ export default class Main extends React.Component {
   }
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
-    // const evt = new Event('mapClicked');
-    // evt.latlng = { lat, lon };
-    // globalEventTarget.dispatch(evt);
-
-    const { tool } = this.state;
-
     if (this.measurement) {
       this.measurement.handlePointAdded({ lat, lon });
     }
@@ -114,19 +104,8 @@ export default class Main extends React.Component {
       this.eleMeasurement.handlePointAdded({ lat, lon });
     }
 
-    if (tool === 'route-planner') {
-      const { routePlannerPickMode: mode, routePlannerPoints: { start, finish } } = this.state;
-
-      if (mode === 'start' || mode === 'finish') {
-        const u = update(this.state, {
-          routePlannerPickMode: { $set: (start || mode === 'start') ? ((finish || mode === 'finish') ? 'midpoint' : 'finish') : 'start' },
-          routePlannerPoints: { [ mode ]: { $set: { lat, lon } } }
-        });
-
-        this.setState(u);
-      } else if (mode == 'midpoint') {
-        this.setState(update(this.state, { routePlannerPoints: { midpoints : { $push: [ { lat, lon } ] } } }));
-      }
+    if (this.routePlanner) {
+      this.routePlanner.getWrappedInstance().handlePointAdded({ lat, lon });
     }
   }
 
@@ -139,8 +118,6 @@ export default class Main extends React.Component {
       mainNavigationIsHidden,
       selectedSearchResult: null,
       poiSearchResults: [],
-      routePlannerPoints: { start: null, midpoints: [], finish: null },
-      routePlannerPickMode: 'start'
     });
   }
 
@@ -156,30 +133,8 @@ export default class Main extends React.Component {
     this.setState({ lat, lon, zoom });
   }
 
-  setRoutePlannerPointPickMode(routePlannerPickMode) {
-    this.setState({ routePlannerPickMode });
-  }
-
-  changeRoutePlannerTransportType(routePlannerTransportType) {
-    this.setState({ routePlannerTransportType });
-  }
-
-  handleRouteMarkerDragend(movedPointType, position, event) {
-    const { lat, lng: lon } = event.target._latlng;
-    if (movedPointType === 'start' || movedPointType === 'finish') {
-      this.setState(update(this.state, {
-        routePlannerPoints: { [ movedPointType ]: { $set: { lat, lon } } }
-      }));
-    } else {
-      this.setState(update(this.state, {
-        routePlannerPoints: { midpoints: { [ position ]: { $set: { lat, lon } } } }
-      }));
-    }
-  }
-
   render() {
-    const { lat, lon, zoom, mapType, overlays, objectsModalShown, tool,
-      mainNavigationIsHidden, routePlannerPoints, routePlannerTransportType, routePlannerPickMode,
+    const { lat, lon, zoom, mapType, overlays, objectsModalShown, tool, mainNavigationIsHidden,
       poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
@@ -214,13 +169,7 @@ export default class Main extends React.Component {
                 </div>
               }
               {
-                tool === 'route-planner' && <RoutePlanner
-                  transportType={routePlannerTransportType}
-                  onChangeTransportType={b(this.changeRoutePlannerTransportType)}
-                  routePlannerPoints={routePlannerPoints}
-                  pickPointMode={routePlannerPickMode}
-                  onChangePickPointMode={b(this.setRoutePlannerPointPickMode)}
-                  onCancel={b(this.setTool, null)} />
+                tool === 'route-planner' && <RoutePlanner onCancel={b(this.setTool, null)}/>
               }
             </Navbar.Collapse>
           </Navbar>
@@ -255,20 +204,11 @@ export default class Main extends React.Component {
               );
             })}
 
-            {tool === 'route-planner' &&
-              <RoutePlannerResults
-                routePlannerPoints={routePlannerPoints}
-                onRouteMarkerDragend={b(this.handleRouteMarkerDragend)}
-                transportType={routePlannerTransportType} />
-            }
+            {tool === 'route-planner' && <RoutePlannerResults ref={e => this.routePlanner = e}/>}
 
-            {tool === 'measure' &&
-              <Measurement ref={e => this.measurement = e}/>
-            }
+            {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
 
-            {tool === 'measure-ele' &&
-              <EleMeasurement ref={e => this.eleMeasurement = e}/>
-            }
+            {tool === 'measure-ele' && <EleMeasurement ref={e => this.eleMeasurement = e}/>}
           </Map>
         </Row>
       </div>

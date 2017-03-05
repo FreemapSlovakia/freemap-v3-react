@@ -2,14 +2,22 @@ import React from 'react';
 import { render } from 'react-dom';
 import { hashHistory, Router, Route } from 'react-router';
 import { Provider } from 'react-redux';
-import { createStore } from 'redux';
-import reducer from './reducers';
+import { createStore, applyMiddleware } from 'redux';
+import { createLogicMiddleware } from 'redux-logic';
+import createLogger from 'redux-logger';
+import reducer from 'fm3/reducers';
+import logics from 'fm3/logic';
 
 import Main from 'fm3/components/Main';
 
 import 'fm3/styles/page.scss';
 
-const store = createStore(reducer);
+const middleware = applyMiddleware(
+  createLogger(),
+  createLogicMiddleware(logics)
+);
+
+const store = createStore(reducer, middleware);
 
 render((
   <Provider store={store}>

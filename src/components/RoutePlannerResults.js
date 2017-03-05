@@ -1,7 +1,8 @@
 import React from 'react';
-
+import { connect } from 'react-redux';
 import { Marker, Polyline, Tooltip} from 'react-leaflet';
-import { parseString as xml2js } from 'xml2js';
+
+import { setStart, setFinish, addMidpoint, setMidpoint } from 'fm3/actions/routePlannerActions';
 
 function createIcon(color) {
   return new L.Icon({
@@ -16,63 +17,35 @@ const startIcon = createIcon('green');
 const midPointIcon = createIcon('grey');
 const finishIcon = createIcon('red');
 
-const freemapTransportTypes = {
-  'car': 'motorcar',
-  'walk': 'hiking',
-  'bicycle': 'bicycle'
-};
+class RoutePlannerResults extends React.Component {
 
-export default class RoutePlannerResults extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      transportType: this.props.transportType,
-      routePlannerPoints: this.props.routePlannerPoints,
-      routeShapePoints: [],
-      distance: null,
-      time: null
-    };
-  }
-
-  componentWillReceiveProps({ routePlannerPoints, transportType }) {
-    // FIXME: there must be some nicer way to do this
-    const pointChanged = JSON.stringify(routePlannerPoints) !== JSON.stringify(this.state.routePlannerPoints);
-    const transportChanged = transportType !== this.state.transportType;
-    if (pointChanged || transportChanged) {
-      this.setState({ routePlannerPoints, routeShapePoints: [], distance: null, time: null, transportType  });
-      this.updateRoute(routePlannerPoints, transportType);
+  handleRouteMarkerDragend(movedPointType, position, event) {
+    const { lat, lng: lon } = event.target._latlng;
+    if (movedPointType === 'start') {
+      this.props.onSetStart({ lat, lon });
+    } else if (movedPointType === 'finish') {
+      this.props.onSetFinish({ lat, lon });
+    } else {
+      this.props.setMidpoint(position, { lat, lon });
     }
   }
 
-  updateRoute({ start, midpoints, finish }, transportType) {
-    if (start && finish) {
-      const allPoints = [
-        [ start.lat, start.lon ].join('%7C'),
-        ...midpoints.map(mp => [ mp.lat, mp.lon ].join('%7C')),
-        [ finish.lat, finish.lon ].join('%7C')
-      ].join('/');
-
-      fetch(`https://www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportTypes[transportType]}/fastest&Ajax=`, {
-        method: 'GET'
-      }).then(res => res.text()).then(data => {
-        xml2js(data, (error, json) => {
-          const rawPointsWithMess = json.osmRoute.wkt[0];
-          const rawPoints = rawPointsWithMess.substring(14, rawPointsWithMess.length - 3).trim();
-          const routeShapePoints = rawPoints ? rawPoints.split(', ').map((lonlat) => {
-            const lonlatArray = lonlat.split(' ');
-            return [ parseFloat(lonlatArray[1]), parseFloat(lonlatArray[0]) ];
-          }) : [];
-          const distance = rawPoints ? json.osmRoute.length[0] : null;
-          const time = rawPoints ? json.osmRoute.time[0] : null;
-          this.setState({ routeShapePoints, distance, time });
-        });
-      });
-    }
+  handlePointAdded({ lat, lon }) {
+    switch (this.props.pickMode) {
+      case 'start':
+        this.props.onSetStart({ lat, lon });
+        break;
+      case 'finish':
+        this.props.onSetFinish({ lat, lon });
+        break;
+      case 'midpoint':
+        this.props.onAddMidpoint({ lat, lon });
+        break;
+    } // TODO default - log error
   }
 
   render() {
-    const { routePlannerPoints: { start, midpoints, finish }, routeShapePoints, time, distance } = this.state;
+    const { start, midpoints, finish, shapePoints, time, distance } = this.props;
 
     return (
       <div>
@@ -80,14 +53,14 @@ export default class RoutePlannerResults extends React.Component {
           <Marker
             icon={startIcon}
             draggable
-            onDragend={this.props.onRouteMarkerDragend.bind(null, 'start', null)}
+            onDragend={this.handleRouteMarkerDragend.bind(this, 'start', null)}
             position={L.latLng(start.lat, start.lon)}/>}
 
             {midpoints.map(({ lat, lon}, i) => (
                 <Marker
                   icon={midPointIcon}
                   draggable
-                  onDragend={this.props.onRouteMarkerDragend.bind(null, 'midpoint', i)}
+                  onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
                   key={i}
                   position={L.latLng(lat, lon)}>
                 </Marker>
@@ -98,7 +71,7 @@ export default class RoutePlannerResults extends React.Component {
           <Marker
               icon={finishIcon}
               draggable
-              onDragend={this.props.onRouteMarkerDragend.bind(null, 'finish', null)}
+              onDragend={this.handleRouteMarkerDragend.bind(this, 'finish', null)}
               position={L.latLng(finish.lat, finish.lon)}>
 
             {distance !== null && time !== null &&
@@ -108,14 +81,54 @@ export default class RoutePlannerResults extends React.Component {
             }
           </Marker>
         }
-        <Polyline positions={routeShapePoints} color="#2F4F4F" weight="8" opacity="0.6"/>
+        {shapePoints && <Polyline positions={shapePoints} color="#2F4F4F" weight="8" opacity="0.6"/>}
       </div>
     );
   }
 }
 
 RoutePlannerResults.propTypes = {
-  routePlannerPoints: React.PropTypes.object,
-  onRouteMarkerDragend: React.PropTypes.func.isRequired,
-  transportType: React.PropTypes.string
+  start: React.PropTypes.object,
+  finish: React.PropTypes.object,
+  midpoints: React.PropTypes.array,
+  shapePoints: React.PropTypes.array,
+  time: React.PropTypes.string,
+  distance: React.PropTypes.string,
+  onSetStart: React.PropTypes.func.isRequired,
+  onSetFinish: React.PropTypes.func.isRequired,
+  setMidpoint: React.PropTypes.func.isRequired,
+  onAddMidpoint: React.PropTypes.func.isRequired,
+  pickMode: React.PropTypes.string.isRequired
 };
+
+export default connect(
+  function (state) {
+    return {
+      pickMode: state.routePlanner.pickMode,
+      start: state.routePlanner.start,
+      finish: state.routePlanner.finish,
+      midpoints: state.routePlanner.midpoints,
+      shapePoints: state.routePlanner.shapePoints,
+      time: state.routePlanner.time,
+      distance: state.routePlanner.distance
+    };
+  },
+  function (dispatch) {
+    return {
+      onSetStart: function(start) {
+        dispatch(setStart(start));
+      },
+      onSetFinish: function(finish) {
+        dispatch(setFinish(finish));
+      },
+      onAddMidpoint: function(midpoint) {
+        dispatch(addMidpoint(midpoint));
+      },
+      setMidpoint: function(position, midpoint) {
+        dispatch(setMidpoint(position, midpoint));
+      }
+    };
+  },
+  null,
+  { withRef: true }
+)(RoutePlannerResults);

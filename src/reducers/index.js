@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
 
-import lenghtMeasurement from 'fm3/reducers/lenghtMeasurement';
+import routePlanner from 'fm3/reducers/routePlannerReducer';
 
-export default combineReducers({ lenghtMeasurement });
+export default combineReducers({ routePlanner });
