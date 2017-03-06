@@ -110,7 +110,7 @@ class Main extends React.Component {
                   <Search/>
                   <Nav>
                     <NavItem onClick={b(onShowObjectsModal)} disabled={this.props.zoom < 12}>Objekty</NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie vzdialenosti</NavItem>
                     <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
                     <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
                   </Nav>

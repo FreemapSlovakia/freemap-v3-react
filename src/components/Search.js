@@ -19,29 +19,29 @@ class Search extends React.Component {
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
-      <Navbar.Form pullLeft id="search">
-          <AsyncTypeahead
-            labelKey="label"
-            useCache={false}
-            minLength={3}
-            delay={500}
-            ignoreDiacritics={true}
-            onSearch={this.props.onDoSearch}
-            options={this.props.results}
-            searchText="Hľadám ..."
-            placeholder="Brusno"
-            clearButton={true}
-            onChange={b(this.onSelectionChange)}
-            emptyLabel={'Nenašli sme žiadne výsledky'}
-            renderMenuItemChildren={(result) => (
-              <div key={result.label + result.id}
-                  onMouseEnter={b(this.onSuggestionHighlightChange, result)}
-                  onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
-                <span>{result.tags.name} </span><br/>
-                <span>({result.tags.type})</span>
-              </div>
-            )}
-          />
+      <Navbar.Form pullLeft>
+        <AsyncTypeahead
+          labelKey="label"
+          useCache={false}
+          minLength={3}
+          delay={500}
+          ignoreDiacritics
+          onSearch={this.props.onDoSearch}
+          options={this.props.results}
+          searchText="Hľadám…"
+          placeholder="Brusno"
+          clearButton
+          onChange={b(this.onSelectionChange)}
+          emptyLabel={'Nenašli sa žiadne výsledky'}
+          renderMenuItemChildren={(result) => (
+            <div key={result.label + result.id}
+                onMouseEnter={b(this.onSuggestionHighlightChange, result)}
+                onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
+              <span>{result.tags.name} </span><br/>
+              <span>({result.tags.type})</span>
+            </div>
+          )}
+        />
       </Navbar.Form>
     );
   }

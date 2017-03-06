@@ -15,6 +15,8 @@ const initialState = {
 
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
+    case 'SET_TOOL':
+      return initialState;
     case 'SET_ROUTE_PLANNER_START':
       return update(state, { start: { $set: action.start }, pickMode: { $set: state.finish ? 'midpoint' : 'finish' } } );
     case 'SET_ROUTE_PLANNER_FINISH':

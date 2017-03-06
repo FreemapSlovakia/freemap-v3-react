@@ -6,6 +6,8 @@ const initialState = {
 
 export default function measurement(state = initialState, action) {
   switch (action.type) {
+    case 'SET_TOOL':
+      return initialState;
     case 'ADD_MEASUREMENT_POINT':
       return update(state, { points: { $push: [ action.point ] } });
     case 'UPDATE_MEASUREMENT_POINT':
