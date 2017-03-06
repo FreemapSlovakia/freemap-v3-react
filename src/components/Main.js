@@ -201,7 +201,8 @@ Main.propTypes = {
   mapType: React.PropTypes.string.isRequired, // TODO enum
   overlays: React.PropTypes.array.isRequired, // TODO enums
   objectsModalShown: React.PropTypes.bool,
-  onShowObjectsModal: React.PropTypes.func.isRequired
+  onShowObjectsModal: React.PropTypes.func.isRequired,
+  onMapBoundsChange: React.PropTypes.func.isRequired
 };
 
 export default connect(

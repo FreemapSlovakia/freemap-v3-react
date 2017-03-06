@@ -82,14 +82,9 @@ ObjectsModal.propTypes = {
 };
 
 export default connect(
-  function (state) {
+  function (/*state*/) {
     // TODO
     return {
-      // tool: state.map.tool,
-      // center: state.map.center,
-      // zoom: state.map.zoom,
-      // mapType: state.map.mapType,
-      // overlays: state.map.overlays
     };
   },
   function (dispatch) {
