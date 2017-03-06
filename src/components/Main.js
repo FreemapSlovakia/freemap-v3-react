@@ -101,8 +101,10 @@ class Main extends React.Component {
     this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, poiSearchResults: [] });
   }
 
+  // TODO move to SearchResults
   refocusMap(lat, lon, zoom) {
-    this.setState({ lat, lon, zoom });
+    this.props.onMapCenterChange({ lat, lon });
+    this.props.onMapZoomChange(zoom);
   }
 
   render() {
@@ -162,7 +164,8 @@ class Main extends React.Component {
             <SearchResults
               highlightedSearchSuggestion={highlightedSearchSuggestion}
               selectedSearchResult={selectedSearchResult}
-              doMapRefocus={b(this.refocusMap)}/>
+              doMapRefocus={b(this.refocusMap)}
+              map={this.map}/>
 
             {poiSearchResults.map(({ id, lat, lon, tags }) => {
               const __html = toHtml(tags);
