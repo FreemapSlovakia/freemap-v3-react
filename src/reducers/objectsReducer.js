@@ -8,6 +8,8 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
+    case 'SET_TOOL':
+      return initialState;
     case 'SHOW_OBJECTS_MODAL':
       return update(state, { objectsModalShown: { $set: true } } );
     case 'SET_OBJECTS_FILTER':
