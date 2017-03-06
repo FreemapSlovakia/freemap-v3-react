@@ -26,11 +26,7 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
 
-    this.state = Object.assign({
-      selectedSearchResult: null,
-      highlightedSearchSuggestion: null,
-    },
-    toMapState(props.params));
+    this.state = Object.assign({},toMapState(props.params));
   }
 
   componentWillReceiveProps(newProps) {
@@ -100,23 +96,10 @@ class Main extends React.Component {
     }
   }
 
-  onSearchSuggestionHighlightChange(highlightedSearchSuggestion) {
-    this.setState({ highlightedSearchSuggestion });
-  }
-
-  onSelectSearchResult(selectedSearchResult) {
-    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null });
-  }
-
-  // TODO move to SearchResults
-  refocusMap(lat, lon, zoom) {
-    this.setState({ lat, lon, zoom });
-  }
-
   render() {
     const { tool, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
 
-    const { selectedSearchResult, highlightedSearchSuggestion, lat, lon, zoom, mapType, overlays } = this.state;
+    const { lat, lon, zoom, mapType, overlays } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -161,11 +144,7 @@ class Main extends React.Component {
               mapType={mapType} onMapChange={b(this.handleMapTypeChange)}
               overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
-            <SearchResults
-              highlightedSearchSuggestion={highlightedSearchSuggestion}
-              selectedSearchResult={selectedSearchResult}
-              doMapRefocus={b(this.refocusMap)}
-              map={this.map}/>
+            <SearchResults/>
 
             <ObjectsResult/>
 

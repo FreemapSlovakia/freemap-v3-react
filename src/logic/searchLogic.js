@@ -1,7 +1,8 @@
 import { createLogic } from 'redux-logic';
 import { setResults } from 'fm3/actions/searchActions';
+import { refocusMap } from 'fm3/actions/mapActions';
 
-export default createLogic({
+const searchLogic = createLogic({
   type: 'SEARCH',
   process({ getState }, dispatch, done) {
     const {center, zoom} = getState().map;
@@ -25,3 +26,26 @@ export default createLogic({
     }).catch(() => {}).then(() => done());
   }
 });
+
+const refocusMapLogic = createLogic({
+  type: 'HIGHLIGHT_RESULT',
+  process({ getState }, dispatch) {
+    const {highlightedResult} = getState().search;
+    const {zoom, bounds} = getState().map;
+    
+    if (highlightedResult && bounds) {
+      const southWest = L.latLng(bounds.south, bounds.west);
+      const northEast = L.latLng(bounds.north, bounds.east);
+      const leafletBounds = L.latLngBounds(southWest, northEast);
+      const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
+      if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
+        dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, 13));
+      }
+    }
+  }
+});
+
+export default [
+  searchLogic,
+  refocusMapLogic
+];

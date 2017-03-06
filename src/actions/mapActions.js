@@ -5,3 +5,7 @@ export function setTool(tool) {
 export function setMapBounds(bounds) {
   return { type: 'SET_MAP_BOUNDS', bounds };
 }
+
+export function refocusMap(lat, lon, zoom) {
+  return { type: 'REFOCUS', lat, lon, zoom };
+}

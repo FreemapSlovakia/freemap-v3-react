@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Marker } from 'react-leaflet';
+import { Marker, Tooltip } from 'react-leaflet';
 
 class SearchResults extends React.Component {
   render() {
@@ -18,6 +18,10 @@ class SearchResults extends React.Component {
     });
 
     const {highlightedResult, selectedResult} = this.props;
+    let tooltipContent = '';
+    if (selectedResult) {
+      tooltipContent = `${selectedResult.tags.name} (${selectedResult.tags.type})` ;
+    }
     return (
       <div>
         {highlightedResult &&
@@ -30,6 +34,9 @@ class SearchResults extends React.Component {
           <Marker
             icon={resultIcon}
             position={L.latLng(selectedResult.lat, selectedResult.lon)}>
+            <Tooltip opacity={1.0} offset={[ 14, -20 ]}>
+              <span dangerouslySetInnerHTML={{__html: tooltipContent}}/>
+            </Tooltip>
           </Marker>
           }
       </div>
@@ -49,7 +56,7 @@ export default connect(
       selectedResult: state.search.selectedResult,
     };
   },
-  function (dispatch) {
+  function () {
     return {
     };
   }

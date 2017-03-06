@@ -18,7 +18,16 @@ export default function map(state = initialState, action) {
     case 'SET_TOOL':
       return update(state, { tool: { $set: action.tool === state.tool ? null : action.tool } } );
     case 'SET_MAP_BOUNDS':
+      console.log('set map bounds');
       return update(state, { bounds: { $set: action.bounds } } );
+    case 'REFOCUS':
+      return update(state, { 
+        zoom: { $set: action.zoom }, 
+        center: {
+          lat : {$set: action.lat}, 
+          lon : {$set: action.lon}
+        }, 
+      });
     default:
       return state;
   }
