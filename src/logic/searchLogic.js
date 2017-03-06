@@ -1,4 +1,5 @@
 import { createLogic } from 'redux-logic';
+import { setResults } from 'fm3/actions/searchActions';
 
 export default createLogic({
   type: 'SEARCH',
@@ -20,7 +21,7 @@ export default createLogic({
         const tags = { name, type: d.type };
         return { id, label: name, lat: parseFloat(d.lat), lon: parseFloat(d.lon), tags };
       });
-      dispatch({ type: 'SET_RESULTS',  results });
+      dispatch(setResults(results));
     }).catch(() => {}).then(() => done());
   }
 });
