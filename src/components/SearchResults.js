@@ -34,7 +34,7 @@ class SearchResults extends React.Component {
           <Marker
             icon={resultIcon}
             position={L.latLng(selectedResult.lat, selectedResult.lon)}>
-            <Tooltip opacity={1.0} offset={[ 14, -20 ]}>
+            <Tooltip opacity={1.0} offset={[ 14, -20 ]} direction="right">
               <span dangerouslySetInnerHTML={{__html: tooltipContent}}/>
             </Tooltip>
           </Marker>
