@@ -15,8 +15,8 @@ export default function Search(state = initialState, action) {
       return update(state, {results: {$set: action.results}});
     case 'HIGHLIGHT_RESULT':
       return update(state, {highlightedResult: {$set: action.highlightedResult}});
-    case 'SELECT_SEARCH_RESULT':
-      return update(state, {selectedResult: {$set: action.selectedResult}});
+    case 'SELECT_RESULT':
+      return update(state, {selectedResult: {$set: action.selectedResult}, highlightedResult: {$set: null}});
     default:
       return state;
   }

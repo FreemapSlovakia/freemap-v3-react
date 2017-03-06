@@ -7,8 +7,8 @@ import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActio
 import 'fm3/styles/search.scss';
 
 class Search extends React.Component {
-  onSelectionChange(resultSelectedByUser) {
-    this.props.onSelectResult(resultSelectedByUser[0]);
+  onSelectionChange(resultsSelectedByUser) {
+    this.props.onSelectResult(resultsSelectedByUser[0]);
   }
 
   onSuggestionHighlightChange(result) {

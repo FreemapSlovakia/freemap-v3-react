@@ -134,13 +134,7 @@ class Main extends React.Component {
             <Navbar.Collapse>
               {tool !== 'route-planner' &&
                 <div>
-                  <Search
-                    onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
-                    onSelectSearchResult={b(this.onSelectSearchResult)}
-                    lat={lat}
-                    lon={lon}
-                    zoom={zoom}
-                  />
+                  <Search/>
                   <Nav>
                     <NavItem onClick={b(onShowObjectsModal)} disabled={zoom < 12}>Objekty</NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
