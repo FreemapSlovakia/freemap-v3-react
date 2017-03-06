@@ -44,7 +44,7 @@ class Main extends React.Component {
   handleMapZoom(e) {
     const center = e.target.getCenter();
     const zoom = e.target.getZoom();
-    if (zoom !== this.state.zoom) {
+    if (zoom !== this.props.zoom) {
       this.handleMapBoundsChanged(e);
       this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
