@@ -51,18 +51,17 @@ class Main extends React.Component {
 
   handleMapMoveend(e) {
     const { lat, lng: lon } = e.target.getCenter();
-    const b = e.target.getBounds();
     this.props.onMapCenterChange({ lat, lon });
-    this.props.onMapBoundsChange({
-      south: b.getSouth(),
-      west: b.getWest(),
-      north: b.getNorth(),
-      east: b.getEast()
-    });
+    this.handleMapBoundsChanged(e);
   }
 
   handleMapZoom(e) {
     this.props.onMapZoomChange(e.target.getZoom());
+    this.handleMapBoundsChanged(e);
+  }
+
+  // TODO there may be more map events which changes map bounds. eg "resize". Implement.
+  handleMapBoundsChanged(e) {
     const b = e.target.getBounds();
     this.props.onMapBoundsChange({
       south: b.getSouth(),
