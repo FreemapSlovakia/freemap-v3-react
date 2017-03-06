@@ -1,7 +1,6 @@
 import React from 'react';
 import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { hashHistory as history } from 'react-router';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
@@ -18,42 +17,36 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, setMapBounds } from 'fm3/actions/mapActions';
+import { setTool, restoreMapFromUrlParams, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 class Main extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.state = Object.assign({},toMapState(props.params));
+    this.state = {};
   }
 
-  componentWillReceiveProps(newProps) {
-    this.setState(toMapState(newProps.params));
-  }
-
-  updateUrl() {
-    const { zoom, lat, lon, mapType, overlays } = this.state;
-    history.replace(`/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
+  componentWillMount() {
+    if (this.props.params.lat) {
+      this.props.onRestoreMapFromUrlParams(this.props.params);
+    }
   }
 
   handleMapMoveend(e) {
     const center = e.target.getCenter();
-    if (Math.abs(center.lat - this.state.lat) > 0.000001 && Math.abs(center.lng - this.state.lon) > 0.000001) {
-      this.setState({ lat: center.lat, lon: center.lng }, () => {
-        this.updateUrl();
-        this.handleMapBoundsChanged(e);
-      });
+    if (Math.abs(center.lat - this.props.center.lat) > 0.000001 && Math.abs(center.lng - this.props.center.lon) > 0.000001) {
+      this.handleMapBoundsChanged(e);
+      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
   handleMapZoom(e) {
+    const center = e.target.getCenter();
     const zoom = e.target.getZoom();
     if (zoom !== this.state.zoom) {
-      this.setState({ zoom }, () => {
-        this.handleMapBoundsChanged(e);
-      });
+      this.handleMapBoundsChanged(e);
+      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
@@ -69,13 +62,13 @@ class Main extends React.Component {
   }
 
   handleMapTypeChange(mapType) {
-    if (this.state.mapType !== mapType) {
-      this.setState({ mapType }, this.updateUrl.bind(this));
+    if (this.props.mapType !== mapType) {
+      this.props.onSetMapType(mapType);
     }
   }
 
   handleOverlayChange(overlays) {
-    this.setState({ overlays }, this.updateUrl.bind(this));
+    this.props.onSetMapOverlays(overlays);
   }
 
   showObjectsModal(objectsModalShown) {
@@ -98,9 +91,6 @@ class Main extends React.Component {
 
   render() {
     const { tool, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
-
-    const { lat, lon, zoom, mapType, overlays } = this.state;
-
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
@@ -119,7 +109,7 @@ class Main extends React.Component {
                 <div>
                   <Search/>
                   <Nav>
-                    <NavItem onClick={b(onShowObjectsModal)} disabled={zoom < 12}>Objekty</NavItem>
+                    <NavItem onClick={b(onShowObjectsModal)} disabled={this.props.zoom < 12}>Objekty</NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                     <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
                     <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
@@ -134,15 +124,15 @@ class Main extends React.Component {
           <Map
               ref={map => this.map = map}
               className={`tool-${tool || 'none'}`}
-              center={L.latLng(lat, lon)}
-              zoom={zoom}
+              center={L.latLng(this.props.center.lat, this.props.center.lon)}
+              zoom={this.props.zoom}
               onMoveend={b(this.handleMapMoveend)}
               onZoom={b(this.handleMapZoom)}
               onClick={b(this.handleMapClick)}>
 
             <Layers
-              mapType={mapType} onMapChange={b(this.handleMapTypeChange)}
-              overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
+              mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
+              overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
             <SearchResults/>
 
@@ -161,19 +151,31 @@ class Main extends React.Component {
 }
 
 Main.propTypes = {
+  center: React.PropTypes.object,
+  zoom: React.PropTypes.number,
   params: React.PropTypes.object,
   tool: React.PropTypes.string,
+  mapType: React.PropTypes.string,
+  overlays: React.PropTypes.array,
   onSetTool: React.PropTypes.func.isRequired,
   objectsModalShown: React.PropTypes.bool,
   onShowObjectsModal: React.PropTypes.func.isRequired,
-  onMapBoundsChange: React.PropTypes.func.isRequired
+  onMapBoundsChange: React.PropTypes.func.isRequired,
+  onRestoreMapFromUrlParams: React.PropTypes.func.isRequired,
+  onMapRefocus: React.PropTypes.func.isRequired,
+  onSetMapType: React.PropTypes.func.isRequired,
+  onSetMapOverlays: React.PropTypes.func.isRequired
 };
 
 export default connect(
   function (state) {
     return {
+      center: state.map.center,
+      zoom: state.map.zoom,
       tool: state.map.tool,
-      objectsModalShown: state.objects.objectsModalShown
+      objectsModalShown: state.objects.objectsModalShown,
+      mapType: state.map.mapType,
+      overlays: state.map.overlays
     };
   },
   function (dispatch) {
@@ -186,18 +188,19 @@ export default connect(
       },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));
+      },
+      onRestoreMapFromUrlParams(params) {
+        dispatch(restoreMapFromUrlParams((params)));
+      },
+      onMapRefocus(lat, lon, zoom) {
+        dispatch(refocusMap(lat, lon, zoom));
+      },
+      onSetMapType(mapType) {
+        dispatch(setMapType(mapType));
+      },
+      onSetMapOverlays(overlays) {
+        dispatch(setMapOverlays(overlays));
       }
     };
   }
 )(Main);
-
-
-function toMapState({ zoom, lat, lon, mapType }) {
-  return {
-    mapType: mapType && mapType.charAt(0) || 'T',
-    lat: parseFloat(lat) || 48.70714,
-    lon: parseFloat(lon) || 19.4995,
-    zoom: parseInt(zoom) || 8,
-    overlays: mapType && mapType.substring(1).split('') || []
-  };
-}
