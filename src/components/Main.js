@@ -132,22 +132,21 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
+              {tool !== 'route-planner' && <Search
+                  onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
+                  onSelectSearchResult={b(this.onSelectSearchResult)}
+                  lat={lat}
+                  lon={lon}
+                  zoom={zoom}
+                />
+              }
               {tool !== 'route-planner' &&
-                <div>
-                  <Search
-                    onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
-                    onSelectSearchResult={b(this.onSelectSearchResult)}
-                    lat={lat}
-                    lon={lon}
-                    zoom={zoom}
-                  />
-                  <Nav>
-                    <NavItem onClick={b(onShowObjectsModal)} disabled={zoom < 12}>Objekty</NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
-                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
-                  </Nav>
-                </div>
+                <Nav>
+                  <NavItem onClick={b(onShowObjectsModal)} disabled={zoom < 12}>Objekty</NavItem>
+                  <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie vzdialenosti</NavItem>
+                  <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                  <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
+                </Nav>
               }
               {tool === 'route-planner' && <RoutePlanner/>}
             </Navbar.Collapse>
