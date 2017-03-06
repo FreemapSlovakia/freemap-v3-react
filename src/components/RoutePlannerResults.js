@@ -21,7 +21,18 @@ class RoutePlannerResults extends React.Component {
 
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
-    this.handlePointAdded({ lat, lon });
+
+    switch (movedPointType) {
+      case 'start':
+        this.props.onSetStart({ lat, lon });
+        break;
+      case 'finish':
+        this.props.onSetFinish({ lat, lon });
+        break;
+      case 'midpoint':
+        this.props.onSetMidpoint(position, { lat, lon });
+        break;
+    } // TODO default - log error
   }
 
   handlePointAdded({ lat, lon }) {
@@ -90,7 +101,7 @@ RoutePlannerResults.propTypes = {
   distance: React.PropTypes.string,
   onSetStart: React.PropTypes.func.isRequired,
   onSetFinish: React.PropTypes.func.isRequired,
-  setMidpoint: React.PropTypes.func.isRequired,
+  onSetMidpoint: React.PropTypes.func.isRequired,
   onAddMidpoint: React.PropTypes.func.isRequired,
   pickMode: React.PropTypes.string.isRequired
 };
@@ -118,7 +129,7 @@ export default connect(
       onAddMidpoint: function(midpoint) {
         dispatch(addMidpoint(midpoint));
       },
-      setMidpoint: function(position, midpoint) {
+      onSetMidpoint: function(position, midpoint) {
         dispatch(setMidpoint(position, midpoint));
       }
     };
