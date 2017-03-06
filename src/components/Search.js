@@ -1,47 +1,18 @@
 import React from 'react';
 import {AsyncTypeahead} from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
+import { connect } from 'react-redux';
 
+import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActions';
 import 'fm3/styles/search.scss';
 
-export default class Search extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      searchSuggestions: [],
-      searchQuery: ''
-    };
-  }
-
-  doSearch(searchQuery) {
-    if (!searchQuery) {
-      return;
-    }
-    this.setState({ searchQuery });
-
-    const { lat, lon, zoom } = this.props;
-
-    // fetch(`https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`, {
-    fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(searchQuery)}`
-        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK`, {
-      method: 'GET'
-    }).then(res => res.json()).then(data => {
-      const searchSuggestions = data.map((d, id) => {
-        const name = d.namedetails.name;
-        const tags = { name, type: d.type };
-        return { id, label: name, lat: parseFloat(d.lat), lon: parseFloat(d.lon), tags };
-      });
-      this.setState({ searchSuggestions });
-    });
-  }
-
-  onSelectionChange(selectedResults) {
-    this.props.onSelectSearchResult(selectedResults[0]);
+class Search extends React.Component {
+  onSelectionChange(resultSelectedByUser) {
+    this.props.onSelectResult(resultSelectedByUser[0]);
   }
 
   onSuggestionHighlightChange(result) {
-    this.props.onSearchSuggestionHighlightChange(result);
+    this.props.onHiglightResult(result);
   }
 
   render() {
@@ -55,8 +26,8 @@ export default class Search extends React.Component {
             minLength={3}
             delay={500}
             ignoreDiacritics={true}
-            onSearch={b(this.doSearch)}
-            options={this.state.searchSuggestions}
+            onSearch={this.props.onDoSearch}
+            options={this.props.results}
             searchText="Hľadám ..."
             placeholder="Brusno"
             clearButton={true}
@@ -77,9 +48,27 @@ export default class Search extends React.Component {
 }
 
 Search.propTypes = {
-  lat: React.PropTypes.number,
-  lon: React.PropTypes.number,
-  zoom: React.PropTypes.number,
-  onSearchSuggestionHighlightChange: React.PropTypes.func.isRequired,
-  onSelectSearchResult: React.PropTypes.func.isRequired
+  results: React.PropTypes.array.isRequired,
+  onDoSearch: React.PropTypes.func.isRequired,
+  onHiglightResult: React.PropTypes.func.isRequired,
+  onSelectResult: React.PropTypes.func.isRequired,
 };
+
+export default connect(
+  function (state) {
+    return {results: state.search.results};
+  },
+  function (dispatch) {
+    return {
+      onDoSearch(query) {
+        dispatch(doSearch(query));
+      },
+      onHiglightResult(result) {
+        dispatch(highlightResult(result));
+      },
+      onSelectResult(result) {
+        dispatch(selectResult(result));
+      }
+    };
+  }
+)(Search);
