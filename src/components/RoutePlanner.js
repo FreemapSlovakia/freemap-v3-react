@@ -7,7 +7,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
 import { setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
-import { setTool } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mapActions';
 
 class RoutePlanner extends React.Component {
 

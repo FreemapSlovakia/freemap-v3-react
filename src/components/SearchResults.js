@@ -12,10 +12,10 @@ export default class SearchResults extends React.Component {
 
   refocusMapIfNeeded(newProps) {
     if (newProps.highlightedSearchSuggestion) {
-      const mapBound = this.props.map.getBounds();
-      const mapZoom = this.props.map.getZoom();
       const h = newProps.highlightedSearchSuggestion;
       const hLatLon = L.latLng(h.lat, h.lon);
+      const mapBound = this.props.map.getBounds();
+      const mapZoom = this.props.map.getZoom();
       if (mapZoom < 13 || !mapBound.contains(hLatLon)) {
         this.props.doMapRefocus(h.lat, h.lon, 13);
       }

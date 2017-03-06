@@ -1,5 +1,4 @@
 import React from 'react';
-import { hashHistory as history } from 'react-router';
 import { Map, Marker, Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
 
@@ -17,53 +16,40 @@ import Measurement from 'fm3/components/Measurement';
 import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
-import { setTool } from 'fm3/actions/mainActions';
+import { setTool, setMapCenter, setMapZoom, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 
 class Main extends React.Component {
 
   constructor(props) {
     super(props);
 
-    this.state = Object.assign({
+    this.state = {
       poiSearchResults: [],
       selectedSearchResult: null,
       highlightedSearchSuggestion: null
-    }, toMapState(props.params));
+    };
   }
 
-  componentWillReceiveProps(newProps) {
-    this.setState(toMapState(newProps.params));
-  }
+  // TODO parse URL and dispatch changes, otherwise programmatich URL change will not update the map state
+  // componentWillReceiveProps(newProps) {
+  //   this.setState(toMapState(newProps.params));
+  // }
 
   handleMapMoveend(e) {
-    const center = e.target.getCenter();
-    this.setState({ lat: center.lat, lon: center.lng }, () => {
-      const { zoom, lat, lon } = this.state;
-      const p = this.props.params;
-
-      if (Math.abs(p.lat - lat) > 0.000001 || Math.abs(p.lon - lon) > 0.000001 || p.zoom != zoom) {
-        this.updateUrl();
-      }
-    });
+    const { lat, lng: lon } = e.target.getCenter();
+    this.props.onMapCenterChange({ lat, lon });
   }
 
   handleMapZoom(e) {
-    this.setState({ zoom: e.target.getZoom() });
+    this.props.onMapZoomChange(e.target.getZoom());
   }
 
-  handleMapChange(mapType) {
-    if (this.state.mapType !== mapType) {
-      this.setState({ mapType }, this.updateUrl.bind(this));
-    }
+  handleMapTypeChange(mapType) {
+    this.props.onMapTypeChange(mapType);
   }
 
   handleOverlayChange(overlays) {
-    this.setState({ overlays }, this.updateUrl.bind(this));
-  }
-
-  updateUrl() {
-    const { zoom, lat, lon, mapType, overlays } = this.state;
-    history.replace(`/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
+    this.props.onMapOverlaysChange(overlays);
   }
 
   showObjectsModal(objectsModalShown) {
@@ -77,7 +63,7 @@ class Main extends React.Component {
       return;
     }
 
-    const b = this.refs.map.leafletElement.getBounds();
+    const b = this.map.leafletElement.getBounds();
 
     const bbox = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
     const query = `[out:json][timeout:60]; (${filter.map(f => `${f}${bbox};`).join('')}); out qt;`;
@@ -120,9 +106,9 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, onSetTool } = this.props;
+    const { tool, onSetTool, center: { lat, lon }, zoom, mapType, overlays } = this.props;
 
-    const { lat, lon, zoom, mapType, overlays, objectsModalShown, poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
+    const { objectsModalShown, poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -161,7 +147,7 @@ class Main extends React.Component {
         </Row>
         <Row>
           <Map
-              ref="map"
+              ref={map => this.map = map}
               className={`tool-${tool || 'none'}`}
               center={L.latLng(lat, lon)}
               zoom={zoom}
@@ -170,14 +156,13 @@ class Main extends React.Component {
               onClick={b(this.handleMapClick)}>
 
             <Layers
-              mapType={mapType} onMapChange={b(this.handleMapChange)}
+              mapType={mapType} onMapChange={b(this.handleMapTypeChange)}
               overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
             <SearchResults
               highlightedSearchSuggestion={highlightedSearchSuggestion}
               selectedSearchResult={selectedSearchResult}
-              doMapRefocus={b(this.refocusMap)}
-              map={this.refs.map}/>
+              doMapRefocus={b(this.refocusMap)}/>
 
             {poiSearchResults.map(({ id, lat, lon, tags }) => {
               const __html = toHtml(tags);
@@ -204,18 +189,42 @@ class Main extends React.Component {
 Main.propTypes = {
   params: React.PropTypes.object,
   tool: React.PropTypes.string,
-  onSetTool: React.PropTypes.func.isRequired
+  onSetTool: React.PropTypes.func.isRequired,
+  onMapCenterChange: React.PropTypes.func.isRequired,
+  onMapZoomChange: React.PropTypes.func.isRequired,
+  onMapTypeChange: React.PropTypes.func.isRequired,
+  onMapOverlaysChange: React.PropTypes.func.isRequired,
+  center: React.PropTypes.object.isRequired,
+  zoom: React.PropTypes.number.isRequired,
+  mapType: React.PropTypes.string.isRequired, // TODO enum
+  overlays: React.PropTypes.array.isRequired // TODO enums
 };
 
 export default connect(function (state) {
   return {
-    tool: state.main.tool
+    tool: state.map.tool,
+    center: state.map.center,
+    zoom: state.map.zoom,
+    mapType: state.map.mapType,
+    overlays: state.map.overlays
   };
 },
 function (dispatch) {
   return {
     onSetTool: function(tool) {
       dispatch(setTool(tool));
+    },
+    onMapCenterChange: function({ lat, lon }) {
+      dispatch(setMapCenter({ lat, lon }));
+    },
+    onMapZoomChange: function(zoom) {
+      dispatch(setMapZoom(zoom));
+    },
+    onMapTypeChange: function(mapType) {
+      dispatch(setMapType(mapType));
+    },
+    onMapOverlaysChange: function(overlays) {
+      dispatch(setMapOverlays(overlays));
     }
   };
 })(Main);
