@@ -17,14 +17,6 @@ export default function map(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
       return update(state, { tool: { $set: action.tool === state.tool ? null : action.tool } } );
-    case 'SET_MAP_CENTER':
-      return update(state, { center: { $set: action.center } } );
-    case 'SET_MAP_ZOOM':
-      return update(state, { zoom: { $set: action.zoom } } );
-    case 'SET_MAP_TYPE':
-      return update(state, { mapType: { $set: action.mapType } } );
-    case 'SET_MAP_OVERLAYS':
-      return update(state, { overlays: { $set: action.overlays } } );
     case 'SET_MAP_BOUNDS':
       return update(state, { bounds: { $set: action.bounds } } );
     default:

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
+import { hashHistory as history } from 'react-router';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
@@ -17,7 +18,7 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, setMapCenter, setMapZoom, setMapType, setMapOverlays, setMapBounds } from 'fm3/actions/mapActions';
+import { setTool, setMapBounds } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 class Main extends React.Component {
@@ -25,39 +26,39 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
 
-    const { params: { lat, lon, zoom } } = props;
-    if (Math.abs(this.props.center.lat - lat) > 0.000001 || Math.abs(this.props.center.lon - lon) > 0.000001) {
-      this.props.onMapCenterChange({ lat: parseFloat(lat), lon: parseFloat(lon) });
-    }
-    if (this.props.zoom != zoom) {
-      this.props.onMapZoomChange(parseInt(zoom));
-    }
-
-    this.state = {
+    this.state = Object.assign({
       selectedSearchResult: null,
-      highlightedSearchSuggestion: null
-    };
+      highlightedSearchSuggestion: null,
+    },
+    toMapState(props.params));
   }
 
+  componentWillReceiveProps(newProps) {
+    this.setState(toMapState(newProps.params));
+  }
 
-  componentWillReceiveProps({ params: { lat, lon, zoom } }) {
-    if (Math.abs(this.props.center.lat - lat) > 0.000001 || Math.abs(this.props.center.lon - lon) > 0.000001) {
-      this.props.onMapCenterChange({ lat: parseFloat(lat), lon: parseFloat(lon) });
-    }
-    if (this.props.zoom != zoom) {
-      this.props.onMapZoomChange(parseInt(zoom));
-    }
+  updateUrl() {
+    const { zoom, lat, lon, mapType, overlays } = this.state;
+    history.replace(`/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
   }
 
   handleMapMoveend(e) {
-    const { lat, lng: lon } = e.target.getCenter();
-    this.props.onMapCenterChange({ lat, lon });
-    this.handleMapBoundsChanged(e);
+    const center = e.target.getCenter();
+    if (Math.abs(center.lat - this.state.lat) > 0.000001 && Math.abs(center.lng - this.state.lon) > 0.000001) {
+      this.setState({ lat: center.lat, lon: center.lng }, () => {
+        this.updateUrl();
+        this.handleMapBoundsChanged(e);
+      });
+    }
   }
 
   handleMapZoom(e) {
-    this.props.onMapZoomChange(e.target.getZoom());
-    this.handleMapBoundsChanged(e);
+    const zoom = e.target.getZoom();
+    if (zoom !== this.state.zoom) {
+      this.setState({ zoom }, () => {
+        this.handleMapBoundsChanged(e);
+      });
+    }
   }
 
   // TODO there may be more map events which changes map bounds. eg "resize". Implement.
@@ -72,13 +73,13 @@ class Main extends React.Component {
   }
 
   handleMapTypeChange(mapType) {
-    if (this.props.mapType !== mapType) {
-      this.props.onMapTypeChange(mapType);
+    if (this.state.mapType !== mapType) {
+      this.setState({ mapType }, this.updateUrl.bind(this));
     }
   }
 
   handleOverlayChange(overlays) {
-    this.props.onMapOverlaysChange(overlays);
+    this.setState({ overlays }, this.updateUrl.bind(this));
   }
 
   showObjectsModal(objectsModalShown) {
@@ -109,14 +110,13 @@ class Main extends React.Component {
 
   // TODO move to SearchResults
   refocusMap(lat, lon, zoom) {
-    this.props.onMapCenterChange({ lat, lon });
-    this.props.onMapZoomChange(zoom);
+    this.setState({ lat, lon, zoom });
   }
 
   render() {
-    const { tool, onSetTool, center: { lat, lon }, zoom, mapType, overlays, onShowObjectsModal, objectsModalShown } = this.props;
+    const { tool, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
 
-    const { selectedSearchResult, highlightedSearchSuggestion } = this.state;
+    const { selectedSearchResult, highlightedSearchSuggestion, lat, lon, zoom, mapType, overlays } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -191,14 +191,6 @@ Main.propTypes = {
   params: React.PropTypes.object,
   tool: React.PropTypes.string,
   onSetTool: React.PropTypes.func.isRequired,
-  onMapCenterChange: React.PropTypes.func.isRequired,
-  onMapZoomChange: React.PropTypes.func.isRequired,
-  onMapTypeChange: React.PropTypes.func.isRequired,
-  onMapOverlaysChange: React.PropTypes.func.isRequired,
-  center: React.PropTypes.object.isRequired,
-  zoom: React.PropTypes.number.isRequired,
-  mapType: React.PropTypes.string.isRequired, // TODO enum
-  overlays: React.PropTypes.array.isRequired, // TODO enums
   objectsModalShown: React.PropTypes.bool,
   onShowObjectsModal: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired
@@ -208,10 +200,6 @@ export default connect(
   function (state) {
     return {
       tool: state.map.tool,
-      center: state.map.center,
-      zoom: state.map.zoom,
-      mapType: state.map.mapType,
-      overlays: state.map.overlays,
       objectsModalShown: state.objects.objectsModalShown
     };
   },
@@ -219,18 +207,6 @@ export default connect(
     return {
       onSetTool(tool) {
         dispatch(setTool(tool));
-      },
-      onMapCenterChange({ lat, lon }) {
-        dispatch(setMapCenter({ lat, lon }));
-      },
-      onMapZoomChange(zoom) {
-        dispatch(setMapZoom(zoom));
-      },
-      onMapTypeChange(mapType) {
-        dispatch(setMapType(mapType));
-      },
-      onMapOverlaysChange(overlays) {
-        dispatch(setMapOverlays(overlays));
       },
       onShowObjectsModal() {
         dispatch(showObjectsModal());
@@ -241,3 +217,14 @@ export default connect(
     };
   }
 )(Main);
+
+
+function toMapState({ zoom, lat, lon, mapType }) {
+  return {
+    mapType: mapType && mapType.charAt(0) || 'T',
+    lat: parseFloat(lat) || 48.70714,
+    lon: parseFloat(lon) || 19.4995,
+    zoom: parseInt(zoom) || 8,
+    overlays: mapType && mapType.substring(1).split('') || []
+  };
+}
