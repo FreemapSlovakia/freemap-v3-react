@@ -1,4 +1,6 @@
 import React from 'react';
+import { connect } from 'react-redux';
+
 import Modal from 'react-bootstrap/lib/Modal';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Button from 'react-bootstrap/lib/Button';
@@ -6,8 +8,9 @@ import Tab from 'react-bootstrap/lib/Tab';
 import Tabs from 'react-bootstrap/lib/Tabs';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { setObjectsFilter, cancelObjectsModal } from 'fm3/actions/objectsActions';
 
-export default class ObjectsModal extends React.Component {
+class ObjectsModal extends React.Component {
 
   constructor(props) {
     super(props);
@@ -19,9 +22,9 @@ export default class ObjectsModal extends React.Component {
   }
 
   showObjects() {
-    this.props.onClose([ ...this.state.selections ]
+    this.props.onSearch([ ...this.state.selections ]
       .map(i => poiTypes[i])
-      .map(({ key, value }) => `node["${key}"="${value}"]`));
+      .map(({ key, value }) => `node["${key}"="${value}"]`)); // TODO move to logic?
   }
 
   select(i) {
@@ -40,13 +43,13 @@ export default class ObjectsModal extends React.Component {
   }
 
   render() {
-    const { onClose } = this.props;
+    const { onCancel } = this.props;
     const { selections } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
-      <Modal show onHide={b(onClose)}>
+      <Modal show onHide={b(onCancel)}>
         <Modal.Header closeButton>
           <Modal.Title>Objekty</Modal.Title>
         </Modal.Header>
@@ -65,7 +68,7 @@ export default class ObjectsModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={b(this.showObjects)} disabled={!selections.size}>Zobraz</Button>
-          <Button onClick={b(onClose)}>Zavri</Button>
+          <Button onClick={b(onCancel)}>Zavri</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -74,5 +77,29 @@ export default class ObjectsModal extends React.Component {
 }
 
 ObjectsModal.propTypes = {
-  onClose: React.PropTypes.func.isRequired
+  onSearch: React.PropTypes.func.isRequired,
+  onCancel: React.PropTypes.func.isRequired
 };
+
+export default connect(
+  function (state) {
+    // TODO
+    return {
+      // tool: state.map.tool,
+      // center: state.map.center,
+      // zoom: state.map.zoom,
+      // mapType: state.map.mapType,
+      // overlays: state.map.overlays
+    };
+  },
+  function (dispatch) {
+    return {
+      onSearch(filter) {
+        dispatch(setObjectsFilter(filter));
+      },
+      onCancel() {
+        dispatch(cancelObjectsModal());
+      }
+    };
+  }
+)(ObjectsModal);

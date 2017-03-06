@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, Marker, Popup } from 'react-leaflet';
+import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -7,7 +7,6 @@ import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 
-import { toHtml } from 'fm3/poiTypes';
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
 import ObjectsModal from 'fm3/components/ObjectsModal';
@@ -16,7 +15,10 @@ import Measurement from 'fm3/components/Measurement';
 import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
+import ObjectsResult from 'fm3/components/ObjectsResult';
+
 import { setTool, setMapCenter, setMapZoom, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
+import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 class Main extends React.Component {
 
@@ -24,7 +26,6 @@ class Main extends React.Component {
     super(props);
 
     this.state = {
-      poiSearchResults: [],
       selectedSearchResult: null,
       highlightedSearchSuggestion: null
     };
@@ -45,7 +46,9 @@ class Main extends React.Component {
   }
 
   handleMapTypeChange(mapType) {
-    this.props.onMapTypeChange(mapType);
+    if (this.props.mapType !== mapType) {
+      this.props.onMapTypeChange(mapType);
+    }
   }
 
   handleOverlayChange(overlays) {
@@ -54,29 +57,6 @@ class Main extends React.Component {
 
   showObjectsModal(objectsModalShown) {
     this.setState({ objectsModalShown });
-  }
-
-  showObjects(filter) {
-    this.setState({ objectsModalShown: false });
-
-    if (!filter || !filter.length) {
-      return;
-    }
-
-    const b = this.map.leafletElement.getBounds();
-
-    const bbox = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
-    const query = `[out:json][timeout:60]; (${filter.map(f => `${f}${bbox};`).join('')}); out qt;`;
-
-    return fetch('https://overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: `data=${encodeURIComponent(query)}`
-    }).then(res => res.json()).then(data => {
-      this.setState({
-        poiSearchResults: data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags })),
-        selectedSearchResult: null
-      });
-    });
   }
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
@@ -98,7 +78,7 @@ class Main extends React.Component {
   }
 
   onSelectSearchResult(selectedSearchResult) {
-    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null, poiSearchResults: [] });
+    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null });
   }
 
   // TODO move to SearchResults
@@ -108,15 +88,15 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, onSetTool, center: { lat, lon }, zoom, mapType, overlays } = this.props;
+    const { tool, onSetTool, center: { lat, lon }, zoom, mapType, overlays, onShowObjectsModal, objectsModalShown } = this.props;
 
-    const { objectsModalShown, poiSearchResults, selectedSearchResult, highlightedSearchSuggestion } = this.state;
+    const { selectedSearchResult, highlightedSearchSuggestion } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
       <div className="container-fluid">
-        {objectsModalShown && <ObjectsModal onClose={b(this.showObjects)}/>}
+        {objectsModalShown && <ObjectsModal/>}
 
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
@@ -136,7 +116,7 @@ class Main extends React.Component {
                     zoom={zoom}
                   />
                   <Nav>
-                    <NavItem onClick={b(this.showObjectsModal, true)} disabled={zoom < 12}>Objekty</NavItem>
+                    <NavItem onClick={b(onShowObjectsModal)} disabled={zoom < 12}>Objekty</NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie</NavItem>
                     <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
                     <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
@@ -167,15 +147,7 @@ class Main extends React.Component {
               doMapRefocus={b(this.refocusMap)}
               map={this.map}/>
 
-            {poiSearchResults.map(({ id, lat, lon, tags }) => {
-              const __html = toHtml(tags);
-
-              return (
-                <Marker key={id} position={L.latLng(lat, lon)}>
-                  {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
-                </Marker>
-              );
-            })}
+            <ObjectsResult/>
 
             {tool === 'route-planner' && <RoutePlannerResults ref={e => this.routePlanner = e}/>}
 
@@ -200,44 +172,42 @@ Main.propTypes = {
   center: React.PropTypes.object.isRequired,
   zoom: React.PropTypes.number.isRequired,
   mapType: React.PropTypes.string.isRequired, // TODO enum
-  overlays: React.PropTypes.array.isRequired // TODO enums
+  overlays: React.PropTypes.array.isRequired, // TODO enums
+  objectsModalShown: React.PropTypes.bool,
+  onShowObjectsModal: React.PropTypes.func.isRequired
 };
 
-export default connect(function (state) {
-  return {
-    tool: state.map.tool,
-    center: state.map.center,
-    zoom: state.map.zoom,
-    mapType: state.map.mapType,
-    overlays: state.map.overlays
-  };
-},
-function (dispatch) {
-  return {
-    onSetTool: function(tool) {
-      dispatch(setTool(tool));
-    },
-    onMapCenterChange: function({ lat, lon }) {
-      dispatch(setMapCenter({ lat, lon }));
-    },
-    onMapZoomChange: function(zoom) {
-      dispatch(setMapZoom(zoom));
-    },
-    onMapTypeChange: function(mapType) {
-      dispatch(setMapType(mapType));
-    },
-    onMapOverlaysChange: function(overlays) {
-      dispatch(setMapOverlays(overlays));
-    }
-  };
-})(Main);
-
-function toMapState({ zoom, lat, lon, mapType }) {
-  return {
-    mapType: mapType && mapType.charAt(0) || 'T',
-    lat: parseFloat(lat) || 48.70714,
-    lon: parseFloat(lon) || 19.4995,
-    zoom: parseInt(zoom) || 8,
-    overlays: mapType && mapType.substring(1).split('') || []
-  };
-}
+export default connect(
+  function (state) {
+    return {
+      tool: state.map.tool,
+      center: state.map.center,
+      zoom: state.map.zoom,
+      mapType: state.map.mapType,
+      overlays: state.map.overlays,
+      objectsModalShown: state.map.objectsModalShown
+    };
+  },
+  function (dispatch) {
+    return {
+      onSetTool: function(tool) {
+        dispatch(setTool(tool));
+      },
+      onMapCenterChange: function({ lat, lon }) {
+        dispatch(setMapCenter({ lat, lon }));
+      },
+      onMapZoomChange: function(zoom) {
+        dispatch(setMapZoom(zoom));
+      },
+      onMapTypeChange: function(mapType) {
+        dispatch(setMapType(mapType));
+      },
+      onMapOverlaysChange: function(overlays) {
+        dispatch(setMapOverlays(overlays));
+      },
+      onShowObjectsModal: function() {
+        dispatch(showObjectsModal());
+      }
+    };
+  }
+)(Main);
