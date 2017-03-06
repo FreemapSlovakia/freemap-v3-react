@@ -17,3 +17,7 @@ export function setMapType(mapType) {
 export function setMapOverlays(overlays) {
   return { type: 'SET_MAP_OVERLAYS', overlays };
 }
+
+export function setMapBounds(bounds) {
+  return { type: 'SET_MAP_BOUNDS', bounds };
+}

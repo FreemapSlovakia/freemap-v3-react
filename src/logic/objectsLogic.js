@@ -10,9 +10,9 @@ export default createLogic({
       return;
     }
 
-    const b = this.map.leafletElement.getBounds();
+    const { south, west, north, east } = getState().map.bounds;
 
-    const bbox = `(${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()})`;
+    const bbox = `(${south},${west},${north},${east})`;
     const query = `[out:json][timeout:60]; (${filter.map(f => `${f}${bbox};`).join('')}); out qt;`;
 
     return fetch('https://overpass-api.de/api/interpreter', {

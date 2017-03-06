@@ -17,7 +17,7 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, setMapCenter, setMapZoom, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
+import { setTool, setMapCenter, setMapZoom, setMapType, setMapOverlays, setMapBounds } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 class Main extends React.Component {
@@ -51,11 +51,25 @@ class Main extends React.Component {
 
   handleMapMoveend(e) {
     const { lat, lng: lon } = e.target.getCenter();
+    const b = e.target.getBounds();
     this.props.onMapCenterChange({ lat, lon });
+    this.props.onMapBoundsChange({
+      south: b.getSouth(),
+      west: b.getWest(),
+      north: b.getNorth(),
+      east: b.getEast()
+    });
   }
 
   handleMapZoom(e) {
     this.props.onMapZoomChange(e.target.getZoom());
+    const b = e.target.getBounds();
+    this.props.onMapBoundsChange({
+      south: b.getSouth(),
+      west: b.getWest(),
+      north: b.getNorth(),
+      east: b.getEast()
+    });
   }
 
   handleMapTypeChange(mapType) {
@@ -198,28 +212,31 @@ export default connect(
       zoom: state.map.zoom,
       mapType: state.map.mapType,
       overlays: state.map.overlays,
-      objectsModalShown: state.map.objectsModalShown
+      objectsModalShown: state.objects.objectsModalShown
     };
   },
   function (dispatch) {
     return {
-      onSetTool: function(tool) {
+      onSetTool(tool) {
         dispatch(setTool(tool));
       },
-      onMapCenterChange: function({ lat, lon }) {
+      onMapCenterChange({ lat, lon }) {
         dispatch(setMapCenter({ lat, lon }));
       },
-      onMapZoomChange: function(zoom) {
+      onMapZoomChange(zoom) {
         dispatch(setMapZoom(zoom));
       },
-      onMapTypeChange: function(mapType) {
+      onMapTypeChange(mapType) {
         dispatch(setMapType(mapType));
       },
-      onMapOverlaysChange: function(overlays) {
+      onMapOverlaysChange(overlays) {
         dispatch(setMapOverlays(overlays));
       },
-      onShowObjectsModal: function() {
+      onShowObjectsModal() {
         dispatch(showObjectsModal());
+      },
+      onMapBoundsChange(bounds) {
+        dispatch(setMapBounds(bounds));
       }
     };
   }

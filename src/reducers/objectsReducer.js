@@ -11,9 +11,9 @@ export default function map(state = initialState, action) {
     case 'SHOW_OBJECTS_MODAL':
       return update(state, { objectsModalShown: { $set: true } } );
     case 'SET_OBJECTS_FILTER':
-      return update(state, { objectsModalShown: { $set: false } } );
+      return update(state, { objectsModalShown: { $set: false }, objects: { $set: [] } } );
     case 'SET_OBJECTS':
-      return update(state, { objectsModalShown: { $set: false }, objects: { $set: true } } );
+      return update(state, { objectsModalShown: { $set: false }, objects: { $set: action.objects } } );
     case 'CANCEL_OBJECTS_MODAL':
       return update(state, { objectsModalShown: { $set: false } } );
     default:
