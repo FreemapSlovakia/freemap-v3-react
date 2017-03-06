@@ -82,10 +82,6 @@ class Main extends React.Component {
     this.setState({ overlays }, this.updateUrl.bind(this));
   }
 
-  showObjectsModal(objectsModalShown) {
-    this.setState({ objectsModalShown });
-  }
-
   handleMapClick({ latlng: { lat, lng: lon }}) {
     if (this.measurement) {
       this.measurement.getWrappedInstance().handlePointAdded({ lat, lon });
