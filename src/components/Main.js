@@ -25,16 +25,29 @@ class Main extends React.Component {
   constructor(props) {
     super(props);
 
+    const { params: { lat, lon, zoom } } = props;
+    if (Math.abs(this.props.center.lat - lat) > 0.000001 || Math.abs(this.props.center.lon - lon) > 0.000001) {
+      this.props.onMapCenterChange({ lat: parseFloat(lat), lon: parseFloat(lon) });
+    }
+    if (this.props.zoom != zoom) {
+      this.props.onMapZoomChange(parseInt(zoom));
+    }
+
     this.state = {
       selectedSearchResult: null,
       highlightedSearchSuggestion: null
     };
   }
 
-  // TODO parse URL and dispatch changes, otherwise programmatich URL change will not update the map state
-  // componentWillReceiveProps(newProps) {
-  //   this.setState(toMapState(newProps.params));
-  // }
+
+  componentWillReceiveProps({ params: { lat, lon, zoom } }) {
+    if (Math.abs(this.props.center.lat - lat) > 0.000001 || Math.abs(this.props.center.lon - lon) > 0.000001) {
+      this.props.onMapCenterChange({ lat: parseFloat(lat), lon: parseFloat(lon) });
+    }
+    if (this.props.zoom != zoom) {
+      this.props.onMapZoomChange(parseInt(zoom));
+    }
+  }
 
   handleMapMoveend(e) {
     const { lat, lng: lon } = e.target.getCenter();
