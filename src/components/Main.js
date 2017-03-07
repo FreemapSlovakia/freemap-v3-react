@@ -1,7 +1,6 @@
 import React from 'react';
 import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { hashHistory as history } from 'react-router';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
@@ -18,46 +17,64 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, setMapBounds } from 'fm3/actions/mapActions';
+import { setTool, restoreMapFromUrlParams, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 class Main extends React.Component {
 
   constructor(props) {
     super(props);
+    this.state = {};
+  }
 
-    this.state = Object.assign({
-      selectedSearchResult: null,
-      highlightedSearchSuggestion: null,
-    },
-    toMapState(props.params));
+  componentWillMount() {
+    if (this.props.params.lat) {
+      this.props.onRestoreMapFromUrlParams(this.props.params);
+    }
   }
 
   componentWillReceiveProps(newProps) {
-    this.setState(toMapState(newProps.params));
-  }
+    const p = newProps.params;
 
-  updateUrl() {
-    const { zoom, lat, lon, mapType, overlays } = this.state;
-    history.replace(`/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`);
+    let mapType = null;
+    if (newProps.params.mapType) {
+      mapType = newProps.params.mapType.charAt(0);
+    }
+    
+    if (mapType && mapType !== this.props.mapType) {
+      this.props.onSetMapType(mapType);
+    }
+
+    const overlays = newProps.params.mapType.substring(1).split('');
+    if (overlays && JSON.stringify(overlays) !== JSON.stringify(this.props.overlays)) {
+      this.props.onSetMapOverlays(overlays);
+    }
+
+    const zoom = parseInt(p.zoom);
+    const lat = parseFloat(p.lat);
+    const lon = parseFloat(p.lon);
+    const zoomChangedInURL = zoom && zoom !== this.props.zoom;
+    const latChangedInURL = lat && lat !== this.props.center.lat;
+    const lonChangedInURL = lon && lon !== this.props.center.lon;
+    if (zoomChangedInURL || latChangedInURL || lonChangedInURL) {
+      this.props.onMapRefocus(lat, lon, zoom);
+    }
   }
 
   handleMapMoveend(e) {
     const center = e.target.getCenter();
-    if (Math.abs(center.lat - this.state.lat) > 0.000001 && Math.abs(center.lng - this.state.lon) > 0.000001) {
-      this.setState({ lat: center.lat, lon: center.lng }, () => {
-        this.updateUrl();
-        this.handleMapBoundsChanged(e);
-      });
+    if (Math.abs(center.lat - this.props.center.lat) > 0.000001 && Math.abs(center.lng - this.props.center.lon) > 0.000001) {
+      this.handleMapBoundsChanged(e);
+      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
   handleMapZoom(e) {
+    const center = e.target.getCenter();
     const zoom = e.target.getZoom();
-    if (zoom !== this.state.zoom) {
-      this.setState({ zoom }, () => {
-        this.handleMapBoundsChanged(e);
-      });
+    if (zoom !== this.props.zoom) {
+      this.handleMapBoundsChanged(e);
+      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
@@ -73,13 +90,13 @@ class Main extends React.Component {
   }
 
   handleMapTypeChange(mapType) {
-    if (this.state.mapType !== mapType) {
-      this.setState({ mapType }, this.updateUrl.bind(this));
+    if (this.props.mapType !== mapType) {
+      this.props.onSetMapType(mapType);
     }
   }
 
   handleOverlayChange(overlays) {
-    this.setState({ overlays }, this.updateUrl.bind(this));
+    this.props.onSetMapOverlays(overlays);
   }
 
   handleMapClick({ latlng: { lat, lng: lon }}) {
@@ -96,24 +113,8 @@ class Main extends React.Component {
     }
   }
 
-  onSearchSuggestionHighlightChange(highlightedSearchSuggestion) {
-    this.setState({ highlightedSearchSuggestion });
-  }
-
-  onSelectSearchResult(selectedSearchResult) {
-    this.setState({ selectedSearchResult, highlightedSearchSuggestion: null });
-  }
-
-  // TODO move to SearchResults
-  refocusMap(lat, lon, zoom) {
-    this.setState({ lat, lon, zoom });
-  }
-
   render() {
     const { tool, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
-
-    const { selectedSearchResult, highlightedSearchSuggestion, lat, lon, zoom, mapType, overlays } = this.state;
-
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
@@ -128,21 +129,16 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool !== 'route-planner' && <Search
-                  onSearchSuggestionHighlightChange={b(this.onSearchSuggestionHighlightChange)}
-                  onSelectSearchResult={b(this.onSelectSearchResult)}
-                  lat={lat}
-                  lon={lon}
-                  zoom={zoom}
-                />
-              }
               {tool !== 'route-planner' &&
-                <Nav>
-                  <NavItem onClick={b(onShowObjectsModal)} disabled={zoom < 12}>Objekty</NavItem>
-                  <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie vzdialenosti</NavItem>
-                  <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
-                  <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
-                </Nav>
+                <div>
+                  <Search/>
+                  <Nav>
+                    <NavItem onClick={b(onShowObjectsModal)} disabled={this.props.zoom < 12}>Objekty</NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie vzdialenosti</NavItem>
+                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
+                  </Nav>
+                </div>
               }
               {tool === 'route-planner' && <RoutePlanner/>}
             </Navbar.Collapse>
@@ -152,21 +148,17 @@ class Main extends React.Component {
           <Map
               ref={map => this.map = map}
               className={`tool-${tool || 'none'}`}
-              center={L.latLng(lat, lon)}
-              zoom={zoom}
+              center={L.latLng(this.props.center.lat, this.props.center.lon)}
+              zoom={this.props.zoom}
               onMoveend={b(this.handleMapMoveend)}
               onZoom={b(this.handleMapZoom)}
               onClick={b(this.handleMapClick)}>
 
             <Layers
-              mapType={mapType} onMapChange={b(this.handleMapTypeChange)}
-              overlays={overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
+              mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
+              overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
 
-            <SearchResults
-              highlightedSearchSuggestion={highlightedSearchSuggestion}
-              selectedSearchResult={selectedSearchResult}
-              doMapRefocus={b(this.refocusMap)}
-              map={this.map}/>
+            <SearchResults/>
 
             <ObjectsResult/>
 
@@ -183,19 +175,31 @@ class Main extends React.Component {
 }
 
 Main.propTypes = {
+  center: React.PropTypes.object,
+  zoom: React.PropTypes.number,
   params: React.PropTypes.object,
   tool: React.PropTypes.string,
+  mapType: React.PropTypes.string,
+  overlays: React.PropTypes.array,
   onSetTool: React.PropTypes.func.isRequired,
   objectsModalShown: React.PropTypes.bool,
   onShowObjectsModal: React.PropTypes.func.isRequired,
-  onMapBoundsChange: React.PropTypes.func.isRequired
+  onMapBoundsChange: React.PropTypes.func.isRequired,
+  onRestoreMapFromUrlParams: React.PropTypes.func.isRequired,
+  onMapRefocus: React.PropTypes.func.isRequired,
+  onSetMapType: React.PropTypes.func.isRequired,
+  onSetMapOverlays: React.PropTypes.func.isRequired
 };
 
 export default connect(
   function (state) {
     return {
+      center: state.map.center,
+      zoom: state.map.zoom,
       tool: state.map.tool,
-      objectsModalShown: state.objects.objectsModalShown
+      objectsModalShown: state.objects.objectsModalShown,
+      mapType: state.map.mapType,
+      overlays: state.map.overlays
     };
   },
   function (dispatch) {
@@ -208,18 +212,19 @@ export default connect(
       },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));
+      },
+      onRestoreMapFromUrlParams(params) {
+        dispatch(restoreMapFromUrlParams((params)));
+      },
+      onMapRefocus(lat, lon, zoom) {
+        dispatch(refocusMap(lat, lon, zoom));
+      },
+      onSetMapType(mapType) {
+        dispatch(setMapType(mapType));
+      },
+      onSetMapOverlays(overlays) {
+        dispatch(setMapOverlays(overlays));
       }
     };
   }
 )(Main);
-
-
-function toMapState({ zoom, lat, lon, mapType }) {
-  return {
-    mapType: mapType && mapType.charAt(0) || 'T',
-    lat: parseFloat(lat) || 48.70714,
-    lon: parseFloat(lon) || 19.4995,
-    zoom: parseInt(zoom) || 8,
-    overlays: mapType && mapType.substring(1).split('') || []
-  };
-}
