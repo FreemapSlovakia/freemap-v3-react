@@ -17,7 +17,7 @@ class SearchResults extends React.Component {
       iconRetinaUrl: require('fm3/images/marker-icon-2x-green.png')
     });
 
-    const {highlightedResult, selectedResult} = this.props;
+    const { highlightedResult, selectedResult } = this.props;
     let tooltipContent = '';
     if (selectedResult) {
       tooltipContent = `${selectedResult.tags.name} (${selectedResult.tags.type})` ;
@@ -35,7 +35,7 @@ class SearchResults extends React.Component {
             icon={resultIcon}
             position={L.latLng(selectedResult.lat, selectedResult.lon)}>
             <Tooltip opacity={1.0} offset={[ 14, -20 ]} direction="right">
-              <span dangerouslySetInnerHTML={{__html: tooltipContent}}/>
+              <span dangerouslySetInnerHTML={{ __html: tooltipContent }}/>
             </Tooltip>
           </Marker>
           }

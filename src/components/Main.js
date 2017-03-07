@@ -93,7 +93,7 @@ class Main extends React.Component {
     this.props.onSetMapOverlays(overlays);
   }
 
-  handleMapClick({ latlng: { lat, lng: lon }}) {
+  handleMapClick({ latlng: { lat, lng: lon } }) {
     if (this.measurement) {
       this.measurement.getWrappedInstance().handlePointAdded({ lat, lon });
     }

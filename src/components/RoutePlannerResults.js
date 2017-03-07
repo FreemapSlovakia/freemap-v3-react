@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Marker, Polyline, Tooltip} from 'react-leaflet';
+import { Marker, Polyline, Tooltip } from 'react-leaflet';
 
 import { setStart, setFinish, addMidpoint, setMidpoint } from 'fm3/actions/routePlannerActions';
 
@@ -61,7 +61,7 @@ class RoutePlannerResults extends React.Component {
             onDragend={this.handleRouteMarkerDragend.bind(this, 'start', null)}
             position={L.latLng(start.lat, start.lon)}/>}
 
-            {midpoints.map(({ lat, lon}, i) => (
+            {midpoints.map(({ lat, lon }, i) => (
                 <Marker
                   icon={midPointIcon}
                   draggable

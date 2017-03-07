@@ -10,13 +10,13 @@ const initialState = {
 export default function Search(state = initialState, action) {
   switch (action.type) {
     case 'SEARCH':
-      return update(state, {query: {$set: action.query}});
+      return update(state, { query: { $set: action.query } });
     case 'SET_RESULTS':
-      return update(state, {results: {$set: action.results}});
+      return update(state, { results: { $set: action.results } });
     case 'HIGHLIGHT_RESULT':
-      return update(state, {highlightedResult: {$set: action.highlightedResult}});
+      return update(state, { highlightedResult: { $set: action.highlightedResult } });
     case 'SELECT_RESULT':
-      return update(state, {selectedResult: {$set: action.selectedResult}, highlightedResult: {$set: null}});
+      return update(state, { selectedResult: { $set: action.selectedResult }, highlightedResult: { $set: null } });
     default:
       return state;
   }

@@ -5,10 +5,10 @@ import { refocusMap } from 'fm3/actions/mapActions';
 const searchLogic = createLogic({
   type: 'SEARCH',
   process({ getState }, dispatch, done) {
-    const {center, zoom} = getState().map;
+    const { center, zoom } = getState().map;
     const lat = center.lat;
     const lon = center.lon;
-    const {query} = getState().search;
+    const { query } = getState().search;
     if (!query) {
       return null;
     }
@@ -30,8 +30,8 @@ const searchLogic = createLogic({
 const refocusMapLogic = createLogic({
   type: 'HIGHLIGHT_RESULT',
   process({ getState }, dispatch) {
-    const {highlightedResult} = getState().search;
-    const {zoom, bounds} = getState().map;
+    const { highlightedResult } = getState().search;
+    const { zoom, bounds } = getState().map;
     
     if (highlightedResult && bounds) {
       const southWest = L.latLng(bounds.south, bounds.west);

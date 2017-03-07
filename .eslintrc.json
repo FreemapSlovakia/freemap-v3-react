@@ -24,8 +24,11 @@
     "array-bracket-spacing": [ "warn", "always" ],
     "semi": [ "warn", "always" ],
     "space-before-blocks": "warn",
+    "block-spacing": "warn",
+    "object-curly-spacing": [ "warn", "always" ],
     "keyword-spacing": "warn",
-    "curly": "warn"
+    "curly": "warn",
+    "brace-style": "warn"
   },
   "globals": {
     "L": true

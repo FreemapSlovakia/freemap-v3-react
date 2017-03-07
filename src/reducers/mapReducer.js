@@ -27,8 +27,8 @@ export default function map(state = initialState, action) {
       return update(state, { 
         zoom: { $set: action.zoom }, 
         center: {
-          lat : {$set: action.lat}, 
-          lon : {$set: action.lon}
+          lat : { $set: action.lat }, 
+          lon : { $set: action.lon }
         }, 
       });
     case 'RESTORE_FROM_URL_PARAMS': {
@@ -37,10 +37,10 @@ export default function map(state = initialState, action) {
         mapType: { $set: action.params.mapType.charAt(0) },
         zoom: { $set: parseInt(action.params.zoom) }, 
         center: {
-          lat : {$set: parseFloat(action.params.lat)}, 
-          lon : {$set: parseFloat(action.params.lon)}
+          lat : { $set: parseFloat(action.params.lat) }, 
+          lon : { $set: parseFloat(action.params.lon) }
         }, 
-        overlays: {$set: overlays}
+        overlays: { $set: overlays }
       });
     }
     default:

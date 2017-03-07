@@ -1,5 +1,5 @@
 import React from 'react';
-import {AsyncTypeahead} from 'react-bootstrap-typeahead';
+import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import { connect } from 'react-redux';
 
@@ -56,7 +56,7 @@ Search.propTypes = {
 
 export default connect(
   function (state) {
-    return {results: state.search.results};
+    return { results: state.search.results };
   },
   function (dispatch) {
     return {
