@@ -9,6 +9,8 @@ npm i
 webpack --watch
 ```
 
+then in your browser open `file:///<path-to-freemap-repo>/dist/index.html`
+
 ## Compiling for the production
 
 ```
