@@ -59,7 +59,9 @@ class RoutePlannerResults extends React.Component {
             icon={startIcon}
             draggable
             onDragend={this.handleRouteMarkerDragend.bind(this, 'start', null)}
-            position={L.latLng(start.lat, start.lon)}/>}
+            position={L.latLng(start.lat, start.lon)}
+          />
+        }
 
             {midpoints.map(({ lat, lon }, i) => (
                 <Marker
@@ -74,10 +76,11 @@ class RoutePlannerResults extends React.Component {
 
         {finish &&
           <Marker
-              icon={finishIcon}
-              draggable
-              onDragend={this.handleRouteMarkerDragend.bind(this, 'finish', null)}
-              position={L.latLng(finish.lat, finish.lon)}>
+            icon={finishIcon}
+            draggable
+            onDragend={this.handleRouteMarkerDragend.bind(this, 'finish', null)}
+            position={L.latLng(finish.lat, finish.lon)}
+          >
 
             {distance !== null && time !== null &&
               <Tooltip offset={new L.Point(14, -25)} direction="right" permanent>
