@@ -66,7 +66,6 @@ class Main extends React.Component {
     const { center: { lat: oldLat, lon: oldLon }, zoom: oldZoom } = this.props;
     if (isNaN(lat) || isNaN(lon) || isNaN(zoom) ||
         Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
-          console.log("DDDD", lat, oldLat, lon, oldLon, zoom, oldZoom, new Error());
       this.props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
       this.handleMapBoundsChanged();
     }
