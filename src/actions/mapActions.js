@@ -1,7 +1,3 @@
-export function restoreMapFromUrlParams(params) {
-  return { type: 'RESTORE_FROM_URL_PARAMS', params };
-}
-
 export function setTool(tool) {
   return { type: 'SET_TOOL', tool };
 }

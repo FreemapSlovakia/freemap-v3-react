@@ -18,7 +18,7 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, resetMap, restoreMapFromUrlParams, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
+import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 import 'fm3/styles/main.scss';
@@ -28,21 +28,24 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 class Main extends React.Component {
 
   componentWillMount() {
-    if (this.props.params.lat) {
-      this.props.onRestoreMapFromUrlParams(this.props.params);
-    }
+    this.setupMapFromUrl(this.props.params);
   }
 
-  componentWillReceiveProps({ params }) {
-    const layers = params.mapType;
-    const mapType = layers ? layers.charAt(0) : null;
-    const overlays = layers && layers.length > 1 ? layers.substring(1).split('') : [];
+  componentWillReceiveProps(newProps) {
+    this.setupMapFromUrl(newProps.params);
+  }
 
-    if (mapType !== this.props.mapType) {
+  setupMapFromUrl(params) {
+    const layersOK = /^[ATCK]I?$/.test(params.mapType);
+    const layers = layersOK ? params.mapType : 'T';
+    const mapType = layers.charAt(0);
+    const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
+
+    if (!layersOK || mapType !== this.props.mapType) {
       this.props.onSetMapType(mapType);
     }
 
-    if (overlays.join('') !== this.props.overlays.join('')) {
+    if (!layersOK || overlays.join('') !== this.props.overlays.join('')) {
       this.props.onSetMapOverlays(overlays);
     }
 
@@ -61,21 +64,25 @@ class Main extends React.Component {
 
   refocusMap2(lat, lon, zoom) {
     const { center: { lat: oldLat, lon: oldLon }, zoom: oldZoom } = this.props;
-    if (Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
+    if (isNaN(lat) || isNaN(lon) || isNaN(zoom) ||
+        Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
+          console.log("DDDD", lat, oldLat, lon, oldLon, zoom, oldZoom, new Error());
+      this.props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
       this.handleMapBoundsChanged();
-      this.props.onMapRefocus(lat, lon, zoom);
     }
   }
 
   // TODO there may be more map events which changes map bounds. eg "resize". Implement.
   handleMapBoundsChanged() {
-    const b = this.map.leafletElement.getBounds();
-    this.props.onMapBoundsChange({
-      south: b.getSouth(),
-      west: b.getWest(),
-      north: b.getNorth(),
-      east: b.getEast()
-    });
+    if (this.map) { // FIXME this is sometimes null (if changed url manually)
+      const b = this.map.leafletElement.getBounds();
+      this.props.onMapBoundsChange({
+        south: b.getSouth(),
+        west: b.getWest(),
+        north: b.getNorth(),
+        east: b.getEast()
+      });
+    }
   }
 
   handleMapTypeChange(mapType) {
@@ -204,7 +211,6 @@ Main.propTypes = {
   objectsModalShown: React.PropTypes.bool,
   onShowObjectsModal: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
-  onRestoreMapFromUrlParams: React.PropTypes.func.isRequired,
   onMapRefocus: React.PropTypes.func.isRequired,
   onSetMapType: React.PropTypes.func.isRequired,
   onSetMapOverlays: React.PropTypes.func.isRequired
@@ -234,9 +240,6 @@ export default connect(
       },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));
-      },
-      onRestoreMapFromUrlParams(params) {
-        dispatch(restoreMapFromUrlParams((params)));
       },
       onMapRefocus(lat, lon, zoom) {
         dispatch(refocusMap(lat, lon, zoom));
