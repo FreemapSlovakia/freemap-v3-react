@@ -34,18 +34,15 @@ class Main extends React.Component {
   }
 
   componentWillReceiveProps({ params }) {
-    let mapType = null;
-    let overlays = [];
-    if (params.mapType) {
-      mapType = params.mapType.charAt(0);
-      overlays = params.mapType.substring(1).split('');
-    }
+    const layers = params.mapType;
+    const mapType = layers ? layers.charAt(0) : null;
+    const overlays = layers && layers.length > 1 ? layers.substring(1).split('') : [];
 
-    if (mapType && mapType !== this.props.mapType) {
+    if (mapType !== this.props.mapType) {
       this.props.onSetMapType(mapType);
     }
 
-    if (overlays && JSON.stringify(overlays) !== JSON.stringify(this.props.overlays)) {
+    if (overlays.join('') !== this.props.overlays.join('')) {
       this.props.onSetMapOverlays(overlays);
     }
 
@@ -105,12 +102,13 @@ class Main extends React.Component {
     }
   }
 
-  onClickSearchPOIs() {
-    if  (this.props.zoom < 12) {
+  handlePoiSearch() {
+    if (this.props.zoom < 12) {
       this.refs.toastContainer.info(
         "Vyhľadávanie POIs funguje až od zoom úrovne 12",
         null,
-        { timeOut: 3000 });
+        { timeOut: 3000 }
+      );
     } else {
       this.props.onShowObjectsModal();
     }
@@ -130,7 +128,7 @@ class Main extends React.Component {
               <Navbar.Brand>
                 <img onClick={b(onResetMap)}
                   className="freemap-logo"
-                  src={ require('fm3/images/freemap-logo.png') } />
+                  src={require('fm3/images/freemap-logo.png')}/>
               </Navbar.Brand>
               <Navbar.Toggle/>
             </Navbar.Header>
@@ -140,7 +138,7 @@ class Main extends React.Component {
                 <div>
                   <Search/>
                   <Nav>
-                    <NavItem onClick={b(this.onClickSearchPOIs)}>
+                    <NavItem onClick={b(this.handlePoiSearch)}>
                       <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
                     </NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
@@ -161,14 +159,14 @@ class Main extends React.Component {
         </Row>
         <Row>
           <Map
-              ref={map => this.map = map}
-              className={`tool-${tool || 'none'}`}
-              center={L.latLng(this.props.center.lat, this.props.center.lon)}
-              zoom={this.props.zoom}
-              onMoveend={b(this.refocusMap)}
-              onZoom={b(this.refocusMap)}
-              onClick={b(this.handleMapClick)}>
-
+            ref={map => this.map = map}
+            className={`tool-${tool || 'none'}`}
+            center={L.latLng(this.props.center.lat, this.props.center.lon)}
+            zoom={this.props.zoom}
+            onMoveend={b(this.refocusMap)}
+            onZoom={b(this.refocusMap)}
+            onClick={b(this.handleMapClick)}
+          >
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
               overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
@@ -185,9 +183,10 @@ class Main extends React.Component {
           </Map>
         </Row>
 
-        <ToastContainer ref="toastContainer"
-                        toastMessageFactory={ToastMessageFactory}
-                        className="toast-top-right" />
+        <ToastContainer
+          ref="toastContainer"
+          toastMessageFactory={ToastMessageFactory}
+          className="toast-top-right"/>
       </div>
     );
   }
