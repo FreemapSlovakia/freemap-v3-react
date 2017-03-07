@@ -138,10 +138,18 @@ class Main extends React.Component {
                 <div>
                   <Search/>
                   <Nav>
-                    <NavItem onClick={b(onShowObjectsModal)} disabled={this.props.zoom < 12}>Objekty</NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>Meranie vzdialenosti</NavItem>
-                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>Plánovač trasy</NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>Výškomer</NavItem>
+                    <NavItem onClick={b(onShowObjectsModal)} disabled={this.props.zoom < 12}>
+                      <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
+                    </NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
+                      <i className={`fa fa-arrows-h`} aria-hidden="true"/> Meranie vzdialenosti
+                    </NavItem>
+                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>
+                      <i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy
+                    </NavItem>
+                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
+                      <i className={`fa fa-area-chart`} aria-hidden="true"/> Výškomer
+                    </NavItem>
                   </Nav>
                 </div>
               }
