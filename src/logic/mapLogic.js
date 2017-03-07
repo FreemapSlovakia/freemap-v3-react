@@ -3,7 +3,6 @@ import { hashHistory as history } from 'react-router';
 
 export default createLogic({
   type: [ 
-    'RESTORE_FROM_URL_PARAMS', 
     'REFOCUS', 
     'SET_MAP_BOUNDS', 
     'SET_MAP_TYPE',
