@@ -36,7 +36,7 @@ class Main extends React.Component {
   componentWillReceiveProps(newProps) {
     const p = newProps.params;
 
-    let mapType = '';
+    let mapType = null;
     if (newProps.params.mapType) {
       mapType = newProps.params.mapType.charAt(0);
     }
