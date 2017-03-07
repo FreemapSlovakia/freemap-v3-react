@@ -34,6 +34,10 @@ class Main extends React.Component {
     }
   }
 
+  componentDidMount() {
+    this.handleMapBoundsChanged();
+  }
+
   componentWillReceiveProps({ params }) {
     let mapType = null;
     let overlays = [];
@@ -65,7 +69,7 @@ class Main extends React.Component {
     const center = e.target.getCenter();
     const { lat, lon } = this.props.center;
     if (Math.abs(center.lat - lat) > 0.000001 && Math.abs(center.lng - lon) > 0.000001) {
-      this.handleMapBoundsChanged(e);
+      this.handleMapBoundsChanged();
       this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
@@ -74,14 +78,14 @@ class Main extends React.Component {
     const center = e.target.getCenter();
     const zoom = e.target.getZoom();
     if (zoom !== this.props.zoom) {
-      this.handleMapBoundsChanged(e);
+      this.handleMapBoundsChanged();
       this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
   // TODO there may be more map events which changes map bounds. eg "resize". Implement.
-  handleMapBoundsChanged(e) {
-    const b = e.target.getBounds();
+  handleMapBoundsChanged() {
+    const b = this.map.leafletElement.getBounds();
     this.props.onMapBoundsChange({
       south: b.getSouth(),
       west: b.getWest(),
