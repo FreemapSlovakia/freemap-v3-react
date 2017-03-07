@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Tab from 'react-bootstrap/lib/Tab';
 import Tabs from 'react-bootstrap/lib/Tabs';
 
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+// TODO remove import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { setObjectsFilter, cancelObjectsModal } from 'fm3/actions/objectsActions';
 
 class ObjectsModal extends React.Component {
@@ -22,9 +22,9 @@ class ObjectsModal extends React.Component {
   }
 
   showObjects() {
-    this.props.onSearch([ ...this.state.selections ]
-      .map(i => poiTypes[i])
-      .map(({ key, value }) => `node["${key}"="${value}"]`)); // TODO move to logic?
+    // this.props.onSearch([ ...this.state.selections ]
+    //   .map(i => poiTypes[i])
+    //   .map(({ key, value }) => `node["${key}"="${value}"]`)); // TODO move to logic?
   }
 
   select(i) {
@@ -43,7 +43,7 @@ class ObjectsModal extends React.Component {
   }
 
   render() {
-    const { onCancel } = this.props;
+    const { onCancel, categories, subcategories } = this.props;
     const { selections } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
@@ -55,11 +55,11 @@ class ObjectsModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <Tabs activeKey={this.state.group} id="groupTabs" onSelect={b(this.handleGroupSelect)} animation={false}>
-            {poiTypeGroups.map(({ id, title }, i) => (
-              <Tab key={i} eventKey={i} title={title}>
+            {categories.map(({ id: cid, name }) => (
+              <Tab key={cid} eventKey={cid} title={name}>
                 <ButtonToolbar>
-                  {poiTypes.map(({ group, title }, i) =>
-                    group === id && <Button key={i} onClick={b(this.select, i)} bsStyle={selections.has(i) ? 'primary' : undefined}>{title}</Button>)
+                  {subcategories.map(({ id, name, category_id }) =>
+                    category_id === cid && <Button key={id} onClick={b(this.select, id)} bsStyle={selections.has(id) ? 'primary' : undefined}>{name}</Button>)
                   }
                 </ButtonToolbar>
               </Tab>
@@ -78,13 +78,16 @@ class ObjectsModal extends React.Component {
 
 ObjectsModal.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired
+  onCancel: React.PropTypes.func.isRequired,
+  categories: React.PropTypes.array.isRequired,
+  subcategories: React.PropTypes.array.isRequired
 };
 
 export default connect(
-  function (/*state*/) {
-    // TODO
+  function (state) {
     return {
+      categories: state.objects.categories,
+      subcategories: state.objects.subcategories
     };
   },
   function (dispatch) {

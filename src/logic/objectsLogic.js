@@ -1,7 +1,7 @@
 import { createLogic } from 'redux-logic';
-import { setObjects, cancelObjectsModal } from 'fm3/actions/objectsActions';
+import { setObjects, cancelObjectsModal, setCategories, setSubcategories } from 'fm3/actions/objectsActions';
 
-export default createLogic({
+const logic1 = createLogic({
   type: 'SET_OBJECTS_FILTER',
   process({ getState, action: { filter } }, dispatch, done) {
     if (!filter || !filter.length) {
@@ -23,3 +23,26 @@ export default createLogic({
     }).catch(() => {}).then(() => done());
   }
 });
+
+const logic2 = createLogic({
+  type: 'SHOW_OBJECTS_MODAL',
+  process({ getState, action: { filter } }, dispatch, done) {
+    // TODO read only once, then use from the store
+
+    const p1 = fetch('https://dev.freemap.sk/api/0.3/poi/categories', {
+      method: 'GET'
+    }).then(res => res.json()).then(data => {
+      dispatch(setCategories(data)); // id, name (missing category_icon,)
+    });
+
+    const p2 = fetch('https://dev.freemap.sk/api/0.3/poi/subcategories', {
+      method: 'GET'
+    }).then(res => res.json()).then(data => {
+      dispatch(setSubcategories(data)); // id, category_id, name, category_icon (no need), subcategory_icon
+    });
+
+    return Promise.all([ p1, p2 ]).catch(() => {}).then(() => done());
+  }
+});
+
+export default [ logic1, logic2 ];
