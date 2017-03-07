@@ -33,6 +33,30 @@ class Main extends React.Component {
     }
   }
 
+  componentWillReceiveProps(newProps) {
+    const p = newProps.params;
+
+    const mapType = newProps.params.mapType.charAt(0);
+    if (mapType && mapType !== this.props.mapType) {
+      this.props.onSetMapType(mapType);
+    }
+
+    const overlays = newProps.params.mapType.substring(1).split('');
+    if (overlays && JSON.stringify(overlays) !== JSON.stringify(this.props.overlays)) {
+      this.props.onSetMapOverlays(overlays);
+    }
+
+    const zoom = parseInt(p.zoom);
+    const lat = parseFloat(p.lat);
+    const lon = parseFloat(p.lon);
+    const zoomChangedInURL = zoom && zoom !== this.props.zoom;
+    const latChangedInURL = lat && lat !== this.props.center.lat;
+    const lonChangedInURL = lon && lon !== this.props.center.lon;
+    if (zoomChangedInURL || latChangedInURL || lonChangedInURL) {
+      this.props.onMapRefocus(lat, lon, zoom);
+    }
+  }
+
   handleMapMoveend(e) {
     const center = e.target.getCenter();
     if (Math.abs(center.lat - this.props.center.lat) > 0.000001 && Math.abs(center.lng - this.props.center.lon) > 0.000001) {
