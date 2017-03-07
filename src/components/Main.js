@@ -22,37 +22,30 @@ import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 class Main extends React.Component {
 
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
-
   componentWillMount() {
     if (this.props.params.lat) {
       this.props.onRestoreMapFromUrlParams(this.props.params);
     }
   }
 
-  componentWillReceiveProps(newProps) {
-    const p = newProps.params;
-
+  componentWillReceiveProps({ params }) {
     let mapType = null;
-    if (newProps.params.mapType) {
-      mapType = newProps.params.mapType.charAt(0);
+    if (params.mapType) {
+      mapType = params.mapType.charAt(0);
     }
-    
+
     if (mapType && mapType !== this.props.mapType) {
       this.props.onSetMapType(mapType);
     }
 
-    const overlays = newProps.params.mapType.substring(1).split('');
+    const overlays = params.mapType.substring(1).split('');
     if (overlays && JSON.stringify(overlays) !== JSON.stringify(this.props.overlays)) {
       this.props.onSetMapOverlays(overlays);
     }
 
-    const zoom = parseInt(p.zoom);
-    const lat = parseFloat(p.lat);
-    const lon = parseFloat(p.lon);
+    const zoom = parseInt(params.zoom);
+    const lat = parseFloat(params.lat);
+    const lon = parseFloat(params.lon);
     const zoomChangedInURL = zoom && zoom !== this.props.zoom;
     const latChangedInURL = lat && lat !== this.props.center.lat;
     const lonChangedInURL = lon && lon !== this.props.center.lon;
@@ -63,7 +56,8 @@ class Main extends React.Component {
 
   handleMapMoveend(e) {
     const center = e.target.getCenter();
-    if (Math.abs(center.lat - this.props.center.lat) > 0.000001 && Math.abs(center.lng - this.props.center.lon) > 0.000001) {
+    const { lat, lon } = this.props.center;
+    if (Math.abs(center.lat - lat) > 0.000001 && Math.abs(center.lng - lon) > 0.000001) {
       this.handleMapBoundsChanged(e);
       this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
