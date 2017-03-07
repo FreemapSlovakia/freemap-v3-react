@@ -12,8 +12,8 @@ module.exports = {
   context: path.resolve(__dirname, 'src'),
   entry: './index.js',
   output: {
-    filename: 'dist/index.js',
-    path: __dirname
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'dist')
   },
   resolve: {
     alias: {
@@ -71,8 +71,8 @@ module.exports = {
 
 module.exports.plugins.push(
   new CopyWebpackPlugin([
-    { from: 'index.html', to: 'dist/index.html' },
-    { from: 'favicon.ico', to: 'dist/favicon.ico' }
+    { from: 'index.html' },
+    { from: 'favicon.ico' }
   ]),
   extractSass
 );
