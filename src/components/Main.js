@@ -7,6 +7,10 @@ import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
 
+const ReactToastr = require("react-toastr");
+const ToastContainer = ReactToastr.ToastContainer;
+const ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
+
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
 import ObjectsModal from 'fm3/components/ObjectsModal';
@@ -110,12 +114,19 @@ class Main extends React.Component {
     }
   }
 
-  resetApp() {
-
+  onClickSearchPOIs() {
+    if  (this.props.zoom < 12) {
+      this.refs.toastContainer.info(
+        "Vyhľadávanie POIs funguje až od zoom úrovne 12", 
+        null,
+        { timeOut: 3000 });
+    } else {
+      this.props.onShowObjectsModal();
+    }
   }
 
   render() {
-    const { tool, onResetMap, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
+    const { tool, onResetMap, onSetTool, objectsModalShown } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
@@ -138,7 +149,7 @@ class Main extends React.Component {
                 <div>
                   <Search/>
                   <Nav>
-                    <NavItem onClick={b(onShowObjectsModal)} disabled={this.props.zoom < 12}>
+                    <NavItem onClick={b(this.onClickSearchPOIs)}>
                       <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
                     </NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
@@ -182,6 +193,10 @@ class Main extends React.Component {
             {tool === 'measure-ele' && <ElevationMeasurement ref={e => this.elevationMeasurement = e}/>}
           </Map>
         </Row>
+
+        <ToastContainer ref="toastContainer"
+                        toastMessageFactory={ToastMessageFactory}
+                        className="toast-top-right" />
       </div>
     );
   }
