@@ -12,11 +12,19 @@ const initialState = {
   overlays: []
 };
 
-
 export default function map(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
       return update(state, { tool: { $set: action.tool === state.tool ? null : action.tool } } );
+    case 'RESET_MAP':
+      return update(state, { 
+        tool: { $set: initialState.tool },
+        zoom: { $set: initialState.zoom }, 
+        center: {
+          lat : { $set: initialState.center.lat }, 
+          lon : { $set: initialState.center.lon }
+        }, 
+      });
     case 'SET_MAP_BOUNDS':
       return update(state, { bounds: { $set: action.bounds } } );
     case 'SET_MAP_TYPE':

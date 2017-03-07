@@ -6,6 +6,10 @@ export function setTool(tool) {
   return { type: 'SET_TOOL', tool };
 }
 
+export function resetMap() {
+  return { type: 'RESET_MAP' };
+}
+
 export function setMapBounds(bounds) {
   return { type: 'SET_MAP_BOUNDS', bounds };
 }

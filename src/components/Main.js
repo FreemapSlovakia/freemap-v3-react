@@ -17,8 +17,10 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, restoreMapFromUrlParams, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
+import { setTool, resetMap, restoreMapFromUrlParams, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
+
+import 'fm3/styles/main.scss';
 
 class Main extends React.Component {
 
@@ -108,8 +110,12 @@ class Main extends React.Component {
     }
   }
 
+  resetApp() {
+
+  }
+
   render() {
-    const { tool, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
+    const { tool, onResetMap, onSetTool, onShowObjectsModal, objectsModalShown } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
@@ -119,7 +125,11 @@ class Main extends React.Component {
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
             <Navbar.Header>
-              <Navbar.Brand>Freemap</Navbar.Brand>
+              <Navbar.Brand>
+                <img onClick={b(onResetMap)} 
+                  className="freemap-logo" 
+                  src={ require('fm3/images/freemap-logo.png') } />
+              </Navbar.Brand>
               <Navbar.Toggle/>
             </Navbar.Header>
 
@@ -177,6 +187,7 @@ Main.propTypes = {
   mapType: React.PropTypes.string,
   overlays: React.PropTypes.array,
   onSetTool: React.PropTypes.func.isRequired,
+  onResetMap: React.PropTypes.func.isRequired,
   objectsModalShown: React.PropTypes.bool,
   onShowObjectsModal: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
@@ -201,6 +212,9 @@ export default connect(
     return {
       onSetTool(tool) {
         dispatch(setTool(tool));
+      },
+      onResetMap() {
+        dispatch(resetMap());
       },
       onShowObjectsModal() {
         dispatch(showObjectsModal());

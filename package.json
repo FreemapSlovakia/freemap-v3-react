@@ -3,6 +3,7 @@
   "version": "3.0.0",
   "description": "Web app for making toposcopes.",
   "dependencies": {
+    "file-loader": "^0.10.1",
     "file-saver": "^1.3.3",
     "immutability-helper": "^2.1.2",
     "leaflet": "^1.0.3",
