@@ -3,11 +3,12 @@ import { connect } from 'react-redux';
 import Point from 'fm3/components/SearchResults/Point';
 import Polyline from 'fm3/components/SearchResults/Polyline';
 import Polygon from 'fm3/components/SearchResults/Polygon';
+import MultiPolygon from 'fm3/components/SearchResults/MultiPolygon';
 
 class SearchResults extends React.Component {
 
   displayAsPoint(result) {
-    return result && (result.geojson.type === 'Point' || result.geojson.type === 'MultiPolygon');
+    return result && result.geojson.type === 'Point';
   }
 
   displayAsPolyline(result) {
@@ -16,6 +17,10 @@ class SearchResults extends React.Component {
 
   displayAsPolygon(result) {
     return result && (result.geojson.type === 'Polygon');
+  }
+
+  displayAsMultiPolygon(result) {
+    return result && (result.geojson.type === 'MultiPolygon');
   }
 
   render() {
@@ -32,6 +37,9 @@ class SearchResults extends React.Component {
         {this.displayAsPolygon(highlightedResult) &&
           <Polygon searchResult={highlightedResult} theme="highlighted" />
         }
+        {this.displayAsMultiPolygon(highlightedResult) &&
+          <MultiPolygon searchResult={highlightedResult} theme="highlighted" />
+        }
         {this.displayAsPoint(selectedResult) &&
           <Point searchResult={selectedResult} theme="selected" />
         }
@@ -40,6 +48,9 @@ class SearchResults extends React.Component {
         }
         {this.displayAsPolygon(selectedResult) &&
           <Polygon searchResult={selectedResult} theme="selected" />
+        }
+        {this.displayAsMultiPolygon(selectedResult) &&
+          <MultiPolygon searchResult={selectedResult} theme="selected" />
         }
       </div>
   );

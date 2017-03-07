@@ -38,7 +38,7 @@ class Search extends React.Component {
                 onMouseEnter={b(this.onSuggestionHighlightChange, result)}
                 onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
               <span>{result.tags.name} </span><br/>
-              <span>({result.tags.type})</span>
+              <span>({result.geojson.type}, {result.tags.type})</span>
             </div>
           )}
         />

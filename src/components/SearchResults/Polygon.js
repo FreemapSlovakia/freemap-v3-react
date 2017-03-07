@@ -4,8 +4,8 @@ import { Polygon as LeafletPolygon } from 'react-leaflet';
 export default function Polygon({ searchResult, theme }) {
 
   const rawLatLons = searchResult.geojson.coordinates[0];
-  const latlongs = rawLatLons.map( latlon => {
-    return L.latLng(latlon[1], latlon[0]);
+  const latlongs = rawLatLons.map( lonlat => {
+    return L.latLng(lonlat[1], lonlat[0]);
   });
 
   let leafletOptions = { fillColor: 'grey', color: 'grey' };
