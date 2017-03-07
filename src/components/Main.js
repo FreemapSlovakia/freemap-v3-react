@@ -30,15 +30,16 @@ class Main extends React.Component {
 
   componentWillReceiveProps({ params }) {
     let mapType = null;
+    let overlays = [];
     if (params.mapType) {
       mapType = params.mapType.charAt(0);
+      overlays = params.mapType.substring(1).split('');
     }
 
     if (mapType && mapType !== this.props.mapType) {
       this.props.onSetMapType(mapType);
     }
 
-    const overlays = params.mapType.substring(1).split('');
     if (overlays && JSON.stringify(overlays) !== JSON.stringify(this.props.overlays)) {
       this.props.onSetMapOverlays(overlays);
     }
