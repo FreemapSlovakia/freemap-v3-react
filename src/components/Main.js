@@ -6,10 +6,7 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
-
-const ReactToastr = require("react-toastr");
-const ToastContainer = ReactToastr.ToastContainer;
-const ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
+import ReactToastr from "react-toastr";
 
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
@@ -25,6 +22,9 @@ import { setTool, resetMap, restoreMapFromUrlParams, setMapBounds, refocusMap, s
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 import 'fm3/styles/main.scss';
+
+const ToastContainer = ReactToastr.ToastContainer;
+const ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
 
 class Main extends React.Component {
 
@@ -61,6 +61,7 @@ class Main extends React.Component {
     const latChangedInURL = lat && lat !== this.props.center.lat;
     const lonChangedInURL = lon && lon !== this.props.center.lon;
     if (zoomChangedInURL || latChangedInURL || lonChangedInURL) {
+      console.log("XXXX");
       this.props.onMapRefocus(lat, lon, zoom);
     }
   }
@@ -70,6 +71,7 @@ class Main extends React.Component {
     const { lat, lon } = this.props.center;
     if (Math.abs(center.lat - lat) > 0.000001 && Math.abs(center.lng - lon) > 0.000001) {
       this.handleMapBoundsChanged();
+      console.log("AAAAAA");
       this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
@@ -121,7 +123,7 @@ class Main extends React.Component {
   onClickSearchPOIs() {
     if  (this.props.zoom < 12) {
       this.refs.toastContainer.info(
-        "Vyhľadávanie POIs funguje až od zoom úrovne 12", 
+        "Vyhľadávanie POIs funguje až od zoom úrovne 12",
         null,
         { timeOut: 3000 });
     } else {
@@ -141,8 +143,8 @@ class Main extends React.Component {
           <Navbar fluid style={{ marginBottom: 0 }}>
             <Navbar.Header>
               <Navbar.Brand>
-                <img onClick={b(onResetMap)} 
-                  className="freemap-logo" 
+                <img onClick={b(onResetMap)}
+                  className="freemap-logo"
                   src={ require('fm3/images/freemap-logo.png') } />
               </Navbar.Brand>
               <Navbar.Toggle/>
