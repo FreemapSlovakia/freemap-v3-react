@@ -20,10 +20,7 @@ export default function map(state = initialState, action) {
       return update(state, { 
         tool: { $set: initialState.tool },
         zoom: { $set: initialState.zoom }, 
-        center: {
-          lat : { $set: initialState.center.lat }, 
-          lon : { $set: initialState.center.lon }
-        }, 
+        center: { $set: initialState.center }, 
       });
     case 'SET_MAP_BOUNDS':
       return update(state, { bounds: { $set: action.bounds } } );
