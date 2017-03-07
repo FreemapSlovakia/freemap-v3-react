@@ -1,12 +1,12 @@
 import React from 'react';
 import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
+import { ToastContainer, ToastMessage } from 'react-toastr';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
-import ReactToastr from "react-toastr";
 
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
@@ -23,8 +23,7 @@ import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 import 'fm3/styles/main.scss';
 
-const ToastContainer = ReactToastr.ToastContainer;
-const ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
+const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 class Main extends React.Component {
 
@@ -32,10 +31,6 @@ class Main extends React.Component {
     if (this.props.params.lat) {
       this.props.onRestoreMapFromUrlParams(this.props.params);
     }
-  }
-
-  componentDidMount() {
-    this.handleMapBoundsChanged();
   }
 
   componentWillReceiveProps({ params }) {
@@ -57,31 +52,21 @@ class Main extends React.Component {
     const zoom = parseInt(params.zoom);
     const lat = parseFloat(params.lat);
     const lon = parseFloat(params.lon);
-    const zoomChangedInURL = zoom && zoom !== this.props.zoom;
-    const latChangedInURL = lat && lat !== this.props.center.lat;
-    const lonChangedInURL = lon && lon !== this.props.center.lon;
-    if (zoomChangedInURL || latChangedInURL || lonChangedInURL) {
-      console.log("XXXX");
+
+    this.refocusMap2(lat, lon, zoom);
+  }
+
+  refocusMap({ target }) {
+    const { lat, lng: lon } = target.getCenter();
+    const zoom = target.getZoom();
+    this.refocusMap2(lat, lon, zoom);
+  }
+
+  refocusMap2(lat, lon, zoom) {
+    const { center: { lat: oldLat, lon: oldLon }, zoom: oldZoom } = this.props;
+    if (Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
+      this.handleMapBoundsChanged();
       this.props.onMapRefocus(lat, lon, zoom);
-    }
-  }
-
-  handleMapMoveend(e) {
-    const center = e.target.getCenter();
-    const { lat, lon } = this.props.center;
-    if (Math.abs(center.lat - lat) > 0.000001 && Math.abs(center.lng - lon) > 0.000001) {
-      this.handleMapBoundsChanged();
-      console.log("AAAAAA");
-      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
-    }
-  }
-
-  handleMapZoom(e) {
-    const center = e.target.getCenter();
-    const zoom = e.target.getZoom();
-    if (zoom !== this.props.zoom) {
-      this.handleMapBoundsChanged();
-      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
@@ -180,8 +165,8 @@ class Main extends React.Component {
               className={`tool-${tool || 'none'}`}
               center={L.latLng(this.props.center.lat, this.props.center.lon)}
               zoom={this.props.zoom}
-              onMoveend={b(this.handleMapMoveend)}
-              onZoom={b(this.handleMapZoom)}
+              onMoveend={b(this.refocusMap)}
+              onZoom={b(this.refocusMap)}
               onClick={b(this.handleMapClick)}>
 
             <Layers
