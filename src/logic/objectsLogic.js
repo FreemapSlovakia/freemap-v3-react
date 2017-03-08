@@ -15,11 +15,14 @@ export default createLogic({
     const bbox = `(${south},${west},${north},${east})`;
     const query = `[out:json][timeout:60]; (${filter.map(f => `${f}${bbox};`).join('')}); out qt;`;
 
-    return fetch('https://overpass-api.de/api/interpreter', {
+    fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`
-    }).then(res => res.json()).then(data => {
-      dispatch(setObjects(data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags }))));
-    }).catch(() => {}).then(() => done());
+    })
+      .then(res => res.json()).then(data => {
+        dispatch(setObjects(data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags }))));
+      })
+      .catch(() => {})
+      .then(() => done());
   }
 });
