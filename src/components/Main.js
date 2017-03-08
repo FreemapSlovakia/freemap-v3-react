@@ -113,7 +113,7 @@ class Main extends React.Component {
       this.refs.toastContainer.info(
         "Vyhľadávanie POIs funguje až od zoom úrovne 12",
         null,
-        { timeOut: 3000 }
+        { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
       );
     } else {
       this.props.onShowObjectsModal();
