@@ -1,15 +1,12 @@
 import React from 'react';
 import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
+import { ToastContainer, ToastMessage } from 'react-toastr';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
-
-const ReactToastr = require("react-toastr");
-const ToastContainer = ReactToastr.ToastContainer;
-const ToastMessageFactory = React.createFactory(ReactToastr.ToastMessage.animation);
 
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
@@ -21,77 +18,70 @@ import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 
-import { setTool, resetMap, restoreMapFromUrlParams, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
+import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 import 'fm3/styles/main.scss';
 
+const ToastMessageFactory = React.createFactory(ToastMessage.animation);
+
 class Main extends React.Component {
 
   componentWillMount() {
-    if (this.props.params.lat) {
-      this.props.onRestoreMapFromUrlParams(this.props.params);
-    }
+    this.setupMapFromUrl(this.props.params);
   }
 
-  componentDidMount() {
-    this.handleMapBoundsChanged();
+  componentWillReceiveProps(newProps) {
+    this.setupMapFromUrl(newProps.params);
   }
 
-  componentWillReceiveProps({ params }) {
-    let mapType = null;
-    let overlays = [];
-    if (params.mapType) {
-      mapType = params.mapType.charAt(0);
-      overlays = params.mapType.substring(1).split('');
-    }
+  setupMapFromUrl(params) {
+    const layersOK = /^[ATCK]I?$/.test(params.mapType);
+    const layers = layersOK ? params.mapType : 'T';
+    const mapType = layers.charAt(0);
+    const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
 
-    if (mapType && mapType !== this.props.mapType) {
+    if (!layersOK || mapType !== this.props.mapType) {
       this.props.onSetMapType(mapType);
     }
 
-    if (overlays && JSON.stringify(overlays) !== JSON.stringify(this.props.overlays)) {
+    if (!layersOK || overlays.join('') !== this.props.overlays.join('')) {
       this.props.onSetMapOverlays(overlays);
     }
 
     const zoom = parseInt(params.zoom);
     const lat = parseFloat(params.lat);
     const lon = parseFloat(params.lon);
-    const zoomChangedInURL = zoom && zoom !== this.props.zoom;
-    const latChangedInURL = lat && lat !== this.props.center.lat;
-    const lonChangedInURL = lon && lon !== this.props.center.lon;
-    if (zoomChangedInURL || latChangedInURL || lonChangedInURL) {
-      this.props.onMapRefocus(lat, lon, zoom);
-    }
+
+    this.refocusMap2(lat, lon, zoom);
   }
 
-  handleMapMoveend(e) {
-    const center = e.target.getCenter();
-    const { lat, lon } = this.props.center;
-    if (Math.abs(center.lat - lat) > 0.000001 && Math.abs(center.lng - lon) > 0.000001) {
-      this.handleMapBoundsChanged();
-      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
-    }
+  refocusMap({ target }) {
+    const { lat, lng: lon } = target.getCenter();
+    const zoom = target.getZoom();
+    this.refocusMap2(lat, lon, zoom);
   }
 
-  handleMapZoom(e) {
-    const center = e.target.getCenter();
-    const zoom = e.target.getZoom();
-    if (zoom !== this.props.zoom) {
+  refocusMap2(lat, lon, zoom) {
+    const { center: { lat: oldLat, lon: oldLon }, zoom: oldZoom } = this.props;
+    if (isNaN(lat) || isNaN(lon) || isNaN(zoom) ||
+        Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
+      this.props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
       this.handleMapBoundsChanged();
-      this.props.onMapRefocus(center.lat, center.lng, e.target.getZoom());
     }
   }
 
   // TODO there may be more map events which changes map bounds. eg "resize". Implement.
   handleMapBoundsChanged() {
-    const b = this.map.leafletElement.getBounds();
-    this.props.onMapBoundsChange({
-      south: b.getSouth(),
-      west: b.getWest(),
-      north: b.getNorth(),
-      east: b.getEast()
-    });
+    if (this.map) { // FIXME this is sometimes null (if changed url manually)
+      const b = this.map.leafletElement.getBounds();
+      this.props.onMapBoundsChange({
+        south: b.getSouth(),
+        west: b.getWest(),
+        north: b.getNorth(),
+        east: b.getEast()
+      });
+    }
   }
 
   handleMapTypeChange(mapType) {
@@ -118,12 +108,13 @@ class Main extends React.Component {
     }
   }
 
-  onClickSearchPOIs() {
-    if  (this.props.zoom < 12) {
+  handlePoiSearch() {
+    if (this.props.zoom < 12) {
       this.refs.toastContainer.info(
-        "Vyhľadávanie POIs funguje až od zoom úrovne 12", 
+        "Vyhľadávanie POIs funguje až od zoom úrovne 12",
         null,
-        { timeOut: 3000 });
+        { timeOut: 3000 }
+      );
     } else {
       this.props.onShowObjectsModal();
     }
@@ -141,9 +132,9 @@ class Main extends React.Component {
           <Navbar fluid style={{ marginBottom: 0 }}>
             <Navbar.Header>
               <Navbar.Brand>
-                <img onClick={b(onResetMap)} 
-                  className="freemap-logo" 
-                  src={ require('fm3/images/freemap-logo.png') } />
+                <img onClick={b(onResetMap)}
+                  className="freemap-logo"
+                  src={require('fm3/images/freemap-logo.png')}/>
               </Navbar.Brand>
               <Navbar.Toggle/>
             </Navbar.Header>
@@ -153,7 +144,7 @@ class Main extends React.Component {
                 <div>
                   <Search/>
                   <Nav>
-                    <NavItem onClick={b(this.onClickSearchPOIs)}>
+                    <NavItem onClick={b(this.handlePoiSearch)}>
                       <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
                     </NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
@@ -174,14 +165,14 @@ class Main extends React.Component {
         </Row>
         <Row>
           <Map
-              ref={map => this.map = map}
-              className={`tool-${tool || 'none'}`}
-              center={L.latLng(this.props.center.lat, this.props.center.lon)}
-              zoom={this.props.zoom}
-              onMoveend={b(this.handleMapMoveend)}
-              onZoom={b(this.handleMapZoom)}
-              onClick={b(this.handleMapClick)}>
-
+            ref={map => this.map = map}
+            className={`tool-${tool || 'none'}`}
+            center={L.latLng(this.props.center.lat, this.props.center.lon)}
+            zoom={this.props.zoom}
+            onMoveend={b(this.refocusMap)}
+            onZoom={b(this.refocusMap)}
+            onClick={b(this.handleMapClick)}
+          >
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
               overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
@@ -198,9 +189,10 @@ class Main extends React.Component {
           </Map>
         </Row>
 
-        <ToastContainer ref="toastContainer"
-                        toastMessageFactory={ToastMessageFactory}
-                        className="toast-top-right" />
+        <ToastContainer
+          ref="toastContainer"
+          toastMessageFactory={ToastMessageFactory}
+          className="toast-top-right"/>
       </div>
     );
   }
@@ -218,7 +210,6 @@ Main.propTypes = {
   objectsModalShown: React.PropTypes.bool,
   onShowObjectsModal: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
-  onRestoreMapFromUrlParams: React.PropTypes.func.isRequired,
   onMapRefocus: React.PropTypes.func.isRequired,
   onSetMapType: React.PropTypes.func.isRequired,
   onSetMapOverlays: React.PropTypes.func.isRequired
@@ -248,9 +239,6 @@ export default connect(
       },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));
-      },
-      onRestoreMapFromUrlParams(params) {
-        dispatch(restoreMapFromUrlParams((params)));
       },
       onMapRefocus(lat, lon, zoom) {
         dispatch(refocusMap(lat, lon, zoom));

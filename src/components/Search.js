@@ -35,8 +35,9 @@ class Search extends React.Component {
           emptyLabel={'Nenašli sa žiadne výsledky'}
           renderMenuItemChildren={(result) => (
             <div key={result.label + result.id}
-                onMouseEnter={b(this.onSuggestionHighlightChange, result)}
-                onMouseLeave={b(this.onSuggestionHighlightChange, null)}>
+              onMouseEnter={b(this.onSuggestionHighlightChange, result)}
+              onMouseLeave={b(this.onSuggestionHighlightChange, null)}
+            >
               <span>{result.tags.name} </span><br/>
               <span>({result.geojson.type}, {result.tags.type})</span>
             </div>

@@ -1,59 +1,43 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import Point from 'fm3/components/SearchResults/Point';
-import Polyline from 'fm3/components/SearchResults/Polyline';
-import Polygon from 'fm3/components/SearchResults/Polygon';
-import MultiPolygon from 'fm3/components/SearchResults/MultiPolygon';
+import Point from 'fm3/components/searchResults/Point';
+import Polyline from 'fm3/components/searchResults/Polyline';
+import Polygon from 'fm3/components/searchResults/Polygon';
+import MultiPolygon from 'fm3/components/searchResults/MultiPolygon';
 
 class SearchResults extends React.Component {
-
-  displayAsPoint(result) {
-    return result && result.geojson.type === 'Point';
-  }
-
-  displayAsPolyline(result) {
-    return result && (result.geojson.type === 'LineString');
-  }
-
-  displayAsPolygon(result) {
-    return result && (result.geojson.type === 'Polygon');
-  }
-
-  displayAsMultiPolygon(result) {
-    return result && (result.geojson.type === 'MultiPolygon');
-  }
 
   render() {
     const { highlightedResult, selectedResult } = this.props;
 
     return (
       <div>
-        {this.displayAsPoint(highlightedResult) &&
+        {displayAsPoint(highlightedResult) &&
           <Point searchResult={highlightedResult} theme="highlighted" />
         }
-        {this.displayAsPolyline(highlightedResult) &&
+        {displayAsPolyline(highlightedResult) &&
           <Polyline searchResult={highlightedResult} theme="highlighted" />
         }
-        {this.displayAsPolygon(highlightedResult) &&
+        {displayAsPolygon(highlightedResult) &&
           <Polygon searchResult={highlightedResult} theme="highlighted" />
         }
-        {this.displayAsMultiPolygon(highlightedResult) &&
+        {displayAsMultiPolygon(highlightedResult) &&
           <MultiPolygon searchResult={highlightedResult} theme="highlighted" />
         }
-        {this.displayAsPoint(selectedResult) &&
+        {displayAsPoint(selectedResult) &&
           <Point searchResult={selectedResult} theme="selected" />
         }
-        {this.displayAsPolyline(selectedResult) &&
+        {displayAsPolyline(selectedResult) &&
           <Polyline searchResult={selectedResult} theme="selected" />
         }
-        {this.displayAsPolygon(selectedResult) &&
+        {displayAsPolygon(selectedResult) &&
           <Polygon searchResult={selectedResult} theme="selected" />
         }
-        {this.displayAsMultiPolygon(selectedResult) &&
+        {displayAsMultiPolygon(selectedResult) &&
           <MultiPolygon searchResult={selectedResult} theme="selected" />
         }
       </div>
-  );
+    );
   }
 }
 
@@ -62,15 +46,27 @@ SearchResults.propTypes = {
   selectedResult: React.PropTypes.any
 };
 
+function displayAsPoint(result) {
+  return result && result.geojson.type === 'Point';
+}
+
+function displayAsPolyline(result) {
+  return result && (result.geojson.type === 'LineString');
+}
+
+function displayAsPolygon(result) {
+  return result && (result.geojson.type === 'Polygon');
+}
+
+function displayAsMultiPolygon(result) {
+  return result && (result.geojson.type === 'MultiPolygon');
+}
+
 export default connect(
   function (state) {
     return {
       highlightedResult: state.search.highlightedResult,
-      selectedResult: state.search.selectedResult,
-    };
-  },
-  function () {
-    return {
+      selectedResult: state.search.selectedResult
     };
   }
 )(SearchResults);
