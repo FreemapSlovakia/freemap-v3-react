@@ -163,7 +163,7 @@ class Main extends React.Component {
             </Navbar.Collapse>
           </Navbar>
         </Row>
-        <Row>
+        <Row className={`active-map-type-${this.props.mapType}`}>
           <Map
             ref={map => this.map = map}
             className={`tool-${tool || 'none'}`}

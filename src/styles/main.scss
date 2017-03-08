@@ -12,3 +12,19 @@
 .toast-info {
   background-color: #009c00;
 }
+
+.active-map-type-T a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-walk.png) !important;
+}
+
+.active-map-type-A a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-car.png) !important;
+}
+
+.active-map-type-C a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-bicycle.png) !important;
+}
+
+.active-map-type-K a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-skiing.png) !important;
+}
