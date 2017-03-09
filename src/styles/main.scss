@@ -1,4 +1,4 @@
-.navbar>.container .navbar-brand, .navbar>.container-fluid img.freemap-logo.navbar-brand {
+.navbar > .container-fluid img.freemap-logo.navbar-brand {
   margin-top: 7px;
   margin-left: 0px;
   padding: 0;
@@ -7,4 +7,28 @@
   &:hover {
     cursor: pointer;
   }
+}
+
+.toast-info {
+  background-color: #009c00;
+}
+
+a.leaflet-control-layers-toggle {
+  background-size: 36px 36px;
+}
+
+.active-map-type-T a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-walk.png);
+}
+
+.active-map-type-A a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-car.png);
+}
+
+.active-map-type-C a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-bicycle.png);
+}
+
+.active-map-type-K a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-skiing.png);
 }

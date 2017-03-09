@@ -113,7 +113,7 @@ class Main extends React.Component {
       this.refs.toastContainer.info(
         "Vyhľadávanie POIs funguje až od zoom úrovne 12",
         null,
-        { timeOut: 3000 }
+        { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
       );
     } else {
       this.props.onShowObjectsModal();
@@ -163,10 +163,9 @@ class Main extends React.Component {
             </Navbar.Collapse>
           </Navbar>
         </Row>
-        <Row>
+        <Row className={`tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
             ref={map => this.map = map}
-            className={`tool-${tool || 'none'}`}
             center={L.latLng(this.props.center.lat, this.props.center.lon)}
             zoom={this.props.zoom}
             onMoveend={b(this.refocusMap)}
@@ -175,7 +174,8 @@ class Main extends React.Component {
           >
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
-              overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}/>
+              overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}
+            />
 
             <SearchResults/>
 
