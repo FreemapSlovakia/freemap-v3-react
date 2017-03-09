@@ -1,4 +1,4 @@
-.navbar>.container-fluid img.freemap-logo.navbar-brand {
+.navbar > .container-fluid img.freemap-logo.navbar-brand {
   margin-top: 7px;
   margin-left: 0px;
   padding: 0;
@@ -11,6 +11,10 @@
 
 .toast-info {
   background-color: #009c00;
+}
+
+a.leaflet-control-layers-toggle {
+  background-size: 36px 36px;
 }
 
 .active-map-type-T a.leaflet-control-layers-toggle {
