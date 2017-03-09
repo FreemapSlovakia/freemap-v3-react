@@ -94,14 +94,8 @@ export default connect(
       onHiglightResult(result) {
         dispatch(highlightResult(result));
       },
-      onSelectResult(result, currentTool) {
-        if (result && currentTool == null) {
-          // calling setTool('search') when tool is already search will
-          // cause the map to set tool to null :(
-          dispatch(setTool('search'));
-        } else if (!result) {
-          dispatch(setTool(null));
-        }
+      onSelectResult(result) {
+        result ? dispatch(setTool('search')) : dispatch(setTool(null));
         dispatch(selectResult(result));
       },
       onInitRoutePlannerWithStart(result) {
