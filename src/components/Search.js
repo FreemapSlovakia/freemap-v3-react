@@ -6,11 +6,13 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import { connect } from 'react-redux';
 import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActions';
+import { setTool } from 'fm3/actions/mapActions';
+import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
 import 'fm3/styles/search.scss';
 
 class Search extends React.Component {
   onSelectionChange(resultsSelectedByUser) {
-    this.props.onSelectResult(resultsSelectedByUser[0]);
+    this.props.onSelectResult(resultsSelectedByUser[0], this.props.tool);
   }
 
   onSuggestionHighlightChange(result) {
@@ -19,7 +21,7 @@ class Search extends React.Component {
 
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
-
+    const { onInitRoutePlannerWithStart, onInitRoutePlannerWithFinish, selectedResult } = this.props;
     return (
       <div>
         <Navbar.Form pullLeft>
@@ -50,10 +52,10 @@ class Search extends React.Component {
         {this.props.tool === 'search' && 
           <Navbar.Form pullLeft>
             <ButtonGroup>
-              <Button>
+              <Button onClick={b(onInitRoutePlannerWithStart, selectedResult)}>
                 <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Navigovať odtiaľto
               </Button>
-              <Button>
+              <Button onClick={b(onInitRoutePlannerWithFinish, selectedResult)}>
                 <Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Navigovať sem
               </Button>
             </ButtonGroup>
@@ -66,17 +68,22 @@ class Search extends React.Component {
 
 Search.propTypes = {
   tool: React.PropTypes.string,
+  selectedResult: React.PropTypes.any,
   results: React.PropTypes.array.isRequired,
   onDoSearch: React.PropTypes.func.isRequired,
   onHiglightResult: React.PropTypes.func.isRequired,
   onSelectResult: React.PropTypes.func.isRequired,
+  onInitRoutePlannerWithStart: React.PropTypes.func.isRequired,
+  onInitRoutePlannerWithFinish: React.PropTypes.func.isRequired
 };
+
 
 export default connect(
   function (state) {
     return { 
       tool: state.map.tool,
-      results: state.search.results 
+      results: state.search.results,
+      selectedResult: state.search.selectedResult
     };
   },
   function (dispatch) {
@@ -87,8 +94,25 @@ export default connect(
       onHiglightResult(result) {
         dispatch(highlightResult(result));
       },
-      onSelectResult(result) {
+      onSelectResult(result, currentTool) {
+        if (result && currentTool == null) {
+          // calling setTool('search') when tool is already search will
+          // cause the map to set tool to null :(
+          dispatch(setTool('search'));
+        } else if (!result) {
+          dispatch(setTool(null));
+        }
         dispatch(selectResult(result));
+      },
+      onInitRoutePlannerWithStart(result) {
+        const start = { lat: result.lat, lon: result.lon };
+        dispatch(setTool('route-planner'));
+        dispatch(setStart(start));
+      },
+      onInitRoutePlannerWithFinish(result) {
+        const finish = { lat: result.lat, lon: result.lon };
+        dispatch(setTool('route-planner'));
+        dispatch(setFinish(finish));
       }
     };
   }

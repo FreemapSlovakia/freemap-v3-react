@@ -9,6 +9,8 @@ const initialState = {
 
 export default function Search(state = initialState, action) {
   switch (action.type) {
+    case 'SET_TOOL':
+      return (action.tool == 'search') ? state : initialState;
     case 'SEARCH':
       return update(state, { query: { $set: action.query } });
     case 'SET_RESULTS':

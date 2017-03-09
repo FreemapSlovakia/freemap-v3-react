@@ -1,6 +1,6 @@
 import { createLogic } from 'redux-logic';
 import { setResults } from 'fm3/actions/searchActions';
-import { refocusMap, setTool } from 'fm3/actions/mapActions';
+import { refocusMap } from 'fm3/actions/mapActions';
 
 const searchLogic = createLogic({
   type: 'SEARCH',
@@ -48,22 +48,7 @@ const refocusMapLogic = createLogic({
   }
 });
 
-const setToolLogic = createLogic({
-  type: 'SELECT_RESULT',
-  process({ getState }, dispatch) {
-    const selectedResult = getState().search.selectedResult;
-    const tool = selectedResult ? 'search' : null;
-
-    // FIXME: this is a hack to avoid Warning: setState(...): Can only update a mounted or mounting component. This usually means you called setState() on an unmounted component. This is a no-op. Please check the code for the ReactClass component.
-    setTimeout(() => {
-      return dispatch(setTool(tool));
-    }, 100);
-  }
-});
-
-
 export default [
   searchLogic,
-  refocusMapLogic,
-  setToolLogic
+  refocusMapLogic
 ];
