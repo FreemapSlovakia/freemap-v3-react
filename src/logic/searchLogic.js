@@ -1,6 +1,6 @@
 import { createLogic } from 'redux-logic';
 import { setResults } from 'fm3/actions/searchActions';
-import { refocusMap } from 'fm3/actions/mapActions';
+import { refocusMap, setTool } from 'fm3/actions/mapActions';
 
 const searchLogic = createLogic({
   type: 'SEARCH',
@@ -33,7 +33,7 @@ const searchLogic = createLogic({
 
 const refocusMapLogic = createLogic({
   type: 'HIGHLIGHT_RESULT',
-  process({ getState }) {
+  process({ getState }, dispatch) {
     const { search: { highlightedResult }, map: { zoom, bounds } } = getState();
 
     if (highlightedResult && bounds) {
@@ -42,13 +42,28 @@ const refocusMapLogic = createLogic({
       const leafletBounds = L.latLngBounds(southWest, northEast);
       const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
       if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
-        return refocusMap(highlightedResult.lat, highlightedResult.lon, 13);
+        return dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, 13));
       }
     }
   }
 });
 
+const setToolLogic = createLogic({
+  type: 'SELECT_RESULT',
+  process({ getState }, dispatch) {
+    const selectedResult = getState().search.selectedResult;
+    const tool = selectedResult ? 'search' : null;
+
+    // FIXME: this is a hack to avoid Warning: setState(...): Can only update a mounted or mounting component. This usually means you called setState() on an unmounted component. This is a no-op. Please check the code for the ReactClass component.
+    setTimeout(() => {
+      return dispatch(setTool(tool));
+    }, 100);
+  }
+});
+
+
 export default [
   searchLogic,
-  refocusMapLogic
+  refocusMapLogic,
+  setToolLogic
 ];
