@@ -31,6 +31,6 @@
   height: calc(100vh - 52px);
 }
 
-.tool-route-planner, .tool-measure, .tool-measure-ele {
+.tool-route-planner .leaflet-container, .tool-measure .leaflet-container, .tool-measure-ele .leaflet-container {
   cursor: crosshair;
 }
