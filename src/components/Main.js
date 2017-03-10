@@ -125,8 +125,13 @@ class Main extends React.Component {
     return this.props.tool !== 'route-planner' && this.props.tool !== 'search';
   }
 
+  toolLauncherClicked(tool) {
+    const toolIsAlreadyActive = this.props.tool === tool;
+    (toolIsAlreadyActive) ? this.props.onSetTool(null) : this.props.onSetTool(tool);
+  }
+
   render() {
-    const { tool, onResetMap, onSetTool, objectsModalShown } = this.props;
+    const { tool, onResetMap, objectsModalShown } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
@@ -153,13 +158,13 @@ class Main extends React.Component {
                   <NavItem onClick={b(this.handlePoiSearch)}>
                   <FontAwesomeIcon icon="star" /> Hľadať POIs
                   </NavItem>
-                  <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
+                  <NavItem onClick={b(this.toolLauncherClicked, 'measure')} active={tool === 'measure'}>
                     <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
                   </NavItem>
-                  <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>
+                  <NavItem onClick={b(this.toolLauncherClicked, 'route-planner')} active={tool === 'route-planner'}>
                     <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
                   </NavItem>
-                  <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
+                  <NavItem onClick={b(this.toolLauncherClicked, 'measure-ele')} active={tool === 'measure-ele'}>
                     <FontAwesomeIcon icon="area-chart" /> Výškomer
                   </NavItem>
                 </Nav>
