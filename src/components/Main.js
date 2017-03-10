@@ -121,13 +121,11 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, onResetMap, onSetTool, objectsModalShown } = this.props;
+    const { tool, onResetMap, onSetTool } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
       <div className="container-fluid">
-        {objectsModalShown && <ObjectsModal/>}
-
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
             <Navbar.Header>
@@ -140,11 +138,14 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool !== 'route-planner' &&
+              {tool === 'route-planner' ? <RoutePlanner/>
+                :
+              tool === 'objects' ? <ObjectsModal/>
+                :
                 <div>
                   <Search/>
                   <Nav>
-                    <NavItem onClick={b(this.handlePoiSearch)}>
+                    <NavItem onClick={b(onSetTool, 'objects')} active={tool === 'objects'}>
                       <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
                     </NavItem>
                     <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
@@ -159,7 +160,8 @@ class Main extends React.Component {
                   </Nav>
                 </div>
               }
-              {tool === 'route-planner' && <RoutePlanner/>}
+
+
             </Navbar.Collapse>
           </Navbar>
         </Row>

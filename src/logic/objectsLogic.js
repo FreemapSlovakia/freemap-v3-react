@@ -28,9 +28,14 @@ const logic1 = createLogic({
 });
 
 const logic2 = createLogic({
-  type: 'SHOW_OBJECTS_MODAL',
-  process({ getState, action: { filter } }, dispatch, done) {
+  type: 'SET_TOOL',
+  process({ getState, action: { tool } }, dispatch, done) {
     // TODO read only once, then use from the store
+
+    if (tool !== 'objects') {
+      done();
+      return;
+    }
 
     const p1 = fetch('https://dev.freemap.sk/api/0.3/poi/categories', {
       method: 'GET'

@@ -17,7 +17,7 @@ class RoutePlanner extends React.Component {
 
     return (
       <div>
-        <Navbar.Text>Plánovač trasy</Navbar.Text>
+        <Navbar.Text><i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy</Navbar.Text>
         <Nav>
           <NavItem onClick={onChangePickPointMode.bind(null, 'start')} active={pickPointMode === 'start'} disabled={!!start}>
             <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Pridať štart

@@ -48,7 +48,7 @@
     "name": "Martin Ždila",
     "email": "martin.zdila@freemap.sk"
   },
-  "license": "Apache License 2.0",
+  "license": "Apache-2.0",
   "bugs": {
     "url": "https://github.com/FreemapSlovakia/freemap-v3-react/issues"
   },
