@@ -17,6 +17,7 @@ import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
@@ -150,16 +151,16 @@ class Main extends React.Component {
               {this.showDefaltMainMenuActions() &&
                 <Nav>
                   <NavItem onClick={b(this.handlePoiSearch)}>
-                    <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
+                  <FontAwesomeIcon icon="star" /> Hľadať POIs
                   </NavItem>
                   <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
-                    <i className={`fa fa-arrows-h`} aria-hidden="true"/> Meranie vzdialenosti
+                    <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
                   </NavItem>
                   <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>
-                    <i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy
+                    <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
                   </NavItem>
                   <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
-                    <i className={`fa fa-area-chart`} aria-hidden="true"/> Výškomer
+                    <FontAwesomeIcon icon="area-chart" /> Výškomer
                   </NavItem>
                 </Nav>
               }
