@@ -121,23 +121,17 @@ class Main extends React.Component {
     }
   }
 
-  showDefaltMainMenuActions() {
-    return this.props.tool !== 'route-planner' && this.props.tool !== 'search';
-  }
-
   toolLauncherClicked(tool) {
     const toolIsAlreadyActive = this.props.tool === tool;
     (toolIsAlreadyActive) ? this.props.onSetTool(null) : this.props.onSetTool(tool);
   }
 
   render() {
-    const { tool, onResetMap, objectsModalShown } = this.props;
+    const { tool, onResetMap } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
       <div className="container-fluid">
-        {objectsModalShown && <ObjectsModal/>}
-
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
             <Navbar.Header>
@@ -150,26 +144,30 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {( this.showDefaltMainMenuActions() || tool === 'search' ) &&
-                <Search/>
+              {tool === 'objects' ? <ObjectsModal/>
+                :
+                tool === 'search' ? <Search/>
+                :
+                tool === 'route-planner' ? <RoutePlanner/>
+                :
+                [
+                  <Search/>,
+                  <Nav>
+                    <NavItem onClick={b(this.toolLauncherClicked, 'objects')} active={tool === 'objects'}>
+                    <FontAwesomeIcon icon="star" /> Hľadať POIs
+                    </NavItem>
+                    <NavItem onClick={b(this.toolLauncherClicked, 'route-planner')} active={tool === 'route-planner'}>
+                      <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
+                    </NavItem>
+                    <NavItem onClick={b(this.toolLauncherClicked, 'measure')} active={tool === 'measure'}>
+                      <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
+                    </NavItem>
+                    <NavItem onClick={b(this.toolLauncherClicked, 'measure-ele')} active={tool === 'measure-ele'}>
+                      <FontAwesomeIcon icon="area-chart" /> Výškomer
+                    </NavItem>
+                  </Nav>
+                ]
               }
-              {this.showDefaltMainMenuActions() &&
-                <Nav>
-                  <NavItem onClick={b(this.handlePoiSearch)}>
-                  <FontAwesomeIcon icon="star" /> Hľadať POIs
-                  </NavItem>
-                  <NavItem onClick={b(this.toolLauncherClicked, 'measure')} active={tool === 'measure'}>
-                    <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
-                  </NavItem>
-                  <NavItem onClick={b(this.toolLauncherClicked, 'route-planner')} active={tool === 'route-planner'}>
-                    <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
-                  </NavItem>
-                  <NavItem onClick={b(this.toolLauncherClicked, 'measure-ele')} active={tool === 'measure-ele'}>
-                    <FontAwesomeIcon icon="area-chart" /> Výškomer
-                  </NavItem>
-                </Nav>
-              }
-              {tool === 'route-planner' && <RoutePlanner/>}
             </Navbar.Collapse>
           </Navbar>
         </Row>
