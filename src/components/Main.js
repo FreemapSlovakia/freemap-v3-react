@@ -120,6 +120,10 @@ class Main extends React.Component {
     }
   }
 
+  showDefaltMainMenuActions() {
+    return this.props.tool !== 'route-planner' && this.props.tool !== 'search';
+  }
+
   render() {
     const { tool, onResetMap, onSetTool, objectsModalShown } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
@@ -140,24 +144,24 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool !== 'route-planner' &&
-                <div>
-                  <Search/>
-                  <Nav>
-                    <NavItem onClick={b(this.handlePoiSearch)}>
-                      <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
-                    </NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
-                      <i className={`fa fa-arrows-h`} aria-hidden="true"/> Meranie vzdialenosti
-                    </NavItem>
-                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>
-                      <i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy
-                    </NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
-                      <i className={`fa fa-area-chart`} aria-hidden="true"/> Výškomer
-                    </NavItem>
-                  </Nav>
-                </div>
+              {( this.showDefaltMainMenuActions() || tool === 'search' ) &&
+                <Search/>
+              }
+              {this.showDefaltMainMenuActions() &&
+                <Nav>
+                  <NavItem onClick={b(this.handlePoiSearch)}>
+                    <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
+                  </NavItem>
+                  <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
+                    <i className={`fa fa-arrows-h`} aria-hidden="true"/> Meranie vzdialenosti
+                  </NavItem>
+                  <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>
+                    <i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy
+                  </NavItem>
+                  <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
+                    <i className={`fa fa-area-chart`} aria-hidden="true"/> Výškomer
+                  </NavItem>
+                </Nav>
               }
               {tool === 'route-planner' && <RoutePlanner/>}
             </Navbar.Collapse>

@@ -15,7 +15,7 @@ const initialState = {
 export default function map(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
-      return update(state, { tool: { $set: action.tool === state.tool ? null : action.tool } } );
+      return update(state, { tool: { $set: action.tool } } );
     case 'RESET_MAP':
       return update(state, {
         tool: { $set: initialState.tool },
