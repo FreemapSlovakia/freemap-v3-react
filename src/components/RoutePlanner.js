@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 
 import { setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
 import { setTool } from 'fm3/actions/mapActions';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 class RoutePlanner extends React.Component {
 
@@ -34,7 +35,7 @@ class RoutePlanner extends React.Component {
             {
               [ [ 'car', 'car' ], [ 'walk', 'male' ], [ 'bicycle', 'bicycle' ] ].map(([ type, icon ], i) => (
                 <Button key={i} active={transportType === type} onClick={onChangeTransportType.bind(null, type)}>
-                  <i className={`fa fa-${icon}`} aria-hidden="true"/>
+                  <FontAwesomeIcon icon={icon} />
                 </Button>
               ))
             }

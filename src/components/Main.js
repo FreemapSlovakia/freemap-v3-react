@@ -17,6 +17,7 @@ import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
 import { showObjectsModal } from 'fm3/actions/objectsActions';
@@ -120,8 +121,13 @@ class Main extends React.Component {
     }
   }
 
+  toolLauncherClicked(tool) {
+    const toolIsAlreadyActive = this.props.tool === tool;
+    (toolIsAlreadyActive) ? this.props.onSetTool(null) : this.props.onSetTool(tool);
+  }
+
   render() {
-    const { tool, onResetMap, onSetTool } = this.props;
+    const { tool, onResetMap } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
@@ -138,30 +144,30 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool === 'route-planner' ? <RoutePlanner/>
+              {tool === 'objects' ? <ObjectsModal/>
                 :
-              tool === 'objects' ? <ObjectsModal/>
+                tool === 'search' ? <Search/>
                 :
-                <div>
-                  <Search/>
+                tool === 'route-planner' ? <RoutePlanner/>
+                :
+                [
+                  <Search/>,
                   <Nav>
-                    <NavItem onClick={b(onSetTool, 'objects')} active={tool === 'objects'}>
-                      <i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs
+                    <NavItem onClick={b(this.toolLauncherClicked, 'objects')} active={tool === 'objects'}>
+                    <FontAwesomeIcon icon="star" /> Hľadať POIs
                     </NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
-                      <i className={`fa fa-arrows-h`} aria-hidden="true"/> Meranie vzdialenosti
+                    <NavItem onClick={b(this.toolLauncherClicked, 'route-planner')} active={tool === 'route-planner'}>
+                      <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
                     </NavItem>
-                    <NavItem onClick={b(onSetTool, 'route-planner')} active={tool === 'route-planner'}>
-                      <i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy
+                    <NavItem onClick={b(this.toolLauncherClicked, 'measure')} active={tool === 'measure'}>
+                      <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
                     </NavItem>
-                    <NavItem onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
-                      <i className={`fa fa-area-chart`} aria-hidden="true"/> Výškomer
+                    <NavItem onClick={b(this.toolLauncherClicked, 'measure-ele')} active={tool === 'measure-ele'}>
+                      <FontAwesomeIcon icon="area-chart" /> Výškomer
                     </NavItem>
                   </Nav>
-                </div>
+                ]
               }
-
-
             </Navbar.Collapse>
           </Navbar>
         </Row>

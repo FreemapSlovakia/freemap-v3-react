@@ -33,7 +33,7 @@ const searchLogic = createLogic({
 
 const refocusMapLogic = createLogic({
   type: 'HIGHLIGHT_RESULT',
-  process({ getState }) {
+  process({ getState }, dispatch) {
     const { search: { highlightedResult }, map: { zoom, bounds } } = getState();
 
     if (highlightedResult && bounds) {
@@ -42,7 +42,7 @@ const refocusMapLogic = createLogic({
       const leafletBounds = L.latLngBounds(southWest, northEast);
       const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
       if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
-        return refocusMap(highlightedResult.lat, highlightedResult.lon, 13);
+        dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, 13));
       }
     }
   }
