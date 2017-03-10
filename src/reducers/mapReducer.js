@@ -30,6 +30,7 @@ export default function map(state = initialState, action) {
       return update(state, { overlays: { $set: action.overlays } } );
     case 'REFOCUS':
       return update(state, {
+        tool: { $set: action.zoom < 12 && state.tool === 'objects' ? null : state.tool },
         zoom: { $set: action.zoom },
         center: {
           lat : { $set: action.lat },

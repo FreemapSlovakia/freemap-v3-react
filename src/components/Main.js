@@ -10,7 +10,7 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
-import ObjectsModal from 'fm3/components/ObjectsModal';
+import Objects from 'fm3/components/Objects';
 import Layers from 'fm3/components/Layers';
 import Measurement from 'fm3/components/Measurement';
 import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
@@ -20,7 +20,6 @@ import ObjectsResult from 'fm3/components/ObjectsResult';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
-import { showObjectsModal } from 'fm3/actions/objectsActions';
 
 import 'fm3/styles/main.scss';
 
@@ -117,7 +116,7 @@ class Main extends React.Component {
         { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
       );
     } else {
-      this.props.onShowObjectsModal();
+      this.props.onSetTool('objects');
     }
   }
 
@@ -144,16 +143,16 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool === 'objects' ? <ObjectsModal/>
+              {tool === 'objects' ? <Objects/>
                 :
                 tool === 'search' ? <Search/>
                 :
                 tool === 'route-planner' ? <RoutePlanner/>
                 :
                 [
-                  <Search/>,
-                  <Nav>
-                    <NavItem onClick={b(this.toolLauncherClicked, 'objects')} active={tool === 'objects'}>
+                  <Search key='search'/>,
+                  <Nav key='nav'>
+                    <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
                     <FontAwesomeIcon icon="star" /> Hľadať POIs
                     </NavItem>
                     <NavItem onClick={b(this.toolLauncherClicked, 'route-planner')} active={tool === 'route-planner'}>
@@ -216,7 +215,6 @@ Main.propTypes = {
   onSetTool: React.PropTypes.func.isRequired,
   onResetMap: React.PropTypes.func.isRequired,
   objectsModalShown: React.PropTypes.bool,
-  onShowObjectsModal: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
   onMapRefocus: React.PropTypes.func.isRequired,
   onSetMapType: React.PropTypes.func.isRequired,
@@ -241,9 +239,6 @@ export default connect(
       },
       onResetMap() {
         dispatch(resetMap());
-      },
-      onShowObjectsModal() {
-        dispatch(showObjectsModal());
       },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));

@@ -12,7 +12,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
-class ObjectsModal extends React.Component {
+class Objects extends React.Component {
 
   constructor(props) {
     super(props);
@@ -70,7 +70,7 @@ class ObjectsModal extends React.Component {
 
 }
 
-ObjectsModal.propTypes = {
+Objects.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
   categories: React.PropTypes.array.isRequired,
@@ -94,4 +94,4 @@ export default connect(
       }
     };
   }
-)(ObjectsModal);
+)(Objects);
