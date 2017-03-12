@@ -6,13 +6,13 @@ export const poiTypeGroups = [
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
 export const poiTypes = [
-  { title: 'Vrchol', key: 'natural', value: 'peak', group: 'nature',
+  { group: 'nature', title: 'Vrchol', key: 'natural', value: 'peak',
     template: ({ name, ele }) => `Vrchol${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `${name ? ' ' : '<br/>'} (${nf.format(ele)} m)` : '' }`
   },
-  { title: 'Prameň', key: 'natural', value: 'spring', group: 'nature',
+  { group: 'nature', title: 'Prameň', key: 'natural', value: 'spring',
     template: ({ name }) => `Prameň${name ? `<br/>${escapeHtml(name)}` : ''}`
   },
-  { title: 'Potraviny', key: 'shop', value: 'convenience', group: 'shop',
+  { group: 'shop', title: 'Potraviny', key: 'shop', value: 'convenience',
     template: ({ name }) => `Potraviny${name ? `<br/>${escapeHtml(name)}` : ''}`
   }
 ];

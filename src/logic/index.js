@@ -7,7 +7,7 @@ import mapLogic from 'fm3/logic/mapLogic';
 export default [
   routePlannerLogic,
   elevationMeasurementLogic,
-  ...objectsLogic, 
+  objectsLogic, 
   ...searchLogic,
   mapLogic
 ];

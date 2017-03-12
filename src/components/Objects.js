@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-// TODO remove import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { setObjectsFilter } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mapActions';
 
@@ -11,6 +11,7 @@ import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import Button from 'react-bootstrap/lib/Button';
 
 class Objects extends React.Component {
 
@@ -23,9 +24,9 @@ class Objects extends React.Component {
   }
 
   showObjects() {
-    // this.props.onSearch([ ...this.state.selections ]
-    //   .map(i => poiTypes[i])
-    //   .map(({ key, value }) => `node["${key}"="${value}"]`)); // TODO move to logic?
+    this.props.onSearch([ ...this.state.selections ]
+      .map(i => poiTypes[i])
+      .map(({ key, value }) => `node["${key}"="${value}"]`)); // TODO move to logic?
   }
 
   select(i) {
@@ -40,29 +41,32 @@ class Objects extends React.Component {
   }
 
   render() {
-    const { categories, subcategories, onCancel } = this.props;
+    const { onCancel } = this.props;
     const { selections } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
-    const title = subcategories.filter(({ id }) => selections.has(id)).map(({ name }) => name).join(', ') || 'Zvoľ katrgóriu';
+    const selectedTitle = [ ...selections ].map(i => poiTypes[i].title).join(', ') || 'Zvoľ katrgóriu';
 
     return (
       <Nav>
         <Navbar.Text><i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs</Navbar.Text>
-        <NavDropdown eventKey={3} title={title} id="basic-nav-dropdown">
-          {categories.map(({ id: cid, name }) => (
+        <NavDropdown eventKey={3} title={selectedTitle} id="basic-nav-dropdown">
+          {poiTypeGroups.map(({ id, title }) => (
             [
-              <MenuItem key={cid + '_'} divider/>,
-              <MenuItem key={cid} header>{name}</MenuItem>,
-              subcategories.map(({ id, name, category_id }) => category_id === cid &&
-                <MenuItem key={id} eventKey={id} onSelect={b(this.select)} active={selections.has(id)}>
-                  {name}
+              <MenuItem key={id + '_'} divider/>,
+              <MenuItem key={id} header>{title}</MenuItem>,
+              poiTypes.map(({ group, title }, i) => group === id &&
+                <MenuItem key={i} eventKey={i} onSelect={b(this.select)} active={selections.has(i)}>
+                  {title}
                 </MenuItem>
               )
             ]
           ))}
         </NavDropdown>
+        <Navbar.Form pullLeft>
+          <Button onClick={b(this.showObjects)} disabled={!selections.size}>Zobraz</Button>
+        </Navbar.Form>
         <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
       </Nav>
     );
@@ -72,16 +76,12 @@ class Objects extends React.Component {
 
 Objects.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired,
-  categories: React.PropTypes.array.isRequired,
-  subcategories: React.PropTypes.array.isRequired
+  onCancel: React.PropTypes.func.isRequired
 };
 
 export default connect(
-  function (state) {
+  function () {
     return {
-      categories: state.objects.categories,
-      subcategories: state.objects.subcategories
     };
   },
   function (dispatch) {
