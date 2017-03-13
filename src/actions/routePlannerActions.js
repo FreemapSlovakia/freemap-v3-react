@@ -14,6 +14,10 @@ export function setMidpoint(position, midpoint) {
   return { type: 'SET_ROUTE_PLANNER_MIDPOINT', position, midpoint };
 }
 
+export function removeMidpoint(position) {
+  return { type: 'REMOVE_ROUTE_PLANNER_MIDPOINT', position };
+}
+
 export function setTransportType(transportType) {
   return { type: 'SET_ROUTE_PLANNER_TRANSPORT_TYPE', transportType };
 }

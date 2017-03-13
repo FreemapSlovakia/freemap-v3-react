@@ -14,6 +14,7 @@ export const findRouteLogic = createLogic({
     'SET_ROUTE_PLANNER_FINISH',
     'ADD_ROUTE_PLANNER_MIDPOINT',
     'SET_ROUTE_PLANNER_MIDPOINT',
+    'REMOVE_ROUTE_PLANNER_MIDPOINT',
     'SET_ROUTE_PLANNER_TRANSPORT_TYPE'
   ],
   process({ getState }, dispatch, done) {

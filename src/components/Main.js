@@ -128,6 +128,14 @@ class Main extends React.Component {
     }
   }
 
+  showToast(toastType, line1, line2) {
+    this.refs.toastContainer[toastType](
+      line2,
+      line1, // sic!
+      { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
+    );    
+  }
+
   handleToolSet(tool) {
     this.props.onSetTool(this.props.tool === tool ? null : tool); // toggle tool
   }
@@ -190,7 +198,10 @@ class Main extends React.Component {
 
             <ObjectsResult/>
 
-            {tool === 'route-planner' && <RoutePlannerResults ref={e => this.routePlanner = e}/>}
+            {tool === 'route-planner' && 
+              <RoutePlannerResults 
+                ref={e => this.routePlanner = e} 
+                onShowToast={b(this.showToast)} />}
 
             {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
 
