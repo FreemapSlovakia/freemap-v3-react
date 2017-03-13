@@ -5,7 +5,7 @@ import searchLogic from 'fm3/logic/searchLogic';
 import mapLogic from 'fm3/logic/mapLogic';
 
 export default [
-  routePlannerLogic,
+  ...routePlannerLogic,
   elevationMeasurementLogic,
   objectsLogic, 
   ...searchLogic,

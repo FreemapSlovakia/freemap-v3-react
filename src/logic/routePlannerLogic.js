@@ -1,5 +1,6 @@
 import { createLogic } from 'redux-logic';
 import { parseString as xml2js } from 'xml2js';
+import { distance } from 'fm3/geoutils';
 
 const freemapTransportTypes = {
   'car': 'motorcar',
@@ -7,7 +8,7 @@ const freemapTransportTypes = {
   'bicycle': 'bicycle'
 };
 
-export default createLogic({
+export const findRouteLogic = createLogic({
   type: [
     'SET_ROUTE_PLANNER_START',
     'SET_ROUTE_PLANNER_FINISH',
@@ -46,3 +47,32 @@ export default createLogic({
       .then(() => done());
   }
 });
+
+const addMidpointToProperPositionLogic = createLogic({
+  type: 'ADD_ROUTE_PLANNER_MIDPOINT',
+  transform({ getState, action }, next) {
+    const { start, finish, midpoints } = getState().routePlanner;
+    if (midpoints.length > 0) {
+      const newMidpoint = action.midpoint;
+      const distances = [ start, ...midpoints, finish ].map(p => {
+        return distance(p.lat, p.lon, newMidpoint.lat, newMidpoint.lon);
+      });
+      let minDistance = Infinity;
+      let positionOfMinDistance;
+      for (let i = 0; i < distances.length - 1; i++) {
+        const d = distances[i] + distances[i+1];
+        if (d < minDistance) {
+          minDistance = d;
+          positionOfMinDistance = i;
+        }
+      }
+      action.position = positionOfMinDistance;
+    }
+    next(action);
+  },
+});
+
+export default [
+  findRouteLogic,
+  addMidpointToProperPositionLogic
+];

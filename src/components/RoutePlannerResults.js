@@ -130,7 +130,8 @@ export default connect(
         dispatch(setFinish(finish));
       },
       onAddMidpoint: function(midpoint) {
-        dispatch(addMidpoint(midpoint));
+        const position = 0;
+        dispatch(addMidpoint(midpoint, position));
       },
       onSetMidpoint: function(position, midpoint) {
         dispatch(setMidpoint(position, midpoint));
