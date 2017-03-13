@@ -77,17 +77,17 @@ class RoutePlannerResults extends React.Component {
           />
         }
 
-            {midpoints.map(({ lat, lon }, i) => (
-                <Marker
-                  icon={midPointIcon}
-                  draggable
-                  onClick={() => this.midpointClicked(i)}
-                  onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
-                  key={i}
-                  position={L.latLng(lat, lon)}>
-                </Marker>
-              )
-            )}
+        {midpoints.map(({ lat, lon }, i) => (
+            <Marker
+              icon={midPointIcon}
+              draggable
+              onClick={() => this.midpointClicked(i)}
+              onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
+              key={i}
+              position={L.latLng(lat, lon)}>
+            </Marker>
+          )
+        )}
 
         {finish &&
           <Marker
