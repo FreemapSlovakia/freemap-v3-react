@@ -56,9 +56,20 @@ class Main extends React.Component {
     this.refocusMap2(lat, lon, zoom);
   }
 
-  refocusMap({ target }) {
-    const { lat, lng: lon } = target.getCenter();
-    const zoom = target.getZoom();
+  handleMapMoveEnd() {
+    this.changeMapBounds();
+    this.refocusMap();
+  }
+
+  handleMapZoom() {
+    this.changeMapBounds();
+    this.refocusMap();
+  }
+
+  refocusMap() {
+    const map = this.refs.map.leafletElement;
+    const { lat, lng: lon } = map.getCenter();
+    const zoom = map.getZoom();
     this.refocusMap2(lat, lon, zoom);
   }
 
@@ -67,21 +78,18 @@ class Main extends React.Component {
     if (isNaN(lat) || isNaN(lon) || isNaN(zoom) ||
         Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
       this.props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
-      this.handleMapBoundsChanged();
     }
   }
 
   // TODO there may be more map events which changes map bounds. eg "resize". Implement.
-  handleMapBoundsChanged() {
-    if (this.map) { // FIXME this is sometimes null (if changed url manually)
-      const b = this.map.leafletElement.getBounds();
-      this.props.onMapBoundsChange({
-        south: b.getSouth(),
-        west: b.getWest(),
-        north: b.getNorth(),
-        east: b.getEast()
-      });
-    }
+  changeMapBounds() {
+    const b = this.refs.map.leafletElement.getBounds();
+    this.props.onMapBoundsChange({
+      south: b.getSouth(),
+      west: b.getWest(),
+      north: b.getNorth(),
+      east: b.getEast()
+    });
   }
 
   handleMapTypeChange(mapType) {
@@ -171,11 +179,11 @@ class Main extends React.Component {
         </Row>
         <Row className={`tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
-            ref={map => this.map = map}
+            ref="map"
             center={L.latLng(this.props.center.lat, this.props.center.lon)}
             zoom={this.props.zoom}
-            onMoveend={b(this.refocusMap)}
-            onZoom={b(this.refocusMap)}
+            onMoveend={b(this.handleMapMoveEnd)}
+            onZoom={b(this.handleMapZoom)}
             onClick={b(this.handleMapClick)}
           >
             <Layers
