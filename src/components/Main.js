@@ -150,29 +150,24 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool === 'objects' ? <Objects/>
-                :
-                tool === 'search' ? <Search/>
-                :
-                tool === 'route-planner' ? <RoutePlanner/>
-                :
-                [
-                  <Search key='search'/>,
-                  <Nav key='nav'>
-                    <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
-                    <FontAwesomeIcon icon="star" /> Hľadať POIs
-                    </NavItem>
-                    <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
-                      <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
-                    </NavItem>
-                    <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
-                      <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
-                    </NavItem>
-                    <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
-                      <FontAwesomeIcon icon="area-chart" /> Výškomer
-                    </NavItem>
-                  </Nav>
-                ]
+              {tool === 'objects' && <Objects/>}
+              {tool !== 'objects' && tool !== 'route-planner' && <Search/>}
+              {tool === 'route-planner' && <RoutePlanner/>}
+              {tool !== 'search' && tool !== 'objects' && tool !== 'route-planner' &&
+                <Nav key='nav'>
+                  <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
+                  <FontAwesomeIcon icon="star" /> Hľadať POIs
+                  </NavItem>
+                  <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
+                    <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
+                  </NavItem>
+                  <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
+                    <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
+                  </NavItem>
+                  <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
+                    <FontAwesomeIcon icon="area-chart" /> Výškomer
+                  </NavItem>
+                </Nav>
               }
             </Navbar.Collapse>
           </Navbar>
