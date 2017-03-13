@@ -17,55 +17,39 @@ class Objects extends React.Component {
 
   constructor(props) {
     super(props);
-
-    this.state = {
-      selections: new Set()
-    };
   }
 
-  showObjects() {
-    this.props.onSearch([ ...this.state.selections ]
-      .map(i => poiTypes[i])
-      .map(({ key, value }) => `node["${key}"="${value}"]`)); // TODO move to logic?
-  }
+  // showObjects() {
+  //   this.props.onSearch([ ...this.state.selections ].map(i => poiTypes[i].filter));
+  // }
 
   select(i) {
-    const s = new Set(this.state.selections);
-    if (s.has(i)) {
-      s.delete(i);
-    } else {
-      s.add(i);
-    }
-
-    this.setState({ selections: s });
+    this.props.onSearch(poiTypes[i].filter);
   }
 
   render() {
     const { onCancel } = this.props;
-    const { selections } = this.state;
 
     const b = (fn, ...args) => fn.bind(this, ...args);
-
-    const selectedTitle = [ ...selections ].map(i => poiTypes[i].title).join(', ') || 'Zvoľ katrgóriu';
 
     return (
       <Nav>
         <Navbar.Text><i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs</Navbar.Text>
-        <NavDropdown eventKey={3} title={selectedTitle} id="basic-nav-dropdown">
-          {poiTypeGroups.map(({ id, title }) => (
+        <NavDropdown title="Zvoľ katrgóriu" id="basic-nav-dropdown">
+          {poiTypeGroups.map(({ id: gid, title }) => (
             [
-              <MenuItem key={id + '_'} divider/>,
-              <MenuItem key={id} header>{title}</MenuItem>,
-              poiTypes.map(({ group, title }, i) => group === id &&
-                <MenuItem key={i} eventKey={i} onSelect={b(this.select)} active={selections.has(i)}>
-                  {title}
+              <MenuItem key={gid + '_'} divider/>,
+              <MenuItem key={gid} header>{title}</MenuItem>,
+              poiTypes.map(({ group, title, id }, i) => group === gid &&
+                <MenuItem key={i} eventKey={i} onSelect={b(this.select)}>
+                  <img src={`http://www.freemap.sk/data/layers/poi/${group}/${id}/list.png`}/> {title}
                 </MenuItem>
               )
             ]
           ))}
         </NavDropdown>
         <Navbar.Form pullLeft>
-          <Button onClick={b(this.showObjects)} disabled={!selections.size}>Zobraz</Button>
+          <Button>Exportuj do GPX</Button>
         </Navbar.Form>
         <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
       </Nav>

@@ -5,8 +5,8 @@ export default createLogic({
   type: 'SET_OBJECTS_FILTER',
   process({ getState, action: { filter } }, dispatch, done) {
     const { south, west, north, east } = getState().map.bounds;
-    const bbox = `(${south},${west},${north},${east})`;
-    const query = `[out:json][timeout:60]; (${filter.map(f => `${f}${bbox};`).join('')}); out qt;`;
+    const bbox = `${south},${west},${north},${east}`;
+    const query = `[out:json][timeout:60]; ${filter.replace('{{bbox}}', bbox)}; out qt;`;
 
     fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
