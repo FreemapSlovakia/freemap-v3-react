@@ -1,57 +1,73 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { TileLayer, LayersControl } from 'react-leaflet';
 
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import { overlayLayers } from 'fm3/mapDefinitions';
 
-export default function Layers({ mapType, onMapChange, onOverlaysChange, overlays }) {
+class Layers extends React.Component {
 
   // eslint-disable-next-line
-  function getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
+  getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
     return <TileLayer attribution={attribution} url={url}
-      onAdd={handleAdd.bind(null, type)}
-      onRemove={handleRemove.bind(null, type)}
+      onAdd={() => this.handleAdd(type)}
+      onRemove={() => this.handleRemove(type)}
       maxZoom={maxZoom} minZoom={minZoom}/>;
   }
 
-  function handleAdd(type) {
-    if (baseLayers.some(x => x.type === type)) {
-      onMapChange(type);
+  handleAdd(type) {
+    if (this.props.baseLayers.some(x => x.type === type)) {
+      this.props.onMapChange(type);
     } else {
-      const next = new Set(overlays);
+      const next = new Set(this.props.overlays);
       next.add(type);
-      onOverlaysChange([ ...next ]);
+      this.props.onOverlaysChange([ ...next ]);
     }
   }
 
-  function handleRemove(type) {
+  handleRemove(type) {
     if (overlayLayers.some(x => x.type === type)) {
-      const next = [ ...overlays ];
+      const next = [ ...this.props.overlays ];
       next.splice(next.indexOf(type));
-      onOverlaysChange(next);
+      this.props.onOverlaysChange(next);
     }
   }
 
-  return (
-    <LayersControl position="topright">
-      {
-        baseLayers.map(item => {
-          const { type, name } = item;
-          return <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>{getTileLayer(item)}</LayersControl.BaseLayer>;
-        })
-      }
-      {
-        overlayLayers && overlayLayers.map(item => {
-          const { type, name } = item;
-          return <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>{getTileLayer(item)}</LayersControl.Overlay>;
-        })
-      }
-    </LayersControl>
-  );
+  render() {
+    return (
+      <LayersControl position="topright">
+        {
+          this.props.baseLayers.map(item => {
+            const { type, name } = item;
+            return <LayersControl.BaseLayer key={type} name={name} checked={this.props.mapType === type}>{this.getTileLayer(item)}</LayersControl.BaseLayer>;
+          })
+        }
+        {
+          overlayLayers && overlayLayers.map(item => {
+            const { type, name } = item;
+            return <LayersControl.Overlay key={type} name={name} checked={this.props.overlays.indexOf(type) !== -1}>{this.getTileLayer(item)}</LayersControl.Overlay>;
+          })
+        }
+      </LayersControl>
+    );
+  }
 }
 
 Layers.propTypes = {
   onMapChange: React.PropTypes.func.isRequired,
   onOverlaysChange: React.PropTypes.func.isRequired,
-  mapType: React.PropTypes.oneOf(baseLayers.map(x => x.type)).isRequired,
+  baseLayers: React.PropTypes.any.isRequired,
+  mapType: React.PropTypes.any.isRequired,
   overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(x => x.type)))
 };
+
+export default connect(
+  function (state) {
+    return {
+      baseLayers: state.map.baseLayers
+    };
+  },
+  function (dispatch) {
+    return {
+    };
+  }
+)(Layers);

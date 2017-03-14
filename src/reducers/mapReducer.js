@@ -9,8 +9,22 @@ const initialState = {
     lon: 19.4995
   },
   zoom: 8,
-  overlays: []
+  overlays: [],
+  baseLayers: []
 };
+
+[ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].forEach(([ type, name ]) => {
+  const layer = {
+    name: `${name}`,
+    type,
+    url: `https://{s}.freemap.sk/${type}/{z}/{x}/{y}.png`,
+    attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+    minZoom: 7,
+    maxZoom: 16
+  };
+  initialState.baseLayers.push(layer);
+});
+
 
 export default function map(state = initialState, action) {
   switch (action.type) {
