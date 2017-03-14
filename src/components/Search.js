@@ -22,6 +22,8 @@ class Search extends React.Component {
   render() {
     const b = (fn, ...args) => fn.bind(this, ...args);
     const { onInitRoutePlannerWithStart, onInitRoutePlannerWithFinish, selectedResult } = this.props;
+
+    // FIXME wrapper element can't be used
     return (
       <div>
         <Navbar.Form pullLeft>
@@ -49,7 +51,7 @@ class Search extends React.Component {
             )}
           />
         </Navbar.Form>
-        {this.props.tool === 'search' && 
+        {this.props.tool === 'search' &&
           <Navbar.Form pullLeft>
             <ButtonGroup>
               <Button onClick={b(onInitRoutePlannerWithStart, selectedResult)}>
@@ -80,7 +82,7 @@ Search.propTypes = {
 
 export default connect(
   function (state) {
-    return { 
+    return {
       tool: state.map.tool,
       results: state.search.results,
       selectedResult: state.search.selectedResult

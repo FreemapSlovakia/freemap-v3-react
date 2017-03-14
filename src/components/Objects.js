@@ -32,6 +32,7 @@ class Objects extends React.Component {
 
     const b = (fn, ...args) => fn.bind(this, ...args);
 
+    // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
     return (
       <Nav>
         <Navbar.Text><i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs</Navbar.Text>

@@ -135,6 +135,7 @@ class Main extends React.Component {
   render() {
     const { tool, onResetMap } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
+    const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele' ].indexOf(tool) !== -1;
 
     return (
       <div className="container-fluid">
@@ -151,31 +152,31 @@ class Main extends React.Component {
 
             <Navbar.Collapse>
               {tool === 'objects' && <Objects/>}
-              {tool !== 'objects' && tool !== 'route-planner' && <Search/>}
+              {(showDefaultMenu || tool === 'search') && <Search/>}
               {tool === 'route-planner' && <RoutePlanner/>}
               {tool === 'settings' && <Settings/>}
-              {tool !== 'search' && tool !== 'objects' && tool !== 'route-planner' &&
-                <div>
-                  <Nav key='nav'>
-                    <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
-                    <FontAwesomeIcon icon="star" /> Hľadať POIs
-                    </NavItem>
-                    <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
-                      <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
-                    </NavItem>
-                    <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
-                      <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
-                    </NavItem>
-                    <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
-                      <FontAwesomeIcon icon="area-chart" /> Výškomer
-                    </NavItem>
-                  </Nav>
-                  <Nav pullRight>
-                    <NavDropdown title="Viac" id="additional-menu-items">
-                      <MenuItem onClick={b(this.handleToolSet, 'settings')}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
-                    </NavDropdown>
-                  </Nav>
-                </div>
+              {showDefaultMenu &&
+                <Nav key='nav'>
+                  <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
+                  <FontAwesomeIcon icon="star" /> Hľadať POIs
+                  </NavItem>
+                  <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
+                    <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
+                  </NavItem>
+                  <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
+                    <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
+                  </NavItem>
+                  <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
+                    <FontAwesomeIcon icon="area-chart" /> Výškomer
+                  </NavItem>
+                </Nav>
+              }
+              {showDefaultMenu &&
+                <Nav pullRight>
+                  <NavDropdown title="Viac" id="additional-menu-items">
+                    <MenuItem onClick={b(this.handleToolSet, 'settings')}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
+                  </NavDropdown>
+                </Nav>
               }
             </Navbar.Collapse>
           </Navbar>

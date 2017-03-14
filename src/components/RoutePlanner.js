@@ -16,6 +16,7 @@ class RoutePlanner extends React.Component {
   render() {
     const { pickPointMode, transportType, onChangeTransportType, start, finish, onChangePickPointMode, onCancel } = this.props;
 
+    // FIXME wrapper element can't be used
     return (
       <div>
         <Navbar.Text><i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy</Navbar.Text>
