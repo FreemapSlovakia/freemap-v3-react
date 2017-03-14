@@ -6,6 +6,26 @@ import { overlayLayers } from 'fm3/mapDefinitions';
 
 class Layers extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = { baseLayers: this.getBaseLayers() };
+  }
+
+  getBaseLayers() {
+    const baseLayers = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].map(([ type, name ]) => {
+      return {
+        name: `${name}`,
+        type,
+        url: `https://{s}.freemap.sk/${type}/{z}/{x}/{y}.${this.props.tileFormat}`,
+        attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+        minZoom: 7,
+        maxZoom: 16
+      };
+    });
+
+    return baseLayers;
+  }
+
   // eslint-disable-next-line
   getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
     return <TileLayer attribution={attribution} url={url}
@@ -15,7 +35,7 @@ class Layers extends React.Component {
   }
 
   handleAdd(type) {
-    if (this.props.baseLayers.some(x => x.type === type)) {
+    if (this.state.baseLayers.some(x => x.type === type)) {
       this.props.onMapChange(type);
     } else {
       const next = new Set(this.props.overlays);
@@ -36,7 +56,7 @@ class Layers extends React.Component {
     return (
       <LayersControl position="topright">
         {
-          this.props.baseLayers.map(item => {
+          this.state.baseLayers.map(item => {
             const { type, name } = item;
             return <LayersControl.BaseLayer key={type} name={name} checked={this.props.mapType === type}>{this.getTileLayer(item)}</LayersControl.BaseLayer>;
           })
@@ -55,7 +75,7 @@ class Layers extends React.Component {
 Layers.propTypes = {
   onMapChange: React.PropTypes.func.isRequired,
   onOverlaysChange: React.PropTypes.func.isRequired,
-  baseLayers: React.PropTypes.any.isRequired,
+  tileFormat: React.PropTypes.string.isRequired,
   mapType: React.PropTypes.any.isRequired,
   overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(x => x.type)))
 };
@@ -63,11 +83,10 @@ Layers.propTypes = {
 export default connect(
   function (state) {
     return {
-      baseLayers: state.map.baseLayers
+      tileFormat: state.map.tileFormat
     };
   },
-  function (dispatch) {
-    return {
-    };
+  function (/*dispatch*/) {
+    return {};
   }
 )(Layers);
