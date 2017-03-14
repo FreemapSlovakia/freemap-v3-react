@@ -1,45 +1,51 @@
-import update from 'immutability-helper';
-
 const initialState = {
   tool: null,
 
   mapType: 'T',
-  center: {
-    lat: 48.70714,
-    lon: 19.4995
-  },
+  lat: 48.70714,
+  lon: 19.4995,
   zoom: 8,
   overlays: [],
+  bounds: {
+    south: 0,
+    west: 0,
+    east: 0,
+    north: 0
+  },
+
   tileFormat: 'png'
 };
 
 export default function map(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
-      return update(state, { tool: { $set: action.tool } } );
+      return Object.assign({}, state, { tool: action.tool });
     case 'RESET_MAP':
-      return update(state, {
-        tool: { $set: initialState.tool },
-        zoom: { $set: initialState.zoom },
-        center: { $set: initialState.center },
+      return Object.assign({}, state, {
+        tool: initialState.tool,
+        zoom: initialState.zoom,
+        lat: initialState.lat,
+        lon: initialState.lon
       });
     case 'SET_MAP_BOUNDS':
-      return update(state, { bounds: { $set: action.bounds } } );
-    case 'SET_MAP_TYPE':
-      return update(state, { mapType: { $set: action.mapType } } );
+      return Object.assign({}, state, { bounds: action.bounds });
     case 'SET_MAP_TILE_FORMAT':
-      return update(state, { tileFormat: { $set: action.tileFormat } } );
-    case 'SET_MAP_OVERLAYS':
-      return update(state, { overlays: { $set: action.overlays } } );
-    case 'REFOCUS':
-      return update(state, {
-        tool: { $set: action.zoom < 12 && state.tool === 'objects' ? null : state.tool },
-        zoom: { $set: action.zoom },
-        center: {
-          lat : { $set: action.lat },
-          lon : { $set: action.lon }
-        },
+      return Object.assign({}, state, { tileFormat: action.tileFormat });
+    case 'REFOCUS': {
+      const newState = Object.assign({}, state);
+
+      if (action.zoom < 12 && state.tool === 'objects') {
+        newState.tool = null;
+      }
+
+      [ 'zoom', 'lat', 'lon', 'mapType', 'overlays' ].forEach(prop => {
+        if (prop in action) {
+          newState[prop] = action[prop];
+        }
       });
+
+      return newState;
+    }
     default:
       return state;
   }

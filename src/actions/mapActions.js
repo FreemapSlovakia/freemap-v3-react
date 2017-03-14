@@ -10,16 +10,8 @@ export function setMapBounds(bounds) {
   return { type: 'SET_MAP_BOUNDS', bounds };
 }
 
-export function refocusMap(lat, lon, zoom) {
-  return { type: 'REFOCUS', lat, lon, zoom };
-}
-
-export function setMapType(mapType) {
-  return { type: 'SET_MAP_TYPE', mapType };
-}
-
-export function setMapOverlays(overlays) {
-  return { type: 'SET_MAP_OVERLAYS', overlays };
+export function refocusMap(changes) {
+  return Object.assign({ type: 'REFOCUS' }, changes);
 }
 
 export function setMapTileFormat(tileFormat) {
