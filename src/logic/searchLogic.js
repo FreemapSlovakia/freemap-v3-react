@@ -1,6 +1,7 @@
 import { createLogic } from 'redux-logic';
 import { setResults } from 'fm3/actions/searchActions';
 import { refocusMap } from 'fm3/actions/mapActions';
+import { zoomLevelToFit } from 'fm3/geoutils';
 
 const searchLogic = createLogic({
   type: 'SEARCH',
@@ -34,15 +35,19 @@ const searchLogic = createLogic({
 const refocusMapLogic = createLogic({
   type: 'HIGHLIGHT_RESULT',
   process({ getState }, dispatch) {
-    const { search: { highlightedResult }, map: { zoom, bounds } } = getState();
+    const { search: { highlightedResult }, map: { bounds, zoom } } = getState();
 
     if (highlightedResult && bounds) {
       const southWest = L.latLng(bounds.south, bounds.west);
       const northEast = L.latLng(bounds.north, bounds.east);
       const leafletBounds = L.latLngBounds(southWest, northEast);
       const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
-      if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
-        dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, 13));
+      let appropriateZoom = 13;
+      if (highlightedResult.geojson.type != 'Point') {
+        appropriateZoom = zoomLevelToFit(highlightedResult.geojson);
+      }
+      if (zoom != appropriateZoom || !leafletBounds.contains(hLatLon)) {
+        dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, appropriateZoom));
       }
     }
   }

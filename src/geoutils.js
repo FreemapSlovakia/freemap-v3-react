@@ -22,3 +22,41 @@ export function bearing(lat1, lon1, lat2, lon2) {
 export function toRad(deg) {
   return deg * Math.PI / 180;
 }
+
+function dimensionsOf(geojson) {
+  const bounds = L.geoJson(geojson).getBounds();
+  const north = bounds.getNorth();
+  const west = bounds.getWest();
+  const south = bounds.getSouth();
+  const east = bounds.getEast();
+  
+  const northToSouthMeters = distance(north, west, south, west);
+  const westToEastMeters = distance(north, west, north, east);
+  
+  return { northToSouthMeters, westToEastMeters };
+}
+
+export function zoomLevelToFit(geojson) { // for Slovakia
+  const { northToSouthMeters, westToEastMeters } = dimensionsOf(geojson);
+  const largerDimension = (northToSouthMeters > westToEastMeters) ? northToSouthMeters : westToEastMeters;
+  const maxMeters = 600;
+  if (largerDimension < maxMeters) {
+    return 16;
+  }
+  if (largerDimension < maxMeters*2) {
+    return 15;
+  }  
+  if (largerDimension < maxMeters*4) {
+    return 14;
+  } 
+  if (largerDimension < maxMeters*8) {
+    return 13;
+  }
+  if (largerDimension < maxMeters*16) {
+    return 12;
+  }
+  if (largerDimension < maxMeters*32) {
+    return 11;
+  }
+  return 10;
+}
