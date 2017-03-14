@@ -6,7 +6,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import { setTool } from 'fm3/actions/mapActions';
+import { setTool, setMapTileFormat } from 'fm3/actions/mapActions';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -65,16 +65,15 @@ Settings.propTypes = {
 };
 
 export default connect(
-  function (/*state*/) {
-    // TODO
+  function (state) {
     return {
-      tileFormat: 'png'
+      tileFormat: state.map.tileFormat
     };
   },
   function (dispatch) {
     return {
-      onSave() {
-        // todo - call save action
+      onSave(tileFormat) {
+        dispatch(setMapTileFormat(tileFormat));
         dispatch(setTool(null));
       },
       onCancel() {

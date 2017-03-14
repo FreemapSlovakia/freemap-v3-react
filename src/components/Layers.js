@@ -8,15 +8,19 @@ class Layers extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { baseLayers: this.getBaseLayers() };
+    this.state = { baseLayers: this.getBaseLayers(props.tileFormat) };
   }
 
-  getBaseLayers() {
+  componentWillReceiveProps(newProps) {
+    this.setState({ baseLayers: this.getBaseLayers(newProps.tileFormat) });
+  }
+
+  getBaseLayers(tileFormat) {
     const baseLayers = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].map(([ type, name ]) => {
       return {
         name: `${name}`,
         type,
-        url: `https://{s}.freemap.sk/${type}/{z}/{x}/{y}.${this.props.tileFormat}`,
+        url: `https://{s}.freemap.sk/${type}/{z}/{x}/{y}.${tileFormat}`,
         attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
         minZoom: 7,
         maxZoom: 16

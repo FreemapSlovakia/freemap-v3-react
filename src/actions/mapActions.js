@@ -21,3 +21,7 @@ export function setMapType(mapType) {
 export function setMapOverlays(overlays) {
   return { type: 'SET_MAP_OVERLAYS', overlays };
 }
+
+export function setMapTileFormat(tileFormat) {
+  return { type: 'SET_MAP_TILE_FORMAT', tileFormat };
+}

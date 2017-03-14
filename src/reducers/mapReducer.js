@@ -27,6 +27,8 @@ export default function map(state = initialState, action) {
       return update(state, { bounds: { $set: action.bounds } } );
     case 'SET_MAP_TYPE':
       return update(state, { mapType: { $set: action.mapType } } );
+    case 'SET_MAP_TILE_FORMAT':
+      return update(state, { tileFormat: { $set: action.tileFormat } } );
     case 'SET_MAP_OVERLAYS':
       return update(state, { overlays: { $set: action.overlays } } );
     case 'REFOCUS':
