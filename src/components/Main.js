@@ -7,6 +7,8 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
+import NavDropdown from 'react-bootstrap/lib/NavDropdown';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
@@ -17,6 +19,7 @@ import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
+import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
@@ -161,21 +164,29 @@ class Main extends React.Component {
               {tool === 'objects' && <Objects/>}
               {tool !== 'objects' && tool !== 'route-planner' && <Search/>}
               {tool === 'route-planner' && <RoutePlanner/>}
+              {tool === 'settings' && <Settings/>}
               {tool !== 'search' && tool !== 'objects' && tool !== 'route-planner' &&
-                <Nav key='nav'>
-                  <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
-                  <FontAwesomeIcon icon="star" /> Hľadať POIs
-                  </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
-                    <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
-                  </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
-                    <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
-                  </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
-                    <FontAwesomeIcon icon="area-chart" /> Výškomer
-                  </NavItem>
-                </Nav>
+                <div>
+                  <Nav key='nav'>
+                    <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
+                    <FontAwesomeIcon icon="star" /> Hľadať POIs
+                    </NavItem>
+                    <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
+                      <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
+                    </NavItem>
+                    <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
+                      <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
+                    </NavItem>
+                    <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
+                      <FontAwesomeIcon icon="area-chart" /> Výškomer
+                    </NavItem>
+                  </Nav>
+                  <Nav pullRight>
+                    <NavDropdown pullright title="Viac" id="additional-menu-items">
+                      <MenuItem onClick={b(this.handleToolSet, 'settings')}>Nastavenia</MenuItem>
+                    </NavDropdown>
+                  </Nav>
+                </div>
               }
             </Navbar.Collapse>
           </Navbar>
