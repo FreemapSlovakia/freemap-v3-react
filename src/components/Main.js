@@ -29,14 +29,15 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 class Main extends React.Component {
 
   componentWillMount() {
-    this.setupMapFromUrl(this.props.params);
+    this.setupMapFromUrl(this.props);
   }
 
   componentWillReceiveProps(newProps) {
-    this.setupMapFromUrl(newProps.params);
+    this.setupMapFromUrl(newProps);
   }
 
-  setupMapFromUrl(params) {
+  setupMapFromUrl(props) {
+    const { params } = props;
     const layersOK = /^[ATCK]I?$/.test(params.mapType);
     const layers = layersOK ? params.mapType : 'T';
     const mapType = layers.charAt(0);
@@ -54,21 +55,27 @@ class Main extends React.Component {
     const lat = parseFloat(params.lat);
     const lon = parseFloat(params.lon);
 
-    this.refocusMap2(lat, lon, zoom);
+    this.refocusMap2(props, lat, lon, zoom);
   }
 
+  // on map move or zoom
   refocusMap({ target }) {
     const { lat, lng: lon } = target.getCenter();
     const zoom = target.getZoom();
-    this.refocusMap2(lat, lon, zoom);
+    this.refocusMap2(this.props, lat, lon, zoom);
   }
 
-  refocusMap2(lat, lon, zoom) {
-    const { center: { lat: oldLat, lon: oldLon }, zoom: oldZoom } = this.props;
+  refocusMap2(props, lat, lon, zoom) {
+    this.handleMapBoundsChanged();
+
+    const { lat: oldLat, lon: oldLon, zoom: oldZoom } = props;
     if (isNaN(lat) || isNaN(lon) || isNaN(zoom) ||
         Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
-      this.props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
-      this.handleMapBoundsChanged();
+      props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
+
+      const { mapType, overlays } = this.props;
+      const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
+      props.router.replace(newUrl);
     }
   }
 
@@ -174,10 +181,9 @@ class Main extends React.Component {
         <Row className={`tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
             ref={map => this.map = map}
-            center={L.latLng(this.props.center.lat, this.props.center.lon)}
+            center={L.latLng(this.props.lat, this.props.lon)}
             zoom={this.props.zoom}
             onMoveend={b(this.refocusMap)}
-            onZoom={b(this.refocusMap)}
             onClick={b(this.handleMapClick)}
           >
             <Layers
@@ -207,9 +213,11 @@ class Main extends React.Component {
 }
 
 Main.propTypes = {
-  center: React.PropTypes.object,
+  lat: React.PropTypes.number,
+  lon: React.PropTypes.number,
   zoom: React.PropTypes.number,
   params: React.PropTypes.object,
+  router: React.PropTypes.object,
   tool: React.PropTypes.string,
   mapType: React.PropTypes.string,
   overlays: React.PropTypes.array,
@@ -226,7 +234,8 @@ Main.propTypes = {
 export default connect(
   function (state) {
     return {
-      center: state.map.center,
+      lat: state.map.lat,
+      lon: state.map.lon,
       zoom: state.map.zoom,
       tool: state.map.tool,
       objectsModalShown: state.objects.objectsModalShown,

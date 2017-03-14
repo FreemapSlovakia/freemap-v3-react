@@ -11,7 +11,7 @@ const searchLogic = createLogic({
       return;
     }
 
-    const { center: { lat, lon }, zoom } = getState().map;
+    const { lat, lon, zoom } = getState().map;
 
     // `https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`
 

@@ -4,10 +4,8 @@ const initialState = {
   tool: null,
 
   mapType: 'T',
-  center: {
-    lat: 48.70714,
-    lon: 19.4995
-  },
+  lat: 48.70714,
+  lon: 19.4995,
   zoom: 8,
   overlays: []
 };
@@ -20,7 +18,8 @@ export default function map(state = initialState, action) {
       return update(state, {
         tool: { $set: initialState.tool },
         zoom: { $set: initialState.zoom },
-        center: { $set: initialState.center },
+        lat: { $set: initialState.lat },
+        lon: { $set: initialState.lon }
       });
     case 'SET_MAP_BOUNDS':
       return update(state, { bounds: { $set: action.bounds } } );
@@ -31,10 +30,8 @@ export default function map(state = initialState, action) {
     case 'REFOCUS':
       return update(state, {
         zoom: { $set: action.zoom },
-        center: {
-          lat : { $set: action.lat },
-          lon : { $set: action.lon }
-        },
+        lat : { $set: action.lat },
+        lon : { $set: action.lon }
       });
     default:
       return state;
