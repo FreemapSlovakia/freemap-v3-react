@@ -22,9 +22,11 @@ export default function routePlanner(state = initialState, action) {
     case 'SET_ROUTE_PLANNER_FINISH':
       return update(state, { finish: { $set: action.finish }, pickMode: { $set: state.start ? 'midpoint' : 'finish' } } );
     case 'ADD_ROUTE_PLANNER_MIDPOINT':
-      return update(state, { midpoints: { $push: [ action.midpoint ] } });
+      return update(state, { midpoints: { $splice: [ [ action.position, 0, action.midpoint ] ] } });
     case 'SET_ROUTE_PLANNER_MIDPOINT':
       return update(state, { midpoints: { [ action.position ]: { $set: action.midpoint } } });
+    case 'REMOVE_ROUTE_PLANNER_MIDPOINT':
+      return update(state, { midpoints: { $splice: [ [ action.position, 1 ] ] } });
     case 'SET_ROUTE_PLANNER_TRANSPORT_TYPE':
       return update(state, { transportType: { $set: action.transportType } } );
     case 'SET_ROUTE_PLANNER_PICK_MODE':

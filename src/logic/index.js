@@ -4,8 +4,8 @@ import objectsLogic from 'fm3/logic/objectsLogic';
 import searchLogic from 'fm3/logic/searchLogic';
 
 export default [
-  routePlannerLogic,
+  ...routePlannerLogic,
   elevationMeasurementLogic,
-  ...objectsLogic,
-  ...searchLogic
+  ...searchLogic,
+  objectsLogic
 ];

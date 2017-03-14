@@ -34,12 +34,10 @@ const searchLogic = createLogic({
 const refocusMapLogic = createLogic({
   type: 'HIGHLIGHT_RESULT',
   process({ getState }, dispatch) {
-    const { search: { highlightedResult }, map: { zoom, bounds } } = getState();
+    const { search: { highlightedResult }, map: { zoom, bounds: { south, west, north, east } } } = getState();
 
-    if (highlightedResult && bounds) {
-      const southWest = L.latLng(bounds.south, bounds.west);
-      const northEast = L.latLng(bounds.north, bounds.east);
-      const leafletBounds = L.latLngBounds(southWest, northEast);
+    if (highlightedResult) {
+      const leafletBounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
       const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
       if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
         dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, 13));

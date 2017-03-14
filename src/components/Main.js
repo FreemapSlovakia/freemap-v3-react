@@ -7,20 +7,22 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
+import NavDropdown from 'react-bootstrap/lib/NavDropdown';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
-import ObjectsModal from 'fm3/components/ObjectsModal';
+import Objects from 'fm3/components/Objects';
 import Layers from 'fm3/components/Layers';
 import Measurement from 'fm3/components/Measurement';
 import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
+import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setTool, resetMap, setMapBounds, refocusMap, setMapType, setMapOverlays } from 'fm3/actions/mapActions';
-import { showObjectsModal } from 'fm3/actions/objectsActions';
+import { setTool, resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 
 import 'fm3/styles/main.scss';
 
@@ -29,77 +31,71 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 class Main extends React.Component {
 
   componentWillMount() {
-    this.setupMapFromUrl(this.props);
+    // set redux according to URL
+    this.props.onMapRefocus(getMapDiff(this.props));
+  }
+
+  componentDidMount() {
+    // to initially set map bounds; TODO map.onLoad would be better but is not called :-(
+    setTimeout(() => {
+      this.changeMapBounds();
+    });
   }
 
   componentWillReceiveProps(newProps) {
-    this.setupMapFromUrl(newProps);
-  }
-
-  setupMapFromUrl(props) {
-    const { params } = props;
-    const layersOK = /^[ATCK]I?$/.test(params.mapType);
-    const layers = layersOK ? params.mapType : 'T';
-    const mapType = layers.charAt(0);
-    const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
-
-    if (!layersOK || mapType !== this.props.mapType) {
-      this.props.onSetMapType(mapType);
-    }
-
-    if (!layersOK || overlays.join('') !== this.props.overlays.join('')) {
-      this.props.onSetMapOverlays(overlays);
-    }
-
-    const zoom = parseInt(params.zoom);
-    const lat = parseFloat(params.lat);
-    const lon = parseFloat(params.lon);
-
-    this.refocusMap2(props, lat, lon, zoom);
-  }
-
-  // on map move or zoom
-  refocusMap({ target }) {
-    const { lat, lng: lon } = target.getCenter();
-    const zoom = target.getZoom();
-    this.refocusMap2(this.props, lat, lon, zoom);
-  }
-
-  refocusMap2(props, lat, lon, zoom) {
-    this.handleMapBoundsChanged();
-
-    const { lat: oldLat, lon: oldLon, zoom: oldZoom } = props;
-    if (isNaN(lat) || isNaN(lon) || isNaN(zoom) ||
-        Math.abs(lat - oldLat) > 0.000001 || Math.abs(lon - oldLon) > 0.000001 || zoom !== oldZoom) {
-      props.onMapRefocus(lat || 48.70714, lon || 19.4995, zoom || 8);
-
-      const { mapType, overlays } = this.props;
+    const stateChanged = [ 'mapType', 'overlays', 'zoom', 'lat', 'lon' ].some(prop => newProps[prop] !== this.props[prop]);
+    if (stateChanged) {
+      // update URL
+      const { mapType, overlays, zoom, lat, lon } = newProps;
       const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
-      props.router.replace(newUrl);
+      newProps.router.replace(newUrl);
+    } else {
+      // set redux according to URL
+      const changes = getMapDiff(newProps);
+      if (Object.keys(changes).length) {
+        newProps.onMapRefocus(changes);
+      }
+    }
+  }
+
+  handleMapMoveEnd() {
+    this.changeMapBounds();
+
+    const map = this.refs.map.leafletElement;
+    const { lat, lng: lon } = map.getCenter();
+    const zoom = map.getZoom();
+
+    if (this.props.lat !== lat || this.props.lon !== lon || this.props.zoom !== zoom) {
+      this.props.onMapRefocus({ lat, lon, zoom });
     }
   }
 
   // TODO there may be more map events which changes map bounds. eg "resize". Implement.
-  handleMapBoundsChanged() {
-    if (this.map) { // FIXME this is sometimes null (if changed url manually)
-      const b = this.map.leafletElement.getBounds();
-      this.props.onMapBoundsChange({
-        south: b.getSouth(),
-        west: b.getWest(),
-        north: b.getNorth(),
-        east: b.getEast()
-      });
+  changeMapBounds() {
+    const b = this.refs.map.leafletElement.getBounds();
+
+    const newBounds = {
+      south: b.getSouth(),
+      west: b.getWest(),
+      north: b.getNorth(),
+      east: b.getEast()
+    };
+
+    const changed = [ 'south', 'west', 'north', 'east' ].some(prop => this.props.bounds[prop] !== newBounds[prop]);
+
+    if (changed) {
+      this.props.onMapBoundsChange(newBounds);
     }
   }
 
   handleMapTypeChange(mapType) {
     if (this.props.mapType !== mapType) {
-      this.props.onSetMapType(mapType);
+      this.props.onMapRefocus({ mapType });
     }
   }
 
   handleOverlayChange(overlays) {
-    this.props.onSetMapOverlays(overlays);
+    this.props.onMapRefocus({ overlays });
   }
 
   handleMapClick({ latlng: { lat, lng: lon } }) {
@@ -118,19 +114,22 @@ class Main extends React.Component {
 
   handlePoiSearch() {
     if (this.props.zoom < 12) {
-      this.refs.toastContainer.info(
-        "Vyhľadávanie POIs funguje až od zoom úrovne 12",
-        null,
-        { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
-      );
+      this.showToast('info', null, "Vyhľadávanie POIs funguje až od zoom úrovne 12");
     } else {
-      this.props.onShowObjectsModal();
+      this.props.onSetTool('objects');
     }
   }
 
-  toolLauncherClicked(tool) {
-    const toolIsAlreadyActive = this.props.tool === tool;
-    (toolIsAlreadyActive) ? this.props.onSetTool(null) : this.props.onSetTool(tool);
+  showToast(toastType, line1, line2) {
+    this.refs.toastContainer[toastType](
+      line2,
+      line1, // sic!
+      { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
+    );
+  }
+
+  handleToolSet(tool) {
+    this.props.onSetTool(this.props.tool === tool ? null : tool); // toggle tool
   }
 
   render() {
@@ -151,40 +150,44 @@ class Main extends React.Component {
             </Navbar.Header>
 
             <Navbar.Collapse>
-              {tool === 'objects' ? <ObjectsModal/>
-                :
-                tool === 'search' ? <Search/>
-                :
-                tool === 'route-planner' ? <RoutePlanner/>
-                :
-                [
-                  <Search/>,
-                  <Nav>
-                    <NavItem onClick={b(this.toolLauncherClicked, 'objects')} active={tool === 'objects'}>
+              {tool === 'objects' && <Objects/>}
+              {tool !== 'objects' && tool !== 'route-planner' && <Search/>}
+              {tool === 'route-planner' && <RoutePlanner/>}
+              {tool === 'settings' && <Settings/>}
+              {tool !== 'search' && tool !== 'objects' && tool !== 'route-planner' &&
+                <div>
+                  <Nav key='nav'>
+                    <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
                     <FontAwesomeIcon icon="star" /> Hľadať POIs
                     </NavItem>
-                    <NavItem onClick={b(this.toolLauncherClicked, 'route-planner')} active={tool === 'route-planner'}>
+                    <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
                       <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
                     </NavItem>
-                    <NavItem onClick={b(this.toolLauncherClicked, 'measure')} active={tool === 'measure'}>
+                    <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
                       <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
                     </NavItem>
-                    <NavItem onClick={b(this.toolLauncherClicked, 'measure-ele')} active={tool === 'measure-ele'}>
+                    <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
                       <FontAwesomeIcon icon="area-chart" /> Výškomer
                     </NavItem>
                   </Nav>
-                ]
+                  <Nav pullRight>
+                    <NavDropdown title="Viac" id="additional-menu-items">
+                      <MenuItem onClick={b(this.handleToolSet, 'settings')}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
+                    </NavDropdown>
+                  </Nav>
+                </div>
               }
             </Navbar.Collapse>
           </Navbar>
         </Row>
         <Row className={`tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
-            ref={map => this.map = map}
+            ref="map"
             center={L.latLng(this.props.lat, this.props.lon)}
             zoom={this.props.zoom}
-            onMoveend={b(this.refocusMap)}
+            onMoveend={b(this.handleMapMoveEnd)}
             onClick={b(this.handleMapClick)}
+            onResize={b(this.changeMapBounds)}
           >
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
@@ -195,7 +198,10 @@ class Main extends React.Component {
 
             <ObjectsResult/>
 
-            {tool === 'route-planner' && <RoutePlannerResults ref={e => this.routePlanner = e}/>}
+            {tool === 'route-planner' &&
+              <RoutePlannerResults
+                ref={e => this.routePlanner = e}
+                onShowToast={b(this.showToast)} />}
 
             {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
 
@@ -216,6 +222,7 @@ Main.propTypes = {
   lat: React.PropTypes.number,
   lon: React.PropTypes.number,
   zoom: React.PropTypes.number,
+  bounds: React.PropTypes.object,
   params: React.PropTypes.object,
   router: React.PropTypes.object,
   tool: React.PropTypes.string,
@@ -224,11 +231,8 @@ Main.propTypes = {
   onSetTool: React.PropTypes.func.isRequired,
   onResetMap: React.PropTypes.func.isRequired,
   objectsModalShown: React.PropTypes.bool,
-  onShowObjectsModal: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
-  onMapRefocus: React.PropTypes.func.isRequired,
-  onSetMapType: React.PropTypes.func.isRequired,
-  onSetMapOverlays: React.PropTypes.func.isRequired
+  onMapRefocus: React.PropTypes.func.isRequired
 };
 
 export default connect(
@@ -240,7 +244,8 @@ export default connect(
       tool: state.map.tool,
       objectsModalShown: state.objects.objectsModalShown,
       mapType: state.map.mapType,
-      overlays: state.map.overlays
+      overlays: state.map.overlays,
+      bounds: state.map.bounds
     };
   },
   function (dispatch) {
@@ -251,21 +256,46 @@ export default connect(
       onResetMap() {
         dispatch(resetMap());
       },
-      onShowObjectsModal() {
-        dispatch(showObjectsModal());
-      },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));
       },
-      onMapRefocus(lat, lon, zoom) {
-        dispatch(refocusMap(lat, lon, zoom));
-      },
-      onSetMapType(mapType) {
-        dispatch(setMapType(mapType));
-      },
-      onSetMapOverlays(overlays) {
-        dispatch(setMapOverlays(overlays));
+      onMapRefocus(changes) {
+        dispatch(refocusMap(changes));
       }
     };
   }
 )(Main);
+
+function getMapDiff(props) {
+  const { params } = props;
+  const layersOK = /^[ATCK]I?$/.test(params.mapType);
+  const layers = layersOK ? params.mapType : 'T';
+  const mapType = layers.charAt(0);
+  const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
+
+  const changes = {};
+
+  if (!layersOK || mapType !== props.mapType) {
+    changes.mapType = mapType;
+  }
+
+  if (!layersOK || overlays.join('') !== props.overlays.join('')) {
+    changes.overlays = overlays;
+  }
+
+  const lat = parseFloat(params.lat);
+  const lon = parseFloat(params.lon);
+
+  if (isNaN(lat) || isNaN(lon) || Math.abs(lat - props.lat) > 0.000001 || Math.abs(lon - props.lon) > 0.000001) {
+    changes.lat = lat || 48.70714;
+    changes.lon = lon || 19.4995;
+  }
+
+  const zoom = parseInt(params.zoom);
+
+  if (isNaN(zoom) || zoom !== props.zoom) {
+    changes.zoom = zoom || 0;
+  }
+
+  return changes;
+}

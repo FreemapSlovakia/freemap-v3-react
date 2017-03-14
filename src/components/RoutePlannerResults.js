@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Marker, Polyline, Tooltip } from 'react-leaflet';
+import Button from 'react-bootstrap/lib/Button';
 
-import { setStart, setFinish, addMidpoint, setMidpoint } from 'fm3/actions/routePlannerActions';
+import { setStart, setFinish, addMidpoint, setMidpoint, removeMidpoint } from 'fm3/actions/routePlannerActions';
 
 function createIcon(color) {
   return new L.Icon({
@@ -49,9 +50,20 @@ class RoutePlannerResults extends React.Component {
     } // TODO default - log error
   }
 
+  midpointClicked(position) {
+    const line1 = 'Odstrániť bod?';
+    const line2 = [
+      <Button key="yes" onClick={() => this.props.onRemoveMidpoint(position)}>
+          <span style={{ fontWeight:700 }}>Áno</span>
+      </Button>,
+      ' ',
+      <Button key="no">Nie</Button> 
+    ];
+    this.props.onShowToast('info', line1, line2);
+  }
+
   render() {
     const { start, midpoints, finish, shapePoints, time, distance } = this.props;
-
     return (
       <div>
         {start &&
@@ -63,16 +75,17 @@ class RoutePlannerResults extends React.Component {
           />
         }
 
-            {midpoints.map(({ lat, lon }, i) => (
-                <Marker
-                  icon={midPointIcon}
-                  draggable
-                  onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
-                  key={i}
-                  position={L.latLng(lat, lon)}>
-                </Marker>
-              )
-            )}
+        {midpoints.map(({ lat, lon }, i) => (
+            <Marker
+              icon={midPointIcon}
+              draggable
+              onClick={() => this.midpointClicked(i)}
+              onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
+              key={i}
+              position={L.latLng(lat, lon)}>
+            </Marker>
+          )
+        )}
 
         {finish &&
           <Marker
@@ -106,7 +119,9 @@ RoutePlannerResults.propTypes = {
   onSetFinish: React.PropTypes.func.isRequired,
   onSetMidpoint: React.PropTypes.func.isRequired,
   onAddMidpoint: React.PropTypes.func.isRequired,
-  pickMode: React.PropTypes.string.isRequired
+  onRemoveMidpoint: React.PropTypes.func.isRequired, 
+  pickMode: React.PropTypes.string.isRequired,
+  onShowToast: React.PropTypes.func.isRequired
 };
 
 export default connect(
@@ -130,10 +145,14 @@ export default connect(
         dispatch(setFinish(finish));
       },
       onAddMidpoint: function(midpoint) {
-        dispatch(addMidpoint(midpoint));
+        const position = 0;
+        dispatch(addMidpoint(midpoint, position));
       },
       onSetMidpoint: function(position, midpoint) {
         dispatch(setMidpoint(position, midpoint));
+      },
+      onRemoveMidpoint: function(position) {
+        dispatch(removeMidpoint(position));
       }
     };
   },
