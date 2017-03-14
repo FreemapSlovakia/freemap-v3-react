@@ -40,7 +40,7 @@ const refocusMapLogic = createLogic({
       const leafletBounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
       const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
       if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
-        dispatch(refocusMap(highlightedResult.lat, highlightedResult.lon, 13));
+        dispatch(refocusMap({ lat: highlightedResult.lat, lon: highlightedResult.lon, zoom: 13 }));
       }
     }
   }
