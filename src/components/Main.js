@@ -182,8 +182,8 @@ class Main extends React.Component {
                     </NavItem>
                   </Nav>
                   <Nav pullRight>
-                    <NavDropdown pullright title="Viac" id="additional-menu-items">
-                      <MenuItem onClick={b(this.handleToolSet, 'settings')}>Nastavenia</MenuItem>
+                    <NavDropdown title="Viac" id="additional-menu-items">
+                      <MenuItem onClick={b(this.handleToolSet, 'settings')}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
                     </NavDropdown>
                   </Nav>
                 </div>

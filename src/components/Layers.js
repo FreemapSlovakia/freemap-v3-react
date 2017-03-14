@@ -8,14 +8,14 @@ class Layers extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = { baseLayers: this.getBaseLayers(props.tileFormat) };
+    this.state = { baseLayers: this.produceBaseLayersFor(props.tileFormat) };
   }
 
   componentWillReceiveProps(newProps) {
-    this.setState({ baseLayers: this.getBaseLayers(newProps.tileFormat) });
+    this.setState({ baseLayers: this.produceBaseLayersFor(newProps.tileFormat) });
   }
 
-  getBaseLayers(tileFormat) {
+  produceBaseLayersFor(tileFormat) {
     const baseLayers = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].map(([ type, name ]) => {
       return {
         name: `${name}`,
@@ -79,8 +79,8 @@ class Layers extends React.Component {
 Layers.propTypes = {
   onMapChange: React.PropTypes.func.isRequired,
   onOverlaysChange: React.PropTypes.func.isRequired,
-  tileFormat: React.PropTypes.string.isRequired,
-  mapType: React.PropTypes.any.isRequired,
+  tileFormat: React.PropTypes.oneOf([ 'jpeg', 'png' ]).isRequired,
+  mapType: React.PropTypes.oneOf([ 'T', 'A', 'C', 'K' ]).isRequired,
   overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(x => x.type)))
 };
 

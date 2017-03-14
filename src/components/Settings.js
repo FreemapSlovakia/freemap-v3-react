@@ -5,6 +5,7 @@ import Modal from 'react-bootstrap/lib/Modal';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { setTool, setMapTileFormat } from 'fm3/actions/mapActions';
 
@@ -45,13 +46,13 @@ class Settings extends React.Component {
               </Button>
             </ButtonGroup>
           </div>
-          <Alert bsStyle="info">
+          <Alert bsStyle="success">
             Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice. Pri pomalom internete preto odporúčame zvoliť JPG.
           </Alert>
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={b(this.save)}>Uložiť</Button>
-          <Button onClick={b(onCancel)}>Zrušiť</Button>
+          <Button bsStyle="success" onClick={b(this.save)}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
+          <Button onClick={b(onCancel)}><Glyphicon glyph="remove"/> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
