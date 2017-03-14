@@ -121,11 +121,7 @@ class Main extends React.Component {
 
   handlePoiSearch() {
     if (this.props.zoom < 12) {
-      this.refs.toastContainer.info(
-        "Vyhľadávanie POIs funguje až od zoom úrovne 12",
-        null,
-        { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
-      );
+      this.showToast('info', null, "Vyhľadávanie POIs funguje až od zoom úrovne 12");
     } else {
       this.props.onSetTool('objects');
     }
@@ -136,7 +132,7 @@ class Main extends React.Component {
       line2,
       line1, // sic!
       { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' }
-    );    
+    );
   }
 
   handleToolSet(tool) {
