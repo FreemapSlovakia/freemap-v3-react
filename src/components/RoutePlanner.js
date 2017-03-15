@@ -10,7 +10,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
 import { setStart, setFinish, setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
-import { setTool } from 'fm3/actions/mainActions';
+import { setTool, setActivePopup } from 'fm3/actions/mainActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
 
@@ -33,7 +33,15 @@ class RoutePlanner extends React.Component {
   setFromHomeLocation(pointType) {
     const { lat, lon } = this.props.homeLocation;
     if (!lat) {
-      this.props.onShowToast('info', null, 'Najpr si musíte nastaviť domovskú polohu cez Viac > Nastavenia.');
+    const line1 = null;
+    const line2 = [
+      'Najpr si musíte nastaviť domovskú polohu cez',
+      ' ',
+      <Button key="settings" onClick={() => this.props.onLaunchSettingsPopup()}>
+        Nastavenia
+      </Button>
+    ];
+    this.props.onShowToast('info', line1, line2);
     } else if (pointType === 'start') {
         this.props.onSetStart({ lat, lon });
     } else if (pointType === 'finish') {
@@ -103,6 +111,7 @@ RoutePlanner.propTypes = {
     lat: React.PropTypes.number,
     lon: React.PropTypes.number
   }),
+  onLaunchSettingsPopup: React.PropTypes.func.isRequired
 };
 
 export default connect(
@@ -129,6 +138,9 @@ export default connect(
       },
       onCancel() {
         dispatch(setTool(null));
+      },
+      onLaunchSettingsPopup() {
+        dispatch(setActivePopup('settings'));
       }
     };
   }
