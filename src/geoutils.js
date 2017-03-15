@@ -22,3 +22,24 @@ export function bearing(lat1, lon1, lat2, lon2) {
 export function toRad(deg) {
   return deg * Math.PI / 180;
 }
+
+export function getCurrentPosition() {
+  const options = {
+    enableHighAccuracy: true,
+    timeout: 2000,
+    maximumAge: 0
+  };
+
+  return new Promise(function(resolve, reject) {
+    // resolve({ lat: 48.786170, lon: 19.496098 });
+    const onSuccess = (pos) => {
+      resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
+    };
+
+    const onError = (error) => {
+      reject(error);
+    };
+
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+  });
+}

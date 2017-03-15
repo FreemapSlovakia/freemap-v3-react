@@ -9,17 +9,28 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
-import { setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
+import { setStart, setFinish, setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
 import { setTool } from 'fm3/actions/mainActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { getCurrentPosition } from 'fm3/geoutils';
 
 import 'fm3/styles/routePlanner.scss';
 
 class RoutePlanner extends React.Component {
-
+  setFromCurrentPosition(pointType) {
+    getCurrentPosition().then(({ lat, lon }) => {
+      if (pointType === 'start') {
+        this.props.onSetStart({ lat, lon });
+      } else if (pointType === 'finish') {
+        this.props.onSetFinish({ lat, lon });
+      } // else fail
+    }).catch(() => {
+      this.props.onShowToast('error', null, 'Nepodarilo sa získať aktuálnu polohu');
+    });
+  }
 
   render() {
-    const { pickPointMode, transportType, onChangeTransportType, start, finish, onChangePickPointMode, onCancel } = this.props;
+    const { pickPointMode, transportType, onChangeTransportType, onChangePickPointMode, onCancel } = this.props;
 
     // FIXME wrapper element can't be used
     return (
@@ -31,10 +42,9 @@ class RoutePlanner extends React.Component {
               title={<span><Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Štart</span>}  
               id="add-start-dropdown"
               onClick={onChangePickPointMode.bind(null, 'start')} 
-              active={pickPointMode === 'start'} 
-              disabled={!!start}>
+              active={pickPointMode === 'start'} >
                 <MenuItem>Vybrať na mape</MenuItem>
-                <MenuItem>Aktuálna poloha</MenuItem>
+                <MenuItem onClick={() => this.setFromCurrentPosition('start')}>Aktuálna poloha</MenuItem>
                 <MenuItem>Domov</MenuItem>
             </DropdownButton>
             <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
@@ -44,10 +54,9 @@ class RoutePlanner extends React.Component {
               title={<span><Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Cieľ</span>}  
               id="add-finish-dropdown"
               onClick={onChangePickPointMode.bind(null, 'finish')} 
-              active={pickPointMode === 'finish'} 
-              disabled={!!finish}>
+              active={pickPointMode === 'finish'} >
                 <MenuItem>Vybrať na mape</MenuItem>
-                <MenuItem>Aktuálna poloha</MenuItem>
+                <MenuItem onClick={() => this.setFromCurrentPosition('finish')}>Aktuálna poloha</MenuItem>
                 <MenuItem>Domov</MenuItem>
             </DropdownButton>
           </ButtonGroup>
@@ -70,26 +79,32 @@ class RoutePlanner extends React.Component {
 }
 
 RoutePlanner.propTypes = {
+  onSetStart: React.PropTypes.func.isRequired,
+  onSetFinish: React.PropTypes.func.isRequired,
   transportType: React.PropTypes.string,
   pickPointMode: React.PropTypes.string,
-  start: React.PropTypes.object,
-  finish: React.PropTypes.object,
   onChangeTransportType: React.PropTypes.func.isRequired,
   onChangePickPointMode: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired
+  onCancel: React.PropTypes.func.isRequired,
+  onShowToast: React.PropTypes.func.isRequired,
+
 };
 
 export default connect(
   function (state) {
     return {
-      start: state.routePlanner.start,
-      finish: state.routePlanner.finish,
       transportType: state.routePlanner.transportType,
       pickPointMode: state.routePlanner.pickMode
     };
   },
   function (dispatch) {
     return {
+      onSetStart: function(start) {
+        dispatch(setStart(start));
+      },
+      onSetFinish: function(finish) {
+        dispatch(setFinish(finish));
+      },
       onChangeTransportType(transportType) {
         dispatch(setTransportType(transportType));
       },

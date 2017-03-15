@@ -153,7 +153,7 @@ class Main extends React.Component {
             <Navbar.Collapse>
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
-              {tool === 'route-planner' && <RoutePlanner/>}
+              {tool === 'route-planner' && <RoutePlanner onShowToast={b(this.showToast)}/>}
               {activePopup === 'settings' && <Settings onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
