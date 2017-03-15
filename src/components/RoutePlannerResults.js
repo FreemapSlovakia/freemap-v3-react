@@ -51,7 +51,7 @@ class RoutePlannerResults extends React.Component {
   }
 
   midpointClicked(position) {
-    const line1 = 'Odstrániť bod?';
+    const line1 = 'Odstrániť zastávku?';
     const line2 = [
       <Button key="yes" onClick={() => this.props.onRemoveMidpoint(position)}>
           <span style={{ fontWeight:700 }}>Áno</span>
