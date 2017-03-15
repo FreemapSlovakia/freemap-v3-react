@@ -17,5 +17,4 @@ export const overlayLayers = [
     minZoom: 7,
     maxZoom: 16
   }
-  //http://t1.freemap.sk/data/layers/presets/X~I/16/36603/22550t.png
 ];
