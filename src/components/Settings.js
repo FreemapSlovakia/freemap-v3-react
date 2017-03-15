@@ -20,6 +20,7 @@ class Settings extends React.Component {
   save() {
     this.props.onSave(this.state.tileFormat);
     this.props.onPopupClose();
+    this.props.onShowToast('info', null, 'Zmeny boli uložené.');
   }
 
   render() {
@@ -63,7 +64,8 @@ class Settings extends React.Component {
 Settings.propTypes = {
   tileFormat: React.PropTypes.oneOf([ 'png', 'jpeg' ]),
   onSave: React.PropTypes.func.isRequired,
-  onPopupClose: React.PropTypes.func.isRequired
+  onPopupClose: React.PropTypes.func.isRequired,
+  onShowToast: React.PropTypes.func.isRequired
 };
 
 export default connect(

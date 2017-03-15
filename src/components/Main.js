@@ -166,7 +166,7 @@ class Main extends React.Component {
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
               {tool === 'route-planner' && <RoutePlanner/>}
-              {activePopup === 'settings' && <Settings onPopupClose={b(this.onPopupClose)}/>}
+              {activePopup === 'settings' && <Settings onPopupClose={b(this.onPopupClose)} onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
