@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { setMapTileFormat } from 'fm3/actions/mapActions';
-import FmPropTypes from 'fm3/propTypes';
+import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
   constructor(props) {

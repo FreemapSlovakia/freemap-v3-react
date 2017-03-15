@@ -1,11 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { TileLayer, LayersControl } from 'react-leaflet';
 
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import FmPropTypes from 'fm3/propTypes';
+import * as FmPropTypes from 'fm3/propTypes';
 
-function Layers(props) {
+export default function Layers(props) {
 
   // eslint-disable-next-line
   function getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
@@ -40,18 +39,25 @@ function Layers(props) {
       {
         baseLayers.map(item => {
           const { type, name } = item;
-          return <LayersControl.BaseLayer key={type} name={name} checked={props.mapType === type}>{getTileLayer(item)}</LayersControl.BaseLayer>;
+          return (
+            <LayersControl.BaseLayer key={type} name={name} checked={props.mapType === type}>
+              {getTileLayer(item)}
+            </LayersControl.BaseLayer>
+          );
         })
       }
       {
         overlayLayers && overlayLayers.map(item => {
           const { type, name } = item;
-          return <LayersControl.Overlay key={type} name={name} checked={props.overlays.indexOf(type) !== -1}>{getTileLayer(item)}</LayersControl.Overlay>;
+          return (
+            <LayersControl.Overlay key={type} name={name} checked={props.overlays.indexOf(type) !== -1}>
+              {getTileLayer(item)}
+            </LayersControl.Overlay>
+          );
         })
       }
     </LayersControl>
   );
-
 }
 
 Layers.propTypes = {
@@ -61,11 +67,3 @@ Layers.propTypes = {
   overlays: FmPropTypes.overlays,
   mapType: FmPropTypes.mapType.isRequired
 };
-
-export default connect(
-  function (state) {
-    return {
-      tileFormat: state.map.tileFormat
-    };
-  }
-)(Layers);

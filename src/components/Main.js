@@ -21,7 +21,7 @@ import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import FmPropTypes from 'fm3/propTypes';
+import * as FmPropTypes from 'fm3/propTypes';
 
 import { setTool, resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 
