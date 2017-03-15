@@ -36,7 +36,7 @@ class Main extends React.Component {
       activePopup: null
     };
   }
-  
+
   componentWillMount() {
     // set redux according to URL
     this.props.onMapRefocus(getMapDiff(this.props));
@@ -55,7 +55,7 @@ class Main extends React.Component {
       // update URL
       const { mapType, overlays, zoom, lat, lon } = newProps;
       const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
-      newProps.router.replace(newUrl);
+      newProps.history.replace(newUrl);
     } else {
       // set redux according to URL
       const changes = getMapDiff(newProps);
@@ -121,7 +121,7 @@ class Main extends React.Component {
 
   handlePoiSearch() {
     if (this.props.zoom < 12) {
-      this.showToast('info', null, "Vyhľadávanie POIs funguje až od zoom úrovne 12");
+      this.showToast('info', null, 'Vyhľadávanie POIs funguje až od zoom úrovne 12');
     } else {
       this.props.onSetTool('objects');
     }
@@ -237,8 +237,8 @@ Main.propTypes = {
   lon: React.PropTypes.number,
   zoom: React.PropTypes.number,
   bounds: React.PropTypes.object,
-  params: React.PropTypes.object,
-  router: React.PropTypes.object,
+  match: React.PropTypes.object,
+  history: React.PropTypes.object,
   tool: React.PropTypes.string,
   mapType: React.PropTypes.string,
   overlays: React.PropTypes.array,
@@ -281,7 +281,7 @@ export default connect(
 )(Main);
 
 function getMapDiff(props) {
-  const { params } = props;
+  const { match: { params } } = props;
   const layersOK = /^[ATCK]I?$/.test(params.mapType);
   const layers = layersOK ? params.mapType : 'T';
   const mapType = layers.charAt(0);
