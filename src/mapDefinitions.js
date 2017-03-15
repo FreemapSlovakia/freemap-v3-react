@@ -1,3 +1,14 @@
+export const baseLayers = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].map(([ type, name ]) => {
+  return {
+    name: `${name}`,
+    type,
+    url: `https://{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
+    attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+    minZoom: 7,
+    maxZoom: 16
+  };
+});
+
 export const overlayLayers = [
   {
     name: 'Galéria obrázkov',

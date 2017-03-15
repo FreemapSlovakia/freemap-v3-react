@@ -144,7 +144,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, onResetMap } = this.props;
+    const { tool, onResetMap, tileFormat } = this.props;
     const { activePopup } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
     const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele' ].indexOf(tool) !== -1;
@@ -206,6 +206,7 @@ class Main extends React.Component {
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
               overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}
+              tileFormat={tileFormat}
             />
 
             <SearchResults/>
@@ -242,6 +243,7 @@ Main.propTypes = {
   tool: React.PropTypes.string,
   mapType: React.PropTypes.string,
   overlays: React.PropTypes.array,
+  tileFormat: React.PropTypes.oneOf([ 'jpeg', 'png' ]).isRequired,
   onSetTool: React.PropTypes.func.isRequired,
   onResetMap: React.PropTypes.func.isRequired,
   objectsModalShown: React.PropTypes.bool,
@@ -259,7 +261,8 @@ export default connect(
       objectsModalShown: state.objects.objectsModalShown,
       mapType: state.map.mapType,
       overlays: state.map.overlays,
-      bounds: state.map.bounds
+      bounds: state.map.bounds,
+      tileFormat: state.map.tileFormat
     };
   },
   function (dispatch) {
