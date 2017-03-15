@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { setObjectsFilter } from 'fm3/actions/objectsActions';
-import { setTool } from 'fm3/actions/mapActions';
+import { setTool } from 'fm3/actions/mainActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';

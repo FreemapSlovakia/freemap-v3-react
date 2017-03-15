@@ -1,7 +1,3 @@
-export function setTool(tool) {
-  return { type: 'SET_TOOL', tool };
-}
-
 export function resetMap() {
   return { type: 'RESET_MAP' };
 }

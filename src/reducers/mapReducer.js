@@ -1,6 +1,4 @@
 const initialState = {
-  tool: null,
-
   mapType: 'T',
   lat: 48.70714,
   lon: 19.4995,
@@ -18,11 +16,8 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
-    case 'SET_TOOL':
-      return Object.assign({}, state, { tool: action.tool });
     case 'RESET_MAP':
       return Object.assign({}, state, {
-        tool: initialState.tool,
         zoom: initialState.zoom,
         lat: initialState.lat,
         lon: initialState.lon
@@ -33,11 +28,6 @@ export default function map(state = initialState, action) {
       return Object.assign({}, state, { tileFormat: action.tileFormat });
     case 'REFOCUS': {
       const newState = Object.assign({}, state);
-
-      if (action.zoom < 12 && state.tool === 'objects') {
-        newState.tool = null;
-      }
-
       [ 'zoom', 'lat', 'lon', 'mapType', 'overlays' ].forEach(prop => {
         if (prop in action) {
           newState[prop] = action[prop];

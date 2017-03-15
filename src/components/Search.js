@@ -6,7 +6,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import { connect } from 'react-redux';
 import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActions';
-import { setTool } from 'fm3/actions/mapActions';
+import { setTool } from 'fm3/actions/mainActions';
 import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
 import 'fm3/styles/search.scss';
 
@@ -83,7 +83,7 @@ Search.propTypes = {
 export default connect(
   function (state) {
     return {
-      tool: state.map.tool,
+      tool: state.main.tool,
       results: state.search.results,
       selectedResult: state.search.selectedResult
     };

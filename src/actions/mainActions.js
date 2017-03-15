@@ -4,3 +4,6 @@ export function setActivePopup(activePopup) {
 export function closePopup() {
   return { type: 'CLOSE_POPUP' };
 }
+export function setTool(tool) {
+  return { type: 'SET_TOOL', tool };
+}

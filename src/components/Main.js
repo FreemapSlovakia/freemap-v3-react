@@ -23,7 +23,8 @@ import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import * as FmPropTypes from 'fm3/propTypes';
 
-import { setTool, resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
+import { resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
+import { setTool } from 'fm3/actions/mainActions';
 import { setActivePopup } from 'fm3/actions/mainActions';
 
 import 'fm3/styles/main.scss';
@@ -248,7 +249,7 @@ export default connect(
       lat: state.map.lat,
       lon: state.map.lon,
       zoom: state.map.zoom,
-      tool: state.map.tool,
+      tool: state.main.tool,
       mapType: state.map.mapType,
       overlays: state.map.overlays,
       bounds: state.map.bounds,
