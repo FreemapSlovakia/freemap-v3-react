@@ -39,7 +39,7 @@ const refocusMapLogic = createLogic({
     if (highlightedResult) {
       const leafletBounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
       const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
-      if (zoom < 13 || !leafletBounds.contains(hLatLon)) {
+      if (zoom < 13 || !leafletBounds.contains(hLatLon)) { // TODO refactor to use geoutils.isInside
         dispatch(refocusMap({ lat: highlightedResult.lat, lon: highlightedResult.lon, zoom: 13 }));
       }
     }

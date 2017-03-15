@@ -1,6 +1,7 @@
 import { createLogic } from 'redux-logic';
 import { parseString as xml2js } from 'xml2js';
-import { distance } from 'fm3/geoutils';
+import { distance, isInside } from 'fm3/geoutils';
+import { refocusMap } from 'fm3/actions/mapActions';
 
 const freemapTransportTypes = {
   'car': 'motorcar',
@@ -73,7 +74,28 @@ const addMidpointToProperPositionLogic = createLogic({
   },
 });
 
+export const refocusMapOnSetStartOrFinishPoint = createLogic({
+  type: [
+    'SET_ROUTE_PLANNER_START', 
+    'SET_ROUTE_PLANNER_FINISH'
+  ],
+  process({ getState, action }, dispatch) {
+    const { routePlanner: { start, finish }, map: { zoom, bounds } } = getState();
+    let focusPoint;
+    if (action.type == 'SET_ROUTE_PLANNER_START') {
+      focusPoint = start;
+    } else if (action.type == 'SET_ROUTE_PLANNER_FINISH') {
+      focusPoint = finish;
+    }
+
+    if (!isInside(bounds, focusPoint)) {
+      dispatch(refocusMap({ lat: focusPoint.lat, lon: focusPoint.lon, zoom }));
+    }
+  }
+});
+
 export default [
   findRouteLogic,
-  addMidpointToProperPositionLogic
+  addMidpointToProperPositionLogic,
+  refocusMapOnSetStartOrFinishPoint
 ];

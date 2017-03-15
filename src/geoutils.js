@@ -31,7 +31,7 @@ export function getCurrentPosition() {
   };
 
   return new Promise(function(resolve, reject) {
-    // resolve({ lat: 48.786170, lon: 19.496098 });
+    //resolve({ lat: 48.786170, lon: 19.496098 });
     const onSuccess = (pos) => {
       resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
     };
@@ -42,4 +42,11 @@ export function getCurrentPosition() {
 
     navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
   });
+}
+
+export function isInside(mapBoundsFromState, point) {
+  const { south, west, north, east } = mapBoundsFromState;
+  const bounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
+  const pos = L.latLng(point.lat, point.lon);
+  return (bounds.contains(pos));
 }
