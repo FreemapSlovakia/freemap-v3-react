@@ -17,6 +17,7 @@ import { getCurrentPosition } from 'fm3/geoutils';
 import 'fm3/styles/routePlanner.scss';
 
 class RoutePlanner extends React.Component {
+  
   setFromCurrentPosition(pointType) {
     getCurrentPosition().then(({ lat, lon }) => {
       if (pointType === 'start') {
@@ -27,6 +28,17 @@ class RoutePlanner extends React.Component {
     }).catch(() => {
       this.props.onShowToast('error', null, 'Nepodarilo sa získať aktuálnu polohu');
     });
+  }
+
+  setFromHomeLocation(pointType) {
+    const { lat, lon } = this.props.homeLocation;
+    if (!lat) {
+      this.props.onShowToast('info', null, 'Najpr si musíte nastaviť domovskú polohu cez Viac > Nastavenia.');
+    } else if (pointType === 'start') {
+        this.props.onSetStart({ lat, lon });
+    } else if (pointType === 'finish') {
+      this.props.onSetFinish({ lat, lon });
+    }
   }
 
   render() {
@@ -45,7 +57,7 @@ class RoutePlanner extends React.Component {
               active={pickPointMode === 'start'} >
                 <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
                 <MenuItem onClick={() => this.setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-                <MenuItem onClick={() => alert('todo')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+                <MenuItem onClick={() => this.setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
             </DropdownButton>
             <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
               <Glyphicon glyph="flag" style={{ color: 'grey' }}/> Zastávka
@@ -57,7 +69,7 @@ class RoutePlanner extends React.Component {
               active={pickPointMode === 'finish'} >
                 <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
                 <MenuItem onClick={() => this.setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-                <MenuItem onClick={() => alert('todo')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+                <MenuItem onClick={() => this.setFromHomeLocation('finish')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
             </DropdownButton>
           </ButtonGroup>
           <ButtonGroup>
@@ -87,12 +99,16 @@ RoutePlanner.propTypes = {
   onChangePickPointMode: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
   onShowToast: React.PropTypes.func.isRequired,
-
+  homeLocation: React.PropTypes.shape({
+    lat: React.PropTypes.number,
+    lon: React.PropTypes.number
+  }),
 };
 
 export default connect(
   function (state) {
     return {
+      homeLocation: state.main.homeLocation,
       transportType: state.routePlanner.transportType,
       pickPointMode: state.routePlanner.pickMode
     };
