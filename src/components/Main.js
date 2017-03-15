@@ -110,6 +110,11 @@ class Main extends React.Component {
     if (this.routePlanner) {
       this.routePlanner.getWrappedInstance().handlePointAdded({ lat, lon });
     }
+
+    if (this.props.tool === 'select-home-location') {
+      this.props.onLaunchPopup('settings');
+      this.settings.getWrappedInstance().onHomeLocationSelected({ lat, lon });
+    }
   }
 
   handlePoiSearch() {
@@ -135,7 +140,7 @@ class Main extends React.Component {
   render() {
     const { tool, onResetMap, tileFormat, activePopup, onLaunchPopup } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
-    const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele' ].indexOf(tool) !== -1;
+    const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele', 'select-home-location' ].indexOf(tool) !== -1;
 
     return (
       <div className="container-fluid">
@@ -154,7 +159,7 @@ class Main extends React.Component {
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
               {tool === 'route-planner' && <RoutePlanner onShowToast={b(this.showToast)}/>}
-              {activePopup === 'settings' && <Settings onShowToast={b(this.showToast)}/>}
+              {activePopup === 'settings' && <Settings ref={e => this.settings = e} onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>

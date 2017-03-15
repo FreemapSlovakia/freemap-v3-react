@@ -8,26 +8,40 @@ import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { setMapTileFormat } from 'fm3/actions/mapActions';
+import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
 import { closePopup } from 'fm3/actions/mainActions';
+import { formatGpsCoord } from 'fm3/geoutils';
+
 import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      tileFormat: props.tileFormat
+      tileFormat: props.tileFormat,
+      homeLocation: props.homeLocation
     };
   }
 
+  onHomeLocationSelected(homeLocation) {
+    this.setState({ homeLocation });
+    this.props.onSelectHomeLocationFinished();
+  }
+
   save() {
-    this.props.onSave(this.state.tileFormat);
+    this.props.onSave(this.state.tileFormat, this.state.homeLocation);
     this.props.onShowToast('info', null, 'Zmeny boli uložené.');
   }
 
   render() {
-    const { onClosePopup } = this.props;
+    const { onClosePopup, onSelectHomeLocation } = this.props;
+    const { homeLocation } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
+    let homeLocationInfo = 'neurčená';
+    if (homeLocation.lat && homeLocation.lon) {
+      homeLocationInfo = formatGpsCoord(homeLocation.lat) + ', ' + formatGpsCoord(homeLocation.lon);
+    }
     return (
       <Modal show onHide={b(onClosePopup)}>
         <Modal.Header closeButton>
@@ -55,6 +69,11 @@ class Settings extends React.Component {
             Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
             Pri pomalom internete preto odporúčame zvoliť JPG.
           </Alert>
+          <hr />
+          Domovská poloha: {homeLocationInfo} <br />
+          <Button onClick={() => onSelectHomeLocation()}>
+            Vybrať na mape
+          </Button>
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="success" onClick={b(this.save)}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
@@ -66,27 +85,44 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
+  homeLocation: React.PropTypes.shape({
+    lat: React.PropTypes.number,
+    lon: React.PropTypes.number
+  }),
   tileFormat: FmPropTypes.tileFormat.isRequired,
   onSave: React.PropTypes.func.isRequired,
   onClosePopup: React.PropTypes.func.isRequired,
-  onShowToast: React.PropTypes.func.isRequired
+  onShowToast: React.PropTypes.func.isRequired,
+  onSelectHomeLocation: React.PropTypes.func.isRequired,
+  onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
 };
 
 export default connect(
   function (state) {
     return {
-      tileFormat: state.map.tileFormat
+      tileFormat: state.map.tileFormat,
+      homeLocation: state.main.homeLocation
     };
   },
   function (dispatch) {
     return {
-      onSave(tileFormat) {
+      onSave(tileFormat, homeLocation) {
         dispatch(setMapTileFormat(tileFormat));
+        dispatch(setHomeLocation(homeLocation));
         dispatch(closePopup());
       },
       onClosePopup() {
         dispatch(closePopup());
+      },
+      onSelectHomeLocation() {
+        dispatch(setTool('select-home-location'));
+        dispatch(closePopup());
+      },
+      onSelectHomeLocationFinished() {
+        dispatch(setTool(null));
       }
     };
-  }
+  },
+  null,
+  { withRef: true }
 )(Settings);

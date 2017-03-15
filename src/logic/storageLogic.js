@@ -8,6 +8,10 @@ export default createLogic({
     const mapState = state.map;
 
     const appState = {
+      main: {
+        homeLocation: state.main.homeLocation,
+        tool: null
+      },
       routePlanner: {
         transportType: state.routePlanner.transportType
       },

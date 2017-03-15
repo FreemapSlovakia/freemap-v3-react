@@ -7,3 +7,6 @@ export function closePopup() {
 export function setTool(tool) {
   return { type: 'SET_TOOL', tool };
 }
+export function setHomeLocation(homeLocation) {
+  return { type: 'SET_HOME_LOCATION', homeLocation };
+}
