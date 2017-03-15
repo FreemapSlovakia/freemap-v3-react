@@ -40,7 +40,7 @@ class Settings extends React.Component {
 
     let homeLocationInfo = 'neurčená';
     if (homeLocation.lat && homeLocation.lon) {
-      homeLocationInfo = formatGpsCoord(homeLocation.lat) + ', ' + formatGpsCoord(homeLocation.lon);
+      homeLocationInfo = `${formatGpsCoord(homeLocation.lat)}N ${formatGpsCoord(homeLocation.lon)}E`;
     }
     return (
       <Modal show onHide={b(onClosePopup)}>
@@ -49,7 +49,7 @@ class Settings extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <div style={{ marginBottom: '10px' }}>
-            Formát dlaždíc:{' '}
+            Formát dlaždíc:<br />
             <ButtonGroup>
               <Button
                 active={this.state.tileFormat === 'png'}
