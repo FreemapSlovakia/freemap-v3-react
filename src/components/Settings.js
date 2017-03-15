@@ -63,7 +63,7 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-  tileFormat: FmPropTypes.tileFormat,
+  tileFormat: FmPropTypes.tileFormat.isRequired,
   onSave: React.PropTypes.func.isRequired,
   onPopupClose: React.PropTypes.func.isRequired,
   onShowToast: React.PropTypes.func.isRequired
