@@ -8,6 +8,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { setMapTileFormat } from 'fm3/actions/mapActions';
+import { closePopup } from 'fm3/actions/mainActions';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
@@ -20,16 +21,15 @@ class Settings extends React.Component {
 
   save() {
     this.props.onSave(this.state.tileFormat);
-    this.props.onPopupClose();
     this.props.onShowToast('info', null, 'Zmeny boli uložené.');
   }
 
   render() {
-    const { onPopupClose } = this.props;
+    const { onClosePopup } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
-      <Modal show onHide={b(onPopupClose)}>
+      <Modal show onHide={b(onClosePopup)}>
         <Modal.Header closeButton>
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
@@ -58,7 +58,7 @@ class Settings extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="success" onClick={b(this.save)}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
-          <Button onClick={b(onPopupClose)}><Glyphicon glyph="remove"/> Zrušiť</Button>
+          <Button onClick={b(onClosePopup)}><Glyphicon glyph="remove"/> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -68,7 +68,7 @@ class Settings extends React.Component {
 Settings.propTypes = {
   tileFormat: FmPropTypes.tileFormat.isRequired,
   onSave: React.PropTypes.func.isRequired,
-  onPopupClose: React.PropTypes.func.isRequired,
+  onClosePopup: React.PropTypes.func.isRequired,
   onShowToast: React.PropTypes.func.isRequired
 };
 
@@ -82,6 +82,10 @@ export default connect(
     return {
       onSave(tileFormat) {
         dispatch(setMapTileFormat(tileFormat));
+        dispatch(closePopup());
+      },
+      onClosePopup() {
+        dispatch(closePopup());
       }
     };
   }

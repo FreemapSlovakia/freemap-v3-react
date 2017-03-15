@@ -24,20 +24,13 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import { setTool, resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
+import { setActivePopup } from 'fm3/actions/mainActions';
 
 import 'fm3/styles/main.scss';
 
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 class Main extends React.Component {
-
-  constructor(props) {
-    super(props);
-    this.state = {
-      activePopup: null
-    };
-  }
-
   componentWillMount() {
     // set redux according to URL
     this.props.onMapRefocus(getMapDiff(this.props));
@@ -140,13 +133,8 @@ class Main extends React.Component {
     this.props.onSetTool(this.props.tool === tool ? null : tool); // toggle tool
   }
 
-  onPopupClose() {
-    this.setState({ activePopup: null });
-  }
-
   render() {
-    const { tool, onResetMap, tileFormat } = this.props;
-    const { activePopup } = this.state;
+    const { tool, onResetMap, tileFormat, activePopup, onLaunchPopup } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
     const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele' ].indexOf(tool) !== -1;
 
@@ -167,7 +155,7 @@ class Main extends React.Component {
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
               {tool === 'route-planner' && <RoutePlanner/>}
-              {activePopup === 'settings' && <Settings onPopupClose={b(this.onPopupClose)} onShowToast={b(this.showToast)}/>}
+              {activePopup === 'settings' && <Settings onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
@@ -187,7 +175,7 @@ class Main extends React.Component {
               {showDefaultMenu &&
                 <Nav pullRight>
                   <NavDropdown title="Viac" id="additional-menu-items">
-                    <MenuItem onClick={() => this.setState({ activePopup: 'settings' })}><FontAwesomeIcon icon="cog"/> Nastavenia</MenuItem>
+                    <MenuItem onClick={() => onLaunchPopup('settings')}><FontAwesomeIcon icon="cog"/> Nastavenia</MenuItem>
                     <MenuItem onClick={() => window.open('http://wiki.freemap.sk/NahlasenieChyby')}><FontAwesomeIcon icon="exclamation-triangle"/> Nahlás chybu</MenuItem>
                   </NavDropdown>
                 </Nav>
@@ -249,7 +237,9 @@ Main.propTypes = {
   onSetTool: React.PropTypes.func.isRequired,
   onResetMap: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
-  onMapRefocus: React.PropTypes.func.isRequired
+  onMapRefocus: React.PropTypes.func.isRequired,
+  activePopup: React.PropTypes.string,
+  onLaunchPopup: React.PropTypes.func.isRequired
 };
 
 export default connect(
@@ -262,7 +252,8 @@ export default connect(
       mapType: state.map.mapType,
       overlays: state.map.overlays,
       bounds: state.map.bounds,
-      tileFormat: state.map.tileFormat
+      tileFormat: state.map.tileFormat,
+      activePopup: state.main.activePopup
     };
   },
   function (dispatch) {
@@ -278,6 +269,9 @@ export default connect(
       },
       onMapRefocus(changes) {
         dispatch(refocusMap(changes));
+      },
+      onLaunchPopup(popupName) {
+        dispatch(setActivePopup(popupName));
       }
     };
   }
