@@ -1,6 +1,6 @@
 export const baseLayers = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].map(([ type, name ]) => {
   return {
-    name: `${name}`,
+    name,
     type,
     url: `https://{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
     attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
