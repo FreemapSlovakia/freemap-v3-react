@@ -36,7 +36,7 @@ class RoutePlanner extends React.Component {
             {
               [ [ 'car', 'car' ], [ 'walk', 'male' ], [ 'bicycle', 'bicycle' ] ].map(([ type, icon ], i) => (
                 <Button key={i} active={transportType === type} onClick={onChangeTransportType.bind(null, type)}>
-                  <FontAwesomeIcon icon={icon} />
+                  <FontAwesomeIcon icon={icon}/>
                 </Button>
               ))
             }

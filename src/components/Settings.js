@@ -39,18 +39,21 @@ class Settings extends React.Component {
             <ButtonGroup>
               <Button
                 active={this.state.tileFormat === 'png'}
-                onClick={() => this.setState({ tileFormat: 'png' })} >
+                onClick={() => this.setState({ tileFormat: 'png' })}
+              >
                 PNG
               </Button>
               <Button
                 active={this.state.tileFormat === 'jpeg'}
-                onClick={() => this.setState({ tileFormat: 'jpeg' })} >
+                onClick={() => this.setState({ tileFormat: 'jpeg' })}
+              >
                 JPG
               </Button>
             </ButtonGroup>
           </div>
           <Alert bsStyle="success">
-            Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice. Pri pomalom internete preto odporúčame zvoliť JPG.
+            Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
+            Pri pomalom internete preto odporúčame zvoliť JPG.
           </Alert>
         </Modal.Body>
         <Modal.Footer>

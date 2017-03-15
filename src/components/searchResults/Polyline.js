@@ -7,7 +7,7 @@ export default function Polyline({ searchResult, theme }) {
   const color = theme === 'selected' ? 'green' : 'grey';
   const leafletOptions = { fillColor: color, color, weight: 8 };
 
-  return <LeafletPolyline positions={latlongs} {...leafletOptions} />;
+  return <LeafletPolyline positions={latlongs} {...leafletOptions}/>;
 }
 
 Polyline.propTypes = {

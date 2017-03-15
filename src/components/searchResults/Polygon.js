@@ -7,7 +7,7 @@ export default function Polygon({ searchResult, theme }) {
   const color = theme === 'selected' ? 'green' : 'grey';
   const leafletOptions = { fillColor: color, color };
 
-  return <LeafletPolygon positions={latlongs} {...leafletOptions} />;
+  return <LeafletPolygon positions={latlongs} {...leafletOptions}/>;
 }
 
 Polygon.propTypes = {

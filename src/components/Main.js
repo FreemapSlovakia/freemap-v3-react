@@ -171,24 +171,24 @@ class Main extends React.Component {
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
-                  <FontAwesomeIcon icon="star" /> Hľadať POIs
+                  <FontAwesomeIcon icon="star"/> Hľadať POIs
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
-                    <FontAwesomeIcon icon="map-signs" /> Plánovač trasy
+                    <FontAwesomeIcon icon="map-signs"/> Plánovač trasy
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
-                    <FontAwesomeIcon icon="arrows-h" /> Meranie vzdialenosti
+                    <FontAwesomeIcon icon="arrows-h"/> Meranie vzdialenosti
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
-                    <FontAwesomeIcon icon="area-chart" /> Výškomer
+                    <FontAwesomeIcon icon="area-chart"/> Výškomer
                   </NavItem>
                 </Nav>
               }
               {showDefaultMenu &&
                 <Nav pullRight>
                   <NavDropdown title="Viac" id="additional-menu-items">
-                    <MenuItem onClick={() => this.setState({ activePopup: 'settings' })}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
-                    <MenuItem onClick={() => window.open('http://wiki.freemap.sk/NahlasenieChyby')}><FontAwesomeIcon icon="exclamation-triangle" /> Nahlás chybu</MenuItem>
+                    <MenuItem onClick={() => this.setState({ activePopup: 'settings' })}><FontAwesomeIcon icon="cog"/> Nastavenia</MenuItem>
+                    <MenuItem onClick={() => window.open('http://wiki.freemap.sk/NahlasenieChyby')}><FontAwesomeIcon icon="exclamation-triangle"/> Nahlás chybu</MenuItem>
                   </NavDropdown>
                 </Nav>
               }
@@ -217,7 +217,8 @@ class Main extends React.Component {
             {tool === 'route-planner' &&
               <RoutePlannerResults
                 ref={e => this.routePlanner = e}
-                onShowToast={b(this.showToast)} />}
+                onShowToast={b(this.showToast)}/>
+            }
 
             {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
 

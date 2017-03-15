@@ -14,34 +14,34 @@ class SearchResults extends React.Component {
     return (
       <div>
         {displayAsPoint(highlightedResult) &&
-          <Point searchResult={highlightedResult} theme="highlighted" />
+          <Point searchResult={highlightedResult} theme="highlighted"/>
         }
         {displayAsPolyline(highlightedResult) &&
-          <Polyline searchResult={highlightedResult} theme="highlighted" />
+          <Polyline searchResult={highlightedResult} theme="highlighted"/>
         }
         {displayAsMultiLineString(highlightedResult) &&
-          <MultiLineString searchResult={highlightedResult} theme="highlighted" />
+          <MultiLineString searchResult={highlightedResult} theme="highlighted"/>
         }
         {displayAsPolygon(highlightedResult) &&
-          <Polygon searchResult={highlightedResult} theme="highlighted" />
+          <Polygon searchResult={highlightedResult} theme="highlighted"/>
         }
         {displayAsMultiPolygon(highlightedResult) &&
-          <MultiPolygon searchResult={highlightedResult} theme="highlighted" />
+          <MultiPolygon searchResult={highlightedResult} theme="highlighted"/>
         }
         {displayAsPoint(selectedResult) &&
-          <Point searchResult={selectedResult} theme="selected" />
+          <Point searchResult={selectedResult} theme="selected"/>
         }
         {displayAsPolyline(selectedResult) &&
-          <Polyline searchResult={selectedResult} theme="selected" />
+          <Polyline searchResult={selectedResult} theme="selected"/>
         }
         {displayAsMultiLineString(selectedResult) &&
-          <MultiLineString searchResult={selectedResult} theme="selected" />
+          <MultiLineString searchResult={selectedResult} theme="selected"/>
         }
         {displayAsPolygon(selectedResult) &&
-          <Polygon searchResult={selectedResult} theme="selected" />
+          <Polygon searchResult={selectedResult} theme="selected"/>
         }
         {displayAsMultiPolygon(selectedResult) &&
-          <MultiPolygon searchResult={selectedResult} theme="selected" />
+          <MultiPolygon searchResult={selectedResult} theme="selected"/>
         }
       </div>
     );
