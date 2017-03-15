@@ -21,6 +21,7 @@ import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 
 import { setTool, resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 
@@ -241,12 +242,11 @@ Main.propTypes = {
   match: React.PropTypes.object,
   history: React.PropTypes.object,
   tool: React.PropTypes.string,
-  mapType: React.PropTypes.string,
-  overlays: React.PropTypes.array,
+  mapType: React.PropTypes.oneOf(baseLayers.map(({ type }) => type)).isRequired,
+  overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(({ type }) => type))),
   tileFormat: React.PropTypes.oneOf([ 'jpeg', 'png' ]).isRequired,
   onSetTool: React.PropTypes.func.isRequired,
   onResetMap: React.PropTypes.func.isRequired,
-  objectsModalShown: React.PropTypes.bool,
   onMapBoundsChange: React.PropTypes.func.isRequired,
   onMapRefocus: React.PropTypes.func.isRequired
 };
@@ -258,7 +258,6 @@ export default connect(
       lon: state.map.lon,
       zoom: state.map.zoom,
       tool: state.map.tool,
-      objectsModalShown: state.objects.objectsModalShown,
       mapType: state.map.mapType,
       overlays: state.map.overlays,
       bounds: state.map.bounds,

@@ -8,7 +8,9 @@ function Layers(props) {
 
   // eslint-disable-next-line
   function getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
-    return <TileLayer attribution={attribution} url={url.replace('{tileFormat}', props.tileFormat)}
+    return <TileLayer
+      attribution={attribution}
+      url={url.replace('{tileFormat}', props.tileFormat)}
       onAdd={() => handleAdd(type)}
       onRemove={() => handleRemove(type)}
       maxZoom={maxZoom} minZoom={minZoom}/>;
@@ -55,8 +57,8 @@ Layers.propTypes = {
   onMapChange: React.PropTypes.func.isRequired,
   onOverlaysChange: React.PropTypes.func.isRequired,
   tileFormat: React.PropTypes.oneOf([ 'jpeg', 'png' ]).isRequired,
-  mapType: React.PropTypes.oneOf([ 'T', 'A', 'C', 'K' ]).isRequired,
-  overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(x => x.type)))
+  mapType: React.PropTypes.oneOf(baseLayers.map(({ type }) => type)).isRequired,
+  overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(({ type }) => type)))
 };
 
 export default connect(
