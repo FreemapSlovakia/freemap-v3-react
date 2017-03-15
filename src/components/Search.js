@@ -39,7 +39,8 @@ class Search extends React.Component {
             placeholder="Brusno"
             clearButton
             onChange={b(this.onSelectionChange)}
-            emptyLabel={'Nenašli sa žiadne výsledky'}
+            emptyLabel="Nenašli sa žiadne výsledky"
+            promptText="Zadajte lokalitu"
             renderMenuItemChildren={(result) => (
               <div key={result.label + result.id}
                 onMouseEnter={b(this.onSuggestionHighlightChange, result)}
