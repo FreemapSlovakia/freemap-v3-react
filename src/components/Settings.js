@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
-import { setTool, setMapTileFormat } from 'fm3/actions/mapActions';
+import { setMapTileFormat } from 'fm3/actions/mapActions';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -19,14 +19,15 @@ class Settings extends React.Component {
 
   save() {
     this.props.onSave(this.state.tileFormat);
+    this.props.onPopupClose();
   }
 
   render() {
-    const { onCancel } = this.props;
+    const { onPopupClose } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     return (
-      <Modal show onHide={b(onCancel)}>
+      <Modal show onHide={b(onPopupClose)}>
         <Modal.Header closeButton>
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
@@ -52,7 +53,7 @@ class Settings extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="success" onClick={b(this.save)}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
-          <Button onClick={b(onCancel)}><Glyphicon glyph="remove"/> Zrušiť</Button>
+          <Button onClick={b(onPopupClose)}><Glyphicon glyph="remove"/> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -62,7 +63,7 @@ class Settings extends React.Component {
 Settings.propTypes = {
   tileFormat: React.PropTypes.oneOf([ 'png', 'jpeg' ]),
   onSave: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired
+  onPopupClose: React.PropTypes.func.isRequired
 };
 
 export default connect(
@@ -75,10 +76,6 @@ export default connect(
     return {
       onSave(tileFormat) {
         dispatch(setMapTileFormat(tileFormat));
-        dispatch(setTool(null));
-      },
-      onCancel() {
-        dispatch(setTool(null));
       }
     };
   }

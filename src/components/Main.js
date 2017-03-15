@@ -30,6 +30,13 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 class Main extends React.Component {
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      activePopup: null
+    };
+  }
+  
   componentWillMount() {
     // set redux according to URL
     this.props.onMapRefocus(getMapDiff(this.props));
@@ -132,8 +139,13 @@ class Main extends React.Component {
     this.props.onSetTool(this.props.tool === tool ? null : tool); // toggle tool
   }
 
+  onPopupClose() {
+    this.setState({ activePopup: null });
+  }
+
   render() {
     const { tool, onResetMap } = this.props;
+    const { activePopup } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
     const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele' ].indexOf(tool) !== -1;
 
@@ -154,7 +166,7 @@ class Main extends React.Component {
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
               {tool === 'route-planner' && <RoutePlanner/>}
-              {tool === 'settings' && <Settings/>}
+              {activePopup === 'settings' && <Settings onPopupClose={b(this.onPopupClose)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
@@ -174,7 +186,7 @@ class Main extends React.Component {
               {showDefaultMenu &&
                 <Nav pullRight>
                   <NavDropdown title="Viac" id="additional-menu-items">
-                    <MenuItem onClick={b(this.handleToolSet, 'settings')}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
+                    <MenuItem onClick={() => this.setState({ activePopup: 'settings' })}><FontAwesomeIcon icon="cog" /> Nastavenia</MenuItem>
                   </NavDropdown>
                 </Nav>
               }
