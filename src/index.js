@@ -17,7 +17,13 @@ const middleware = applyMiddleware(
   createLogicMiddleware(logics)
 );
 
-const store = createStore(reducer, middleware);
+let store;
+try {
+  const appState = JSON.parse(localStorage.getItem('appState'));
+  store = createStore(reducer, appState, middleware);
+} catch (e) {
+  store = createStore(reducer, middleware);
+}
 
 render((
   <Provider store={store}>

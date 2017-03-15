@@ -48,9 +48,7 @@ class Main extends React.Component {
     const stateChanged = [ 'mapType', 'overlays', 'zoom', 'lat', 'lon' ].some(prop => newProps[prop] !== this.props[prop]);
     if (stateChanged) {
       // update URL
-      const { mapType, overlays, zoom, lat, lon } = newProps;
-      const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
-      newProps.history.replace(newUrl);
+      updateUrl(newProps);
     } else {
       // set redux according to URL
       const changes = getMapDiff(newProps);
@@ -280,34 +278,48 @@ export default connect(
 
 function getMapDiff(props) {
   const { match: { params } } = props;
+
   const layersOK = /^[ATCK]I?$/.test(params.mapType);
-  const layers = layersOK ? params.mapType : 'T';
+  const lat = parseFloat(params.lat);
+  const lon = parseFloat(params.lon);
+  const zoom = parseInt(params.zoom);
+
+  if (!layersOK || isNaN(lat) || isNaN(lon) || isNaN(zoom)) {
+    updateUrl(props);
+    return;
+  }
+
+  const layers = params.mapType;
   const mapType = layers.charAt(0);
   const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
 
   const changes = {};
 
-  if (!layersOK || mapType !== props.mapType) {
+  if (mapType !== props.mapType) {
     changes.mapType = mapType;
   }
 
-  if (!layersOK || overlays.join('') !== props.overlays.join('')) {
+  if (overlays.join('') !== props.overlays.join('')) {
     changes.overlays = overlays;
   }
 
-  const lat = parseFloat(params.lat);
-  const lon = parseFloat(params.lon);
-
-  if (isNaN(lat) || isNaN(lon) || Math.abs(lat - props.lat) > 0.000001 || Math.abs(lon - props.lon) > 0.000001) {
-    changes.lat = lat || 48.70714;
-    changes.lon = lon || 19.4995;
+  if (Math.abs(lat - props.lat) > 0.000001) {
+    changes.lat = lat;
   }
 
-  const zoom = parseInt(params.zoom);
+  if (Math.abs(lon - props.lon) > 0.000001) {
+    changes.lon = lon;
+  }
 
-  if (isNaN(zoom) || zoom !== props.zoom) {
-    changes.zoom = zoom || 0;
+  if (zoom !== props.zoom) {
+    changes.zoom = zoom;
   }
 
   return changes;
+}
+
+function updateUrl(props) {
+  const { mapType, overlays, zoom, lat, lon } = props;
+  const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
+  props.history.replace(newUrl);
 }

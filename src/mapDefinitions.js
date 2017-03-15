@@ -1,4 +1,6 @@
-export const baseLayers = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ].map(([ type, name ]) => {
+const baseSpecs = [ [ 'A', 'Automapa' ], [ 'T', 'Turistická' ], [ 'C', 'Cyklomapa' ], [ 'K', 'Lyžiarska' ] ];
+
+export const baseLayers = baseSpecs.map(([ type, name ]) => {
   return {
     name,
     type,
