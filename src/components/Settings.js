@@ -40,7 +40,7 @@ class Settings extends React.Component {
 
     let homeLocationInfo = 'neurčená';
     if (homeLocation.lat && homeLocation.lon) {
-      homeLocationInfo = `${formatGpsCoord(homeLocation.lat)}N ${formatGpsCoord(homeLocation.lon)}E`;
+      homeLocationInfo = `${formatGpsCoord(homeLocation.lat, 'SN')}, ${formatGpsCoord(homeLocation.lon, 'WE')}`;
     }
     return (
       <Modal show onHide={b(onClosePopup)}>

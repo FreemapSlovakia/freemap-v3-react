@@ -2,10 +2,18 @@ import React from 'react';
 import { Marker, Tooltip } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
+import { formatGpsCoord } from 'fm3/geoutils';
 
 class ElevationMeasurement extends React.Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {};
+  }
+
   handlePointAdded({ lat, lon }) {
+    this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
   }
 
@@ -15,20 +23,38 @@ class ElevationMeasurement extends React.Component {
 
   handleDragEnd(event) {
     const { lat, lng: lon } = event.target._latlng;
+    this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
+  }
+
+  handleDrag(event) {
+    const { lat, lng: lon } = event.target._latlng;
+    this.setState({ point: { lat, lon } });
   }
 
   render() {
     const { point, elevation } = this.props;
+    const { point: tmpPoint } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
+
+    const p = tmpPoint || point;
 
     return point && (
       <Marker
-          position={L.latLng(point.lat, point.lon)}
-          onDragstart={b(this.handleDragStart)}
-          onDragend={b(this.handleDragEnd)}
-          draggable>
-        {typeof elevation === 'number' && <Tooltip direction="right" permanent><span>{elevation} m</span></Tooltip>}
+        position={L.latLng(p.lat, p.lon)}
+        onDragstart={b(this.handleDragStart)}
+        onDragend={b(this.handleDragEnd)}
+        onDrag={b(this.handleDrag)}
+        draggable
+      >
+
+        <Tooltip direction="right" permanent>
+          <span>
+            <div>Zemepisná šírka: {formatGpsCoord(p.lat, 'SN')}</div>
+            <div>Zemepisná dĺžka: {formatGpsCoord(p.lon, 'WE')}</div>
+            {typeof elevation === 'number' && <div>Nadmorská výška: {elevation} m. n. m.</div>}
+          </span>
+        </Tooltip>
       </Marker>
     );
   }

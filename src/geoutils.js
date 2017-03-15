@@ -1,10 +1,16 @@
 const PI2 = 2 * Math.PI;
 
-export function formatGpsCoord(angle) {
+export function formatGpsCoord(angle, cardinals) {
+  let cardinal = '';
+  if (cardinals) {
+    cardinal = cardinals[angle < 0 ? 0 : 1] + ' ';
+    angle = Math.abs(angle);
+  }
+
   const degrees = Math.floor(angle);
   const minutes = Math.floor((angle - degrees) * 60);
   const seconds = Math.round((angle - degrees - minutes / 60) * 3600);
-  return `${degrees}° ${minutes}' ${seconds}"`;
+  return `${cardinal}${degrees}° ${minutes}' ${seconds}"`;
 }
 
 export function distance(lat1, lon1, lat2, lon2) {

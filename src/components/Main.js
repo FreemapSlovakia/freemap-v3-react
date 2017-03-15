@@ -172,7 +172,7 @@ class Main extends React.Component {
                     <FontAwesomeIcon icon="arrows-h"/> Meranie vzdialenosti
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
-                    <FontAwesomeIcon icon="area-chart"/> Výškomer
+                    <FontAwesomeIcon icon="area-chart"/> Výškomer a polohomer
                   </NavItem>
                 </Nav>
               }
