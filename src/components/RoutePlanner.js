@@ -43,9 +43,9 @@ class RoutePlanner extends React.Component {
               id="add-start-dropdown"
               onClick={onChangePickPointMode.bind(null, 'start')} 
               active={pickPointMode === 'start'} >
-                <MenuItem>Vybrať na mape</MenuItem>
-                <MenuItem onClick={() => this.setFromCurrentPosition('start')}>Aktuálna poloha</MenuItem>
-                <MenuItem>Domov</MenuItem>
+                <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
+                <MenuItem onClick={() => this.setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
+                <MenuItem onClick={() => alert('todo')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
             </DropdownButton>
             <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
               <Glyphicon glyph="flag" style={{ color: 'grey' }}/> Zastávka
@@ -55,9 +55,9 @@ class RoutePlanner extends React.Component {
               id="add-finish-dropdown"
               onClick={onChangePickPointMode.bind(null, 'finish')} 
               active={pickPointMode === 'finish'} >
-                <MenuItem>Vybrať na mape</MenuItem>
-                <MenuItem onClick={() => this.setFromCurrentPosition('finish')}>Aktuálna poloha</MenuItem>
-                <MenuItem>Domov</MenuItem>
+                <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
+                <MenuItem onClick={() => this.setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
+                <MenuItem onClick={() => alert('todo')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
             </DropdownButton>
           </ButtonGroup>
           <ButtonGroup>
