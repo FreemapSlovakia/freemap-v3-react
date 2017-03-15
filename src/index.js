@@ -22,7 +22,6 @@ try {
   const appState = JSON.parse(localStorage.getItem('appState'));
   store = createStore(reducer, appState, middleware);
 } catch (e) {
-  alert('xx');
   store = createStore(reducer, middleware);
 }
 
