@@ -21,7 +21,7 @@ import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import FmPropTypes from 'fm3/propTypes';
 
 import { setTool, resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 
@@ -242,9 +242,9 @@ Main.propTypes = {
   match: React.PropTypes.object,
   history: React.PropTypes.object,
   tool: React.PropTypes.string,
-  mapType: React.PropTypes.oneOf(baseLayers.map(({ type }) => type)).isRequired,
-  overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(({ type }) => type))),
-  tileFormat: React.PropTypes.oneOf([ 'jpeg', 'png' ]).isRequired,
+  tileFormat: FmPropTypes.tileFormat.isRequired,
+  overlays: FmPropTypes.overlays,
+  mapType: FmPropTypes.mapType.isRequired,
   onSetTool: React.PropTypes.func.isRequired,
   onResetMap: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,

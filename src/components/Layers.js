@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { TileLayer, LayersControl } from 'react-leaflet';
 
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import FmPropTypes from 'fm3/propTypes';
 
 function Layers(props) {
 
@@ -56,9 +57,9 @@ function Layers(props) {
 Layers.propTypes = {
   onMapChange: React.PropTypes.func.isRequired,
   onOverlaysChange: React.PropTypes.func.isRequired,
-  tileFormat: React.PropTypes.oneOf([ 'jpeg', 'png' ]).isRequired,
-  mapType: React.PropTypes.oneOf(baseLayers.map(({ type }) => type)).isRequired,
-  overlays: React.PropTypes.arrayOf(React.PropTypes.oneOf(overlayLayers.map(({ type }) => type)))
+  tileFormat: FmPropTypes.tileFormat.isRequired,
+  overlays: FmPropTypes.overlays,
+  mapType: FmPropTypes.mapType.isRequired
 };
 
 export default connect(

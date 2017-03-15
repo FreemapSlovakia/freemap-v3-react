@@ -8,6 +8,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { setMapTileFormat } from 'fm3/actions/mapActions';
+import FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
   constructor(props) {
@@ -36,12 +37,12 @@ class Settings extends React.Component {
           <div style={{ marginBottom: '10px' }}>
             Formát dlaždíc:{' '}
             <ButtonGroup>
-              <Button 
+              <Button
                 active={this.state.tileFormat === 'png'}
                 onClick={() => this.setState({ tileFormat: 'png' })} >
                 PNG
               </Button>
-              <Button 
+              <Button
                 active={this.state.tileFormat === 'jpeg'}
                 onClick={() => this.setState({ tileFormat: 'jpeg' })} >
                 JPG
@@ -62,7 +63,7 @@ class Settings extends React.Component {
 }
 
 Settings.propTypes = {
-  tileFormat: React.PropTypes.oneOf([ 'png', 'jpeg' ]),
+  tileFormat: FmPropTypes.tileFormat,
   onSave: React.PropTypes.func.isRequired,
   onPopupClose: React.PropTypes.func.isRequired,
   onShowToast: React.PropTypes.func.isRequired
