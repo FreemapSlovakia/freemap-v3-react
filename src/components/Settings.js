@@ -6,6 +6,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setMapTileFormat } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
@@ -19,12 +20,13 @@ class Settings extends React.Component {
     super(props);
     this.state = {
       tileFormat: props.tileFormat,
-      homeLocation: props.homeLocation
+      homeLocation: props.homeLocation,
+      homeLocationCssClasses: ''
     };
   }
 
   onHomeLocationSelected(homeLocation) {
-    this.setState({ homeLocation });
+    this.setState({ homeLocation, homeLocationCssClasses: 'animated flash' }); // via animate.css
     this.props.onSelectHomeLocationFinished();
   }
 
@@ -35,12 +37,12 @@ class Settings extends React.Component {
 
   render() {
     const { onClosePopup, onSelectHomeLocation } = this.props;
-    const { homeLocation } = this.state;
+    const { homeLocation, homeLocationCssClasses } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     let homeLocationInfo = 'neurčená';
     if (homeLocation.lat && homeLocation.lon) {
-      homeLocationInfo = `${formatGpsCoord(homeLocation.lat, 'SN')}, ${formatGpsCoord(homeLocation.lon, 'WE')}`;
+      homeLocationInfo = `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`;
     }
     return (
       <Modal show onHide={b(onClosePopup)}>
@@ -70,9 +72,9 @@ class Settings extends React.Component {
             Pri pomalom internete preto odporúčame zvoliť JPG.
           </Alert>
           <hr />
-          Domovská poloha: {homeLocationInfo} <br />
+          Domovská poloha: <span className={homeLocationCssClasses}>{homeLocationInfo}</span> <br />
           <Button onClick={() => onSelectHomeLocation()}>
-            Vybrať na mape
+           <FontAwesomeIcon icon="crosshairs"/> Vybrať na mape
           </Button>
         </Modal.Body>
         <Modal.Footer>
