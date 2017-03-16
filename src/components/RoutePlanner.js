@@ -56,7 +56,7 @@ class RoutePlanner extends React.Component {
     return (
       <div>
         <Nav>
-          <Navbar.Text onClick={onCancel}><FontAwesomeIcon icon="map-signs"/> Plánovač trasy</Navbar.Text>
+          <Navbar.Text><FontAwesomeIcon icon="map-signs"/> <b>Plánovač trasy</b></Navbar.Text>
         </Nav>
         <Navbar.Form pullLeft>
           <ButtonGroup>
