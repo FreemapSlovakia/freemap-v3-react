@@ -17,7 +17,7 @@ import { getCurrentPosition } from 'fm3/geoutils';
 import 'fm3/styles/routePlanner.scss';
 
 class RoutePlanner extends React.Component {
-  
+
   setFromCurrentPosition(pointType) {
     getCurrentPosition().then(({ lat, lon }) => {
       if (pointType === 'start') {
@@ -56,32 +56,35 @@ class RoutePlanner extends React.Component {
     return (
       <div>
         <Nav>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť plánovač</NavItem>
+          <Navbar.Text onClick={onCancel}><FontAwesomeIcon icon="map-signs"/> Plánovač trasy</Navbar.Text>
         </Nav>
         <Navbar.Form pullLeft>
           <ButtonGroup>
-            <DropdownButton 
-              title={<span><Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Štart</span>}  
+            <DropdownButton
+              title={<span><Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Štart</span>}
               id="add-start-dropdown"
-              onClick={onChangePickPointMode.bind(null, 'start')} 
-              active={pickPointMode === 'start'} >
-                <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
-                <MenuItem onClick={() => this.setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-                <MenuItem onClick={() => this.setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+              onClick={onChangePickPointMode.bind(null, 'start')}
+              active={pickPointMode === 'start'}
+            >
+              <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
+              <MenuItem onClick={() => this.setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
+              <MenuItem onClick={() => this.setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
             </DropdownButton>
             <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
               <Glyphicon glyph="flag" style={{ color: 'grey' }}/> Zastávka
             </Button>
-            <DropdownButton 
-              title={<span><Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Cieľ</span>}  
+            <DropdownButton
+              title={<span><Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Cieľ</span>}
               id="add-finish-dropdown"
-              onClick={onChangePickPointMode.bind(null, 'finish')} 
-              active={pickPointMode === 'finish'} >
-                <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
-                <MenuItem onClick={() => this.setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-                <MenuItem onClick={() => this.setFromHomeLocation('finish')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+              onClick={onChangePickPointMode.bind(null, 'finish')}
+              active={pickPointMode === 'finish'}
+            >
+              <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
+              <MenuItem onClick={() => this.setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
+              <MenuItem onClick={() => this.setFromHomeLocation('finish')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
             </DropdownButton>
           </ButtonGroup>
+          {' '}
           <ButtonGroup>
             {
               [ [ 'car', 'car' ], [ 'walk', 'male' ], [ 'bicycle', 'bicycle' ] ].map(([ type, icon ], i) => (
@@ -91,6 +94,8 @@ class RoutePlanner extends React.Component {
               ))
             }
           </ButtonGroup>
+          {' '}
+          <Button onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť plánovač</Button>
         </Navbar.Form>
       </div>
     );
