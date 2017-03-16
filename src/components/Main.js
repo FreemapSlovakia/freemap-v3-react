@@ -10,6 +10,7 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
+import NavbarHeader from 'fm3/components/NavbarHeader';
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
 import Objects from 'fm3/components/Objects';
@@ -23,7 +24,7 @@ import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import * as FmPropTypes from 'fm3/propTypes';
 
-import { resetMap, setMapBounds, refocusMap } from 'fm3/actions/mapActions';
+import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { setActivePopup } from 'fm3/actions/mainActions';
 
@@ -138,7 +139,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, onResetMap, tileFormat, activePopup, onLaunchPopup } = this.props;
+    const { tool, tileFormat, activePopup, onLaunchPopup } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
     const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele', 'select-home-location' ].indexOf(tool) !== -1;
 
@@ -146,15 +147,7 @@ class Main extends React.Component {
       <div className="container-fluid">
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
-            <Navbar.Header>
-              <Navbar.Brand>
-                <img onClick={b(onResetMap)}
-                  className="freemap-logo"
-                  src={require('fm3/images/freemap-logo.png')}/>
-              </Navbar.Brand>
-              <Navbar.Toggle/>
-            </Navbar.Header>
-
+            <NavbarHeader />
             <Navbar.Collapse>
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
@@ -163,10 +156,10 @@ class Main extends React.Component {
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
-                  <FontAwesomeIcon icon="star"/> Hľadať POIs
+                  <FontAwesomeIcon icon="star"/> POIs
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
-                    <FontAwesomeIcon icon="map-signs"/> Plánovač trasy
+                    <FontAwesomeIcon icon="map-signs"/> Plánovač
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
                     <FontAwesomeIcon icon="arrows-h"/> Meranie vzdialenosti
@@ -239,7 +232,6 @@ Main.propTypes = {
   overlays: FmPropTypes.overlays,
   mapType: FmPropTypes.mapType.isRequired,
   onSetTool: React.PropTypes.func.isRequired,
-  onResetMap: React.PropTypes.func.isRequired,
   onMapBoundsChange: React.PropTypes.func.isRequired,
   onMapRefocus: React.PropTypes.func.isRequired,
   activePopup: React.PropTypes.string,
@@ -264,9 +256,6 @@ export default connect(
     return {
       onSetTool(tool) {
         dispatch(setTool(tool));
-      },
-      onResetMap() {
-        dispatch(resetMap());
       },
       onMapBoundsChange(bounds) {
         dispatch(setMapBounds(bounds));
