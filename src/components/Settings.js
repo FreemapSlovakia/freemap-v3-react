@@ -21,8 +21,15 @@ class Settings extends React.Component {
     this.state = {
       tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
-      homeLocationCssClasses: ''
+      homeLocationCssClasses: '',
+      userMadeChanges: false
     };
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (!nextState.userMadeChanges) {
+      this.setState({ userMadeChanges: true });
+    }
   }
 
   onHomeLocationSelected(homeLocation) {
@@ -37,7 +44,7 @@ class Settings extends React.Component {
 
   render() {
     const { onClosePopup, onSelectHomeLocation } = this.props;
-    const { homeLocation, homeLocationCssClasses } = this.state;
+    const { homeLocation, homeLocationCssClasses, userMadeChanges } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
     let homeLocationInfo = 'neurčená';
@@ -78,7 +85,7 @@ class Settings extends React.Component {
           </Button>
         </Modal.Body>
         <Modal.Footer>
-          <Button bsStyle="success" onClick={b(this.save)}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
+          <Button bsStyle="success" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
           <Button onClick={b(onClosePopup)}><Glyphicon glyph="remove"/> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
