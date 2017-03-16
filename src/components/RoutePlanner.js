@@ -55,7 +55,9 @@ class RoutePlanner extends React.Component {
     // FIXME wrapper element can't be used
     return (
       <div>
-        <Navbar.Text><i className={`fa fa-map-signs`} aria-hidden="true"/> Plánovač trasy</Navbar.Text>
+        <Nav>
+          <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť plánovač</NavItem>
+        </Nav>
         <Navbar.Form pullLeft>
           <ButtonGroup>
             <DropdownButton 
@@ -90,9 +92,6 @@ class RoutePlanner extends React.Component {
             }
           </ButtonGroup>
         </Navbar.Form>
-        <Nav>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
-        </Nav>
       </div>
     );
   }
