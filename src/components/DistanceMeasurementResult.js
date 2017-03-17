@@ -5,7 +5,7 @@ import { Marker, Tooltip, Polyline } from 'react-leaflet';
 import { addPoint, updatePoint } from 'fm3/actions/measurementActions';
 import { distance } from 'fm3/geoutils';
 
-const km = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
 class DistanceMeasurementResult extends React.Component {
 
@@ -33,7 +33,7 @@ class DistanceMeasurementResult extends React.Component {
 
           const m = (
             <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={this.handleMeasureMarkerDrag.bind(this, i)}>
-              <Tooltip direction="right" permanent><span>{km.format(dist / 1000)} km</span></Tooltip>
+              <Tooltip direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
             </Marker>
           );
 
