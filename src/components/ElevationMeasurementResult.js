@@ -64,9 +64,7 @@ class ElevationMeasurementResult extends React.Component {
 
         <Tooltip direction="right" permanent>
           <span>
-            <div>{formatGpsCoord(p.lat, 'SN', 'D')} {formatGpsCoord(p.lon, 'WE', 'D')}</div>
-            <div>{formatGpsCoord(p.lat, 'SN', 'DM')} {formatGpsCoord(p.lon, 'WE', 'DM')}</div>
-            <div>{formatGpsCoord(p.lat, 'SN', 'DMS')} {formatGpsCoord(p.lon, 'WE', 'DMS')}</div>
+            {[ 'D', 'DM', 'DMS' ].map(format => <div key={format}>{formatGpsCoord(p.lat, 'SN', format)} {formatGpsCoord(p.lon, 'WE', format)}</div>)}
             {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
           </span>
         </Tooltip>
