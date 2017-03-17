@@ -52,7 +52,6 @@ class Settings extends React.Component {
 
   onHomeLocationSelected = (lat, lon) => {
     this.setState({ homeLocation: { lat, lon }, homeLocationCssClasses: 'animated flash' }); // via animate.css
-    console.log("AAAAAAAAA");
     this.props.onSelectHomeLocationFinished();
   }
 
