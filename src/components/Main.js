@@ -128,7 +128,7 @@ class Main extends React.Component {
 
   handlePoiSearch() {
     if (this.props.zoom < 12) {
-      this.showToast('info', null, 'Vyhľadávanie POIs funguje až od zoom úrovne 12');
+      this.showToast('info', null, 'Vyhľadávanie miest funguje až od zoom úrovne 12');
     } else {
       this.props.onSetTool('objects');
     }

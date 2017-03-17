@@ -94,7 +94,7 @@ class RoutePlanner extends React.Component {
         </Navbar.Form>
         <Nav>
           <NavItem onClick={onCancel}>
-            <Glyphicon glyph="remove"/>  Zrušiť
+            <Glyphicon glyph="remove"/> Zavrieť
           </NavItem>
          </Nav>
       </div>
