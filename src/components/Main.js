@@ -210,9 +210,9 @@ class Main extends React.Component {
               tileFormat={tileFormat}
             />
 
-            <SearchResults/>
+            {(showDefaultMenu || tool === 'search') && <SearchResults/>}
 
-            <ObjectsResult/>
+            {tool === 'objects' && <ObjectsResult/>}
 
             {tool === 'route-planner' && <RoutePlannerResult onShowToast={b(this.showToast)}/>}
 
