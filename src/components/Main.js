@@ -155,7 +155,7 @@ class Main extends React.Component {
       <div className="container-fluid">
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
-            <NavbarHeader />
+            <NavbarHeader/>
             <Navbar.Collapse>
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
