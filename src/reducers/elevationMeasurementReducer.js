@@ -1,5 +1,3 @@
-import update from 'immutability-helper';
-
 const initialState = {
   elevation: null,
   point: null
@@ -7,10 +5,13 @@ const initialState = {
 
 export default function elevationMeasurement(state = initialState, action) {
   switch (action.type) {
+    case 'RESET_MAP':
+    case 'SET_TOOL':
+      return initialState;
     case 'SET_ELEVATION':
-      return update(state, { elevation: { $set: action.elevation } } );
+      return Object.assign({}, state, { elevation: action.elevation } );
     case 'SET_ELEVATION_POINT':
-      return update(state, { point: { $set: action.point } } );
+      return Object.assign({}, state, { point: action.point } );
     default:
       return state;
   }

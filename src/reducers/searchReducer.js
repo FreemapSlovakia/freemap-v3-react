@@ -1,5 +1,3 @@
-import update from 'immutability-helper';
-
 const initialState = {
   query: null,
   results: [],
@@ -9,16 +7,17 @@ const initialState = {
 
 export default function Search(state = initialState, action) {
   switch (action.type) {
+    case 'RESET_MAP':
     case 'SET_TOOL':
       return (action.tool == 'search') ? state : initialState;
     case 'SEARCH':
-      return update(state, { query: { $set: action.query } });
+      return Object.assign({}, state, { query: action.query });
     case 'SET_RESULTS':
-      return update(state, { results: { $set: action.results } });
+      return Object.assign({}, state, { results: action.results });
     case 'HIGHLIGHT_RESULT':
-      return update(state, { highlightedResult: { $set: action.highlightedResult } });
+      return Object.assign({}, state, { highlightedResult: action.highlightedResult });
     case 'SELECT_RESULT':
-      return update(state, { selectedResult: { $set: action.selectedResult }, highlightedResult: { $set: null } });
+      return Object.assign({}, state, { selectedResult: action.selectedResult, highlightedResult: null });
     default:
       return state;
   }
