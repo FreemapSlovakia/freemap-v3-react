@@ -3,6 +3,7 @@ import { Marker, Tooltip } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
 import { formatGpsCoord } from 'fm3/geoutils';
+import mapEventEmmiter from 'fm3/mapEventEmmiter';
 
 const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -17,8 +18,15 @@ class ElevationMeasurementResult extends React.Component {
 
   state = {};
 
-  // called externally
-  handlePointAdded({ lat, lon }) {
+  componentWillMount() {
+    mapEventEmmiter.on('mapClick', this.handlePoiAdded);
+  }
+
+  componentWillUnmount() {
+    mapEventEmmiter.removeListener('mapClick', this.handlePoiAdded);
+  }
+
+  handlePoiAdded = (lat, lon) => {
     this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
   }
@@ -84,7 +92,5 @@ export default connect(
         dispatch(setElevation(null));
       }
     };
-  },
-  null,
-  { withRef: true }
+  }
 )(ElevationMeasurementResult);

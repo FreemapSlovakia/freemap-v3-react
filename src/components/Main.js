@@ -31,6 +31,7 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 import Settings from 'fm3/components/Settings';
 
 import * as FmPropTypes from 'fm3/propTypes';
+import mapEventEmmiter from 'fm3/mapEventEmmiter';
 
 import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
@@ -128,26 +129,7 @@ class Main extends React.Component {
   }
 
   handleMapClick({ latlng: { lat, lng: lon } }) {
-    if (this.measurement) {
-      this.measurement.getWrappedInstance().handlePointAdded({ lat, lon });
-    }
-
-    if (this.elevationMeasurement) {
-      this.elevationMeasurement.getWrappedInstance().handlePointAdded({ lat, lon });
-    }
-
-    if (this.areaMeasurement) {
-      this.areaMeasurement.getWrappedInstance().handlePointAdded({ lat, lon });
-    }
-
-    if (this.routePlanner) {
-      this.routePlanner.getWrappedInstance().handlePointAdded({ lat, lon });
-    }
-
-    if (this.props.tool === 'select-home-location') {
-      this.props.onLaunchPopup('settings');
-      this.settings.getWrappedInstance().onHomeLocationSelected({ lat, lon });
-    }
+    mapEventEmmiter.emit('mapClick', lat, lon);
   }
 
   handlePoiSearch() {
@@ -185,7 +167,7 @@ class Main extends React.Component {
               {(showDefaultMenu || tool === 'search') && <SearchMenu/>}
               {tool === 'route-planner' && <RoutePlannerMenu onShowToast={b(this.showToast)}/>}
               {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu/>}
-              {activePopup === 'settings' && <Settings ref={e => this.settings = e} onShowToast={b(this.showToast)}/>}
+              {activePopup === 'settings' && <Settings onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
                   <NavItem onClick={b(this.handlePoiSearch)}>
@@ -232,17 +214,13 @@ class Main extends React.Component {
 
             <ObjectsResult/>
 
-            {tool === 'route-planner' &&
-              <RoutePlannerResult
-                ref={e => this.routePlanner = e}
-                onShowToast={b(this.showToast)}/>
-            }
+            {tool === 'route-planner' && <RoutePlannerResult onShowToast={b(this.showToast)}/>}
 
-            {tool === 'measure' && <DistanceMeasurementResult ref={e => this.measurement = e}/>}
+            {tool === 'measure' && <DistanceMeasurementResult/>}
 
-            {tool === 'measure-ele' && <ElevationMeasurementResult ref={e => this.elevationMeasurement = e}/>}
+            {tool === 'measure-ele' && <ElevationMeasurementResult/>}
 
-            {tool === 'measure-area' && <AreaMeasurementResult ref={e => this.areaMeasurement = e}/>}
+            {tool === 'measure-area' && <AreaMeasurementResult/>}
           </Map>
         </Row>
 

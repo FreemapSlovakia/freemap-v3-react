@@ -4,6 +4,7 @@ import { Marker, Tooltip, Polygon } from 'react-leaflet';
 
 import { addPoint, updatePoint } from 'fm3/actions/measurementActions';
 import { area } from 'fm3/geoutils';
+import mapEventEmmiter from 'fm3/mapEventEmmiter';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
@@ -15,8 +16,15 @@ class AreaMeasurementResult extends React.Component {
     onPointUpdate: React.PropTypes.func.isRequired
   };
 
-  // called externally
-  handlePointAdded({ lat, lon }) {
+  componentWillMount() {
+    mapEventEmmiter.on('mapClick', this.handlePoiAdded);
+  }
+
+  componentWillUnmount() {
+    mapEventEmmiter.removeListener('mapClick', this.handlePoiAdded);
+  }
+
+  handlePoiAdded = (lat, lon) => {
     this.props.onPointAdd({ lat, lon });
   }
 
@@ -69,7 +77,5 @@ export default connect(
         dispatch(updatePoint(i, point));
       }
     };
-  },
-  null,
-  { withRef: true }
+  }
 )(AreaMeasurementResult);

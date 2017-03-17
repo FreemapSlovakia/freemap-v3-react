@@ -11,8 +11,9 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setMapTileFormat } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
 import { closePopup } from 'fm3/actions/mainActions';
-import { formatGpsCoord } from 'fm3/geoutils';
 
+import { formatGpsCoord } from 'fm3/geoutils';
+import mapEventEmmiter from 'fm3/mapEventEmmiter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
@@ -28,6 +29,7 @@ class Settings extends React.Component {
     onShowToast: React.PropTypes.func.isRequired,
     onSelectHomeLocation: React.PropTypes.func.isRequired,
     onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
+    tool: React.PropTypes.string,
   };
 
   constructor(props) {
@@ -40,15 +42,24 @@ class Settings extends React.Component {
     };
   }
 
+  componentWillMount() {
+    mapEventEmmiter.on('mapClick', this.onHomeLocationSelected);
+  }
+
+  componentWillUnmount() {
+    mapEventEmmiter.removeListener('mapClick', this.onHomeLocationSelected);
+  }
+
+  onHomeLocationSelected = (lat, lon) => {
+    this.setState({ homeLocation: { lat, lon }, homeLocationCssClasses: 'animated flash' }); // via animate.css
+    console.log("AAAAAAAAA");
+    this.props.onSelectHomeLocationFinished();
+  }
+
   componentWillUpdate(nextProps, nextState) {
     if (!nextState.userMadeChanges) {
       this.setState({ userMadeChanges: true });
     }
-  }
-
-  onHomeLocationSelected(homeLocation) {
-    this.setState({ homeLocation, homeLocationCssClasses: 'animated flash' }); // via animate.css
-    this.props.onSelectHomeLocationFinished();
   }
 
   save() {
@@ -57,7 +68,7 @@ class Settings extends React.Component {
   }
 
   render() {
-    const { onClosePopup, onSelectHomeLocation } = this.props;
+    const { onClosePopup, onSelectHomeLocation, tool } = this.props;
     const { homeLocation, homeLocationCssClasses, userMadeChanges } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
 
@@ -65,8 +76,9 @@ class Settings extends React.Component {
     if (homeLocation.lat && homeLocation.lon) {
       homeLocationInfo = `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`;
     }
+
     return (
-      <Modal show onHide={b(onClosePopup)}>
+      <Modal show={tool !== 'select-home-location'} onHide={b(onClosePopup)}>
         <Modal.Header closeButton>
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
@@ -111,7 +123,8 @@ export default connect(
   function (state) {
     return {
       tileFormat: state.map.tileFormat,
-      homeLocation: state.main.homeLocation
+      homeLocation: state.main.homeLocation,
+      tool: state.main.tool
     };
   },
   function (dispatch) {
@@ -126,13 +139,10 @@ export default connect(
       },
       onSelectHomeLocation() {
         dispatch(setTool('select-home-location'));
-        dispatch(closePopup());
       },
       onSelectHomeLocationFinished() {
         dispatch(setTool(null));
       }
     };
-  },
-  null,
-  { withRef: true }
+  }
 )(Settings);

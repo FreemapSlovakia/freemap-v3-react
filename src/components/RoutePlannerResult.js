@@ -4,6 +4,7 @@ import { Marker, Polyline, Tooltip } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 
 import { setStart, setFinish, addMidpoint, setMidpoint, removeMidpoint } from 'fm3/actions/routePlannerActions';
+import mapEventEmmiter from 'fm3/mapEventEmmiter';
 
 function createIcon(color) {
   return new L.Icon({
@@ -20,6 +21,28 @@ const finishIcon = createIcon('red');
 
 class RoutePlannerResult extends React.Component {
 
+  componentWillMount() {
+    mapEventEmmiter.on('mapClick', this.handlePoiAdded);
+  }
+
+  componentWillUnmount() {
+    mapEventEmmiter.removeListener('mapClick', this.handlePoiAdded);
+  }
+
+  handlePoiAdded = (lat, lon) => {
+    switch (this.props.pickMode) {
+      case 'start':
+        this.props.onSetStart({ lat, lon });
+        break;
+      case 'finish':
+        this.props.onSetFinish({ lat, lon });
+        break;
+      case 'midpoint':
+        this.props.onAddMidpoint({ lat, lon });
+        break;
+    } // TODO default - log error
+  }
+
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
 
@@ -32,21 +55,6 @@ class RoutePlannerResult extends React.Component {
         break;
       case 'midpoint':
         this.props.onSetMidpoint(position, { lat, lon });
-        break;
-    } // TODO default - log error
-  }
-
-  // called externally
-  handlePointAdded({ lat, lon }) {
-    switch (this.props.pickMode) {
-      case 'start':
-        this.props.onSetStart({ lat, lon });
-        break;
-      case 'finish':
-        this.props.onSetFinish({ lat, lon });
-        break;
-      case 'midpoint':
-        this.props.onAddMidpoint({ lat, lon });
         break;
     } // TODO default - log error
   }
@@ -156,7 +164,5 @@ export default connect(
         dispatch(removeMidpoint(position));
       }
     };
-  },
-  null,
-  { withRef: true }
+  }
 )(RoutePlannerResult);

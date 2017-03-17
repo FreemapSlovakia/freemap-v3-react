@@ -4,6 +4,7 @@
   "description": "Freemap web portal.",
   "dependencies": {
     "@mapbox/geojson-area": "0.2.2",
+    "events": "1.1.1",
     "file-saver": "1.3.3",
     "immutability-helper": "2.1.2",
     "leaflet": "1.0.3",
