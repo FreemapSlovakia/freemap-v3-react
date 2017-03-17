@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
 import { formatGpsCoord } from 'fm3/geoutils';
 
+const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
 class ElevationMeasurementResult extends React.Component {
 
   constructor(props) {
@@ -53,7 +55,7 @@ class ElevationMeasurementResult extends React.Component {
             <div>{formatGpsCoord(p.lat, 'SN', 'D')} {formatGpsCoord(p.lon, 'WE', 'D')}</div>
             <div>{formatGpsCoord(p.lat, 'SN', 'DM')} {formatGpsCoord(p.lon, 'WE', 'DM')}</div>
             <div>{formatGpsCoord(p.lat, 'SN', 'DMS')} {formatGpsCoord(p.lon, 'WE', 'DMS')}</div>
-            {typeof elevation === 'number' && <div>Nadmorská výška: {elevation} m. n. m.</div>}
+            {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
           </span>
         </Tooltip>
       </Marker>
