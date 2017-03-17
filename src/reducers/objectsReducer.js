@@ -10,9 +10,9 @@ export default function map(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'SET_OBJECTS_FILTER':
-      return Object.assign({}, state, { objects: [] } );
+      return { ...state, objects: [] };
     case 'SET_OBJECTS':
-      return Object.assign({}, state, { objects: action.objects } );
+      return { ...state, objects: action.objects };
     default:
       return state;
   }

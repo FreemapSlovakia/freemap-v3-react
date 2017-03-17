@@ -10,7 +10,7 @@ export default function measurement(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'ADD_MEASUREMENT_POINT':
-      return update(state, { points: { $push: [ action.point ] } });
+      return { ...state, points: [ ...state.points, action.point ] };
     case 'UPDATE_MEASUREMENT_POINT':
       return update(state, { points: { [ action.index ]: { $set: action.point } } });
     default:

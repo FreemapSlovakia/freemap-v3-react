@@ -4,26 +4,20 @@ import { Marker, Popup } from 'react-leaflet';
 
 import { toHtml } from 'fm3/poiTypes';
 
-class ObjectsResult extends React.Component {
+function ObjectsResult({ objects }) {
+  return (
+    <div>
+      {objects.map(({ id, lat, lon, tags }) => {
+        const __html = toHtml(tags);
 
-  render() {
-    const { objects } = this.props;
-
-    return (
-      <div>
-        {objects.map(({ id, lat, lon, tags }) => {
-          const __html = toHtml(tags);
-
-          return (
-            <Marker key={id} position={L.latLng(lat, lon)}>
-              {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
-            </Marker>
-          );
-        })}
-      </div>
-    );
-  }
-
+        return (
+          <Marker key={id} position={L.latLng(lat, lon)}>
+            {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
+          </Marker>
+        );
+      })}
+    </div>
+  );
 }
 
 ObjectsResult.propTypes = {

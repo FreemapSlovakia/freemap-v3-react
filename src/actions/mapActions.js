@@ -7,7 +7,7 @@ export function setMapBounds(bounds) {
 }
 
 export function refocusMap(changes) {
-  return Object.assign({ type: 'REFOCUS' }, changes);
+  return { type: 'REFOCUS', ...changes };
 }
 
 export function setMapTileFormat(tileFormat) {

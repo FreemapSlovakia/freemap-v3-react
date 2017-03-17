@@ -10,63 +10,62 @@ import { setTool } from 'fm3/actions/mainActions';
 import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
 import 'fm3/styles/search.scss';
 
-class SearchMenu extends React.Component {
-  onSelectionChange(resultsSelectedByUser) {
-    this.props.onSelectResult(resultsSelectedByUser[0], this.props.tool);
+function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlannerWithStart,
+    onInitRoutePlannerWithFinish, selectedResult, onDoSearch, results }) {
+
+  function onSelectionChange(resultsSelectedByUser) {
+    onSelectResult(resultsSelectedByUser[0], tool);
   }
 
-  onSuggestionHighlightChange(result) {
-    this.props.onHiglightResult(result);
+  function onSuggestionHighlightChange(result) {
+    onHiglightResult(result);
   }
 
-  render() {
-    const b = (fn, ...args) => fn.bind(this, ...args);
-    const { onInitRoutePlannerWithStart, onInitRoutePlannerWithFinish, selectedResult } = this.props;
+  const b = (fn, ...args) => fn.bind(null, ...args);
 
-    // FIXME wrapper element can't be used
-    return (
-      <div>
+  // FIXME wrapper element can't be used
+  return (
+    <div>
+      <Navbar.Form pullLeft>
+        <AsyncTypeahead
+          labelKey="label"
+          useCache={false}
+          minLength={3}
+          delay={500}
+          ignoreDiacritics
+          onSearch={onDoSearch}
+          options={results}
+          searchText="Hľadám…"
+          placeholder="Brusno"
+          clearButton
+          onChange={onSelectionChange}
+          emptyLabel="Nenašli sa žiadne výsledky"
+          promptText="Zadajte lokalitu"
+          renderMenuItemChildren={(result) => (
+            <div key={result.label + result.id}
+              onMouseEnter={b(onSuggestionHighlightChange, result)}
+              onMouseLeave={b(onSuggestionHighlightChange, null)}
+            >
+              <span>{result.tags.name} </span><br/>
+              <span>({result.geojson.type}, {result.tags.type})</span>
+            </div>
+          )}
+        />
+      </Navbar.Form>
+      {tool === 'search' &&
         <Navbar.Form pullLeft>
-          <AsyncTypeahead
-            labelKey="label"
-            useCache={false}
-            minLength={3}
-            delay={500}
-            ignoreDiacritics
-            onSearch={this.props.onDoSearch}
-            options={this.props.results}
-            searchText="Hľadám…"
-            placeholder="Brusno"
-            clearButton
-            onChange={b(this.onSelectionChange)}
-            emptyLabel="Nenašli sa žiadne výsledky"
-            promptText="Zadajte lokalitu"
-            renderMenuItemChildren={(result) => (
-              <div key={result.label + result.id}
-                onMouseEnter={b(this.onSuggestionHighlightChange, result)}
-                onMouseLeave={b(this.onSuggestionHighlightChange, null)}
-              >
-                <span>{result.tags.name} </span><br/>
-                <span>({result.geojson.type}, {result.tags.type})</span>
-              </div>
-            )}
-          />
+          <ButtonGroup>
+            <Button onClick={b(onInitRoutePlannerWithStart, selectedResult)}>
+              <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Navigovať odtiaľto
+            </Button>
+            <Button onClick={b(onInitRoutePlannerWithFinish, selectedResult)}>
+              <Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Navigovať sem
+            </Button>
+          </ButtonGroup>
         </Navbar.Form>
-        {this.props.tool === 'search' &&
-          <Navbar.Form pullLeft>
-            <ButtonGroup>
-              <Button onClick={b(onInitRoutePlannerWithStart, selectedResult)}>
-                <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Navigovať odtiaľto
-              </Button>
-              <Button onClick={b(onInitRoutePlannerWithFinish, selectedResult)}>
-                <Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Navigovať sem
-              </Button>
-            </ButtonGroup>
-          </Navbar.Form>
-        }
-      </div>
-    );
-  }
+      }
+    </div>
+  );
 }
 
 SearchMenu.propTypes = {

@@ -9,6 +9,13 @@ const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDi
 
 class DistanceMeasurementResult extends React.Component {
 
+  static propTypes = {
+    points: React.PropTypes.array,
+    onPointAdd: React.PropTypes.func.isRequired,
+    onPointUpdate: React.PropTypes.func.isRequired
+  };
+
+  // called externally
   handlePointAdded({ lat, lon }) {
     this.props.onPointAdd({ lat, lon });
   }
@@ -46,12 +53,6 @@ class DistanceMeasurementResult extends React.Component {
   }
 
 }
-
-DistanceMeasurementResult.propTypes = {
-  points: React.PropTypes.array,
-  onPointAdd: React.PropTypes.func.isRequired,
-  onPointUpdate: React.PropTypes.func.isRequired
-};
 
 export default connect(
   function (state) {

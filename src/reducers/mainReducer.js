@@ -8,19 +8,19 @@ const initialState = {
 export default function main(state = initialState, action) {
   switch (action.type) {
     case 'SET_ACTIVE_POPUP':
-      return Object.assign({}, state, { activePopup: action.activePopup });
+      return { ...state, activePopup: action.activePopup };
     case 'CLOSE_POPUP':
-      return Object.assign({}, state, { activePopup: null });
+      return { ...state, activePopup: null };
     case 'RESET_MAP':
-      return Object.assign({}, state, { tool: null });
+      return { ...state, tool: null };
     case 'SET_TOOL':
-      return Object.assign({}, state, { tool: action.tool });
+      return { ...state, tool: action.tool };
     case 'SET_HOME_LOCATION':
-      return Object.assign({}, state, { homeLocation: action.homeLocation });
+      return { ...state, homeLocation: action.homeLocation };
     case 'START_PROGRESS':
-      return Object.assign({}, state, { progress: true });
+      return { ...state, progress: true };
     case 'STOP_PROGRESS':
-      return Object.assign({}, state, { progress: false });
+      return { ...state, progress: false };
     default:
       return state;
   }

@@ -8,12 +8,16 @@ const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionD
 
 class ElevationMeasurementResult extends React.Component {
 
-  constructor(props) {
-    super(props);
-
-    this.state = {};
+  static propTypes = {
+    onPointSet: React.PropTypes.func.isRequired,
+    onClearElevation: React.PropTypes.func.isRequired,
+    point: React.PropTypes.object,
+    elevation: React.PropTypes.number
   }
 
+  state = {};
+
+  // called externally
   handlePointAdded({ lat, lon }) {
     this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
@@ -63,13 +67,6 @@ class ElevationMeasurementResult extends React.Component {
   }
 
 }
-
-ElevationMeasurementResult.propTypes = {
-  onPointSet: React.PropTypes.func.isRequired,
-  onClearElevation: React.PropTypes.func.isRequired,
-  point: React.PropTypes.object,
-  elevation: React.PropTypes.number
-};
 
 export default connect(
   function (state) {

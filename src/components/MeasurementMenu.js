@@ -11,43 +11,34 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 
-class MeasurementMenu extends React.Component {
+function MeasurementMenu({ onCancel, onSetTool, tool }) {
 
-  constructor(props) {
-    super(props);
-  }
+  const b = (fn, ...args) => fn.bind(null, ...args);
 
-  render() {
-    const { onCancel, onSetTool, tool } = this.props;
-
-    const b = (fn, ...args) => fn.bind(this, ...args);
-
-    // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
-    return (
-      <div>
-        <Nav>
-          <Navbar.Text><FontAwesomeIcon icon="arrows-h"/> Meranie</Navbar.Text>
-        </Nav>
-        <Navbar.Form pullLeft>
-          <ButtonGroup>
-            <Button onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
-              <FontAwesomeIcon icon="arrows-h"/> Vzdialenosť
-            </Button>
-            <Button onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
-              <FontAwesomeIcon icon="long-arrow-up"/> Výška a poloha
-            </Button>
-            <Button onClick={b(onSetTool, 'measure-area')} active={tool === 'measure-area'}>
-              <FontAwesomeIcon icon="square"/> Plocha
-            </Button>
-          </ButtonGroup>
-        </Navbar.Form>
-        <Nav>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
-        </Nav>
-      </div>
-    );
-  }
-
+  // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
+  return (
+    <div>
+      <Nav>
+        <Navbar.Text><FontAwesomeIcon icon="arrows-h"/> Meranie</Navbar.Text>
+      </Nav>
+      <Navbar.Form pullLeft>
+        <ButtonGroup>
+          <Button onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
+            <FontAwesomeIcon icon="arrows-h"/> Vzdialenosť
+          </Button>
+          <Button onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
+            <FontAwesomeIcon icon="long-arrow-up"/> Výška a poloha
+          </Button>
+          <Button onClick={b(onSetTool, 'measure-area')} active={tool === 'measure-area'}>
+            <FontAwesomeIcon icon="square"/> Plocha
+          </Button>
+        </ButtonGroup>
+      </Navbar.Form>
+      <Nav>
+        <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
+      </Nav>
+    </div>
+  );
 }
 
 MeasurementMenu.propTypes = {

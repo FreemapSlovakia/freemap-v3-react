@@ -16,6 +16,20 @@ import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
+
+  static propTypes = {
+    homeLocation: React.PropTypes.shape({
+      lat: React.PropTypes.number,
+      lon: React.PropTypes.number
+    }),
+    tileFormat: FmPropTypes.tileFormat.isRequired,
+    onSave: React.PropTypes.func.isRequired,
+    onClosePopup: React.PropTypes.func.isRequired,
+    onShowToast: React.PropTypes.func.isRequired,
+    onSelectHomeLocation: React.PropTypes.func.isRequired,
+    onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -92,19 +106,6 @@ class Settings extends React.Component {
     );
   }
 }
-
-Settings.propTypes = {
-  homeLocation: React.PropTypes.shape({
-    lat: React.PropTypes.number,
-    lon: React.PropTypes.number
-  }),
-  tileFormat: FmPropTypes.tileFormat.isRequired,
-  onSave: React.PropTypes.func.isRequired,
-  onClosePopup: React.PropTypes.func.isRequired,
-  onShowToast: React.PropTypes.func.isRequired,
-  onSelectHomeLocation: React.PropTypes.func.isRequired,
-  onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
-};
 
 export default connect(
   function (state) {

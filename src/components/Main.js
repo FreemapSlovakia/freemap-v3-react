@@ -41,6 +41,26 @@ import 'fm3/styles/main.scss';
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 class Main extends React.Component {
+
+  static propTypes = {
+    lat: React.PropTypes.number,
+    lon: React.PropTypes.number,
+    zoom: React.PropTypes.number,
+    bounds: React.PropTypes.object,
+    match: React.PropTypes.object,
+    history: React.PropTypes.object,
+    tool: React.PropTypes.string,
+    tileFormat: FmPropTypes.tileFormat.isRequired,
+    overlays: FmPropTypes.overlays,
+    mapType: FmPropTypes.mapType.isRequired,
+    onSetTool: React.PropTypes.func.isRequired,
+    onMapBoundsChange: React.PropTypes.func.isRequired,
+    onMapRefocus: React.PropTypes.func.isRequired,
+    activePopup: React.PropTypes.string,
+    onLaunchPopup: React.PropTypes.func.isRequired,
+    progress: React.PropTypes.bool,
+  };
+
   componentWillMount() {
     // set redux according to URL
     this.props.onMapRefocus(getMapDiff(this.props));
@@ -234,25 +254,6 @@ class Main extends React.Component {
     );
   }
 }
-
-Main.propTypes = {
-  lat: React.PropTypes.number,
-  lon: React.PropTypes.number,
-  zoom: React.PropTypes.number,
-  bounds: React.PropTypes.object,
-  match: React.PropTypes.object,
-  history: React.PropTypes.object,
-  tool: React.PropTypes.string,
-  tileFormat: FmPropTypes.tileFormat.isRequired,
-  overlays: FmPropTypes.overlays,
-  mapType: FmPropTypes.mapType.isRequired,
-  onSetTool: React.PropTypes.func.isRequired,
-  onMapBoundsChange: React.PropTypes.func.isRequired,
-  onMapRefocus: React.PropTypes.func.isRequired,
-  activePopup: React.PropTypes.string,
-  onLaunchPopup: React.PropTypes.func.isRequired,
-  progress: React.PropTypes.bool,
-};
 
 export default connect(
   function (state) {

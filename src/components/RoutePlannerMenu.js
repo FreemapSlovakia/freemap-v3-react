@@ -16,90 +16,87 @@ import { getCurrentPosition } from 'fm3/geoutils';
 
 import 'fm3/styles/routePlanner.scss';
 
-class RoutePlannerMenu extends React.Component {
+function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode, transportType,
+    onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup }) {
 
-  setFromCurrentPosition(pointType) {
+  function setFromCurrentPosition(pointType) {
     getCurrentPosition().then(({ lat, lon }) => {
       if (pointType === 'start') {
-        this.props.onSetStart({ lat, lon });
+        onSetStart({ lat, lon });
       } else if (pointType === 'finish') {
-        this.props.onSetFinish({ lat, lon });
+        onSetFinish({ lat, lon });
       } // else fail
     }).catch(() => {
-      this.props.onShowToast('error', null, 'Nepodarilo sa získať aktuálnu polohu');
+      onShowToast('error', null, 'Nepodarilo sa získať aktuálnu polohu');
     });
   }
 
-  setFromHomeLocation(pointType) {
-    const { lat, lon } = this.props.homeLocation;
-    if (!lat) {
-    const line1 = null;
-    const line2 = [
-      'Najpr si musíte nastaviť domovskú polohu cez',
-      ' ',
-      <Button key="settings" onClick={() => this.props.onLaunchSettingsPopup()}>
-        Nastavenia
-      </Button>
-    ];
-    this.props.onShowToast('info', line1, line2);
+  function setFromHomeLocation(pointType) {
+    const { lat, lon } = homeLocation;
+      if (!lat) {
+      const line1 = null;
+      const line2 = [
+        'Najpr si musíte nastaviť domovskú polohu cez',
+        ' ',
+        <Button key="settings" onClick={onLaunchSettingsPopup}>
+          Nastavenia
+        </Button>
+      ];
+      onShowToast('info', line1, line2);
     } else if (pointType === 'start') {
-        this.props.onSetStart({ lat, lon });
+        onSetStart({ lat, lon });
     } else if (pointType === 'finish') {
-      this.props.onSetFinish({ lat, lon });
+      onSetFinish({ lat, lon });
     }
   }
 
-  render() {
-    const { pickPointMode, transportType, onChangeTransportType, onChangePickPointMode, onCancel } = this.props;
-
-    // FIXME wrapper element can't be used
-    return (
-      <div>
-        <Navbar.Form pullLeft>
-          <ButtonGroup>
-            <DropdownButton
-              title={<span><Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Štart</span>}
-              id="add-start-dropdown"
-              onClick={onChangePickPointMode.bind(null, 'start')}
-              active={pickPointMode === 'start'}
-            >
-              <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
-              <MenuItem onClick={() => this.setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-              <MenuItem onClick={() => this.setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
-            </DropdownButton>
-            <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
-              <Glyphicon glyph="flag" style={{ color: 'grey' }}/> Zastávka
-            </Button>
-            <DropdownButton
-              title={<span><Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Cieľ</span>}
-              id="add-finish-dropdown"
-              onClick={onChangePickPointMode.bind(null, 'finish')}
-              active={pickPointMode === 'finish'}
-            >
-              <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
-              <MenuItem onClick={() => this.setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-              <MenuItem onClick={() => this.setFromHomeLocation('finish')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
-            </DropdownButton>
-          </ButtonGroup>
-          {' '}
-          <ButtonGroup>
-            {
-              [ [ 'car', 'car' ], [ 'walk', 'male' ], [ 'bicycle', 'bicycle' ] ].map(([ type, icon ], i) => (
-                <Button key={i} active={transportType === type} onClick={onChangeTransportType.bind(null, type)}>
-                  <FontAwesomeIcon icon={icon}/>
-                </Button>
-              ))
-            }
-          </ButtonGroup>
-        </Navbar.Form>
-        <Nav>
-          <NavItem onClick={onCancel}>
-            <Glyphicon glyph="remove"/> Zavrieť
-          </NavItem>
-         </Nav>
-      </div>
-    );
-  }
+  // FIXME wrapper element can't be used
+  return (
+    <div>
+      <Navbar.Form pullLeft>
+        <ButtonGroup>
+          <DropdownButton
+            title={<span><Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Štart</span>}
+            id="add-start-dropdown"
+            onClick={onChangePickPointMode.bind(null, 'start')}
+            active={pickPointMode === 'start'}
+          >
+            <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
+            <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
+            <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+          </DropdownButton>
+          <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
+            <Glyphicon glyph="flag" style={{ color: 'grey' }}/> Zastávka
+          </Button>
+          <DropdownButton
+            title={<span><Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Cieľ</span>}
+            id="add-finish-dropdown"
+            onClick={onChangePickPointMode.bind(null, 'finish')}
+            active={pickPointMode === 'finish'}
+          >
+            <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
+            <MenuItem onClick={() => setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
+            <MenuItem onClick={() => setFromHomeLocation('finish')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+          </DropdownButton>
+        </ButtonGroup>
+        {' '}
+        <ButtonGroup>
+          {
+            [ [ 'car', 'car' ], [ 'walk', 'male' ], [ 'bicycle', 'bicycle' ] ].map(([ type, icon ], i) => (
+              <Button key={i} active={transportType === type} onClick={onChangeTransportType.bind(null, type)}>
+                <FontAwesomeIcon icon={icon}/>
+              </Button>
+            ))
+          }
+        </ButtonGroup>
+      </Navbar.Form>
+      <Nav>
+        <NavItem onClick={onCancel}>
+          <Glyphicon glyph="remove"/> Zavrieť
+        </NavItem>
+       </Nav>
+    </div>
+  );
 }
 
 RoutePlannerMenu.propTypes = {

@@ -19,9 +19,9 @@ export default function routePlanner(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'SET_ROUTE_PLANNER_START':
-      return Object.assign({}, state, { start: action.start, pickMode: state.finish ? 'midpoint' : 'finish' });
+      return { ...state, start: action.start, pickMode: state.finish ? 'midpoint' : 'finish' };
     case 'SET_ROUTE_PLANNER_FINISH':
-      return Object.assign({}, state, { finish: action.finish, pickMode: state.start ? 'midpoint' : 'finish' });
+      return { ...state, finish: action.finish, pickMode: state.start ? 'midpoint' : 'finish' };
     case 'ADD_ROUTE_PLANNER_MIDPOINT':
       return update(state, { midpoints: { $splice: [ [ action.position, 0, action.midpoint ] ] } });
     case 'SET_ROUTE_PLANNER_MIDPOINT':
@@ -29,15 +29,15 @@ export default function routePlanner(state = initialState, action) {
     case 'REMOVE_ROUTE_PLANNER_MIDPOINT':
       return update(state, { midpoints: { $splice: [ [ action.position, 1 ] ] } });
     case 'SET_ROUTE_PLANNER_TRANSPORT_TYPE':
-      return Object.assign({}, state, { transportType: action.transportType });
+      return { ...state, transportType: action.transportType };
     case 'SET_ROUTE_PLANNER_PICK_MODE':
-      return Object.assign({}, state, { pickMode: action.pickMode });
+      return { ...state, pickMode: action.pickMode };
     case 'SET_ROUTE_PLANNER_RESULT':
-      return Object.assign({}, state, {
+      return { ...state,
         shapePoints: action.shapePoints,
         distance: action.distance,
         time: action.time
-      });
+      };
     default:
       return state;
   }

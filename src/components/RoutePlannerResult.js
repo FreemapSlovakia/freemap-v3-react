@@ -36,6 +36,7 @@ class RoutePlannerResult extends React.Component {
     } // TODO default - log error
   }
 
+  // called externally
   handlePointAdded({ lat, lon }) {
     switch (this.props.pickMode) {
       case 'start':

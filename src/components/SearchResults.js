@@ -6,46 +6,42 @@ import Polygon from 'fm3/components/searchResults/Polygon';
 import MultiLineString from 'fm3/components/searchResults/MultiLineString';
 import MultiPolygon from 'fm3/components/searchResults/MultiPolygon';
 
-class SearchResults extends React.Component {
+function SearchResults({ highlightedResult, selectedResult }) {
 
-  render() {
-    const { highlightedResult, selectedResult } = this.props;
-
-    return (
-      <div>
-        {displayAsPoint(highlightedResult) &&
-          <Point searchResult={highlightedResult} theme="highlighted"/>
-        }
-        {displayAsPolyline(highlightedResult) &&
-          <Polyline searchResult={highlightedResult} theme="highlighted"/>
-        }
-        {displayAsMultiLineString(highlightedResult) &&
-          <MultiLineString searchResult={highlightedResult} theme="highlighted"/>
-        }
-        {displayAsPolygon(highlightedResult) &&
-          <Polygon searchResult={highlightedResult} theme="highlighted"/>
-        }
-        {displayAsMultiPolygon(highlightedResult) &&
-          <MultiPolygon searchResult={highlightedResult} theme="highlighted"/>
-        }
-        {displayAsPoint(selectedResult) &&
-          <Point searchResult={selectedResult} theme="selected"/>
-        }
-        {displayAsPolyline(selectedResult) &&
-          <Polyline searchResult={selectedResult} theme="selected"/>
-        }
-        {displayAsMultiLineString(selectedResult) &&
-          <MultiLineString searchResult={selectedResult} theme="selected"/>
-        }
-        {displayAsPolygon(selectedResult) &&
-          <Polygon searchResult={selectedResult} theme="selected"/>
-        }
-        {displayAsMultiPolygon(selectedResult) &&
-          <MultiPolygon searchResult={selectedResult} theme="selected"/>
-        }
-      </div>
-    );
-  }
+  return (
+    <div>
+      {displayAsPoint(highlightedResult) &&
+        <Point searchResult={highlightedResult} theme="highlighted"/>
+      }
+      {displayAsPolyline(highlightedResult) &&
+        <Polyline searchResult={highlightedResult} theme="highlighted"/>
+      }
+      {displayAsMultiLineString(highlightedResult) &&
+        <MultiLineString searchResult={highlightedResult} theme="highlighted"/>
+      }
+      {displayAsPolygon(highlightedResult) &&
+        <Polygon searchResult={highlightedResult} theme="highlighted"/>
+      }
+      {displayAsMultiPolygon(highlightedResult) &&
+        <MultiPolygon searchResult={highlightedResult} theme="highlighted"/>
+      }
+      {displayAsPoint(selectedResult) &&
+        <Point searchResult={selectedResult} theme="selected"/>
+      }
+      {displayAsPolyline(selectedResult) &&
+        <Polyline searchResult={selectedResult} theme="selected"/>
+      }
+      {displayAsMultiLineString(selectedResult) &&
+        <MultiLineString searchResult={selectedResult} theme="selected"/>
+      }
+      {displayAsPolygon(selectedResult) &&
+        <Polygon searchResult={selectedResult} theme="selected"/>
+      }
+      {displayAsMultiPolygon(selectedResult) &&
+        <MultiPolygon searchResult={selectedResult} theme="selected"/>
+      }
+    </div>
+  );
 }
 
 SearchResults.propTypes = {

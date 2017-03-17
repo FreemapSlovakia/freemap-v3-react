@@ -17,17 +17,17 @@ const initialState = {
 export default function map(state = initialState, action) {
   switch (action.type) {
     case 'RESET_MAP':
-      return Object.assign({}, state, {
+      return { ...state,
         zoom: initialState.zoom,
         lat: initialState.lat,
         lon: initialState.lon
-      });
+      };
     case 'SET_MAP_BOUNDS':
-      return Object.assign({}, state, { bounds: action.bounds });
+      return { ...state, bounds: action.bounds };
     case 'SET_MAP_TILE_FORMAT':
-      return Object.assign({}, state, { tileFormat: action.tileFormat });
+      return { ...state, tileFormat: action.tileFormat };
     case 'REFOCUS': {
-      const newState = Object.assign({}, state);
+      const newState = { ...state };
       [ 'zoom', 'lat', 'lon', 'mapType', 'overlays' ].forEach(prop => {
         if (prop in action) {
           newState[prop] = action[prop];
