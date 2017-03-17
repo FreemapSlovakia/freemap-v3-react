@@ -14,7 +14,7 @@ categories.forEach(function (c) {
 });
 
 export const poiTypes = subcategories.map(s => ({ id: s.filename, group: m.get(s.category_id), title: s.name, description: s.description,
-  filter: `node["${s.key1}"="${s.value1}"]${s.key2 ? '["${s.key2}"="${s.value2}"]' : ''}({{bbox}})` }));
+  filter: `node["${s.key1}"="${s.value1}"]${s.key2 ? `["${s.key2}"="${s.value2}"]` : ''}({{bbox}})` }));
 
 // const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 //
