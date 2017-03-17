@@ -18,7 +18,7 @@ const startIcon = createIcon('green');
 const midPointIcon = createIcon('grey');
 const finishIcon = createIcon('red');
 
-class RoutePlannerResults extends React.Component {
+class RoutePlannerResult extends React.Component {
 
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target._latlng;
@@ -57,7 +57,7 @@ class RoutePlannerResults extends React.Component {
           <span style={{ fontWeight:700 }}>Áno</span>
       </Button>,
       ' ',
-      <Button key="no">Nie</Button> 
+      <Button key="no">Nie</Button>
     ];
     this.props.onShowToast('info', line1, line2);
   }
@@ -108,7 +108,7 @@ class RoutePlannerResults extends React.Component {
   }
 }
 
-RoutePlannerResults.propTypes = {
+RoutePlannerResult.propTypes = {
   start: React.PropTypes.object,
   finish: React.PropTypes.object,
   midpoints: React.PropTypes.array,
@@ -119,7 +119,7 @@ RoutePlannerResults.propTypes = {
   onSetFinish: React.PropTypes.func.isRequired,
   onSetMidpoint: React.PropTypes.func.isRequired,
   onAddMidpoint: React.PropTypes.func.isRequired,
-  onRemoveMidpoint: React.PropTypes.func.isRequired, 
+  onRemoveMidpoint: React.PropTypes.func.isRequired,
   pickMode: React.PropTypes.string.isRequired,
   onShowToast: React.PropTypes.func.isRequired
 };
@@ -158,4 +158,4 @@ export default connect(
   },
   null,
   { withRef: true }
-)(RoutePlannerResults);
+)(RoutePlannerResult);

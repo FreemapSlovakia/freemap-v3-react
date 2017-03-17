@@ -14,7 +14,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-class Objects extends React.Component {
+class ObjectsMenu extends React.Component {
 
   constructor(props) {
     super(props);
@@ -60,7 +60,7 @@ class Objects extends React.Component {
 
 }
 
-Objects.propTypes = {
+ObjectsMenu.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired
 };
@@ -80,4 +80,4 @@ export default connect(
       }
     };
   }
-)(Objects);
+)(ObjectsMenu);

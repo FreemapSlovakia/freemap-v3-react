@@ -7,7 +7,7 @@ import { distance } from 'fm3/geoutils';
 
 const km = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
-class Measurement extends React.Component {
+class DistanceMeasurementResult extends React.Component {
 
   handlePointAdded({ lat, lon }) {
     this.props.onPointAdd({ lat, lon });
@@ -47,7 +47,7 @@ class Measurement extends React.Component {
 
 }
 
-Measurement.propTypes = {
+DistanceMeasurementResult.propTypes = {
   points: React.PropTypes.array,
   onPointAdd: React.PropTypes.func.isRequired,
   onPointUpdate: React.PropTypes.func.isRequired
@@ -71,4 +71,4 @@ export default connect(
   },
   null,
   { withRef: true }
-)(Measurement);
+)(DistanceMeasurementResult);

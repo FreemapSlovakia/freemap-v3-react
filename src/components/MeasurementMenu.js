@@ -11,7 +11,7 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 
-class Objects extends React.Component {
+class MeasurementMenu extends React.Component {
 
   constructor(props) {
     super(props);
@@ -50,7 +50,7 @@ class Objects extends React.Component {
 
 }
 
-Objects.propTypes = {
+MeasurementMenu.propTypes = {
   tool: React.PropTypes.string,
   onSetTool: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired
@@ -72,4 +72,4 @@ export default connect(
       }
     };
   }
-)(Objects);
+)(MeasurementMenu);

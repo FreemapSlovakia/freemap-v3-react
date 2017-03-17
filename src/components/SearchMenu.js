@@ -10,7 +10,7 @@ import { setTool } from 'fm3/actions/mainActions';
 import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
 import 'fm3/styles/search.scss';
 
-class Search extends React.Component {
+class SearchMenu extends React.Component {
   onSelectionChange(resultsSelectedByUser) {
     this.props.onSelectResult(resultsSelectedByUser[0], this.props.tool);
   }
@@ -69,7 +69,7 @@ class Search extends React.Component {
   }
 }
 
-Search.propTypes = {
+SearchMenu.propTypes = {
   tool: React.PropTypes.string,
   selectedResult: React.PropTypes.any,
   results: React.PropTypes.array.isRequired,
@@ -113,4 +113,4 @@ export default connect(
       }
     };
   }
-)(Search);
+)(SearchMenu);

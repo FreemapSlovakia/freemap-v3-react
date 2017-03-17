@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
 import { formatGpsCoord } from 'fm3/geoutils';
 
-class ElevationMeasurement extends React.Component {
+class ElevationMeasurementResult extends React.Component {
 
   constructor(props) {
     super(props);
@@ -61,7 +61,7 @@ class ElevationMeasurement extends React.Component {
 
 }
 
-ElevationMeasurement.propTypes = {
+ElevationMeasurementResult.propTypes = {
   onPointSet: React.PropTypes.func.isRequired,
   onClearElevation: React.PropTypes.func.isRequired,
   point: React.PropTypes.object,
@@ -87,4 +87,4 @@ export default connect(
   },
   null,
   { withRef: true }
-)(ElevationMeasurement);
+)(ElevationMeasurementResult);

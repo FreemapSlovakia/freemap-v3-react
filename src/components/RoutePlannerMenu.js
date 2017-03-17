@@ -16,7 +16,7 @@ import { getCurrentPosition } from 'fm3/geoutils';
 
 import 'fm3/styles/routePlanner.scss';
 
-class RoutePlanner extends React.Component {
+class RoutePlannerMenu extends React.Component {
 
   setFromCurrentPosition(pointType) {
     getCurrentPosition().then(({ lat, lon }) => {
@@ -102,7 +102,7 @@ class RoutePlanner extends React.Component {
   }
 }
 
-RoutePlanner.propTypes = {
+RoutePlannerMenu.propTypes = {
   onSetStart: React.PropTypes.func.isRequired,
   onSetFinish: React.PropTypes.func.isRequired,
   transportType: React.PropTypes.string,
@@ -148,4 +148,4 @@ export default connect(
       }
     };
   }
-)(RoutePlanner);
+)(RoutePlannerMenu);

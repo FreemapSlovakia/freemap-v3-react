@@ -11,20 +11,24 @@ import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import NavbarHeader from 'fm3/components/NavbarHeader';
-import Search from 'fm3/components/Search';
-import SearchResults from 'fm3/components/SearchResults';
-import Objects from 'fm3/components/Objects';
-import Measure from 'fm3/components/Measure';
 import Layers from 'fm3/components/Layers';
-import Measurement from 'fm3/components/Measurement';
-import AreaMeasurement from 'fm3/components/AreaMeasurement';
-import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
-import RoutePlanner from 'fm3/components/RoutePlanner';
-import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
-import ObjectsResult from 'fm3/components/ObjectsResult';
-import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ProgressIndicator from 'fm3/components/ProgressIndicator';
+
+import SearchMenu from 'fm3/components/SearchMenu';
+import SearchResults from 'fm3/components/SearchResults';
+
+import ObjectsMenu from 'fm3/components/ObjectsMenu';
+import ObjectsResult from 'fm3/components/ObjectsResult';
+
+import MeasurementMenu from 'fm3/components/MeasurementMenu';
+import DistanceMeasurementResult from 'fm3/components/DistanceMeasurementResult';
+import AreaMeasurementResult from 'fm3/components/AreaMeasurementResult';
+import ElevationMeasurementResult from 'fm3/components/ElevationMeasurementResult';
+
+import RoutePlannerMenu from 'fm3/components/RoutePlannerMenu';
+import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
+import Settings from 'fm3/components/Settings';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
@@ -157,10 +161,10 @@ class Main extends React.Component {
           <Navbar fluid style={{ marginBottom: 0 }}>
             <NavbarHeader/>
             <Navbar.Collapse>
-              {tool === 'objects' && <Objects/>}
-              {(showDefaultMenu || tool === 'search') && <Search/>}
-              {tool === 'route-planner' && <RoutePlanner onShowToast={b(this.showToast)}/>}
-              {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <Measure/>}
+              {tool === 'objects' && <ObjectsMenu/>}
+              {(showDefaultMenu || tool === 'search') && <SearchMenu/>}
+              {tool === 'route-planner' && <RoutePlannerMenu onShowToast={b(this.showToast)}/>}
+              {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu/>}
               {activePopup === 'settings' && <Settings ref={e => this.settings = e} onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
@@ -209,16 +213,16 @@ class Main extends React.Component {
             <ObjectsResult/>
 
             {tool === 'route-planner' &&
-              <RoutePlannerResults
+              <RoutePlannerResult
                 ref={e => this.routePlanner = e}
                 onShowToast={b(this.showToast)}/>
             }
 
-            {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
+            {tool === 'measure' && <DistanceMeasurementResult ref={e => this.measurement = e}/>}
 
-            {tool === 'measure-ele' && <ElevationMeasurement ref={e => this.elevationMeasurement = e}/>}
+            {tool === 'measure-ele' && <ElevationMeasurementResult ref={e => this.elevationMeasurement = e}/>}
 
-            {tool === 'measure-area' && <AreaMeasurement ref={e => this.areaMeasurement = e}/>}
+            {tool === 'measure-area' && <AreaMeasurementResult ref={e => this.areaMeasurement = e}/>}
           </Map>
         </Row>
 

@@ -7,7 +7,7 @@ import { area } from 'fm3/geoutils';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
-class AreaMeasurement extends React.Component {
+class AreaMeasurementResult extends React.Component {
 
   handlePointAdded({ lat, lon }) {
     this.props.onPointAdd({ lat, lon });
@@ -47,7 +47,7 @@ class AreaMeasurement extends React.Component {
 
 }
 
-AreaMeasurement.propTypes = {
+AreaMeasurementResult.propTypes = {
   points: React.PropTypes.array,
   onPointAdd: React.PropTypes.func.isRequired,
   onPointUpdate: React.PropTypes.func.isRequired
@@ -71,4 +71,4 @@ export default connect(
   },
   null,
   { withRef: true }
-)(AreaMeasurement);
+)(AreaMeasurementResult);
