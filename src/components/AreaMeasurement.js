@@ -35,7 +35,7 @@ class AreaMeasurement extends React.Component {
                   <div>{nf.format(areaSize)} ㎡</div>
                   <div>{nf.format(areaSize / 100)} a</div>
                   <div>{nf.format(areaSize / 10000)} ha</div>
-                  <div>{nf.format(areaSize / 10000000)} ㎢</div>
+                  <div>{nf.format(areaSize / 1000000)} ㎢</div>
                 </span>
               </Tooltip>
             }
