@@ -32,10 +32,10 @@ class AreaMeasurement extends React.Component {
             {points.length > 2 &&
               <Tooltip direction="center" permanent>
                 <span>
-                  <div>{nf.format(areaSize)} ㎡</div>
+                  <div>{nf.format(areaSize)} m<sup>2</sup></div>
                   <div>{nf.format(areaSize / 100)} a</div>
                   <div>{nf.format(areaSize / 10000)} ha</div>
-                  <div>{nf.format(areaSize / 1000000)} ㎢</div>
+                  <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
                 </span>
               </Tooltip>
             }
