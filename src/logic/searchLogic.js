@@ -1,6 +1,7 @@
 import { createLogic } from 'redux-logic';
 import { setResults } from 'fm3/actions/searchActions';
 import { refocusMap } from 'fm3/actions/mapActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 const searchLogic = createLogic({
   type: 'SEARCH',
@@ -15,6 +16,7 @@ const searchLogic = createLogic({
 
     // `https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`
 
+    dispatch(startProgress());
     fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(query)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK&polygon_geojson=1`)
       .then(res => res.json())
@@ -27,7 +29,10 @@ const searchLogic = createLogic({
         dispatch(setResults(results));
       })
       .catch(() => {})
-      .then(() => done());
+      .then(() => {
+        dispatch(stopProgress());
+        done();
+      });
   }
 });
 

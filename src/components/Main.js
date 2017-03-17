@@ -24,6 +24,8 @@ import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
 import ObjectsResult from 'fm3/components/ObjectsResult';
 import Settings from 'fm3/components/Settings';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import ProgressIndicator from 'fm3/components/ProgressIndicator';
+
 import * as FmPropTypes from 'fm3/propTypes';
 
 import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
@@ -145,7 +147,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, tileFormat, activePopup, onLaunchPopup } = this.props;
+    const { tool, tileFormat, activePopup, onLaunchPopup, progress } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
     const showDefaultMenu = [ null, 'select-home-location' ].indexOf(tool) !== -1;
 
@@ -183,6 +185,9 @@ class Main extends React.Component {
               }
             </Navbar.Collapse>
           </Navbar>
+        </Row>
+        <Row>
+          <ProgressIndicator active={progress}/>
         </Row>
         <Row className={`tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
@@ -241,7 +246,8 @@ Main.propTypes = {
   onMapBoundsChange: React.PropTypes.func.isRequired,
   onMapRefocus: React.PropTypes.func.isRequired,
   activePopup: React.PropTypes.string,
-  onLaunchPopup: React.PropTypes.func.isRequired
+  onLaunchPopup: React.PropTypes.func.isRequired,
+  progress: React.PropTypes.bool,
 };
 
 export default connect(
@@ -255,7 +261,8 @@ export default connect(
       overlays: state.map.overlays,
       bounds: state.map.bounds,
       tileFormat: state.map.tileFormat,
-      activePopup: state.main.activePopup
+      activePopup: state.main.activePopup,
+      progress: state.main.progress,
     };
   },
   function (dispatch) {

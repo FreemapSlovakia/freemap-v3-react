@@ -2,6 +2,7 @@ import { createLogic } from 'redux-logic';
 import { parseString as xml2js } from 'xml2js';
 import { distance, isInside } from 'fm3/geoutils';
 import { refocusMap } from 'fm3/actions/mapActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 const freemapTransportTypes = {
   'car': 'motorcar',
@@ -31,6 +32,7 @@ export const findRouteLogic = createLogic({
       [ finish.lat, finish.lon ].join('%7C')
     ].join('/');
 
+    dispatch(startProgress());
     fetch(`https://www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportTypes[transportType]}/fastest&Ajax=`)
       .then(res => res.text()).then(data => {
         xml2js(data, (error, json) => {
@@ -46,7 +48,10 @@ export const findRouteLogic = createLogic({
         });
       })
       .catch(() => {})
-      .then(() => done());
+      .then(() => {
+        dispatch(stopProgress());
+        done();
+      });
   }
 });
 
@@ -76,7 +81,7 @@ const addMidpointToProperPositionLogic = createLogic({
 
 export const refocusMapOnSetStartOrFinishPoint = createLogic({
   type: [
-    'SET_ROUTE_PLANNER_START', 
+    'SET_ROUTE_PLANNER_START',
     'SET_ROUTE_PLANNER_FINISH'
   ],
   process({ getState, action }, dispatch) {

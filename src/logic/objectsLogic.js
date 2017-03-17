@@ -1,5 +1,6 @@
 import { createLogic } from 'redux-logic';
 import { setObjects } from 'fm3/actions/objectsActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 export default createLogic({
   type: 'SET_OBJECTS_FILTER',
@@ -8,6 +9,7 @@ export default createLogic({
     const bbox = `${south},${west},${north},${east}`;
     const query = `[out:json][timeout:60]; ${filter.replace('{{bbox}}', bbox)}; out qt;`;
 
+    dispatch(startProgress());
     fetch('https://overpass-api.de/api/interpreter', {
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`
@@ -16,6 +18,9 @@ export default createLogic({
         dispatch(setObjects(data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags }))));
       })
       .catch(() => {})
-      .then(() => done());
+      .then(() => {
+        dispatch(stopProgress());
+        done();
+      });
   }
 });
