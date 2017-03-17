@@ -19,9 +19,9 @@ export default function routePlanner(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'SET_ROUTE_PLANNER_START':
-      return update(state, { start: { $set: action.start }, pickMode: { $set: state.finish ? 'midpoint' : 'finish' } } );
+      return Object.assign({}, state, { start: action.start, pickMode: state.finish ? 'midpoint' : 'finish' });
     case 'SET_ROUTE_PLANNER_FINISH':
-      return update(state, { finish: { $set: action.finish }, pickMode: { $set: state.start ? 'midpoint' : 'finish' } } );
+      return Object.assign({}, state, { finish: action.finish, pickMode: state.start ? 'midpoint' : 'finish' });
     case 'ADD_ROUTE_PLANNER_MIDPOINT':
       return update(state, { midpoints: { $splice: [ [ action.position, 0, action.midpoint ] ] } });
     case 'SET_ROUTE_PLANNER_MIDPOINT':
@@ -29,14 +29,14 @@ export default function routePlanner(state = initialState, action) {
     case 'REMOVE_ROUTE_PLANNER_MIDPOINT':
       return update(state, { midpoints: { $splice: [ [ action.position, 1 ] ] } });
     case 'SET_ROUTE_PLANNER_TRANSPORT_TYPE':
-      return update(state, { transportType: { $set: action.transportType } } );
+      return Object.assign({}, state, { transportType: action.transportType });
     case 'SET_ROUTE_PLANNER_PICK_MODE':
-      return update(state, { pickMode: { $set: action.pickMode } } );
+      return Object.assign({}, state, { pickMode: action.pickMode });
     case 'SET_ROUTE_PLANNER_RESULT':
-      return update(state, {
-        shapePoints: { $set: action.shapePoints },
-        distance: { $set: action.distance },
-        time: { $set: action.time }
+      return Object.assign({}, state, {
+        shapePoints: action.shapePoints,
+        distance: action.distance,
+        time: action.time
       });
     default:
       return state;

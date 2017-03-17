@@ -1,5 +1,3 @@
-import update from 'immutability-helper';
-
 const initialState = {
   objects: [],
   categories: [],
@@ -12,9 +10,9 @@ export default function map(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'SET_OBJECTS_FILTER':
-      return update(state, { objects: { $set: [] } } );
+      return Object.assign({}, state, { objects: [] } );
     case 'SET_OBJECTS':
-      return update(state, { objects: { $set: action.objects } } );
+      return Object.assign({}, state, { objects: action.objects } );
     default:
       return state;
   }
