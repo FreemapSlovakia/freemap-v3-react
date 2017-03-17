@@ -12,6 +12,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 class Objects extends React.Component {
 
@@ -35,7 +36,7 @@ class Objects extends React.Component {
     // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
     return (
       <Nav>
-        <Navbar.Text><i className={`fa fa-star`} aria-hidden="true"/> Hľadať POIs</Navbar.Text>
+        <Navbar.Text><FontAwesomeIcon icon="map-marker"/> Miesta</Navbar.Text>
         <NavDropdown title="Zvoľ katrgóriu" id="basic-nav-dropdown">
           {poiTypeGroups.map(({ id: gid, title }) => (
             [

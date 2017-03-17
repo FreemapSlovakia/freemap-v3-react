@@ -56,3 +56,12 @@ export function isInside(mapBoundsFromState, point) {
   const pos = L.latLng(point.lat, point.lon);
   return (bounds.contains(pos));
 }
+
+export function area(points) {
+  const geojsonArea = require('@mapbox/geojson-area');
+  const geometry = {
+    "type": "Polygon",
+    "coordinates": [ [ ...points, points[0] ].map(({ lat, lon }) => [ lon, lat ]) ]
+  };
+  return geojsonArea.geometry(geometry);
+}

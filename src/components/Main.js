@@ -14,8 +14,10 @@ import NavbarHeader from 'fm3/components/NavbarHeader';
 import Search from 'fm3/components/Search';
 import SearchResults from 'fm3/components/SearchResults';
 import Objects from 'fm3/components/Objects';
+import Measure from 'fm3/components/Measure';
 import Layers from 'fm3/components/Layers';
 import Measurement from 'fm3/components/Measurement';
+import AreaMeasurement from 'fm3/components/AreaMeasurement';
 import ElevationMeasurement from 'fm3/components/ElevationMeasurement';
 import RoutePlanner from 'fm3/components/RoutePlanner';
 import RoutePlannerResults from 'fm3/components/RoutePlannerResults';
@@ -108,6 +110,10 @@ class Main extends React.Component {
       this.elevationMeasurement.getWrappedInstance().handlePointAdded({ lat, lon });
     }
 
+    if (this.areaMeasurement) {
+      this.areaMeasurement.getWrappedInstance().handlePointAdded({ lat, lon });
+    }
+
     if (this.routePlanner) {
       this.routePlanner.getWrappedInstance().handlePointAdded({ lat, lon });
     }
@@ -141,7 +147,7 @@ class Main extends React.Component {
   render() {
     const { tool, tileFormat, activePopup, onLaunchPopup } = this.props;
     const b = (fn, ...args) => fn.bind(this, ...args);
-    const showDefaultMenu = [ null, 'settings', 'measure', 'measure-ele', 'select-home-location' ].indexOf(tool) !== -1;
+    const showDefaultMenu = [ null, 'select-home-location' ].indexOf(tool) !== -1;
 
     return (
       <div className="container-fluid">
@@ -152,20 +158,18 @@ class Main extends React.Component {
               {tool === 'objects' && <Objects/>}
               {(showDefaultMenu || tool === 'search') && <Search/>}
               {tool === 'route-planner' && <RoutePlanner onShowToast={b(this.showToast)}/>}
+              {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <Measure/>}
               {activePopup === 'settings' && <Settings ref={e => this.settings = e} onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
-                  <NavItem onClick={b(this.handlePoiSearch)} active={tool === 'objects'}>
-                  <FontAwesomeIcon icon="star"/> POIs
+                  <NavItem onClick={b(this.handlePoiSearch)}>
+                  <FontAwesomeIcon icon="map-marker"/> Miesta
                   </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'route-planner')} active={tool === 'route-planner'}>
+                  <NavItem onClick={b(this.handleToolSet, 'route-planner')}>
                     <FontAwesomeIcon icon="map-signs"/> Plánovač
                   </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'measure')} active={tool === 'measure'}>
-                    <FontAwesomeIcon icon="arrows-h"/> Meranie vzdialenosti
-                  </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'measure-ele')} active={tool === 'measure-ele'}>
-                    <FontAwesomeIcon icon="area-chart"/> Výškomer a polohomer
+                  <NavItem onClick={b(this.handleToolSet, 'measure')}>
+                    <FontAwesomeIcon icon="arrows-h"/> Meranie
                   </NavItem>
                 </Nav>
               }
@@ -208,6 +212,8 @@ class Main extends React.Component {
             {tool === 'measure' && <Measurement ref={e => this.measurement = e}/>}
 
             {tool === 'measure-ele' && <ElevationMeasurement ref={e => this.elevationMeasurement = e}/>}
+
+            {tool === 'measure-area' && <AreaMeasurement ref={e => this.areaMeasurement = e}/>}
           </Map>
         </Row>
 
