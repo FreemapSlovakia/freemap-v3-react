@@ -1,7 +1,8 @@
 import React from 'react';
-import { Marker, Tooltip } from 'react-leaflet';
+import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
+import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmmiter from 'fm3/mapEventEmmiter';
 
@@ -54,7 +55,7 @@ class ElevationMeasurementResult extends React.Component {
     const p = tmpPoint || point;
 
     return point && (
-      <Marker
+      <MarkerWithAutoOpeningPopup
         position={L.latLng(p.lat, p.lon)}
         onDragstart={b(this.handleDragStart)}
         onDragend={b(this.handleDragEnd)}
@@ -62,13 +63,13 @@ class ElevationMeasurementResult extends React.Component {
         draggable
       >
 
-        <Tooltip direction="right" permanent>
+        <Popup closeButton={false} autoClose={false}>
           <span>
             {[ 'D', 'DM', 'DMS' ].map(format => <div key={format}>{formatGpsCoord(p.lat, 'SN', format)} {formatGpsCoord(p.lon, 'WE', format)}</div>)}
             {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
           </span>
-        </Tooltip>
-      </Marker>
+        </Popup>
+      </MarkerWithAutoOpeningPopup>
     );
   }
 
