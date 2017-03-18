@@ -185,6 +185,7 @@ class Main extends React.Component {
                 <Nav pullRight>
                   <NavDropdown title="Viac" id="additional-menu-items">
                     <MenuItem onClick={() => onLaunchPopup('settings')}><FontAwesomeIcon icon="cog"/> Nastavenia</MenuItem>
+                    <MenuItem divider></MenuItem>
                     <MenuItem onClick={() => window.open('http://wiki.freemap.sk/NahlasenieChyby')}><FontAwesomeIcon icon="exclamation-triangle"/> Nahlás chybu</MenuItem>
                   </NavDropdown>
                 </Nav>
