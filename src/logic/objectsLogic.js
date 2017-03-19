@@ -10,7 +10,7 @@ export default createLogic({
     const query = `[out:json][timeout:60]; ${filter.replace('{{bbox}}', bbox)}; out qt;`;
 
     dispatch(startProgress());
-    fetch('https://overpass-api.de/api/interpreter', {
+    fetch('//overpass-api.de/api/interpreter', {
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`
     })

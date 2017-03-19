@@ -33,7 +33,7 @@ export const findRouteLogic = createLogic({
     ].join('/');
 
     dispatch(startProgress());
-    fetch(`https://www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportTypes[transportType]}/fastest&Ajax=`)
+    fetch(`//www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportTypes[transportType]}/fastest&Ajax=`)
       .then(res => res.text()).then(data => {
         xml2js(data, (error, json) => {
           const rawPointsWithMess = json.osmRoute.wkt[0];

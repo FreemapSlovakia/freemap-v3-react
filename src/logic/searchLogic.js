@@ -17,7 +17,7 @@ const searchLogic = createLogic({
     // `https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`
 
     dispatch(startProgress());
-    fetch(`https://nominatim.openstreetmap.org/search/${encodeURIComponent(query)}`
+    fetch(`//nominatim.openstreetmap.org/search/${encodeURIComponent(query)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK&polygon_geojson=1`)
       .then(res => res.json())
       .then(data => {
