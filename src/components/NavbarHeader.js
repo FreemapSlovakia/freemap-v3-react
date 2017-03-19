@@ -11,10 +11,9 @@ function NavbarHeader({ tool, onResetMap }) {
   return (
     <Navbar.Header>
       <Navbar.Brand>
-        <img
+        <div
           onClick={onResetMap}
-          className="freemap-logo"
-          src={require('fm3/images/freemap-logo.png')}
+          id="freemap-logo"
         />
       </Navbar.Brand>
       {tool === 'route-planner' &&

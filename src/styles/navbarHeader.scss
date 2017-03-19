@@ -1,10 +1,25 @@
-img.freemap-logo.navbar-brand {
-  margin-top: 7px;
-  margin-left: 0px;
-  padding: 0;
-  height: 36px;
+@import "variables";
+
+#freemap-logo {
+  background-image: url(../images/freemap-logo.png);
+  background-size: 138px 38px;
+  background-repeat: no-repeat;
+  margin-top: 8px;
+  margin-left: 0;
+  height: 38px;
+  width: 138px;
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: .1s ease-in-out;
+	transition: .1s ease-in-out;
 
   &:hover {
     cursor: pointer;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+
+  @media ($smartphone-screen) {
+    margin-left: 10px;
   }
 }
