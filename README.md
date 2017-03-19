@@ -9,7 +9,7 @@ npm i
 webpack --watch
 ```
 
-then in your browser open `file:///<path-to-freemap-repo>/dist/index.html`
+then run in `dist` folder a static webserver, e.g. `ruby -run -ehttpd . -p8000` and go to `http://localhost:8000/`
 
 ## Compiling for the production
 
