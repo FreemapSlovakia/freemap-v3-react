@@ -15,6 +15,7 @@ export default function Point({ searchResult, theme }) {
 
   return (
     <Marker
+      interactive={false}
       position={L.latLng(searchResult.lat, searchResult.lon)}
       icon={icon}>
         <Tooltip opacity={1.0} offset={[ 14, -20 ]} direction="right">

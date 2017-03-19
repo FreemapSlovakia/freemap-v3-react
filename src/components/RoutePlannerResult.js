@@ -111,7 +111,7 @@ class RoutePlannerResult extends React.Component {
             }
           </Marker>
         }
-        {shapePoints && <Polyline positions={shapePoints} color="#2F4F4F" weight="8" opacity="0.6"/>}
+        {shapePoints && <Polyline positions={shapePoints} color="#2F4F4F" weight="8" opacity="0.6" interactive={false}/>}
       </div>
     );
   }

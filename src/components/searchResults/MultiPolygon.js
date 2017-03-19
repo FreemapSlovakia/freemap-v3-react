@@ -7,7 +7,7 @@ export default function MultiPolygon({ searchResult, theme }) {
   );
 
   const color = theme === 'selected' ? 'green' : 'grey';
-  const leafletOptions = { fillColor: color, color };
+  const leafletOptions = { fillColor: color, color, interactive: false };
 
   return <div>{polygonsLatLons.map((p, i) => <LeafletPolygon key={i} positions={p} {...leafletOptions}/>)}</div>;
 }

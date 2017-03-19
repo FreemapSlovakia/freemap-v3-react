@@ -5,7 +5,7 @@ export default function Polyline({ searchResult, theme }) {
   const latlongs = searchResult.geojson.coordinates.map(latlon => L.latLng(latlon[1], latlon[0]));
 
   const color = theme === 'selected' ? 'green' : 'grey';
-  const leafletOptions = { fillColor: color, color, weight: 8 };
+  const leafletOptions = { fillColor: color, color, weight: 8, interactive: false };
 
   return <LeafletPolyline positions={latlongs} {...leafletOptions}/>;
 }

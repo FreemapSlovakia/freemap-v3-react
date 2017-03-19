@@ -9,7 +9,7 @@ export default function MultiLineString({ searchResult, theme }) {
   const color = theme === 'selected' ? 'green' : 'grey';
   const leafletOptions = { fillColor: color, color };
 
-  return <div>{polylinesLatLons.map((p, i) => <Polyline key={i} positions={p} {...leafletOptions}/>)}</div>;
+  return <div>{polylinesLatLons.map((p, i) => <Polyline key={i} positions={p} interactive={false} {...leafletOptions}/>)}</div>;
 }
 
 MultiLineString.propTypes = {

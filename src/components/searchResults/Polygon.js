@@ -5,7 +5,7 @@ export default function Polygon({ searchResult, theme }) {
   const latlongs = searchResult.geojson.coordinates[0].map(lonlat => L.latLng(lonlat[1], lonlat[0]));
 
   const color = theme === 'selected' ? 'green' : 'grey';
-  const leafletOptions = { fillColor: color, color };
+  const leafletOptions = { fillColor: color, color, interactive: false };
 
   return <LeafletPolygon positions={latlongs} {...leafletOptions}/>;
 }
