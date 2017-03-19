@@ -18,5 +18,13 @@ export const overlayLayers = [
     url: `http://t1.freemap.sk/data/layers/presets/X~I/{z}/{x}/{y}t.png`,
     minZoom: 7,
     maxZoom: 16
+  },
+  {
+    name: 'Lesné cesty NLC',
+    type: 'N',
+    url: `http://gpsteam.eu/cache/nlcml/{z}/{x}/{y}.png`,
+    attribution: '© <a href="http://www.nlcsk.org/">NLC Zvolen</a>',
+    minZoom: 14,
+    maxZoom: 16
   }
 ];

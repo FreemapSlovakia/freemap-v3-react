@@ -37,6 +37,8 @@ import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { setActivePopup } from 'fm3/actions/mainActions';
 
+import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+
 import 'fm3/styles/main.scss';
 
 const ToastMessageFactory = React.createFactory(ToastMessage.animation);
@@ -267,10 +269,15 @@ export default connect(
   }
 )(Main);
 
+
+const baseLetters = baseLayers.map(({ type }) => type).join('');
+const overlayLetters = overlayLayers.map(({ type }) => type).join('');
+const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
+
 function getMapDiff(props) {
   const { match: { params } } = props;
 
-  const layersOK = /^[ATCK]I?$/.test(params.mapType);
+  const layersOK = layersRegExp.test(params.mapType);
   const lat = parseFloat(params.lat);
   const lon = parseFloat(params.lon);
   const zoom = parseInt(params.zoom);
