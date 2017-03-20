@@ -77,6 +77,8 @@ class Main extends React.Component {
   }
 
   componentWillReceiveProps(newProps) {
+    this.ignoreMapMoveEndEvent = true;
+
     const stateChanged = [ 'mapType', 'overlays', 'zoom', 'lat', 'lon' ].some(prop => newProps[prop] !== this.props[prop]);
     if (stateChanged) {
       // update URL
@@ -90,7 +92,15 @@ class Main extends React.Component {
     }
   }
 
+  componentDidUpdate() {
+    this.ignoreMapMoveEndEvent = false;
+  }
+
   handleMapMoveEnd() {
+    if (this.ignoreMapMoveEndEvent) {
+      return;
+    }
+
     this.changeMapBounds();
 
     const map = this.refs.map.leafletElement;
@@ -319,5 +329,6 @@ function getMapDiff(props) {
 function updateUrl(props) {
   const { mapType, overlays, zoom, lat, lon } = props;
   const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
+  console.log("UUUUUU", newUrl);
   props.history.replace(newUrl);
 }
