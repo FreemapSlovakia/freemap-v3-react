@@ -31,7 +31,7 @@ function ObjectsMenu({ onSearch, onCancel }) {
             <MenuItem key={gid} header>{title}</MenuItem>,
             poiTypes.map(({ group, title, id }, i) => group === gid &&
               <MenuItem key={i} eventKey={i} onSelect={select}>
-                <img src={`http://www.freemap.sk/data/layers/poi/${group}/${id}/list.png`}/> {title}
+                <img src={require(`../images/mapIcons/${group}-${id}.png`)}/> {title}
               </MenuItem>
             )
           ]
