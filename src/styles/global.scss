@@ -1,3 +1,13 @@
+body {
+    margin: 0;
+    height: calc(100% - 56px);
+}
+
+html, .map-holder, #app, #app > div, .container-fluid {
+
+    height: 100%;
+}
+
 .leaflet-div-icon {
   background: none;
   border: 0;
@@ -28,7 +38,7 @@
 }
 
 .leaflet-container {
-  height: calc(100vh - 56px);
+  height: 100%;
 }
 
 .tool-route-planner .leaflet-container,

@@ -208,7 +208,7 @@ class Main extends React.Component {
         <Row>
           <ProgressIndicator active={progress}/>
         </Row>
-        <Row className={`tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
+        <Row className={`map-holder tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
             ref="map"
             center={L.latLng(this.props.lat, this.props.lon)}
