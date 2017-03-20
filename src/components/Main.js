@@ -329,6 +329,5 @@ function getMapDiff(props) {
 function updateUrl(props) {
   const { mapType, overlays, zoom, lat, lon } = props;
   const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
-  console.log("UUUUUU", newUrl);
   props.history.replace(newUrl);
 }
