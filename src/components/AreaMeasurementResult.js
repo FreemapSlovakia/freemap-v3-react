@@ -4,7 +4,7 @@ import { Marker, Tooltip, Polygon } from 'react-leaflet';
 
 import { addPoint, updatePoint } from 'fm3/actions/measurementActions';
 import { area } from 'fm3/geoutils';
-import mapEventEmmiter from 'fm3/mapEventEmmiter';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
@@ -17,11 +17,11 @@ class AreaMeasurementResult extends React.Component {
   };
 
   componentWillMount() {
-    mapEventEmmiter.on('mapClick', this.handlePoiAdded);
+    mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
   componentWillUnmount() {
-    mapEventEmmiter.removeListener('mapClick', this.handlePoiAdded);
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
   }
 
   handlePoiAdded = (lat, lon) => {

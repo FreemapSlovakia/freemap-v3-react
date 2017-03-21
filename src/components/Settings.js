@@ -13,7 +13,7 @@ import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
 import { closePopup } from 'fm3/actions/mainActions';
 
 import { formatGpsCoord } from 'fm3/geoutils';
-import mapEventEmmiter from 'fm3/mapEventEmmiter';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
@@ -43,11 +43,11 @@ class Settings extends React.Component {
   }
 
   componentWillMount() {
-    mapEventEmmiter.on('mapClick', this.onHomeLocationSelected);
+    mapEventEmitter.on('mapClick', this.onHomeLocationSelected);
   }
 
   componentWillUnmount() {
-    mapEventEmmiter.removeListener('mapClick', this.onHomeLocationSelected);
+    mapEventEmitter.removeListener('mapClick', this.onHomeLocationSelected);
   }
 
   onHomeLocationSelected = (lat, lon) => {

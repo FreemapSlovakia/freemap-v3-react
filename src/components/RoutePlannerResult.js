@@ -4,7 +4,7 @@ import { Marker, Polyline, Tooltip } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 
 import { setStart, setFinish, addMidpoint, setMidpoint, removeMidpoint } from 'fm3/actions/routePlannerActions';
-import mapEventEmmiter from 'fm3/mapEventEmmiter';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 function createIcon(color) {
   return new L.Icon({
@@ -22,11 +22,11 @@ const finishIcon = createIcon('red');
 class RoutePlannerResult extends React.Component {
 
   componentWillMount() {
-    mapEventEmmiter.on('mapClick', this.handlePoiAdded);
+    mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
   componentWillUnmount() {
-    mapEventEmmiter.removeListener('mapClick', this.handlePoiAdded);
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
   }
 
   handlePoiAdded = (lat, lon) => {

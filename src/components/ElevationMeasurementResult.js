@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
 import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 import { formatGpsCoord } from 'fm3/geoutils';
-import mapEventEmmiter from 'fm3/mapEventEmmiter';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -20,11 +20,11 @@ class ElevationMeasurementResult extends React.Component {
   state = {};
 
   componentWillMount() {
-    mapEventEmmiter.on('mapClick', this.handlePoiAdded);
+    mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
   componentWillUnmount() {
-    mapEventEmmiter.removeListener('mapClick', this.handlePoiAdded);
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
   }
 
   handlePoiAdded = (lat, lon) => {

@@ -31,8 +31,8 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 import Settings from 'fm3/components/Settings';
 
 import * as FmPropTypes from 'fm3/propTypes';
-import mapEventEmmiter from 'fm3/mapEventEmmiter';
-import mapAimedEventEmitter from 'fm3/mapAimedEventEmitter';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import mapAimedEventEmitter from 'fm3/emitters/mapAimedEventEmitter';
 
 import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
@@ -156,7 +156,7 @@ class Main extends React.Component {
   }
 
   handleMapClick({ latlng: { lat, lng: lon } }) {
-    mapEventEmmiter.emit('mapClick', lat, lon);
+    mapEventEmitter.emit('mapClick', lat, lon);
   }
 
   handlePoiSearch() {
