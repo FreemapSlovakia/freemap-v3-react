@@ -8,7 +8,8 @@ import { connect } from 'react-redux';
 import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
-import mapAimedEventEmitter from 'fm3/emitters/mapAimedEventEmitter';
+import { getLeafletElement } from 'fm3/leafletElementHolder';
+
 import 'fm3/styles/search.scss';
 
 function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlannerWithStart,
@@ -20,7 +21,13 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
 
   function onSuggestionHighlightChange(result) {
     if (result) {
-      mapAimedEventEmitter.emit('fitMapTo', result.geojson);
+      const geojson = result.geojson;
+      const options = {};
+      if (geojson.type === 'Point') {
+        options.maxZoom = 14;
+      }
+      const geojsonBounds = L.geoJson(geojson).getBounds();
+      getLeafletElement().fitBounds(geojsonBounds, options);
     }
     onHiglightResult(result);
   }

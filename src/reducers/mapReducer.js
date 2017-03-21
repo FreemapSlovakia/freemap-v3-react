@@ -4,12 +4,6 @@ const initialState = {
   lon: 19.4995,
   zoom: 8,
   overlays: [],
-  bounds: {
-    south: 0,
-    west: 0,
-    east: 0,
-    north: 0
-  },
 
   tileFormat: 'png'
 };
@@ -22,8 +16,6 @@ export default function map(state = initialState, action) {
         lat: initialState.lat,
         lon: initialState.lon
       };
-    case 'SET_MAP_BOUNDS':
-      return { ...state, bounds: action.bounds };
     case 'SET_MAP_TILE_FORMAT':
       return { ...state, tileFormat: action.tileFormat };
     case 'REFOCUS': {

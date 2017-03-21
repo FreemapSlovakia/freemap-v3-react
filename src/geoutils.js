@@ -66,13 +66,6 @@ export function getCurrentPosition() {
   });
 }
 
-export function isInside(mapBoundsFromState, point) {
-  const { south, west, north, east } = mapBoundsFromState;
-  const bounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
-  const pos = L.latLng(point.lat, point.lon);
-  return (bounds.contains(pos));
-}
-
 export function area(points) {
   const geojsonArea = require('@mapbox/geojson-area');
   const geometry = {

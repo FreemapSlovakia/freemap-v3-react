@@ -21,7 +21,6 @@ export default createLogic({
         lon: mapState.lon,
         zoom: mapState.zoom,
         overlays: mapState.overlays,
-        bounds: mapState.bounds,
         tileFormat: mapState.tileFormat
       }
     };

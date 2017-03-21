@@ -33,13 +33,13 @@ import Settings from 'fm3/components/Settings';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-import mapAimedEventEmitter from 'fm3/emitters/mapAimedEventEmitter';
 
-import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
+import { refocusMap } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { setActivePopup } from 'fm3/actions/mainActions';
 
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import { setLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/main.scss';
 
@@ -51,7 +51,6 @@ class Main extends React.Component {
     lat: React.PropTypes.number,
     lon: React.PropTypes.number,
     zoom: React.PropTypes.number,
-    bounds: React.PropTypes.object,
     match: React.PropTypes.object,
     history: React.PropTypes.object,
     tool: React.PropTypes.string,
@@ -59,7 +58,6 @@ class Main extends React.Component {
     overlays: FmPropTypes.overlays,
     mapType: FmPropTypes.mapType.isRequired,
     onSetTool: React.PropTypes.func.isRequired,
-    onMapBoundsChange: React.PropTypes.func.isRequired,
     onMapRefocus: React.PropTypes.func.isRequired,
     activePopup: React.PropTypes.string,
     onLaunchPopup: React.PropTypes.func.isRequired,
@@ -69,27 +67,14 @@ class Main extends React.Component {
   componentWillMount() {
     // set redux according to URL
     this.props.onMapRefocus(getMapDiff(this.props));
-    mapAimedEventEmitter.on('fitMapTo', this.fitMapTo);
   }
 
   componentWillUnmount() {
-    mapAimedEventEmitter.removeListener('fitMapTo', this.fitMapTo);
-  }
-
-  fitMapTo = (geojson) => {
-    let options = {};
-    if (geojson.type === 'Point') {
-      options.maxZoom = 14;
-    }
-    const geojsonBounds = L.geoJson(geojson).getBounds();
-    this.refs.map.leafletElement.fitBounds(geojsonBounds, options);
+    setLeafletElement(null);
   }
 
   componentDidMount() {
-    // to initially set map bounds; TODO map.onLoad would be better but is not called :-(
-    setTimeout(() => {
-      this.changeMapBounds();
-    });
+    setLeafletElement(this.refs.map.leafletElement);
   }
 
   componentWillReceiveProps(newProps) {
@@ -117,32 +102,12 @@ class Main extends React.Component {
       return;
     }
 
-    this.changeMapBounds();
-
     const map = this.refs.map.leafletElement;
     const { lat, lng: lon } = map.getCenter();
     const zoom = map.getZoom();
 
     if (this.props.lat !== lat || this.props.lon !== lon || this.props.zoom !== zoom) {
       this.props.onMapRefocus({ lat, lon, zoom });
-    }
-  }
-
-  // TODO there may be more map events which changes map bounds. eg "resize". Implement.
-  changeMapBounds() {
-    const b = this.refs.map.leafletElement.getBounds();
-
-    const newBounds = {
-      south: b.getSouth(),
-      west: b.getWest(),
-      north: b.getNorth(),
-      east: b.getEast()
-    };
-
-    const changed = [ 'south', 'west', 'north', 'east' ].some(prop => this.props.bounds[prop] !== newBounds[prop]);
-
-    if (changed) {
-      this.props.onMapBoundsChange(newBounds);
     }
   }
 
@@ -231,7 +196,6 @@ class Main extends React.Component {
             zoom={this.props.zoom}
             onMoveend={b(this.handleMapMoveEnd)}
             onClick={b(this.handleMapClick)}
-            onResize={b(this.changeMapBounds)}
           >
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
@@ -271,7 +235,6 @@ export default connect(
       tool: state.main.tool,
       mapType: state.map.mapType,
       overlays: state.map.overlays,
-      bounds: state.map.bounds,
       tileFormat: state.map.tileFormat,
       activePopup: state.main.activePopup,
       progress: state.main.progress,
@@ -281,9 +244,6 @@ export default connect(
     return {
       onSetTool(tool) {
         dispatch(setTool(tool));
-      },
-      onMapBoundsChange(bounds) {
-        dispatch(setMapBounds(bounds));
       },
       onMapRefocus(changes) {
         dispatch(refocusMap(changes));

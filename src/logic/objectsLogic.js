@@ -1,12 +1,15 @@
 import { createLogic } from 'redux-logic';
 import { setObjects } from 'fm3/actions/objectsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { getLeafletElement } from 'fm3/leafletElementHolder';
 
 export default createLogic({
   type: 'SET_OBJECTS_FILTER',
   process({ getState, action: { filter } }, dispatch, done) {
-    const { south, west, north, east } = getState().map.bounds;
-    const bbox = `${south},${west},${north},${east}`;
+
+    const b = getLeafletElement().getBounds();
+
+    const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
     const query = `[out:json][timeout:60]; ${filter.replace('{{bbox}}', bbox)}; out qt;`;
 
     dispatch(startProgress());

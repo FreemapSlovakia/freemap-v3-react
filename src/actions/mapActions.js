@@ -2,10 +2,6 @@ export function resetMap() {
   return { type: 'RESET_MAP' };
 }
 
-export function setMapBounds(bounds) {
-  return { type: 'SET_MAP_BOUNDS', bounds };
-}
-
 export function refocusMap(changes) {
   return { type: 'REFOCUS', ...changes };
 }

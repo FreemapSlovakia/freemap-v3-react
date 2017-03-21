@@ -1,8 +1,9 @@
 import { createLogic } from 'redux-logic';
 import { parseString as xml2js } from 'xml2js';
-import { distance, isInside } from 'fm3/geoutils';
+import { distance } from 'fm3/geoutils';
 import { refocusMap } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { getLeafletElement } from 'fm3/leafletElementHolder';
 
 const freemapTransportTypes = {
   'car': 'motorcar',
@@ -85,7 +86,7 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
     'SET_ROUTE_PLANNER_FINISH'
   ],
   process({ getState, action }, dispatch) {
-    const { routePlanner: { start, finish }, map: { zoom, bounds } } = getState();
+    const { routePlanner: { start, finish } } = getState();
     let focusPoint;
     if (action.type == 'SET_ROUTE_PLANNER_START') {
       focusPoint = start;
@@ -93,8 +94,8 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
       focusPoint = finish;
     }
 
-    if (!isInside(bounds, focusPoint)) {
-      dispatch(refocusMap({ lat: focusPoint.lat, lon: focusPoint.lon, zoom }));
+    if (!getLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
+      dispatch(refocusMap({ lat: focusPoint.lat, lon: focusPoint.lon }));
     }
   }
 });
