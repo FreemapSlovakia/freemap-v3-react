@@ -8,6 +8,7 @@
     "file-saver": "1.3.3",
     "immutability-helper": "2.1.2",
     "leaflet": "1.0.3",
+    "query-string": "4.3.2",
     "react": "15.4.2",
     "react-bootstrap": "0.30.8",
     "react-bootstrap-modal": "3.0.1",

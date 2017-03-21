@@ -2,6 +2,7 @@ import React from 'react';
 import { Map } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { ToastContainer, ToastMessage } from 'react-toastr';
+import queryString from 'query-string';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
@@ -300,19 +301,25 @@ const overlayLetters = overlayLayers.map(({ type }) => type).join('');
 const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
 
 function getMapDiff(props) {
-  const { match: { params } } = props;
+  const { location: { search } } = props;
 
-  const layersOK = layersRegExp.test(params.mapType);
-  const lat = parseFloat(params.lat);
-  const lon = parseFloat(params.lon);
-  const zoom = parseInt(params.zoom);
+  const query = queryString.parse(search);
+
+  const [ zoomFrag, latFrag, lonFrag ] = (query.map || '').split('/');
+
+  const lat = parseFloat(latFrag);
+  const lon = parseFloat(lonFrag);
+  const zoom = parseInt(zoomFrag);
+
+  const layers = query.layers || '';
+
+  const layersOK = layersRegExp.test(layers);
 
   if (!layersOK || isNaN(lat) || isNaN(lon) || isNaN(zoom)) {
     updateUrl(props);
-    return;
+    return {};
   }
 
-  const layers = params.mapType;
   const mapType = layers.charAt(0);
   const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
 
@@ -326,11 +333,11 @@ function getMapDiff(props) {
     changes.overlays = overlays;
   }
 
-  if (Math.abs(lat - props.lat) > 0.000001) {
+  if (Math.abs(lat - props.lat) > 0.00001) {
     changes.lat = lat;
   }
 
-  if (Math.abs(lon - props.lon) > 0.000001) {
+  if (Math.abs(lon - props.lon) > 0.00001) {
     changes.lon = lon;
   }
 
@@ -343,6 +350,7 @@ function getMapDiff(props) {
 
 function updateUrl(props) {
   const { mapType, overlays, zoom, lat, lon } = props;
-  const newUrl = `/${mapType}${overlays.join('')}/${zoom}/${lat.toFixed(6)}/${lon.toFixed(6)}`;
-  props.history.replace(newUrl);
+  props.history.replace({
+    search: `?map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}&layers=${mapType}${overlays.join('')}`
+  });
 }
