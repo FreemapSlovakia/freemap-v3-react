@@ -8,6 +8,7 @@ import { connect } from 'react-redux';
 import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
+import mapAimedEventEmitter from 'fm3/mapAimedEventEmitter';
 import 'fm3/styles/search.scss';
 
 function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlannerWithStart,
@@ -18,6 +19,9 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
   }
 
   function onSuggestionHighlightChange(result) {
+    if (result) {
+      mapAimedEventEmitter.emit('fitMapTo', result.geojson);
+    }
     onHiglightResult(result);
   }
 

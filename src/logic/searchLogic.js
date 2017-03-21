@@ -1,9 +1,8 @@
 import { createLogic } from 'redux-logic';
 import { setResults } from 'fm3/actions/searchActions';
-import { refocusMap } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
-const searchLogic = createLogic({
+export default createLogic({
   type: 'SEARCH',
   process({ getState }, dispatch, done) {
     const { query } = getState().search;
@@ -35,23 +34,3 @@ const searchLogic = createLogic({
       });
   }
 });
-
-const refocusMapLogic = createLogic({
-  type: 'HIGHLIGHT_RESULT',
-  process({ getState }, dispatch) {
-    const { search: { highlightedResult }, map: { zoom, bounds: { south, west, north, east } } } = getState();
-
-    if (highlightedResult) {
-      const leafletBounds = L.latLngBounds(L.latLng(south, west), L.latLng(north, east));
-      const hLatLon = L.latLng(highlightedResult.lat, highlightedResult.lon);
-      if (zoom < 13 || !leafletBounds.contains(hLatLon)) { // TODO refactor to use geoutils.isInside
-        dispatch(refocusMap({ lat: highlightedResult.lat, lon: highlightedResult.lon, zoom: 13 }));
-      }
-    }
-  }
-});
-
-export default [
-  searchLogic,
-  refocusMapLogic
-];

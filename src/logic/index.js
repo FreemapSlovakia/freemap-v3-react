@@ -8,7 +8,7 @@ import storageLogic from 'fm3/logic/storageLogic';
 export default [
   ...routePlannerLogic,
   elevationMeasurementLogic,
-  ...searchLogic,
+  searchLogic,
   objectsLogic,
   mapLogic,
   storageLogic

@@ -32,6 +32,7 @@ import Settings from 'fm3/components/Settings';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmmiter from 'fm3/mapEventEmmiter';
+import mapAimedEventEmitter from 'fm3/mapAimedEventEmitter';
 
 import { setMapBounds, refocusMap } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
@@ -67,6 +68,20 @@ class Main extends React.Component {
   componentWillMount() {
     // set redux according to URL
     this.props.onMapRefocus(getMapDiff(this.props));
+    mapAimedEventEmitter.on('fitMapTo', this.fitMapTo);
+  }
+
+  componentWillUnmount() {
+    mapAimedEventEmitter.removeListener('fitMapTo', this.fitMapTo);
+  }
+
+  fitMapTo = (geojson) => {
+    let options = {};
+    if (geojson.type === 'Point') {
+      options.maxZoom = 14;
+    }
+    const geojsonBounds = L.geoJson(geojson).getBounds();
+    this.refs.map.leafletElement.fitBounds(geojsonBounds, options);
   }
 
   componentDidMount() {
