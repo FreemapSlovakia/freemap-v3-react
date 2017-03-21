@@ -17,12 +17,12 @@ export default function map(state = initialState, action) {
         lon: initialState.lon
       };
     case 'SET_MAP_TILE_FORMAT':
-      return { ...state, tileFormat: action.tileFormat };
+      return { ...state, tileFormat: action.payload };
     case 'REFOCUS': {
       const newState = { ...state };
       [ 'zoom', 'lat', 'lon', 'mapType', 'overlays' ].forEach(prop => {
-        if (prop in action) {
-          newState[prop] = action[prop];
+        if (prop in action.payload) {
+          newState[prop] = action.payload[prop];
         }
       });
 

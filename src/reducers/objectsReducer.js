@@ -12,7 +12,7 @@ export default function map(state = initialState, action) {
     case 'SET_OBJECTS_FILTER':
       return { ...state, objects: [] };
     case 'SET_OBJECTS':
-      return { ...state, objects: action.objects };
+      return { ...state, objects: action.payload };
     default:
       return state;
   }

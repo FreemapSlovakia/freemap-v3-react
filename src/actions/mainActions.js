@@ -1,5 +1,5 @@
 export function setActivePopup(activePopup) {
-  return { type: 'SET_ACTIVE_POPUP', activePopup };
+  return { type: 'SET_ACTIVE_POPUP', payload: activePopup };
 }
 
 export function closePopup() {
@@ -7,11 +7,11 @@ export function closePopup() {
 }
 
 export function setTool(tool) {
-  return { type: 'SET_TOOL', tool };
+  return { type: 'SET_TOOL', payload: tool };
 }
 
 export function setHomeLocation(homeLocation) {
-  return { type: 'SET_HOME_LOCATION', homeLocation };
+  return { type: 'SET_HOME_LOCATION', payload: homeLocation };
 }
 
 export function startProgress() {

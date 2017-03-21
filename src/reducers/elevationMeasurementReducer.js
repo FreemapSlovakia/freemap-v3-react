@@ -9,9 +9,9 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'SET_ELEVATION':
-      return { ...state, elevation: action.elevation };
+      return { ...state, elevation: action.payload };
     case 'SET_ELEVATION_POINT':
-      return { ...state, point: action.point };
+      return { ...state, point: action.payload };
     default:
       return state;
   }

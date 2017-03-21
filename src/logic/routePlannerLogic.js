@@ -3,12 +3,13 @@ import { parseString as xml2js } from 'xml2js';
 import { distance } from 'fm3/geoutils';
 import { refocusMap } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { setRoutePlannerResult } from 'fm3/actions/routePlannerActions';
 import { getLeafletElement } from 'fm3/leafletElementHolder';
 
 const freemapTransportTypes = {
-  'car': 'motorcar',
-  'walk': 'hiking',
-  'bicycle': 'bicycle'
+  car: 'motorcar',
+  walk: 'hiking',
+  bicycle: 'bicycle'
 };
 
 export const findRouteLogic = createLogic({
@@ -45,7 +46,7 @@ export const findRouteLogic = createLogic({
           }) : [];
           const distance = rawPoints ? json.osmRoute.length[0] : null;
           const time = rawPoints ? json.osmRoute.time[0] : null;
-          dispatch({ type: 'SET_ROUTE_PLANNER_RESULT', shapePoints, distance, time });
+          dispatch(setRoutePlannerResult(shapePoints, distance, time));
         });
       })
       .catch(() => {})
@@ -56,12 +57,12 @@ export const findRouteLogic = createLogic({
   }
 });
 
-const addMidpointToProperPositionLogic = createLogic({
+export const addMidpointToProperPositionLogic = createLogic({
   type: 'ADD_ROUTE_PLANNER_MIDPOINT',
   transform({ getState, action }, next) {
     const { start, finish, midpoints } = getState().routePlanner;
     if (midpoints.length > 0) {
-      const newMidpoint = action.midpoint;
+      const newMidpoint = action.payload.midpoint;
       const distances = [ start, ...midpoints, finish ].map(p => {
         return distance(p.lat, p.lon, newMidpoint.lat, newMidpoint.lon);
       });
@@ -74,9 +75,10 @@ const addMidpointToProperPositionLogic = createLogic({
           positionOfMinDistance = i;
         }
       }
-      action.position = positionOfMinDistance;
+      next({ ...action, payload: { ...action.payload, position: positionOfMinDistance } });
+    } else {
+      next(action);
     }
-    next(action);
   },
 });
 
@@ -88,9 +90,9 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
   process({ getState, action }, dispatch) {
     const { routePlanner: { start, finish } } = getState();
     let focusPoint;
-    if (action.type == 'SET_ROUTE_PLANNER_START') {
+    if (action.type === 'SET_ROUTE_PLANNER_START') {
       focusPoint = start;
-    } else if (action.type == 'SET_ROUTE_PLANNER_FINISH') {
+    } else if (action.type === 'SET_ROUTE_PLANNER_FINISH') {
       focusPoint = finish;
     }
 

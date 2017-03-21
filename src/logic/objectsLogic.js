@@ -5,12 +5,12 @@ import { getLeafletElement } from 'fm3/leafletElementHolder';
 
 export default createLogic({
   type: 'SET_OBJECTS_FILTER',
-  process({ getState, action: { filter } }, dispatch, done) {
+  process({ getState, action: { payload } }, dispatch, done) {
 
     const b = getLeafletElement().getBounds();
 
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
-    const query = `[out:json][timeout:60]; ${filter.replace('{{bbox}}', bbox)}; out qt;`;
+    const query = `[out:json][timeout:60]; ${payload.replace('{{bbox}}', bbox)}; out qt;`;
 
     dispatch(startProgress());
     fetch('//overpass-api.de/api/interpreter', {

@@ -8,15 +8,15 @@ const initialState = {
 export default function main(state = initialState, action) {
   switch (action.type) {
     case 'SET_ACTIVE_POPUP':
-      return { ...state, activePopup: action.activePopup };
+      return { ...state, activePopup: action.payload };
     case 'CLOSE_POPUP':
       return { ...state, activePopup: null };
     case 'RESET_MAP':
       return { ...state, tool: null };
     case 'SET_TOOL':
-      return { ...state, tool: action.tool };
+      return { ...state, tool: action.payload };
     case 'SET_HOME_LOCATION':
-      return { ...state, homeLocation: action.homeLocation };
+      return { ...state, homeLocation: action.payload };
     case 'START_PROGRESS':
       return { ...state, progress: true };
     case 'STOP_PROGRESS':
