@@ -7,7 +7,6 @@ export default createLogic({
   process({ getState }, dispatch, done) {
     const point = getState().elevationMeasurement.point;
     if (point) {
-      dispatch(setElevation(null));
       dispatch(startProgress());
       fetch(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`)
         .then(res => res.json()).then(data => {
