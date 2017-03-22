@@ -10,7 +10,7 @@ export default function measurement(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'ADD_MEASUREMENT_POINT':
-      return { ...state, points: [ ...state.points, action.payload ] };
+      return update(state, { points: { $splice: [ [ action.payload.position, 0, action.payload.point ] ] } });
     case 'UPDATE_MEASUREMENT_POINT':
       return update(state, { points: { [ action.payload.index ]: { $set: action.payload.point } } });
     default:
