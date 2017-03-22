@@ -14,17 +14,23 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function ObjectsMenu({ onSearch, onCancel }) {
+function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom }) {
 
   function select(i) {
     onSearch(poiTypes[i].filter);
+  }
+
+  function validateZoom() {
+    if (zoom < 12) {
+      onShowToast('info', null, 'Vyhľadávanie miest funguje až od priblíženia úrovne 12');
+    }
   }
 
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
   return (
     <Nav>
       <Navbar.Text><FontAwesomeIcon icon="map-marker"/> Miesta</Navbar.Text>
-      <NavDropdown title="Zvoľ kategóriu" id="basic-nav-dropdown" className="dropdown-long">
+      <NavDropdown title="Zvoľ kategóriu" id="basic-nav-dropdown" className="dropdown-long" onToggle={validateZoom} open={zoom < 12 ? false : undefined}>
         {poiTypeGroups.map(({ id: gid, title }) => (
           [
             <MenuItem key={gid + '_'} divider/>,
@@ -48,11 +54,17 @@ function ObjectsMenu({ onSearch, onCancel }) {
 
 ObjectsMenu.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired
+  onCancel: React.PropTypes.func.isRequired,
+  onShowToast: React.PropTypes.func.isRequired,
+  zoom: React.PropTypes.number.isRequired
 };
 
 export default connect(
-  null,
+  function (state) {
+    return {
+      zoom: state.map.zoom
+    };
+  },
   function (dispatch) {
     return {
       onSearch(filter) {

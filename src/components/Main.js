@@ -125,13 +125,13 @@ class Main extends React.Component {
     mapEventEmitter.emit('mapClick', lat, lon);
   }
 
-  handlePoiSearch() {
-    if (this.props.zoom < 12) {
-      this.showToast('info', null, 'Vyhľadávanie miest funguje až od zoom úrovne 12');
-    } else {
-      this.props.onSetTool('objects');
-    }
-  }
+  // handlePoiSearch() {
+  //   if (this.props.zoom < 12) {
+  //     this.showToast('info', null, 'Vyhľadávanie miest funguje až od zoom úrovne 12');
+  //   } else {
+  //     this.props.onSetTool('objects');
+  //   }
+  // }
 
   showToast(toastType, line1, line2) {
     this.refs.toastContainer[toastType](
@@ -156,14 +156,14 @@ class Main extends React.Component {
           <Navbar fluid style={{ marginBottom: 0 }}>
             <NavbarHeader/>
             <Navbar.Collapse>
-              {tool === 'objects' && <ObjectsMenu/>}
+              {tool === 'objects' && <ObjectsMenu onShowToast={b(this.showToast)}/>}
               {(showDefaultMenu || tool === 'search') && <SearchMenu/>}
               {tool === 'route-planner' && <RoutePlannerMenu onShowToast={b(this.showToast)}/>}
               {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu/>}
               {activePopup === 'settings' && <Settings onShowToast={b(this.showToast)}/>}
               {showDefaultMenu &&
                 <Nav key='nav'>
-                  <NavItem onClick={b(this.handlePoiSearch)}>
+                  <NavItem onClick={b(this.handleToolSet, 'objects')}>
                   <FontAwesomeIcon icon="map-marker"/> Miesta
                   </NavItem>
                   <NavItem onClick={b(this.handleToolSet, 'route-planner')}>
