@@ -99,7 +99,7 @@ class Settings extends React.Component {
               </Button>
             </ButtonGroup>
           </div>
-          <Alert bsStyle="success">
+          <Alert>
             Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
             Pri pomalom internete preto odporúčame zvoliť JPG.
           </Alert>
@@ -110,7 +110,7 @@ class Settings extends React.Component {
           </Button>
         </Modal.Body>
         <Modal.Footer>
-          <Button bsStyle="success" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
+          <Button bsStyle="info" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
           <Button onClick={b(onClosePopup)}><Glyphicon glyph="remove"/> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
