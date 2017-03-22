@@ -1,16 +1,12 @@
 import React from 'react';
 import { Polyline as LeafletPolyline } from 'react-leaflet';
 
-export default function Polyline({ searchResult, theme }) {
+export default function Polyline({ searchResult }) {
   const latlongs = searchResult.geojson.coordinates.map(latlon => L.latLng(latlon[1], latlon[0]));
 
-  const color = theme === 'selected' ? 'green' : 'grey';
-  const leafletOptions = { fillColor: color, color, weight: 8, interactive: false };
-
-  return <LeafletPolyline positions={latlongs} {...leafletOptions}/>;
+  return <LeafletPolyline positions={latlongs} interactive={false} weight={8}/>;
 }
 
 Polyline.propTypes = {
-  searchResult: React.PropTypes.any,
-  theme: React.PropTypes.oneOf([ 'selected', 'highlighted' ])
+  searchResult: React.PropTypes.any
 };

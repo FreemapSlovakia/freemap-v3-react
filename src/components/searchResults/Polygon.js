@@ -1,16 +1,12 @@
 import React from 'react';
 import { Polygon as LeafletPolygon } from 'react-leaflet';
 
-export default function Polygon({ searchResult, theme }) {
+export default function Polygon({ searchResult }) {
   const latlongs = searchResult.geojson.coordinates[0].map(lonlat => L.latLng(lonlat[1], lonlat[0]));
 
-  const color = theme === 'selected' ? 'green' : 'grey';
-  const leafletOptions = { fillColor: color, color, interactive: false };
-
-  return <LeafletPolygon positions={latlongs} {...leafletOptions}/>;
+  return <LeafletPolygon positions={latlongs} interactive={false}/>;
 }
 
 Polygon.propTypes = {
-  searchResult: React.PropTypes.any,
-  theme: React.PropTypes.oneOf([ 'selected', 'highlighted' ])
+  searchResult: React.PropTypes.any
 };

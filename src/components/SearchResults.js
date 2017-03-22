@@ -11,34 +11,34 @@ function SearchResults({ highlightedResult, selectedResult }) {
   return (
     <div>
       {displayAsPoint(highlightedResult) &&
-        <Point searchResult={highlightedResult} theme="highlighted"/>
+        <Point searchResult={highlightedResult}/>
       }
       {displayAsPolyline(highlightedResult) &&
-        <Polyline searchResult={highlightedResult} theme="highlighted"/>
+        <Polyline searchResult={highlightedResult}/>
       }
       {displayAsMultiLineString(highlightedResult) &&
-        <MultiLineString searchResult={highlightedResult} theme="highlighted"/>
+        <MultiLineString searchResult={highlightedResult}/>
       }
       {displayAsPolygon(highlightedResult) &&
-        <Polygon searchResult={highlightedResult} theme="highlighted"/>
+        <Polygon searchResult={highlightedResult}/>
       }
       {displayAsMultiPolygon(highlightedResult) &&
-        <MultiPolygon searchResult={highlightedResult} theme="highlighted"/>
+        <MultiPolygon searchResult={highlightedResult}/>
       }
       {displayAsPoint(selectedResult) &&
-        <Point searchResult={selectedResult} theme="selected"/>
+        <Point searchResult={selectedResult}/>
       }
       {displayAsPolyline(selectedResult) &&
-        <Polyline searchResult={selectedResult} theme="selected"/>
+        <Polyline searchResult={selectedResult}/>
       }
       {displayAsMultiLineString(selectedResult) &&
-        <MultiLineString searchResult={selectedResult} theme="selected"/>
+        <MultiLineString searchResult={selectedResult}/>
       }
       {displayAsPolygon(selectedResult) &&
-        <Polygon searchResult={selectedResult} theme="selected"/>
+        <Polygon searchResult={selectedResult}/>
       }
       {displayAsMultiPolygon(selectedResult) &&
-        <MultiPolygon searchResult={selectedResult} theme="selected"/>
+        <MultiPolygon searchResult={selectedResult}/>
       }
     </div>
   );

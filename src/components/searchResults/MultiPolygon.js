@@ -1,18 +1,14 @@
 import React from 'react';
 import { Polygon as LeafletPolygon } from 'react-leaflet';
 
-export default function MultiPolygon({ searchResult, theme }) {
+export default function MultiPolygon({ searchResult }) {
   const polygonsLatLons = searchResult.geojson.coordinates.map(
     polygonCoords => polygonCoords[0].map(lonlat => L.latLng(lonlat[1], lonlat[0]))
   );
 
-  const color = theme === 'selected' ? 'green' : 'grey';
-  const leafletOptions = { fillColor: color, color, interactive: false };
-
-  return <div>{polygonsLatLons.map((p, i) => <LeafletPolygon key={i} positions={p} {...leafletOptions}/>)}</div>;
+  return <div>{polygonsLatLons.map((p, i) => <LeafletPolygon key={i} positions={p} interactive={false}/>)}</div>;
 }
 
 MultiPolygon.propTypes = {
-  searchResult: React.PropTypes.any,
-  theme: React.PropTypes.oneOf([ 'selected', 'highlighted' ])
+  searchResult: React.PropTypes.any
 };
