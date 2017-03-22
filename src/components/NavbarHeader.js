@@ -7,6 +7,20 @@ import { resetMap } from 'fm3/actions/mapActions';
 
 import 'fm3/styles/navbarHeader.scss';
 
+const humanNameForToolToShowInNavbar = {
+  'route-planner': 'Plánovač',
+  'measure': 'Meranie',
+  'measure-ele': 'Meranie',
+  'measure-area': 'Meranie'
+};
+
+const iconForTool = {
+  'route-planner': 'map-signs',
+  'measure': 'arrows-h',
+  'measure-ele': 'long-arrow-up',
+  'measure-area': 'square'
+};
+
 function NavbarHeader({ tool, onResetMap }) {
   return (
     <Navbar.Header>
@@ -16,9 +30,9 @@ function NavbarHeader({ tool, onResetMap }) {
           id="freemap-logo"
         />
       </Navbar.Brand>
-      {tool === 'route-planner' &&
+      {humanNameForToolToShowInNavbar[tool] &&
         <Navbar.Text style={{ display: 'inline-block', paddingLeft: '10px' }}>
-          <span><FontAwesomeIcon icon="map-signs"/> Plánovač</span>
+          <span><FontAwesomeIcon icon={iconForTool[tool]}/> {humanNameForToolToShowInNavbar[tool]}</span>
         </Navbar.Text>}
       <Navbar.Toggle/>
     </Navbar.Header>

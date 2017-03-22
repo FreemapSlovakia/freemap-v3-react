@@ -18,9 +18,6 @@ function MeasurementMenu({ onCancel, onSetTool, tool }) {
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
   return (
     <div>
-      <Nav>
-        <Navbar.Text><FontAwesomeIcon icon="arrows-h"/> Meranie</Navbar.Text>
-      </Nav>
       <Navbar.Form pullLeft>
         <ButtonGroup>
           <Button onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
