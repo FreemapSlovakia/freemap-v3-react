@@ -13,11 +13,18 @@ categories.forEach(function (c) {
   m.set(c.id, c.filename);
 });
 
-export const poiTypes = subcategories.map(s => ({ id: s.filename, group: m.get(s.category_id), title: s.name, description: s.description,
-  filter: `node["${s.key1}"="${s.value1}"]${s.key2 ? `["${s.key2}"="${s.value2}"]` : ''}({{bbox}})` }));
+export const poiTypes = subcategories.map(s => ({
+  id: s.filename,
+  group: m.get(s.category_id),
+  title: s.name,
+  description: s.description,
+  filter: `node["${s.key1}"="${s.value1}"]${s.key2 ? `["${s.key2}"="${s.value2}"]` : ''}({{bbox}})`,
+  key1: s.key1,
+  value1: s.value1
+}));
 
-// const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
-//
+const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+
 // export const poiTypes = [
 //   { group: 'nature', title: 'Vrchol', key: 'natural', value: 'peak',
 //     template: ({ name, ele }) => `Vrchol${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `${name ? ' ' : '<br/>'} (${nf.format(ele)} m)` : '' }`
@@ -30,19 +37,33 @@ export const poiTypes = subcategories.map(s => ({ id: s.filename, group: m.get(s
 //   }
 // ];
 
-const keys = new Set(poiTypes.map(pt => pt.key));
+const keyPairs = new Set(poiTypes.map(pt => [ pt.key1, pt.key2 ]));
 
-export function toHtml(tags) {
-  for (let key of keys) {
-    if (tags[key]) {
-      const pt = poiTypes.find(pt => pt.key === key && pt.value === tags[key]);
+// TODO improve, currently it is O(n^2)
+export function getPointType(tags) {
+  for (let [ key1, key2 ] of keyPairs) {
+    if (tags[key1] && (!key2 || tags[key2])) {
+      const pt = poiTypes.find(
+        pt => pt.key1 === key1 && pt.value1 === tags[key1]
+          && (!key2 || pt.key2 === key2 && pt.value2 === tags[key2])
+      );
       if (pt) {
-        return pt.template ? pt.template(tags) : ({ name }) => `${pt.title}${name ? `<br/>${escapeHtml(name)}` : ''}`;
+        return pt;
       }
     }
   }
+  return null;
+}
 
-  return tags.name && escapeHtml(tags.name);
+export function toHtml(tags) {
+  const pt = getPointType(tags);
+  const { name, ele } = tags;
+  if (pt) {
+    const img = require(`./images/mapIcons/${pt.group}-${pt.id}.png`);
+    return pt.template ? pt.template(tags) : `<img src="${img}"/> ${pt.title}${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `<br/>${nf.format(ele)} m n. m.` : ''}`;
+  } else {
+    return name && escapeHtml(name);
+  }
 }
 
 function escapeHtml(unsafe) {

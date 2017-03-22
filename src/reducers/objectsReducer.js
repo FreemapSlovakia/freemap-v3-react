@@ -9,10 +9,8 @@ export default function map(state = initialState, action) {
     case 'MAP_RESET':
     case 'SET_TOOL':
       return initialState;
-    case 'OBJECTS_SET_FILTER':
-      return { ...state, objects: [] };
     case 'OBJECTS_SET_RESULT':
-      return { ...state, objects: action.payload };
+      return { ...state, objects: [ ...state.objects, ...action.payload ] };
     default:
       return state;
   }

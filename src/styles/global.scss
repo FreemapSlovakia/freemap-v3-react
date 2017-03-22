@@ -48,3 +48,10 @@ html, .map-holder, #app, #app > div, .container-fluid {
 .tool-select-home-location .leaflet-container {
   cursor: crosshair;
 }
+
+@media (min-width: 768px) {
+  .dropdown-long .dropdown-menu {
+    overflow-x: auto;
+    height: calc(100vh - 64px);
+  }
+}

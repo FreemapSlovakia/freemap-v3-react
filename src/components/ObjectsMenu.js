@@ -24,7 +24,7 @@ function ObjectsMenu({ onSearch, onCancel }) {
   return (
     <Nav>
       <Navbar.Text><FontAwesomeIcon icon="map-marker"/> Miesta</Navbar.Text>
-      <NavDropdown title="Zvoľ katrgóriu" id="basic-nav-dropdown">
+      <NavDropdown title="Zvoľ kategóriu" id="basic-nav-dropdown" className="dropdown-long">
         {poiTypeGroups.map(({ id: gid, title }) => (
           [
             <MenuItem key={gid + '_'} divider/>,
@@ -52,10 +52,7 @@ ObjectsMenu.propTypes = {
 };
 
 export default connect(
-  function () {
-    return {
-    };
-  },
+  null,
   function (dispatch) {
     return {
       onSearch(filter) {

@@ -6,9 +6,7 @@ import { getLeafletElement } from 'fm3/leafletElementHolder';
 export default createLogic({
   type: 'OBJECTS_SET_FILTER',
   process({ getState, action: { payload } }, dispatch, done) {
-
     const b = getLeafletElement().getBounds();
-
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
     const query = `[out:json][timeout:60]; ${payload.replace('{{bbox}}', bbox)}; out qt;`;
 
@@ -18,7 +16,7 @@ export default createLogic({
       body: `data=${encodeURIComponent(query)}`
     })
       .then(res => res.json()).then(data => {
-        dispatch(objectsSetResult(data.elements.map((d, id) => ({ id, lat: d.lat, lon: d.lon, tags: d.tags }))));
+        dispatch(objectsSetResult(data.elements.map(d => ({ id: d.id, lat: d.lat, lon: d.lon, tags: d.tags }))));
       })
       .catch(() => {})
       .then(() => {
