@@ -16,7 +16,6 @@ function createIcon(color) {
 }
 
 const startIcon = createIcon('green');
-const midPointIcon = createIcon('grey');
 const finishIcon = createIcon('red');
 
 class RoutePlannerResult extends React.Component {
@@ -86,7 +85,6 @@ class RoutePlannerResult extends React.Component {
 
         {midpoints.map(({ lat, lon }, i) => (
             <Marker
-              icon={midPointIcon}
               draggable
               onClick={() => this.midpointClicked(i)}
               onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
@@ -111,7 +109,7 @@ class RoutePlannerResult extends React.Component {
             }
           </Marker>
         }
-        {shapePoints && <Polyline positions={shapePoints} color="#2F4F4F" weight="8" opacity="0.6" interactive={false}/>}
+        {shapePoints && <Polyline positions={shapePoints} weight="8" opacity="0.8" interactive={false}/>}
       </div>
     );
   }

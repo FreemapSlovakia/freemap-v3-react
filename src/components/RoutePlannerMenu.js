@@ -66,7 +66,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
             <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
           </DropdownButton>
           <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
-            <Glyphicon glyph="flag" style={{ color: 'grey' }}/> Zastávka
+            <Glyphicon glyph="flag" style={{ color: '#247dc9' }}/> Zastávka
           </Button>
           <DropdownButton
             title={<span><Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Cieľ</span>}
