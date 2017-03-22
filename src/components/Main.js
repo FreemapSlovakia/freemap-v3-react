@@ -213,7 +213,7 @@ class Main extends React.Component {
 
             {tool === 'measure-ele' && <ElevationMeasurementResult/>}
 
-            {tool === 'measure-area' && <AreaMeasurementResult/>}
+            {tool === 'measure-area' && <AreaMeasurementResult onShowToast={b(this.showToast)}/>}
           </Map>
         </Row>
 

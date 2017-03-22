@@ -5,3 +5,7 @@ export function measurementAddPoint(point) {
 export function measurementUpdatePoint(index, point) {
   return { type: 'MEASUREMENT_UPDATE_POINT', payload: { index, point } };
 }
+
+export function measurementRemovePoint(index) {
+  return { type: 'MEASUREMENT_REMOVE_POINT', payload: { index } };
+}

@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polygon } from 'react-leaflet';
+import Button from 'react-bootstrap/lib/Button';
 
-import { measurementAddPoint, measurementUpdatePoint } from 'fm3/actions/measurementActions';
+import { measurementAddPoint, measurementUpdatePoint, measurementRemovePoint } from 'fm3/actions/measurementActions';
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -13,7 +14,9 @@ class AreaMeasurementResult extends React.Component {
   static propTypes = {
     points: React.PropTypes.array,
     onPointAdd: React.PropTypes.func.isRequired,
-    onPointUpdate: React.PropTypes.func.isRequired
+    onPointUpdate: React.PropTypes.func.isRequired,
+    onPointRemove: React.PropTypes.func.isRequired,
+    onShowToast: React.PropTypes.func.isRequired
   };
 
   componentWillMount() {
@@ -32,6 +35,18 @@ class AreaMeasurementResult extends React.Component {
     this.props.onPointUpdate(i, { lat, lon });
   }
 
+  pointClicked(position) {
+    const line1 = 'Odstrániť bod?';
+    const line2 = [
+      <Button key="yes" onClick={() => this.props.onPointRemove(position)}>
+          <span style={{ fontWeight:700 }}>Áno</span>
+      </Button>,
+      ' ',
+      <Button key="no">Nie</Button>
+    ];
+    this.props.onShowToast('info', line1, line2);
+  }
+
   render() {
     const { points } = this.props;
     const areaSize = points.length > 2 ? area(points) : NaN;
@@ -39,7 +54,12 @@ class AreaMeasurementResult extends React.Component {
     return (
       <div>
         {points.map((p, i) =>
-          <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={this.handleMeasureMarkerDrag.bind(this, i)}/>
+          <Marker
+            key={i} 
+            position={L.latLng(p.lat, p.lon)} 
+            draggable 
+            onClick={() => this.pointClicked(i)}
+            onDrag={this.handleMeasureMarkerDrag.bind(this, i)}/>
         )}
 
         {points.length > 1 &&
@@ -75,7 +95,10 @@ export default connect(
       },
       onPointUpdate(i, point) {
         dispatch(measurementUpdatePoint(i, point));
-      }
+      },
+      onPointRemove(i) {
+        dispatch(measurementRemovePoint(i));
+      },
     };
   }
 )(AreaMeasurementResult);

@@ -13,6 +13,8 @@ export default function measurement(state = initialState, action) {
       return update(state, { points: { $splice: [ [ action.payload.position, 0, action.payload.point ] ] } });
     case 'MEASUREMENT_UPDATE_POINT':
       return update(state, { points: { [ action.payload.index ]: { $set: action.payload.point } } });
+    case 'MEASUREMENT_REMOVE_POINT':
+      return update(state, { points: { $splice: [ [ action.payload.index, 1 ] ] } });
     default:
       return state;
   }
