@@ -15,6 +15,5 @@ export default function Point({ searchResult }) {
 }
 
 Point.propTypes = {
-  searchResult: React.PropTypes.any,
-  theme: React.PropTypes.oneOf([ 'selected', 'highlighted' ])
+  searchResult: React.PropTypes.any
 };
