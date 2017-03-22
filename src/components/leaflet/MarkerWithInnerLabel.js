@@ -25,19 +25,14 @@ export default function MarkerWithInnerLabel(props) {
     html: svg
   });
 
-  return (
-    <Marker
-      {...props}
-      icon={icon}>
-    </Marker>
-  );
+  return <Marker {...props} icon={icon}/>;
 }
 
-MarkerWithInnerLabel.propTypes = { 
-  ...Marker.propTypes, 
+MarkerWithInnerLabel.propTypes = {
+  ...Marker.propTypes,
   label: React.PropTypes.oneOfType([
-      React.PropTypes.string,
-      React.PropTypes.number
-    ]).isRequired,
+    React.PropTypes.string,
+    React.PropTypes.number
+  ]).isRequired,
   color: React.PropTypes.string
 };
