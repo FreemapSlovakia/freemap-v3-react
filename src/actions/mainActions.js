@@ -1,12 +1,23 @@
-import { createActions } from 'redux-actions';
+export function setActivePopup(activePopup) {
+  return { type: 'SET_ACTIVE_POPUP', payload: activePopup };
+}
 
-const { setActivePopup, closePopup, setTool, setHomeLocation, startProgress, stopProgress } = createActions(
-  'SET_ACTIVE_POPUP',
-  'SET_TOOL',
-  'SET_HOME_LOCATION',
-  'START_PROGRESS',
-  'CLOSE_POPUP',
-  'STOP_PROGRESS'
-);
+export function closePopup() {
+  return { type: 'CLOSE_POPUP' };
+}
 
-export { setActivePopup, closePopup, setTool, setHomeLocation, startProgress, stopProgress };
+export function setTool(tool) {
+  return { type: 'SET_TOOL', payload: tool };
+}
+
+export function setHomeLocation(homeLocation) {
+  return { type: 'SET_HOME_LOCATION', payload: homeLocation };
+}
+
+export function startProgress() {
+  return { type: 'START_PROGRESS' };
+}
+
+export function stopProgress() {
+  return { type: 'STOP_PROGRESS' };
+}
