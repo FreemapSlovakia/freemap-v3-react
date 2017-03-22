@@ -1,9 +1,9 @@
 import { createLogic } from 'redux-logic';
-import { setResults } from 'fm3/actions/searchActions';
+import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 export default createLogic({
-  type: 'SEARCH',
+  type: 'SEARCH_SET_QUERY',
   process({ getState }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {
@@ -25,7 +25,7 @@ export default createLogic({
           const tags = { name, type: d.type };
           return { id, label: name, geojson: d.geojson, lat: parseFloat(d.lat), lon: parseFloat(d.lon), tags };
         });
-        dispatch(setResults(results));
+        dispatch(searchSetResults(results));
       })
       .catch(() => {})
       .then(() => {

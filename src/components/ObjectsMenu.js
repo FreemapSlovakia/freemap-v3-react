@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { setObjectsFilter } from 'fm3/actions/objectsActions';
+import { objectsSetFilter } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
@@ -59,7 +59,7 @@ export default connect(
   function (dispatch) {
     return {
       onSearch(filter) {
-        dispatch(setObjectsFilter(filter));
+        dispatch(objectsSetFilter(filter));
       },
       onCancel() {
         dispatch(setTool(null));

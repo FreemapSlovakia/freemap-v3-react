@@ -1,7 +1,7 @@
-export function setElevation(elevation) {
-  return { type: 'SET_ELEVATION', payload: elevation };
+export function elevationMeasurementSetElevation(elevation) {
+  return { type: 'ELEVATION_MEASUREMENT_SET_ELEVATION', payload: elevation };
 }
 
-export function setPoint(point) {
-  return { type: 'SET_ELEVATION_POINT', payload: point };
+export function elevationMeasurementSetPoint(point) {
+  return { type: 'ELEVATION_MEASUREMENT_SET_POINT', payload: point };
 }

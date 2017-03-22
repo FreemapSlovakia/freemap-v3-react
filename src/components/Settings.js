@@ -8,7 +8,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setMapTileFormat } from 'fm3/actions/mapActions';
+import { mapSetTileFormat } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
 import { closePopup } from 'fm3/actions/mainActions';
 
@@ -129,7 +129,7 @@ export default connect(
   function (dispatch) {
     return {
       onSave(tileFormat, homeLocation) {
-        dispatch(setMapTileFormat(tileFormat));
+        dispatch(mapSetTileFormat(tileFormat));
         dispatch(setHomeLocation(homeLocation));
         dispatch(closePopup());
       },

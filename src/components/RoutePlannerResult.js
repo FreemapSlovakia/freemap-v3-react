@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Marker, Polyline, Tooltip } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 
-import { setStart, setFinish, addMidpoint, setMidpoint, removeMidpoint } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 function createIcon(color) {
@@ -148,20 +148,20 @@ export default connect(
   function (dispatch) {
     return {
       onSetStart: function(start) {
-        dispatch(setStart(start));
+        dispatch(routePlannerSetStart(start));
       },
       onSetFinish: function(finish) {
-        dispatch(setFinish(finish));
+        dispatch(routePlannerSetFinish(finish));
       },
       onAddMidpoint: function(midpoint) {
         const position = 0;
-        dispatch(addMidpoint(midpoint, position));
+        dispatch(routePlannerAddMidpoint(midpoint, position));
       },
       onSetMidpoint: function(position, midpoint) {
-        dispatch(setMidpoint(position, midpoint));
+        dispatch(routePlannerSetMidpoint(position, midpoint));
       },
       onRemoveMidpoint: function(position) {
-        dispatch(removeMidpoint(position));
+        dispatch(routePlannerRemoveMidpoint(position));
       }
     };
   }

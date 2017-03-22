@@ -1,7 +1,7 @@
-export function setObjectsFilter(filter) {
-  return { type: 'SET_OBJECTS_FILTER', payload: filter };
+export function objectsSetFilter(filter) {
+  return { type: 'OBJECTS_SET_FILTER', payload: filter };
 }
 
-export function setObjects(objects) {
-  return { type: 'SET_OBJECTS', payload: objects };
+export function objectsSetResult(objects) {
+  return { type: 'OBJECTS_SET_RESULT', payload: objects };
 }

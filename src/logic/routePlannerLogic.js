@@ -1,9 +1,9 @@
 import { createLogic } from 'redux-logic';
 import { parseString as xml2js } from 'xml2js';
 import { distance } from 'fm3/geoutils';
-import { refocusMap } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { setRoutePlannerResult } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { getLeafletElement } from 'fm3/leafletElementHolder';
 
 const freemapTransportTypes = {
@@ -14,12 +14,12 @@ const freemapTransportTypes = {
 
 export const findRouteLogic = createLogic({
   type: [
-    'SET_ROUTE_PLANNER_START',
-    'SET_ROUTE_PLANNER_FINISH',
-    'ADD_ROUTE_PLANNER_MIDPOINT',
-    'SET_ROUTE_PLANNER_MIDPOINT',
-    'REMOVE_ROUTE_PLANNER_MIDPOINT',
-    'SET_ROUTE_PLANNER_TRANSPORT_TYPE'
+    'ROUTE_PLANNER_SET_START',
+    'ROUTE_PLANNER_SET_FINISH',
+    'ROUTE_PLANNER_ADD_MIDPOINT',
+    'ROUTE_PLANNER_SET_MIDPOINT',
+    'ROUTE_PLANNER_REMOVE_MIDPOINT',
+    'ROUTE_PLANNER_SET_TRANSPORT_TYPE'
   ],
   process({ getState }, dispatch, done) {
     const { start, finish, midpoints, transportType } = getState().routePlanner;
@@ -46,7 +46,7 @@ export const findRouteLogic = createLogic({
           }) : [];
           const distance = rawPoints ? json.osmRoute.length[0] : null;
           const time = rawPoints ? json.osmRoute.time[0] : null;
-          dispatch(setRoutePlannerResult(shapePoints, distance, time));
+          dispatch(routePlannerSetResult(shapePoints, distance, time));
         });
       })
       .catch(() => {})
@@ -58,7 +58,7 @@ export const findRouteLogic = createLogic({
 });
 
 export const addMidpointToProperPositionLogic = createLogic({
-  type: 'ADD_ROUTE_PLANNER_MIDPOINT',
+  type: 'ROUTE_PLANNER_ADD_MIDPOINT',
   transform({ getState, action }, next) {
     const { start, finish, midpoints } = getState().routePlanner;
     if (midpoints.length > 0) {
@@ -84,20 +84,20 @@ export const addMidpointToProperPositionLogic = createLogic({
 
 export const refocusMapOnSetStartOrFinishPoint = createLogic({
   type: [
-    'SET_ROUTE_PLANNER_START',
-    'SET_ROUTE_PLANNER_FINISH'
+    'ROUTE_PLANNER_SET_START',
+    'ROUTE_PLANNER_SET_FINISH'
   ],
   process({ getState, action }, dispatch) {
     const { routePlanner: { start, finish } } = getState();
     let focusPoint;
-    if (action.type === 'SET_ROUTE_PLANNER_START') {
+    if (action.type === 'ROUTE_PLANNER_SET_START') {
       focusPoint = start;
-    } else if (action.type === 'SET_ROUTE_PLANNER_FINISH') {
+    } else if (action.type === 'ROUTE_PLANNER_SET_FINISH') {
       focusPoint = finish;
     }
 
     if (!getLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
-      dispatch(refocusMap({ lat: focusPoint.lat, lon: focusPoint.lon }));
+      dispatch(mapRefocus({ lat: focusPoint.lat, lon: focusPoint.lon }));
     }
   }
 });

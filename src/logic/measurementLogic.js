@@ -2,7 +2,7 @@ import { createLogic } from 'redux-logic';
 import { distance } from 'fm3/geoutils';
 
 export default createLogic({
-  type: 'ADD_MEASUREMENT_POINT',
+  type: 'MEASUREMENT_ADD_POINT',
   transform({ getState, action }, next) {
     const { tool } = getState().main;
     const { points } = getState().measurement;
@@ -12,6 +12,7 @@ export default createLogic({
       const distances = points.map(p => {
         return distance(p.lat, p.lon, newPoint.lat, newPoint.lon);
       });
+      
       distances.push(distances[0]); // take into account adding between first and last point
       let minDistance = Infinity;
       for (let i = 1; i < distances.length; i++) {

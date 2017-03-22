@@ -15,24 +15,24 @@ const initialState = {
 
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
-    case 'RESET_MAP':
+    case 'MAP_RESET':
     case 'SET_TOOL':
       return initialState;
-    case 'SET_ROUTE_PLANNER_START':
+    case 'ROUTE_PLANNER_SET_START':
       return { ...state, start: action.payload, pickMode: state.finish ? 'midpoint' : 'finish' };
-    case 'SET_ROUTE_PLANNER_FINISH':
+    case 'ROUTE_PLANNER_SET_FINISH':
       return { ...state, finish: action.payload, pickMode: state.start ? 'midpoint' : 'finish' };
-    case 'ADD_ROUTE_PLANNER_MIDPOINT':
+    case 'ROUTE_PLANNER_ADD_MIDPOINT':
       return update(state, { midpoints: { $splice: [ [ action.payload.position, 0, action.payload.midpoint ] ] } });
-    case 'SET_ROUTE_PLANNER_MIDPOINT':
+    case 'ROUTE_PLANNER_SET_MIDPOINT':
       return update(state, { midpoints: { [ action.payload.position ]: { $set: action.payload.midpoint } } });
-    case 'REMOVE_ROUTE_PLANNER_MIDPOINT':
+    case 'ROUTE_PLANNER_REMOVE_MIDPOINT':
       return update(state, { midpoints: { $splice: [ [ action.payload, 1 ] ] } });
-    case 'SET_ROUTE_PLANNER_TRANSPORT_TYPE':
+    case 'ROUTE_PLANNER_SET_TRANSPORT_TYPE':
       return { ...state, transportType: action.payload };
-    case 'SET_ROUTE_PLANNER_PICK_MODE':
+    case 'ROUTE_PLANNER_SET_PICK_MODE':
       return { ...state, pickMode: action.payload };
-    case 'SET_ROUTE_PLANNER_RESULT':
+    case 'ROUTE_PLANNER_SET_RESULT':
       return { ...state,
         shapePoints: action.payload.shapePoints,
         distance: action.payload.distance,

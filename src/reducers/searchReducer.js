@@ -7,16 +7,16 @@ const initialState = {
 
 export default function Search(state = initialState, action) {
   switch (action.type) {
-    case 'RESET_MAP':
+    case 'MAP_RESET':
     case 'SET_TOOL':
       return action.payload === 'search' ? state : initialState;
-    case 'SEARCH':
+    case 'SEARCH_SET_QUERY':
       return { ...state, query: action.payload };
-    case 'SET_RESULTS':
+    case 'SEARCH_SET_RESULTS':
       return { ...state, results: action.payload };
-    case 'HIGHLIGHT_RESULT':
+    case 'SEARCH_HIGHLIGHT_RESULT':
       return { ...state, highlightedResult: action.payload };
-    case 'SELECT_RESULT':
+    case 'SEARCH_SELECT_RESULT':
       return { ...state, selectedResult: action.payload, highlightedResult: null };
     default:
       return state;

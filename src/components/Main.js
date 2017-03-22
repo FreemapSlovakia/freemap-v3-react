@@ -34,7 +34,7 @@ import Settings from 'fm3/components/Settings';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import { refocusMap } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { setActivePopup } from 'fm3/actions/mainActions';
 
@@ -246,7 +246,7 @@ export default connect(
         dispatch(setTool(tool));
       },
       onMapRefocus(changes) {
-        dispatch(refocusMap(changes));
+        dispatch(mapRefocus(changes));
       },
       onLaunchPopup(popupName) {
         dispatch(setActivePopup(popupName));

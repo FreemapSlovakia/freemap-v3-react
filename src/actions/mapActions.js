@@ -1,11 +1,11 @@
-export function resetMap() {
-  return { type: 'RESET_MAP' };
+export function mapReset() {
+  return { type: 'MAP_RESET' };
 }
 
-export function refocusMap(changes) {
-  return { type: 'REFOCUS', payload: { ...changes } };
+export function mapRefocus(changes) {
+  return { type: 'MAP_REFOCUS', payload: { ...changes } };
 }
 
-export function setMapTileFormat(tileFormat) {
-  return { type: 'SET_MAP_TILE_FORMAT', payload: tileFormat };
+export function mapSetTileFormat(tileFormat) {
+  return { type: 'MAP_SET_TILE_FORMAT', payload: tileFormat };
 }
