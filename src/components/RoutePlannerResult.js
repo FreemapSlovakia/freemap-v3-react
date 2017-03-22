@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Marker, Polyline, Tooltip } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
-
+import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -78,19 +78,20 @@ class RoutePlannerResult extends React.Component {
           <Marker
             icon={startIcon}
             draggable
-            onDragend={this.handleRouteMarkerDragend.bind(this, 'start', null)}
+            onDragend={(e) => this.handleRouteMarkerDragend('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
           />
         }
 
         {midpoints.map(({ lat, lon }, i) => (
-            <Marker
+            <MarkerWithInnerLabel
               draggable
+              onDragend={(e) => this.handleRouteMarkerDragend('midpoint', i, e)}
               onClick={() => this.midpointClicked(i)}
-              onDragend={this.handleRouteMarkerDragend.bind(this, 'midpoint', i)}
               key={i}
+              label={i+1}
               position={L.latLng(lat, lon)}>
-            </Marker>
+            </MarkerWithInnerLabel>
           )
         )}
 
@@ -98,7 +99,7 @@ class RoutePlannerResult extends React.Component {
           <Marker
             icon={finishIcon}
             draggable
-            onDragend={this.handleRouteMarkerDragend.bind(this, 'finish', null)}
+            onDragend={(e) => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
           >
 
