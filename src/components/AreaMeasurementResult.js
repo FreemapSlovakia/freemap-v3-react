@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polygon } from 'react-leaflet';
 
-import { addPoint, updatePoint } from 'fm3/actions/measurementActions';
+import { measurementAddPoint, measurementUpdatePoint } from 'fm3/actions/measurementActions';
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -71,10 +71,10 @@ export default connect(
   function (dispatch) {
     return {
       onPointAdd(point) {
-        dispatch(addPoint(point));
+        dispatch(measurementAddPoint(point));
       },
       onPointUpdate(i, point) {
-        dispatch(updatePoint(i, point));
+        dispatch(measurementUpdatePoint(i, point));
       }
     };
   }

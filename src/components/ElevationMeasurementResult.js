@@ -1,7 +1,7 @@
 import React from 'react';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { setPoint, setElevation } from 'fm3/actions/elevationMeasurementActions';
+import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
 import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -85,10 +85,10 @@ export default connect(
   function (dispatch) {
     return {
       onPointSet(point) {
-        dispatch(setPoint(point));
+        dispatch(elevationMeasurementSetPoint(point));
       },
       onClearElevation() {
-        dispatch(setElevation(null));
+        dispatch(elevationMeasurementSetElevation(null));
       }
     };
   }

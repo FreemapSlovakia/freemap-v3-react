@@ -5,9 +5,9 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import { connect } from 'react-redux';
-import { doSearch, highlightResult, selectResult } from 'fm3/actions/searchActions';
+import { searchSetQuery, searchHighlightResult, searchSelectResult } from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
-import { setStart, setFinish } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
 import { getLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/search.scss';
@@ -102,24 +102,24 @@ export default connect(
   function (dispatch) {
     return {
       onDoSearch(query) {
-        dispatch(doSearch(query));
+        dispatch(searchSetQuery(query));
       },
       onHiglightResult(result) {
-        dispatch(highlightResult(result));
+        dispatch(searchHighlightResult(result));
       },
       onSelectResult(result) {
         result ? dispatch(setTool('search')) : dispatch(setTool(null));
-        dispatch(selectResult(result));
+        dispatch(searchSelectResult(result));
       },
       onInitRoutePlannerWithStart(result) {
         const start = { lat: result.lat, lon: result.lon };
         dispatch(setTool('route-planner'));
-        dispatch(setStart(start));
+        dispatch(routePlannerSetStart(start));
       },
       onInitRoutePlannerWithFinish(result) {
         const finish = { lat: result.lat, lon: result.lon };
         dispatch(setTool('route-planner'));
-        dispatch(setFinish(finish));
+        dispatch(routePlannerSetFinish(finish));
       }
     };
   }

@@ -11,7 +11,7 @@ export default function main(state = initialState, action) {
       return { ...state, activePopup: action.payload };
     case 'CLOSE_POPUP':
       return { ...state, activePopup: null };
-    case 'RESET_MAP':
+    case 'MAP_RESET':
       return { ...state, tool: null };
     case 'SET_TOOL':
       return { ...state, tool: action.payload };

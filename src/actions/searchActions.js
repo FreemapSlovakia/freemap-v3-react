@@ -1,15 +1,15 @@
-export function doSearch(query) {
-  return { type: 'SEARCH', payload: query };
+export function searchSetQuery(query) {
+  return { type: 'SEARCH_SET_QUERY', payload: query };
 }
 
-export function setResults(results) {
-  return { type: 'SET_RESULTS', payload: results };
+export function searchSetResults(results) {
+  return { type: 'SEARCH_SET_RESULTS', payload: results };
 }
 
-export function highlightResult(highlightedResult) {
-  return { type: 'HIGHLIGHT_RESULT', payload: highlightedResult };
+export function searchHighlightResult(highlightedResult) {
+  return { type: 'SEARCH_HIGHLIGHT_RESULT', payload: highlightedResult };
 }
 
-export function selectResult(selectedResult) {
-  return { type: 'SELECT_RESULT', payload: selectedResult };
+export function searchSelectResult(selectedResult) {
+  return { type: 'SEARCH_SELECT_RESULT', payload: selectedResult };
 }

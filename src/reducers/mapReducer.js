@@ -10,15 +10,15 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
-    case 'RESET_MAP':
+    case 'MAP_RESET':
       return { ...state,
         zoom: initialState.zoom,
         lat: initialState.lat,
         lon: initialState.lon
       };
-    case 'SET_MAP_TILE_FORMAT':
+    case 'MAP_SET_TILE_FORMAT':
       return { ...state, tileFormat: action.payload };
-    case 'REFOCUS': {
+    case 'MAP_REFOCUS': {
       const newState = { ...state };
       [ 'zoom', 'lat', 'lon', 'mapType', 'overlays' ].forEach(prop => {
         if (prop in action.payload) {

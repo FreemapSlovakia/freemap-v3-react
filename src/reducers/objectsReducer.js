@@ -6,12 +6,12 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
-    case 'RESET_MAP':
+    case 'MAP_RESET':
     case 'SET_TOOL':
       return initialState;
-    case 'SET_OBJECTS_FILTER':
+    case 'OBJECTS_SET_FILTER':
       return { ...state, objects: [] };
-    case 'SET_OBJECTS':
+    case 'OBJECTS_SET_RESULT':
       return { ...state, objects: action.payload };
     default:
       return state;

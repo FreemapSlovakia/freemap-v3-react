@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
-import { setStart, setFinish, setTransportType, setPickMode } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetPickMode } from 'fm3/actions/routePlannerActions';
 import { setTool, setActivePopup } from 'fm3/actions/mainActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
@@ -126,16 +126,16 @@ export default connect(
   function (dispatch) {
     return {
       onSetStart: function(start) {
-        dispatch(setStart(start));
+        dispatch(routePlannerSetStart(start));
       },
       onSetFinish: function(finish) {
-        dispatch(setFinish(finish));
+        dispatch(routePlannerSetFinish(finish));
       },
       onChangeTransportType(transportType) {
-        dispatch(setTransportType(transportType));
+        dispatch(routePlannerSetTransportType(transportType));
       },
       onChangePickPointMode(pickMode) {
-        dispatch(setPickMode(pickMode));
+        dispatch(routePlannerSetPickMode(pickMode));
       },
       onCancel() {
         dispatch(setTool(null));

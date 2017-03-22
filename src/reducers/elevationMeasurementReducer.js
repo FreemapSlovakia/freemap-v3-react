@@ -5,12 +5,12 @@ const initialState = {
 
 export default function elevationMeasurement(state = initialState, action) {
   switch (action.type) {
-    case 'RESET_MAP':
+    case 'MAP_RESET':
     case 'SET_TOOL':
       return initialState;
-    case 'SET_ELEVATION':
+    case 'ELEVATION_MEASUREMENT_SET_ELEVATION':
       return { ...state, elevation: action.payload };
-    case 'SET_ELEVATION_POINT':
+    case 'ELEVATION_MEASUREMENT_SET_POINT':
       return { ...state, point: action.payload, elevation: null };
     default:
       return state;

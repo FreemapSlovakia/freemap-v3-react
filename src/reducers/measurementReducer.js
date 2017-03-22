@@ -6,12 +6,12 @@ const initialState = {
 
 export default function measurement(state = initialState, action) {
   switch (action.type) {
-    case 'RESET_MAP':
+    case 'MAP_RESET':
     case 'SET_TOOL':
       return initialState;
-    case 'ADD_MEASUREMENT_POINT':
+    case 'MEASUREMENT_ADD_POINT':
       return { ...state, points: [ ...state.points, action.payload ] };
-    case 'UPDATE_MEASUREMENT_POINT':
+    case 'MEASUREMENT_UPDATE_POINT':
       return update(state, { points: { [ action.payload.index ]: { $set: action.payload.point } } });
     default:
       return state;

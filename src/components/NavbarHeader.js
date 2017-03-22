@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import { resetMap } from 'fm3/actions/mapActions';
+import { mapReset } from 'fm3/actions/mapActions';
 
 import 'fm3/styles/navbarHeader.scss';
 
@@ -53,7 +53,7 @@ export default connect(
   function (dispatch) {
     return {
       onResetMap() {
-        dispatch(resetMap());
+        dispatch(mapReset());
       }
     };
   }
