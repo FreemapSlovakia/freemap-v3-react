@@ -13,7 +13,7 @@ import Main from 'fm3/components/Main';
 import 'fm3/styles/global.scss';
 
 const middleware = applyMiddleware(
-  createLogger({ diff: true }),
+  createLogger(),
   createLogicMiddleware(logics)
 );
 
