@@ -15,6 +15,7 @@
     "react-bootstrap-typeahead": "1.2.0",
     "react-dom": "15.4.2",
     "react-leaflet": "1.1.4",
+    "react-leaflet-bing": "2.0.0",
     "react-redux": "5.0.3",
     "react-router": "4.0.0",
     "react-router-dom": "4.0.0",

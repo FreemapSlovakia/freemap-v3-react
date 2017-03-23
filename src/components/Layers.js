@@ -1,5 +1,6 @@
 import React from 'react';
 import { TileLayer, LayersControl } from 'react-leaflet';
+import { BingLayer } from 'react-leaflet-bing';
 
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -8,12 +9,21 @@ export default function Layers(props) {
 
   // eslint-disable-next-line
   function getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
-    return <TileLayer
-      attribution={attribution}
-      url={url.replace('{tileFormat}', props.tileFormat)}
-      onAdd={() => handleAdd(type)}
-      onRemove={() => handleRemove(type)}
-      maxZoom={maxZoom} minZoom={minZoom}/>;
+    if (type === 'S') {
+      return <BingLayer
+        bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
+        onAdd={() => handleAdd(type)}
+        onRemove={() => handleRemove(type)}
+      />;
+    } else {
+      return <TileLayer
+        attribution={attribution}
+        url={url.replace('{tileFormat}', props.tileFormat)}
+        onAdd={() => handleAdd(type)}
+        onRemove={() => handleRemove(type)}
+        maxZoom={maxZoom} minZoom={minZoom}
+      />;
+    }
   }
 
   function handleAdd(type) {

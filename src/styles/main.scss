@@ -25,8 +25,12 @@ a.leaflet-control-layers-toggle {
   background-image: url(../images/icon-skiing.png);
 }
 
+.active-map-type-S a.leaflet-control-layers-toggle {
+  background-image: url(../images/icon-satellite.png);
+}
+
 @media ($smartphone-screen) { // issue #71
-  .navbar-form { 
+  .navbar-form {
     border-top: 0;
     margin-top: 0;
   }
