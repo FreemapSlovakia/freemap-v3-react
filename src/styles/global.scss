@@ -1,3 +1,5 @@
+@import "variables";
+
 body {
     margin: 0;
     height: calc(100% - 56px);
@@ -63,4 +65,8 @@ html, .map-holder, #app, #app > div, .container-fluid {
   top: 6px;
   text-align: center;
   font-size: 83%;
+}
+
+.rangeslider-horizontal .rangeslider__fill {
+  background-color: lighten($theme-primary-color, 25%);
 }

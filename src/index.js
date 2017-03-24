@@ -20,6 +20,10 @@ const middleware = applyMiddleware(
 let store;
 try {
   const appState = JSON.parse(localStorage.getItem('appState'));
+  // FIXME: handle missing attributes in saved state in some generic way
+  if (!appState.map.overlayOpacity) {
+    appState.map.overlayOpacity = { N: 1.0 };
+  }
   store = createStore(reducer, appState, middleware);
 } catch (e) {
   store = createStore(reducer, middleware);

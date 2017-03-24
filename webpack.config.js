@@ -56,6 +56,10 @@ module.exports = {
             // use style-loader in development
             fallback: 'style-loader'
         })
+      },
+      {
+        test: /\.css$/,
+        use: [ 'style-loader', { loader: 'css-loader' } ]
       }
     ]
   },

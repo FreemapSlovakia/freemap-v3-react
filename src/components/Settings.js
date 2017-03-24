@@ -7,14 +7,17 @@ import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import Slider from 'react-rangeslider';
+import 'react-rangeslider/lib/index.css';
 
-import { mapSetTileFormat } from 'fm3/actions/mapActions';
+import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
 import { closePopup } from 'fm3/actions/mainActions';
 
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
+
 
 class Settings extends React.Component {
 
@@ -30,6 +33,8 @@ class Settings extends React.Component {
     onSelectHomeLocation: React.PropTypes.func.isRequired,
     onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
     tool: React.PropTypes.string,
+    nlcOpacity: React.PropTypes.number.isRequired,
+    zoom: React.PropTypes.number
   };
 
   constructor(props) {
@@ -38,7 +43,8 @@ class Settings extends React.Component {
       tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
       homeLocationCssClasses: '',
-      userMadeChanges: false
+      userMadeChanges: false,
+      nlcOpacity: props.nlcOpacity
     };
   }
 
@@ -62,14 +68,15 @@ class Settings extends React.Component {
   }
 
   save() {
-    this.props.onSave(this.state.tileFormat, this.state.homeLocation);
+    this.props.onSave(this.state.tileFormat, this.state.homeLocation, this.state.nlcOpacity);
     this.props.onShowToast('info', null, 'Zmeny boli uložené.');
   }
 
   render() {
-    const { onClosePopup, onSelectHomeLocation, tool } = this.props;
+    const { onClosePopup, onSelectHomeLocation, tool, zoom } = this.props;
     const { homeLocation, homeLocationCssClasses, userMadeChanges } = this.state;
     const b = (fn, ...args) => fn.bind(this, ...args);
+    const nlcOverlayIsNotVisible = zoom < 14;
 
     let homeLocationInfo = 'neurčená';
     if (homeLocation.lat && homeLocation.lon) {
@@ -108,6 +115,21 @@ class Settings extends React.Component {
           <Button onClick={() => onSelectHomeLocation()}>
            <FontAwesomeIcon icon="crosshairs"/> Vybrať na mape
           </Button>
+
+          <hr />
+          Viditeľnosť vrstvy Lesné cesty NLC: {this.state.nlcOpacity.toFixed(1) * 100}%
+          <Slider
+            value={this.state.nlcOpacity}
+            min={0.1}
+            max={1.0}
+            step={0.1}
+            tooltip={false}
+            onChange={(newOpacity) => this.setState({ nlcOpacity: newOpacity } )}
+          />
+          {nlcOverlayIsNotVisible && 
+            <Alert>
+              NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
+            </Alert> }
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
@@ -123,14 +145,17 @@ export default connect(
     return {
       tileFormat: state.map.tileFormat,
       homeLocation: state.main.homeLocation,
-      tool: state.main.tool
+      tool: state.main.tool,
+      zoom: state.map.zoom,
+      nlcOpacity: state.map.overlayOpacity.N
     };
   },
   function (dispatch) {
     return {
-      onSave(tileFormat, homeLocation) {
+      onSave(tileFormat, homeLocation, nlcOpacity) {
         dispatch(mapSetTileFormat(tileFormat));
         dispatch(setHomeLocation(homeLocation));
+        dispatch(mapSetOverlayOpacity('N', nlcOpacity));
         dispatch(closePopup());
       },
       onClosePopup() {

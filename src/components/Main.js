@@ -56,6 +56,7 @@ class Main extends React.Component {
     tool: React.PropTypes.string,
     tileFormat: FmPropTypes.tileFormat.isRequired,
     overlays: FmPropTypes.overlays,
+    overlayOpacity: React.PropTypes.any,
     mapType: FmPropTypes.mapType.isRequired,
     onSetTool: React.PropTypes.func.isRequired,
     onMapRefocus: React.PropTypes.func.isRequired,
@@ -200,7 +201,7 @@ class Main extends React.Component {
             <Layers
               mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
               overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}
-              tileFormat={tileFormat}
+              tileFormat={tileFormat} overlayOpacity={this.props.overlayOpacity}
             />
 
             {(showDefaultMenu || tool === 'search') && <SearchResults/>}
@@ -235,6 +236,7 @@ export default connect(
       tool: state.main.tool,
       mapType: state.map.mapType,
       overlays: state.map.overlays,
+      overlayOpacity: state.map.overlayOpacity,
       tileFormat: state.map.tileFormat,
       activePopup: state.main.activePopup,
       progress: state.main.progress,

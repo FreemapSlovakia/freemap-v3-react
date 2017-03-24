@@ -16,12 +16,15 @@ export default function Layers(props) {
         onRemove={() => handleRemove(type)}
       />;
     } else {
+      const opacity = props.overlayOpacity[type] || 1.0;
+
       return <TileLayer
         attribution={attribution}
         url={url.replace('{tileFormat}', props.tileFormat)}
         onAdd={() => handleAdd(type)}
         onRemove={() => handleRemove(type)}
         maxZoom={maxZoom} minZoom={minZoom}
+        opacity={opacity}
       />;
     }
   }
@@ -75,5 +78,6 @@ Layers.propTypes = {
   onOverlaysChange: React.PropTypes.func.isRequired,
   tileFormat: FmPropTypes.tileFormat.isRequired,
   overlays: FmPropTypes.overlays,
-  mapType: FmPropTypes.mapType.isRequired
+  mapType: FmPropTypes.mapType.isRequired,
+  overlayOpacity: React.PropTypes.any.isRequired
 };
