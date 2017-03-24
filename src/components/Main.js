@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map } from 'react-leaflet';
+import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 import queryString from 'query-string';
@@ -203,6 +203,8 @@ class Main extends React.Component {
               overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}
               tileFormat={tileFormat} overlayOpacity={this.props.overlayOpacity}
             />
+
+            {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <ScaleControl imperial={false} position="bottomright"/> }
 
             {(showDefaultMenu || tool === 'search') && <SearchResults/>}
 
