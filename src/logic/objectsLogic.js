@@ -8,7 +8,7 @@ export default createLogic({
   process({ getState, action: { payload } }, dispatch, done) {
     const b = getLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
-    const query = `[out:json][timeout:60]; ${payload.replace('{{bbox}}', bbox)}; out qt;`;
+    const query = `[out:json][timeout:60]; ${payload.replace(/\{\{bbox\}\}/g, bbox)}; out center;`;
 
     dispatch(startProgress());
     fetch('//overpass-api.de/api/interpreter', {
@@ -16,9 +16,11 @@ export default createLogic({
       body: `data=${encodeURIComponent(query)}`
     })
       .then(res => res.json()).then(data => {
-        dispatch(objectsSetResult(data.elements.map(d => ({ id: d.id, lat: d.lat, lon: d.lon, tags: d.tags }))));
+        const result = data.elements.map(({ id, center, tags, lat, lon }) => ({ id, lat: center && center.lat || lat, lon: center && center.lon || lon, tags }));
+        console.log("R", result);
+        dispatch(objectsSetResult(result));
       })
-      .catch(() => {})
+      .catch(e => console.error(e))
       .then(() => {
         dispatch(stopProgress());
         done();

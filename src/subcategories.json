@@ -106,8 +106,10 @@
     "filename": "castle",
     "key1": "historic",
     "value1": "castle",
-    "key2": "ruins",
-    "value2": "~|no|false"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "ruins",
+    "// TODO value2": "~|no|false"
   },
   {
     "id": 12,
@@ -116,8 +118,10 @@
     "filename": "chateau",
     "key1": "historic",
     "value1": "chateau",
-    "key2": "ruins",
-    "value2": "~|no|false"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "ruins",
+    "// TODO value2": "~|no|false"
   },
   {
     "id": 13,
@@ -146,8 +150,10 @@
     "filename": "monument",
     "key1": "historic",
     "value1": "monument",
-    "key2": "ruins",
-    "value2": "~|no|false"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "ruins",
+    "// TODO value2": "~|no|false"
   },
   {
     "id": 16,
@@ -156,8 +162,10 @@
     "filename": "memorial",
     "key1": "historic",
     "value1": "memorial",
-    "key2": "ruins",
-    "value2": "~|no|false"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "ruins",
+    "// TODO value2": "~|no|false"
   },
   {
     "id": 17,
@@ -306,8 +314,10 @@
     "filename": "place_of_worship",
     "key1": "amenity",
     "value1": "place_of_worship",
-    "key2": "place_of_worship:type",
-    "value2": "~|~chapel"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "place_of_worship:type",
+    "// TODO value2": "~|~chapel"
   },
   {
     "id": 33,
@@ -326,8 +336,10 @@
     "filename": "bank",
     "key1": "amenity",
     "value1": "bank",
-    "key2": "atm",
-    "value2": "~|no|false"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "atm",
+    "// TODO value2": "~|no|false"
   },
   {
     "id": 35,
@@ -546,8 +558,10 @@
     "filename": "city",
     "key1": "place",
     "value1": "city",
-    "key2": "city_type",
-    "value2": "~"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "city_type",
+    "// TODO value2": "~"
   },
   {
     "id": 59,
@@ -556,8 +570,10 @@
     "filename": "town",
     "key1": "place",
     "value1": "town",
-    "key2": "city_type",
-    "value2": "~"
+    "key2": null,
+    "value2": null,
+    "// TODO key2": "city_type",
+    "// TODO value2": "~"
   },
   {
     "id": 60,
@@ -2406,8 +2422,10 @@
     "filename": "lake",
     "key1": "natural",
     "value1": "water",
-    "key2": "water",
-    "value2": "~|~reservoir"
+    "key2": null,
+    "value2": null,
+    "//TODO key2": "water",
+    "//TODO value2": "~|~reservoir"
   },
   {
     "id": 246,

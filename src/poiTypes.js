@@ -18,12 +18,16 @@ export const poiTypes = subcategories.map(s => ({
   group: m.get(s.category_id),
   title: s.name,
   description: s.description,
-  filter: `node["${s.key1}"="${s.value1}"]${s.key2 ? `["${s.key2}"="${s.value2}"]` : ''}({{bbox}})`,
+  filter: `(${[ 'node', 'way', 'relation' ].map(element => toQuery(element, s)).join('')})`,
   key1: s.key1,
   value1: s.value1
 }));
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+
+function toQuery(element, s) {
+  return `${element}["${s.key1}"="${s.value1}"]${s.key2 ? `["${s.key2}"="${s.value2}"]` : ''}({{bbox}});`;
+}
 
 // export const poiTypes = [
 //   { group: 'nature', title: 'Vrchol', key: 'natural', value: 'peak',
