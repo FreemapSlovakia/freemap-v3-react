@@ -2,6 +2,7 @@ import { createLogic } from 'redux-logic';
 import { objectsSetResult } from 'fm3/actions/objectsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { getLeafletElement } from 'fm3/leafletElementHolder';
+import { getPointType } from 'fm3/poiTypes';
 
 export default createLogic({
   type: 'OBJECTS_SET_FILTER',
@@ -16,8 +17,9 @@ export default createLogic({
       body: `data=${encodeURIComponent(query)}`
     })
       .then(res => res.json()).then(data => {
-        const result = data.elements.map(({ id, center, tags, lat, lon }) => ({ id, lat: center && center.lat || lat, lon: center && center.lon || lon, tags }));
-        console.log("R", result);
+        const result = data.elements.map(({ id, center, tags, lat, lon }) => (
+          { id, lat: center && center.lat || lat, lon: center && center.lon || lon, tags, typeId: getPointType(tags).id })
+        );
         dispatch(objectsSetResult(result));
       })
       .catch(e => console.error(e))

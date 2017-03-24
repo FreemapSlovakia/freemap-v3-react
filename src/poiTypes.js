@@ -13,20 +13,25 @@ categories.forEach(function (c) {
   m.set(c.id, c.filename);
 });
 
-export const poiTypes = subcategories.map(s => ({
-  id: s.filename,
-  group: m.get(s.category_id),
-  title: s.name,
-  description: s.description,
-  filter: `(${[ 'node', 'way', 'relation' ].map(element => toQuery(element, s)).join('')})`,
-  key1: s.key1,
-  value1: s.value1
+export const poiTypes = subcategories.map(({ filename, categoryId, name, filter }) => ({
+  id: filename, // TODO use id
+  group: m.get(categoryId),
+  title: name,
+  filter,
+  overpassFilter: `(${[ 'node', 'way', 'relation' ].map(element => toOverpassFilter(element, filter)).join('')})`
 }));
+
+const poiTypesMap = new Map();
+poiTypes.forEach(pt => poiTypesMap.set(pt.id, pt));
+
+export function getPoiType(id) {
+  return poiTypesMap.get(id);
+}
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
-function toQuery(element, s) {
-  return `${element}["${s.key1}"="${s.value1}"]${s.key2 ? `["${s.key2}"="${s.value2}"]` : ''}({{bbox}});`;
+function toOverpassFilter(element, filter) {
+  return `${element}${filter.map(({ key, value }) => `["${key}"="${value}"]`).join()}({{bbox}});`;
 }
 
 // export const poiTypes = [
@@ -41,26 +46,14 @@ function toQuery(element, s) {
 //   }
 // ];
 
-const keyPairs = new Set(poiTypes.map(pt => [ pt.key1, pt.key2 ]));
-
-// TODO improve, currently it is O(n^2)
 export function getPointType(tags) {
-  for (let [ key1, key2 ] of keyPairs) {
-    if (tags[key1] && (!key2 || tags[key2])) {
-      const pt = poiTypes.find(
-        pt => pt.key1 === key1 && pt.value1 === tags[key1]
-          && (!key2 || pt.key2 === key2 && pt.value2 === tags[key2])
-      );
-      if (pt) {
-        return pt;
-      }
-    }
-  }
-  return null;
+  return poiTypes.find(({ filter }) => {
+    return filter.every(({ key, value }) => tags[key] === value);
+  });
 }
 
-export function toHtml(tags) {
-  const pt = getPointType(tags);
+export function toHtml(typeId, tags) {
+  const pt = getPoiType(typeId);
   const { name, ele } = tags;
   if (pt) {
     const img = require(`./images/mapIcons/${pt.group}-${pt.id}.png`);

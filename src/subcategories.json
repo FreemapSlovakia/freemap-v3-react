@@ -1,2720 +1,3398 @@
 [
   {
     "id": 1,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Jaskyňa",
     "filename": "cave_entrance",
-    "key1": "natural",
-    "value1": "cave_entrance",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "natural",
+        "value": "cave_entrance"
+      }
+    ]
   },
   {
     "id": 2,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Vrch",
     "filename": "peak",
-    "key1": "natural",
-    "value1": "peak",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "natural",
+        "value": "peak"
+      }
+    ]
   },
   {
     "id": 3,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Čerpacia stanica",
     "filename": "fuel",
-    "key1": "amenity",
-    "value1": "fuel",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "fuel"
+      }
+    ]
   },
   {
     "id": 4,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Reštaurácia",
     "filename": "restaurant",
-    "key1": "amenity",
-    "value1": "restaurant",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "restaurant"
+      }
+    ]
   },
   {
     "id": 5,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Hotel",
     "filename": "hotel",
-    "key1": "tourism",
-    "value1": "hotel",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "hotel"
+      }
+    ]
   },
   {
     "id": 6,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Parkovisko",
     "filename": "parking",
-    "key1": "amenity",
-    "value1": "parking",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "parking"
+      }
+    ]
   },
   {
     "id": 7,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Letisko",
     "filename": "airport",
-    "key1": "aeroway",
-    "value1": "aerodrome",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "aeroway",
+        "value": "aerodrome"
+      }
+    ]
   },
   {
     "id": 8,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Železničná stanica",
     "filename": "train",
-    "key1": "railway",
-    "value1": "station",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "railway",
+        "value": "station"
+      }
+    ]
   },
   {
     "id": 9,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Autobusová stanica",
     "filename": "bus_station",
-    "key1": "amenity",
-    "value1": "bus_station",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bus_station"
+      }
+    ]
   },
   {
     "id": 10,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Autobusová zastávka",
     "filename": "bus_stop",
-    "key1": "highway|amenity",
-    "value1": "bus_stop",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "highway|amenity",
+        "value": "bus_stop"
+      }
+    ]
   },
   {
     "id": 11,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Hrad",
     "filename": "castle",
-    "key1": "historic",
-    "value1": "castle",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "ruins",
-    "// TODO value2": "~|no|false"
+    "filter": [
+      {
+        "key": "historic",
+        "value": "castle"
+      },
+      {
+        "key": "ruins",
+        "value": "~|no|false"
+      }
+    ]
   },
   {
     "id": 12,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Zámok",
     "filename": "chateau",
-    "key1": "historic",
-    "value1": "chateau",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "ruins",
-    "// TODO value2": "~|no|false"
+    "filter": [
+      {
+        "key": "historic",
+        "value": "chateau"
+      },
+      {
+        "key": "ruins",
+        "value": "~|no|false"
+      }
+    ]
   },
   {
     "id": 13,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Zrúcanina",
     "filename": "ruins",
-    "key1": "historic",
-    "value1": "*",
-    "key2": "ruins",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "historic",
+        "value": "*"
+      },
+      {
+        "key": "ruins",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 14,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Múzeum",
     "filename": "museum",
-    "key1": "tourism",
-    "value1": "museum",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "museum"
+      }
+    ]
   },
   {
     "id": 15,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Pamätihodnosť",
     "filename": "monument",
-    "key1": "historic",
-    "value1": "monument",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "ruins",
-    "// TODO value2": "~|no|false"
+    "filter": [
+      {
+        "key": "historic",
+        "value": "monument"
+      },
+      {
+        "key": "ruins",
+        "value": "~|no|false"
+      }
+    ]
   },
   {
     "id": 16,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Pamätník",
     "filename": "memorial",
-    "key1": "historic",
-    "value1": "memorial",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "ruins",
-    "// TODO value2": "~|no|false"
+    "filter": [
+      {
+        "key": "historic",
+        "value": "memorial"
+      },
+      {
+        "key": "ruins",
+        "value": "~|no|false"
+      }
+    ]
   },
   {
     "id": 17,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Lekáreň",
     "filename": "pharmacy",
-    "key1": "amenity",
-    "value1": "pharmacy",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "pharmacy"
+      }
+    ]
   },
   {
     "id": 18,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Nemocnica",
     "filename": "hospital",
-    "key1": "amenity",
-    "value1": "hospital",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "hospital"
+      }
+    ]
   },
   {
     "id": 19,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Ordinácia",
     "filename": "doctor",
-    "key1": "amenity",
-    "value1": "doctor",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "doctor"
+      }
+    ]
   },
   {
     "id": 20,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Polícia",
     "filename": "police",
-    "key1": "amenity",
-    "value1": "police",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "police"
+      }
+    ]
   },
   {
     "id": 21,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Poliklinika",
     "filename": "clinic",
-    "key1": "amenity",
-    "value1": "clinic",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "clinic"
+      }
+    ]
   },
   {
     "id": 22,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Hraničný prechod",
     "filename": "border_control",
-    "key1": "amenity",
-    "value1": "border_control",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "border_control"
+      }
+    ]
   },
   {
     "id": 23,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Nemocnica s pohotovosťou",
     "filename": "emergency",
-    "key1": "amenity",
-    "value1": "hospital",
-    "key2": "emergency",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "hospital"
+      },
+      {
+        "key": "emergency",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 24,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Supermarket",
     "filename": "supermarket",
-    "key1": "shop",
-    "value1": "supermarket",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop",
+        "value": "supermarket"
+      }
+    ]
   },
   {
     "id": 26,
-    "category_id": 7,
+    "categoryId": 7,
     "name": "Jadrová elektráreň",
     "filename": "nuclear",
-    "key1": "power",
-    "value1": "generator",
-    "key2": "generator:source",
-    "value2": "nuclear"
+    "filter": [
+      {
+        "key": "power",
+        "value": "generator"
+      },
+      {
+        "key": "generator:source",
+        "value": "nuclear"
+      }
+    ]
   },
   {
     "id": 27,
-    "category_id": 7,
+    "categoryId": 7,
     "name": "Tepelná elektráreň (uhlie)",
     "filename": "fossil",
-    "key1": "power",
-    "value1": "generator",
-    "key2": "generator:source",
-    "value2": "coal"
+    "filter": [
+      {
+        "key": "power",
+        "value": "generator"
+      },
+      {
+        "key": "generator:source",
+        "value": "coal"
+      }
+    ]
   },
   {
     "id": 28,
-    "category_id": 7,
+    "categoryId": 7,
     "name": "Vodná elektráreň",
     "filename": "hydro",
-    "key1": "power",
-    "value1": "generator",
-    "key2": "generator:source",
-    "value2": "hydro"
+    "filter": [
+      {
+        "key": "power",
+        "value": "generator"
+      },
+      {
+        "key": "generator:source",
+        "value": "hydro"
+      }
+    ]
   },
   {
     "id": 29,
-    "category_id": 7,
+    "categoryId": 7,
     "name": "Veterná elektráreň",
     "filename": "wind",
-    "key1": "power",
-    "value1": "generator",
-    "key2": "generator:source",
-    "value2": "wind"
+    "filter": [
+      {
+        "key": "power",
+        "value": "generator"
+      },
+      {
+        "key": "generator:source",
+        "value": "wind"
+      }
+    ]
   },
   {
     "id": 30,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Potraviny",
     "filename": "convenience",
-    "key1": "shop",
-    "value1": "convenience",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop",
+        "value": "convenience"
+      }
+    ]
   },
   {
     "id": 31,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Hasičská stanica",
     "filename": "firestation",
-    "key1": "amenity",
-    "value1": "fire_station",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "fire_station"
+      }
+    ]
   },
   {
     "id": 32,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Kostol",
     "filename": "place_of_worship",
-    "key1": "amenity",
-    "value1": "place_of_worship",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "place_of_worship:type",
-    "// TODO value2": "~|~chapel"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "place_of_worship"
+      },
+      {
+        "key": "place_of_worship:type",
+        "value": "~|~chapel"
+      }
+    ]
   },
   {
     "id": 33,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Pohostinstvo",
     "filename": "pub",
-    "key1": "amenity",
-    "value1": "pub",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "pub"
+      }
+    ]
   },
   {
     "id": 34,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Banka",
     "filename": "bank",
-    "key1": "amenity",
-    "value1": "bank",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "atm",
-    "// TODO value2": "~|no|false"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bank"
+      },
+      {
+        "key": "atm",
+        "value": "~|no|false"
+      }
+    ]
   },
   {
     "id": 35,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Bankomat",
     "filename": "atm",
-    "key1": "amenity",
-    "value1": "atm",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "atm"
+      }
+    ]
   },
   {
     "id": 36,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Rýchle občerstvenie",
     "filename": "fast_food",
-    "key1": "amenity",
-    "value1": "fast_food",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "fast_food"
+      }
+    ]
   },
   {
     "id": 39,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Banka",
     "filename": "bank",
-    "key1": "amenity",
-    "value1": "bank",
-    "key2": "atm",
-    "value2": "yes|1"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bank"
+      },
+      {
+        "key": "atm",
+        "value": "yes|1"
+      }
+    ]
   },
   {
     "id": 40,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Výhľad",
     "filename": "viewpoint",
-    "key1": "tourism",
-    "value1": "viewpoint",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "viewpoint"
+      }
+    ]
   },
   {
     "id": 41,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Kemping",
     "filename": "camping",
-    "key1": "tourism",
-    "value1": "camp_site",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "camp_site"
+      }
+    ]
   },
   {
     "id": 42,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Chránené stromy",
     "filename": "protected_tree",
-    "key1": "natural",
-    "value1": "tree",
-    "key2": "protected",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "natural",
+        "value": "tree"
+      },
+      {
+        "key": "protected",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 43,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Prameň",
     "filename": "spring",
-    "key1": "natural",
-    "value1": "spring",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "natural",
+        "value": "spring"
+      }
+    ]
   },
   {
     "id": 44,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Rázcestník",
     "filename": "stand",
-    "key1": "information",
-    "value1": "guidepost",
-    "key2": "hiking",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "information",
+        "value": "guidepost"
+      },
+      {
+        "key": "hiking",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 45,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Orientačná mapa",
     "filename": "map",
-    "key1": "marked_trail",
-    "value1": "map",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "marked_trail",
+        "value": "map"
+      }
+    ]
   },
   {
     "id": 46,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Útulňa",
     "filename": "wilderness_hut",
-    "key1": "tourism",
-    "value1": "wilderness_hut",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "wilderness_hut"
+      }
+    ]
   },
   {
     "id": 47,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Prístrešok, altánok",
     "filename": "shelter",
-    "key1": "amenity",
-    "value1": "shelter",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "shelter"
+      }
+    ]
   },
   {
     "id": 48,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Poštový úrad",
     "filename": "post_office",
-    "key1": "amenity",
-    "value1": "post_office",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "post_office"
+      }
+    ]
   },
   {
     "id": 49,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Pamätník, bojisko",
     "filename": "battlefield",
-    "key1": "historic",
-    "value1": "battlefield",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "historic",
+        "value": "battlefield"
+      }
+    ]
   },
   {
     "id": 50,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Polovnícky posed",
     "filename": "hunting_stand",
-    "key1": "amenity",
-    "value1": "hunting_stand",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "hunting_stand"
+      }
+    ]
   },
   {
     "id": 51,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Vysielač",
     "filename": "tower_communication",
-    "key1": "man_made",
-    "value1": "tower",
-    "key2": "tower:type",
-    "value2": "communication"
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "tower"
+      },
+      {
+        "key": "tower:type",
+        "value": "communication"
+      }
+    ]
   },
   {
     "id": 52,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Rozhľadňa",
     "filename": "tower_observation",
-    "key1": "man_made",
-    "value1": "tower",
-    "key2": "tower:type",
-    "value2": "observation"
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "tower"
+      },
+      {
+        "key": "tower:type",
+        "value": "observation"
+      }
+    ]
   },
   {
     "id": 53,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Motel",
     "filename": "motel",
-    "key1": "tourism",
-    "value1": "motel",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "motel"
+      }
+    ]
   },
   {
     "id": 54,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Penzión",
     "filename": "guest_house",
-    "key1": "tourism",
-    "value1": "guest_house",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "guest_house"
+      }
+    ]
   },
   {
     "id": 55,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Privát",
     "filename": "hostel",
-    "key1": "tourism",
-    "value1": "hostel",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "hostel"
+      }
+    ]
   },
   {
     "id": 56,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Regionálne mesto",
     "filename": "region",
-    "key1": "place",
-    "value1": "city",
-    "key2": "city_type",
-    "value2": "region_city"
+    "filter": [
+      {
+        "key": "place",
+        "value": "city"
+      },
+      {
+        "key": "city_type",
+        "value": "region_city"
+      }
+    ]
   },
   {
     "id": 57,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Okresné mesto",
     "filename": "county",
-    "key1": "place",
-    "value1": "town",
-    "key2": "city_type",
-    "value2": "county_city"
+    "filter": [
+      {
+        "key": "place",
+        "value": "town"
+      },
+      {
+        "key": "city_type",
+        "value": "county_city"
+      }
+    ]
   },
   {
     "id": 58,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Veľké mesto",
     "filename": "city",
-    "key1": "place",
-    "value1": "city",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "city_type",
-    "// TODO value2": "~"
+    "filter": [
+      {
+        "key": "place",
+        "value": "city"
+      },
+      {
+        "key": "city_type",
+        "value": "~"
+      }
+    ]
   },
   {
     "id": 59,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Mesto",
     "filename": "town",
-    "key1": "place",
-    "value1": "town",
-    "key2": null,
-    "value2": null,
-    "// TODO key2": "city_type",
-    "// TODO value2": "~"
+    "filter": [
+      {
+        "key": "place",
+        "value": "town"
+      },
+      {
+        "key": "city_type",
+        "value": "~"
+      }
+    ]
   },
   {
     "id": 60,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Obec",
     "filename": "village",
-    "key1": "place",
-    "value1": "village",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "place",
+        "value": "village"
+      }
+    ]
   },
   {
     "id": 61,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Osada",
     "filename": "hamlet",
-    "key1": "place",
-    "value1": "hamlet",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "place",
+        "value": "hamlet"
+      }
+    ]
   },
   {
     "id": 62,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Mestský obvod",
     "filename": "suburb",
-    "key1": "place",
-    "value1": "suburb",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "place",
+        "value": "suburb"
+      }
+    ]
   },
   {
     "id": 63,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Horáreň",
     "filename": "ranger_house",
-    "key1": "amenity",
-    "value1": "ranger_house",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "ranger_house"
+      }
+    ]
   },
   {
     "id": 64,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Zubár",
     "filename": "dentist",
-    "key1": "amenity",
-    "value1": "dentist",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "dentist"
+      }
+    ]
   },
   {
     "id": 65,
-    "category_id": 15,
+    "categoryId": 15,
     "name": "Predajňa bicyklov",
     "filename": "bicycle",
-    "key1": "shop ",
-    "value1": "bicycle",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "bicycle"
+      }
+    ]
   },
   {
     "id": 66,
-    "category_id": 15,
+    "categoryId": 15,
     "name": "Stojan na bicykle",
     "filename": "bicycle_parking",
-    "key1": "amenity",
-    "value1": "bicycle_parking",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bicycle_parking"
+      }
+    ]
   },
   {
     "id": 67,
-    "category_id": 15,
+    "categoryId": 15,
     "name": "Prenájom bicyklov",
     "filename": "bicycle_rental",
-    "key1": "amenity",
-    "value1": "bicycle_rental",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bicycle_rental"
+      }
+    ]
   },
   {
     "id": 68,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Predaj alkoholu",
     "filename": "alcohol",
-    "key1": "shop ",
-    "value1": "alcohol",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "alcohol"
+      }
+    ]
   },
   {
     "id": 69,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Umenie",
     "filename": "art",
-    "key1": "shop ",
-    "value1": "art",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "art"
+      }
+    ]
   },
   {
     "id": 70,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Pekáreň",
     "filename": "bakery",
-    "key1": "shop ",
-    "value1": "bakery",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "bakery"
+      }
+    ]
   },
   {
     "id": 71,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Starostlivosť o krásu",
     "filename": "beauty",
-    "key1": "shop ",
-    "value1": "beauty",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "beauty"
+      }
+    ]
   },
   {
     "id": 72,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Postele",
     "filename": "bed",
-    "key1": "shop ",
-    "value1": "bed",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "bed"
+      }
+    ]
   },
   {
     "id": 73,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Nápoje",
     "filename": "beverages",
-    "key1": "shop ",
-    "value1": "beverages",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "beverages"
+      }
+    ]
   },
   {
     "id": 74,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Kníhkupectvo",
     "filename": "books",
-    "key1": "shop ",
-    "value1": "books",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "books"
+      }
+    ]
   },
   {
     "id": 75,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Butik",
     "filename": "boutique",
-    "key1": "shop ",
-    "value1": "boutique",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "boutique"
+      }
+    ]
   },
   {
     "id": 76,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Mäsiarstvo",
     "filename": "butcher",
-    "key1": "shop ",
-    "value1": "butcher",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "butcher"
+      }
+    ]
   },
   {
     "id": 77,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Predaj áut",
     "filename": "car",
-    "key1": "shop ",
-    "value1": "car",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "car"
+      }
+    ]
   },
   {
     "id": 78,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Autoservis",
     "filename": "car_repair",
-    "key1": "shop ",
-    "value1": "car_repair",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "car_repair"
+      }
+    ]
   },
   {
     "id": 79,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Charita",
     "filename": "charity",
-    "key1": "shop ",
-    "value1": "charity",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "charity"
+      }
+    ]
   },
   {
     "id": 80,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Drogéria",
     "filename": "chemist",
-    "key1": "shop ",
-    "value1": "chemist",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "chemist"
+      }
+    ]
   },
   {
     "id": 81,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Oblečenie",
     "filename": "clothes",
-    "key1": "shop ",
-    "value1": "clothes",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "clothes"
+      }
+    ]
   },
   {
     "id": 82,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Počítače",
     "filename": "computer",
-    "key1": "shop ",
-    "value1": "computer",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "computer"
+      }
+    ]
   },
   {
     "id": 83,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Cukrovinky",
     "filename": "confectionery",
-    "key1": "shop ",
-    "value1": "confectionery",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "confectionery"
+      }
+    ]
   },
   {
     "id": 84,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Kopírovanie",
     "filename": "copyshop",
-    "key1": "shop ",
-    "value1": "copyshop",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "copyshop"
+      }
+    ]
   },
   {
     "id": 85,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Záclony a závesy",
     "filename": "curtain",
-    "key1": "shop ",
-    "value1": "curtain",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "curtain"
+      }
+    ]
   },
   {
     "id": 86,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Delikatesy",
     "filename": "deli",
-    "key1": "shop ",
-    "value1": "deli",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "deli"
+      }
+    ]
   },
   {
     "id": 87,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Obchodný dom",
     "filename": "department_store",
-    "key1": "shop ",
-    "value1": "department_store",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "department_store"
+      }
+    ]
   },
   {
     "id": 88,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Potápačské potreby",
     "filename": "dive",
-    "key1": "shop ",
-    "value1": "dive",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "dive"
+      }
+    ]
   },
   {
     "id": 89,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Čistiareň",
     "filename": "dry_cleaning",
-    "key1": "shop ",
-    "value1": "dry_cleaning",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "dry_cleaning"
+      }
+    ]
   },
   {
     "id": 90,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Domáce výrobky",
     "filename": "doityourself",
-    "key1": "shop ",
-    "value1": "doityourself",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "doityourself"
+      }
+    ]
   },
   {
     "id": 91,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Elektronika",
     "filename": "electronics",
-    "key1": "shop ",
-    "value1": "electronics",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "electronics"
+      }
+    ]
   },
   {
     "id": 92,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Erotika",
     "filename": "erotic",
-    "key1": "shop ",
-    "value1": "erotic",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "erotic"
+      }
+    ]
   },
   {
     "id": 93,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Firemná predajňa",
     "filename": "fabric",
-    "key1": "shop ",
-    "value1": "fabric",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "fabric"
+      }
+    ]
   },
   {
     "id": 94,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Farmárske produkty",
     "filename": "farm",
-    "key1": "shop ",
-    "value1": "farm",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "farm"
+      }
+    ]
   },
   {
     "id": 95,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Kvetinárstvo",
     "filename": "florist",
-    "key1": "shop ",
-    "value1": "florist",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "florist"
+      }
+    ]
   },
   {
     "id": 96,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Obrazy",
     "filename": "frame",
-    "key1": "shop ",
-    "value1": "frame",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "frame"
+      }
+    ]
   },
   {
     "id": 97,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "furnace",
     "filename": "furnace",
-    "key1": "shop ",
-    "value1": "furnace",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "furnace"
+      }
+    ]
   },
   {
     "id": 98,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "funeral_directors",
     "filename": "funeral_directors",
-    "key1": "shop ",
-    "value1": "funeral_directors",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "funeral_directors"
+      }
+    ]
   },
   {
     "id": 99,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Nábytok",
     "filename": "furniture",
-    "key1": "shop ",
-    "value1": "furniture",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "furniture"
+      }
+    ]
   },
   {
     "id": 100,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Záhradné centrum",
     "filename": "garden_centre",
-    "key1": "shop ",
-    "value1": "garden_centre",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "garden_centre"
+      }
+    ]
   },
   {
     "id": 101,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Rozličný tovar",
     "filename": "general",
-    "key1": "shop ",
-    "value1": "general",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "general"
+      }
+    ]
   },
   {
     "id": 102,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Darčeková predajňa",
     "filename": "gift",
-    "key1": "shop ",
-    "value1": "gift",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "gift"
+      }
+    ]
   },
   {
     "id": 103,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "glaziery",
     "filename": "glaziery",
-    "key1": "shop ",
-    "value1": "glaziery",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "glaziery"
+      }
+    ]
   },
   {
     "id": 104,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Ovocie, zelenina",
     "filename": "greengrocer",
-    "key1": "shop ",
-    "value1": "greengrocer",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "greengrocer"
+      }
+    ]
   },
   {
     "id": 105,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Kaderníctvo",
     "filename": "hairdresser",
-    "key1": "shop ",
-    "value1": "hairdresser",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "hairdresser"
+      }
+    ]
   },
   {
     "id": 106,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Železiarstvo",
     "filename": "hardware",
-    "key1": "shop ",
-    "value1": "hardware",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "hardware"
+      }
+    ]
   },
   {
     "id": 107,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Načúvacie pomôcky",
     "filename": "hearing_aids",
-    "key1": "shop ",
-    "value1": "hearing_aids",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "hearing_aids"
+      }
+    ]
   },
   {
     "id": 108,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "HI-FI",
     "filename": "hifi",
-    "key1": "shop ",
-    "value1": "hifi",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "hifi"
+      }
+    ]
   },
   {
     "id": 109,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Zmrzlina",
     "filename": "ice_cream",
-    "key1": "amenity",
-    "value1": "ice_cream",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "ice_cream"
+      }
+    ]
   },
   {
     "id": 110,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "interior_decoration",
     "filename": "interior_decoration",
-    "key1": "shop ",
-    "value1": "interior_decoration",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "interior_decoration"
+      }
+    ]
   },
   {
     "id": 111,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Zlatníctvo",
     "filename": "jewelry",
-    "key1": "shop ",
-    "value1": "jewelry",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "jewelry"
+      }
+    ]
   },
   {
     "id": 112,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Kiosk",
     "filename": "kiosk",
-    "key1": "shop ",
-    "value1": "kiosk",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "kiosk"
+      }
+    ]
   },
   {
     "id": 113,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Kuchynské potreby",
     "filename": "kitchen",
-    "key1": "shop ",
-    "value1": "kitchen",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "kitchen"
+      }
+    ]
   },
   {
     "id": 114,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Práčovňa",
     "filename": "laundry",
-    "key1": "shop ",
-    "value1": "laundry",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "laundry"
+      }
+    ]
   },
   {
     "id": 115,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Nákupné centrum",
     "filename": "mall",
-    "key1": "shop ",
-    "value1": "mall",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "mall"
+      }
+    ]
   },
   {
     "id": 116,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Masáže",
     "filename": "massage",
-    "key1": "shop ",
-    "value1": "massage",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "massage"
+      }
+    ]
   },
   {
     "id": 117,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Mobilné telefóny",
     "filename": "mobile_phone",
-    "key1": "shop ",
-    "value1": "mobile_phone",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "mobile_phone"
+      }
+    ]
   },
   {
     "id": 118,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "money_lender",
     "filename": "money_lender",
-    "key1": "shop ",
-    "value1": "money_lender",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "money_lender"
+      }
+    ]
   },
   {
     "id": 119,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Motocykle",
     "filename": "motorcycle",
-    "key1": "shop ",
-    "value1": "motorcycle",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "motorcycle"
+      }
+    ]
   },
   {
     "id": 120,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Hudobné nástroje",
     "filename": "musical_instrument",
-    "key1": "shop ",
-    "value1": "musical_instrument",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "musical_instrument"
+      }
+    ]
   },
   {
     "id": 121,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Noviny",
     "filename": "newsagent",
-    "key1": "shop ",
-    "value1": "newsagent",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "newsagent"
+      }
+    ]
   },
   {
     "id": 122,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Optika",
     "filename": "optician",
-    "key1": "shop ",
-    "value1": "optician",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "optician"
+      }
+    ]
   },
   {
     "id": 123,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Organické potraviny",
     "filename": "organic",
-    "key1": "shop ",
-    "value1": "organic",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "organic"
+      }
+    ]
   },
   {
     "id": 124,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Outdoor",
     "filename": "outdoor",
-    "key1": "shop ",
-    "value1": "outdoor",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "outdoor"
+      }
+    ]
   },
   {
     "id": 125,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Farby",
     "filename": "paint",
-    "key1": "shop ",
-    "value1": "paint",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "paint"
+      }
+    ]
   },
   {
     "id": 126,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "pawnbroker",
     "filename": "pawnbroker",
-    "key1": "shop ",
-    "value1": "pawnbroker",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "pawnbroker"
+      }
+    ]
   },
   {
     "id": 127,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Zvieratá",
     "filename": "pet",
-    "key1": "shop ",
-    "value1": "pet",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "pet"
+      }
+    ]
   },
   {
     "id": 128,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Plody mora",
     "filename": "seafood",
-    "key1": "shop ",
-    "value1": "seafood",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "seafood"
+      }
+    ]
   },
   {
     "id": 129,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Second hand",
     "filename": "second_hand",
-    "key1": "shop ",
-    "value1": "second_hand",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "second_hand"
+      }
+    ]
   },
   {
     "id": 130,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Obuv",
     "filename": "shoes",
-    "key1": "shop ",
-    "value1": "shoes",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "shoes"
+      }
+    ]
   },
   {
     "id": 131,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Športové potreby",
     "filename": "sports",
-    "key1": "shop ",
-    "value1": "sports",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "sports"
+      }
+    ]
   },
   {
     "id": 132,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Papierníctvo",
     "filename": "stationery",
-    "key1": "shop ",
-    "value1": "stationery",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "stationery"
+      }
+    ]
   },
   {
     "id": 133,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Tetovanie",
     "filename": "tattoo",
-    "key1": "shop ",
-    "value1": "tattoo",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "tattoo"
+      }
+    ]
   },
   {
     "id": 134,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Hračkárstvo",
     "filename": "toys",
-    "key1": "shop ",
-    "value1": "toys",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "toys"
+      }
+    ]
   },
   {
     "id": 135,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Stavebniny",
     "filename": "building_supplies",
-    "key1": "shop ",
-    "value1": "trade",
-    "key2": "trade",
-    "value2": "building_supplies"
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "trade"
+      },
+      {
+        "key": "trade",
+        "value": "building_supplies"
+      }
+    ]
   },
   {
     "id": 136,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "vacant",
     "filename": "vacant",
-    "key1": "shop ",
-    "value1": "vacant",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "vacant"
+      }
+    ]
   },
   {
     "id": 137,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Vysávače",
     "filename": "vacuum_cleaner",
-    "key1": "shop ",
-    "value1": "vacuum_cleaner",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "vacuum_cleaner"
+      }
+    ]
   },
   {
     "id": 138,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "variety_store",
     "filename": "variety_store",
-    "key1": "shop ",
-    "value1": "variety_store",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "variety_store"
+      }
+    ]
   },
   {
     "id": 139,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Video/DVD",
     "filename": "video",
-    "key1": "shop ",
-    "value1": "video",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "shop ",
+        "value": "video"
+      }
+    ]
   },
   {
     "id": 140,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "ZOO",
     "filename": "zoo",
-    "key1": "tourism",
-    "value1": "zoo",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "zoo"
+      }
+    ]
   },
   {
     "id": 141,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Horská chata",
     "filename": "alpine_hut",
-    "key1": "tourism",
-    "value1": "alpine_hut",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "alpine_hut"
+      }
+    ]
   },
   {
     "id": 142,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Atrakcia",
     "filename": "attraction",
-    "key1": "tourism",
-    "value1": "attraction",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "attraction"
+      }
+    ]
   },
   {
     "id": 143,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Toalety",
     "filename": "toilets",
-    "key1": "amenity",
-    "value1": "toilets",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "toilets"
+      }
+    ]
   },
   {
     "id": 144,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Telefón",
     "filename": "telephone",
-    "key1": "amenity",
-    "value1": "telephone",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "telephone"
+      }
+    ]
   },
   {
     "id": 145,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Miestny úrad",
     "filename": "townhall",
-    "key1": "amenity",
-    "value1": "townhall",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "townhall"
+      }
+    ]
   },
   {
     "id": 146,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Väznica",
     "filename": "prison",
-    "key1": "amenity",
-    "value1": "prison",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "prison"
+      }
+    ]
   },
   {
     "id": 147,
-    "category_id": 6,
+    "categoryId": 6,
     "name": "Trhovisko",
     "filename": "marketplace",
-    "key1": "amenity",
-    "value1": "marketplace",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "marketplace"
+      }
+    ]
   },
   {
     "id": 148,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Bar",
     "filename": "bar",
-    "key1": "amenity",
-    "value1": "bar",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bar"
+      }
+    ]
   },
   {
     "id": 149,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Kaviareň",
     "filename": "cafe",
-    "key1": "amenity",
-    "value1": "cafe",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "cafe"
+      }
+    ]
   },
   {
     "id": 150,
-    "category_id": 8,
+    "categoryId": 8,
     "name": "Verejný gril",
     "filename": "bbq",
-    "key1": "amenity",
-    "value1": "bbq",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "bbq"
+      }
+    ]
   },
   {
     "id": 151,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Pitná voda",
     "filename": "drinking_water",
-    "key1": "amenity",
-    "value1": "drinking_water",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "drinking_water"
+      }
+    ]
   },
   {
     "id": 152,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Taxi",
     "filename": "taxi",
-    "key1": "amenity",
-    "value1": "taxi",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "taxi"
+      }
+    ]
   },
   {
     "id": 153,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Knižnica",
     "filename": "library",
-    "key1": "amenity",
-    "value1": "library",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "library"
+      }
+    ]
   },
   {
     "id": 154,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Umývačka áut",
     "filename": "car_wash",
-    "key1": "amenity",
-    "value1": "car_wash",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "car_wash"
+      }
+    ]
   },
   {
     "id": 155,
-    "category_id": 5,
+    "categoryId": 5,
     "name": "Veterinár",
     "filename": "veterinary",
-    "key1": "amenity",
-    "value1": "veterinary",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "veterinary"
+      }
+    ]
   },
   {
     "id": 156,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Semafór",
     "filename": "traffic_signals",
-    "key1": "highway",
-    "value1": "traffic_signals",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "highway",
+        "value": "traffic_signals"
+      }
+    ]
   },
   {
     "id": 157,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Železničná zástavka",
     "filename": "halt",
-    "key1": "railway",
-    "value1": "halt",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "railway",
+        "value": "halt"
+      }
+    ]
   },
   {
     "id": 158,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Železničné priecestie",
     "filename": "level_crossing",
-    "key1": "railway",
-    "value1": "level_crossing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "railway",
+        "value": "level_crossing"
+      }
+    ]
   },
   {
     "id": 159,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Zástavka električky",
     "filename": "tram_stop",
-    "key1": "railway",
-    "value1": "tram_stop",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "railway",
+        "value": "tram_stop"
+      }
+    ]
   },
   {
     "id": 160,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Heliport",
     "filename": "helipad",
-    "key1": "aeroway",
-    "value1": "helipad",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "aeroway",
+        "value": "helipad"
+      }
+    ]
   },
   {
     "id": 161,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Vodárenská veža",
     "filename": "water_tower",
-    "key1": "man_made",
-    "value1": "water_tower",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "water_tower"
+      }
+    ]
   },
   {
     "id": 162,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Veterný mlyn",
     "filename": "windmill",
-    "key1": "man_made",
-    "value1": "windmill",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "windmill"
+      }
+    ]
   },
   {
     "id": 163,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Sauna",
     "filename": "sauna",
-    "key1": "amenity",
-    "value1": "sauna",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "sauna"
+      }
+    ]
   },
   {
     "id": 164,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Čerpacia stanica LPG",
     "filename": "fuel",
-    "key1": "amenity",
-    "value1": "fuel",
-    "key2": "fuel:lpg",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "fuel"
+      },
+      {
+        "key": "fuel:lpg",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 166,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Park pre psov",
     "filename": "dog_park",
-    "key1": "leisure",
-    "value1": "dog_park",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "dog_park"
+      }
+    ]
   },
   {
     "id": 167,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Športové centrum",
     "filename": "sports_centre",
-    "key1": "leisure",
-    "value1": "sports_centre",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "sports_centre"
+      }
+    ]
   },
   {
     "id": 168,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Kurzy golfu",
     "filename": "golf_course",
-    "key1": "leisure",
-    "value1": "golf_course",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "golf_course"
+      }
+    ]
   },
   {
     "id": 169,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Štadión",
     "filename": "stadium",
-    "key1": "leisure",
-    "value1": "stadium",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "stadium"
+      }
+    ]
   },
   {
     "id": 170,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Ihrisko",
     "filename": "pitch",
-    "key1": "leisure",
-    "value1": "pitch",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "pitch"
+      }
+    ]
   },
   {
     "id": 171,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Vodný park",
     "filename": "water_park",
-    "key1": "leisure",
-    "value1": "water_park",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "water_park"
+      }
+    ]
   },
   {
     "id": 172,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Vypúštanie lodí",
     "filename": "slipway",
-    "key1": "leisure",
-    "value1": "slipway",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "slipway"
+      }
+    ]
   },
   {
     "id": 173,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Rybolov",
     "filename": "fishing",
-    "key1": "leisure",
-    "value1": "fishing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "fishing"
+      }
+    ]
   },
   {
     "id": 174,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Park",
     "filename": "park",
-    "key1": "leisure",
-    "value1": "park",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "park"
+      }
+    ]
   },
   {
     "id": 175,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Detské ihrisko",
     "filename": "playground",
-    "key1": "leisure",
-    "value1": "playground",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "playground"
+      }
+    ]
   },
   {
     "id": 176,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Záhrada",
     "filename": "garden",
-    "key1": "leisure",
-    "value1": "garden",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "garden"
+      }
+    ]
   },
   {
     "id": 177,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Verejná plocha",
     "filename": "common",
-    "key1": "leisure",
-    "value1": "common",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "common"
+      }
+    ]
   },
   {
     "id": 178,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Klzisko",
     "filename": "ice_rink",
-    "key1": "leisure",
-    "value1": "ice_rink",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "ice_rink"
+      }
+    ]
   },
   {
     "id": 179,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Mini-golf",
     "filename": "miniature_golf",
-    "key1": "leisure",
-    "value1": "miniature_golf",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "miniature_golf"
+      }
+    ]
   },
   {
     "id": 180,
-    "category_id": 12,
+    "categoryId": 12,
     "name": "Tanec",
     "filename": "dance",
-    "key1": "leisure",
-    "value1": "dance",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "dance"
+      }
+    ]
   },
   {
     "id": 181,
-    "category_id": 14,
+    "categoryId": 14,
     "name": "Základná škola",
     "filename": "school",
-    "key1": "amenity",
-    "value1": "school",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "school"
+      }
+    ]
   },
   {
     "id": 182,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "9pin",
     "filename": "9pin",
-    "key1": "sport",
-    "value1": "9pin",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "9pin"
+      }
+    ]
   },
   {
     "id": 183,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Bowling",
     "filename": "10pin",
-    "key1": "sport",
-    "value1": "10pin",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "10pin"
+      }
+    ]
   },
   {
     "id": 184,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Americký futbal",
     "filename": "american_football",
-    "key1": "sport",
-    "value1": "american_football",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "american_football"
+      }
+    ]
   },
   {
     "id": 185,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Lukostrelba",
     "filename": "archery",
-    "key1": "sport",
-    "value1": "archery",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "archery"
+      }
+    ]
   },
   {
     "id": 186,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Atletika",
     "filename": "athletics",
-    "key1": "sport",
-    "value1": "athletics",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "athletics"
+      }
+    ]
   },
   {
     "id": 187,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "australian_football",
     "filename": "australian_football",
-    "key1": "sport",
-    "value1": "australian_football",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "australian_football"
+      }
+    ]
   },
   {
     "id": 188,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Baseball",
     "filename": "baseball",
-    "key1": "sport",
-    "value1": "baseball",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "baseball"
+      }
+    ]
   },
   {
     "id": 189,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Basketball",
     "filename": "basketball",
-    "key1": "sport",
-    "value1": "basketball",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "basketball"
+      }
+    ]
   },
   {
     "id": 190,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Plážový volejbal",
     "filename": "beachvolleyball",
-    "key1": "sport",
-    "value1": "beachvolleyball",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "beachvolleyball"
+      }
+    ]
   },
   {
     "id": 191,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Bmx",
     "filename": "bmx",
-    "key1": "sport",
-    "value1": "bmx",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "bmx"
+      }
+    ]
   },
   {
     "id": 192,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Boules",
     "filename": "boules",
-    "key1": "sport",
-    "value1": "boules",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "boules"
+      }
+    ]
   },
   {
     "id": 193,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Bowls",
     "filename": "bowls",
-    "key1": "sport",
-    "value1": "bowls",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "bowls"
+      }
+    ]
   },
   {
     "id": 194,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "canadian_football",
     "filename": "canadian_football",
-    "key1": "sport",
-    "value1": "canadian_football",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "canadian_football"
+      }
+    ]
   },
   {
     "id": 195,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Kanoe",
     "filename": "canoe",
-    "key1": "sport",
-    "value1": "canoe",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "canoe"
+      }
+    ]
   },
   {
     "id": 196,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Šach",
     "filename": "chess",
-    "key1": "sport",
-    "value1": "chess",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "chess"
+      }
+    ]
   },
   {
     "id": 197,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Lezenie",
     "filename": "climbing",
-    "key1": "sport",
-    "value1": "climbing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "climbing"
+      }
+    ]
   },
   {
     "id": 198,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Kriket",
     "filename": "cricket",
-    "key1": "sport",
-    "value1": "cricket",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "cricket"
+      }
+    ]
   },
   {
     "id": 199,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "cricket_nets",
     "filename": "cricket_nets",
-    "key1": "sport",
-    "value1": "cricket_nets",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "cricket_nets"
+      }
+    ]
   },
   {
     "id": 200,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "croquet",
     "filename": "croquet",
-    "key1": "sport",
-    "value1": "croquet",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "croquet"
+      }
+    ]
   },
   {
     "id": 201,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Bicyklovanie",
     "filename": "cycling",
-    "key1": "sport",
-    "value1": "cycling",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "cycling"
+      }
+    ]
   },
   {
     "id": 202,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Potápanie",
     "filename": "diving",
-    "key1": "sport",
-    "value1": "diving",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "diving"
+      }
+    ]
   },
   {
     "id": 203,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Preteky psov",
     "filename": "dog_racing",
-    "key1": "sport",
-    "value1": "dog_racing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "dog_racing"
+      }
+    ]
   },
   {
     "id": 204,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Jazdenie na koni",
     "filename": "equestrian",
-    "key1": "sport",
-    "value1": "equestrian",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "equestrian"
+      }
+    ]
   },
   {
     "id": 205,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Futbal",
     "filename": "football",
-    "key1": "sport",
-    "value1": "football",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "football"
+      }
+    ]
   },
   {
     "id": 206,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "gaelic_football",
     "filename": "gaelic_football",
-    "key1": "sport",
-    "value1": "gaelic_football",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "gaelic_football"
+      }
+    ]
   },
   {
     "id": 207,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Golf",
     "filename": "golf",
-    "key1": "sport",
-    "value1": "golf",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "golf"
+      }
+    ]
   },
   {
     "id": 208,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Gymnastika",
     "filename": "gymnastics",
-    "key1": "sport",
-    "value1": "gymnastics",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "gymnastics"
+      }
+    ]
   },
   {
     "id": 209,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Hokej",
     "filename": "hockey",
-    "key1": "sport",
-    "value1": "hockey",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "hockey"
+      }
+    ]
   },
   {
     "id": 210,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "horseshoes",
     "filename": "horseshoes",
-    "key1": "sport",
-    "value1": "horseshoes",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "horseshoes"
+      }
+    ]
   },
   {
     "id": 211,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Dostihy",
     "filename": "horse_racing",
-    "key1": "sport",
-    "value1": "horse_racing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "horse_racing"
+      }
+    ]
   },
   {
     "id": 212,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "ice_stock",
     "filename": "ice_stock",
-    "key1": "sport",
-    "value1": "ice_stock",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "ice_stock"
+      }
+    ]
   },
   {
     "id": 213,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "korfball",
     "filename": "korfball",
-    "key1": "sport",
-    "value1": "korfball",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "korfball"
+      }
+    ]
   },
   {
     "id": 214,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Motorky",
     "filename": "motor",
-    "key1": "sport",
-    "value1": "motor",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "motor"
+      }
+    ]
   },
   {
     "id": 215,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Multi",
     "filename": "multi",
-    "key1": "sport",
-    "value1": "multi",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "multi"
+      }
+    ]
   },
   {
     "id": 216,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "orienteering",
     "filename": "orienteering",
-    "key1": "sport",
-    "value1": "orienteering",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "orienteering"
+      }
+    ]
   },
   {
     "id": 217,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "paddle_tennis",
     "filename": "paddle_tennis",
-    "key1": "sport",
-    "value1": "paddle_tennis",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "paddle_tennis"
+      }
+    ]
   },
   {
     "id": 218,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Paraglajding",
     "filename": "paragliding",
-    "key1": "sport",
-    "value1": "paragliding",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "paragliding"
+      }
+    ]
   },
   {
     "id": 219,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "pelota",
     "filename": "pelota",
-    "key1": "sport",
-    "value1": "pelota",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "pelota"
+      }
+    ]
   },
   {
     "id": 220,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "racquet",
     "filename": "racquet",
-    "key1": "sport",
-    "value1": "racquet",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "racquet"
+      }
+    ]
   },
   {
     "id": 221,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "rowing",
     "filename": "rowing",
-    "key1": "sport",
-    "value1": "rowing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "rowing"
+      }
+    ]
   },
   {
     "id": 222,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "rugby_league",
     "filename": "rugby_league",
-    "key1": "sport",
-    "value1": "rugby_league",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "rugby_league"
+      }
+    ]
   },
   {
     "id": 223,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "rugby_union",
     "filename": "rugby_union",
-    "key1": "sport",
-    "value1": "rugby_union",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "rugby_union"
+      }
+    ]
   },
   {
     "id": 224,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Strelba",
     "filename": "shooting",
-    "key1": "sport",
-    "value1": "shooting",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "shooting"
+      }
+    ]
   },
   {
     "id": 225,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Korčulovanie",
     "filename": "skating",
-    "key1": "sport",
-    "value1": "skating",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "skating"
+      }
+    ]
   },
   {
     "id": 226,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Skateboard",
     "filename": "skateboard",
-    "key1": "sport",
-    "value1": "skateboard",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "skateboard"
+      }
+    ]
   },
   {
     "id": 227,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Lyžovanie",
     "filename": "skiing",
-    "key1": "sport",
-    "value1": "skiing",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "skiing"
+      }
+    ]
   },
   {
     "id": 228,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Futbal",
     "filename": "soccer",
-    "key1": "sport",
-    "value1": "soccer",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "soccer"
+      }
+    ]
   },
   {
     "id": 229,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Plávanie",
     "filename": "swimming",
-    "key1": "sport",
-    "value1": "swimming",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "swimming"
+      }
+    ]
   },
   {
     "id": 230,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Stolný tenis",
     "filename": "table_tennis",
-    "key1": "sport",
-    "value1": "table_tennis",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "table_tennis"
+      }
+    ]
   },
   {
     "id": 231,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Hádzaná",
     "filename": "team_handball",
-    "key1": "sport",
-    "value1": "team_handball",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "team_handball"
+      }
+    ]
   },
   {
     "id": 232,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Tenis",
     "filename": "tennis",
-    "key1": "sport",
-    "value1": "tennis",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "tennis"
+      }
+    ]
   },
   {
     "id": 233,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Tobogan",
     "filename": "toboggan",
-    "key1": "sport",
-    "value1": "toboggan",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "toboggan"
+      }
+    ]
   },
   {
     "id": 234,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Volejbal",
     "filename": "volleyball",
-    "key1": "sport",
-    "value1": "volleyball",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "volleyball"
+      }
+    ]
   },
   {
     "id": 235,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Vodné lyžovanie",
     "filename": "water_ski",
-    "key1": "sport",
-    "value1": "water_ski",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "water_ski"
+      }
+    ]
   },
   {
     "id": 236,
-    "category_id": 14,
+    "categoryId": 14,
     "name": "Univerzita",
     "filename": "university",
-    "key1": "amenity",
-    "value1": "university",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "university"
+      }
+    ]
   },
   {
     "id": 237,
-    "category_id": 14,
+    "categoryId": 14,
     "name": "Materská škola",
     "filename": "kindergarten",
-    "key1": "amenity",
-    "value1": "kindergarten",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "kindergarten"
+      }
+    ]
   },
   {
     "id": 238,
-    "category_id": 14,
+    "categoryId": 14,
     "name": "Stredná škola",
     "filename": "college",
-    "key1": "amenity",
-    "value1": "college",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "college"
+      }
+    ]
   },
   {
     "id": 239,
-    "category_id": 14,
+    "categoryId": 14,
     "name": "Autoškola",
     "filename": "driving_school",
-    "key1": "amenity",
-    "value1": "driving_school",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "driving_school"
+      }
+    ]
   },
   {
     "id": 240,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Kaplnka",
     "filename": "chapel",
-    "key1": "amenity",
-    "value1": "place_of_worship",
-    "key2": "place_of_worship:type",
-    "value2": "chapel"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "place_of_worship"
+      },
+      {
+        "key": "place_of_worship:type",
+        "value": "chapel"
+      }
+    ]
   },
   {
     "id": 241,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Miesto na piknik",
     "filename": "picnic_site",
-    "key1": "tourism",
-    "value1": "picnic_site",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "picnic_site"
+      }
+    ]
   },
   {
     "id": 242,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Miesto s ohniskom",
     "filename": "fireplace",
-    "key1": "fireplace",
-    "value1": "yes",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "fireplace",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 243,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Lokalita",
     "filename": "locality",
-    "key1": "place",
-    "value1": "locality",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "place",
+        "value": "locality"
+      }
+    ]
   },
   {
     "id": 244,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Vodopád",
     "filename": "waterfall",
-    "key1": "waterway",
-    "value1": "waterfall",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "waterway",
+        "value": "waterfall"
+      }
+    ]
   },
   {
     "id": 245,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Jazero",
     "filename": "lake",
-    "key1": "natural",
-    "value1": "water",
-    "key2": null,
-    "value2": null,
-    "//TODO key2": "water",
-    "//TODO value2": "~|~reservoir"
+    "filter": [
+      {
+        "key": "natural",
+        "value": "water"
+      },
+      {
+        "key": "water",
+        "value": "~|~reservoir"
+      }
+    ]
   },
   {
     "id": 246,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Priehrada",
     "filename": "riverbank",
-    "key1": "natural",
-    "value1": "water",
-    "key2": "water",
-    "value2": "reservoir"
+    "filter": [
+      {
+        "key": "natural",
+        "value": "water"
+      },
+      {
+        "key": "water",
+        "value": "reservoir"
+      }
+    ]
   },
   {
     "id": 248,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Prírodná rezervácia",
     "filename": "boundary_reserve",
-    "key1": "boundary",
-    "value1": "protected_area",
-    "key2": "protect_class",
-    "value2": "1"
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "protected_area"
+      },
+      {
+        "key": "protect_class",
+        "value": "1"
+      }
+    ]
   },
   {
     "id": 249,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Prírodná pamiatka",
     "filename": "boundary_monument",
-    "key1": "boundary",
-    "value1": "protected_area",
-    "key2": "protect_class",
-    "value2": "3"
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "protected_area"
+      },
+      {
+        "key": "protect_class",
+        "value": "3"
+      }
+    ]
   },
   {
     "id": 250,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Chránený areál",
     "filename": "boundary_protected_site",
-    "key1": "boundary",
-    "value1": "protected_area",
-    "key2": "protect_class",
-    "value2": "4"
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "protected_area"
+      },
+      {
+        "key": "protect_class",
+        "value": "4"
+      }
+    ]
   },
   {
     "id": 251,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Chránená krajinná oblasť",
     "filename": "boundary_protected_area",
-    "key1": "boundary",
-    "value1": "protected_area",
-    "key2": "protect_class",
-    "value2": "5"
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "protected_area"
+      },
+      {
+        "key": "protect_class",
+        "value": "5"
+      }
+    ]
   },
   {
     "id": 252,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Národný park",
     "filename": "boundary_national_park",
-    "key1": "boundary",
-    "value1": "national_park",
-    "key2": "protect_class",
-    "value2": "2"
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "national_park"
+      },
+      {
+        "key": "protect_class",
+        "value": "2"
+      }
+    ]
   },
   {
     "id": 253,
-    "category_id": 2,
+    "categoryId": 2,
     "name": "Automat na mlieko",
     "filename": "vending_machine_milk",
-    "key1": "amenity",
-    "value1": "vending_machine",
-    "key2": "vending",
-    "value2": "milk"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "vending_machine"
+      },
+      {
+        "key": "vending",
+        "value": "milk"
+      }
+    ]
   },
   {
     "id": 254,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Významné mokriny (RAMSAR)",
     "filename": "boundary_protected_area_ramsar",
-    "key1": "boundary",
-    "value1": "protected_area",
-    "key2": "protection_id",
-    "value2": "98"
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "protected_area"
+      },
+      {
+        "key": "protection_id",
+        "value": "98"
+      }
+    ]
   },
   {
     "id": 255,
-    "category_id": 10,
+    "categoryId": 10,
     "name": "Adresné body",
     "filename": "addr",
-    "key1": "addr:housenumber",
-    "value1": "*",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "addr:housenumber",
+        "value": "*"
+      }
+    ]
   },
   {
     "id": 256,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Banícka šachta",
     "filename": "mineshaft",
-    "key1": "man_made",
-    "value1": "mineshaft",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "mineshaft"
+      }
+    ]
   },
   {
     "id": 257,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Štôlňa",
     "filename": "adit",
-    "key1": "man_made",
-    "value1": "adit",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "adit"
+      }
+    ]
   },
   {
     "id": 258,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Studňa",
     "filename": "water_well",
-    "key1": "man_made",
-    "value1": "water_well",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "water_well"
+      }
+    ]
   },
   {
     "id": 259,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Kríž",
     "filename": "wayside_cross",
-    "key1": "historic",
-    "value1": "wayside_cross",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "historic",
+        "value": "wayside_cross"
+      }
+    ]
   },
   {
     "id": 260,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Svätyňa",
     "filename": "wayside_shrine",
-    "key1": "historic",
-    "value1": "wayside_shrine",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "historic",
+        "value": "wayside_shrine"
+      }
+    ]
   },
   {
     "id": 261,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Posilňovňa",
     "filename": "gym",
-    "key1": "amenity",
-    "value1": "gym",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "gym"
+      }
+    ]
   },
   {
     "id": 262,
-    "category_id": 7,
+    "categoryId": 7,
     "name": "Paroplynová elektráreň",
     "filename": "generator_gas",
-    "key1": "power",
-    "value1": "generator",
-    "key2": "generator:source",
-    "value2": "gas"
+    "filter": [
+      {
+        "key": "power",
+        "value": "generator"
+      },
+      {
+        "key": "generator:source",
+        "value": "gas"
+      }
+    ]
   },
   {
     "id": 263,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Kaštiel",
     "filename": "manor",
-    "key1": "historic",
-    "value1": "manor",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "historic",
+        "value": "manor"
+      }
+    ]
   },
   {
     "id": 264,
-    "category_id": 1,
+    "categoryId": 1,
     "name": "Geomorfologické členenie",
     "filename": "geomorphological_unit",
-    "key1": "boundary",
-    "value1": "geomorphological-unit",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "boundary",
+        "value": "geomorphological-unit"
+      }
+    ]
   },
   {
     "id": 265,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Vojenský bunker",
     "filename": "bunker",
-    "key1": "military",
-    "value1": "bunker",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "military",
+        "value": "bunker"
+      }
+    ]
   },
   {
     "id": 266,
-    "category_id": 3,
+    "categoryId": 3,
     "name": "Príjazd/Výjazd z diaľnice",
     "filename": "motorway_junction",
-    "key1": "highway",
-    "value1": "motorway_junction",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "highway",
+        "value": "motorway_junction"
+      }
+    ]
   },
   {
     "id": 267,
-    "category_id": 4,
+    "categoryId": 4,
     "name": "Sochy",
     "filename": "sculpture",
-    "key1": "tourism",
-    "value1": "artwork",
-    "key2": "artwork_type",
-    "value2": "sculpture"
+    "filter": [
+      {
+        "key": "tourism",
+        "value": "artwork"
+      },
+      {
+        "key": "artwork_type",
+        "value": "sculpture"
+      }
+    ]
   },
   {
     "id": 268,
-    "category_id": 11,
+    "categoryId": 11,
     "name": "Komín",
     "filename": "chimney",
-    "key1": "man_made",
-    "value1": "chimney",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "man_made",
+        "value": "chimney"
+      }
+    ]
   },
   {
     "id": 269,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Paragliding",
     "filename": "paragliding",
-    "key1": "sport",
-    "value1": "free_flying",
-    "key2": "free_flying:paragliding",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "sport",
+        "value": "free_flying"
+      },
+      {
+        "key": "free_flying:paragliding",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 270,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Závesné lietanie",
     "filename": "hanggliding",
-    "key1": "sport",
-    "value1": "free_flying",
-    "key2": "free_flying:hanggliding",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "sport",
+        "value": "free_flying"
+      },
+      {
+        "key": "free_flying:hanggliding",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 271,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Krmelec",
     "filename": "feeding",
-    "key1": "amenity",
-    "value1": "feeding_place|game_feeding",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "feeding_place|game_feeding"
+      }
+    ]
   },
   {
     "id": 272,
-    "category_id": 9,
+    "categoryId": 9,
     "name": "Ohnisko",
     "filename": "fireplace",
-    "key1": "leisure",
-    "value1": "firepit",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "leisure",
+        "value": "firepit"
+      }
+    ]
   },
   {
     "id": 273,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Bedminton/Squash",
     "filename": "tennis",
-    "key1": "sport",
-    "value1": "badminton|squash",
-    "key2": null,
-    "value2": null
+    "filter": [
+      {
+        "key": "sport",
+        "value": "badminton|squash"
+      }
+    ]
   },
   {
     "id": 274,
-    "category_id": 15,
+    "categoryId": 15,
     "name": "Rázcestník",
     "filename": "stand",
-    "key1": "information",
-    "value1": "guidepost",
-    "key2": "bicycle",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "information",
+        "value": "guidepost"
+      },
+      {
+        "key": "bicycle",
+        "value": "yes"
+      }
+    ]
   },
   {
     "id": 275,
-    "category_id": 13,
+    "categoryId": 13,
     "name": "Nabíjacia stanica pre bicykle",
     "filename": "ecycle_charging",
-    "key1": "amenity",
-    "value1": "charging_station",
-    "key2": "bicycle",
-    "value2": "yes"
+    "filter": [
+      {
+        "key": "amenity",
+        "value": "charging_station"
+      },
+      {
+        "key": "bicycle",
+        "value": "yes"
+      }
+    ]
   }
 ]

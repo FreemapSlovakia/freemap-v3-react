@@ -18,7 +18,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom, location: { search } }) {
   function select(i) {
-    onSearch(poiTypes[i].filter);
+    onSearch(poiTypes[i].overpassFilter);
   }
 
   function validateZoom() {

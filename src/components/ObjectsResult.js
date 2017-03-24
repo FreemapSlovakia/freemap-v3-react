@@ -3,15 +3,15 @@ import { connect } from 'react-redux';
 import { Popup } from 'react-leaflet';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
-import { toHtml, getPointType } from 'fm3/poiTypes';
+import { toHtml, getPoiType } from 'fm3/poiTypes';
 
 function ObjectsResult({ objects }) {
   return (
     <div>
-      {objects.map(({ id, lat, lon, tags }) => {
-        const __html = toHtml(tags);
+      {objects.map(({ id, lat, lon, tags, typeId }) => {
+        const __html = toHtml(typeId, tags);
 
-        const pt = getPointType(tags);
+        const pt = getPoiType(typeId);
         const img = pt ? require(`../images/mapIcons/${pt.group}-${pt.id}.png`) : null;
 
         return (
