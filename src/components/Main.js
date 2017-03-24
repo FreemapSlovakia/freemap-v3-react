@@ -204,7 +204,7 @@ class Main extends React.Component {
               tileFormat={tileFormat} overlayOpacity={this.props.overlayOpacity}
             />
 
-            {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <ScaleControl imperial={false} position="bottomright"/> }
+            <ScaleControl imperial={false} position="bottomright" />
 
             {(showDefaultMenu || tool === 'search') && <SearchResults/>}
 
