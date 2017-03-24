@@ -1,8 +1,14 @@
 @import "variables";
 
-#toast-container>div.toast-info {
+#toast-container > div.toast-info {
   background-color: $theme-primary-color;
   opacity: 1.0;
+}
+
+.toast-message a {
+  &, &:hover {
+    text-decoration: underline;
+  }
 }
 
 a.leaflet-control-layers-toggle {

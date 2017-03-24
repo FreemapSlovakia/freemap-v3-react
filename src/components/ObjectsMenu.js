@@ -1,5 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router-dom';
+import { withRouter } from 'react-router';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
@@ -14,15 +16,15 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom }) {
-
+function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom, location: { search } }) {
   function select(i) {
     onSearch(poiTypes[i].filter);
   }
 
   function validateZoom() {
     if (zoom < 12) {
-      onShowToast('info', null, 'Vyhľadávanie miest funguje až od priblíženia úrovne 12');
+      const to = search.replace(/\bmap=\d+/, 'map=12'); // TODO this is ugly. Rework after introducing react-url-query
+      onShowToast('info', null, <span>Vyhľadávanie miest funguje až od priblíženia <Link to={to}>úrovne 12</Link>.</span>);
     }
   }
 
@@ -56,7 +58,8 @@ ObjectsMenu.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
   onShowToast: React.PropTypes.func.isRequired,
-  zoom: React.PropTypes.number.isRequired
+  zoom: React.PropTypes.number.isRequired,
+  location: React.PropTypes.object.isRequired,
 };
 
 export default connect(
@@ -75,4 +78,4 @@ export default connect(
       }
     };
   }
-)(ObjectsMenu);
+)(withRouter(ObjectsMenu));
