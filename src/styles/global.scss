@@ -55,3 +55,12 @@ html, .map-holder, #app, #app > div, .container-fluid {
     height: calc(100vh - 64px);
   }
 }
+
+.fa-icon-inside-leaflet-icon-holder {
+  position: absolute; 
+  width: 100%;left: 50%;
+  margin-left: -50%;
+  top: 6px;
+  text-align: center;
+  font-size: 83%;
+}

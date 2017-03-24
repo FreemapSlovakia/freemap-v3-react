@@ -1,22 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Marker, Polyline, Tooltip } from 'react-leaflet';
+import { Polyline, Tooltip } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-
-function createIcon(color) {
-  return new L.Icon({
-    iconSize: [ 23, 37 ],
-    iconAnchor: [ 12, 37 ],
-    iconUrl: require(`../images/marker-icon-${color}.png`),
-    iconRetinaUrl: require(`../images/marker-icon-2x-${color}.png`)
-  });
-}
-
-const startIcon = createIcon('green');
-const finishIcon = createIcon('red');
 
 class RoutePlannerResult extends React.Component {
 
@@ -75,8 +63,10 @@ class RoutePlannerResult extends React.Component {
     return (
       <div>
         {start &&
-          <Marker
-            icon={startIcon}
+          <MarkerWithInnerLabel
+            faIcon="play"
+            faIconLeftPadding="2px"
+            color="green"
             draggable
             onDragend={(e) => this.handleRouteMarkerDragend('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
@@ -96,8 +86,9 @@ class RoutePlannerResult extends React.Component {
         )}
 
         {finish &&
-          <Marker
-            icon={finishIcon}
+          <MarkerWithInnerLabel
+            faIcon="stop"
+            color="red"
             draggable
             onDragend={(e) => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
@@ -108,7 +99,7 @@ class RoutePlannerResult extends React.Component {
                 <span>{distance}, {time}</span>
               </Tooltip>
             }
-          </Marker>
+          </MarkerWithInnerLabel>
         }
         {shapePoints && <Polyline positions={shapePoints} weight="8" opacity="0.8" interactive={false}/>}
       </div>

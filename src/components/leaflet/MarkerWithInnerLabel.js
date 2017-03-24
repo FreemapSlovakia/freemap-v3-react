@@ -3,9 +3,9 @@ import { Marker } from 'react-leaflet';
 
 export default function MarkerWithInnerLabel(props) {
   const oneLetterLabel = props.label && props.label.toString().charAt(0);
-  const { image, color = '#2981ca' } = props;
+  const { image, faIcon, faIconLeftPadding, color = '#2981ca' } = props;
 
-  const svg = `<?xml version="1.0" encoding="utf-8"?>
+  let html = `<?xml version="1.0" encoding="utf-8"?>
     <svg style="enable-background:new 0 0 512 512;" x="0px" y="0px" viewBox="0 0 310 512" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <radialGradient id="gradient-2" gradientUnits="userSpaceOnUse" cx="154.607" cy="160.652" r="131.625" gradientTransform="matrix(0.907588, 0, 0, 0.907588, 13.800331, 17.89466)">
@@ -20,11 +20,16 @@ export default function MarkerWithInnerLabel(props) {
       ${image ? `<image x="74" y="84" width="160" height="160" xlink:href="${image}">` : ''}
     </svg>`;
 
+  if (faIcon) {
+    let leftPadding = faIconLeftPadding || 0;
+    html += `<div class="fa-icon-inside-leaflet-icon-holder"><i class="fa fa-${faIcon}" style="color: ${color}; padding-left: ${leftPadding}" /></div>`; 
+  }
+
   const icon = new L.divIcon({
     iconSize: [ 24, 40 ],
     iconAnchor: [ 12, 37 ],
     popupAnchor: [ 0, -34 ],
-    html: svg
+    html
   });
 
   return <Marker {...props} icon={icon}/>;
@@ -37,5 +42,7 @@ MarkerWithInnerLabel.propTypes = {
     React.PropTypes.number
   ]),
   color: React.PropTypes.string,
-  image: React.PropTypes.string
+  image: React.PropTypes.string,
+  faIcon: React.PropTypes.string,
+  faIconLeftPadding: React.PropTypes.string
 };
