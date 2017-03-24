@@ -3,7 +3,7 @@ import { Marker } from 'react-leaflet';
 
 export default function MarkerWithInnerLabel(props) {
   const oneLetterLabel = props.label && props.label.toString().charAt(0);
-  const { image, faIcon, faIconLeftPadding, color = '#2981ca' } = props;
+  const { image, faIcon, faIconLeftPadding, color = '#428bca' } = props;
 
   let html = `<?xml version="1.0" encoding="utf-8"?>
     <svg style="enable-background:new 0 0 512 512;" x="0px" y="0px" viewBox="0 0 310 512" xmlns="http://www.w3.org/2000/svg">

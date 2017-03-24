@@ -66,7 +66,7 @@ class RoutePlannerResult extends React.Component {
           <MarkerWithInnerLabel
             faIcon="play"
             faIconLeftPadding="2px"
-            color="green"
+            color="#409a40"
             draggable
             onDragend={(e) => this.handleRouteMarkerDragend('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
@@ -88,7 +88,7 @@ class RoutePlannerResult extends React.Component {
         {finish &&
           <MarkerWithInnerLabel
             faIcon="stop"
-            color="red"
+            color="#d9534f"
             draggable
             onDragend={(e) => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
