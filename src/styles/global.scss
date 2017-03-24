@@ -41,13 +41,19 @@ html, .map-holder, #app, #app > div, .container-fluid {
   }
 
   .fa-icon-inside-leaflet-icon-holder {
-    position: absolute; 
+    position: absolute;
     width: 100%;left: 50%;
     margin-left: -50%;
     top: 6px;
     text-align: center;
     font-size: 83%;
   }
+}
+
+// preventing some defaults on L.divIcon
+.leaflet-div-icon {
+  background-color: transparent;
+  border: 0;
 }
 
 .tool-route-planner .leaflet-container,
