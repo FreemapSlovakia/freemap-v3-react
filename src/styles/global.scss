@@ -6,7 +6,6 @@ body {
 }
 
 html, .map-holder, #app, #app > div, .container-fluid {
-
     height: 100%;
 }
 
@@ -41,6 +40,19 @@ html, .map-holder, #app, #app > div, .container-fluid {
 
 .leaflet-container {
   height: 100%;
+
+  .leaflet-tooltip.compact {
+    padding: 0 3px;
+  }
+
+  .fa-icon-inside-leaflet-icon-holder {
+    position: absolute; 
+    width: 100%;left: 50%;
+    margin-left: -50%;
+    top: 6px;
+    text-align: center;
+    font-size: 83%;
+  }
 }
 
 .tool-route-planner .leaflet-container,
@@ -56,15 +68,6 @@ html, .map-holder, #app, #app > div, .container-fluid {
     overflow-x: auto;
     height: calc(100vh - 64px);
   }
-}
-
-.fa-icon-inside-leaflet-icon-holder {
-  position: absolute; 
-  width: 100%;left: 50%;
-  margin-left: -50%;
-  top: 6px;
-  text-align: center;
-  font-size: 83%;
 }
 
 .rangeslider-horizontal .rangeslider__fill {
