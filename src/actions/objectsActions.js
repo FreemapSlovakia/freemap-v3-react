@@ -1,5 +1,5 @@
-export function objectsSetFilter(filter) {
-  return { type: 'OBJECTS_SET_FILTER', payload: filter };
+export function objectsSetFilter(typeId) {
+  return { type: 'OBJECTS_SET_FILTER', payload: typeId };
 }
 
 export function objectsSetResult(objects) {

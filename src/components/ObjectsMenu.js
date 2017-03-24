@@ -18,7 +18,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom, location: { search } }) {
   function select(i) {
-    onSearch(poiTypes[i].overpassFilter);
+    onSearch(poiTypes[i].id);
   }
 
   function validateZoom() {
@@ -70,8 +70,8 @@ export default connect(
   },
   function (dispatch) {
     return {
-      onSearch(filter) {
-        dispatch(objectsSetFilter(filter));
+      onSearch(typeId) {
+        dispatch(objectsSetFilter(typeId));
       },
       onCancel() {
         dispatch(setTool(null));

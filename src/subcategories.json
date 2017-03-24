@@ -114,7 +114,8 @@
     "filename": "bus_stop",
     "filter": [
       {
-        "key": "highway|amenity",
+        "keyOperation": "~",
+        "key": "^(highway|amenity)$",
         "value": "bus_stop"
       }
     ]
@@ -131,7 +132,8 @@
       },
       {
         "key": "ruins",
-        "value": "~|no|false"
+        "operation": "!=",
+        "value": "no"
       }
     ]
   },
@@ -147,7 +149,8 @@
       },
       {
         "key": "ruins",
-        "value": "~|no|false"
+        "operation": "!=",
+        "value": "no"
       }
     ]
   },
@@ -191,7 +194,8 @@
       },
       {
         "key": "ruins",
-        "value": "~|no|false"
+        "operation": "!=",
+        "value": "no"
       }
     ]
   },
@@ -207,7 +211,8 @@
       },
       {
         "key": "ruins",
-        "value": "~|no|false"
+        "operation": "!=",
+        "value": "no"
       }
     ]
   },
@@ -411,7 +416,8 @@
       },
       {
         "key": "place_of_worship:type",
-        "value": "~|~chapel"
+        "operation": "~",
+        "value": "^(chapel|)$"
       }
     ]
   },
@@ -439,7 +445,8 @@
       },
       {
         "key": "atm",
-        "value": "~|no|false"
+        "operation": "!=",
+        "value": "no"
       }
     ]
   },
@@ -479,7 +486,7 @@
       },
       {
         "key": "atm",
-        "value": "yes|1"
+        "value": "yes"
       }
     ]
   },
@@ -734,8 +741,8 @@
         "value": "city"
       },
       {
-        "key": "city_type",
-        "value": "~"
+        "keyOperation": "!",
+        "key": "city_type"
       }
     ]
   },
@@ -750,8 +757,8 @@
         "value": "town"
       },
       {
-        "key": "city_type",
-        "value": "~"
+        "keyOperation": "!",
+        "key": "city_type"
       }
     ]
   },
@@ -2987,7 +2994,8 @@
       },
       {
         "key": "water",
-        "value": "~|~reservoir"
+        "operation": "!=",
+        "value": "reservoir"
       }
     ]
   },
@@ -3335,7 +3343,8 @@
     "filter": [
       {
         "key": "amenity",
-        "value": "feeding_place|game_feeding"
+        "operation": "~",
+        "value": "^(feeding_place|game_feeding)$"
       }
     ]
   },
@@ -3359,7 +3368,8 @@
     "filter": [
       {
         "key": "sport",
-        "value": "badminton|squash"
+        "operation": "~",
+        "value": "^(badminton|squash)$"
       }
     ]
   },

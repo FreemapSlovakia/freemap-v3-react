@@ -31,7 +31,8 @@ export function getPoiType(id) {
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
 function toOverpassFilter(element, filter) {
-  return `${element}${filter.map(({ key, value }) => `["${key}"="${value}"]`).join()}({{bbox}});`;
+  return `${element}${filter.map(({ keyOperation, key, operation = '=', value }) =>
+    `[${keyOperation || ''}"${key}"${value === undefined ? '' : `${operation || '='}"${value}"`}]`).join('')}({{bbox}});`;
 }
 
 // export const poiTypes = [
@@ -46,11 +47,43 @@ function toOverpassFilter(element, filter) {
 //   }
 // ];
 
-export function getPointType(tags) {
-  return poiTypes.find(({ filter }) => {
-    return filter.every(({ key, value }) => tags[key] === value);
-  });
-}
+// TODO use this to find pointType by tags - useful once overpass will return muitiple POI types in single result
+// TODO not much tested, little buggy
+
+// export function getPointType(tags) {
+//   return poiTypes.find(({ filter }) => {
+//     return filter.every(({ keyOperation, key: filterKey, operation = '=', value: filterValue }) => {
+//       // see https://wiki.openstreetmap.org/wiki/Overpass_API/Language_Guide#Tag_request_clauses_.28or_.22tag_filters.22.29
+//
+//       if (!keyOperation) {
+//         return testPair(filterKey, filterValue, operation);
+//       } else if (keyOperation === '!') {
+//         return filterValue === undefined ? !(filterKey in tags) : false;
+//       } else if (keyOperation === '~') {
+//         // all matching
+//         const re = new RegExp(filterKey);
+//         return Object.keys(tags).filter(t => re.test(t)).some(key => testPair(key, filterValue, operation)); // (all or) at least one? find in overpass specs.
+//       } else if (keyOperation === '!~') {
+//         if (filterValue !== undefined) {
+//           return false;
+//         }
+//         const re = new RegExp(filterKey);
+//         return !Object.keys(tags).some(t => re.test(t));
+//       } else {
+//         throw new Error('unsupported keyOperation');
+//       }
+//     });
+//   });
+//
+//   function testPair(key, filterValue, operation) {
+//     return filterValue === undefined ? true
+//       : operation === '=' ? tags[key] === filterValue
+//       : operation === '!=' ? tags[key] !== filterValue
+//       : operation === '~' ? new RegExp(filterValue).test(tags[key])
+//       : operation === '!~' ? !new RegExp(filterValue).test(tags[key])
+//       : false;
+//   }
+// }
 
 export function toHtml(typeId, tags) {
   const pt = getPoiType(typeId);
