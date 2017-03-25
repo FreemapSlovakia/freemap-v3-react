@@ -9,7 +9,7 @@ export default [
   ...routePlannerLogic,
   elevationMeasurementLogic,
   searchLogic,
-  objectsLogic,
+  ...objectsLogic,
   measurementLogic,
   storageLogic
 ];

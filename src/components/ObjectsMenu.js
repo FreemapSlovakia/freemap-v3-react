@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { objectsSetFilter } from 'fm3/actions/objectsActions';
+import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
@@ -16,7 +16,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom, location: { search } }) {
+function ObjectsMenu({ onSearch, onCancel, onShowToast, onGpxExport, zoom, location: { search } }) {
   function select(i) {
     onSearch(poiTypes[i].id);
   }
@@ -46,7 +46,7 @@ function ObjectsMenu({ onSearch, onCancel, onShowToast, zoom, location: { search
         ))}
       </NavDropdown>
       <Navbar.Form pullLeft>
-        <Button>Exportuj do GPX</Button>
+        <Button onClick={onGpxExport}>Exportuj do GPX</Button>
       </Navbar.Form>
       <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
     </Nav>
@@ -58,6 +58,7 @@ ObjectsMenu.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
   onShowToast: React.PropTypes.func.isRequired,
+  onGpxExport: React.PropTypes.func.isRequired,
   zoom: React.PropTypes.number.isRequired,
   location: React.PropTypes.object.isRequired,
 };
@@ -72,6 +73,9 @@ export default connect(
     return {
       onSearch(typeId) {
         dispatch(objectsSetFilter(typeId));
+      },
+      onGpxExport() {
+        dispatch(objectsExportGpx());
       },
       onCancel() {
         dispatch(setTool(null));
