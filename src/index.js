@@ -4,7 +4,7 @@ import { BrowserRouter as Router, Route } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import { createLogicMiddleware } from 'redux-logic';
-import createLogger from 'redux-logger';
+import { createLogger } from 'redux-logger';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
