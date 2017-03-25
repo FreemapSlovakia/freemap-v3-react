@@ -47,7 +47,8 @@
     "sass-loader": "6.0.3",
     "style-loader": "0.15.0",
     "url-loader": "0.5.8",
-    "webpack": "2.3.0"
+    "webpack": "2.3.0",
+    "webpack-dev-server": "2.4.2"
   },
   "repository": {
     "type": "git",
@@ -61,5 +62,8 @@
   "bugs": {
     "url": "https://github.com/FreemapSlovakia/freemap-v3-react/issues"
   },
-  "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react"
+  "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
+  "scripts": {
+    "livereload": "webpack-dev-server --content-base=src --inline --watch"
+  }
 }

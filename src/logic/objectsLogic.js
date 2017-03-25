@@ -25,7 +25,7 @@ export default createLogic({
         );
         dispatch(objectsSetResult(result));
       })
-      .catch(e => console.error(e))
+      // .catch(e => console.error(e))
       .then(() => {
         dispatch(stopProgress());
         done();
