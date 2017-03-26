@@ -55,7 +55,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
       <Navbar.Form pullLeft>
         <ButtonGroup>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" style={{ color: '#409a40' }} /> Štart</span>}
+            title={<span><FontAwesomeIcon icon="play" color="#409a40" /> Štart</span>}
             id="add-start-dropdown"
             onClick={() => onChangePickPointMode('start')}
             active={pickPointMode === 'start'}
@@ -65,10 +65,10 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
             <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
           <Button onClick={() => onChangePickPointMode('midpoint')} active={pickPointMode === 'midpoint'}>
-            <FontAwesomeIcon icon="pause" style={{ color: '#247dc9' }} /> Zastávka
+            <FontAwesomeIcon icon="pause" color="#247dc9" /> Zastávka
           </Button>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} /> Cieľ</span>}
+            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /> Cieľ</span>}
             id="add-finish-dropdown"
             onClick={() => onChangePickPointMode('finish')}
             active={pickPointMode === 'finish'}
