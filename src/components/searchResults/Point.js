@@ -1,5 +1,5 @@
 import React from 'react';
-import { Marker, Tooltip } from 'react-leaflet';
+import { Marker } from 'react-leaflet';
 import * as FmPropTypes from 'fm3/propTypes';
 
 export default function Point({ searchResult }) {
@@ -7,11 +7,7 @@ export default function Point({ searchResult }) {
     <Marker
       interactive={false}
       position={L.latLng(searchResult.lat, searchResult.lon)}
-    >
-      <Tooltip opacity={1.0} offset={[14, -20]} direction="right">
-        <span dangerouslySetInnerHTML={{ __html: `${searchResult.tags.name} (${searchResult.tags.type})` }} />
-      </Tooltip>
-    </Marker>
+    />
   );
 }
 
