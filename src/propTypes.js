@@ -29,7 +29,9 @@ export const overlayOpacity = React.PropTypes.shape({
   N: React.PropTypes.number.isRequired,
 });
 
-export const points = React.PropTypes.arrayOf(React.PropTypes.shape({
+export const point = React.PropTypes.shape({
   lat: React.PropTypes.number.isRequired,
   lon: React.PropTypes.number.isRequired,
-}));
+});
+
+export const points = React.PropTypes.arrayOf(point);

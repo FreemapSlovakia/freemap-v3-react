@@ -5,6 +5,7 @@ import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from '
 import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import * as FmPropTypes from 'fm3/propTypes';
 
 const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -13,7 +14,7 @@ class ElevationMeasurementResult extends React.Component {
   static propTypes = {
     onPointSet: React.PropTypes.func.isRequired,
     onClearElevation: React.PropTypes.func.isRequired,
-    point: React.PropTypes.object,
+    point: FmPropTypes.point,
     elevation: React.PropTypes.number,
   }
 
@@ -37,13 +38,13 @@ class ElevationMeasurementResult extends React.Component {
   }
 
   handleDragEnd(event) {
-    const { lat, lng: lon } = event.target._latlng;
+    const { lat, lng: lon } = event.target.getLatLng();
     this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
   }
 
   handleDrag(event) {
-    const { lat, lng: lon } = event.target._latlng;
+    const { lat, lng: lon } = event.target.getLatLng();
     this.setState({ point: { lat, lon } });
   }
 

@@ -83,7 +83,7 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
 SearchMenu.propTypes = {
   tool: React.PropTypes.string,
   selectedResult: FmPropTypes.searchResult,
-  results: React.PropTypes.array.isRequired,
+  results: React.PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
   onDoSearch: React.PropTypes.func.isRequired,
   onHiglightResult: React.PropTypes.func.isRequired,
   onSelectResult: React.PropTypes.func.isRequired,

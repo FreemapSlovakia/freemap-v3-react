@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/lib/Button';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import * as FmPropTypes from 'fm3/propTypes';
 
 class RoutePlannerResult extends React.Component {
 
@@ -33,7 +34,7 @@ class RoutePlannerResult extends React.Component {
   }
 
   handleRouteMarkerDragend(movedPointType, position, event) {
-    const { lat, lng: lon } = event.target._latlng;
+    const { lat, lng: lon } = event.target.getLatLng();
 
     switch (movedPointType) {
       case 'start':
@@ -82,7 +83,7 @@ class RoutePlannerResult extends React.Component {
             draggable
             onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
             onClick={() => this.midpointClicked(i)}
-            key={i}
+            key={String(i)}
             label={i + 1}
             position={L.latLng(lat, lon)}
           />
@@ -112,10 +113,10 @@ class RoutePlannerResult extends React.Component {
 }
 
 RoutePlannerResult.propTypes = {
-  start: React.PropTypes.object,
-  finish: React.PropTypes.object,
-  midpoints: React.PropTypes.array,
-  shapePoints: React.PropTypes.array,
+  start: FmPropTypes.point,
+  finish: FmPropTypes.point,
+  midpoints: FmPropTypes.points,
+  shapePoints: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.number)),
   time: React.PropTypes.string,
   distance: React.PropTypes.string,
   onSetStart: React.PropTypes.func.isRequired,

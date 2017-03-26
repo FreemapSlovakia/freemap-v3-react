@@ -6,13 +6,14 @@ import Button from 'react-bootstrap/lib/Button';
 import { measurementAddPoint, measurementUpdatePoint, measurementRemovePoint } from 'fm3/actions/measurementActions';
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
 class AreaMeasurementResult extends React.Component {
 
   static propTypes = {
-    points: React.PropTypes.array,
+    points: FmPropTypes.points,
     onPointAdd: React.PropTypes.func.isRequired,
     onPointUpdate: React.PropTypes.func.isRequired,
     onPointRemove: React.PropTypes.func.isRequired,
@@ -55,7 +56,7 @@ class AreaMeasurementResult extends React.Component {
       <div>
         {points.map((p, i) =>
           <Marker
-            key={i}
+            key={String(i)}
             position={L.latLng(p.lat, p.lon)}
             draggable
             onClick={() => this.pointClicked(i)}

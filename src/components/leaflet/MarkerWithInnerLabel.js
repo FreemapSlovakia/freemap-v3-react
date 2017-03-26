@@ -25,7 +25,8 @@ export default function MarkerWithInnerLabel(props) {
     html += `<div class="fa-icon-inside-leaflet-icon-holder"><i class="fa fa-${faIcon}" style="color: ${color}; padding-left: ${leftPadding}" /></div>`;
   }
 
-  const icon = new L.divIcon({
+  const Icon = L.divIcon;
+  const icon = new Icon({
     iconSize: [24, 40],
     iconAnchor: [12, 37],
     popupAnchor: [0, -34],
