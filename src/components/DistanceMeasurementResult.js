@@ -5,13 +5,14 @@ import { Marker, Tooltip, Polyline } from 'react-leaflet';
 import { measurementAddPoint, measurementUpdatePoint } from 'fm3/actions/measurementActions';
 import { distance } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
 class DistanceMeasurementResult extends React.Component {
 
   static propTypes = {
-    points: React.PropTypes.array,
+    points: FmPropTypes.points.isRequired,
     onPointAdd: React.PropTypes.func.isRequired,
     onPointUpdate: React.PropTypes.func.isRequired,
   };
@@ -47,7 +48,7 @@ class DistanceMeasurementResult extends React.Component {
           prev = p;
 
           const m = (
-            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)}>
+            <Marker key={p.lat + p.lon} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)}>
               <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
             </Marker>
           );

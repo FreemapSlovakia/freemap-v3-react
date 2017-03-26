@@ -24,3 +24,12 @@ export const searchResult = React.PropTypes.shape({
   lon: React.PropTypes.number.isRequired,
   tags: React.PropTypes.object.isRequired,
 });
+
+export const overlayOpacity = React.PropTypes.shape({
+  N: React.PropTypes.number.isRequired,
+});
+
+export const points = React.PropTypes.arrayOf(React.PropTypes.shape({
+  lat: React.PropTypes.number.isRequired,
+  lon: React.PropTypes.number.isRequired,
+}));

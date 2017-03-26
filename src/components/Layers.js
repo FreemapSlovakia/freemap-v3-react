@@ -77,5 +77,5 @@ Layers.propTypes = {
   tileFormat: FmPropTypes.tileFormat.isRequired,
   overlays: FmPropTypes.overlays,
   mapType: FmPropTypes.mapType.isRequired,
-  overlayOpacity: React.PropTypes.object.isRequired,
+  overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
 };

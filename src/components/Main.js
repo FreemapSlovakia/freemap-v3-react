@@ -53,7 +53,7 @@ class Main extends React.Component {
     tool: React.PropTypes.string,
     tileFormat: FmPropTypes.tileFormat.isRequired,
     overlays: FmPropTypes.overlays.isRequired,
-    overlayOpacity: React.PropTypes.object.isRequired,
+    overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
     onSetTool: React.PropTypes.func.isRequired,
     onMapRefocus: React.PropTypes.func.isRequired,

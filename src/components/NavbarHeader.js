@@ -25,7 +25,7 @@ function NavbarHeader({ tool, onResetMap }) {
   return (
     <Navbar.Header>
       <Navbar.Brand>
-        <div id="freemap-logo" onClick={onResetMap} />
+        <button id="freemap-logo" onClick={onResetMap} />
       </Navbar.Brand>
       {humanNameForToolToShowInNavbar[tool] &&
         <Navbar.Text style={{ display: 'inline-block', paddingLeft: '10px' }}>
