@@ -1,3 +1,5 @@
+import geojsonArea from '@mapbox/geojson-area';
+
 const PI2 = 2 * Math.PI;
 
 const nf3 = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
@@ -71,7 +73,6 @@ export function getCurrentPosition() {
 }
 
 export function area(points) {
-  const geojsonArea = require('@mapbox/geojson-area');
   const geometry = {
     type: 'Polygon',
     coordinates: [[...points, points[0]].map(({ lat, lon }) => [lon, lat])],
