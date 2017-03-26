@@ -1,5 +1,5 @@
-export function measurementAddPoint(point) {
-  return { type: 'MEASUREMENT_ADD_POINT', payload: { point } };
+export function measurementAddPoint(point, position) {
+  return { type: 'MEASUREMENT_ADD_POINT', payload: { point, position } };
 }
 
 export function measurementUpdatePoint(index, point) {

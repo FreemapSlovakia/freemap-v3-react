@@ -20,16 +20,41 @@ class AreaMeasurementResult extends React.Component {
     onShowToast: React.PropTypes.func.isRequired,
   };
 
+  constructor(props) {
+    super(props);
+    this.state = {
+      futurePoints: [],
+    };
+  }
+
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
+  }
+
+  componentWillReceiveProps(newProps) {
+    const futurePoints = [];
+    if (newProps.points.length > 2) {
+      for (let i = 0; i < newProps.points.length; i += 1) {
+        const p1 = newProps.points[i];
+        const isLast = i === newProps.points.length - 1;
+        const p2 = isLast ? newProps.points[0] : newProps.points[i + 1];
+
+        const lat = (p1.lat + p2.lat) / 2;
+        const lon = (p1.lon + p2.lon) / 2;
+        futurePoints.push({ lat, lon });
+      }
+    }
+
+    this.setState({ futurePoints });
   }
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
   }
 
-  handlePoiAdded = (lat, lon) => {
-    this.props.onPointAdd({ lat, lon });
+  handlePoiAdded = (lat, lon, position) => {
+    const pos = position || 0;
+    this.props.onPointAdd({ lat, lon }, pos);
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
@@ -50,7 +75,16 @@ class AreaMeasurementResult extends React.Component {
 
   render() {
     const { points } = this.props;
+    const { futurePoints } = this.state;
+
     const areaSize = points.length > 2 ? area(points) : NaN;
+
+    const Icon = L.divIcon;
+    const circularIcon = new Icon({ // CircleMarker is not draggable
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      html: '<div style="height: 14px; width: 14px; background-color: #38f; border-radius: 14px"></div>',
+    });
 
     return (
       <div>
@@ -78,6 +112,16 @@ class AreaMeasurementResult extends React.Component {
             }
           </Polygon>
         }
+
+        {futurePoints.map((p, i) =>
+          <Marker
+            key={String(i)}
+            draggable
+            icon={circularIcon}
+            onDragend={e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i + 1)}
+            position={L.latLng(p.lat, p.lon)}
+          />,
+        )}
       </div>
     );
   }
@@ -89,8 +133,8 @@ export default connect(
     points: state.measurement.points,
   }),
   dispatch => ({
-    onPointAdd(point) {
-      dispatch(measurementAddPoint(point));
+    onPointAdd(point, position) {
+      dispatch(measurementAddPoint(point, position));
     },
     onPointUpdate(i, point) {
       dispatch(measurementUpdatePoint(i, point));
