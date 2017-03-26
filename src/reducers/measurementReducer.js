@@ -10,7 +10,7 @@ export default function measurement(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'MEASUREMENT_ADD_POINT':
-      return update(state, { points: { $splice: [[action.payload.position === undefined ? state.points.length : 0, 0, action.payload.point]] } });
+      return update(state, { points: { $splice: [[action.payload.position === undefined ? state.points.length : action.payload.position, 0, action.payload.point]] } });
     case 'MEASUREMENT_UPDATE_POINT':
       return update(state, { points: { [action.payload.index]: { $set: action.payload.point } } });
     case 'MEASUREMENT_REMOVE_POINT':
