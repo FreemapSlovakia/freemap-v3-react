@@ -14,7 +14,7 @@ class ElevationMeasurementResult extends React.Component {
     onPointSet: React.PropTypes.func.isRequired,
     onClearElevation: React.PropTypes.func.isRequired,
     point: React.PropTypes.object,
-    elevation: React.PropTypes.number
+    elevation: React.PropTypes.number,
   }
 
   state = {};
@@ -65,7 +65,7 @@ class ElevationMeasurementResult extends React.Component {
 
         <Popup closeButton={false} autoClose={false} autoPan={false}>
           <span>
-            {[ 'D', 'DM', 'DMS' ].map(format => <div key={format}>{formatGpsCoord(p.lat, 'SN', format)} {formatGpsCoord(p.lon, 'WE', format)}</div>)}
+            {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(p.lat, 'SN', format)} {formatGpsCoord(p.lon, 'WE', format)}</div>)}
             {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
           </span>
         </Popup>
@@ -76,20 +76,16 @@ class ElevationMeasurementResult extends React.Component {
 }
 
 export default connect(
-  function (state) {
-    return {
-      elevation: state.elevationMeasurement.elevation,
-      point: state.elevationMeasurement.point
-    };
-  },
-  function (dispatch) {
-    return {
-      onPointSet(point) {
-        dispatch(elevationMeasurementSetPoint(point));
-      },
-      onClearElevation() {
-        dispatch(elevationMeasurementSetElevation(null));
-      }
-    };
-  }
+  state => ({
+    elevation: state.elevationMeasurement.elevation,
+    point: state.elevationMeasurement.point,
+  }),
+  dispatch => ({
+    onPointSet(point) {
+      dispatch(elevationMeasurementSetPoint(point));
+    },
+    onClearElevation() {
+      dispatch(elevationMeasurementSetElevation(null));
+    },
+  }),
 )(ElevationMeasurementResult);

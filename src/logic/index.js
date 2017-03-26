@@ -11,5 +11,5 @@ export default [
   searchLogic,
   ...objectsLogic,
   measurementLogic,
-  storageLogic
+  storageLogic,
 ];

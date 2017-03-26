@@ -14,7 +14,7 @@ import 'fm3/styles/global.scss';
 
 const middleware = applyMiddleware(
   createLogger(),
-  createLogicMiddleware(logics)
+  createLogicMiddleware(logics),
 );
 
 let store;
@@ -33,7 +33,7 @@ render((
   <Provider store={store}>
     <div>
       <Router>
-        <Route path="/" component={Main}></Route>
+        <Route path="/" component={Main} />
       </Router>
     </div>
   </Provider>

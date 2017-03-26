@@ -1,7 +1,7 @@
 import update from 'immutability-helper';
 
 const initialState = {
-  points: []
+  points: [],
 };
 
 export default function measurement(state = initialState, action) {
@@ -10,11 +10,11 @@ export default function measurement(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'MEASUREMENT_ADD_POINT':
-      return update(state, { points: { $splice: [ [ action.payload.position, 0, action.payload.point ] ] } });
+      return update(state, { points: { $splice: [[action.payload.position, 0, action.payload.point]] } });
     case 'MEASUREMENT_UPDATE_POINT':
-      return update(state, { points: { [ action.payload.index ]: { $set: action.payload.point } } });
+      return update(state, { points: { [action.payload.index]: { $set: action.payload.point } } });
     case 'MEASUREMENT_REMOVE_POINT':
-      return update(state, { points: { $splice: [ [ action.payload.index, 1 ] ] } });
+      return update(state, { points: { $splice: [[action.payload.index, 1]] } });
     default:
       return state;
   }

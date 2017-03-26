@@ -1,7 +1,7 @@
 const initialState = {
   objects: [],
   categories: [],
-  subcategories: []
+  subcategories: [],
 };
 
 export default function map(state = initialState, action) {
@@ -10,7 +10,7 @@ export default function map(state = initialState, action) {
     case 'SET_TOOL':
       return initialState;
     case 'OBJECTS_SET_RESULT':
-      return { ...state, objects: [ ...state.objects, ...action.payload ] };
+      return { ...state, objects: [...state.objects, ...action.payload] };
     default:
       return state;
   }

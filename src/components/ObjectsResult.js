@@ -4,6 +4,7 @@ import { Popup } from 'react-leaflet';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { toHtml, getPoiType } from 'fm3/poiTypes';
+import * as FmPropTypes from 'fm3/propTypes';
 
 function ObjectsResult({ objects }) {
   return (
@@ -16,7 +17,7 @@ function ObjectsResult({ objects }) {
 
         return (
           <MarkerWithInnerLabel key={id} position={L.latLng(lat, lon)} image={img}>
-            {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }}/></Popup>}
+            {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }} /></Popup>}
           </MarkerWithInnerLabel>
         );
       })}
@@ -25,13 +26,11 @@ function ObjectsResult({ objects }) {
 }
 
 ObjectsResult.propTypes = {
-  objects: React.PropTypes.array
+  objects: React.PropTypes.arrayOf(FmPropTypes.object).isRequired,
 };
 
 export default connect(
-  function (state) {
-    return {
-      objects: state.objects.objects
-    };
-  }
+  state => ({
+    objects: state.objects.objects,
+  }),
 )(ObjectsResult);

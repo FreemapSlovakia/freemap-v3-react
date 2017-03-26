@@ -9,7 +9,7 @@ import subcategories from './subcategories.json';
 export const poiTypeGroups = categories.map(c => ({ id: c.filename, title: c.name, description: c.description }));
 
 const m = new Map();
-categories.forEach(function (c) {
+categories.forEach((c) => {
   m.set(c.id, c.filename);
 });
 
@@ -18,7 +18,7 @@ export const poiTypes = subcategories.map(({ filename, categoryId, name, filter 
   group: m.get(categoryId),
   title: name,
   filter,
-  overpassFilter: `(${[ 'node', 'way', 'relation' ].map(element => toOverpassFilter(element, filter)).join('')})`
+  overpassFilter: `(${['node', 'way', 'relation'].map(element => toOverpassFilter(element, filter)).join('')})`,
 }));
 
 const poiTypesMap = new Map();
@@ -91,9 +91,8 @@ export function toHtml(typeId, tags) {
   if (pt) {
     const img = require(`./images/mapIcons/${pt.group}-${pt.id}.png`);
     return pt.template ? pt.template(tags) : `<img src="${img}"/> ${pt.title}${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `<br/>${nf.format(ele)} m n. m.` : ''}`;
-  } else {
-    return name && escapeHtml(name);
   }
+  return name && escapeHtml(name);
 }
 
 function escapeHtml(unsafe) {
@@ -103,4 +102,4 @@ function escapeHtml(unsafe) {
      .replace(/>/g, '&gt;')
      .replace(/"/g, '&quot;')
      .replace(/'/g, '&#039;');
- }
+}

@@ -14,7 +14,6 @@ import 'fm3/styles/search.scss';
 
 function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlannerWithStart,
     onInitRoutePlannerWithFinish, selectedResult, onDoSearch, results }) {
-
   function onSelectionChange(resultsSelectedByUser) {
     onSelectResult(resultsSelectedByUser[0], tool);
   }
@@ -52,12 +51,13 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
           onChange={onSelectionChange}
           emptyLabel="Nenašli sa žiadne výsledky"
           promptText="Zadajte lokalitu"
-          renderMenuItemChildren={(result) => (
-            <div key={result.label + result.id}
+          renderMenuItemChildren={result => (
+            <div
+              key={result.label + result.id}
               onMouseEnter={b(onSuggestionHighlightChange, result)}
               onMouseLeave={b(onSuggestionHighlightChange, null)}
             >
-              <span>{result.tags.name} </span><br/>
+              <span>{result.tags.name} </span><br />
               <span>({result.geojson.type}, {result.tags.type})</span>
             </div>
           )}
@@ -67,10 +67,10 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
         <Navbar.Form pullLeft>
           <ButtonGroup>
             <Button onClick={b(onInitRoutePlannerWithStart, selectedResult)}>
-              <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }}/> Navigovať odtiaľto
+              <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} /> Navigovať odtiaľto
             </Button>
             <Button onClick={b(onInitRoutePlannerWithFinish, selectedResult)}>
-              <Glyphicon glyph="record" style={{ color: '#FF6347' }}/> Navigovať sem
+              <Glyphicon glyph="record" style={{ color: '#FF6347' }} /> Navigovať sem
             </Button>
           </ButtonGroup>
         </Navbar.Form>
@@ -87,40 +87,36 @@ SearchMenu.propTypes = {
   onHiglightResult: React.PropTypes.func.isRequired,
   onSelectResult: React.PropTypes.func.isRequired,
   onInitRoutePlannerWithStart: React.PropTypes.func.isRequired,
-  onInitRoutePlannerWithFinish: React.PropTypes.func.isRequired
+  onInitRoutePlannerWithFinish: React.PropTypes.func.isRequired,
 };
 
 
 export default connect(
-  function (state) {
-    return {
-      tool: state.main.tool,
-      results: state.search.results,
-      selectedResult: state.search.selectedResult
-    };
-  },
-  function (dispatch) {
-    return {
-      onDoSearch(query) {
-        dispatch(searchSetQuery(query));
-      },
-      onHiglightResult(result) {
-        dispatch(searchHighlightResult(result));
-      },
-      onSelectResult(result) {
-        result ? dispatch(setTool('search')) : dispatch(setTool(null));
-        dispatch(searchSelectResult(result));
-      },
-      onInitRoutePlannerWithStart(result) {
-        const start = { lat: result.lat, lon: result.lon };
-        dispatch(setTool('route-planner'));
-        dispatch(routePlannerSetStart(start));
-      },
-      onInitRoutePlannerWithFinish(result) {
-        const finish = { lat: result.lat, lon: result.lon };
-        dispatch(setTool('route-planner'));
-        dispatch(routePlannerSetFinish(finish));
-      }
-    };
-  }
+  state => ({
+    tool: state.main.tool,
+    results: state.search.results,
+    selectedResult: state.search.selectedResult,
+  }),
+  dispatch => ({
+    onDoSearch(query) {
+      dispatch(searchSetQuery(query));
+    },
+    onHiglightResult(result) {
+      dispatch(searchHighlightResult(result));
+    },
+    onSelectResult(result) {
+      dispatch(setTool(result ? 'search' : null));
+      dispatch(searchSelectResult(result));
+    },
+    onInitRoutePlannerWithStart(result) {
+      const start = { lat: result.lat, lon: result.lon };
+      dispatch(setTool('route-planner'));
+      dispatch(routePlannerSetStart(start));
+    },
+    onInitRoutePlannerWithFinish(result) {
+      const finish = { lat: result.lat, lon: result.lon };
+      dispatch(setTool('route-planner'));
+      dispatch(routePlannerSetFinish(finish));
+    },
+  }),
 )(SearchMenu);

@@ -12,7 +12,6 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 
 function MeasurementMenu({ onCancel, onSetTool, tool }) {
-
   const b = (fn, ...args) => fn.bind(null, ...args);
 
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
@@ -21,18 +20,18 @@ function MeasurementMenu({ onCancel, onSetTool, tool }) {
       <Navbar.Form pullLeft>
         <ButtonGroup>
           <Button onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
-            <FontAwesomeIcon icon="arrows-h"/> Vzdialenosť
+            <FontAwesomeIcon icon="arrows-h" /> Vzdialenosť
           </Button>
           <Button onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
-            <FontAwesomeIcon icon="long-arrow-up"/> Výška a poloha
+            <FontAwesomeIcon icon="long-arrow-up" /> Výška a poloha
           </Button>
           <Button onClick={b(onSetTool, 'measure-area')} active={tool === 'measure-area'}>
-            <FontAwesomeIcon icon="square"/> Plocha
+            <FontAwesomeIcon icon="square" /> Plocha
           </Button>
         </ButtonGroup>
       </Navbar.Form>
       <Nav>
-        <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
+        <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
       </Nav>
     </div>
   );
@@ -41,23 +40,19 @@ function MeasurementMenu({ onCancel, onSetTool, tool }) {
 MeasurementMenu.propTypes = {
   tool: React.PropTypes.string,
   onSetTool: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired
+  onCancel: React.PropTypes.func.isRequired,
 };
 
 export default connect(
-  function (state) {
-    return {
-      tool: state.main.tool
-    };
-  },
-  function (dispatch) {
-    return {
-      onSetTool(tool) {
-        dispatch(setTool(tool));
-      },
-      onCancel() {
-        dispatch(setTool(null));
-      }
-    };
-  }
+  state => ({
+    tool: state.main.tool,
+  }),
+  dispatch => ({
+    onSetTool(tool) {
+      dispatch(setTool(tool));
+    },
+    onCancel() {
+      dispatch(setTool(null));
+    },
+  }),
 )(MeasurementMenu);

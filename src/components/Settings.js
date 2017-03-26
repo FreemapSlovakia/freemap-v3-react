@@ -6,14 +6,13 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
-import { setTool, setHomeLocation } from 'fm3/actions/mainActions';
-import { closePopup } from 'fm3/actions/mainActions';
+import { setTool, setHomeLocation, closePopup } from 'fm3/actions/mainActions';
 
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -24,7 +23,7 @@ class Settings extends React.Component {
   static propTypes = {
     homeLocation: React.PropTypes.shape({
       lat: React.PropTypes.number,
-      lon: React.PropTypes.number
+      lon: React.PropTypes.number,
     }),
     tileFormat: FmPropTypes.tileFormat.isRequired,
     onSave: React.PropTypes.func.isRequired,
@@ -34,7 +33,7 @@ class Settings extends React.Component {
     onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
     tool: React.PropTypes.string,
     nlcOpacity: React.PropTypes.number.isRequired,
-    zoom: React.PropTypes.number
+    zoom: React.PropTypes.number,
   };
 
   constructor(props) {
@@ -44,12 +43,18 @@ class Settings extends React.Component {
       homeLocation: props.homeLocation,
       homeLocationCssClasses: '',
       userMadeChanges: false,
-      nlcOpacity: props.nlcOpacity
+      nlcOpacity: props.nlcOpacity,
     };
   }
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.onHomeLocationSelected);
+  }
+
+  componentWillUpdate(nextProps, nextState) {
+    if (!nextState.userMadeChanges) {
+      this.setState({ userMadeChanges: true });
+    }
   }
 
   componentWillUnmount() {
@@ -59,12 +64,6 @@ class Settings extends React.Component {
   onHomeLocationSelected = (lat, lon) => {
     this.setState({ homeLocation: { lat, lon }, homeLocationCssClasses: 'animated flash' }); // via animate.css
     this.props.onSelectHomeLocationFinished();
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if (!nextState.userMadeChanges) {
-      this.setState({ userMadeChanges: true });
-    }
   }
 
   save() {
@@ -113,7 +112,7 @@ class Settings extends React.Component {
           <hr />
           Domovská poloha: <span className={homeLocationCssClasses}>{homeLocationInfo}</span> <br />
           <Button onClick={() => onSelectHomeLocation()}>
-           <FontAwesomeIcon icon="crosshairs"/> Vybrať na mape
+            <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
           </Button>
 
           <hr />
@@ -124,16 +123,16 @@ class Settings extends React.Component {
             max={1.0}
             step={0.1}
             tooltip={false}
-            onChange={(newOpacity) => this.setState({ nlcOpacity: newOpacity } )}
+            onChange={newOpacity => this.setState({ nlcOpacity: newOpacity })}
           />
-          {nlcOverlayIsNotVisible && 
+          {nlcOverlayIsNotVisible &&
             <Alert>
               NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
             </Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button bsStyle="info" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk"/> Uložiť</Button>
-          <Button onClick={b(onClosePopup)}><Glyphicon glyph="remove"/> Zrušiť</Button>
+          <Button bsStyle="info" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
+          <Button onClick={b(onClosePopup)}><Glyphicon glyph="remove" /> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -141,32 +140,28 @@ class Settings extends React.Component {
 }
 
 export default connect(
-  function (state) {
-    return {
-      tileFormat: state.map.tileFormat,
-      homeLocation: state.main.homeLocation,
-      tool: state.main.tool,
-      zoom: state.map.zoom,
-      nlcOpacity: state.map.overlayOpacity.N
-    };
-  },
-  function (dispatch) {
-    return {
-      onSave(tileFormat, homeLocation, nlcOpacity) {
-        dispatch(mapSetTileFormat(tileFormat));
-        dispatch(setHomeLocation(homeLocation));
-        dispatch(mapSetOverlayOpacity('N', nlcOpacity));
-        dispatch(closePopup());
-      },
-      onClosePopup() {
-        dispatch(closePopup());
-      },
-      onSelectHomeLocation() {
-        dispatch(setTool('select-home-location'));
-      },
-      onSelectHomeLocationFinished() {
-        dispatch(setTool(null));
-      }
-    };
-  }
+  state => ({
+    tileFormat: state.map.tileFormat,
+    homeLocation: state.main.homeLocation,
+    tool: state.main.tool,
+    zoom: state.map.zoom,
+    nlcOpacity: state.map.overlayOpacity.N,
+  }),
+  dispatch => ({
+    onSave(tileFormat, homeLocation, nlcOpacity) {
+      dispatch(mapSetTileFormat(tileFormat));
+      dispatch(setHomeLocation(homeLocation));
+      dispatch(mapSetOverlayOpacity('N', nlcOpacity));
+      dispatch(closePopup());
+    },
+    onClosePopup() {
+      dispatch(closePopup());
+    },
+    onSelectHomeLocation() {
+      dispatch(setTool('select-home-location'));
+    },
+    onSelectHomeLocationFinished() {
+      dispatch(setTool(null));
+    },
+  }),
 )(Settings);

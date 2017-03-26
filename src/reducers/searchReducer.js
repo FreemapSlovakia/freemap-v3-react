@@ -2,7 +2,7 @@ const initialState = {
   query: null,
   results: [],
   highlightedResult: null,
-  selectedResult: null
+  selectedResult: null,
 };
 
 export default function Search(state = initialState, action) {

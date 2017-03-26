@@ -19,7 +19,7 @@ export default createLogic({
     fetch(`//nominatim.openstreetmap.org/search/${encodeURIComponent(query)}`
         + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK&polygon_geojson=1`)
       .then(res => res.json())
-      .then(data => {
+      .then((data) => {
         const results = data.map((d, id) => {
           const name = d.namedetails.name;
           const tags = { name, type: d.type };
@@ -32,5 +32,5 @@ export default createLogic({
         dispatch(stopProgress());
         done();
       });
-  }
+  },
 });

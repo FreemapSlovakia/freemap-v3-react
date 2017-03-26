@@ -9,52 +9,45 @@ import 'fm3/styles/navbarHeader.scss';
 
 const humanNameForToolToShowInNavbar = {
   'route-planner': 'Plánovač',
-  'measure': 'Meranie',
+  measure: 'Meranie',
   'measure-ele': 'Meranie',
-  'measure-area': 'Meranie'
+  'measure-area': 'Meranie',
 };
 
 const iconForTool = {
   'route-planner': 'map-signs',
-  'measure': 'arrows-h',
+  measure: 'arrows-h',
   'measure-ele': 'long-arrow-up',
-  'measure-area': 'square'
+  'measure-area': 'square',
 };
 
 function NavbarHeader({ tool, onResetMap }) {
   return (
     <Navbar.Header>
       <Navbar.Brand>
-        <div
-          onClick={onResetMap}
-          id="freemap-logo"
-        />
+        <div id="freemap-logo" onClick={onResetMap} />
       </Navbar.Brand>
       {humanNameForToolToShowInNavbar[tool] &&
         <Navbar.Text style={{ display: 'inline-block', paddingLeft: '10px' }}>
-          <span><FontAwesomeIcon icon={iconForTool[tool]}/> {humanNameForToolToShowInNavbar[tool]}</span>
+          <span><FontAwesomeIcon icon={iconForTool[tool]} /> {humanNameForToolToShowInNavbar[tool]}</span>
         </Navbar.Text>}
-      <Navbar.Toggle/>
+      <Navbar.Toggle />
     </Navbar.Header>
   );
 }
 
 NavbarHeader.propTypes = {
   tool: React.PropTypes.string,
-  onResetMap: React.PropTypes.func.isRequired
+  onResetMap: React.PropTypes.func.isRequired,
 };
 
 export default connect(
-  function (state) {
-    return {
-      tool: state.main.tool
-    };
-  },
-  function (dispatch) {
-    return {
-      onResetMap() {
-        dispatch(mapReset());
-      }
-    };
-  }
+  state => ({
+    tool: state.main.tool,
+  }),
+  dispatch => ({
+    onResetMap() {
+      dispatch(mapReset());
+    },
+  }),
 )(NavbarHeader);

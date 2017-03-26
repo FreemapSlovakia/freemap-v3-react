@@ -10,10 +10,10 @@ export default createLogic({
     const appState = {
       main: {
         homeLocation: state.main.homeLocation,
-        tool: null
+        tool: null,
       },
       routePlanner: {
-        transportType: state.routePlanner.transportType
+        transportType: state.routePlanner.transportType,
       },
       map: {
         mapType: mapState.mapType,
@@ -22,10 +22,10 @@ export default createLogic({
         zoom: mapState.zoom,
         overlays: mapState.overlays,
         overlayOpacity: mapState.overlayOpacity,
-        tileFormat: mapState.tileFormat
-      }
+        tileFormat: mapState.tileFormat,
+      },
     };
 
     localStorage.setItem('appState', JSON.stringify(appState));
-  }
+  },
 });

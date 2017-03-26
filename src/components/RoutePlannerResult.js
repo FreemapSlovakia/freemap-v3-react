@@ -50,10 +50,10 @@ class RoutePlannerResult extends React.Component {
     const line1 = 'Odstrániť zastávku?';
     const line2 = [
       <Button key="yes" onClick={() => this.props.onRemoveMidpoint(position)}>
-          <span style={{ fontWeight:700 }}>Áno</span>
+        <span style={{ fontWeight: 700 }}>Áno</span>
       </Button>,
       ' ',
-      <Button key="no">Nie</Button>
+      <Button key="no">Nie</Button>,
     ];
     this.props.onShowToast('info', line1, line2);
   }
@@ -68,21 +68,21 @@ class RoutePlannerResult extends React.Component {
             faIconLeftPadding="2px"
             color="#409a40"
             draggable
-            onDragend={(e) => this.handleRouteMarkerDragend('start', null, e)}
+            onDragend={e => this.handleRouteMarkerDragend('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
           />
         }
 
         {midpoints.map(({ lat, lon }, i) => (
-            <MarkerWithInnerLabel
-              draggable
-              onDragend={(e) => this.handleRouteMarkerDragend('midpoint', i, e)}
-              onClick={() => this.midpointClicked(i)}
-              key={i}
-              label={i+1}
-              position={L.latLng(lat, lon)}>
-            </MarkerWithInnerLabel>
-          )
+          <MarkerWithInnerLabel
+            draggable
+            onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
+            onClick={() => this.midpointClicked(i)}
+            key={i}
+            label={i + 1}
+            position={L.latLng(lat, lon)}
+          />
+          ),
         )}
 
         {finish &&
@@ -90,7 +90,7 @@ class RoutePlannerResult extends React.Component {
             faIcon="stop"
             color="#d9534f"
             draggable
-            onDragend={(e) => this.handleRouteMarkerDragend('finish', null, e)}
+            onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
           >
 
@@ -101,7 +101,7 @@ class RoutePlannerResult extends React.Component {
             }
           </MarkerWithInnerLabel>
         }
-        {shapePoints && <Polyline positions={shapePoints} weight="8" opacity="0.8" interactive={false}/>}
+        {shapePoints && <Polyline positions={shapePoints} weight="8" opacity="0.8" interactive={false} />}
       </div>
     );
   }
@@ -120,39 +120,35 @@ RoutePlannerResult.propTypes = {
   onAddMidpoint: React.PropTypes.func.isRequired,
   onRemoveMidpoint: React.PropTypes.func.isRequired,
   pickMode: React.PropTypes.string.isRequired,
-  onShowToast: React.PropTypes.func.isRequired
+  onShowToast: React.PropTypes.func.isRequired,
 };
 
 export default connect(
-  function (state) {
-    return {
-      pickMode: state.routePlanner.pickMode,
-      start: state.routePlanner.start,
-      finish: state.routePlanner.finish,
-      midpoints: state.routePlanner.midpoints,
-      shapePoints: state.routePlanner.shapePoints,
-      time: state.routePlanner.time,
-      distance: state.routePlanner.distance
-    };
-  },
-  function (dispatch) {
-    return {
-      onSetStart: function(start) {
-        dispatch(routePlannerSetStart(start));
-      },
-      onSetFinish: function(finish) {
-        dispatch(routePlannerSetFinish(finish));
-      },
-      onAddMidpoint: function(midpoint) {
-        const position = 0;
-        dispatch(routePlannerAddMidpoint(midpoint, position));
-      },
-      onSetMidpoint: function(position, midpoint) {
-        dispatch(routePlannerSetMidpoint(position, midpoint));
-      },
-      onRemoveMidpoint: function(position) {
-        dispatch(routePlannerRemoveMidpoint(position));
-      }
-    };
-  }
+  state => ({
+    pickMode: state.routePlanner.pickMode,
+    start: state.routePlanner.start,
+    finish: state.routePlanner.finish,
+    midpoints: state.routePlanner.midpoints,
+    shapePoints: state.routePlanner.shapePoints,
+    time: state.routePlanner.time,
+    distance: state.routePlanner.distance,
+  }),
+  dispatch => ({
+    onSetStart(start) {
+      dispatch(routePlannerSetStart(start));
+    },
+    onSetFinish(finish) {
+      dispatch(routePlannerSetFinish(finish));
+    },
+    onAddMidpoint(midpoint) {
+      const position = 0;
+      dispatch(routePlannerAddMidpoint(midpoint, position));
+    },
+    onSetMidpoint(position, midpoint) {
+      dispatch(routePlannerSetMidpoint(position, midpoint));
+    },
+    onRemoveMidpoint(position) {
+      dispatch(routePlannerRemoveMidpoint(position));
+    },
+  }),
 )(RoutePlannerResult);

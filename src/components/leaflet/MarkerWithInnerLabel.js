@@ -21,28 +21,28 @@ export default function MarkerWithInnerLabel(props) {
     </svg>`;
 
   if (faIcon) {
-    let leftPadding = faIconLeftPadding || 0;
-    html += `<div class="fa-icon-inside-leaflet-icon-holder"><i class="fa fa-${faIcon}" style="color: ${color}; padding-left: ${leftPadding}" /></div>`; 
+    const leftPadding = faIconLeftPadding || 0;
+    html += `<div class="fa-icon-inside-leaflet-icon-holder"><i class="fa fa-${faIcon}" style="color: ${color}; padding-left: ${leftPadding}" /></div>`;
   }
 
   const icon = new L.divIcon({
-    iconSize: [ 24, 40 ],
-    iconAnchor: [ 12, 37 ],
-    popupAnchor: [ 0, -34 ],
-    html
+    iconSize: [24, 40],
+    iconAnchor: [12, 37],
+    popupAnchor: [0, -34],
+    html,
   });
 
-  return <Marker {...props} icon={icon}/>;
+  return <Marker {...props} icon={icon} />;
 }
 
 MarkerWithInnerLabel.propTypes = {
   ...Marker.propTypes,
   label: React.PropTypes.oneOfType([
     React.PropTypes.string,
-    React.PropTypes.number
+    React.PropTypes.number,
   ]),
   color: React.PropTypes.string,
   image: React.PropTypes.string,
   faIcon: React.PropTypes.string,
-  faIconLeftPadding: React.PropTypes.string
+  faIconLeftPadding: React.PropTypes.string,
 };

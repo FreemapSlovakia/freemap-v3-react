@@ -9,7 +9,7 @@ export default createLogic({
     if (point) {
       dispatch(startProgress());
       fetch(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`)
-        .then(res => res.json()).then(data => {
+        .then(res => res.json()).then((data) => {
           dispatch(elevationMeasurementSetElevation(parseFloat(data.ele)));
         })
         .catch(() => {})
@@ -21,5 +21,5 @@ export default createLogic({
       dispatch(elevationMeasurementSetElevation(null));
       done();
     }
-  }
+  },
 });

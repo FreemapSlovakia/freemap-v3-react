@@ -2,7 +2,7 @@ const initialState = {
   activePopup: null,
   tool: null,
   homeLocation: { lat: null, lon: null },
-  progress: false
+  progress: false,
 };
 
 export default function main(state = initialState, action) {

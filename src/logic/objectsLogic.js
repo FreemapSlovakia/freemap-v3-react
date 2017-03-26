@@ -19,12 +19,16 @@ export const objectsFetchLogic = createLogic({
     dispatch(startProgress());
     fetch('//overpass-api.de/api/interpreter', {
       method: 'POST',
-      body: `data=${encodeURIComponent(query)}`
+      body: `data=${encodeURIComponent(query)}`,
     })
-      .then(res => res.json()).then(data => {
-        const result = data.elements.map(({ id, center, tags, lat, lon }) => (
-          { id, lat: center && center.lat || lat, lon: center && center.lon || lon, tags, typeId: payload })
-        );
+      .then(res => res.json()).then((data) => {
+        const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
+          id,
+          lat: center && center.lat || lat,
+          lon: center && center.lon || lon,
+          tags,
+          typeId: payload,
+        }));
         dispatch(objectsSetResult(result));
       })
       // .catch(e => console.error(e))
@@ -32,7 +36,7 @@ export const objectsFetchLogic = createLogic({
         dispatch(stopProgress());
         done();
       });
-  }
+  },
 });
 
 const ns = 'http://www.topografix.com/GPX/1/1';
@@ -63,10 +67,10 @@ export const objectGpxExportLogic = createLogic({
     // eslint-disable-next-line
     console.log(serializer.serializeToString(doc));
 
-    FileSaver.saveAs(new Blob([ serializer.serializeToString(doc) ], { type: 'application/json' }), 'miesta.gpx');
+    FileSaver.saveAs(new Blob([serializer.serializeToString(doc)], { type: 'application/json' }), 'miesta.gpx');
 
     done();
-  }
+  },
 });
 
 function createElement(parent, name, text, attributes = {}) {
@@ -87,4 +91,4 @@ function addAttribute(elem, name, value) {
   elem.setAttributeNode(attr);
 }
 
-export default [ objectsFetchLogic, objectGpxExportLogic ];
+export default [objectsFetchLogic, objectGpxExportLogic];

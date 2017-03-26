@@ -16,7 +16,7 @@ class AreaMeasurementResult extends React.Component {
     onPointAdd: React.PropTypes.func.isRequired,
     onPointUpdate: React.PropTypes.func.isRequired,
     onPointRemove: React.PropTypes.func.isRequired,
-    onShowToast: React.PropTypes.func.isRequired
+    onShowToast: React.PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -39,10 +39,10 @@ class AreaMeasurementResult extends React.Component {
     const line1 = 'Odstrániť bod?';
     const line2 = [
       <Button key="yes" onClick={() => this.props.onPointRemove(position)}>
-          <span style={{ fontWeight:700 }}>Áno</span>
+        <span style={{ fontWeight: 700 }}>Áno</span>
       </Button>,
       ' ',
-      <Button key="no">Nie</Button>
+      <Button key="no">Nie</Button>,
     ];
     this.props.onShowToast('info', line1, line2);
   }
@@ -55,15 +55,16 @@ class AreaMeasurementResult extends React.Component {
       <div>
         {points.map((p, i) =>
           <Marker
-            key={i} 
-            position={L.latLng(p.lat, p.lon)} 
-            draggable 
+            key={i}
+            position={L.latLng(p.lat, p.lon)}
+            draggable
             onClick={() => this.pointClicked(i)}
-            onDrag={this.handleMeasureMarkerDrag.bind(this, i)}/>
+            onDrag={() => this.handleMeasureMarkerDrag(i)}
+          />,
         )}
 
         {points.length > 1 &&
-          <Polygon positions={points.map(({ lat, lon }) => [ lat, lon ])}>
+          <Polygon positions={points.map(({ lat, lon }) => [lat, lon])}>
             {points.length > 2 &&
               <Tooltip direction="center" permanent>
                 <span>
@@ -83,22 +84,18 @@ class AreaMeasurementResult extends React.Component {
 }
 
 export default connect(
-  function (state) {
-    return {
-      points: state.measurement.points
-    };
-  },
-  function (dispatch) {
-    return {
-      onPointAdd(point) {
-        dispatch(measurementAddPoint(point));
-      },
-      onPointUpdate(i, point) {
-        dispatch(measurementUpdatePoint(i, point));
-      },
-      onPointRemove(i) {
-        dispatch(measurementRemovePoint(i));
-      },
-    };
-  }
+  state => ({
+    points: state.measurement.points,
+  }),
+  dispatch => ({
+    onPointAdd(point) {
+      dispatch(measurementAddPoint(point));
+    },
+    onPointUpdate(i, point) {
+      dispatch(measurementUpdatePoint(i, point));
+    },
+    onPointRemove(i) {
+      dispatch(measurementRemovePoint(i));
+    },
+  }),
 )(AreaMeasurementResult);

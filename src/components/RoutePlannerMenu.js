@@ -18,7 +18,6 @@ import 'fm3/styles/routePlanner.scss';
 
 function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode, transportType,
     onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup }) {
-
   function setFromCurrentPosition(pointType) {
     getCurrentPosition().then(({ lat, lon }) => {
       if (pointType === 'start') {
@@ -33,18 +32,18 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
 
   function setFromHomeLocation(pointType) {
     const { lat, lon } = homeLocation;
-      if (!lat) {
+    if (!lat) {
       const line1 = null;
       const line2 = [
         'Najpr si musíte nastaviť domovskú polohu cez',
         ' ',
         <Button key="settings" onClick={onLaunchSettingsPopup}>
           Nastavenia
-        </Button>
+        </Button>,
       ];
       onShowToast('info', line1, line2);
     } else if (pointType === 'start') {
-        onSetStart({ lat, lon });
+      onSetStart({ lat, lon });
     } else if (pointType === 'finish') {
       onSetFinish({ lat, lon });
     }
@@ -56,35 +55,35 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
       <Navbar.Form pullLeft>
         <ButtonGroup>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" style={{ color: '#409a40' }}/> Štart</span>}
+            title={<span><FontAwesomeIcon icon="play" style={{ color: '#409a40' }} /> Štart</span>}
             id="add-start-dropdown"
-            onClick={onChangePickPointMode.bind(null, 'start')}
+            onClick={() => onChangePickPointMode('start')}
             active={pickPointMode === 'start'}
           >
-            <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
-            <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-            <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
+            <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
+            <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
-          <Button onClick={onChangePickPointMode.bind(null, 'midpoint')} active={pickPointMode === 'midpoint'}>
-            <FontAwesomeIcon icon="pause" style={{ color: '#247dc9' }}/> Zastávka
+          <Button onClick={() => onChangePickPointMode('midpoint')} active={pickPointMode === 'midpoint'}>
+            <FontAwesomeIcon icon="pause" style={{ color: '#247dc9' }} /> Zastávka
           </Button>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }}/> Cieľ</span>}
+            title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} /> Cieľ</span>}
             id="add-finish-dropdown"
-            onClick={onChangePickPointMode.bind(null, 'finish')}
+            onClick={() => onChangePickPointMode('finish')}
             active={pickPointMode === 'finish'}
           >
-            <MenuItem><FontAwesomeIcon icon="map-marker"/> Vybrať na mape</MenuItem>
-            <MenuItem onClick={() => setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye"/> Aktuálna poloha</MenuItem>
-            <MenuItem onClick={() => setFromHomeLocation('finish')}><FontAwesomeIcon icon="home"/> Domov</MenuItem>
+            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
+            <MenuItem onClick={() => setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
+            <MenuItem onClick={() => setFromHomeLocation('finish')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
         </ButtonGroup>
         {' '}
         <ButtonGroup>
           {
-            [ [ 'car', 'car' ], [ 'walk', 'male' ], [ 'bicycle', 'bicycle' ] ].map(([ type, icon ], i) => (
-              <Button key={i} active={transportType === type} onClick={onChangeTransportType.bind(null, type)}>
-                <FontAwesomeIcon icon={icon}/>
+            [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon], i) => (
+              <Button key={i} active={transportType === type} onClick={() => onChangeTransportType(type)}>
+                <FontAwesomeIcon icon={icon} />
               </Button>
             ))
           }
@@ -92,9 +91,9 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
       </Navbar.Form>
       <Nav>
         <NavItem onClick={onCancel}>
-          <Glyphicon glyph="remove"/> Zavrieť
+          <Glyphicon glyph="remove" /> Zavrieť
         </NavItem>
-       </Nav>
+      </Nav>
     </div>
   );
 }
@@ -110,39 +109,35 @@ RoutePlannerMenu.propTypes = {
   onShowToast: React.PropTypes.func.isRequired,
   homeLocation: React.PropTypes.shape({
     lat: React.PropTypes.number,
-    lon: React.PropTypes.number
+    lon: React.PropTypes.number,
   }),
-  onLaunchSettingsPopup: React.PropTypes.func.isRequired
+  onLaunchSettingsPopup: React.PropTypes.func.isRequired,
 };
 
 export default connect(
-  function (state) {
-    return {
-      homeLocation: state.main.homeLocation,
-      transportType: state.routePlanner.transportType,
-      pickPointMode: state.routePlanner.pickMode
-    };
-  },
-  function (dispatch) {
-    return {
-      onSetStart: function(start) {
-        dispatch(routePlannerSetStart(start));
-      },
-      onSetFinish: function(finish) {
-        dispatch(routePlannerSetFinish(finish));
-      },
-      onChangeTransportType(transportType) {
-        dispatch(routePlannerSetTransportType(transportType));
-      },
-      onChangePickPointMode(pickMode) {
-        dispatch(routePlannerSetPickMode(pickMode));
-      },
-      onCancel() {
-        dispatch(setTool(null));
-      },
-      onLaunchSettingsPopup() {
-        dispatch(setActivePopup('settings'));
-      }
-    };
-  }
+  state => ({
+    homeLocation: state.main.homeLocation,
+    transportType: state.routePlanner.transportType,
+    pickPointMode: state.routePlanner.pickMode,
+  }),
+  dispatch => ({
+    onSetStart(start) {
+      dispatch(routePlannerSetStart(start));
+    },
+    onSetFinish(finish) {
+      dispatch(routePlannerSetFinish(finish));
+    },
+    onChangeTransportType(transportType) {
+      dispatch(routePlannerSetTransportType(transportType));
+    },
+    onChangePickPointMode(pickMode) {
+      dispatch(routePlannerSetPickMode(pickMode));
+    },
+    onCancel() {
+      dispatch(setTool(null));
+    },
+    onLaunchSettingsPopup() {
+      dispatch(setActivePopup('settings'));
+    },
+  }),
 )(RoutePlannerMenu);

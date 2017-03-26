@@ -13,7 +13,7 @@ class DistanceMeasurementResult extends React.Component {
   static propTypes = {
     points: React.PropTypes.array,
     onPointAdd: React.PropTypes.func.isRequired,
-    onPointUpdate: React.PropTypes.func.isRequired
+    onPointUpdate: React.PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -47,15 +47,15 @@ class DistanceMeasurementResult extends React.Component {
           prev = p;
 
           const m = (
-            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={this.handleMeasureMarkerDrag.bind(this, i)}>
-              <Tooltip className="compact" offset={[ -4,0 ]} direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
+            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={() => this.handleMeasureMarkerDrag(i)}>
+              <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
             </Marker>
           );
 
           return m;
         })}
 
-        {points.length > 1 && <Polyline positions={points.map(({ lat, lon }) => [ lat, lon ])}/>}
+        {points.length > 1 && <Polyline positions={points.map(({ lat, lon }) => [lat, lon])} />}
       </div>
     );
   }
@@ -63,19 +63,15 @@ class DistanceMeasurementResult extends React.Component {
 }
 
 export default connect(
-  function (state) {
-    return {
-      points: state.measurement.points
-    };
-  },
-  function (dispatch) {
-    return {
-      onPointAdd(point) {
-        dispatch(measurementAddPoint(point));
-      },
-      onPointUpdate(i, point) {
-        dispatch(measurementUpdatePoint(i, point));
-      }
-    };
-  }
+  state => ({
+    points: state.measurement.points,
+  }),
+  dispatch => ({
+    onPointAdd(point) {
+      dispatch(measurementAddPoint(point));
+    },
+    onPointUpdate(i, point) {
+      dispatch(measurementUpdatePoint(i, point));
+    },
+  }),
 )(DistanceMeasurementResult);

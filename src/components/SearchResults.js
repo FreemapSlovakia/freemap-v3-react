@@ -7,38 +7,37 @@ import MultiLineString from 'fm3/components/searchResults/MultiLineString';
 import MultiPolygon from 'fm3/components/searchResults/MultiPolygon';
 
 function SearchResults({ highlightedResult, selectedResult }) {
-
   return (
     <div>
       {displayAsPoint(highlightedResult) &&
-        <Point searchResult={highlightedResult}/>
+        <Point searchResult={highlightedResult} />
       }
       {displayAsPolyline(highlightedResult) &&
-        <Polyline searchResult={highlightedResult}/>
+        <Polyline searchResult={highlightedResult} />
       }
       {displayAsMultiLineString(highlightedResult) &&
-        <MultiLineString searchResult={highlightedResult}/>
+        <MultiLineString searchResult={highlightedResult} />
       }
       {displayAsPolygon(highlightedResult) &&
-        <Polygon searchResult={highlightedResult}/>
+        <Polygon searchResult={highlightedResult} />
       }
       {displayAsMultiPolygon(highlightedResult) &&
-        <MultiPolygon searchResult={highlightedResult}/>
+        <MultiPolygon searchResult={highlightedResult} />
       }
       {displayAsPoint(selectedResult) &&
-        <Point searchResult={selectedResult}/>
+        <Point searchResult={selectedResult} />
       }
       {displayAsPolyline(selectedResult) &&
-        <Polyline searchResult={selectedResult}/>
+        <Polyline searchResult={selectedResult} />
       }
       {displayAsMultiLineString(selectedResult) &&
-        <MultiLineString searchResult={selectedResult}/>
+        <MultiLineString searchResult={selectedResult} />
       }
       {displayAsPolygon(selectedResult) &&
-        <Polygon searchResult={selectedResult}/>
+        <Polygon searchResult={selectedResult} />
       }
       {displayAsMultiPolygon(selectedResult) &&
-        <MultiPolygon searchResult={selectedResult}/>
+        <MultiPolygon searchResult={selectedResult} />
       }
     </div>
   );
@@ -46,7 +45,7 @@ function SearchResults({ highlightedResult, selectedResult }) {
 
 SearchResults.propTypes = {
   highlightedResult: React.PropTypes.any,
-  selectedResult: React.PropTypes.any
+  selectedResult: React.PropTypes.any,
 };
 
 function displayAsPoint(result) {
@@ -70,10 +69,8 @@ function displayAsMultiLineString(result) {
 }
 
 export default connect(
-  function (state) {
-    return {
-      highlightedResult: state.search.highlightedResult,
-      selectedResult: state.search.selectedResult
-    };
-  }
+  state => ({
+    highlightedResult: state.search.highlightedResult,
+    selectedResult: state.search.selectedResult,
+  }),
 )(SearchResults);

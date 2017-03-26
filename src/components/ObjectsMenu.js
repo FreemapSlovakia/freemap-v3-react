@@ -31,27 +31,26 @@ function ObjectsMenu({ onSearch, onCancel, onShowToast, onGpxExport, zoom, locat
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
   return (
     <Nav>
-      <Navbar.Text><FontAwesomeIcon icon="map-marker"/> Miesta</Navbar.Text>
+      <Navbar.Text><FontAwesomeIcon icon="map-marker" /> Miesta</Navbar.Text>
       <NavDropdown title="Zvoľ kategóriu" id="basic-nav-dropdown" className="dropdown-long" onToggle={validateZoom} open={zoom < 12 ? false : undefined}>
         {poiTypeGroups.map(({ id: gid, title }) => (
           [
-            <MenuItem key={gid + '_'} divider/>,
+            <MenuItem key={`${gid}_`} divider />,
             <MenuItem key={gid} header>{title}</MenuItem>,
             poiTypes.map(({ group, title, id }, i) => group === gid &&
               <MenuItem key={i} eventKey={i} onSelect={select}>
-                <img src={require(`../images/mapIcons/${group}-${id}.png`)}/> {title}
-              </MenuItem>
-            )
+                <img src={require(`../images/mapIcons/${group}-${id}.png`)} alt={`${group}-${id}`} /> {title}
+              </MenuItem>,
+            ),
           ]
         ))}
       </NavDropdown>
       <Navbar.Form pullLeft>
         <Button onClick={onGpxExport}>Exportuj do GPX</Button>
       </Navbar.Form>
-      <NavItem onClick={onCancel}><Glyphicon glyph="remove"/> Zavrieť</NavItem>
+      <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
     </Nav>
   );
-
 }
 
 ObjectsMenu.propTypes = {
@@ -64,22 +63,18 @@ ObjectsMenu.propTypes = {
 };
 
 export default connect(
-  function (state) {
-    return {
-      zoom: state.map.zoom
-    };
-  },
-  function (dispatch) {
-    return {
-      onSearch(typeId) {
-        dispatch(objectsSetFilter(typeId));
-      },
-      onGpxExport() {
-        dispatch(objectsExportGpx());
-      },
-      onCancel() {
-        dispatch(setTool(null));
-      }
-    };
-  }
+  state => ({
+    zoom: state.map.zoom,
+  }),
+  dispatch => ({
+    onSearch(typeId) {
+      dispatch(objectsSetFilter(typeId));
+    },
+    onGpxExport() {
+      dispatch(objectsExportGpx());
+    },
+    onCancel() {
+      dispatch(setTool(null));
+    },
+  }),
 )(withRouter(ObjectsMenu));

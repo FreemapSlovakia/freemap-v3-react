@@ -1,6 +1,6 @@
 const initialState = {
   elevation: null,
-  point: null
+  point: null,
 };
 
 export default function elevationMeasurement(state = initialState, action) {

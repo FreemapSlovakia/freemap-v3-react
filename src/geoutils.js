@@ -7,7 +7,7 @@ const nf6 = Intl.NumberFormat('sk', { minimumFractionDigits: 6, maximumFractionD
 export function formatGpsCoord(angle, cardinals, style = 'DMS') {
   let cardinal = '';
   if (cardinals) {
-    cardinal = cardinals[angle < 0 ? 0 : 1] + ' ';
+    cardinal = `${cardinals[angle < 0 ? 0 : 1]} `;
     angle = Math.abs(angle);
   }
 
@@ -25,6 +25,9 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS') {
     }
     case 'D': {
       return `${cardinal}${nf6.format(angle)}°`;
+    }
+    default: {
+      throw new Error();
     }
   }
 }
@@ -49,11 +52,11 @@ export function getCurrentPosition() {
   const options = {
     enableHighAccuracy: true,
     timeout: 2000,
-    maximumAge: 0
+    maximumAge: 0,
   };
 
-  return new Promise(function(resolve, reject) {
-    //resolve({ lat: 48.786170, lon: 19.496098 });
+  return new Promise((resolve, reject) => {
+    // resolve({ lat: 48.786170, lon: 19.496098 });
     const onSuccess = (pos) => {
       resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
     };
@@ -69,8 +72,8 @@ export function getCurrentPosition() {
 export function area(points) {
   const geojsonArea = require('@mapbox/geojson-area');
   const geometry = {
-    "type": "Polygon",
-    "coordinates": [ [ ...points, points[0] ].map(({ lat, lon }) => [ lon, lat ]) ]
+    type: 'Polygon',
+    coordinates: [[...points, points[0]].map(({ lat, lon }) => [lon, lat])],
   };
   return geojsonArea.geometry(geometry);
 }
