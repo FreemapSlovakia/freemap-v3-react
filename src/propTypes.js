@@ -9,11 +9,11 @@ export const overlays = React.PropTypes.arrayOf(
 );
 
 export const object = React.PropTypes.shape({
-  id: React.PropTypes.string.isRequired,
+  id: React.PropTypes.number.isRequired,
   lat: React.PropTypes.number.isRequired,
   lon: React.PropTypes.number.isRequired,
   tags: React.PropTypes.object.isRequired,
-  typeId: React.PropTypes.string.isRequired,
+  typeId: React.PropTypes.number.isRequired,
 });
 
 export const searchResult = React.PropTypes.shape({
