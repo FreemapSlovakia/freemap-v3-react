@@ -1,5 +1,6 @@
 import React from 'react';
 import { Polyline as LeafletPolyline } from 'react-leaflet';
+import * as FmPropTypes from 'fm3/propTypes';
 
 export default function Polyline({ searchResult }) {
   const latlongs = searchResult.geojson.coordinates.map(latlon => L.latLng(latlon[1], latlon[0]));
@@ -8,5 +9,5 @@ export default function Polyline({ searchResult }) {
 }
 
 Polyline.propTypes = {
-  searchResult: React.PropTypes.any,
+  searchResult: FmPropTypes.searchResult.isRequired,
 };

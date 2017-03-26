@@ -15,3 +15,12 @@ export const object = React.PropTypes.shape({
   tags: React.PropTypes.object.isRequired,
   typeId: React.PropTypes.string.isRequired,
 });
+
+export const searchResult = React.PropTypes.shape({
+  id: React.PropTypes.number.isRequired,
+  label: React.PropTypes.string.isRequired,
+  geojson: React.PropTypes.object.isRequired,
+  lat: React.PropTypes.number.isRequired,
+  lon: React.PropTypes.number.isRequired,
+  tags: React.PropTypes.object.isRequired,
+});

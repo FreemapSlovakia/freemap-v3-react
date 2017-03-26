@@ -47,13 +47,13 @@ const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 class Main extends React.Component {
 
   static propTypes = {
-    lat: React.PropTypes.number,
-    lon: React.PropTypes.number,
-    zoom: React.PropTypes.number,
+    lat: React.PropTypes.number.isRequired,
+    lon: React.PropTypes.number.isRequired,
+    zoom: React.PropTypes.number.isRequired,
     tool: React.PropTypes.string,
     tileFormat: FmPropTypes.tileFormat.isRequired,
-    overlays: FmPropTypes.overlays,
-    overlayOpacity: React.PropTypes.number,
+    overlays: FmPropTypes.overlays.isRequired,
+    overlayOpacity: React.PropTypes.object.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
     onSetTool: React.PropTypes.func.isRequired,
     onMapRefocus: React.PropTypes.func.isRequired,

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Polygon as LeafletPolygon } from 'react-leaflet';
+import * as FmPropTypes from 'fm3/propTypes';
 
 export default function Polygon({ searchResult }) {
   const positions = searchResult.geojson.coordinates[0]
@@ -9,5 +10,5 @@ export default function Polygon({ searchResult }) {
 }
 
 Polygon.propTypes = {
-  searchResult: React.PropTypes.any,
+  searchResult: FmPropTypes.searchResult.isRequired,
 };

@@ -1,5 +1,6 @@
 import React from 'react';
 import { Marker, Tooltip } from 'react-leaflet';
+import * as FmPropTypes from 'fm3/propTypes';
 
 export default function Point({ searchResult }) {
   return (
@@ -15,5 +16,5 @@ export default function Point({ searchResult }) {
 }
 
 Point.propTypes = {
-  searchResult: React.PropTypes.any,
+  searchResult: FmPropTypes.searchResult.isRequired,
 };

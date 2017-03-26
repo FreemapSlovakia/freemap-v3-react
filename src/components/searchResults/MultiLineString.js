@@ -1,5 +1,6 @@
 import React from 'react';
 import { Polyline } from 'react-leaflet';
+import * as FmPropTypes from 'fm3/propTypes';
 
 export default function MultiLineString({ searchResult }) {
   const polylinesLatLons = searchResult.geojson.coordinates
@@ -13,5 +14,5 @@ export default function MultiLineString({ searchResult }) {
 }
 
 MultiLineString.propTypes = {
-  searchResult: React.PropTypes.any,
+  searchResult: FmPropTypes.searchResult.isRequired,
 };
