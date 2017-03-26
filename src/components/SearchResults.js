@@ -5,6 +5,7 @@ import Polyline from 'fm3/components/searchResults/Polyline';
 import Polygon from 'fm3/components/searchResults/Polygon';
 import MultiLineString from 'fm3/components/searchResults/MultiLineString';
 import MultiPolygon from 'fm3/components/searchResults/MultiPolygon';
+import * as FmPropTypes from 'fm3/propTypes';
 
 function SearchResults({ highlightedResult, selectedResult }) {
   return (
@@ -44,8 +45,8 @@ function SearchResults({ highlightedResult, selectedResult }) {
 }
 
 SearchResults.propTypes = {
-  highlightedResult: React.PropTypes.any,
-  selectedResult: React.PropTypes.any,
+  highlightedResult: FmPropTypes.searchResult,
+  selectedResult: FmPropTypes.searchResult,
 };
 
 function displayAsPoint(result) {

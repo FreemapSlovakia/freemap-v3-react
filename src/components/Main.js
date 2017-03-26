@@ -68,7 +68,7 @@ class Main extends React.Component {
   }
 
   componentDidMount() {
-    setLeafletElement(this.refs.map.leafletElement);
+    setLeafletElement(this.map.leafletElement);
   }
 
   componentWillReceiveProps(newProps) {
@@ -95,12 +95,12 @@ class Main extends React.Component {
     setLeafletElement(null);
   }
 
-  handleMapMoveEnd() {
+  handleMapMoveEnd = () => {
     if (this.ignoreMapMoveEndEvent) {
       return;
     }
 
-    const map = this.refs.map.leafletElement;
+    const map = this.map.leafletElement;
     const { lat, lng: lon } = map.getCenter();
     const zoom = map.getZoom();
 
@@ -109,26 +109,18 @@ class Main extends React.Component {
     }
   }
 
-  handleMapTypeChange(mapType) {
+  handleMapTypeChange = (mapType) => {
     if (this.props.mapType !== mapType) {
       this.props.onMapRefocus({ mapType });
     }
   }
 
-  handleOverlayChange(overlays) {
+  handleOverlayChange = (overlays) => {
     this.props.onMapRefocus({ overlays });
   }
 
-  // handlePoiSearch() {
-  //   if (this.props.zoom < 12) {
-  //     this.showToast('info', null, 'Vyhľadávanie miest funguje až od zoom úrovne 12');
-  //   } else {
-  //     this.props.onSetTool('objects');
-  //   }
-  // }
-
-  showToast(toastType, line1, line2) {
-    this.refs.toastContainer[toastType](
+  showToast = (toastType, line1, line2) => {
+    this.toastContainer[toastType](
       line2,
       line1, // sic!
       { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' },
@@ -141,7 +133,6 @@ class Main extends React.Component {
 
   render() {
     const { tool, tileFormat, activePopup, onLaunchPopup, progress } = this.props;
-    const b = (fn, ...args) => fn.bind(this, ...args);
     const showDefaultMenu = [null, 'select-home-location'].indexOf(tool) !== -1;
 
     return (
@@ -150,20 +141,20 @@ class Main extends React.Component {
           <Navbar fluid style={{ marginBottom: 0 }}>
             <NavbarHeader />
             <Navbar.Collapse>
-              {tool === 'objects' && <ObjectsMenu onShowToast={b(this.showToast)} />}
+              {tool === 'objects' && <ObjectsMenu onShowToast={this.showToast} />}
               {(showDefaultMenu || tool === 'search') && <SearchMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu onShowToast={b(this.showToast)} />}
+              {tool === 'route-planner' && <RoutePlannerMenu onShowToast={this.showToast} />}
               {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
-              {activePopup === 'settings' && <Settings onShowToast={b(this.showToast)} />}
+              {activePopup === 'settings' && <Settings onShowToast={this.showToast} />}
               {showDefaultMenu &&
                 <Nav key="nav">
-                  <NavItem onClick={b(this.handleToolSet, 'objects')}>
+                  <NavItem onClick={() => this.handleToolSet('objects')}>
                     <FontAwesomeIcon icon="map-marker" /> Miesta
                   </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'route-planner')}>
+                  <NavItem onClick={() => this.handleToolSet('route-planner')}>
                     <FontAwesomeIcon icon="map-signs" /> Plánovač
                   </NavItem>
-                  <NavItem onClick={b(this.handleToolSet, 'measure')}>
+                  <NavItem onClick={() => this.handleToolSet('measure')}>
                     <FontAwesomeIcon icon="arrows-h" /> Meranie
                   </NavItem>
                 </Nav>
@@ -185,15 +176,15 @@ class Main extends React.Component {
         </Row>
         <Row className={`map-holder tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
           <Map
-            ref="map"
+            ref={(map) => { this.map = map; }}
             center={L.latLng(this.props.lat, this.props.lon)}
             zoom={this.props.zoom}
-            onMoveend={b(this.handleMapMoveEnd)}
+            onMoveend={this.handleMapMoveEnd}
             onClick={handleMapClick}
           >
             <Layers
-              mapType={this.props.mapType} onMapChange={b(this.handleMapTypeChange)}
-              overlays={this.props.overlays} onOverlaysChange={b(this.handleOverlayChange)}
+              mapType={this.props.mapType} onMapChange={this.handleMapTypeChange}
+              overlays={this.props.overlays} onOverlaysChange={this.handleOverlayChange}
               tileFormat={tileFormat} overlayOpacity={this.props.overlayOpacity}
             />
 
@@ -203,18 +194,18 @@ class Main extends React.Component {
 
             {tool === 'objects' && <ObjectsResult />}
 
-            {tool === 'route-planner' && <RoutePlannerResult onShowToast={b(this.showToast)} />}
+            {tool === 'route-planner' && <RoutePlannerResult onShowToast={this.showToast} />}
 
             {tool === 'measure' && <DistanceMeasurementResult />}
 
             {tool === 'measure-ele' && <ElevationMeasurementResult />}
 
-            {tool === 'measure-area' && <AreaMeasurementResult onShowToast={b(this.showToast)} />}
+            {tool === 'measure-area' && <AreaMeasurementResult onShowToast={this.showToast} />}
           </Map>
         </Row>
 
         <ToastContainer
-          ref="toastContainer"
+          ref={(toastContainer) => { this.toastContainer = toastContainer; }}
           toastMessageFactory={ToastMessageFactory}
           className="toast-top-right"
         />

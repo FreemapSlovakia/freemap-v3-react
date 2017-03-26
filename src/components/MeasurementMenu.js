@@ -12,20 +12,18 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 
 function MeasurementMenu({ onCancel, onSetTool, tool }) {
-  const b = (fn, ...args) => fn.bind(null, ...args);
-
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
   return (
     <div>
       <Navbar.Form pullLeft>
         <ButtonGroup>
-          <Button onClick={b(onSetTool, 'measure')} active={tool === 'measure'}>
+          <Button onClick={() => onSetTool('measure')} active={tool === 'measure'}>
             <FontAwesomeIcon icon="arrows-h" /> Vzdialenosť
           </Button>
-          <Button onClick={b(onSetTool, 'measure-ele')} active={tool === 'measure-ele'}>
+          <Button onClick={() => onSetTool('measure-ele')} active={tool === 'measure-ele'}>
             <FontAwesomeIcon icon="long-arrow-up" /> Výška a poloha
           </Button>
-          <Button onClick={b(onSetTool, 'measure-area')} active={tool === 'measure-area'}>
+          <Button onClick={() => onSetTool('measure-area')} active={tool === 'measure-area'}>
             <FontAwesomeIcon icon="square" /> Plocha
           </Button>
         </ButtonGroup>

@@ -10,14 +10,14 @@ function ObjectsResult({ objects }) {
   return (
     <div>
       {objects.map(({ id, lat, lon, tags, typeId }) => {
-        const __html = toHtml(typeId, tags);
+        const html = toHtml(typeId, tags);
 
         const pt = getPoiType(typeId);
         const img = pt ? require(`../images/mapIcons/${pt.group}-${pt.id}.png`) : null;
 
         return (
           <MarkerWithInnerLabel key={id} position={L.latLng(lat, lon)} image={img}>
-            {__html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html }} /></Popup>}
+            {html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html: html }} /></Popup>}
           </MarkerWithInnerLabel>
         );
       })}

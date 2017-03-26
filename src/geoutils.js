@@ -6,25 +6,26 @@ const nf6 = Intl.NumberFormat('sk', { minimumFractionDigits: 6, maximumFractionD
 
 export function formatGpsCoord(angle, cardinals, style = 'DMS') {
   let cardinal = '';
+  let a = angle;
   if (cardinals) {
     cardinal = `${cardinals[angle < 0 ? 0 : 1]} `;
-    angle = Math.abs(angle);
+    a = Math.abs(angle);
   }
 
   switch (style) {
     case 'DMS': {
-      const degrees = Math.floor(angle);
-      const minutes = Math.floor((angle - degrees) * 60);
-      const seconds = nf3.format((angle - degrees - minutes / 60) * 3600);
+      const degrees = Math.floor(a);
+      const minutes = Math.floor((a - degrees) * 60);
+      const seconds = nf3.format((a - degrees - minutes / 60) * 3600);
       return `${cardinal}${degrees}° ${minutes}' ${seconds}"`;
     }
     case 'DM': {
-      const degrees = Math.floor(angle);
-      const minutes = nf4.format((angle - degrees) * 60);
+      const degrees = Math.floor(a);
+      const minutes = nf4.format((a - degrees) * 60);
       return `${cardinal}${degrees}° ${minutes}'`;
     }
     case 'D': {
-      return `${cardinal}${nf6.format(angle)}°`;
+      return `${cardinal}${nf6.format(a)}°`;
     }
     default: {
       throw new Error();

@@ -33,10 +33,10 @@ function ObjectsMenu({ onSearch, onCancel, onShowToast, onGpxExport, zoom, locat
     <Nav>
       <Navbar.Text><FontAwesomeIcon icon="map-marker" /> Miesta</Navbar.Text>
       <NavDropdown title="Zvoľ kategóriu" id="basic-nav-dropdown" className="dropdown-long" onToggle={validateZoom} open={zoom < 12 ? false : undefined}>
-        {poiTypeGroups.map(({ id: gid, title }) => (
+        {poiTypeGroups.map(({ id: gid, title: groupTitle }) => (
           [
             <MenuItem key={`${gid}_`} divider />,
-            <MenuItem key={gid} header>{title}</MenuItem>,
+            <MenuItem key={gid} header>{groupTitle}</MenuItem>,
             poiTypes.map(({ group, title, id }, i) => group === gid &&
               <MenuItem key={i} eventKey={i} onSelect={select}>
                 <img src={require(`../images/mapIcons/${group}-${id}.png`)} alt={`${group}-${id}`} /> {title}

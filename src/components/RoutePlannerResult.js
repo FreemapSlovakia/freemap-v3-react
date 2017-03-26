@@ -27,7 +27,9 @@ class RoutePlannerResult extends React.Component {
       case 'midpoint':
         this.props.onAddMidpoint({ lat, lon });
         break;
-    } // TODO default - log error
+      default:
+        throw new Error('unknown pickMode');
+    }
   }
 
   handleRouteMarkerDragend(movedPointType, position, event) {
@@ -43,7 +45,9 @@ class RoutePlannerResult extends React.Component {
       case 'midpoint':
         this.props.onSetMidpoint(position, { lat, lon });
         break;
-    } // TODO default - log error
+      default:
+        throw new Error('unknown pointType');
+    }
   }
 
   midpointClicked(position) {

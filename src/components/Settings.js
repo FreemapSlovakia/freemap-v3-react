@@ -66,7 +66,7 @@ class Settings extends React.Component {
     this.props.onSelectHomeLocationFinished();
   }
 
-  save() {
+  handleSave = () => {
     this.props.onSave(this.state.tileFormat, this.state.homeLocation, this.state.nlcOpacity);
     this.props.onShowToast('info', null, 'Zmeny boli uložené.');
   }
@@ -74,7 +74,6 @@ class Settings extends React.Component {
   render() {
     const { onClosePopup, onSelectHomeLocation, tool, zoom } = this.props;
     const { homeLocation, homeLocationCssClasses, userMadeChanges } = this.state;
-    const b = (fn, ...args) => fn.bind(this, ...args);
     const nlcOverlayIsNotVisible = zoom < 14;
 
     let homeLocationInfo = 'neurčená';
@@ -83,7 +82,7 @@ class Settings extends React.Component {
     }
 
     return (
-      <Modal show={tool !== 'select-home-location'} onHide={b(onClosePopup)}>
+      <Modal show={tool !== 'select-home-location'} onHide={onClosePopup}>
         <Modal.Header closeButton>
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
@@ -131,8 +130,8 @@ class Settings extends React.Component {
             </Alert> }
         </Modal.Body>
         <Modal.Footer>
-          <Button bsStyle="info" onClick={b(this.save)} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-          <Button onClick={b(onClosePopup)}><Glyphicon glyph="remove" /> Zrušiť</Button>
+          <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
+          <Button onClick={onClosePopup}><Glyphicon glyph="remove" /> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );

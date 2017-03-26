@@ -9,6 +9,7 @@ import { searchSetQuery, searchHighlightResult, searchSelectResult } from 'fm3/a
 import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
 import { getLeafletElement } from 'fm3/leafletElementHolder';
+import * as FmPropTypes from 'fm3/propTypes';
 
 import 'fm3/styles/search.scss';
 
@@ -81,7 +82,7 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
 
 SearchMenu.propTypes = {
   tool: React.PropTypes.string,
-  selectedResult: React.PropTypes.any,
+  selectedResult: FmPropTypes.searchResult,
   results: React.PropTypes.array.isRequired,
   onDoSearch: React.PropTypes.func.isRequired,
   onHiglightResult: React.PropTypes.func.isRequired,

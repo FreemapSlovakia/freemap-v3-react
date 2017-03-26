@@ -81,8 +81,8 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
         {' '}
         <ButtonGroup>
           {
-            [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon], i) => (
-              <Button key={i} active={transportType === type} onClick={() => onChangeTransportType(type)}>
+            [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon]) => (
+              <Button key={type} active={transportType === type} onClick={() => onChangeTransportType(type)}>
                 <FontAwesomeIcon icon={icon} />
               </Button>
             ))

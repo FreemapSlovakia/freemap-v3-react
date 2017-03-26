@@ -8,5 +8,5 @@ export default function FontAwesomeIcon({ icon, style }) {
 
 FontAwesomeIcon.propTypes = {
   icon: React.PropTypes.string,
-  style: React.PropTypes.any,
+  style: React.PropTypes.object,
 };
