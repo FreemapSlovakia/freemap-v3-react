@@ -59,7 +59,7 @@ class AreaMeasurementResult extends React.Component {
             position={L.latLng(p.lat, p.lon)}
             draggable
             onClick={() => this.pointClicked(i)}
-            onDrag={() => this.handleMeasureMarkerDrag(i)}
+            onDrag={e => this.handleMeasureMarkerDrag(i, e)}
           />,
         )}
 

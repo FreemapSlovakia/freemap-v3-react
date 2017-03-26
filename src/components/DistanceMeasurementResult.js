@@ -47,7 +47,7 @@ class DistanceMeasurementResult extends React.Component {
           prev = p;
 
           const m = (
-            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={() => this.handleMeasureMarkerDrag(i)}>
+            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)}>
               <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
             </Marker>
           );
