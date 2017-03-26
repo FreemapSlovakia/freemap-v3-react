@@ -47,13 +47,11 @@ class DistanceMeasurementResult extends React.Component {
           }
           prev = p;
 
-          const m = (
-            <Marker key={String(i)} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)}>
+          return (
+            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)}>
               <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
             </Marker>
           );
-
-          return m;
         })}
 
         {points.length > 1 && <Polyline positions={points.map(({ lat, lon }) => [lat, lon])} />}
