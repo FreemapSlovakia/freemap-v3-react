@@ -20,36 +20,29 @@ class AreaMeasurementResult extends React.Component {
     onShowToast: React.PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      futurePoints: [],
-    };
-  }
-
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
-  componentWillReceiveProps(newProps) {
-    const futurePoints = [];
-    if (newProps.points.length > 2) {
-      for (let i = 0; i < newProps.points.length; i += 1) {
-        const p1 = newProps.points[i];
-        const isLast = i === newProps.points.length - 1;
-        const p2 = isLast ? newProps.points[0] : newProps.points[i + 1];
+  componentWillUnmount() {
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
+  }
+
+  futurePoints = () => {
+    const fps = [];
+    if (this.props.points.length > 2) {
+      for (let i = 0; i < this.props.points.length; i += 1) {
+        const p1 = this.props.points[i];
+        const isLast = i === this.props.points.length - 1;
+        const p2 = isLast ? this.props.points[0] : this.props.points[i + 1];
 
         const lat = (p1.lat + p2.lat) / 2;
         const lon = (p1.lon + p2.lon) / 2;
-        futurePoints.push({ lat, lon });
+        fps.push({ lat, lon });
       }
     }
 
-    this.setState({ futurePoints });
-  }
-
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
+    return fps;
   }
 
   handlePoiAdded = (lat, lon, position) => {
@@ -75,7 +68,6 @@ class AreaMeasurementResult extends React.Component {
 
   render() {
     const { points } = this.props;
-    const { futurePoints } = this.state;
 
     const areaSize = points.length > 2 ? area(points) : NaN;
 
@@ -113,7 +105,7 @@ class AreaMeasurementResult extends React.Component {
           </Polygon>
         }
 
-        {futurePoints.map((p, i) =>
+        {this.futurePoints().map((p, i) =>
           <Marker
             key={String(i)}
             draggable
