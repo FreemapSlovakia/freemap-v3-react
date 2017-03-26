@@ -1,21 +1,17 @@
 import categories from './categories.json';
 import subcategories from './subcategories.json';
 
-// export const poiTypeGroups = [
-//   { id: 'nature', title: 'Príroda' },
-//   { id: 'shop', title: 'Obchody' }
-// ];
+export const poiTypeGroups = categories.map(c => ({
+  id: c.id, icon: c.filename, title: c.name, description: c.description,
+}));
 
-export const poiTypeGroups = categories.map(c => ({ id: c.filename, title: c.name, description: c.description }));
+const poiTypeGroupsMap = new Map();
+poiTypeGroups.forEach(group => poiTypeGroupsMap.set(group.id, group));
 
-const m = new Map();
-categories.forEach((c) => {
-  m.set(c.id, c.filename);
-});
-
-export const poiTypes = subcategories.map(({ filename, categoryId, name, filter }) => ({
-  id: filename, // TODO use id
-  group: m.get(categoryId),
+export const poiTypes = subcategories.map(({ id, filename, categoryId, name, filter }) => ({
+  id,
+  icon: `${poiTypeGroupsMap.get(categoryId).icon}-${filename}`,
+  group: categoryId,
   title: name,
   filter,
   overpassFilter: `(${['node', 'way', 'relation'].map(element => toOverpassFilter(element, filter)).join('')})`,
@@ -89,7 +85,7 @@ export function toHtml(typeId, tags) {
   const pt = getPoiType(typeId);
   const { name, ele } = tags;
   if (pt) {
-    const img = require(`./images/mapIcons/${pt.group}-${pt.id}.png`);
+    const img = require(`./images/mapIcons/${pt.icon}.png`);
     return pt.template ? pt.template(tags) : `<img src="${img}"/> ${pt.title}${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `<br/>${nf.format(ele)} m n. m.` : ''}`;
   }
   return name && escapeHtml(name);

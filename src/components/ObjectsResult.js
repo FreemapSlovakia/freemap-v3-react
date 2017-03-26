@@ -13,7 +13,7 @@ function ObjectsResult({ objects }) {
         const html = toHtml(typeId, tags);
 
         const pt = getPoiType(typeId);
-        const img = pt ? require(`../images/mapIcons/${pt.group}-${pt.id}.png`) : null;
+        const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
         return (
           <MarkerWithInnerLabel key={id} position={L.latLng(lat, lon)} image={img}>

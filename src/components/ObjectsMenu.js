@@ -3,54 +3,108 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { poiTypeGroups, poiTypes, getPoiType } from 'fm3/poiTypes';
 import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
-import NavDropdown from 'react-bootstrap/lib/NavDropdown';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import FormControl from 'react-bootstrap/lib/FormControl';
+import Dropdown from 'react-bootstrap/lib/Dropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function ObjectsMenu({ onSearch, onCancel, onShowToast, onGpxExport, zoom, location: { search } }) {
-  function select(i) {
-    onSearch(poiTypes[i].id);
+class ObjectsMenu extends React.Component {
+
+  state = {
+    filter: '',
+    dropdownOpened: false,
+    focused: false,
   }
 
-  function validateZoom() {
-    if (zoom < 12) {
-      const to = search.replace(/\bmap=\d+/, 'map=12'); // TODO this is ugly. Rework after introducing react-url-query
-      onShowToast('info', null, <span>Vyhľadávanie miest funguje až od priblíženia <Link to={to}>úrovne 12</Link>.</span>);
+  getGroupMenuItems = ({ id: gid, title: groupTitle }) => {
+    const items = poiTypes
+        .filter(({ group }) => group === gid)
+        .filter(({ title }) => title.toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
+        .map(({ group, title, id, icon }) =>
+          <MenuItem key={id} eventKey={id} onSelect={this.select}>
+            <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {title}
+          </MenuItem>,
+    );
+
+    return items.length === 0 ? null : [
+      <MenuItem key={`${gid}_`} divider />,
+      <MenuItem key={gid} header>{groupTitle}</MenuItem>,
+      items,
+    ];
+  }
+
+  handleFilterSet = (e) => {
+    this.setState({ filter: e.target.value });
+  }
+
+  handleFilterFocus = () => {
+    this.setState({ focused: true });
+  }
+
+  handleFilterBlur = () => {
+    this.setState({ focused: false });
+  }
+
+  handleToggle = () => {
+    this.setState({ dropdownOpened: !this.state.dropdownOpened || this.state.focused });
+  }
+
+  validateZoom = () => {
+    if (this.props.zoom < 12) {
+      const to = this.props.location.search.replace(/\bmap=\d+/, 'map=12'); // TODO this is ugly. Rework after introducing react-url-query
+      this.props.onShowToast('info', null, <span>Vyhľadávanie miest funguje až od priblíženia <Link to={to}>úrovne 12</Link>.</span>);
     }
   }
 
-  // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
-  return (
-    <Nav>
-      <Navbar.Text><FontAwesomeIcon icon="map-marker" /> Miesta</Navbar.Text>
-      <NavDropdown title="Zvoľ kategóriu" id="basic-nav-dropdown" className="dropdown-long" onToggle={validateZoom} open={zoom < 12 ? false : undefined}>
-        {poiTypeGroups.map(({ id: gid, title: groupTitle }) => (
-          [
-            <MenuItem key={`${gid}_`} divider />,
-            <MenuItem key={gid} header>{groupTitle}</MenuItem>,
-            poiTypes.map(({ group, title, id }, i) => group === gid &&
-              <MenuItem key={i} eventKey={i} onSelect={select}>
-                <img src={require(`../images/mapIcons/${group}-${id}.png`)} alt={`${group}-${id}`} /> {title}
-              </MenuItem>,
-            ),
-          ]
-        ))}
-      </NavDropdown>
-      <Navbar.Form pullLeft>
-        <Button onClick={onGpxExport}>Exportuj do GPX</Button>
-      </Navbar.Form>
-      <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-    </Nav>
-  );
+  select = (id) => {
+    this.props.onSearch(id);
+  }
+
+  render() {
+    const { onCancel, onGpxExport } = this.props;
+
+    // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
+    return (
+      <Nav>
+        <Navbar.Text><FontAwesomeIcon icon="map-marker" /> Miesta</Navbar.Text>
+        <Navbar.Form pullLeft>
+          <Dropdown
+            id="objectsMenuDropdown"
+            onToggle={this.handleToggle}
+            open={this.state.dropdownOpened}
+          >
+            <FormGroup bsRole="toggle">
+              <FormControl
+                type="text"
+                placeholder="Typ"
+                onChange={this.handleFilterSet}
+                value={this.state.filter}
+                onFocus={this.handleFilterFocus}
+                onBlur={this.handleFilterBlur}
+              />
+            </FormGroup>
+            <Dropdown.Menu>
+              {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
+            </Dropdown.Menu>
+          </Dropdown>
+        </Navbar.Form>
+        <Navbar.Form pullLeft>
+          <Button onClick={onGpxExport}>Exportuj do GPX</Button>
+        </Navbar.Form>
+        <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
+      </Nav>
+    );
+  }
 }
 
 ObjectsMenu.propTypes = {
