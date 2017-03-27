@@ -7,23 +7,26 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 export default function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, overlayOpacity }) {
   // eslint-disable-next-line
-  function getTileLayer({ type, url, attribution, maxZoom, minZoom }) {
+  function getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
     if (type === 'S') {
       return (<BingLayer
         bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
         onAdd={() => handleAdd(type)}
         onRemove={() => handleRemove(type)}
+        maxZoom={20}
+        maxNativeZoom={18}
       />);
     }
-    const opacity = overlayOpacity[type] || 1.0;
 
     return (<TileLayer
       attribution={attribution}
       url={url.replace('{tileFormat}', tileFormat)}
       onAdd={() => handleAdd(type)}
       onRemove={() => handleRemove(type)}
-      maxZoom={maxZoom} minZoom={minZoom}
-      opacity={opacity}
+      maxZoom={20}
+      minZoom={minZoom}
+      maxNativeZoom={maxNativeZoom}
+      opacity={overlayOpacity[type] || 1.0}
     />);
   }
 
