@@ -21,3 +21,7 @@ export function startProgress() {
 export function stopProgress() {
   return { type: 'STOP_PROGRESS' };
 }
+
+export function setLocation(lat, lon, accuracy) {
+  return { type: 'SET_LOCATION', payload: { lat, lon, accuracy } };
+}

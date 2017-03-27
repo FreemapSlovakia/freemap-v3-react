@@ -1,5 +1,5 @@
 import React from 'react';
-import { Map, ScaleControl } from 'react-leaflet';
+import { Map, ScaleControl, Circle, Marker } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { ToastContainer, ToastMessage } from 'react-toastr';
 import queryString from 'query-string';
@@ -35,7 +35,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { setTool, setActivePopup } from 'fm3/actions/mainActions';
+import { setTool, setActivePopup, setLocation } from 'fm3/actions/mainActions';
 
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { setLeafletElement } from 'fm3/leafletElementHolder';
@@ -60,6 +60,8 @@ class Main extends React.Component {
     activePopup: React.PropTypes.string,
     onLaunchPopup: React.PropTypes.func.isRequired,
     progress: React.PropTypes.bool,
+    gpsLocation: React.PropTypes.object,
+    onSetLocation: React.PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -127,12 +129,20 @@ class Main extends React.Component {
     );
   }
 
+  handleLocate = () => {
+    this.map.leafletElement.locate({ setView: true, maxZoom: 16 });
+  }
+
+  handleLocationFound = (e) => {
+    this.props.onSetLocation(e.latitude, e.longitude, e.accuracy);
+  }
+
   handleToolSet(tool) {
     this.props.onSetTool(this.props.tool === tool ? null : tool); // toggle tool
   }
 
   render() {
-    const { tool, tileFormat, activePopup, onLaunchPopup, progress } = this.props;
+    const { tool, tileFormat, activePopup, onLaunchPopup, progress, gpsLocation } = this.props;
     const showDefaultMenu = [null, 'select-home-location'].indexOf(tool) !== -1;
 
     return (
@@ -156,6 +166,9 @@ class Main extends React.Component {
                   </NavItem>
                   <NavItem onClick={() => this.handleToolSet('measure')}>
                     <FontAwesomeIcon icon="arrows-h" /> Meranie
+                  </NavItem>
+                  <NavItem onClick={() => this.handleLocate()}>
+                    <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
                   </NavItem>
                 </Nav>
               }
@@ -181,6 +194,7 @@ class Main extends React.Component {
             zoom={this.props.zoom}
             onMoveend={this.handleMapMoveEnd}
             onClick={handleMapClick}
+            onLocationfound={this.handleLocationFound}
           >
             <Layers
               mapType={this.props.mapType} onMapChange={this.handleMapTypeChange}
@@ -201,6 +215,10 @@ class Main extends React.Component {
             {tool === 'measure-ele' && <ElevationMeasurementResult />}
 
             {tool === 'measure-area' && <AreaMeasurementResult onShowToast={this.showToast} />}
+
+            {gpsLocation && <Circle center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />}
+            {gpsLocation && <Marker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} />}
+
           </Map>
         </Row>
 
@@ -226,6 +244,7 @@ export default connect(
     tileFormat: state.map.tileFormat,
     activePopup: state.main.activePopup,
     progress: state.main.progress,
+    gpsLocation: state.main.location,
   }),
   dispatch => ({
     onSetTool(tool) {
@@ -236,6 +255,9 @@ export default connect(
     },
     onLaunchPopup(popupName) {
       dispatch(setActivePopup(popupName));
+    },
+    onSetLocation(lat, lon, accuracy) {
+      dispatch(setLocation(lat, lon, accuracy));
     },
   }),
 )(Main);

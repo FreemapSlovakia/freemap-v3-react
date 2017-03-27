@@ -3,6 +3,7 @@ const initialState = {
   tool: null,
   homeLocation: { lat: null, lon: null },
   progress: false,
+  location: null,
 };
 
 export default function main(state = initialState, action) {
@@ -21,6 +22,8 @@ export default function main(state = initialState, action) {
       return { ...state, progress: true };
     case 'STOP_PROGRESS':
       return { ...state, progress: false };
+    case 'SET_LOCATION':
+      return { ...state, location: { lat: action.payload.lat, lon: action.payload.lon, accuracy: action.payload.accuracy } };
     default:
       return state;
   }
