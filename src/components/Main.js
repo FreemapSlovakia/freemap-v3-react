@@ -50,7 +50,7 @@ class Main extends React.Component {
     lat: React.PropTypes.number.isRequired,
     lon: React.PropTypes.number.isRequired,
     zoom: React.PropTypes.number.isRequired,
-    tool: React.PropTypes.string,
+    tool: FmPropTypes.tool,
     tileFormat: FmPropTypes.tileFormat.isRequired,
     overlays: FmPropTypes.overlays.isRequired,
     overlayOpacity: FmPropTypes.overlayOpacity.isRequired,

@@ -10,6 +10,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
+import * as FmPropTypes from 'fm3/propTypes';
 
 function MeasurementMenu({ onCancel, onSetTool, tool }) {
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
@@ -36,7 +37,7 @@ function MeasurementMenu({ onCancel, onSetTool, tool }) {
 }
 
 MeasurementMenu.propTypes = {
-  tool: React.PropTypes.string,
+  tool: FmPropTypes.tool,
   onSetTool: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
 };

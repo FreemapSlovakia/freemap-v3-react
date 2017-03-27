@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import { mapReset } from 'fm3/actions/mapActions';
+import * as FmPropTypes from 'fm3/propTypes';
 
 import 'fm3/styles/navbarHeader.scss';
 
@@ -37,7 +38,7 @@ function NavbarHeader({ tool, onResetMap }) {
 }
 
 NavbarHeader.propTypes = {
-  tool: React.PropTypes.string,
+  tool: FmPropTypes.tool,
   onResetMap: React.PropTypes.func.isRequired,
 };
 

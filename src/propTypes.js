@@ -35,3 +35,6 @@ export const point = React.PropTypes.shape({
 });
 
 export const points = React.PropTypes.arrayOf(point);
+
+export const tool = React.PropTypes.oneOf(['search', 'objects', 'route-planner',
+  'measure', 'measure-ele', 'measure-area', 'select-home-location', 'route-planner']);

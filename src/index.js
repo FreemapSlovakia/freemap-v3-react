@@ -20,13 +20,23 @@ const middleware = applyMiddleware(
 let store;
 try {
   const appState = JSON.parse(localStorage.getItem('appState'));
-  // FIXME: handle missing attributes in saved state in some generic way
-  if (!appState.map.overlayOpacity) {
-    appState.map.overlayOpacity = { N: 1.0 };
-  }
+  sanitizeSavedAppState(appState);
   store = createStore(reducer, appState, middleware);
 } catch (e) {
   store = createStore(reducer, middleware);
+}
+
+// FIXME handle invalid values saved state in some generic way
+function sanitizeSavedAppState(appState) {
+  /* eslint-disable no-param-reassign */
+
+  if (appState.main) {
+    appState.main.tool = null;
+  }
+
+  if (!appState.map.overlayOpacity) {
+    appState.map.overlayOpacity = { N: 1.0 };
+  }
 }
 
 render((

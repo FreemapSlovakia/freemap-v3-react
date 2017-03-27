@@ -31,7 +31,7 @@ class Settings extends React.Component {
     onShowToast: React.PropTypes.func.isRequired,
     onSelectHomeLocation: React.PropTypes.func.isRequired,
     onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
-    tool: React.PropTypes.string,
+    tool: FmPropTypes.tool,
     nlcOpacity: React.PropTypes.number.isRequired,
     zoom: React.PropTypes.number,
   };
