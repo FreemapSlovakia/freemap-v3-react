@@ -65,6 +65,7 @@ class RoutePlannerResult extends React.Component {
 
   render() {
     const { start, midpoints, finish, shapePoints, time, distance } = this.props;
+
     return (
       <div>
         {start &&
@@ -101,7 +102,7 @@ class RoutePlannerResult extends React.Component {
 
             {distance !== null && time !== null &&
               <Tooltip offset={new L.Point(14, -25)} direction="right" permanent>
-                <span>{distance}, {time}</span>
+                <span>{distance} km, {Math.floor(time / 60)}h {time % 60}m</span>
               </Tooltip>
             }
           </MarkerWithInnerLabel>
@@ -117,8 +118,8 @@ RoutePlannerResult.propTypes = {
   finish: FmPropTypes.point,
   midpoints: FmPropTypes.points,
   shapePoints: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.number)),
-  time: React.PropTypes.string,
-  distance: React.PropTypes.string,
+  time: React.PropTypes.number,
+  distance: React.PropTypes.number,
   onSetStart: React.PropTypes.func.isRequired,
   onSetFinish: React.PropTypes.func.isRequired,
   onSetMidpoint: React.PropTypes.func.isRequired,

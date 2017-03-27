@@ -6,7 +6,6 @@ const initialState = {
   finish: null,
   transportType: 'car',
   pickMode: 'start',
-  points: [],
   shapePoints: null,
   distance: null,
   time: null,

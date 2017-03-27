@@ -1,16 +1,9 @@
 import { createLogic } from 'redux-logic';
-import { parseString as xml2js } from 'xml2js';
 import { distance } from 'fm3/geoutils';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { getLeafletElement } from 'fm3/leafletElementHolder';
-
-const freemapTransportTypes = {
-  car: 'motorcar',
-  walk: 'hiking',
-  bicycle: 'bicycle',
-};
 
 export const findRouteLogic = createLogic({
   type: [
@@ -29,27 +22,22 @@ export const findRouteLogic = createLogic({
     }
 
     const allPoints = [
-      [start.lat, start.lon].join('%7C'),
-      ...midpoints.map(mp => [mp.lat, mp.lon].join('%7C')),
-      [finish.lat, finish.lon].join('%7C'),
-    ].join('/');
+      [start.lat, start.lon].join(','),
+      ...midpoints.map(mp => [mp.lat, mp.lon].join(',')),
+      [finish.lat, finish.lon].join(','),
+    ].join(',');
 
     dispatch(startProgress());
-    fetch(`//www.freemap.sk/api/0.1/r/${allPoints}/${freemapTransportTypes[transportType]}/fastest&Ajax=`)
-      .then(res => res.text()).then((data) => {
-        xml2js(data, (error, json) => {
-          const rawPointsWithMess = json.osmRoute.wkt[0];
-          const rawPoints = rawPointsWithMess.substring(14, rawPointsWithMess.length - 3).trim();
-          const shapePoints = rawPoints ? rawPoints.split(', ').map((lonlat) => {
-            const lonlatArray = lonlat.split(' ');
-            return [parseFloat(lonlatArray[1]), parseFloat(lonlatArray[0])];
-          }) : [];
-          const dist = rawPoints ? json.osmRoute.length[0] : null;
-          const time = rawPoints ? json.osmRoute.time[0] : null;
-          dispatch(routePlannerSetResult(shapePoints, dist, time));
-        });
+    const url = `//www.freemap.sk/api/0.3/route-planner/${allPoints}?transport_type=${transportType}`;
+    fetch(url)
+      .then(res => res.json())
+      .then(({ route: { properties: { distance_in_km, time_in_minutes }, geometry: { coordinates } } }) => {
+        const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
+        dispatch(routePlannerSetResult(routeLatLons, distance_in_km, time_in_minutes));
       })
-      .catch(() => {})
+      .catch(() => {
+        // TODO display toast with error
+      })
       .then(() => {
         dispatch(stopProgress());
         done();
