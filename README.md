@@ -4,22 +4,19 @@ Freemap Portal.
 
 ## Compiling and running in development mode
 
-First compile the sources:
+Install the necessary libs:
 
 ```
-sudo npm i -g webpack
 npm i
-webpack --watch
 ```
 
-Afterwards install and run http server (in separate console) to serve the compiled resources:
+and run webserver which also compiles the source files on change:
 
 ```
-sudo npm i -g http-server
-http-server dist
+npm run-script livereload
 ```
 
-Finally open the application by visiting `http://localhost:8080/` (address printed by http-server command).
+Then open the application by visiting `http://localhost:8080/` (address printed by `npm run-script livereload` command).
 
 ## Compiling for the production
 
