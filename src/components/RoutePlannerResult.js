@@ -64,13 +64,14 @@ class RoutePlannerResult extends React.Component {
   }
 
   render() {
-    const { start, midpoints, finish, shapePoints, time, distance } = this.props;
+    const { start, midpoints, finish, shapePoints, time, distance, itinerary, itineraryIsVisible } = this.props;
 
     return (
       <div>
         {start &&
           <MarkerWithInnerLabel
             faIcon="play"
+            zIndexOffset={10}
             faIconLeftPadding="2px"
             color="#409a40"
             draggable
@@ -85,6 +86,7 @@ class RoutePlannerResult extends React.Component {
             onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
             onClick={() => this.midpointClicked(i)}
             key={String(i)}
+            zIndexOffset={9}
             label={i + 1}
             position={L.latLng(lat, lon)}
           />
@@ -95,18 +97,34 @@ class RoutePlannerResult extends React.Component {
           <MarkerWithInnerLabel
             faIcon="stop"
             color="#d9534f"
+            zIndexOffset={10}
             draggable
             onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
           >
 
             {distance !== null && time !== null &&
-              <Tooltip offset={new L.Point(14, -25)} direction="right" permanent>
-                <span>{distance} km, {Math.floor(time / 60)}h {time % 60}m</span>
+              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+                <span>{distance}km, {Math.floor(time / 60)}h {time % 60}m</span>
               </Tooltip>
             }
           </MarkerWithInnerLabel>
         }
+
+        {itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
+          <MarkerWithInnerLabel
+            faIcon="info"
+            color="grey"
+            key={String(i)}
+            position={L.latLng(lat, lon)}
+          >
+            <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+              <span>{desc} ({km}km)</span>
+            </Tooltip>
+          </MarkerWithInnerLabel>
+          ),
+        )}
+
         {shapePoints && <Polyline positions={shapePoints} weight="8" opacity="0.8" interactive={false} />}
       </div>
     );
@@ -120,6 +138,13 @@ RoutePlannerResult.propTypes = {
   shapePoints: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.number)),
   time: React.PropTypes.number,
   distance: React.PropTypes.number,
+  itinerary: React.PropTypes.arrayOf(React.PropTypes.shape({
+    lat: React.PropTypes.number.isRequired,
+    lon: React.PropTypes.number.isRequired,
+    desc: React.PropTypes.string.isRequired,
+    km: React.PropTypes.number.isRequired,
+  })),
+  itineraryIsVisible: React.PropTypes.bool.isRequired,
   onSetStart: React.PropTypes.func.isRequired,
   onSetFinish: React.PropTypes.func.isRequired,
   onSetMidpoint: React.PropTypes.func.isRequired,
@@ -138,6 +163,8 @@ export default connect(
     shapePoints: state.routePlanner.shapePoints,
     time: state.routePlanner.time,
     distance: state.routePlanner.distance,
+    itinerary: state.routePlanner.itinerary,
+    itineraryIsVisible: state.routePlanner.itineraryIsVisible,
   }),
   dispatch => ({
     onSetStart(start) {

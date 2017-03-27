@@ -31,9 +31,10 @@ export const findRouteLogic = createLogic({
     const url = `//www.freemap.sk/api/0.3/route-planner/${allPoints}?transport_type=${transportType}`;
     fetch(url)
       .then(res => res.json())
-      .then(({ route: { properties: { distance_in_km, time_in_minutes }, geometry: { coordinates } } }) => {
+      .then(({ route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } }) => {
         const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
-        dispatch(routePlannerSetResult(routeLatLons, distance_in_km, time_in_minutes));
+        const betterItinerary = itinerary.map(step => ({ lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km }));
+        dispatch(routePlannerSetResult(routeLatLons, betterItinerary, distance_in_km, time_in_minutes));
       })
       .catch(() => {
         // TODO display toast with error

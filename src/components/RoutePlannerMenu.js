@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
-import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetPickMode } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
 import { setTool, setActivePopup } from 'fm3/actions/mainActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
@@ -17,7 +17,8 @@ import { getCurrentPosition } from 'fm3/geoutils';
 import 'fm3/styles/routePlanner.scss';
 
 function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode, transportType,
-    onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup }) {
+    onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup,
+    onToggleItineraryVisibility, itineraryIsVisible }) {
   function setFromCurrentPosition(pointType) {
     getCurrentPosition().then(({ lat, lon }) => {
       if (pointType === 'start') {
@@ -88,6 +89,10 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
             ))
           }
         </ButtonGroup>
+        {' '}
+        <Button onClick={() => onToggleItineraryVisibility()} active={itineraryIsVisible}>
+          <FontAwesomeIcon icon="list-ol" /> Itinerár
+        </Button>
       </Navbar.Form>
       <Nav>
         <NavItem onClick={onCancel}>
@@ -112,6 +117,8 @@ RoutePlannerMenu.propTypes = {
     lon: React.PropTypes.number,
   }),
   onLaunchSettingsPopup: React.PropTypes.func.isRequired,
+  onToggleItineraryVisibility: React.PropTypes.func.isRequired,
+  itineraryIsVisible: React.PropTypes.bool.isRequired,
 };
 
 export default connect(
@@ -119,6 +126,7 @@ export default connect(
     homeLocation: state.main.homeLocation,
     transportType: state.routePlanner.transportType,
     pickPointMode: state.routePlanner.pickMode,
+    itineraryIsVisible: state.routePlanner.itineraryIsVisible,
   }),
   dispatch => ({
     onSetStart(start) {
@@ -126,6 +134,9 @@ export default connect(
     },
     onSetFinish(finish) {
       dispatch(routePlannerSetFinish(finish));
+    },
+    onToggleItineraryVisibility() {
+      dispatch(routePlannerToggleItineraryVisibility());
     },
     onChangeTransportType(transportType) {
       dispatch(routePlannerSetTransportType(transportType));

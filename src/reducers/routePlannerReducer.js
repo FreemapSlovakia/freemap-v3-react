@@ -9,6 +9,8 @@ const initialState = {
   shapePoints: null,
   distance: null,
   time: null,
+  itineraryIsVisible: false,
+  itinerary: [],
 };
 
 
@@ -31,9 +33,12 @@ export default function routePlanner(state = initialState, action) {
       return { ...state, transportType: action.payload };
     case 'ROUTE_PLANNER_SET_PICK_MODE':
       return { ...state, pickMode: action.payload };
+    case 'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY':
+      return { ...state, itineraryIsVisible: !state.itineraryIsVisible };
     case 'ROUTE_PLANNER_SET_RESULT':
       return { ...state,
         shapePoints: action.payload.shapePoints,
+        itinerary: action.payload.itinerary,
         distance: action.payload.distance,
         time: action.payload.time,
       };
