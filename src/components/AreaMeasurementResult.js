@@ -24,6 +24,14 @@ class AreaMeasurementResult extends React.Component {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
+  componentDidUpdate() {
+    // XXX re-centering tooltip to polygon, see https://github.com/Leaflet/Leaflet/issues/5412
+    if (this.polygon && this.tooltip) {
+      this.polygon.leafletElement.unbindTooltip();
+      this.polygon.leafletElement.bindTooltip(this.tooltip.leafletElement);
+    }
+  }
+
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
   }
@@ -91,9 +99,9 @@ class AreaMeasurementResult extends React.Component {
         )}
 
         {points.length > 1 &&
-          <Polygon positions={points.map(({ lat, lon }) => [lat, lon])}>
+          <Polygon positions={points.map(({ lat, lon }) => [lat, lon])} ref={(polygon) => { this.polygon = polygon; }}>
             {points.length > 2 &&
-              <Tooltip direction="center" permanent>
+              <Tooltip direction="center" permanent ref={(tooltip) => { this.tooltip = tooltip; }}>
                 <span>
                   <div>{nf.format(areaSize)} m<sup>2</sup></div>
                   <div>{nf.format(areaSize / 100)} a</div>
