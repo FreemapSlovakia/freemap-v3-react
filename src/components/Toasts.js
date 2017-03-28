@@ -10,7 +10,7 @@ export default class Toasts extends React.Component {
   }
 
   componentWillUnmount() {
-    toastEmitter.removeListener('showToast', this.handlePoiAdded);
+    toastEmitter.removeListener('showToast', this.showToast);
   }
 
   showToast = (toastType, line1, line2) => {
