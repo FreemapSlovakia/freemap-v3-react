@@ -6,6 +6,7 @@ import { withRouter } from 'react-router';
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
@@ -62,7 +63,7 @@ class ObjectsMenu extends React.Component {
   validateZoom = () => {
     if (this.props.zoom < 12) {
       const to = this.props.location.search.replace(/\bmap=\d+/, 'map=12'); // TODO this is ugly. Rework after introducing react-url-query
-      this.props.onShowToast('info', null, <span>Vyhľadávanie miest funguje až od priblíženia <Link to={to}>úrovne 12</Link>.</span>);
+      toastEmitter.emit('showToast', 'info', null, <span>Vyhľadávanie miest funguje až od priblíženia <Link to={to}>úrovne 12</Link>.</span>);
     }
   }
 
@@ -110,7 +111,6 @@ class ObjectsMenu extends React.Component {
 ObjectsMenu.propTypes = {
   onSearch: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
-  onShowToast: React.PropTypes.func.isRequired,
   onGpxExport: React.PropTypes.func.isRequired,
   zoom: React.PropTypes.number.isRequired,
   location: React.PropTypes.object.isRequired,

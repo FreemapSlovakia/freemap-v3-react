@@ -5,6 +5,7 @@ import Button from 'react-bootstrap/lib/Button';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class RoutePlannerResult extends React.Component {
@@ -60,7 +61,7 @@ class RoutePlannerResult extends React.Component {
       ' ',
       <Button key="no">Nie</Button>,
     ];
-    this.props.onShowToast('info', line1, line2);
+    toastEmitter.emit('showToast', 'info', line1, line2);
   }
 
   render() {
@@ -151,7 +152,6 @@ RoutePlannerResult.propTypes = {
   onAddMidpoint: React.PropTypes.func.isRequired,
   onRemoveMidpoint: React.PropTypes.func.isRequired,
   pickMode: React.PropTypes.string.isRequired,
-  onShowToast: React.PropTypes.func.isRequired,
 };
 
 export default connect(

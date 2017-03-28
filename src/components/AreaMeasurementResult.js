@@ -6,6 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import { measurementAddPoint, measurementUpdatePoint, measurementRemovePoint } from 'fm3/actions/measurementActions';
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
@@ -17,7 +18,6 @@ class AreaMeasurementResult extends React.Component {
     onPointAdd: React.PropTypes.func.isRequired,
     onPointUpdate: React.PropTypes.func.isRequired,
     onPointRemove: React.PropTypes.func.isRequired,
-    onShowToast: React.PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -71,7 +71,7 @@ class AreaMeasurementResult extends React.Component {
       ' ',
       <Button key="no">Nie</Button>,
     ];
-    this.props.onShowToast('info', line1, line2);
+    toastEmitter.emit('showToast', 'info', line1, line2);
   }
 
   render() {

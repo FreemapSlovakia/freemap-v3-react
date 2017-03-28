@@ -1,7 +1,6 @@
 import React from 'react';
 import { Map, ScaleControl, Circle, Marker } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { ToastContainer, ToastMessage } from 'react-toastr';
 import queryString from 'query-string';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -15,6 +14,7 @@ import NavbarHeader from 'fm3/components/NavbarHeader';
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ProgressIndicator from 'fm3/components/ProgressIndicator';
+import Toasts from 'fm3/components/Toasts';
 
 import SearchMenu from 'fm3/components/SearchMenu';
 import SearchResults from 'fm3/components/SearchResults';
@@ -41,8 +41,6 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { setLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/main.scss';
-
-const ToastMessageFactory = React.createFactory(ToastMessage.animation);
 
 class Main extends React.Component {
 
@@ -121,14 +119,6 @@ class Main extends React.Component {
     this.props.onMapRefocus({ overlays });
   }
 
-  showToast = (toastType, line1, line2) => {
-    this.toastContainer[toastType](
-      line2,
-      line1, // sic!
-      { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' },
-    );
-  }
-
   handleLocate = () => {
     this.map.leafletElement.locate({ setView: true, maxZoom: 16 });
   }
@@ -151,11 +141,11 @@ class Main extends React.Component {
           <Navbar fluid style={{ marginBottom: 0 }}>
             <NavbarHeader />
             <Navbar.Collapse>
-              {tool === 'objects' && <ObjectsMenu onShowToast={this.showToast} />}
+              {tool === 'objects' && <ObjectsMenu />}
               {(showDefaultMenu || tool === 'search') && <SearchMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu onShowToast={this.showToast} />}
+              {tool === 'route-planner' && <RoutePlannerMenu />}
               {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
-              {activePopup === 'settings' && <Settings onShowToast={this.showToast} />}
+              {activePopup === 'settings' && <Settings />}
               {showDefaultMenu &&
                 <Nav key="nav">
                   <NavItem onClick={() => this.handleToolSet('objects')}>
@@ -208,13 +198,13 @@ class Main extends React.Component {
 
             {tool === 'objects' && <ObjectsResult />}
 
-            {tool === 'route-planner' && <RoutePlannerResult onShowToast={this.showToast} />}
+            {tool === 'route-planner' && <RoutePlannerResult />}
 
             {tool === 'measure' && <DistanceMeasurementResult />}
 
             {tool === 'measure-ele' && <ElevationMeasurementResult />}
 
-            {tool === 'measure-area' && <AreaMeasurementResult onShowToast={this.showToast} />}
+            {tool === 'measure-area' && <AreaMeasurementResult />}
 
             {gpsLocation && <Circle center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />}
             {gpsLocation && <Marker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} />}
@@ -222,11 +212,7 @@ class Main extends React.Component {
           </Map>
         </Row>
 
-        <ToastContainer
-          ref={(toastContainer) => { this.toastContainer = toastContainer; }}
-          toastMessageFactory={ToastMessageFactory}
-          className="toast-top-right"
-        />
+        <Toasts />
       </div>
     );
   }

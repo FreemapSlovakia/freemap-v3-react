@@ -11,6 +11,7 @@ import 'react-rangeslider/lib/index.css';
 
 import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation, closePopup } from 'fm3/actions/mainActions';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
@@ -28,7 +29,6 @@ class Settings extends React.Component {
     tileFormat: FmPropTypes.tileFormat.isRequired,
     onSave: React.PropTypes.func.isRequired,
     onClosePopup: React.PropTypes.func.isRequired,
-    onShowToast: React.PropTypes.func.isRequired,
     onSelectHomeLocation: React.PropTypes.func.isRequired,
     onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
     tool: FmPropTypes.tool,
@@ -68,7 +68,7 @@ class Settings extends React.Component {
 
   handleSave = () => {
     this.props.onSave(this.state.tileFormat, this.state.homeLocation, this.state.nlcOpacity);
-    this.props.onShowToast('info', null, 'Zmeny boli uložené.');
+    toastEmitter.emit('showToast', 'info', null, 'Zmeny boli uložené.');
   }
 
   render() {

@@ -8,6 +8,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
 import { setTool, setActivePopup } from 'fm3/actions/mainActions';
@@ -16,7 +17,7 @@ import { getCurrentPosition } from 'fm3/geoutils';
 
 import 'fm3/styles/routePlanner.scss';
 
-function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode, transportType,
+function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportType,
     onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup,
     onToggleItineraryVisibility, itineraryIsVisible }) {
   function setFromCurrentPosition(pointType) {
@@ -27,7 +28,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
         onSetFinish({ lat, lon });
       } // else fail
     }).catch(() => {
-      onShowToast('error', null, 'Nepodarilo sa získať aktuálnu polohu');
+      toastEmitter.emit('showToast', 'error', null, 'Nepodarilo sa získať aktuálnu polohu');
     });
   }
 
@@ -42,7 +43,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, onShowToast, pickPointMode,
           Nastavenia
         </Button>,
       ];
-      onShowToast('info', line1, line2);
+      toastEmitter.emit('showToast', 'info', line1, line2);
     } else if (pointType === 'start') {
       onSetStart({ lat, lon });
     } else if (pointType === 'finish') {
@@ -111,7 +112,6 @@ RoutePlannerMenu.propTypes = {
   onChangeTransportType: React.PropTypes.func.isRequired,
   onChangePickPointMode: React.PropTypes.func.isRequired,
   onCancel: React.PropTypes.func.isRequired,
-  onShowToast: React.PropTypes.func.isRequired,
   homeLocation: React.PropTypes.shape({
     lat: React.PropTypes.number,
     lon: React.PropTypes.number,
