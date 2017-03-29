@@ -3,7 +3,7 @@ import { distance } from 'fm3/geoutils';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
-import { getLeafletElement } from 'fm3/leafletElementHolder';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export const findRouteLogic = createLogic({
   type: [
@@ -83,7 +83,7 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
       focusPoint = finish;
     }
 
-    if (!getLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
+    if (!getMapLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
       dispatch(mapRefocus({ lat: focusPoint.lat, lon: focusPoint.lon }));
     }
   },

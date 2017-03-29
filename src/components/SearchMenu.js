@@ -8,7 +8,7 @@ import { connect } from 'react-redux';
 import { searchSetQuery, searchHighlightResult, searchSelectResult } from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
-import { getLeafletElement } from 'fm3/leafletElementHolder';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import 'fm3/styles/search.scss';
@@ -27,7 +27,7 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
         options.maxZoom = 14;
       }
       const geojsonBounds = L.geoJson(geojson).getBounds();
-      getLeafletElement().fitBounds(geojsonBounds, options);
+      getMapLeafletElement().fitBounds(geojsonBounds, options);
     }
     onHiglightResult(result);
   }

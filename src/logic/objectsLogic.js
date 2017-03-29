@@ -3,13 +3,13 @@ import FileSaver from 'file-saver';
 
 import { objectsSetResult } from 'fm3/actions/objectsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { getLeafletElement } from 'fm3/leafletElementHolder';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
 
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
   process({ getState, action: { payload } }, dispatch, done) {
-    const b = getLeafletElement().getBounds();
+    const b = getMapLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
 
     const poiType = getPoiType(payload);

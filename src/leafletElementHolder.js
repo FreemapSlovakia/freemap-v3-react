@@ -1,9 +1,9 @@
-let leafletElement = null;
+let mapLeafletElement = null;
 
-export function setLeafletElement(e) {
-  leafletElement = e;
+export function setMapLeafletElement(e) {
+  mapLeafletElement = e;
 }
 
-export function getLeafletElement() {
-  return leafletElement;
+export function getMapLeafletElement() {
+  return mapLeafletElement;
 }
