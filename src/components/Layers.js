@@ -9,25 +9,29 @@ export default function Layers({ onMapChange, onOverlaysChange, tileFormat, over
   // eslint-disable-next-line
   function getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
     if (type === 'S') {
-      return (<BingLayer
-        bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
+      return (
+        <BingLayer
+          bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
+          onAdd={() => handleAdd(type)}
+          onRemove={() => handleRemove(type)}
+          maxZoom={20}
+          maxNativeZoom={18}
+        />
+      );
+    }
+
+    return (
+      <TileLayer
+        attribution={attribution}
+        url={url.replace('{tileFormat}', tileFormat)}
         onAdd={() => handleAdd(type)}
         onRemove={() => handleRemove(type)}
         maxZoom={20}
-        maxNativeZoom={18}
-      />);
-    }
-
-    return (<TileLayer
-      attribution={attribution}
-      url={url.replace('{tileFormat}', tileFormat)}
-      onAdd={() => handleAdd(type)}
-      onRemove={() => handleRemove(type)}
-      maxZoom={20}
-      minZoom={minZoom}
-      maxNativeZoom={maxNativeZoom}
-      opacity={overlayOpacity[type] || 1.0}
-    />);
+        minZoom={minZoom}
+        maxNativeZoom={maxNativeZoom}
+        opacity={overlayOpacity[type] || 1.0}
+      />
+    );
   }
 
   function handleAdd(type) {
