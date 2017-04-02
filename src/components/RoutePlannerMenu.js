@@ -66,9 +66,6 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
             <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
             <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
-          <Button onClick={() => onChangePickPointMode('midpoint')} active={pickPointMode === 'midpoint'}>
-            <FontAwesomeIcon icon="pause" color="#247dc9" /> Zastávka
-          </Button>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /> Cieľ</span>}
             id="add-finish-dropdown"

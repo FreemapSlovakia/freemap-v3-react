@@ -1,11 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Polyline, Tooltip } from 'react-leaflet';
+import turfLineDistance from '@turf/line-distance';
+import turfAlong from '@turf/along';
+import { Polyline, Tooltip, Marker } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import toastEmitter from 'fm3/emitters/toastEmitter';
+import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class RoutePlannerResult extends React.Component {
@@ -19,18 +22,10 @@ class RoutePlannerResult extends React.Component {
   }
 
   handlePoiAdded = (lat, lon) => {
-    switch (this.props.pickMode) {
-      case 'start':
-        this.props.onSetStart({ lat, lon });
-        break;
-      case 'finish':
-        this.props.onSetFinish({ lat, lon });
-        break;
-      case 'midpoint':
-        this.props.onAddMidpoint({ lat, lon });
-        break;
-      default:
-        throw new Error('unknown pickMode');
+    if (this.props.pickMode === 'start') {
+      this.props.onSetStart({ lat, lon });
+    } else if (this.props.pickMode === 'finish') {
+      this.props.onSetFinish({ lat, lon });
     }
   }
 
@@ -64,8 +59,31 @@ class RoutePlannerResult extends React.Component {
     toastEmitter.emit('showToast', 'info', line1, line2);
   }
 
+  futureMidpoints() {
+    const { start, finish, midpoints, shapePoints } = this.props;
+    if (!(start && finish && shapePoints)) {
+      return [];
+    }
+
+    const splitPoints = [start, ...midpoints, finish];
+    const routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
+    const futureMidpoints = routeSlices.map((routeSlice) => {
+      const length = turfLineDistance(routeSlice);
+      const pointInMiddleOfSlice = turfAlong(routeSlice, length / 2);
+      const lonlat = pointInMiddleOfSlice.geometry.coordinates;
+      return { lat: lonlat[1], lon: lonlat[0] };
+    });
+    return futureMidpoints;
+  }
+
   render() {
     const { start, midpoints, finish, shapePoints, time, distance, itinerary, itineraryIsVisible } = this.props;
+    const Icon = L.divIcon;
+    const circularIcon = new Icon({ // CircleMarker is not draggable
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      html: '<div class="circular-leaflet-marker-icon"></div>',
+    });
 
     return (
       <div>
@@ -112,6 +130,20 @@ class RoutePlannerResult extends React.Component {
           </MarkerWithInnerLabel>
         }
 
+        {this.futureMidpoints().map((p, i) =>
+          <Marker
+            key={String(i)}
+            draggable
+            icon={circularIcon}
+            onDragend={e => this.props.onAddMidpoint(i, {
+              lat: e.target.getLatLng().lat,
+              lon: e.target.getLatLng().lng,
+            })
+            }
+            position={L.latLng(p.lat, p.lon)}
+          />,
+        )}
+
         {itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
           <MarkerWithInnerLabel
             faIcon="info"
@@ -126,7 +158,13 @@ class RoutePlannerResult extends React.Component {
           ),
         )}
 
-        {shapePoints && <Polyline positions={shapePoints} weight="8" opacity="0.8" interactive={false} />}
+        { shapePoints &&
+          <Polyline
+            positions={shapePoints}
+            weight="8"
+            opacity="0.8"
+            interactive={false}
+          /> }
       </div>
     );
   }
@@ -173,8 +211,7 @@ export default connect(
     onSetFinish(finish) {
       dispatch(routePlannerSetFinish(finish));
     },
-    onAddMidpoint(midpoint) {
-      const position = 0;
+    onAddMidpoint(position, midpoint) {
       dispatch(routePlannerAddMidpoint(midpoint, position));
     },
     onSetMidpoint(position, midpoint) {

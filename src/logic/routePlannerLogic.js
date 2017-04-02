@@ -46,29 +46,6 @@ export const findRouteLogic = createLogic({
   },
 });
 
-export const addMidpointToProperPositionLogic = createLogic({
-  type: 'ROUTE_PLANNER_ADD_MIDPOINT',
-  transform({ getState, action }, next) {
-    const { start, finish, midpoints } = getState().routePlanner;
-    if (midpoints.length > 0) {
-      const newMidpoint = action.payload.midpoint;
-      const distances = [start, ...midpoints, finish].map(p => distance(p.lat, p.lon, newMidpoint.lat, newMidpoint.lon));
-      let minDistance = Infinity;
-      let positionOfMinDistance;
-      for (let i = 0; i < distances.length - 1; i += 1) {
-        const d = distances[i] + distances[i + 1];
-        if (d < minDistance) {
-          minDistance = d;
-          positionOfMinDistance = i;
-        }
-      }
-      next({ ...action, payload: { ...action.payload, position: positionOfMinDistance } });
-    } else {
-      next(action);
-    }
-  },
-});
-
 export const refocusMapOnSetStartOrFinishPoint = createLogic({
   type: [
     'ROUTE_PLANNER_SET_START',
@@ -91,6 +68,5 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
 
 export default [
   findRouteLogic,
-  addMidpointToProperPositionLogic,
   refocusMapOnSetStartOrFinishPoint,
 ];
