@@ -83,7 +83,7 @@ class AreaMeasurementResult extends React.Component {
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
       iconAnchor: [7, 7],
-      html: '<div style="height: 14px; width: 14px; background-color: #38f; border-radius: 14px"></div>',
+      html: '<div class="circular-leaflet-marker-icon"></div>',
     });
 
     return (
