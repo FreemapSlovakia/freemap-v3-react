@@ -1,5 +1,4 @@
 import { createLogic } from 'redux-logic';
-import { distance } from 'fm3/geoutils';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
