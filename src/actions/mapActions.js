@@ -15,9 +15,9 @@ export function mapSetOverlayOpacity(overlayType, overlayOpacity) {
 }
 
 export function setMouseCursorToCrosshair() {
-  return { type: 'SET_MOUSE_CURSOR', payload: 'crosshair' };
+  return { type: 'MAP_SET_MOUSE_CURSOR', payload: 'crosshair' };
 }
 
 export function resetMouseCursor() {
-  return { type: 'SET_MOUSE_CURSOR', payload: 'auto' };
+  return { type: 'MAP_SET_MOUSE_CURSOR', payload: 'auto' };
 }

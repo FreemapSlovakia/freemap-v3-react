@@ -33,7 +33,7 @@ export default function map(state = initialState, action) {
 
       return newState;
     }
-    case 'SET_MOUSE_CURSOR':
+    case 'MAP_SET_MOUSE_CURSOR':
       return { ...state, mouseCursor: action.payload };
     default:
       return state;
