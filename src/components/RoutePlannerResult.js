@@ -70,21 +70,26 @@ class RoutePlannerResult extends React.Component {
     toastEmitter.emit('showToast', 'info', line1, line2);
   }
 
-  futureMidpoints() {
+  futureMidpointsAndDistances() {
     const { start, finish, midpoints, shapePoints } = this.props;
-    if (!(start && finish && shapePoints)) {
-      return [];
+    const futureMidpoints = [];
+    const midpointDistancesFromStart = [];
+    if ((start && finish && shapePoints)) {
+      const splitPoints = [start, ...midpoints, finish];
+      const routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
+      let distanceFromStart = 0;
+
+      routeSlices.forEach((routeSlice) => {
+        const length = turfLineDistance(routeSlice);
+        distanceFromStart += length;
+        const pointInMiddleOfSlice = turfAlong(routeSlice, length / 2);
+        const lonlat = pointInMiddleOfSlice.geometry.coordinates;
+        futureMidpoints.push({ lat: lonlat[1], lon: lonlat[0] });
+        midpointDistancesFromStart.push(distanceFromStart);
+      });
     }
 
-    const splitPoints = [start, ...midpoints, finish];
-    const routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
-    const futureMidpoints = routeSlices.map((routeSlice) => {
-      const length = turfLineDistance(routeSlice);
-      const pointInMiddleOfSlice = turfAlong(routeSlice, length / 2);
-      const lonlat = pointInMiddleOfSlice.geometry.coordinates;
-      return { lat: lonlat[1], lon: lonlat[0] };
-    });
-    return futureMidpoints;
+    return { futureMidpoints, midpointDistancesFromStart };
   }
 
   render() {
@@ -95,6 +100,7 @@ class RoutePlannerResult extends React.Component {
       iconAnchor: [7, 7],
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
+    const { futureMidpoints, midpointDistancesFromStart } = this.futureMidpointsAndDistances();
 
     return (
       <div>
@@ -119,7 +125,12 @@ class RoutePlannerResult extends React.Component {
             zIndexOffset={9}
             label={i + 1}
             position={L.latLng(lat, lon)}
-          />
+          >
+            {!itineraryIsVisible &&
+              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+                <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
+              </Tooltip>}
+          </MarkerWithInnerLabel>
           ),
         )}
 
@@ -141,7 +152,7 @@ class RoutePlannerResult extends React.Component {
           </MarkerWithInnerLabel>
         }
 
-        {this.futureMidpoints().map((p, i) =>
+        {futureMidpoints.map((p, i) =>
           <Marker
             key={String(i)}
             draggable
