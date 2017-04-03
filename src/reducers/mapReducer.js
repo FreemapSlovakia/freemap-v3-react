@@ -8,6 +8,7 @@ const initialState = {
   overlays: [],
   overlayOpacity: { N: 1.0 },
   tileFormat: 'png',
+  mouseCursor: 'auto',
 };
 
 export default function map(state = initialState, action) {
@@ -32,6 +33,8 @@ export default function map(state = initialState, action) {
 
       return newState;
     }
+    case 'SET_MOUSE_CURSOR':
+      return { ...state, mouseCursor: action.payload };
     default:
       return state;
   }

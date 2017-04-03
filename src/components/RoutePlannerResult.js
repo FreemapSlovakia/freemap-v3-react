@@ -6,6 +6,7 @@ import { Polyline, Tooltip, Marker } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
+import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import toastEmitter from 'fm3/emitters/toastEmitter';
 import { sliceToGeojsonPoylines } from 'fm3/geoutils';
@@ -15,10 +16,20 @@ class RoutePlannerResult extends React.Component {
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
+    this.props.onSetMouseCursorToCrosshair();
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.pickMode) {
+      this.props.onSetMouseCursorToCrosshair();
+    } else {
+      this.props.onResetMouseCursor();
+    }
   }
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
+    this.props.onResetMouseCursor();
   }
 
   handlePoiAdded = (lat, lon) => {
@@ -189,7 +200,9 @@ RoutePlannerResult.propTypes = {
   onSetMidpoint: React.PropTypes.func.isRequired,
   onAddMidpoint: React.PropTypes.func.isRequired,
   onRemoveMidpoint: React.PropTypes.func.isRequired,
-  pickMode: React.PropTypes.string.isRequired,
+  pickMode: React.PropTypes.string,
+  onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
+  onResetMouseCursor: React.PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -219,6 +232,12 @@ export default connect(
     },
     onRemoveMidpoint(position) {
       dispatch(routePlannerRemoveMidpoint(position));
+    },
+    onSetMouseCursorToCrosshair() {
+      dispatch(setMouseCursorToCrosshair());
+    },
+    onResetMouseCursor() {
+      dispatch(resetMouseCursor());
     },
   }),
 )(RoutePlannerResult);

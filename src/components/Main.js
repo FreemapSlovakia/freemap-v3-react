@@ -60,6 +60,7 @@ class Main extends React.Component {
     onLaunchPopup: React.PropTypes.func.isRequired,
     progress: React.PropTypes.bool,
     onSetLocation: React.PropTypes.func.isRequired,
+    mouseCursor: React.PropTypes.string.isRequired,
   };
 
   componentWillMount() {
@@ -128,7 +129,7 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, tileFormat, activePopup, onLaunchPopup, progress } = this.props;
+    const { tool, tileFormat, activePopup, onLaunchPopup, progress, mouseCursor } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].indexOf(tool) !== -1;
 
     return (
@@ -205,7 +206,7 @@ class Main extends React.Component {
         <Row>
           <ProgressIndicator active={progress} />
         </Row>
-        <Row className={`map-holder tool-${tool || 'none'} active-map-type-${this.props.mapType}`}>
+        <Row className={`map-holder active-map-type-${this.props.mapType}`}>
           <Map
             ref={(map) => { this.map = map; }}
             center={L.latLng(this.props.lat, this.props.lon)}
@@ -213,6 +214,7 @@ class Main extends React.Component {
             onMoveend={this.handleMapMoveEnd}
             onClick={handleMapClick}
             onLocationfound={this.handleLocationFound}
+            style={{ cursor: mouseCursor }}
           >
             <Layers
               mapType={this.props.mapType} onMapChange={this.handleMapTypeChange}
@@ -256,6 +258,7 @@ export default connect(
     tileFormat: state.map.tileFormat,
     activePopup: state.main.activePopup,
     progress: state.main.progress,
+    mouseCursor: state.map.mouseCursor,
   }),
   dispatch => ({
     onSetTool(tool) {

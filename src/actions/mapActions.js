@@ -13,3 +13,11 @@ export function mapSetTileFormat(tileFormat) {
 export function mapSetOverlayOpacity(overlayType, overlayOpacity) {
   return { type: 'MAP_SET_OVERLAY_OPACITY', overlayType, overlayOpacity };
 }
+
+export function setMouseCursorToCrosshair() {
+  return { type: 'SET_MOUSE_CURSOR', payload: 'crosshair' };
+}
+
+export function resetMouseCursor() {
+  return { type: 'SET_MOUSE_CURSOR', payload: 'auto' };
+}

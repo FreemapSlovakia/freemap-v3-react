@@ -4,6 +4,7 @@ import { Marker, Tooltip, Polygon } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 
 import { measurementAddPoint, measurementUpdatePoint, measurementRemovePoint } from 'fm3/actions/measurementActions';
+import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import toastEmitter from 'fm3/emitters/toastEmitter';
@@ -18,10 +19,16 @@ class AreaMeasurementResult extends React.Component {
     onPointAdd: React.PropTypes.func.isRequired,
     onPointUpdate: React.PropTypes.func.isRequired,
     onPointRemove: React.PropTypes.func.isRequired,
+    onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
+    onResetMouseCursor: React.PropTypes.func.isRequired,
   };
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
+  }
+
+  componentDidMount() {
+    this.props.onSetMouseCursorToCrosshair();
   }
 
   componentDidUpdate() {
@@ -34,6 +41,7 @@ class AreaMeasurementResult extends React.Component {
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
+    this.props.onResetMouseCursor();
   }
 
   futurePoints = () => {
@@ -141,6 +149,12 @@ export default connect(
     },
     onPointRemove(i) {
       dispatch(measurementRemovePoint(i));
+    },
+    onSetMouseCursorToCrosshair() {
+      dispatch(setMouseCursorToCrosshair());
+    },
+    onResetMouseCursor() {
+      dispatch(resetMouseCursor());
     },
   }),
 )(AreaMeasurementResult);

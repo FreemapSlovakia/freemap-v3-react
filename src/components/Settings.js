@@ -9,7 +9,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
-import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
+import { mapSetTileFormat, mapSetOverlayOpacity, setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation, closePopup } from 'fm3/actions/mainActions';
 import toastEmitter from 'fm3/emitters/toastEmitter';
 
@@ -158,9 +158,11 @@ export default connect(
     },
     onSelectHomeLocation() {
       dispatch(setTool('select-home-location'));
+      dispatch(setMouseCursorToCrosshair());
     },
     onSelectHomeLocationFinished() {
       dispatch(setTool(null));
+      dispatch(resetMouseCursor());
     },
   }),
 )(Settings);

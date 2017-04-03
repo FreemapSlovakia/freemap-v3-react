@@ -2,6 +2,7 @@ import React from 'react';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
+import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -16,6 +17,8 @@ class ElevationMeasurementResult extends React.Component {
     onClearElevation: React.PropTypes.func.isRequired,
     point: FmPropTypes.point,
     elevation: React.PropTypes.number,
+    onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
+    onResetMouseCursor: React.PropTypes.func.isRequired,
   }
 
   state = {};
@@ -24,8 +27,13 @@ class ElevationMeasurementResult extends React.Component {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
+  componentDidMount() {
+    this.props.onSetMouseCursorToCrosshair();
+  }
+
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
+    this.props.onResetMouseCursor();
   }
 
   handlePoiAdded = (lat, lon) => {
@@ -87,6 +95,12 @@ export default connect(
     },
     onClearElevation() {
       dispatch(elevationMeasurementSetElevation(null));
+    },
+    onSetMouseCursorToCrosshair() {
+      dispatch(setMouseCursorToCrosshair());
+    },
+    onResetMouseCursor() {
+      dispatch(resetMouseCursor());
     },
   }),
 )(ElevationMeasurementResult);

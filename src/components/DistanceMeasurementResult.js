@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
+import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { measurementAddPoint, measurementUpdatePoint } from 'fm3/actions/measurementActions';
 import { distance } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -15,14 +16,21 @@ class DistanceMeasurementResult extends React.Component {
     points: FmPropTypes.points.isRequired,
     onPointAdd: React.PropTypes.func.isRequired,
     onPointUpdate: React.PropTypes.func.isRequired,
+    onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
+    onResetMouseCursor: React.PropTypes.func.isRequired,
   };
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdded);
   }
 
+  componentDidMount() {
+    this.props.onSetMouseCursorToCrosshair();
+  }
+
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
+    this.props.onResetMouseCursor();
   }
 
   handlePoiAdded = (lat, lon) => {
@@ -71,6 +79,12 @@ export default connect(
     },
     onPointUpdate(i, point) {
       dispatch(measurementUpdatePoint(i, point));
+    },
+    onSetMouseCursorToCrosshair() {
+      dispatch(setMouseCursorToCrosshair());
+    },
+    onResetMouseCursor() {
+      dispatch(resetMouseCursor());
     },
   }),
 )(DistanceMeasurementResult);

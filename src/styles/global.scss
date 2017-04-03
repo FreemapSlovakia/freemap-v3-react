@@ -64,14 +64,6 @@ html, .map-holder, #app, #app > div, .container-fluid {
   border: 0;
 }
 
-.tool-route-planner .leaflet-container,
-.tool-measure .leaflet-container,
-.tool-measure-ele .leaflet-container,
-.tool-measure-area .leaflet-container,
-.tool-select-home-location .leaflet-container {
-  cursor: crosshair;
-}
-
 @media (min-width: 768px) {
   .dropdown-long .dropdown-menu {
     overflow-x: auto;
