@@ -30,6 +30,9 @@ import LocationResult from 'fm3/components/LocationResult';
 
 import RoutePlannerMenu from 'fm3/components/RoutePlannerMenu';
 import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
+
+import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
+
 import Settings from 'fm3/components/Settings';
 
 import * as FmPropTypes from 'fm3/propTypes';
@@ -142,6 +145,7 @@ class Main extends React.Component {
               {(showDefaultMenu || tool === 'search') && <SearchMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
+              {tool === 'track-viewer' && <TrackViewerMenu />}
               {activePopup === 'settings' && <Settings />}
               {showDefaultMenu &&
                 <Nav key="nav" className="hidden-sm">
@@ -156,6 +160,9 @@ class Main extends React.Component {
                   </NavItem>
                   <NavItem onClick={() => this.handleToggleTool('location')} active={tool === 'location'}>
                     <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
+                  </NavItem>
+                  <NavItem onClick={() => this.handleToggleTool('track-viewer')} active={tool === 'track-viewer'}>
+                    <FontAwesomeIcon icon="file-code-o" /> Prehliadač trás
                   </NavItem>
                 </Nav>
               }
@@ -186,6 +193,9 @@ class Main extends React.Component {
                     </MenuItem>
                     <MenuItem onClick={() => this.handleToggleTool('location')} active={tool === 'location'}>
                       <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
+                    </MenuItem>
+                    <MenuItem onClick={() => this.handleToggleTool('track-viewer')} active={tool === 'track-viewer'}>
+                      <FontAwesomeIcon icon="file-code-o" /> Prehliadač trás
                     </MenuItem>
                   </NavDropdown>
                 </Nav>

@@ -13,6 +13,7 @@ const humanNameForToolToShowInNavbar = {
   measure: 'Meranie',
   'measure-ele': 'Meranie',
   'measure-area': 'Meranie',
+  'track-viewer': 'Prehliadač trás',
 };
 
 const iconForTool = {
@@ -20,6 +21,7 @@ const iconForTool = {
   measure: 'arrows-h',
   'measure-ele': 'long-arrow-up',
   'measure-area': 'square',
+  'track-viewer': 'file-code-o',
 };
 
 function NavbarHeader({ tool, onResetMap }) {
