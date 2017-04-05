@@ -3,19 +3,25 @@ import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import * as FmPropTypes from 'fm3/propTypes';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import strftime from 'strftime';
 
 class TrackViewerResult extends React.Component {
 
   static propTypes = {
     trackGeojson: React.PropTypes.any,
-    startPoints: FmPropTypes.points,
+    startPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
+      lat: React.PropTypes.number.isRequired,
+      lon: React.PropTypes.number.isRequired,
+      lengthInKm: React.PropTypes.number.isRequired,
+      startTime: React.PropTypes.string,
+    })),
     finishPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
       lat: React.PropTypes.number.isRequired,
       lon: React.PropTypes.number.isRequired,
       lengthInKm: React.PropTypes.number.isRequired,
+      finishTime: React.PropTypes.string,
     })),
   }
-
   render() {
     const { trackGeojson, startPoints, finishPoints } = this.props;
     const keyToAssureProperRefresh = Math.random(); // otherwise GeoJSON will still display the first data
@@ -43,7 +49,12 @@ class TrackViewerResult extends React.Component {
             color="#409a40"
             interactive={false}
             position={L.latLng(p.lat, p.lon)}
-          />
+          >
+            { p.startTime &&
+              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+                <span>{strftime('%H:%M', new Date(p.startTime))}</span>
+              </Tooltip> }
+          </MarkerWithInnerLabel>
           ))}
         {finishPoints.map((p, i) => (
           <MarkerWithInnerLabel
@@ -55,7 +66,10 @@ class TrackViewerResult extends React.Component {
             position={L.latLng(p.lat, p.lon)}
           >
             <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-              <span>{p.lengthInKm.toFixed(1)}km</span>
+              <span>
+                {p.finishTime ? strftime('%H:%M', new Date(p.finishTime)) : ''}
+                {p.finishTime ? ', ' : ''}
+                {p.lengthInKm.toFixed(1)}km</span>
             </Tooltip>
           </MarkerWithInnerLabel>
           ))}

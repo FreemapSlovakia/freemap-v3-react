@@ -13,9 +13,19 @@ export default createLogic({
           const lengthInKm = turfLineDistance(feature);
           const coords = feature.geometry.coordinates;
           const startLonlat = coords[0];
+          let startTime;
+          let finishTime;
+          const times = feature.properties.coordTimes;
+          if (times) {
+            startTime = times[0];
+            finishTime = times[times.length - 1];
+          }
+          const start = { lat: startLonlat[1], lon: startLonlat[0], startTime };
+          startPoints.push(start);
+
           const finishLonLat = coords[coords.length - 1];
-          startPoints.push({ lat: startLonlat[1], lon: startLonlat[0] });
-          finishPoints.push({ lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm });
+          const finish = { lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm, finishTime };
+          finishPoints.push(finish);
         }
       });
     }
