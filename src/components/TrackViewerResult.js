@@ -37,17 +37,20 @@ class TrackViewerResult extends React.Component {
     }
 
     if (feature.geometry.type === 'LineString') {
-      layer.on('mouseover', (e) => {
-        const infoLat = e.latlng.lat;
-        const infoLon = e.latlng.lng;
-        const infoDistanceKm = this.computeInfoDistanceKm(infoLat, infoLon, feature);
-        this.setState({ infoLat, infoLon, infoDistanceKm });
-      });
+      layer.on('click', (e) => { this.showInfoPoint(e, feature); });
+      layer.on('mouseover', (e) => { this.showInfoPoint(e, feature); });
       layer.on('mouseout', () => {
         this.setState({ infoLat: undefined, infoLon: undefined, infoDistanceKm: undefined });
       });
     }
   };
+
+  showInfoPoint = (e, feature) => {
+    const infoLat = e.latlng.lat;
+    const infoLon = e.latlng.lng;
+    const infoDistanceKm = this.computeInfoDistanceKm(infoLat, infoLon, feature);
+    this.setState({ infoLat, infoLon, infoDistanceKm });
+  }
 
   computeInfoDistanceKm = (infoLat, infoLon, geojsonLineString) => {
     const p1 = {
