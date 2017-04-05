@@ -4,6 +4,7 @@ import objectsLogic from 'fm3/logic/objectsLogic';
 import searchLogic from 'fm3/logic/searchLogic';
 import storageLogic from 'fm3/logic/storageLogic';
 import locateLogic from 'fm3/logic/locateLogic';
+import trackViewerLogic from 'fm3/logic/trackViewerLogic';
 
 export default [
   ...routePlannerLogic,
@@ -12,4 +13,5 @@ export default [
   ...objectsLogic,
   storageLogic,
   locateLogic,
+  trackViewerLogic,
 ];

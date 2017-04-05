@@ -1,3 +1,3 @@
-export default function setTrackGeojson(geojson) {
-  return { type: 'TRACK_VIEWER_SET_TRACK_GEOJSON', payload: geojson };
+export default function setTrackGeojson(trackGeojson) {
+  return { type: 'TRACK_VIEWER_SET_TRACK_GEOJSON', payload: { trackGeojson } };
 }
