@@ -4,6 +4,7 @@
   "description": "Freemap web portal.",
   "dependencies": {
     "@mapbox/geojson-area": "0.2.2",
+    "@mapbox/togeojson": "0.16.0",
     "@turf/along": "3.14.0",
     "@turf/line-distance": "3.14.2",
     "@turf/line-slice": "3.14.2",
@@ -17,6 +18,7 @@
     "react-bootstrap-modal": "3.0.1",
     "react-bootstrap-typeahead": "1.2.0",
     "react-dom": "15.4.2",
+    "react-dropzone": "3.12.2",
     "react-leaflet": "1.1.4",
     "react-leaflet-bing": "2.0.0",
     "react-rangeslider": "2.0.1",

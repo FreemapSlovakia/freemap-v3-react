@@ -21,7 +21,7 @@ const iconForTool = {
   measure: 'arrows-h',
   'measure-ele': 'long-arrow-up',
   'measure-area': 'square',
-  'track-viewer': 'file-code-o',
+  'track-viewer': 'road',
 };
 
 function NavbarHeader({ tool, onResetMap }) {

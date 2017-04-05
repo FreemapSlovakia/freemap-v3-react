@@ -7,5 +7,6 @@ import measurement from 'fm3/reducers/measurementReducer';
 import elevationMeasurement from 'fm3/reducers/elevationMeasurementReducer';
 import objects from 'fm3/reducers/objectsReducer';
 import search from 'fm3/reducers/searchReducer';
+import trackViewer from 'fm3/reducers/trackViewerReducer';
 
-export default combineReducers({ main, map, routePlanner, measurement, elevationMeasurement, objects, search });
+export default combineReducers({ main, map, routePlanner, measurement, elevationMeasurement, objects, search, trackViewer });

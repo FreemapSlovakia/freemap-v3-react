@@ -32,6 +32,7 @@ import RoutePlannerMenu from 'fm3/components/RoutePlannerMenu';
 import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
+import TrackViewerResult from 'fm3/components/TrackViewerResult';
 
 import Settings from 'fm3/components/Settings';
 
@@ -162,7 +163,7 @@ class Main extends React.Component {
                     <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
                   </NavItem>
                   <NavItem onClick={() => this.handleToggleTool('track-viewer')} active={tool === 'track-viewer'}>
-                    <FontAwesomeIcon icon="file-code-o" /> Prehliadač trás
+                    <FontAwesomeIcon icon="road" /> Prehliadač trás
                   </NavItem>
                 </Nav>
               }
@@ -195,7 +196,7 @@ class Main extends React.Component {
                       <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
                     </MenuItem>
                     <MenuItem onClick={() => this.handleToggleTool('track-viewer')} active={tool === 'track-viewer'}>
-                      <FontAwesomeIcon icon="file-code-o" /> Prehliadač trás
+                      <FontAwesomeIcon icon="road" /> Prehliadač trás
                     </MenuItem>
                   </NavDropdown>
                 </Nav>
@@ -247,6 +248,8 @@ class Main extends React.Component {
             {tool === 'measure-area' && <AreaMeasurementResult />}
 
             {tool === 'location' && <LocationResult />}
+
+            {tool === 'track-viewer' && <TrackViewerResult />}
           </Map>
         </Row>
 
