@@ -41,3 +41,15 @@ a.leaflet-control-layers-toggle {
     margin-top: 0;
   }
 }
+
+.navbar-nav.hidden-sm li:hover {
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: .1s ease-in-out;
+	transition: .1s ease-in-out;
+
+  &:hover {
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+}
