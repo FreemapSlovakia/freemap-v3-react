@@ -4,6 +4,7 @@ import Dropzone from 'react-dropzone';
 import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
 import setTrackGeojson from 'fm3/actions/trackViewerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 import Nav from 'react-bootstrap/lib/Nav';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import NavItem from 'react-bootstrap/lib/NavItem';
@@ -21,19 +22,27 @@ class TrackViewerMenu extends React.Component {
     if (acceptedFiles.length > 0) {
       const reader = new FileReader();
       reader.readAsText(acceptedFiles[0], 'UTF-8');
-      reader.onload = (evt) => {
-        const gpxAsString = evt.target.result;
-        const gpxAsXml = new DOMParser().parseFromString(gpxAsString);
-        const geojson = toGeoJSON.gpx(gpxAsXml);
-        this.props.onSetTrackGeojson(geojson);
-        const geojsonBounds = L.geoJson(geojson).getBounds();
-        getMapLeafletElement().fitBounds(geojsonBounds);
-        this.props.onClosePopup();
+      reader.onload = (event) => {
+        const gpxAsString = event.target.result;
+        try {
+          const gpxAsXml = new DOMParser().parseFromString(gpxAsString);
+          const geojson = toGeoJSON.gpx(gpxAsXml);
+          this.props.onSetTrackGeojson(geojson);
+          const geojsonBounds = L.geoJson(geojson).getBounds();
+          getMapLeafletElement().fitBounds(geojsonBounds);
+          this.props.onClosePopup();
+        } catch (e) {
+          toastEmitter.emit('showToast', 'error', 'Nepodarilo sa spracovať súbor.', e.toString());
+        }
+      };
+
+      reader.onerror = () => {
+        toastEmitter.emit('showToast', 'error', null, 'Nepodarilo sa spracovať súbor.');
       };
     }
 
     if (rejectedFiles.length > 0) {
-      // TODO
+      toastEmitter.emit('showToast', 'warning', 'Nesprávny formát súboru', 'Nahraný súbor musí mať príponu .gpx');
     }
   }
 
@@ -56,7 +65,7 @@ class TrackViewerMenu extends React.Component {
           </Modal.Header>
           <Modal.Body>
             <Dropzone onDrop={this.onFileDrop} multiple={false} accept=".gpx" className="dropzone">
-              <div>Potiahnite sem GPX súbor (alebo kliknite sem pre výber súboru).</div>
+              <div>Potiahnite sem .gpx súbor (alebo kliknite pre výber súboru).</div>
             </Dropzone>
           </Modal.Body>
           <Modal.Footer>
