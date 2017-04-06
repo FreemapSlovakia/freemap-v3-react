@@ -13,7 +13,6 @@ class TrackViewerResult extends React.Component {
     startPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
       lat: React.PropTypes.number.isRequired,
       lon: React.PropTypes.number.isRequired,
-      lengthInKm: React.PropTypes.number.isRequired,
       startTime: React.PropTypes.string,
     })),
     finishPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
