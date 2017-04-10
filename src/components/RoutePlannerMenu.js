@@ -11,7 +11,7 @@ import { connect } from 'react-redux';
 import toastEmitter from 'fm3/emitters/toastEmitter';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
-import { setTool, setActivePopup } from 'fm3/actions/mainActions';
+import { setTool, setActivePopup, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
 
@@ -19,15 +19,18 @@ import 'fm3/styles/routePlanner.scss';
 
 function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportType,
     onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup,
-    onToggleItineraryVisibility, itineraryIsVisible }) {
+    onToggleItineraryVisibility, itineraryIsVisible, onStartProgress, onStopProgress }) {
   function setFromCurrentPosition(pointType) {
+    onStartProgress();
     getCurrentPosition().then(({ lat, lon }) => {
+      onStopProgress();
       if (pointType === 'start') {
         onSetStart({ lat, lon });
       } else if (pointType === 'finish') {
         onSetFinish({ lat, lon });
       } // else fail
     }).catch(() => {
+      onStopProgress();
       toastEmitter.emit('showToast', 'error', null, 'Nepodarilo sa získať aktuálnu polohu');
     });
   }
@@ -116,6 +119,8 @@ RoutePlannerMenu.propTypes = {
   onLaunchSettingsPopup: React.PropTypes.func.isRequired,
   onToggleItineraryVisibility: React.PropTypes.func.isRequired,
   itineraryIsVisible: React.PropTypes.bool.isRequired,
+  onStartProgress: React.PropTypes.func.isRequired,
+  onStopProgress: React.PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -146,6 +151,12 @@ export default connect(
     },
     onLaunchSettingsPopup() {
       dispatch(setActivePopup('settings'));
+    },
+    onStartProgress() {
+      dispatch(startProgress());
+    },
+    onStopProgress() {
+      dispatch(stopProgress());
     },
   }),
 )(RoutePlannerMenu);

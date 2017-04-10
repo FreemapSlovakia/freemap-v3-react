@@ -55,7 +55,7 @@ export function toRad(deg) {
 export function getCurrentPosition() {
   const options = {
     enableHighAccuracy: true,
-    timeout: 2000,
+    timeout: 10000,
     maximumAge: 0,
   };
 
