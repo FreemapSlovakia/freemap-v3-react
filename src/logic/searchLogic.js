@@ -1,6 +1,7 @@
 import { createLogic } from 'redux-logic';
 import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
@@ -11,23 +12,31 @@ export default createLogic({
       return;
     }
 
-    const { lat, lon, zoom } = getState().map;
-
-    // `https://www.freemap.sk/api/0.1/q/${encodeURIComponent(searchQuery)}&lat=${lat}&lon=${lon}&zoom=${zoom}`
-
     dispatch(startProgress());
-    fetch(`//nominatim.openstreetmap.org/search/${encodeURIComponent(query)}`
-        + `?format=jsonv2&lat=${lat}&lon=${lon}&zoom=${zoom}&namedetails=1&extratags=1&countrycodes=SK&polygon_geojson=1`)
+    fetch(`//www.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}&max_count=10`)
       .then(res => res.json())
       .then((data) => {
-        const results = data.map((d, id) => {
-          const name = d.namedetails.name;
-          const tags = { name, type: d.type };
-          return { id, label: name, geojson: d.geojson, lat: parseFloat(d.lat), lon: parseFloat(d.lon), tags };
+        const results = data.results.map((d, id) => {
+          const name = d.properties.name;
+          const geometryType = d.geometry.type;
+          const tags = { name, type: geometryType };
+          let centerLonlat;
+          if (geometryType === 'Point') {
+            centerLonlat = d.geometry.coordinates;
+          } else if (geometryType === 'MultiLineString') {
+            centerLonlat = d.geometry.coordinates[0][0];
+          } else {
+            centerLonlat = d.geometry.coordinates[0];
+          }
+          const centerLat = centerLonlat[1];
+          const centerLon = centerLonlat[0];
+          return { id, label: name, geojson: d.geometry, lat: centerLat, lon: centerLon, tags };
         });
         dispatch(searchSetResults(results));
       })
-      .catch(() => {})
+      .catch((e) => {
+        toastEmitter.emit('showToast', 'error', 'Nastala chyba pri spracovaní výsledkov vyhľadávania', e.toString());
+      })
       .then(() => {
         dispatch(stopProgress());
         done();

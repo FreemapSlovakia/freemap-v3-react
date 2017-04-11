@@ -59,7 +59,7 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
               onMouseLeave={b(onSuggestionHighlightChange, null)}
             >
               <span>{result.tags.name} </span><br />
-              <span>({result.geojson.type}, {result.tags.type})</span>
+              <span>({result.geojson.type})</span>
             </div>
           )}
         />

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Point from 'fm3/components/searchResults/Point';
+import MultiPoint from 'fm3/components/searchResults/MultiPoint';
 import Polyline from 'fm3/components/searchResults/Polyline';
 import Polygon from 'fm3/components/searchResults/Polygon';
 import MultiLineString from 'fm3/components/searchResults/MultiLineString';
@@ -12,6 +13,9 @@ function SearchResults({ highlightedResult, selectedResult }) {
     <div>
       {displayAsPoint(highlightedResult) &&
         <Point searchResult={highlightedResult} />
+      }
+      {displayAsMultiPoint(highlightedResult) &&
+        <MultiPoint searchResult={highlightedResult} />
       }
       {displayAsPolyline(highlightedResult) &&
         <Polyline searchResult={highlightedResult} />
@@ -27,6 +31,9 @@ function SearchResults({ highlightedResult, selectedResult }) {
       }
       {displayAsPoint(selectedResult) &&
         <Point searchResult={selectedResult} />
+      }
+      {displayAsMultiPoint(selectedResult) &&
+        <MultiPoint searchResult={selectedResult} />
       }
       {displayAsPolyline(selectedResult) &&
         <Polyline searchResult={selectedResult} />
@@ -51,6 +58,10 @@ SearchResults.propTypes = {
 
 function displayAsPoint(result) {
   return result && result.geojson.type === 'Point';
+}
+
+function displayAsMultiPoint(result) {
+  return result && result.geojson.type === 'MultiPoint';
 }
 
 function displayAsPolyline(result) {
