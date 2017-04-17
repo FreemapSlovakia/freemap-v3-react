@@ -32,8 +32,10 @@ class Settings extends React.Component {
     onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
     tool: FmPropTypes.tool,
     nlcOpacity: React.PropTypes.number.isRequired,
+    touristOverlayOpacity: React.PropTypes.number.isRequired,
+    cycloOverlayOpacity: React.PropTypes.number.isRequired,
     zoom: React.PropTypes.number,
-    expertMode: React.PropTypes.bool,
+    expertMode: React.PropTypes.bool.isRequired,
   };
 
   constructor(props) {
@@ -44,6 +46,8 @@ class Settings extends React.Component {
       homeLocationCssClasses: '',
       userMadeChanges: false,
       nlcOpacity: props.nlcOpacity,
+      touristOverlayOpacity: props.touristOverlayOpacity,
+      cycloOverlayOpacity: props.cycloOverlayOpacity,
       expertMode: props.expertMode,
     };
   }
@@ -68,7 +72,12 @@ class Settings extends React.Component {
   }
 
   handleSave = () => {
-    this.props.onSave(this.state.tileFormat, this.state.homeLocation, this.state.nlcOpacity, this.state.expertMode);
+    this.props.onSave(this.state.tileFormat,
+      this.state.homeLocation,
+      this.state.nlcOpacity,
+      this.state.touristOverlayOpacity,
+      this.state.cycloOverlayOpacity,
+      this.state.expertMode);
     toastEmitter.emit('showToast', 'info', null, 'Zmeny boli uložené.');
   }
 
@@ -152,6 +161,32 @@ class Settings extends React.Component {
             <Alert>
               V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
             </Alert> }
+
+          {this.state.expertMode &&
+            <div>
+                Viditeľnosť vrstvy Turistické trasy: {(this.state.touristOverlayOpacity).toFixed(1) * 100}%
+              <Slider
+                value={this.state.touristOverlayOpacity}
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                tooltip={false}
+                onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
+              />
+            </div>}
+
+          {this.state.expertMode &&
+            <div>
+                Viditeľnosť vrstvy Cyklotrasy: {(this.state.cycloOverlayOpacity).toFixed(1) * 100}%
+              <Slider
+                value={this.state.cycloOverlayOpacity}
+                min={0.1}
+                max={1.0}
+                step={0.1}
+                tooltip={false}
+                onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
+              />
+            </div>}
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
@@ -169,13 +204,17 @@ export default connect(
     tool: state.main.tool,
     zoom: state.map.zoom,
     nlcOpacity: state.map.overlayOpacity.N,
+    touristOverlayOpacity: state.map.overlayOpacity.t,
+    cycloOverlayOpacity: state.map.overlayOpacity.c,
     expertMode: state.main.expertMode,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, nlcOpacity, expertMode) {
+    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode) {
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
       dispatch(mapSetOverlayOpacity('N', nlcOpacity));
+      dispatch(mapSetOverlayOpacity('t', touristOverlayOpacity));
+      dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
       dispatch(closePopup());
       dispatch(setExpertMode(expertMode));
     },

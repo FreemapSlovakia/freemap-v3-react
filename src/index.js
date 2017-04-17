@@ -34,8 +34,20 @@ function sanitizeSavedAppState(appState) {
     appState.main.tool = null;
   }
 
+  if (appState.main.expertMode === undefined) {
+    appState.main.expertMode = false;
+  }
+
   if (!appState.map.overlayOpacity) {
     appState.map.overlayOpacity = { N: 1.0 };
+  }
+
+  if (!appState.map.overlayOpacity.t) {
+    appState.map.overlayOpacity.t = 1.0;
+  }
+
+  if (!appState.map.overlayOpacity.c) {
+    appState.map.overlayOpacity.c = 1.0;
   }
 }
 

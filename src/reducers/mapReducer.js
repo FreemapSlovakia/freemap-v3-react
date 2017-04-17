@@ -6,7 +6,7 @@ const initialState = {
   lon: 19.4995,
   zoom: 8,
   overlays: [],
-  overlayOpacity: { N: 1.0 },
+  overlayOpacity: { N: 1.0, t: 1.0, c: 1.0 },
   tileFormat: 'png',
   mouseCursor: 'auto',
 };
