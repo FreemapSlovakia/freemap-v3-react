@@ -10,14 +10,13 @@ import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 import { mapSetTileFormat, mapSetOverlayOpacity, setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
-import { setTool, setHomeLocation, closePopup } from 'fm3/actions/mainActions';
+import { setTool, setHomeLocation, closePopup, setExpertMode } from 'fm3/actions/mainActions';
 import toastEmitter from 'fm3/emitters/toastEmitter';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
-
 
 class Settings extends React.Component {
 
@@ -34,6 +33,7 @@ class Settings extends React.Component {
     tool: FmPropTypes.tool,
     nlcOpacity: React.PropTypes.number.isRequired,
     zoom: React.PropTypes.number,
+    expertMode: React.PropTypes.bool,
   };
 
   constructor(props) {
@@ -44,6 +44,7 @@ class Settings extends React.Component {
       homeLocationCssClasses: '',
       userMadeChanges: false,
       nlcOpacity: props.nlcOpacity,
+      expertMode: props.expertMode,
     };
   }
 
@@ -67,7 +68,7 @@ class Settings extends React.Component {
   }
 
   handleSave = () => {
-    this.props.onSave(this.state.tileFormat, this.state.homeLocation, this.state.nlcOpacity);
+    this.props.onSave(this.state.tileFormat, this.state.homeLocation, this.state.nlcOpacity, this.state.expertMode);
     toastEmitter.emit('showToast', 'info', null, 'Zmeny boli uložené.');
   }
 
@@ -128,6 +129,29 @@ class Settings extends React.Component {
             <Alert>
               NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
             </Alert> }
+
+          <hr />
+          <div style={{ marginBottom: '10px' }}>
+            Expertný mód:<br />
+            <ButtonGroup>
+              <Button
+                active={!this.state.expertMode}
+                onClick={() => this.setState({ expertMode: false })}
+              >
+                Vypnutý
+              </Button>
+              <Button
+                active={this.state.expertMode}
+                onClick={() => this.setState({ expertMode: true })}
+              >
+                Zapnutý
+              </Button>
+            </ButtonGroup>
+          </div>
+          {!this.state.expertMode &&
+            <Alert>
+              V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
+            </Alert> }
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
@@ -145,13 +169,15 @@ export default connect(
     tool: state.main.tool,
     zoom: state.map.zoom,
     nlcOpacity: state.map.overlayOpacity.N,
+    expertMode: state.main.expertMode,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, nlcOpacity) {
+    onSave(tileFormat, homeLocation, nlcOpacity, expertMode) {
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
       dispatch(mapSetOverlayOpacity('N', nlcOpacity));
       dispatch(closePopup());
+      dispatch(setExpertMode(expertMode));
     },
     onClosePopup() {
       dispatch(closePopup());

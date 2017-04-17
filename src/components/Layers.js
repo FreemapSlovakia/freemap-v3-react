@@ -5,7 +5,7 @@ import { BingLayer } from 'react-leaflet-bing';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 
-export default function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, overlayOpacity }) {
+export default function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, overlayOpacity, expertMode }) {
   // eslint-disable-next-line
   function getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
     if (type === 'S') {
@@ -67,10 +67,12 @@ export default function Layers({ onMapChange, onOverlaysChange, tileFormat, over
       {
         overlayLayers && overlayLayers.map((item) => {
           const { type, name } = item;
+          const isAvailableToUser = !item.showOnlyInExpertMode || (item.showOnlyInExpertMode && expertMode);
           return (
-            <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
-              {getTileLayer(item)}
-            </LayersControl.Overlay>
+            isAvailableToUser &&
+              <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
+                  {getTileLayer(item)}
+              </LayersControl.Overlay>
           );
         })
       }
@@ -85,4 +87,5 @@ Layers.propTypes = {
   overlays: FmPropTypes.overlays,
   mapType: FmPropTypes.mapType.isRequired,
   overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
+  expertMode: React.PropTypes.bool,
 };

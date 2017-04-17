@@ -11,6 +11,7 @@ export default createLogic({
       main: {
         homeLocation: state.main.homeLocation,
         tool: null,
+        expertMode: state.main.expertMode,
       },
       routePlanner: {
         transportType: state.routePlanner.transportType,

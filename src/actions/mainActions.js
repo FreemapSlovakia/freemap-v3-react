@@ -25,3 +25,7 @@ export function stopProgress() {
 export function setLocation(lat, lon, accuracy) {
   return { type: 'SET_LOCATION', payload: { lat, lon, accuracy } };
 }
+
+export function setExpertMode(value) {
+  return { type: 'SET_EXPERT_MODE', payload: value };
+}

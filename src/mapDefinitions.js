@@ -33,4 +33,20 @@ export const overlayLayers = [
     minZoom: 7,
     maxNativeZoom: 16,
   },
+  {
+    name: 'Turist. trasy',
+    type: 't',
+    url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
+    minZoom: 7,
+    maxNativeZoom: 16,
+    showOnlyInExpertMode: true,
+  },
+  {
+    name: 'Cyklotrasy',
+    type: 'c',
+    url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
+    minZoom: 7,
+    maxNativeZoom: 16,
+    showOnlyInExpertMode: true,
+  },
 ];

@@ -65,6 +65,7 @@ class Main extends React.Component {
     progress: React.PropTypes.bool,
     onSetLocation: React.PropTypes.func.isRequired,
     mouseCursor: React.PropTypes.string.isRequired,
+    expertMode: React.PropTypes.bool,
   };
 
   componentWillMount() {
@@ -231,6 +232,7 @@ class Main extends React.Component {
               mapType={this.props.mapType} onMapChange={this.handleMapTypeChange}
               overlays={this.props.overlays} onOverlaysChange={this.handleOverlayChange}
               tileFormat={tileFormat} overlayOpacity={this.props.overlayOpacity}
+              expertMode={this.props.expertMode}
             />
 
             <ScaleControl imperial={false} position="bottomright" />
@@ -272,6 +274,7 @@ export default connect(
     activePopup: state.main.activePopup,
     progress: state.main.progress,
     mouseCursor: state.map.mouseCursor,
+    expertMode: state.main.expertMode,
   }),
   dispatch => ({
     onSetTool(tool) {
