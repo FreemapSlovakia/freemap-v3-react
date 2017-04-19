@@ -9,7 +9,7 @@ import turfLineDistance from '@turf/line-distance';
 class TrackViewerResult extends React.Component {
 
   static propTypes = {
-    trackGeojson: React.PropTypes.any,
+    trackGeojson: React.PropTypes.any, // eslint-disable-line
     startPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
       lat: React.PropTypes.number.isRequired,
       lon: React.PropTypes.number.isRequired,
