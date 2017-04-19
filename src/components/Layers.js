@@ -1,11 +1,13 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import { TileLayer, LayersControl } from 'react-leaflet';
 import { BingLayer } from 'react-leaflet-bing';
 
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 
-export default function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, overlayOpacity, expertMode }) {
+function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, overlayOpacity, expertMode }) {
   // eslint-disable-next-line
   function getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
     if (type === 'S') {
@@ -89,3 +91,23 @@ Layers.propTypes = {
   overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
   expertMode: React.PropTypes.bool,
 };
+
+export default connect(
+  state => ({
+    tileFormat: state.map.tileFormat,
+    overlays: state.map.overlays,
+    mapType: state.map.mapType,
+    overlayOpacity: state.map.overlayOpacity,
+    expertMode: state.main.expertMode,
+  }),
+  (dispatch, props) => ({
+    onMapChange(mapType) {
+      if (props.mapType !== mapType) {
+        dispatch(mapRefocus({ mapType }));
+      }
+    },
+    onOverlaysChange(overlays) {
+      dispatch(mapRefocus({ overlays }));
+    },
+  }),
+)(Layers);

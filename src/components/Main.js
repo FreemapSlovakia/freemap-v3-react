@@ -54,9 +54,7 @@ class Main extends React.Component {
     lon: React.PropTypes.number.isRequired,
     zoom: React.PropTypes.number.isRequired,
     tool: FmPropTypes.tool,
-    tileFormat: FmPropTypes.tileFormat.isRequired,
     overlays: FmPropTypes.overlays.isRequired,
-    overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
     onSetTool: React.PropTypes.func.isRequired,
     onMapRefocus: React.PropTypes.func.isRequired,
@@ -65,7 +63,6 @@ class Main extends React.Component {
     progress: React.PropTypes.bool,
     onSetLocation: React.PropTypes.func.isRequired,
     mouseCursor: React.PropTypes.string.isRequired,
-    expertMode: React.PropTypes.bool,
   };
 
   componentWillMount() {
@@ -115,16 +112,6 @@ class Main extends React.Component {
     }
   }
 
-  handleMapTypeChange = (mapType) => {
-    if (this.props.mapType !== mapType) {
-      this.props.onMapRefocus({ mapType });
-    }
-  }
-
-  handleOverlayChange = (overlays) => {
-    this.props.onMapRefocus({ overlays });
-  }
-
   handleLocationFound = (e) => {
     this.props.onSetLocation(e.latitude, e.longitude, e.accuracy);
   }
@@ -134,7 +121,8 @@ class Main extends React.Component {
   }
 
   render() {
-    const { tool, tileFormat, activePopup, onLaunchPopup, progress, mouseCursor } = this.props;
+    // eslint-disable-next-line
+    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].indexOf(tool) !== -1;
 
     return (
@@ -228,12 +216,7 @@ class Main extends React.Component {
             onLocationfound={this.handleLocationFound}
             style={{ cursor: mouseCursor }}
           >
-            <Layers
-              mapType={this.props.mapType} onMapChange={this.handleMapTypeChange}
-              overlays={this.props.overlays} onOverlaysChange={this.handleOverlayChange}
-              tileFormat={tileFormat} overlayOpacity={this.props.overlayOpacity}
-              expertMode={this.props.expertMode}
-            />
+            <Layers />
 
             <ScaleControl imperial={false} position="bottomright" />
 
@@ -269,12 +252,9 @@ export default connect(
     tool: state.main.tool,
     mapType: state.map.mapType,
     overlays: state.map.overlays,
-    overlayOpacity: state.map.overlayOpacity,
-    tileFormat: state.map.tileFormat,
     activePopup: state.main.activePopup,
     progress: state.main.progress,
     mouseCursor: state.map.mouseCursor,
-    expertMode: state.main.expertMode,
   }),
   dispatch => ({
     onSetTool(tool) {
