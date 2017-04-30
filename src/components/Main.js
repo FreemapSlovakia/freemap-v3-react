@@ -138,7 +138,7 @@ class Main extends React.Component {
               {tool === 'track-viewer' && <TrackViewerMenu />}
               {activePopup === 'settings' && <Settings />}
               {showDefaultMenu &&
-                <Nav key="nav" className="hidden-sm">
+                <Nav key="nav" className="hidden-sm hidden-md">
                   <NavItem onClick={() => this.handleToggleTool('objects')}>
                     <FontAwesomeIcon icon="map-marker" /> Miesta
                   </NavItem>
@@ -170,7 +170,7 @@ class Main extends React.Component {
                 </Nav>
               }
               {showDefaultMenu &&
-                <Nav pullRight className="hidden-lg hidden-md hidden-xs">
+                <Nav pullRight className="hidden-lg hidden-xs">
                   <NavDropdown title="Nástroje" id="tools">
                     <MenuItem onClick={() => this.handleToggleTool('objects')}>
                       <FontAwesomeIcon icon="map-marker" /> Miesta
