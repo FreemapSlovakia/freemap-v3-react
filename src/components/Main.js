@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import queryString from 'query-string';
@@ -50,19 +51,19 @@ import 'fm3/styles/main.scss';
 class Main extends React.Component {
 
   static propTypes = {
-    lat: React.PropTypes.number.isRequired,
-    lon: React.PropTypes.number.isRequired,
-    zoom: React.PropTypes.number.isRequired,
+    lat: PropTypes.number.isRequired,
+    lon: PropTypes.number.isRequired,
+    zoom: PropTypes.number.isRequired,
     tool: FmPropTypes.tool,
     overlays: FmPropTypes.overlays.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
-    onSetTool: React.PropTypes.func.isRequired,
-    onMapRefocus: React.PropTypes.func.isRequired,
-    activePopup: React.PropTypes.string,
-    onLaunchPopup: React.PropTypes.func.isRequired,
-    progress: React.PropTypes.bool,
-    onSetLocation: React.PropTypes.func.isRequired,
-    mouseCursor: React.PropTypes.string.isRequired,
+    onSetTool: PropTypes.func.isRequired,
+    onMapRefocus: PropTypes.func.isRequired,
+    activePopup: PropTypes.string,
+    onLaunchPopup: PropTypes.func.isRequired,
+    progress: PropTypes.bool,
+    onSetLocation: PropTypes.func.isRequired,
+    mouseCursor: PropTypes.string.isRequired,
   };
 
   componentWillMount() {

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
@@ -109,11 +110,11 @@ class ObjectsMenu extends React.Component {
 }
 
 ObjectsMenu.propTypes = {
-  onSearch: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired,
-  onGpxExport: React.PropTypes.func.isRequired,
-  zoom: React.PropTypes.number.isRequired,
-  location: React.PropTypes.object.isRequired,
+  onSearch: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  onGpxExport: PropTypes.func.isRequired,
+  zoom: PropTypes.number.isRequired,
+  location: PropTypes.object.isRequired,
 };
 
 export default connect(

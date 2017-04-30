@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -41,7 +42,7 @@ function NavbarHeader({ tool, onResetMap }) {
 
 NavbarHeader.propTypes = {
   tool: FmPropTypes.tool,
-  onResetMap: React.PropTypes.func.isRequired,
+  onResetMap: PropTypes.func.isRequired,
 };
 
 export default connect(

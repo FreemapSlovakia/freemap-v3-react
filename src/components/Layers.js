@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TileLayer, LayersControl } from 'react-leaflet';
 import { BingLayer } from 'react-leaflet-bing';
@@ -83,13 +84,13 @@ function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, 
 }
 
 Layers.propTypes = {
-  onMapChange: React.PropTypes.func.isRequired,
-  onOverlaysChange: React.PropTypes.func.isRequired,
+  onMapChange: PropTypes.func.isRequired,
+  onOverlaysChange: PropTypes.func.isRequired,
   tileFormat: FmPropTypes.tileFormat.isRequired,
   overlays: FmPropTypes.overlays,
   mapType: FmPropTypes.mapType.isRequired,
   overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
-  expertMode: React.PropTypes.bool,
+  expertMode: PropTypes.bool,
 };
 
 export default connect(

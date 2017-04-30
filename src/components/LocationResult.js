@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Circle, Marker } from 'react-leaflet';
 
@@ -12,7 +13,7 @@ function LocationResult({ gpsLocation }) {
 }
 
 LocationResult.propTypes = {
-  gpsLocation: React.PropTypes.object,
+  gpsLocation: PropTypes.object,
 };
 
 export default connect(

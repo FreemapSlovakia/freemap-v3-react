@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
@@ -13,12 +14,12 @@ const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionD
 class ElevationMeasurementResult extends React.Component {
 
   static propTypes = {
-    onPointSet: React.PropTypes.func.isRequired,
-    onClearElevation: React.PropTypes.func.isRequired,
+    onPointSet: PropTypes.func.isRequired,
+    onClearElevation: PropTypes.func.isRequired,
     point: FmPropTypes.point,
-    elevation: React.PropTypes.number,
-    onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
-    onResetMouseCursor: React.PropTypes.func.isRequired,
+    elevation: PropTypes.number,
+    onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
+    onResetMouseCursor: PropTypes.func.isRequired,
   }
 
   state = {};

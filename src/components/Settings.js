@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
@@ -21,21 +22,21 @@ import * as FmPropTypes from 'fm3/propTypes';
 class Settings extends React.Component {
 
   static propTypes = {
-    homeLocation: React.PropTypes.shape({
-      lat: React.PropTypes.number,
-      lon: React.PropTypes.number,
+    homeLocation: PropTypes.shape({
+      lat: PropTypes.number,
+      lon: PropTypes.number,
     }),
     tileFormat: FmPropTypes.tileFormat.isRequired,
-    onSave: React.PropTypes.func.isRequired,
-    onClosePopup: React.PropTypes.func.isRequired,
-    onSelectHomeLocation: React.PropTypes.func.isRequired,
-    onSelectHomeLocationFinished: React.PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+    onClosePopup: PropTypes.func.isRequired,
+    onSelectHomeLocation: PropTypes.func.isRequired,
+    onSelectHomeLocationFinished: PropTypes.func.isRequired,
     tool: FmPropTypes.tool,
-    nlcOpacity: React.PropTypes.number.isRequired,
-    touristOverlayOpacity: React.PropTypes.number.isRequired,
-    cycloOverlayOpacity: React.PropTypes.number.isRequired,
-    zoom: React.PropTypes.number,
-    expertMode: React.PropTypes.bool.isRequired,
+    nlcOpacity: PropTypes.number.isRequired,
+    touristOverlayOpacity: PropTypes.number.isRequired,
+    cycloOverlayOpacity: PropTypes.number.isRequired,
+    zoom: PropTypes.number,
+    expertMode: PropTypes.bool.isRequired,
   };
 
   constructor(props) {

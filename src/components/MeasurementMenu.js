@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { setTool } from 'fm3/actions/mainActions';
@@ -38,8 +39,8 @@ function MeasurementMenu({ onCancel, onSetTool, tool }) {
 
 MeasurementMenu.propTypes = {
   tool: FmPropTypes.tool,
-  onSetTool: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired,
+  onSetTool: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
 };
 
 export default connect(

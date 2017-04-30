@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Popup } from 'react-leaflet';
 
@@ -26,7 +27,7 @@ function ObjectsResult({ objects }) {
 }
 
 ObjectsResult.propTypes = {
-  objects: React.PropTypes.arrayOf(FmPropTypes.object).isRequired,
+  objects: PropTypes.arrayOf(FmPropTypes.object).isRequired,
 };
 
 export default connect(

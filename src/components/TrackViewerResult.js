@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
@@ -9,17 +10,17 @@ import turfLineDistance from '@turf/line-distance';
 class TrackViewerResult extends React.Component {
 
   static propTypes = {
-    trackGeojson: React.PropTypes.any, // eslint-disable-line
-    startPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
-      lat: React.PropTypes.number.isRequired,
-      lon: React.PropTypes.number.isRequired,
-      startTime: React.PropTypes.string,
+    trackGeojson: PropTypes.any, // eslint-disable-line
+    startPoints: PropTypes.arrayOf(PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+      startTime: PropTypes.string,
     })),
-    finishPoints: React.PropTypes.arrayOf(React.PropTypes.shape({
-      lat: React.PropTypes.number.isRequired,
-      lon: React.PropTypes.number.isRequired,
-      lengthInKm: React.PropTypes.number.isRequired,
-      finishTime: React.PropTypes.string,
+    finishPoints: PropTypes.arrayOf(PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+      lengthInKm: PropTypes.number.isRequired,
+      finishTime: PropTypes.string,
     })),
   }
 

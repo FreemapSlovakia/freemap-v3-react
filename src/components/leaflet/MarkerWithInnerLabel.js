@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { Marker } from 'react-leaflet';
 
 export default function MarkerWithInnerLabel(props) {
@@ -38,12 +39,12 @@ export default function MarkerWithInnerLabel(props) {
 
 MarkerWithInnerLabel.propTypes = {
   ...Marker.propTypes,
-  label: React.PropTypes.oneOfType([
-    React.PropTypes.string,
-    React.PropTypes.number,
+  label: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.number,
   ]),
-  color: React.PropTypes.string,
-  image: React.PropTypes.string,
-  faIcon: React.PropTypes.string,
-  faIconLeftPadding: React.PropTypes.string,
+  color: PropTypes.string,
+  image: PropTypes.string,
+  faIcon: PropTypes.string,
+  faIconLeftPadding: PropTypes.string,
 };

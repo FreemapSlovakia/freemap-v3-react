@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import Nav from 'react-bootstrap/lib/Nav';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import NavItem from 'react-bootstrap/lib/NavItem';
@@ -105,22 +106,22 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
 }
 
 RoutePlannerMenu.propTypes = {
-  onSetStart: React.PropTypes.func.isRequired,
-  onSetFinish: React.PropTypes.func.isRequired,
-  transportType: React.PropTypes.string,
-  pickPointMode: React.PropTypes.string,
-  onChangeTransportType: React.PropTypes.func.isRequired,
-  onChangePickPointMode: React.PropTypes.func.isRequired,
-  onCancel: React.PropTypes.func.isRequired,
-  homeLocation: React.PropTypes.shape({
-    lat: React.PropTypes.number,
-    lon: React.PropTypes.number,
+  onSetStart: PropTypes.func.isRequired,
+  onSetFinish: PropTypes.func.isRequired,
+  transportType: PropTypes.string,
+  pickPointMode: PropTypes.string,
+  onChangeTransportType: PropTypes.func.isRequired,
+  onChangePickPointMode: PropTypes.func.isRequired,
+  onCancel: PropTypes.func.isRequired,
+  homeLocation: PropTypes.shape({
+    lat: PropTypes.number,
+    lon: PropTypes.number,
   }),
-  onLaunchSettingsPopup: React.PropTypes.func.isRequired,
-  onToggleItineraryVisibility: React.PropTypes.func.isRequired,
-  itineraryIsVisible: React.PropTypes.bool.isRequired,
-  onStartProgress: React.PropTypes.func.isRequired,
-  onStopProgress: React.PropTypes.func.isRequired,
+  onLaunchSettingsPopup: PropTypes.func.isRequired,
+  onToggleItineraryVisibility: PropTypes.func.isRequired,
+  itineraryIsVisible: PropTypes.bool.isRequired,
+  onStartProgress: PropTypes.func.isRequired,
+  onStopProgress: PropTypes.func.isRequired,
 };
 
 export default connect(

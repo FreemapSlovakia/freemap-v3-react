@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
@@ -78,11 +79,11 @@ class TrackViewerMenu extends React.Component {
 }
 
 TrackViewerMenu.propTypes = {
-  activePopup: React.PropTypes.string,
-  onCancel: React.PropTypes.func.isRequired,
-  onClosePopup: React.PropTypes.func.isRequired,
-  onLaunchPopup: React.PropTypes.func.isRequired,
-  onSetTrackGeojson: React.PropTypes.func.isRequired,
+  activePopup: PropTypes.string,
+  onCancel: PropTypes.func.isRequired,
+  onClosePopup: PropTypes.func.isRequired,
+  onLaunchPopup: PropTypes.func.isRequired,
+  onSetTrackGeojson: PropTypes.func.isRequired,
 };
 
 export default connect(

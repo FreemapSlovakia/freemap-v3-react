@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
@@ -83,12 +84,12 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
 SearchMenu.propTypes = {
   tool: FmPropTypes.tool,
   selectedResult: FmPropTypes.searchResult,
-  results: React.PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
-  onDoSearch: React.PropTypes.func.isRequired,
-  onHiglightResult: React.PropTypes.func.isRequired,
-  onSelectResult: React.PropTypes.func.isRequired,
-  onInitRoutePlannerWithStart: React.PropTypes.func.isRequired,
-  onInitRoutePlannerWithFinish: React.PropTypes.func.isRequired,
+  results: PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
+  onDoSearch: PropTypes.func.isRequired,
+  onHiglightResult: PropTypes.func.isRequired,
+  onSelectResult: PropTypes.func.isRequired,
+  onInitRoutePlannerWithStart: PropTypes.func.isRequired,
+  onInitRoutePlannerWithFinish: PropTypes.func.isRequired,
 };
 
 

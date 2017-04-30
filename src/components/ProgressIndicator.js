@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import 'fm3/styles/progressIndicator.scss';
 
@@ -7,5 +8,5 @@ export default function ProgressIndicator({ active }) {
 }
 
 ProgressIndicator.propTypes = {
-  active: React.PropTypes.bool,
+  active: PropTypes.bool,
 };

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
@@ -14,10 +15,10 @@ class DistanceMeasurementResult extends React.Component {
 
   static propTypes = {
     points: FmPropTypes.points.isRequired,
-    onPointAdd: React.PropTypes.func.isRequired,
-    onPointUpdate: React.PropTypes.func.isRequired,
-    onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
-    onResetMouseCursor: React.PropTypes.func.isRequired,
+    onPointAdd: PropTypes.func.isRequired,
+    onPointUpdate: PropTypes.func.isRequired,
+    onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
+    onResetMouseCursor: PropTypes.func.isRequired,
   };
 
   componentWillMount() {

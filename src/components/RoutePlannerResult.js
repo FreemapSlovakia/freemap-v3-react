@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import turfLineDistance from '@turf/line-distance';
 import turfAlong from '@turf/along';
@@ -196,24 +197,24 @@ RoutePlannerResult.propTypes = {
   start: FmPropTypes.point,
   finish: FmPropTypes.point,
   midpoints: FmPropTypes.points,
-  shapePoints: React.PropTypes.arrayOf(React.PropTypes.arrayOf(React.PropTypes.number)),
-  time: React.PropTypes.number,
-  distance: React.PropTypes.number,
-  itinerary: React.PropTypes.arrayOf(React.PropTypes.shape({
-    lat: React.PropTypes.number.isRequired,
-    lon: React.PropTypes.number.isRequired,
-    desc: React.PropTypes.string.isRequired,
-    km: React.PropTypes.number.isRequired,
+  shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+  time: PropTypes.number,
+  distance: PropTypes.number,
+  itinerary: PropTypes.arrayOf(PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lon: PropTypes.number.isRequired,
+    desc: PropTypes.string.isRequired,
+    km: PropTypes.number.isRequired,
   })),
-  itineraryIsVisible: React.PropTypes.bool.isRequired,
-  onSetStart: React.PropTypes.func.isRequired,
-  onSetFinish: React.PropTypes.func.isRequired,
-  onSetMidpoint: React.PropTypes.func.isRequired,
-  onAddMidpoint: React.PropTypes.func.isRequired,
-  onRemoveMidpoint: React.PropTypes.func.isRequired,
-  pickMode: React.PropTypes.string,
-  onSetMouseCursorToCrosshair: React.PropTypes.func.isRequired,
-  onResetMouseCursor: React.PropTypes.func.isRequired,
+  itineraryIsVisible: PropTypes.bool.isRequired,
+  onSetStart: PropTypes.func.isRequired,
+  onSetFinish: PropTypes.func.isRequired,
+  onSetMidpoint: PropTypes.func.isRequired,
+  onAddMidpoint: PropTypes.func.isRequired,
+  onRemoveMidpoint: PropTypes.func.isRequired,
+  pickMode: PropTypes.string,
+  onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
+  onResetMouseCursor: PropTypes.func.isRequired,
 };
 
 export default connect(
