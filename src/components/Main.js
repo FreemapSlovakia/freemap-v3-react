@@ -64,6 +64,7 @@ class Main extends React.Component {
     progress: PropTypes.bool,
     onSetLocation: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
+    expertMode: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
@@ -121,9 +122,33 @@ class Main extends React.Component {
     this.props.onSetTool(this.props.tool === tool ? null : tool);
   }
 
+  openIn(where) {
+    const { zoom, lat, lon } = this.props;
+    switch (where) {
+      case 'osm.org':
+        window.open(`https://www.openstreetmap.org/#map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
+        break;
+      case 'osm.org/id':
+        window.open(`https://www.openstreetmap.org/edit?editor=id#map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
+        break;
+      case 'josm': {
+        const bounds = this.map.leafletElement.getBounds();
+        fetch(`http://localhost:8111/load_and_zoom?left=${bounds.getWest()}&right=${bounds.getEast()}&top=${bounds.getNorth()}&bottom=${bounds.getSouth()}`);
+        break;
+      }
+      case 'hiking.sk': {
+        const point = L.CRS.EPSG3857.project(L.latLng(lat, lon));
+        window.open(`https://mapy.hiking.sk/?zoom=${zoom}&lon=${point.x}&lat=${point.y}&layers=00B00FFFTTFTTTTFFFFFFTTT`);
+        break;
+      }
+      default:
+        break;
+    }
+  }
+
   render() {
     // eslint-disable-next-line
-    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays } = this.props;
+    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].indexOf(tool) !== -1;
 
     return (
@@ -139,7 +164,7 @@ class Main extends React.Component {
               {tool === 'track-viewer' && <TrackViewerMenu />}
               {activePopup === 'settings' && <Settings />}
               {showDefaultMenu &&
-                <Nav key="nav" className="hidden-sm hidden-md">
+                <Nav key="nav" className="hidden-sm hidden-md hidden-lg">
                   <NavItem onClick={() => this.handleToggleTool('objects')}>
                     <FontAwesomeIcon icon="map-marker" /> Miesta
                   </NavItem>
@@ -158,8 +183,8 @@ class Main extends React.Component {
                 </Nav>
               }
               {showDefaultMenu &&
-                <Nav pullRight className="hidden-xs hidden-lg">
-                  <NavDropdown title="Viac" id="additional-menu-items">
+                <Nav pullRight className="hidden-xs">
+                  <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
                     <MenuItem onClick={() => onLaunchPopup('settings')}>
                       <FontAwesomeIcon icon="cog" /> Nastavenia
                     </MenuItem>
@@ -171,8 +196,8 @@ class Main extends React.Component {
                 </Nav>
               }
               {showDefaultMenu &&
-                <Nav pullRight className="hidden-lg hidden-xs">
-                  <NavDropdown title="Nástroje" id="tools">
+                <Nav className="hidden-xs">
+                  <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
                     <MenuItem onClick={() => this.handleToggleTool('objects')}>
                       <FontAwesomeIcon icon="map-marker" /> Miesta
                     </MenuItem>
@@ -191,8 +216,18 @@ class Main extends React.Component {
                   </NavDropdown>
                 </Nav>
               }
+              {showDefaultMenu && expertMode &&
+                <Nav>
+                  <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
+                    <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
+                    <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
+                    <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
+                    <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
+                  </NavDropdown>
+                </Nav>
+              }
               {showDefaultMenu &&
-                <Nav pullRight className="hidden-sm hidden-md">
+                <Nav pullRight className="hidden-sm hidden-md hidden-lg">
                   <NavItem onClick={() => onLaunchPopup('settings')}>
                     <FontAwesomeIcon icon="cog" /> Nastavenia
                   </NavItem>
@@ -256,6 +291,7 @@ export default connect(
     activePopup: state.main.activePopup,
     progress: state.main.progress,
     mouseCursor: state.map.mouseCursor,
+    expertMode: state.main.expertMode,
   }),
   dispatch => ({
     onSetTool(tool) {
