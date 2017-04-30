@@ -50,7 +50,7 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
     'ROUTE_PLANNER_SET_START',
     'ROUTE_PLANNER_SET_FINISH',
   ],
-  process({ getState, action }, dispatch) {
+  process({ getState, action }, dispatch, done) {
     const { routePlanner: { start, finish } } = getState();
     let focusPoint;
     if (action.type === 'ROUTE_PLANNER_SET_START') {
@@ -62,6 +62,8 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
     if (!getMapLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
       dispatch(mapRefocus({ lat: focusPoint.lat, lon: focusPoint.lon }));
     }
+
+    done();
   },
 });
 
