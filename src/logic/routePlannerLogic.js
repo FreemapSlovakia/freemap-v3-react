@@ -5,15 +5,18 @@ import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { exportGpx, createElement } from 'fm3/gpxExporter';
 
+const updateRouteTypes = [
+  'ROUTE_PLANNER_SET_START',
+  'ROUTE_PLANNER_SET_FINISH',
+  'ROUTE_PLANNER_ADD_MIDPOINT',
+  'ROUTE_PLANNER_SET_MIDPOINT',
+  'ROUTE_PLANNER_REMOVE_MIDPOINT',
+  'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
+];
+
 export const routePlannerFindRouteLogic = createLogic({
-  type: [
-    'ROUTE_PLANNER_SET_START',
-    'ROUTE_PLANNER_SET_FINISH',
-    'ROUTE_PLANNER_ADD_MIDPOINT',
-    'ROUTE_PLANNER_SET_MIDPOINT',
-    'ROUTE_PLANNER_REMOVE_MIDPOINT',
-    'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
-  ],
+  type: updateRouteTypes,
+  cancelType: ['SET_TOOL', ...updateRouteTypes],
   process({ getState }, dispatch, done) {
     const { start, finish, midpoints, transportType } = getState().routePlanner;
     if (!start || !finish) {

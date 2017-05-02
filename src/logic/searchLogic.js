@@ -5,6 +5,7 @@ import toastEmitter from 'fm3/emitters/toastEmitter';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
+  cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL'],
   process({ getState }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {

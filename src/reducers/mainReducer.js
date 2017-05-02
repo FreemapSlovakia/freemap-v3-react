@@ -27,7 +27,7 @@ export default function main(state = initialState, action) {
     case 'MAP_RESET':
       return { ...state, tool: null };
     case 'SET_TOOL':
-      return { ...state, tool: action.payload };
+      return { ...state, tool: action.payload, progress: false };
     case 'SET_HOME_LOCATION':
       return { ...state, homeLocation: action.payload };
     case 'START_PROGRESS':
