@@ -100,6 +100,17 @@ class Main extends React.Component {
     setMapLeafletElement(null);
   }
 
+  getOpenInDropdown() {
+    return this.props.expertMode && (
+      <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
+        <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
+        <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
+        <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
+        <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
+      </NavDropdown>
+    );
+  }
+
   handleMapMoveEnd = () => {
     if (this.ignoreMapMoveEndEvent) {
       return;
@@ -164,7 +175,7 @@ class Main extends React.Component {
               {tool === 'track-viewer' && <TrackViewerMenu />}
               {activePopup === 'settings' && <Settings />}
               {showDefaultMenu &&
-                <Nav key="nav" className="hidden-sm hidden-md hidden-lg">
+                <Nav className="hidden-sm hidden-md hidden-lg">
                   <NavItem onClick={() => this.handleToggleTool('objects')}>
                     <FontAwesomeIcon icon="map-marker" /> Miesta
                   </NavItem>
@@ -174,12 +185,13 @@ class Main extends React.Component {
                   <NavItem onClick={() => this.handleToggleTool('measure')}>
                     <FontAwesomeIcon icon="arrows-h" /> Meranie
                   </NavItem>
-                  <NavItem onClick={() => this.handleToggleTool('location')} active={tool === 'location'}>
+                  <NavItem onClick={() => this.handleToggleTool('location')}>
                     <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
                   </NavItem>
-                  <NavItem onClick={() => this.handleToggleTool('track-viewer')} active={tool === 'track-viewer'}>
+                  <NavItem onClick={() => this.handleToggleTool('track-viewer')}>
                     <FontAwesomeIcon icon="road" /> Prehliadač trás
                   </NavItem>
+                  {this.getOpenInDropdown()}
                 </Nav>
               }
               {showDefaultMenu &&
@@ -207,23 +219,14 @@ class Main extends React.Component {
                     <MenuItem onClick={() => this.handleToggleTool('measure')}>
                       <FontAwesomeIcon icon="arrows-h" /> Meranie
                     </MenuItem>
-                    <MenuItem onClick={() => this.handleToggleTool('location')} active={tool === 'location'}>
+                    <MenuItem onClick={() => this.handleToggleTool('location')}>
                       <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
                     </MenuItem>
-                    <MenuItem onClick={() => this.handleToggleTool('track-viewer')} active={tool === 'track-viewer'}>
+                    <MenuItem onClick={() => this.handleToggleTool('track-viewer')}>
                       <FontAwesomeIcon icon="road" /> Prehliadač trás
                     </MenuItem>
                   </NavDropdown>
-                </Nav>
-              }
-              {showDefaultMenu && expertMode &&
-                <Nav>
-                  <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
-                    <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
-                    <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
-                    <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
-                    <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
-                  </NavDropdown>
+                  {this.getOpenInDropdown()}
                 </Nav>
               }
               {showDefaultMenu &&

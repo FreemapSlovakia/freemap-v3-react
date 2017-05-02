@@ -30,12 +30,12 @@ class ObjectsMenu extends React.Component {
 
   getGroupMenuItems = ({ id: gid, title: groupTitle }) => {
     const items = poiTypes
-        .filter(({ group }) => group === gid)
-        .filter(({ title }) => title.toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
-        .map(({ group, title, id, icon }) =>
-          <MenuItem key={id} eventKey={id} onSelect={this.select}>
-            <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {title}
-          </MenuItem>,
+      .filter(({ group }) => group === gid)
+      .filter(({ title }) => title.toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
+      .map(({ group, title, id, icon }) =>
+        <MenuItem key={id} eventKey={id} onSelect={this.select}>
+          <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {title}
+        </MenuItem>,
     );
 
     return items.length === 0 ? null : [
@@ -73,7 +73,7 @@ class ObjectsMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, onGpxExport } = this.props;
+    const { onCancel, onGpxExport, objectsFound } = this.props;
 
     // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
     return (
@@ -99,9 +99,10 @@ class ObjectsMenu extends React.Component {
               {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
             </Dropdown.Menu>
           </Dropdown>
-        </Navbar.Form>
-        <Navbar.Form pullLeft>
-          <Button onClick={onGpxExport}>Exportuj do GPX</Button>
+          {' '}
+          <Button onClick={onGpxExport} disabled={!objectsFound}>
+            <FontAwesomeIcon icon="share" /> Exportuj do GPX
+          </Button>
         </Navbar.Form>
         <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
       </Nav>
@@ -115,11 +116,13 @@ ObjectsMenu.propTypes = {
   onGpxExport: PropTypes.func.isRequired,
   zoom: PropTypes.number.isRequired,
   location: PropTypes.object.isRequired,
+  objectsFound: PropTypes.bool.isRequired,
 };
 
 export default connect(
   state => ({
     zoom: state.map.zoom,
+    objectsFound: !!state.objects.objects.length,
   }),
   dispatch => ({
     onSearch(typeId) {

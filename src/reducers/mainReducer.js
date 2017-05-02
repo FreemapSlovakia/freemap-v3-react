@@ -9,6 +9,17 @@ const initialState = {
 
 export default function main(state = initialState, action) {
   switch (action.type) {
+    case 'MAIN_LOAD_STATE': {
+      const s = { ...state };
+      const { homeLocation, expertMode } = action.payload;
+      if (homeLocation) {
+        s.homeLocation = { ...homeLocation };
+      }
+      if (expertMode) {
+        s.expertMode = expertMode;
+      }
+      return s;
+    }
     case 'SET_ACTIVE_POPUP':
       return { ...state, activePopup: action.payload };
     case 'CLOSE_POPUP':

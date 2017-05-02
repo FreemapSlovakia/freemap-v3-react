@@ -33,3 +33,7 @@ export function routePlannerSetResult(shapePoints, itinerary, distance, time) {
 export function routePlannerToggleItineraryVisibility() {
   return { type: 'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY' };
 }
+
+export function routePlannerExportGpx() {
+  return { type: 'ROUTE_PLANNER_EXPORT_GPX' };
+}

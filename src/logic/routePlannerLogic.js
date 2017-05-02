@@ -3,8 +3,9 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { exportGpx, createElement } from 'fm3/gpxExporter';
 
-export const findRouteLogic = createLogic({
+export const routePlannerFindRouteLogic = createLogic({
   type: [
     'ROUTE_PLANNER_SET_START',
     'ROUTE_PLANNER_SET_FINISH',
@@ -67,7 +68,25 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
   },
 });
 
+export const routePlannerGpxExportLogic = createLogic({
+  type: 'ROUTE_PLANNER_EXPORT_GPX',
+  process({ getState }, dispatch, done) {
+    exportGpx('trasa', (doc) => {
+      const { shapePoints } = getState().routePlanner;
+      const rteEle = createElement(doc.documentElement, 'rte');
+
+      shapePoints.forEach(([lat, lon]) => {
+        createElement(rteEle, 'rtept', undefined, { lat, lon });
+      });
+
+      // TODO add start / finish / midpoints / itinerar details (?) / metadata
+    });
+    done();
+  },
+});
+
 export default [
-  findRouteLogic,
+  routePlannerFindRouteLogic,
   refocusMapOnSetStartOrFinishPoint,
+  routePlannerGpxExportLogic,
 ];

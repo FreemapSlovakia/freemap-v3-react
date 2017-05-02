@@ -21,3 +21,7 @@ export function setMouseCursorToCrosshair() {
 export function resetMouseCursor() {
   return { type: 'MAP_SET_MOUSE_CURSOR', payload: 'auto' };
 }
+
+export function mapLoadState(payload) {
+  return { type: 'MAP_LOAD_STATE', payload };
+}

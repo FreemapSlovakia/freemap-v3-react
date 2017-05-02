@@ -13,6 +13,32 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
+    case 'MAP_LOAD_STATE': {
+      const s = { ...state };
+      const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat } = action.payload;
+      if (mapType) {
+        s.mapType = mapType;
+      }
+      if (lat) {
+        s.lat = lat;
+      }
+      if (lon) {
+        s.lon = lon;
+      }
+      if (zoom) {
+        s.zoom = zoom;
+      }
+      if (overlays) {
+        s.overlays = overlays;
+      }
+      if (overlayOpacity) {
+        s.overlayOpacity = overlayOpacity;
+      }
+      if (tileFormat) {
+        s.tileFormat = tileFormat;
+      }
+      return s;
+    }
     case 'MAP_RESET':
       return { ...state,
         zoom: initialState.zoom,

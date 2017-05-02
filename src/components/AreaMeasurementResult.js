@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Marker, Tooltip, Polygon } from 'react-leaflet';
 import Button from 'react-bootstrap/lib/Button';
 
-import { measurementAddPoint, measurementUpdatePoint, measurementRemovePoint } from 'fm3/actions/measurementActions';
+import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -139,17 +139,17 @@ class AreaMeasurementResult extends React.Component {
 
 export default connect(
   state => ({
-    points: state.measurement.points,
+    points: state.areaMeasurement.points,
   }),
   dispatch => ({
     onPointAdd(point, position) {
-      dispatch(measurementAddPoint(point, position));
+      dispatch(areaMeasurementAddPoint(point, position));
     },
     onPointUpdate(i, point) {
-      dispatch(measurementUpdatePoint(i, point));
+      dispatch(areaMeasurementUpdatePoint(i, point));
     },
     onPointRemove(i) {
-      dispatch(measurementRemovePoint(i));
+      dispatch(areaMeasurementRemovePoint(i));
     },
     onSetMouseCursorToCrosshair() {
       dispatch(setMouseCursorToCrosshair());

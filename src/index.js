@@ -7,6 +7,8 @@ import { createLogicMiddleware } from 'redux-logic';
 import { createLogger } from 'redux-logger';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
+import { mainLoadState } from 'fm3/actions/mainActions';
+import { mapLoadState } from 'fm3/actions/mapActions';
 
 import Main from 'fm3/components/Main';
 
@@ -17,38 +19,18 @@ const middleware = applyMiddleware(
   createLogicMiddleware(logics),
 );
 
-let store;
+const store = createStore(reducer, middleware);
+
+let appState;
 try {
-  const appState = JSON.parse(localStorage.getItem('appState'));
-  sanitizeSavedAppState(appState);
-  store = createStore(reducer, appState, middleware);
+  appState = JSON.parse(localStorage.getItem('appState'));
 } catch (e) {
-  store = createStore(reducer, middleware);
+  // ignore
 }
 
-// FIXME handle invalid values saved state in some generic way
-function sanitizeSavedAppState(appState) {
-  /* eslint-disable no-param-reassign */
-
-  if (appState.main) {
-    appState.main.tool = null;
-  }
-
-  if (appState.main.expertMode === undefined) {
-    appState.main.expertMode = false;
-  }
-
-  if (!appState.map.overlayOpacity) {
-    appState.map.overlayOpacity = { N: 1.0 };
-  }
-
-  if (!appState.map.overlayOpacity.t) {
-    appState.map.overlayOpacity.t = 1.0;
-  }
-
-  if (!appState.map.overlayOpacity.c) {
-    appState.map.overlayOpacity.c = 1.0;
-  }
+if (appState) {
+  store.dispatch(mainLoadState(appState.main));
+  store.dispatch(mapLoadState(appState.map));
 }
 
 render((

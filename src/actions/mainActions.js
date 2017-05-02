@@ -29,3 +29,7 @@ export function setLocation(lat, lon, accuracy) {
 export function setExpertMode(value) {
   return { type: 'SET_EXPERT_MODE', payload: value };
 }
+
+export function mainLoadState(payload) {
+  return { type: 'MAIN_LOAD_STATE', payload };
+}

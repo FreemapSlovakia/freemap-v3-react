@@ -1,10 +1,10 @@
 import { createLogic } from 'redux-logic';
-import FileSaver from 'file-saver';
 
 import { objectsSetResult } from 'fm3/actions/objectsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
+import { exportGpx, createElement } from 'fm3/gpxExporter';
 
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
@@ -39,56 +39,24 @@ export const objectsFetchLogic = createLogic({
   },
 });
 
-const ns = 'http://www.topografix.com/GPX/1/1';
-
 export const objectGpxExportLogic = createLogic({
   type: 'OBJECTS_EXPORT_GPX',
   process({ getState }, dispatch, done) {
-    const doc = document.implementation.createDocument(ns, 'gpx');
+    exportGpx('miesta', (doc) => {
+      getState().objects.objects.forEach(({ lat, lon, tags }) => {
+        const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
 
-    addAttribute(doc.documentElement, 'version', '1.1');
-    addAttribute(doc.documentElement, 'creator', 'FreemapV3');
+        if (!isNaN(tags.ele)) {
+          createElement(wptEle, 'ele', tags.ele);
+        }
 
-    createElement(doc.documentElement, 'metadata');
-
-    getState().objects.objects.forEach(({ lat, lon, tags }) => {
-      const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
-
-      if (!isNaN(tags.ele)) {
-        createElement(wptEle, 'ele', tags.ele);
-      }
-
-      if (tags.name) {
-        createElement(wptEle, 'name', tags.name);
-      }
+        if (tags.name) {
+          createElement(wptEle, 'name', tags.name);
+        }
+      });
     });
-
-    const serializer = new XMLSerializer();
-    // eslint-disable-next-line
-    console.log(serializer.serializeToString(doc));
-
-    FileSaver.saveAs(new Blob([serializer.serializeToString(doc)], { type: 'application/json' }), 'miesta.gpx');
-
     done();
   },
 });
-
-function createElement(parent, name, text, attributes = {}) {
-  const elem = document.createElementNS(ns, name);
-  if (text !== undefined) {
-    elem.textContent = text;
-  }
-
-  Object.keys(attributes).forEach(key => addAttribute(elem, key, attributes[key]));
-
-  parent.appendChild(elem);
-  return elem;
-}
-
-function addAttribute(elem, name, value) {
-  const attr = document.createAttribute(name);
-  attr.value = value;
-  elem.setAttributeNode(attr);
-}
 
 export default [objectsFetchLogic, objectGpxExportLogic];

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { setTool } from 'fm3/actions/mainActions';
+import { distanceMeasurementExportGpx } from 'fm3/actions/distanceMeasurementActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
@@ -13,7 +14,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import * as FmPropTypes from 'fm3/propTypes';
 
-function MeasurementMenu({ onCancel, onSetTool, tool }) {
+function MeasurementMenu({ onCancel, onSetTool, tool, onGpxExport, routeDefined }) {
   // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
   return (
     <div>
@@ -29,6 +30,12 @@ function MeasurementMenu({ onCancel, onSetTool, tool }) {
             <FontAwesomeIcon icon="square" /> Plocha
           </Button>
         </ButtonGroup>
+        {' '}
+        {tool === 'measure' &&
+          <Button onClick={onGpxExport} disabled={!routeDefined}>
+            <FontAwesomeIcon icon="share" /> Exportuj do GPX
+          </Button>
+        }
       </Navbar.Form>
       <Nav>
         <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
@@ -41,11 +48,14 @@ MeasurementMenu.propTypes = {
   tool: FmPropTypes.tool,
   onSetTool: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
+  onGpxExport: PropTypes.func.isRequired,
+  routeDefined: PropTypes.bool.isRequired,
 };
 
 export default connect(
   state => ({
     tool: state.main.tool,
+    routeDefined: state.distanceMeasurement.points.length > 1,
   }),
   dispatch => ({
     onSetTool(tool) {
@@ -53,6 +63,9 @@ export default connect(
     },
     onCancel() {
       dispatch(setTool(null));
+    },
+    onGpxExport() {
+      dispatch(distanceMeasurementExportGpx());
     },
   }),
 )(MeasurementMenu);

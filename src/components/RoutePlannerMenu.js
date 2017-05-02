@@ -11,7 +11,8 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 import toastEmitter from 'fm3/emitters/toastEmitter';
 
-import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
+  routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerExportGpx } from 'fm3/actions/routePlannerActions';
 import { setTool, setActivePopup, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
@@ -20,7 +21,7 @@ import 'fm3/styles/routePlanner.scss';
 
 function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportType,
     onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onLaunchSettingsPopup,
-    onToggleItineraryVisibility, itineraryIsVisible, onStartProgress, onStopProgress }) {
+    onToggleItineraryVisibility, itineraryIsVisible, onStartProgress, onStopProgress, onGpxExport, routeFound }) {
   function setFromCurrentPosition(pointType) {
     onStartProgress();
     getCurrentPosition().then(({ lat, lon }) => {
@@ -95,6 +96,10 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
         <Button onClick={() => onToggleItineraryVisibility()} active={itineraryIsVisible}>
           <FontAwesomeIcon icon="list-ol" /> Itinerár
         </Button>
+        {' '}
+        <Button onClick={onGpxExport} disabled={!routeFound}>
+          <FontAwesomeIcon icon="share" /> Exportuj do GPX
+        </Button>
       </Navbar.Form>
       <Nav>
         <NavItem onClick={onCancel}>
@@ -122,6 +127,8 @@ RoutePlannerMenu.propTypes = {
   itineraryIsVisible: PropTypes.bool.isRequired,
   onStartProgress: PropTypes.func.isRequired,
   onStopProgress: PropTypes.func.isRequired,
+  onGpxExport: PropTypes.func.isRequired,
+  routeFound: PropTypes.bool.isRequired,
 };
 
 export default connect(
@@ -130,6 +137,7 @@ export default connect(
     transportType: state.routePlanner.transportType,
     pickPointMode: state.routePlanner.pickMode,
     itineraryIsVisible: state.routePlanner.itineraryIsVisible,
+    routeFound: !!state.routePlanner.shapePoints,
   }),
   dispatch => ({
     onSetStart(start) {
@@ -158,6 +166,9 @@ export default connect(
     },
     onStopProgress() {
       dispatch(stopProgress());
+    },
+    onGpxExport() {
+      dispatch(routePlannerExportGpx());
     },
   }),
 )(RoutePlannerMenu);

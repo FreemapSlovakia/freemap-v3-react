@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
-import { measurementAddPoint, measurementUpdatePoint } from 'fm3/actions/measurementActions';
+import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
 import { distance } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -72,14 +72,14 @@ class DistanceMeasurementResult extends React.Component {
 
 export default connect(
   state => ({
-    points: state.measurement.points,
+    points: state.distanceMeasurement.points,
   }),
   dispatch => ({
     onPointAdd(point) {
-      dispatch(measurementAddPoint(point));
+      dispatch(distanceMeasurementAddPoint(point));
     },
     onPointUpdate(i, point) {
-      dispatch(measurementUpdatePoint(i, point));
+      dispatch(distanceMeasurementUpdatePoint(i, point));
     },
     onSetMouseCursorToCrosshair() {
       dispatch(setMouseCursorToCrosshair());
