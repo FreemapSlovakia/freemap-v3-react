@@ -77,8 +77,7 @@ class ObjectsMenu extends React.Component {
 
     // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
     return (
-      <Nav>
-        <Navbar.Text><FontAwesomeIcon icon="map-marker" /> Miesta</Navbar.Text>
+      <div>
         <Navbar.Form pullLeft>
           <Dropdown
             id="objectsMenuDropdown"
@@ -104,8 +103,10 @@ class ObjectsMenu extends React.Component {
             <FontAwesomeIcon icon="share" /> Exportuj do GPX
           </Button>
         </Navbar.Form>
-        <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-      </Nav>
+        <Nav>
+          <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
+        </Nav>
+      </div>
     );
   }
 }

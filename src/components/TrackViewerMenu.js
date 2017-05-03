@@ -51,12 +51,12 @@ class TrackViewerMenu extends React.Component {
     const { activePopup, onCancel, onLaunchPopup, onClosePopup } = this.props;
     return (
       <div>
+        <Navbar.Form pullLeft>
+          <Button onClick={() => onLaunchPopup('upload-track')}>
+            <FontAwesomeIcon icon="upload" /> Nahrať trasu
+          </Button>
+        </Navbar.Form>
         <Nav>
-          <Navbar.Form pullLeft>
-            <Button onClick={() => onLaunchPopup('upload-track')}>
-              <FontAwesomeIcon icon="upload" /> Nahrať trasu
-            </Button>
-          </Navbar.Form>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
 
