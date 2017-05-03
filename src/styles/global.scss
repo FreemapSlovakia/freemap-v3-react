@@ -50,9 +50,9 @@ html, .map-holder, #app, #app > div, .container-fluid {
   }
 
   .circular-leaflet-marker-icon {
-    height: 14px; 
-    width: 14px; 
-    background-color: #38f; 
+    height: 14px;
+    width: 14px;
+    background-color: #38f;
     border-radius: 14px;
     border: 1px solid rgba(255, 255, 255, 0.75);
   }
@@ -73,4 +73,9 @@ html, .map-holder, #app, #app > div, .container-fluid {
 
 .rangeslider-horizontal .rangeslider__fill {
   background-color: lighten($theme-primary-color, 25%);
+}
+
+// to show dropdown in Objects menu
+.navbar-collapse.collapse.in {
+  overflow: visible !important;
 }
