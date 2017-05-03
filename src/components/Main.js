@@ -137,7 +137,7 @@ class Main extends React.Component {
     const { zoom, lat, lon } = this.props;
     switch (where) {
       case 'osm.org':
-        window.open(`https://www.openstreetmap.org/#map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
+        window.open(`https://www.openstreetmap.org/#map=${zoom > 19 ? 19 : zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
         break;
       case 'osm.org/id':
         window.open(`https://www.openstreetmap.org/edit?editor=id#map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
@@ -149,7 +149,7 @@ class Main extends React.Component {
       }
       case 'hiking.sk': {
         const point = L.CRS.EPSG3857.project(L.latLng(lat, lon));
-        window.open(`https://mapy.hiking.sk/?zoom=${zoom}&lon=${point.x}&lat=${point.y}&layers=00B00FFFTTFTTTTFFFFFFTTT`);
+        window.open(`https://mapy.hiking.sk/?zoom=${zoom > 15 ? 15 : zoom}&lon=${point.x}&lat=${point.y}&layers=00B00FFFTTFTTTTFFFFFFTTT`);
         break;
       }
       default:
