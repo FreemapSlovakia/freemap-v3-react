@@ -105,6 +105,8 @@ class Main extends React.Component {
       <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
         <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
         <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
+        <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
+        <MenuItem divider />
         <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
         <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
       </NavDropdown>
@@ -150,6 +152,10 @@ class Main extends React.Component {
       case 'hiking.sk': {
         const point = L.CRS.EPSG3857.project(L.latLng(lat, lon));
         window.open(`https://mapy.hiking.sk/?zoom=${zoom > 15 ? 15 : zoom}&lon=${point.x}&lat=${point.y}&layers=00B00FFFTTFTTTTFFFFFFTTT`);
+        break;
+      }
+      case 'mapy.cz/ophoto': {
+        window.open(`https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${zoom > 19 ? 19 : zoom}&base=ophoto`);
         break;
       }
       default:
