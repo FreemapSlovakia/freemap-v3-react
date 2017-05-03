@@ -36,6 +36,7 @@ import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
 
 import Settings from 'fm3/components/Settings';
+import ExternalApps from 'fm3/components/ExternalApps';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -100,20 +101,6 @@ class Main extends React.Component {
     setMapLeafletElement(null);
   }
 
-  getOpenInDropdown() {
-    return this.props.expertMode && (
-      <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
-        <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
-        <MenuItem onClick={() => this.openIn('google')}>Google Mapy</MenuItem>
-        <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
-        <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
-        <MenuItem divider />
-        <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
-        <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
-      </NavDropdown>
-    );
-  }
-
   handleMapMoveEnd = () => {
     if (this.ignoreMapMoveEndEvent) {
       return;
@@ -136,39 +123,9 @@ class Main extends React.Component {
     this.props.onSetTool(this.props.tool === tool ? null : tool);
   }
 
-  openIn(where) {
-    const { zoom, lat, lon } = this.props;
-    switch (where) {
-      case 'osm.org':
-        window.open(`https://www.openstreetmap.org/#map=${zoom > 19 ? 19 : zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
-        break;
-      case 'osm.org/id':
-        window.open(`https://www.openstreetmap.org/edit?editor=id#map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}`);
-        break;
-      case 'josm': {
-        const bounds = this.map.leafletElement.getBounds();
-        fetch(`http://localhost:8111/load_and_zoom?left=${bounds.getWest()}&right=${bounds.getEast()}&top=${bounds.getNorth()}&bottom=${bounds.getSouth()}`);
-        break;
-      }
-      case 'hiking.sk': {
-        const point = L.CRS.EPSG3857.project(L.latLng(lat, lon));
-        window.open(`https://mapy.hiking.sk/?zoom=${zoom > 15 ? 15 : zoom}&lon=${point.x}&lat=${point.y}&layers=00B00FFFTTFTTTTFFFFFFTTT`);
-        break;
-      }
-      case 'google':
-        window.open(`https://www.google.sk/maps/@${lat},${lon},${zoom}z`);
-        break;
-      case 'mapy.cz/ophoto':
-        window.open(`https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${zoom > 19 ? 19 : zoom}&base=ophoto`);
-        break;
-      default:
-        break;
-    }
-  }
-
   render() {
     // eslint-disable-next-line
-    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode } = this.props;
+    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, lat, lon, zoom } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].indexOf(tool) !== -1;
 
     return (
@@ -200,7 +157,7 @@ class Main extends React.Component {
                   <NavItem onClick={() => this.handleToggleTool('track-viewer')}>
                     <FontAwesomeIcon icon="road" /> Prehliadač trás
                   </NavItem>
-                  {this.getOpenInDropdown()}
+                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} />}
                 </Nav>
               }
               {showDefaultMenu &&
@@ -235,7 +192,7 @@ class Main extends React.Component {
                       <FontAwesomeIcon icon="road" /> Prehliadač trás
                     </MenuItem>
                   </NavDropdown>
-                  {this.getOpenInDropdown()}
+                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} />}
                 </Nav>
               }
               {showDefaultMenu &&
