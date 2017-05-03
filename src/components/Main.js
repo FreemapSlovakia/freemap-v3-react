@@ -125,7 +125,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, lat, lon, zoom } = this.props;
+    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, lat, lon, zoom, mapType } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].indexOf(tool) !== -1;
 
     return (
@@ -211,11 +211,11 @@ class Main extends React.Component {
         <Row>
           <ProgressIndicator active={progress} />
         </Row>
-        <Row className={`map-holder active-map-type-${this.props.mapType}`}>
+        <Row className={`map-holder active-map-type-${mapType}`}>
           <Map
             ref={(map) => { this.map = map; }}
-            center={L.latLng(this.props.lat, this.props.lon)}
-            zoom={this.props.zoom}
+            center={L.latLng(lat, lon)}
+            zoom={zoom}
             onMoveend={this.handleMapMoveEnd}
             onClick={handleMapClick}
             onLocationfound={this.handleLocationFound}
