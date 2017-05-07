@@ -1,7 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Marker, Tooltip, Polygon } from 'react-leaflet';
+import { Marker, Popup, Polygon } from 'react-leaflet';
+import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 import Button from 'react-bootstrap/lib/Button';
 
 import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
@@ -30,14 +31,6 @@ class AreaMeasurementResult extends React.Component {
 
   componentDidMount() {
     this.props.onSetMouseCursorToCrosshair();
-  }
-
-  componentDidUpdate() {
-    // XXX re-centering tooltip to polygon, see https://github.com/Leaflet/Leaflet/issues/5412
-    if (this.polygon && this.tooltip) {
-      this.polygon.leafletElement.unbindTooltip();
-      this.polygon.leafletElement.bindTooltip(this.tooltip.leafletElement);
-    }
   }
 
   componentWillUnmount() {
@@ -87,7 +80,12 @@ class AreaMeasurementResult extends React.Component {
     const { points } = this.props;
 
     const areaSize = points.length > 2 ? area(points) : NaN;
-
+    let northmostPoint = points[0];
+    points.forEach((p) => {
+      if (northmostPoint.lat < p.lat) {
+        northmostPoint = p;
+      }
+    });
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
@@ -97,6 +95,22 @@ class AreaMeasurementResult extends React.Component {
 
     return (
       <div>
+        {points.length > 2 &&
+        <MarkerWithAutoOpeningPopup
+          interactive={false}
+          opacity={0}
+          position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
+        >
+          <Popup closeButton={false} autoClose={false} autoPan={false}>
+            <span>
+              <div>{nf.format(areaSize)} m<sup>2</sup></div>
+              <div>{nf.format(areaSize / 100)} a</div>
+              <div>{nf.format(areaSize / 10000)} ha</div>
+              <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
+            </span>
+          </Popup>
+        </MarkerWithAutoOpeningPopup>
+        }
         {points.map((p, i) =>
           <Marker
             key={String(i)}
@@ -107,20 +121,7 @@ class AreaMeasurementResult extends React.Component {
           />,
         )}
 
-        {points.length > 1 &&
-          <Polygon positions={points.map(({ lat, lon }) => [lat, lon])} ref={(polygon) => { this.polygon = polygon; }}>
-            {points.length > 2 &&
-              <Tooltip direction="center" permanent ref={(tooltip) => { this.tooltip = tooltip; }}>
-                <span>
-                  <div>{nf.format(areaSize)} m<sup>2</sup></div>
-                  <div>{nf.format(areaSize / 100)} a</div>
-                  <div>{nf.format(areaSize / 10000)} ha</div>
-                  <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
-                </span>
-              </Tooltip>
-            }
-          </Polygon>
-        }
+        {points.length > 1 && <Polygon positions={points.map(({ lat, lon }) => [lat, lon])} /> }
 
         {this.futurePoints().map((p, i) =>
           <Marker
