@@ -39,7 +39,7 @@ class DistanceMeasurementResult extends React.Component {
 
   futurePoints = () => {
     const fps = [];
-    if (this.props.points.length > 2) {
+    if (this.props.points.length > 1) {
       for (let i = 0; i < this.props.points.length - 1; i += 1) {
         const p1 = this.props.points[i];
         const p2 = this.props.points[i + 1];
