@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
+import Button from 'react-bootstrap/lib/Button';
 
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
-import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
+import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint } from 'fm3/actions/distanceMeasurementActions';
 import { distance } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import toastEmitter from 'fm3/emitters/toastEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
@@ -17,6 +19,7 @@ class DistanceMeasurementResult extends React.Component {
     points: FmPropTypes.points.isRequired,
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
+    onPointRemove: PropTypes.func.isRequired,
     onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
     onResetMouseCursor: PropTypes.func.isRequired,
   };
@@ -42,6 +45,18 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onPointUpdate(i, { lat, lon });
   }
 
+  pointClicked(index) {
+    const line1 = 'Odstrániť bod?';
+    const line2 = [
+      <Button key="yes" onClick={() => this.props.onPointRemove(index)}>
+        <span style={{ fontWeight: 700 }}>Áno</span>
+      </Button>,
+      ' ',
+      <Button key="no">Nie</Button>,
+    ];
+    toastEmitter.emit('showToast', 'info', line1, line2);
+  }
+
   render() {
     const { points } = this.props;
 
@@ -57,7 +72,7 @@ class DistanceMeasurementResult extends React.Component {
           prev = p;
 
           return (
-            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)}>
+            <Marker key={i} position={L.latLng(p.lat, p.lon)} draggable onDrag={e => this.handleMeasureMarkerDrag(i, e)} onClick={() => this.pointClicked(i)}>
               <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent><span>{nf.format(dist / 1000)} km</span></Tooltip>
             </Marker>
           );
@@ -80,6 +95,9 @@ export default connect(
     },
     onPointUpdate(i, point) {
       dispatch(distanceMeasurementUpdatePoint(i, point));
+    },
+    onPointRemove(i) {
+      dispatch(distanceMeasurementRemovePoint(i));
     },
     onSetMouseCursorToCrosshair() {
       dispatch(setMouseCursorToCrosshair());
