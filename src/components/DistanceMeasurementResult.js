@@ -37,8 +37,24 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onResetMouseCursor();
   }
 
-  handlePoiAdded = (lat, lon) => {
-    this.props.onPointAdd({ lat, lon });
+  futurePoints = () => {
+    const fps = [];
+    if (this.props.points.length > 2) {
+      for (let i = 0; i < this.props.points.length - 1; i += 1) {
+        const p1 = this.props.points[i];
+        const p2 = this.props.points[i + 1];
+        const lat = (p1.lat + p2.lat) / 2;
+        const lon = (p1.lon + p2.lon) / 2;
+        fps.push({ lat, lon });
+      }
+    }
+
+    return fps;
+  }
+
+  handlePoiAdded = (lat, lon, position) => {
+    const pos = position || (this.props.points.length);
+    this.props.onPointAdd({ lat, lon }, pos);
   }
 
   handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
@@ -62,6 +78,12 @@ class DistanceMeasurementResult extends React.Component {
 
     let prev = null;
     let dist = 0;
+    const Icon = L.divIcon;
+    const circularIcon = new Icon({ // CircleMarker is not draggable
+      iconSize: [14, 14],
+      iconAnchor: [7, 7],
+      html: '<div class="circular-leaflet-marker-icon"></div>',
+    });
 
     return (
       <div>
@@ -79,6 +101,15 @@ class DistanceMeasurementResult extends React.Component {
         })}
 
         {points.length > 1 && <Polyline positions={points.map(({ lat, lon }) => [lat, lon])} />}
+        {this.futurePoints().map((p, i) =>
+          <Marker
+            key={String(i)}
+            draggable
+            icon={circularIcon}
+            onDragend={e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i + 1)}
+            position={L.latLng(p.lat, p.lon)}
+          />,
+        )}
       </div>
     );
   }
@@ -90,8 +121,8 @@ export default connect(
     points: state.distanceMeasurement.points,
   }),
   dispatch => ({
-    onPointAdd(point) {
-      dispatch(distanceMeasurementAddPoint(point));
+    onPointAdd(point, position) {
+      dispatch(distanceMeasurementAddPoint(point, position));
     },
     onPointUpdate(i, point) {
       dispatch(distanceMeasurementUpdatePoint(i, point));
