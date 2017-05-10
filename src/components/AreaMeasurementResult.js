@@ -142,11 +142,11 @@ export default connect(
     points: state.areaMeasurement.points,
   }),
   dispatch => ({
-    onPointAdd(point, position) {
-      dispatch(areaMeasurementAddPoint(point, position));
+    onPointAdd(coordinates, position) {
+      dispatch(areaMeasurementAddPoint(coordinates, position));
     },
-    onPointUpdate(i, point) {
-      dispatch(areaMeasurementUpdatePoint(i, point));
+    onPointUpdate(i, coordinates) {
+      dispatch(areaMeasurementUpdatePoint(i, coordinates));
     },
     onPointRemove(i) {
       dispatch(areaMeasurementRemovePoint(i));
