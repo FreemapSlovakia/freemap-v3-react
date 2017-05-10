@@ -17,15 +17,21 @@ export default class Toasts extends React.Component {
     this.toastContainer[toastType](
       line2,
       line1, // sic!
-      { timeOut: 3000, showAnimation: 'animated fadeIn', hideAnimation: 'animated fadeOut' },
+      {
+        timeOut: 3000,
+        showAnimation: 'animated fadeIn',
+        hideAnimation: 'animated fadeOut',
+      },
     );
   }
 
   render() {
-    return (<ToastContainer
-      ref={(toastContainer) => { this.toastContainer = toastContainer; }}
-      toastMessageFactory={ToastMessageFactory}
-      className="toast-top-right"
-    />);
+    return (
+      <ToastContainer
+        ref={(toastContainer) => { this.toastContainer = toastContainer; }}
+        toastMessageFactory={ToastMessageFactory}
+        className="toast-top-right"
+      />
+    );
   }
 }
