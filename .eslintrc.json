@@ -42,7 +42,8 @@
     "jsx-a11y/no-static-element-interactions": 1,
     "react/no-string-refs": 1,
     "no-unused-vars": 1,
-    "new-cap": 0
+    "new-cap": 0,
+    "react/prefer-stateless-function": 1
   },
   "globals": {
     "L": true

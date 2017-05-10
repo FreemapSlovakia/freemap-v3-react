@@ -9,6 +9,7 @@ import elevationMeasurement from 'fm3/reducers/elevationMeasurementReducer';
 import objects from 'fm3/reducers/objectsReducer';
 import search from 'fm3/reducers/searchReducer';
 import trackViewer from 'fm3/reducers/trackViewerReducer';
+import toasts from 'fm3/reducers/toastsReducer';
 
 export default combineReducers({
   main,
@@ -20,4 +21,5 @@ export default combineReducers({
   objects,
   search,
   trackViewer,
+  toasts,
 });

@@ -15,7 +15,7 @@ import NavbarHeader from 'fm3/components/NavbarHeader';
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ProgressIndicator from 'fm3/components/ProgressIndicator';
-import Toasts from 'fm3/components/Toasts';
+import Toasts from 'fm3/components/ToastsNew';
 
 import SearchMenu from 'fm3/components/SearchMenu';
 import SearchResults from 'fm3/components/SearchResults';
@@ -130,6 +130,7 @@ class Main extends React.Component {
 
     return (
       <div className="container-fluid">
+        <Toasts />
         <Row>
           <Navbar fluid style={{ marginBottom: 0 }}>
             <NavbarHeader />
@@ -242,8 +243,6 @@ class Main extends React.Component {
             {tool === 'track-viewer' && <TrackViewerResult />}
           </Map>
         </Row>
-
-        <Toasts />
       </div>
     );
   }

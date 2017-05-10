@@ -2,14 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
-import Button from 'react-bootstrap/lib/Button';
 
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint } from 'fm3/actions/distanceMeasurementActions';
 import { distance } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-import toastEmitter from 'fm3/emitters/toastEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
@@ -28,9 +27,9 @@ class DistanceMeasurementResult extends React.Component {
     points: FmPropTypes.points.isRequired,
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
-    onPointRemove: PropTypes.func.isRequired,
     onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
     onResetMouseCursor: PropTypes.func.isRequired,
+    onPointRemove: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -66,14 +65,8 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
-  pointClicked(index) {
-    toastEmitter.emit('showToast', 'info', 'Odstrániť bod?', [
-      <Button key="yes" onClick={() => this.props.onPointRemove(index)}>
-        <span style={{ fontWeight: 700 }}>Áno</span>
-      </Button>,
-      ' ',
-      <Button key="no">Nie</Button>,
-    ]);
+  handlePointClicked(id) {
+    this.props.onPointRemove(id);
   }
 
   render() {
@@ -114,7 +107,7 @@ class DistanceMeasurementResult extends React.Component {
             icon: circularIcon,
             opacity: 1,
             onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-            onClick: () => this.pointClicked(i / 2),
+            onClick: () => this.handlePointClicked(p.id),
           };
 
           return (
@@ -149,14 +142,17 @@ export default connect(
     onPointUpdate(i, point) {
       dispatch(distanceMeasurementUpdatePoint(i, point));
     },
-    onPointRemove(i) {
-      dispatch(distanceMeasurementRemovePoint(i));
-    },
     onSetMouseCursorToCrosshair() {
       dispatch(setMouseCursorToCrosshair());
     },
     onResetMouseCursor() {
       dispatch(resetMouseCursor());
+    },
+    onPointRemove(id) {
+      dispatch(toastsAdd('Odstrániť bod?', [
+        { name: 'Áno', action: distanceMeasurementRemovePoint(id), style: 'danger' },
+        { name: 'Nie' },
+      ]));
     },
   }),
 )(DistanceMeasurementResult);

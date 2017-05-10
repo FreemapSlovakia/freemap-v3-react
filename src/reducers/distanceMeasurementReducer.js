@@ -14,7 +14,7 @@ export default function measurement(state = initialState, action) {
     case 'DISTANCE_MEASUREMENT_UPDATE_POINT':
       return update(state, { points: { [action.payload.index]: { $set: action.payload.point } } });
     case 'DISTANCE_MEASUREMENT_REMOVE_POINT':
-      return update(state, { points: { $splice: [[action.payload.index, 1]] } });
+      return { ...state, points: state.points.filter(({ id }) => id !== action.payload) };
     default:
       return state;
   }

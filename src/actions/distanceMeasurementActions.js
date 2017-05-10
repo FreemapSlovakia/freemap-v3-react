@@ -6,8 +6,8 @@ export function distanceMeasurementUpdatePoint(index, point) {
   return { type: 'DISTANCE_MEASUREMENT_UPDATE_POINT', payload: { index, point } };
 }
 
-export function distanceMeasurementRemovePoint(index) {
-  return { type: 'DISTANCE_MEASUREMENT_REMOVE_POINT', payload: { index } };
+export function distanceMeasurementRemovePoint(id) {
+  return { type: 'DISTANCE_MEASUREMENT_REMOVE_POINT', payload: id };
 }
 
 export function distanceMeasurementExportGpx() {
