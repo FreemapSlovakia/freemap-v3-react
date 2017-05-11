@@ -31,6 +31,10 @@ export default class Toast extends React.Component {
     this.props.onRestartTimeout(this.props.id);
   }
 
+  handleAlertDismiss = () => {
+    this.props.onAction(this.props.id);
+  }
+
   render() {
     const { message, actions, onAction, id, style } = this.props;
     const defaultAction = actions.find(({ name }) => !name);
@@ -44,16 +48,20 @@ export default class Toast extends React.Component {
         onClick={clickHandler}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
+        onDismiss={this.handleAlertDismiss}
       >
         <p>{message}</p>
-        {buttonActions.length &&
-          <ButtonToolbar>
-            {
-              buttonActions.map(({ name, action, style: buttonStyle }) => (
-                <Button key={name} bsStyle={buttonStyle} onClick={() => onAction(id, action)}>{name}</Button>
-              ))
-            }
-          </ButtonToolbar>
+        {buttonActions.length > 0 &&
+          <div>
+            <br />
+            <ButtonToolbar>
+              {
+                buttonActions.map(({ name, action, style: buttonStyle }) => (
+                  <Button key={name} bsStyle={buttonStyle} onClick={() => onAction(id, action)}>{name}</Button>
+                ))
+              }
+            </ButtonToolbar>
+          </div>
         }
       </Alert>
     );

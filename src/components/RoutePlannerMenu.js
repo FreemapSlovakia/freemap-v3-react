@@ -168,7 +168,6 @@ export default connect(
         message: 'Nepodarilo sa získať aktuálnu polohu.',
         style: 'danger',
         timeout: 3000,
-        actions: [{ name: 'OK' }],
       }));
     },
     onMissingHomeLocation() {

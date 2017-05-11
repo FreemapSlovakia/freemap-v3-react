@@ -223,7 +223,6 @@ export default connect(
         message: 'Zmeny boli uložené.',
         style: 'info',
         timeout: 3000,
-        actions: [{ name: 'OK' }],
       }));
     },
     onClosePopup() {

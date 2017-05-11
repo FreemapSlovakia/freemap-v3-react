@@ -117,7 +117,6 @@ export default connect(
         message,
         style: 'danger',
         timeout: 3000,
-        actions: [{ name: 'OK' }],
       }));
     },
   }),

@@ -52,7 +52,9 @@ export default connect(
   }),
   dispatch => ({
     onAction(id, action) {
-      dispatch(toastsRemove(id)); // TODO use some flag
+      // TODO use some action flag to indicate that we want the action to close the toast
+      dispatch(toastsRemove(id));
+
       if (action) {
         if (Array.isArray(action)) {
           action.forEach(a => dispatch(a));
