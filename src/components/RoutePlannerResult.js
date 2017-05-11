@@ -4,12 +4,14 @@ import { connect } from 'react-redux';
 import turfLineDistance from '@turf/line-distance';
 import turfAlong from '@turf/along';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
-import Button from 'react-bootstrap/lib/Button';
+
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-import toastEmitter from 'fm3/emitters/toastEmitter';
 import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
@@ -60,15 +62,7 @@ class RoutePlannerResult extends React.Component {
   }
 
   midpointClicked(position) {
-    const line1 = 'Odstrániť zastávku?';
-    const line2 = [
-      <Button key="yes" onClick={() => this.props.onRemoveMidpoint(position)}>
-        <span style={{ fontWeight: 700 }}>Áno</span>
-      </Button>,
-      ' ',
-      <Button key="no">Nie</Button>,
-    ];
-    toastEmitter.emit('showToast', 'info', line1, line2);
+    this.props.onRemoveMidpoint(position);
   }
 
   futureMidpointsAndDistances() {
@@ -243,7 +237,14 @@ export default connect(
       dispatch(routePlannerSetMidpoint(position, midpoint));
     },
     onRemoveMidpoint(position) {
-      dispatch(routePlannerRemoveMidpoint(position));
+      dispatch(toastsAdd({
+        message: 'Odstrániť zastávku?',
+        style: 'warning',
+        actions: [
+          { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },
+          { name: 'Nie' },
+        ],
+      }));
     },
     onSetMouseCursorToCrosshair() {
       dispatch(setMouseCursorToCrosshair());

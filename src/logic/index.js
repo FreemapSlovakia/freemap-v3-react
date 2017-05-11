@@ -6,6 +6,7 @@ import storageLogic from 'fm3/logic/storageLogic';
 import locateLogic from 'fm3/logic/locateLogic';
 import trackViewerLogic from 'fm3/logic/trackViewerLogic';
 import distanceMeasurementExportGpxLogic from 'fm3/logic/distanceMeasurementLogic';
+import toastsLogic from 'fm3/logic/toastsLogic';
 
 export default [
   ...routePlannerLogic,
@@ -16,4 +17,5 @@ export default [
   locateLogic,
   trackViewerLogic,
   distanceMeasurementExportGpxLogic,
+  ...toastsLogic,
 ];

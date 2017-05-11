@@ -10,7 +10,10 @@ export default class Toast extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     message: PropTypes.string.isRequired,
+    style: PropTypes.string,
     onAction: PropTypes.func.isRequired,
+    onStopTimeout: PropTypes.func.isRequired,
+    onRestartTimeout: PropTypes.func.isRequired,
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
@@ -20,24 +23,34 @@ export default class Toast extends React.Component {
     ).isRequired,
   }
 
-  handleToastClicked = () => {
-    this.props.onAction(this.props.id);
+  handleMouseEnter = () => {
+    this.props.onStopTimeout(this.props.id);
+  }
+
+  handleMouseLeave = () => {
+    this.props.onRestartTimeout(this.props.id);
   }
 
   render() {
-    const { message, actions, onAction, id } = this.props;
+    const { message, actions, onAction, id, style } = this.props;
     const defaultAction = actions.find(({ name }) => !name);
     const clickHandler = defaultAction ? () => onAction(id, defaultAction.action) : undefined;
     const buttonActions = actions.filter(({ name }) => name);
 
     return (
-      <Alert className="new-toast" bsStyle="danger" onClick={clickHandler}>
+      <Alert
+        className="new-toast"
+        bsStyle={style}
+        onClick={clickHandler}
+        onMouseEnter={this.handleMouseEnter}
+        onMouseLeave={this.handleMouseLeave}
+      >
         <p>{message}</p>
         {buttonActions.length &&
           <ButtonToolbar>
             {
-              buttonActions.map(({ name, action, style }) => (
-                <Button key={name} bsStyle={style} onClick={() => onAction(id, action)}>{name}</Button>
+              buttonActions.map(({ name, action, style: buttonStyle }) => (
+                <Button key={name} bsStyle={buttonStyle} onClick={() => onAction(id, action)}>{name}</Button>
               ))
             }
           </ButtonToolbar>

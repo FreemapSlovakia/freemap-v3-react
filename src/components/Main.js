@@ -15,7 +15,7 @@ import NavbarHeader from 'fm3/components/NavbarHeader';
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ProgressIndicator from 'fm3/components/ProgressIndicator';
-import Toasts from 'fm3/components/ToastsNew';
+import Toasts from 'fm3/components/Toasts';
 
 import SearchMenu from 'fm3/components/SearchMenu';
 import SearchResults from 'fm3/components/SearchResults';

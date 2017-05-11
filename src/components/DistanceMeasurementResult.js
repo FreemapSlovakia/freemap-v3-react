@@ -5,10 +5,11 @@ import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint } from 'fm3/actions/distanceMeasurementActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+
 import { distance } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
@@ -149,10 +150,14 @@ export default connect(
       dispatch(resetMouseCursor());
     },
     onPointRemove(id) {
-      dispatch(toastsAdd('Odstrániť bod?', [
-        { name: 'Áno', action: distanceMeasurementRemovePoint(id), style: 'danger' },
-        { name: 'Nie' },
-      ]));
+      dispatch(toastsAdd({
+        message: 'Odstrániť bod?',
+        style: 'warning',
+        actions: [
+          { name: 'Áno', action: distanceMeasurementRemovePoint(id), style: 'danger' },
+          { name: 'Nie' },
+        ],
+      }));
     },
   }),
 )(DistanceMeasurementResult);

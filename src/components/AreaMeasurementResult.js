@@ -3,13 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Popup, Polygon } from 'react-leaflet';
 import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
-import Button from 'react-bootstrap/lib/Button';
 
 import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+
 import { area } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-import toastEmitter from 'fm3/emitters/toastEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
@@ -65,15 +65,7 @@ class AreaMeasurementResult extends React.Component {
   }
 
   pointClicked(position) {
-    const line1 = 'Odstrániť bod?';
-    const line2 = [
-      <Button key="yes" onClick={() => this.props.onPointRemove(position)}>
-        <span style={{ fontWeight: 700 }}>Áno</span>
-      </Button>,
-      ' ',
-      <Button key="no">Nie</Button>,
-    ];
-    toastEmitter.emit('showToast', 'info', line1, line2);
+    this.props.onPointRemove(position);
   }
 
   render() {
@@ -150,7 +142,14 @@ export default connect(
       dispatch(areaMeasurementUpdatePoint(i, coordinates));
     },
     onPointRemove(i) {
-      dispatch(areaMeasurementRemovePoint(i));
+      dispatch(toastsAdd({
+        message: 'Odstrániť bod?',
+        style: 'warning',
+        actions: [
+          { name: 'Áno', action: areaMeasurementRemovePoint(i), style: 'danger' },
+          { name: 'Nie' },
+        ],
+      }));
     },
     onSetMouseCursorToCrosshair() {
       dispatch(setMouseCursorToCrosshair());

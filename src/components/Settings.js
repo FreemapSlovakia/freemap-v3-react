@@ -12,7 +12,7 @@ import 'react-rangeslider/lib/index.css';
 
 import { mapSetTileFormat, mapSetOverlayOpacity, setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation, closePopup, setExpertMode } from 'fm3/actions/mainActions';
-import toastEmitter from 'fm3/emitters/toastEmitter';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
@@ -78,8 +78,8 @@ class Settings extends React.Component {
       this.state.nlcOpacity,
       this.state.touristOverlayOpacity,
       this.state.cycloOverlayOpacity,
-      this.state.expertMode);
-    toastEmitter.emit('showToast', 'info', null, 'Zmeny boli uložené.');
+      this.state.expertMode,
+    );
   }
 
   render() {
@@ -218,6 +218,12 @@ export default connect(
       dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
       dispatch(closePopup());
       dispatch(setExpertMode(expertMode));
+      dispatch(toastsAdd({
+        message: 'Zmeny boli uložené.',
+        style: 'info',
+        timeout: 3000,
+        actions: [{ name: 'OK' }],
+      }));
     },
     onClosePopup() {
       dispatch(closePopup());

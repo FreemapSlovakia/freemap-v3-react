@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
-import toastEmitter from 'fm3/emitters/toastEmitter';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import NavItem from 'react-bootstrap/lib/NavItem';
@@ -61,15 +60,12 @@ class ObjectsMenu extends React.Component {
     this.setState({ dropdownOpened: !this.state.dropdownOpened || this.state.focused });
   }
 
-  validateZoom = () => {
-    if (this.props.zoom < 12) {
-      const to = this.props.location.search.replace(/\bmap=\d+/, 'map=12'); // TODO this is ugly. Rework after introducing react-url-query
-      toastEmitter.emit('showToast', 'info', null, <span>Vyhľadávanie miest funguje až od priblíženia <Link to={to}>úrovne 12</Link>.</span>);
-    }
-  }
-
   select = (id) => {
-    this.props.onSearch(id);
+    if (this.props.zoom < 12) {
+      this.props.onLowZoom(id);
+    } else {
+      this.props.onSearch(id);
+    }
   }
 
   render() {
@@ -113,10 +109,10 @@ class ObjectsMenu extends React.Component {
 
 ObjectsMenu.propTypes = {
   onSearch: PropTypes.func.isRequired,
+  onLowZoom: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   onGpxExport: PropTypes.func.isRequired,
   zoom: PropTypes.number.isRequired,
-  location: PropTypes.object.isRequired,
   objectsFound: PropTypes.bool.isRequired,
 };
 
@@ -134,6 +130,17 @@ export default connect(
     },
     onCancel() {
       dispatch(setTool(null));
+    },
+    onLowZoom(typeId) {
+      dispatch(toastsAdd({
+        message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+        timeout: 3000,
+        style: 'warning',
+        actions: [
+          { name: 'OK' },
+          { name: 'Priblíž a hľadaj', action: objectsSetFilter(typeId) /* TODO zoom */ },
+        ],
+      }));
     },
   }),
 )(withRouter(ObjectsMenu));
