@@ -219,6 +219,7 @@ export default connect(
       dispatch(closePopup());
       dispatch(setExpertMode(expertMode));
       dispatch(toastsAdd({
+        collapseKey: 'settings.saved',
         message: 'Zmeny boli uložené.',
         style: 'info',
         timeout: 3000,

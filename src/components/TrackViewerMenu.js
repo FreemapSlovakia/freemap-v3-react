@@ -113,6 +113,7 @@ export default connect(
     },
     onLoadError(message) {
       dispatch(toastsAdd({
+        collapseKey: 'trackViewer.loadError',
         message,
         style: 'danger',
         timeout: 3000,

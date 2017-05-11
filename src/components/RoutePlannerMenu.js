@@ -164,6 +164,7 @@ export default connect(
     },
     onGetCurrentPositionError() {
       dispatch(toastsAdd({
+        collapseKey: 'routePlanner.gpsError',
         message: 'Nepodarilo sa získať aktuálnu polohu.',
         style: 'danger',
         timeout: 3000,
@@ -172,6 +173,7 @@ export default connect(
     },
     onMissingHomeLocation() {
       dispatch(toastsAdd({
+        collapseKey: 'routePlanner.noHome',
         message: 'Najprv si musíte nastaviť domovskú polohu.',
         style: 'warning',
         actions: [

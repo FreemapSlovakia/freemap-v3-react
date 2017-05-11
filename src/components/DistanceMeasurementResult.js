@@ -151,6 +151,7 @@ export default connect(
     },
     onPointRemove(id) {
       dispatch(toastsAdd({
+        collapseKey: 'distanceMeasurement.removePoint',
         message: 'Odstrániť bod?',
         style: 'warning',
         actions: [

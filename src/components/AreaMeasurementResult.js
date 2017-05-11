@@ -143,6 +143,7 @@ export default connect(
     },
     onPointRemove(i) {
       dispatch(toastsAdd({
+        collapseKey: 'areaMeasurement.removePoint',
         message: 'Odstrániť bod?',
         style: 'warning',
         actions: [

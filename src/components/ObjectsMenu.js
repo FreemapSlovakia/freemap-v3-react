@@ -133,6 +133,7 @@ export default connect(
     },
     onLowZoom(typeId) {
       dispatch(toastsAdd({
+        collapseKey: 'objects.lowZoom',
         message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
         timeout: 3000,
         style: 'warning',

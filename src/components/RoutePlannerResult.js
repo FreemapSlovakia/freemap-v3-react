@@ -238,6 +238,7 @@ export default connect(
     },
     onRemoveMidpoint(position) {
       dispatch(toastsAdd({
+        collapseKey: 'routePlanner.removeMidpoint',
         message: 'Odstrániť zastávku?',
         style: 'warning',
         actions: [
