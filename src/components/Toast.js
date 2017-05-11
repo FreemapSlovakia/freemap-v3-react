@@ -17,7 +17,7 @@ export default class Toast extends React.Component {
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
-        action: PropTypes.object,
+        action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
         style: PropTypes.string,
       }),
     ).isRequired,

@@ -38,7 +38,8 @@ Toasts.propTypes = {
       actions: PropTypes.arrayOf(
         PropTypes.shape({
           name: PropTypes.string,
-          action: PropTypes.object,
+          action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
+          style: PropTypes.string,
         }),
       ).isRequired,
     }),
@@ -53,7 +54,11 @@ export default connect(
     onAction(id, action) {
       dispatch(toastsRemove(id)); // TODO use some flag
       if (action) {
-        dispatch(action);
+        if (Array.isArray(action)) {
+          action.forEach(a => dispatch(a));
+        } else {
+          dispatch(action);
+        }
       }
     },
     onStopTimeout(id) {

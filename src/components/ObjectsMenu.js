@@ -6,6 +6,7 @@ import { withRouter } from 'react-router';
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import Nav from 'react-bootstrap/lib/Nav';
@@ -131,7 +132,7 @@ export default connect(
     onCancel() {
       dispatch(setTool(null));
     },
-    onLowZoom(typeId) {
+    onLowZoom(/* typeId */) {
       dispatch(toastsAdd({
         collapseKey: 'objects.lowZoom',
         message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
@@ -139,7 +140,14 @@ export default connect(
         style: 'warning',
         actions: [
           { name: 'OK' },
-          { name: 'Priblíž a hľadaj', action: objectsSetFilter(typeId) /* TODO zoom */ },
+          {
+            // name: 'Priblíž a hľadaj', TODO
+            name: 'Priblíž',
+            action: [
+              mapRefocus({ zoom: 12 }),
+              // objectsSetFilter(typeId) it won't work correctly because it uses bounds before refocus
+            ],
+          },
         ],
       }));
     },
