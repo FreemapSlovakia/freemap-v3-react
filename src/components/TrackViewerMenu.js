@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
-import toGeoJSON from '@mapbox/togeojson';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -14,33 +13,29 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
-import setTrackGeojson from 'fm3/actions/trackViewerActions';
+import { setTrackData, resetTrackViewer } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
-
 import 'fm3/styles/trackViewer.scss';
 
-const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
-
 class TrackViewerMenu extends React.Component {
+  componentWillReceiveProps(newProps) {
+    if (newProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(newProps.trackGeojson)) {
+      const geojsonBounds = L.geoJson(newProps.trackGeojson).getBounds();
+      getMapLeafletElement().fitBounds(geojsonBounds);
+    }
+  }
+
   onFileDrop = (acceptedFiles, rejectedFiles) => {
     if (acceptedFiles.length > 0) {
       const reader = new FileReader();
       reader.readAsText(acceptedFiles[0], 'UTF-8');
       reader.onload = (event) => {
         const gpxAsString = event.target.result;
-        try {
-          const gpxAsXml = new DOMParser().parseFromString(gpxAsString);
-          const geojson = toGeoJSON.gpx(gpxAsXml);
-          this.props.onSetTrackGeojson(geojson);
-          const geojsonBounds = L.geoJson(geojson).getBounds();
-          getMapLeafletElement().fitBounds(geojsonBounds);
-          this.props.onClosePopup();
-        } catch (e) {
-          this.props.onLoadError(`Nepodarilo sa spracovať súbor: ${e.message}`);
-        }
+        this.props.onSetTrackGpx(gpxAsString);
+        this.props.onClosePopup();
       };
 
       reader.onerror = (e) => {
@@ -55,6 +50,7 @@ class TrackViewerMenu extends React.Component {
 
   render() {
     const { activePopup, onCancel, onLaunchPopup, onClosePopup } = this.props;
+
     return (
       <div>
         <Navbar.Form pullLeft>
@@ -89,17 +85,20 @@ TrackViewerMenu.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onClosePopup: PropTypes.func.isRequired,
   onLaunchPopup: PropTypes.func.isRequired,
-  onSetTrackGeojson: PropTypes.func.isRequired,
+  onSetTrackGpx: PropTypes.func.isRequired,
   onLoadError: PropTypes.func.isRequired,
+  // eslint-disable-next-line
+  trackGeojson: PropTypes.object,
 };
 
 export default connect(
   state => ({
     activePopup: state.main.activePopup,
+    trackGeojson: state.trackViewer.trackGeojson,
   }),
   dispatch => ({
     onCancel() {
-      dispatch(setTrackGeojson(null));
+      dispatch(resetTrackViewer(null));
       dispatch(setTool(null));
     },
     onLaunchPopup(popupName) {
@@ -108,8 +107,8 @@ export default connect(
     onClosePopup() {
       dispatch(closePopup());
     },
-    onSetTrackGeojson(geojson) {
-      dispatch(setTrackGeojson(geojson));
+    onSetTrackGpx(gpx) {
+      dispatch(setTrackData(gpx));
     },
     onLoadError(message) {
       dispatch(toastsAdd({

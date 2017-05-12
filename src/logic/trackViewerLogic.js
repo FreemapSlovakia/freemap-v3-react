@@ -1,10 +1,16 @@
 import { createLogic } from 'redux-logic';
 import turfLineDistance from '@turf/line-distance';
+import toGeoJSON from '@mapbox/togeojson';
+
+const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
 export default createLogic({
-  type: 'TRACK_VIEWER_SET_TRACK_GEOJSON',
+  type: 'TRACK_VIEWER_SET_TRACK_DATA',
   transform({ getState, action }, next) {
-    const trackGeojson = action.payload.trackGeojson;
+    // TODO add try/catch and show toast if parsing fails
+    const gpxAsXml = new DOMParser().parseFromString(action.payload.trackGpx);
+    const trackGeojson = toGeoJSON.gpx(gpxAsXml);
+
     const startPoints = [];
     const finishPoints = [];
     if (trackGeojson) {
@@ -30,6 +36,7 @@ export default createLogic({
       });
     }
     const enahancedAction = Object.assign({}, action);
+    enahancedAction.payload.trackGeojson = trackGeojson;
     enahancedAction.payload.startPoints = startPoints;
     enahancedAction.payload.finishPoints = finishPoints;
     next(enahancedAction);
