@@ -239,6 +239,7 @@ export default connect(
         collapseKey: 'routePlanner.removeMidpoint',
         message: 'Odstrániť zastávku?',
         style: 'warning',
+        cancelType: 'SET_TOOL',
         actions: [
           { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },
           { name: 'Nie' },
