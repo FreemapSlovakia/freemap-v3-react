@@ -18,7 +18,14 @@ function ObjectsResult({ objects }) {
 
         return (
           <MarkerWithInnerLabel key={id} position={L.latLng(lat, lon)} image={img}>
-            {html && <Popup autoPan={false}><span dangerouslySetInnerHTML={{ __html: html }} /></Popup>}
+            {html &&
+              <Popup autoPan={false}>
+                <span
+                  // eslint-disable-next-line
+                  dangerouslySetInnerHTML={{ __html: html }}
+                />
+              </Popup>
+            }
           </MarkerWithInnerLabel>
         );
       })}

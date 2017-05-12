@@ -9,7 +9,7 @@ export default function MultiPolygon({ searchResult }) {
 
   return (
     <div>
-      {polygonsLatLons.map((p, i) => <LeafletPolygon key={String(i)} positions={p} interactive={false} />)}
+      {polygonsLatLons.map((p, i) => <LeafletPolygon key={i} positions={p} interactive={false} />)}
     </div>
   );
 }

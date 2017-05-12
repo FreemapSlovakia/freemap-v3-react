@@ -3,8 +3,7 @@ import { toastsRemove } from 'fm3/actions/toastsActions';
 
 const timeoutMap = new Map();
 
-// TODO handle collapseKey
-const logic1 = createLogic({
+export const toastsAddLogic = createLogic({
   type: 'TOASTS_ADD',
   process({ getState, action: { payload: { timeout, id, collapseKey } } }, dispatch, done) {
     if (collapseKey) {
@@ -22,14 +21,14 @@ const logic1 = createLogic({
   },
 });
 
-const logic2 = createLogic({
+export const toastsRemoveLogic = createLogic({
   type: 'TOASTS_REMOVE',
   process({ action: { payload: id } }) {
     removeTimeout(id);
   },
 });
 
-const logic3 = createLogic({
+export const toastsStopTimeoutLogic = createLogic({
   type: 'TOASTS_STOP_TIMEOUT',
   process({ action: { payload: id } }) {
     const tm = timeoutMap.get(id);
@@ -40,7 +39,7 @@ const logic3 = createLogic({
   },
 });
 
-const logic4 = createLogic({
+export const toastsRestartTimeoutLogic = createLogic({
   type: 'TOASTS_RESTART_TIMEOUT',
   process({ getState, action: { payload: id } }) {
     const tm = timeoutMap.get(id);
@@ -58,6 +57,16 @@ const logic4 = createLogic({
         tm.done();
       }
     }
+  },
+});
+
+export const toastsCancelTypeLogic = createLogic({
+  type: '*',
+  process({ getState, action: { type } }, dispatch, done) {
+    getState().toasts.toasts.filter(({ cancelType }) => matches(type, cancelType)).forEach(({ id }) => {
+      dispatch(toastsRemove(id));
+    });
+    done();
   },
 });
 
@@ -84,4 +93,23 @@ function removeTimeout(id) {
   }
 }
 
-export default [logic1, logic2, logic3, logic4];
+function matches(value, test) {
+  if (test === null || test === undefined) {
+    return false;
+  } else if (typeof test === 'string') {
+    return value === test;
+  } else if (Array.isArray(test)) {
+    return test.some(p => matches(value, p));
+  } else if (test instanceof RegExp) {
+    return test.test(value);
+  }
+  throw new Error('unsupported test value');
+}
+
+export default [
+  toastsAddLogic,
+  toastsRemoveLogic,
+  toastsStopTimeoutLogic,
+  toastsRestartTimeoutLogic,
+  toastsCancelTypeLogic,
+];

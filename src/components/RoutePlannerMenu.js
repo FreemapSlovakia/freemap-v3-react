@@ -175,6 +175,7 @@ export default connect(
         collapseKey: 'routePlanner.noHome',
         message: 'Najprv si musíte nastaviť domovskú polohu.',
         style: 'warning',
+        cancelType: 'SET_TOOL',
         actions: [
           { name: 'Nastav', action: setActivePopup('settings') },
           { name: 'Zavri' },

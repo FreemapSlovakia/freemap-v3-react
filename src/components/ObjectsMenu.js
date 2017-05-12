@@ -32,11 +32,11 @@ class ObjectsMenu extends React.Component {
     const items = poiTypes
       .filter(({ group }) => group === gid)
       .filter(({ title }) => title.toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
-      .map(({ group, title, id, icon }) =>
+      .map(({ group, title, id, icon }) => (
         <MenuItem key={id} eventKey={id} onSelect={this.select}>
           <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {title}
-        </MenuItem>,
-    );
+        </MenuItem>
+      ));
 
     return items.length === 0 ? null : [
       <MenuItem key={`${gid}_`} divider />,
@@ -137,6 +137,7 @@ export default connect(
         collapseKey: 'objects.lowZoom',
         message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
         style: 'warning',
+        cancelType: 'SET_TOOL',
         actions: [
           {
             // name: 'Priblíž a hľadaj', TODO

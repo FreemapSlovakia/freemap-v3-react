@@ -43,14 +43,14 @@ export default class Toast extends React.Component {
 
     return (
       <Alert
-        className="new-toast"
+        className="toast"
         bsStyle={style}
         onClick={clickHandler}
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         onDismiss={this.handleAlertDismiss}
       >
-        <p>{message}</p>
+        <div className="toast-message">{message}</div>
         {buttonActions.length > 0 &&
           <div>
             <br />
