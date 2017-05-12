@@ -116,7 +116,7 @@ class RoutePlannerResult extends React.Component {
             draggable
             onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
             onClick={() => this.midpointClicked(i)}
-            key={String(i)}
+            key={i}
             zIndexOffset={9}
             label={i + 1}
             position={L.latLng(lat, lon)}
@@ -126,8 +126,7 @@ class RoutePlannerResult extends React.Component {
                 <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
               </Tooltip>}
           </MarkerWithInnerLabel>
-          ),
-        )}
+        ))}
 
         {finish &&
           <MarkerWithInnerLabel
@@ -138,7 +137,6 @@ class RoutePlannerResult extends React.Component {
             onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
           >
-
             {distance !== null && time !== null &&
               <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
                 <span>{distance}km, {Math.floor(time / 60)}h {time % 60}m</span>
@@ -147,25 +145,24 @@ class RoutePlannerResult extends React.Component {
           </MarkerWithInnerLabel>
         }
 
-        {futureMidpoints.map((p, i) =>
+        {futureMidpoints.map((p, i) => (
           <Marker
-            key={String(i)}
+            key={i}
             draggable
             icon={circularIcon}
             onDragend={e => this.props.onAddMidpoint(i, {
               lat: e.target.getLatLng().lat,
               lon: e.target.getLatLng().lng,
-            })
-            }
+            })}
             position={L.latLng(p.lat, p.lon)}
-          />,
-        )}
+          />
+        ))}
 
         {itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
           <MarkerWithInnerLabel
             faIcon="info"
             color="grey"
-            key={String(i)}
+            key={i}
             position={L.latLng(lat, lon)}
           >
             <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
@@ -175,13 +172,14 @@ class RoutePlannerResult extends React.Component {
           ),
         )}
 
-        { shapePoints &&
+        {shapePoints &&
           <Polyline
             positions={shapePoints}
             weight="8"
             opacity="0.8"
             interactive={false}
-          /> }
+          />
+        }
       </div>
     );
   }

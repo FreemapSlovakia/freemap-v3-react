@@ -103,27 +103,27 @@ class AreaMeasurementResult extends React.Component {
           </Popup>
         </MarkerWithAutoOpeningPopup>
         }
-        {points.map((p, i) =>
+        {points.map((p, i) => (
           <Marker
-            key={String(i)}
+            key={i}
             position={L.latLng(p.lat, p.lon)}
             draggable
             onClick={() => this.pointClicked(i)}
             onDrag={e => this.handleMeasureMarkerDrag(i, e)}
-          />,
-        )}
+          />
+        ))}
 
         {points.length > 1 && <Polygon positions={points.map(({ lat, lon }) => [lat, lon])} /> }
 
-        {this.futurePoints().map((p, i) =>
+        {this.futurePoints().map((p, i) => (
           <Marker
-            key={String(i)}
+            key={i}
             draggable
             icon={circularIcon}
             onDragend={e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i + 1)}
             position={L.latLng(p.lat, p.lon)}
-          />,
-        )}
+          />
+        ))}
       </div>
     );
   }

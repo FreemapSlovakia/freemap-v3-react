@@ -8,7 +8,7 @@ export default function MultiLineString({ searchResult }) {
 
   return (
     <div>
-      {polylinesLatLons.map((p, i) => <Polyline key={String(i)} positions={p} interactive={false} />)}
+      {polylinesLatLons.map((p, i) => <Polyline key={i} positions={p} interactive={false} />)}
     </div>
   );
 }

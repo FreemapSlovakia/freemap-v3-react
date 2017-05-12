@@ -81,7 +81,7 @@ class TrackViewerResult extends React.Component {
         {startPoints.map((p, i) => (
           <MarkerWithInnerLabel
             faIcon="play"
-            key={String(i)}
+            key={i}
             faIconLeftPadding="2px"
             color="#409a40"
             interactive={false}
@@ -96,7 +96,7 @@ class TrackViewerResult extends React.Component {
         {finishPoints.map((p, i) => (
           <MarkerWithInnerLabel
             faIcon="stop"
-            key={String(i)}
+            key={i}
             faIconLeftPadding="2px"
             color="#d9534f"
             interactive={false}

@@ -13,7 +13,11 @@ function LocationResult({ gpsLocation }) {
 }
 
 LocationResult.propTypes = {
-  gpsLocation: PropTypes.object,
+  gpsLocation: PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lon: PropTypes.number.isRequired,
+    accuracy: PropTypes.number.isRequired,
+  }),
 };
 
 export default connect(
