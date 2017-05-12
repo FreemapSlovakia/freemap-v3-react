@@ -13,7 +13,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
-import { setTrackData, resetTrackViewer } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerResetData } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -34,7 +34,7 @@ class TrackViewerMenu extends React.Component {
       reader.readAsText(acceptedFiles[0], 'UTF-8');
       reader.onload = (event) => {
         const gpxAsString = event.target.result;
-        this.props.onSetTrackGpx(gpxAsString);
+        this.props.onTrackViewerSetData(gpxAsString);
         this.props.onClosePopup();
       };
 
@@ -85,7 +85,7 @@ TrackViewerMenu.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onClosePopup: PropTypes.func.isRequired,
   onLaunchPopup: PropTypes.func.isRequired,
-  onSetTrackGpx: PropTypes.func.isRequired,
+  onTrackViewerSetData: PropTypes.func.isRequired,
   onLoadError: PropTypes.func.isRequired,
   // eslint-disable-next-line
   trackGeojson: PropTypes.object,
@@ -98,7 +98,7 @@ export default connect(
   }),
   dispatch => ({
     onCancel() {
-      dispatch(resetTrackViewer());
+      dispatch(trackViewerResetData());
       dispatch(setTool(null));
     },
     onLaunchPopup(popupName) {
@@ -107,8 +107,8 @@ export default connect(
     onClosePopup() {
       dispatch(closePopup());
     },
-    onSetTrackGpx(gpx) {
-      dispatch(setTrackData(gpx));
+    onTrackViewerSetData(gpx) {
+      dispatch(trackViewerSetData(gpx));
     },
     onLoadError(message) {
       dispatch(toastsAdd({
