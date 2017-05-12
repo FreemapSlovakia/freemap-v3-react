@@ -221,6 +221,7 @@ class Main extends React.Component {
             onClick={handleMapClick}
             onLocationfound={this.handleLocationFound}
             style={{ cursor: mouseCursor }}
+            maxBounds={[[47.63617, 16.69965], [49.66746, 22.67475]]}
           >
             <Layers />
 
