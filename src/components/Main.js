@@ -158,7 +158,7 @@ class Main extends React.Component {
                   <NavItem onClick={() => this.handleToggleTool('track-viewer')}>
                     <FontAwesomeIcon icon="road" /> Prehliadač trás
                   </NavItem>
-                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} />}
+                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
                 </Nav>
               }
               {showDefaultMenu &&
@@ -193,7 +193,7 @@ class Main extends React.Component {
                       <FontAwesomeIcon icon="road" /> Prehliadač trás
                     </MenuItem>
                   </NavDropdown>
-                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} />}
+                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
                 </Nav>
               }
               {showDefaultMenu &&

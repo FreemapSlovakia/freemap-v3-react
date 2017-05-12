@@ -6,7 +6,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-export default function ExternalApps({ lat, lon, zoom }) {
+export default function ExternalApps({ lat, lon, zoom, mapType }) {
   function openIn(where) {
     switch (where) {
       case 'osm.org':
@@ -31,6 +31,10 @@ export default function ExternalApps({ lat, lon, zoom }) {
       case 'mapy.cz/ophoto':
         window.open(`https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${zoom > 19 ? 19 : zoom}&base=ophoto`);
         break;
+      case 'oma.sk':
+        console.log(`http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`);
+        window.open(`http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`);
+        break;
       default:
         break;
     }
@@ -39,6 +43,7 @@ export default function ExternalApps({ lat, lon, zoom }) {
   return (
     <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
       <MenuItem onClick={() => openIn('osm.org')}>OpenStreetMap</MenuItem>
+      <MenuItem onClick={() => openIn('oma.sk')}>OMA</MenuItem>
       <MenuItem onClick={() => openIn('google')}>Google Mapy</MenuItem>
       <MenuItem onClick={() => openIn('hiking.sk')}>Hiking.sk</MenuItem>
       <MenuItem onClick={() => openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
@@ -54,4 +59,5 @@ ExternalApps.propTypes = {
   lat: PropTypes.number.isRequired,
   lon: PropTypes.number.isRequired,
   zoom: PropTypes.number.isRequired,
+  mapType: PropTypes.string,
 };
