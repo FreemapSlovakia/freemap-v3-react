@@ -98,7 +98,7 @@ export default connect(
   }),
   dispatch => ({
     onCancel() {
-      dispatch(resetTrackViewer(null));
+      dispatch(resetTrackViewer());
       dispatch(setTool(null));
     },
     onLaunchPopup(popupName) {
