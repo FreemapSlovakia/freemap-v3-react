@@ -102,7 +102,7 @@ class DistanceMeasurementResult extends React.Component {
           const props = i % 2 ? {
             icon: circularIcon,
             opacity: 0.5,
-            onMousedown: e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
+            onDragstart: e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
           } : {
             // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
             icon: circularIcon,
