@@ -15,7 +15,7 @@ export default [
   ...objectsLogic,
   storageLogic,
   locateLogic,
-  trackViewerLogic,
+  ...trackViewerLogic,
   distanceMeasurementExportGpxLogic,
   ...toastsLogic,
 ];

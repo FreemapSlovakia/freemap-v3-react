@@ -9,14 +9,16 @@ import NavItem from 'react-bootstrap/lib/NavItem';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerResetData } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerResetData, trackViewerSetTrackUID, trackViewerResetTrackUID } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { getNodejsBackendURL } from 'fm3/backendDefinitions';
 
 import 'fm3/styles/trackViewer.scss';
 
@@ -34,6 +36,7 @@ class TrackViewerMenu extends React.Component {
       reader.readAsText(acceptedFiles[0], 'UTF-8');
       reader.onload = (event) => {
         const gpxAsString = event.target.result;
+        this.props.onResetTrackUID();
         this.props.onTrackViewerSetData(gpxAsString);
         this.props.onClosePopup();
       };
@@ -48,15 +51,49 @@ class TrackViewerMenu extends React.Component {
     }
   }
 
-  render() {
-    const { activePopup, onCancel, onLaunchPopup, onClosePopup } = this.props;
+  shareTrack = () => {
+    if (this.props.trackUID) {
+      this.props.onLaunchPopup('track-viewer-share');
+    } else {
+      fetch(`${getNodejsBackendURL()}/tracklogs`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: btoa(this.props.trackGpx),
+          mediaType: 'application/gpx+xml',
+        }),
+      }).then(res => res.json())
+      .then((res) => {
+        this.props.onSetTrackUID(res.uid);
+        this.props.onLaunchPopup('track-viewer-share');
+      }).catch((e) => {
+        this.props.onLoadError(`Nepodarilo sa nahrať súbor: ${e}`);
+      });
+    }
+  }
 
+  render() {
+    const { activePopup, onCancel, onLaunchPopup, onClosePopup, trackGpx, trackUID } = this.props;
+
+    let shareURL = '';
+    if (trackUID) {
+      shareURL = `${window.location.origin}/?tool=track-viewer&track-uid=${trackUID}`;
+    }
     return (
       <div>
         <Navbar.Form pullLeft>
           <Button onClick={() => onLaunchPopup('upload-track')}>
             <FontAwesomeIcon icon="upload" /> Nahrať trasu
           </Button>
+          {' '}
+          {trackGpx &&
+            <Button onClick={this.shareTrack}>
+              <FontAwesomeIcon icon="share-alt" /> Zdieľať
+            </Button>
+          }
         </Navbar.Form>
         <Nav>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
@@ -75,6 +112,21 @@ class TrackViewerMenu extends React.Component {
             <Button onClick={onClosePopup}><Glyphicon glyph="remove" /> Zrušiť</Button>
           </Modal.Footer>
         </Modal>
+
+        <Modal show={activePopup === 'track-viewer-share'} onHide={onClosePopup}>
+          <Modal.Header closeButton>
+            <Modal.Title>Zdieľať záznam trasy</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Trasa je dostupná na tejto adrese:
+            <Alert>
+              <a href={shareURL}>{shareURL}</a>
+            </Alert>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={onClosePopup}><Glyphicon glyph="remove" /> Zavrieť</Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     );
   }
@@ -87,14 +139,19 @@ TrackViewerMenu.propTypes = {
   onLaunchPopup: PropTypes.func.isRequired,
   onTrackViewerSetData: PropTypes.func.isRequired,
   onLoadError: PropTypes.func.isRequired,
-  // eslint-disable-next-line
-  trackGeojson: PropTypes.object,
+  onSetTrackUID: PropTypes.func.isRequired,
+  onResetTrackUID: PropTypes.func.isRequired,
+  trackGeojson: PropTypes.object,  // eslint-disable-line
+  trackGpx: PropTypes.string,
+  trackUID: PropTypes.string,
 };
 
 export default connect(
   state => ({
     activePopup: state.main.activePopup,
     trackGeojson: state.trackViewer.trackGeojson,
+    trackGpx: state.trackViewer.trackGpx,
+    trackUID: state.trackViewer.trackUID,
   }),
   dispatch => ({
     onCancel() {
@@ -109,6 +166,12 @@ export default connect(
     },
     onTrackViewerSetData(gpx) {
       dispatch(trackViewerSetData(gpx));
+    },
+    onSetTrackUID(uid) {
+      dispatch(trackViewerSetTrackUID(uid));
+    },
+    onResetTrackUID() {
+      dispatch(trackViewerResetTrackUID());
     },
     onLoadError(message) {
       dispatch(toastsAdd({
