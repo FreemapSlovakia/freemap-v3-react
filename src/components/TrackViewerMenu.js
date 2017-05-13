@@ -23,6 +23,13 @@ import { getNodejsBackendURL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefini
 import 'fm3/styles/trackViewer.scss';
 
 class TrackViewerMenu extends React.Component {
+  componentWillMount() {
+    const startingWithBlankTrackViewer = this.props.trackUID === null;
+    if (startingWithBlankTrackViewer) {
+      this.props.onLaunchPopup('upload-track');
+    }
+  }
+
   componentWillReceiveProps(newProps) {
     if (newProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(newProps.trackGeojson)) {
       const geojsonBounds = L.geoJson(newProps.trackGeojson).getBounds();
@@ -120,7 +127,7 @@ class TrackViewerMenu extends React.Component {
             <Modal.Title>Zdieľať záznam trasy</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Trasa je dostupná na tejto adrese:
+            Trasa je dostupná na nasledovnej adrese:
             <Alert>
               <a href={shareURL}>{shareURL}</a>
             </Alert>
