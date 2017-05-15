@@ -46,6 +46,7 @@
     "react/prefer-stateless-function": 1
   },
   "globals": {
-    "L": true
+    "L": true,
+    "__ENV__": true
   }
 }

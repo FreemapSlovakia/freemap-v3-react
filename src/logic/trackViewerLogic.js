@@ -3,7 +3,7 @@ import turfLineDistance from '@turf/line-distance';
 import toGeoJSON from '@mapbox/togeojson';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getNodejsBackendURL } from 'fm3/backendDefinitions';
+import { API_URL } from 'fm3/backendDefinitions';
 
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
@@ -42,7 +42,7 @@ export const trackViewerDownloadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_DOWNLOAD_TRACK',
   process({ getState }, dispatch, done) {
     const trackUID = getState().trackViewer.trackUID;
-    fetch(`${getNodejsBackendURL()}/tracklogs/${trackUID}`)
+    fetch(`${API_URL}/tracklogs/${trackUID}`)
       .then(res => res.json()).then((payload) => {
         if (payload.error) {
           dispatch(createErrorToast(payload.error));

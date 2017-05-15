@@ -18,7 +18,8 @@ import { trackViewerSetData, trackViewerResetData, trackViewerSetTrackUID, track
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { getNodejsBackendURL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
+import { API_URL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
+
 import 'fm3/styles/trackViewer.scss';
 
 class TrackViewerMenu extends React.Component {
@@ -63,7 +64,7 @@ class TrackViewerMenu extends React.Component {
     } else if (this.props.trackGpx.length > (MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
       this.props.onLoadError(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`);
     } else {
-      fetch(`${getNodejsBackendURL()}/tracklogs`, {
+      fetch(`${API_URL}/tracklogs`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
