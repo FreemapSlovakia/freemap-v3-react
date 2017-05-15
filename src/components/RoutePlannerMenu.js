@@ -18,8 +18,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
 
-import 'fm3/styles/routePlanner.scss';
-
 function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportType,
     onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
     onToggleItineraryVisibility, itineraryIsVisible, onStartProgress, onStopProgress, onGpxExport, routeFound }) {
