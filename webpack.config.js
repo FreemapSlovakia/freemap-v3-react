@@ -63,18 +63,21 @@ module.exports = {
       },
     ],
   },
-  plugins: process.env.NODE_ENV === 'production' ? [
+  plugins: [
     new webpack.DefinePlugin({
-      __ENV__: JSON.stringify('production'),
+      __ENV__: JSON.stringify(process.env.NODE_ENV),
     }),
-    new webpack.optimize.UglifyJsPlugin(),
-  ] : [],
+  ],
 };
+
+if (process.env.NODE_ENV === 'production') {
+  module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin());
+}
 
 module.exports.plugins.push(
   new CopyWebpackPlugin([
     { from: 'index.html' },
     { from: 'favicon.ico' },
   ]),
-  extractSass,
+  extractSass
 );
