@@ -20,24 +20,24 @@ function MeasurementMenu({ onCancel, onSetTool, tool, onGpxExport, routeDefined 
     <div>
       <Navbar.Form pullLeft>
         <ButtonGroup>
-          <Button onClick={() => onSetTool('measure')} active={tool === 'measure'}>
-            <FontAwesomeIcon icon="arrows-h" /> Vzdialenosť
+          <Button onClick={() => onSetTool('measure')} active={tool === 'measure'} title="Vzdialenosť">
+            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
           </Button>
-          <Button onClick={() => onSetTool('measure-ele')} active={tool === 'measure-ele'}>
-            <FontAwesomeIcon icon="long-arrow-up" /> Výška a poloha
+          <Button onClick={() => onSetTool('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
+            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-sm"> Výška a poloha</span>
           </Button>
-          <Button onClick={() => onSetTool('measure-area')} active={tool === 'measure-area'}>
-            <FontAwesomeIcon icon="square" /> Plocha
+          <Button onClick={() => onSetTool('measure-area')} active={tool === 'measure-area'} title="Plocha">
+            <FontAwesomeIcon icon="square" /><span className="hidden-sm"> Plocha</span>
           </Button>
         </ButtonGroup>
         {' '}
         {tool === 'measure' &&
-          <Button onClick={onGpxExport} disabled={!routeDefined}>
-            <FontAwesomeIcon icon="share" /> Exportuj do GPX
+          <Button onClick={onGpxExport} disabled={!routeDefined} title="Exportuj do GPX">
+            <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
           </Button>
         }
       </Navbar.Form>
-      <Nav>
+      <Nav pullRight>
         <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
       </Nav>
     </div>

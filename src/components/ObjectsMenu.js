@@ -96,11 +96,11 @@ class ObjectsMenu extends React.Component {
             </Dropdown.Menu>
           </Dropdown>
           {' '}
-          <Button onClick={onGpxExport} disabled={!objectsFound}>
-            <FontAwesomeIcon icon="share" /> Exportuj do GPX
+          <Button onClick={onGpxExport} disabled={!objectsFound} title="Exportuj do GPX">
+            <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
           </Button>
         </Navbar.Form>
-        <Nav>
+        <Nav pullRight>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
       </div>

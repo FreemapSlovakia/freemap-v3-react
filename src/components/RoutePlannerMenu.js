@@ -54,7 +54,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
       <Navbar.Form pullLeft>
         <ButtonGroup>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" color="#409a40" /> Štart</span>}
+            title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
             id="add-start-dropdown"
             onClick={() => onChangePickPointMode('start')}
             active={pickPointMode === 'start'}
@@ -64,7 +64,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
             <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /> Cieľ</span>}
+            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
             id="add-finish-dropdown"
             onClick={() => onChangePickPointMode('finish')}
             active={pickPointMode === 'finish'}
@@ -85,17 +85,17 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
           }
         </ButtonGroup>
         {' '}
-        <Button onClick={() => onToggleItineraryVisibility()} active={itineraryIsVisible}>
-          <FontAwesomeIcon icon="list-ol" /> Itinerár
+        <Button onClick={() => onToggleItineraryVisibility()} active={itineraryIsVisible} title="Itinerár">
+          <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
         </Button>
         {' '}
-        <Button onClick={onGpxExport} disabled={!routeFound}>
-          <FontAwesomeIcon icon="share" /> Exportuj do GPX
+        <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
+          <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
         </Button>
       </Navbar.Form>
-      <Nav>
-        <NavItem onClick={onCancel}>
-          <Glyphicon glyph="remove" /> Zavrieť
+      <Nav pullRight>
+        <NavItem onClick={onCancel} title="Zavrieť">
+          <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
         </NavItem>
       </Nav>
     </div>
