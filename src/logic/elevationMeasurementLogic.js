@@ -1,6 +1,7 @@
 import { createLogic } from 'redux-logic';
 import { elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import 'whatwg-fetch';
 
 export default createLogic({
   type: 'ELEVATION_MEASUREMENT_SET_POINT',

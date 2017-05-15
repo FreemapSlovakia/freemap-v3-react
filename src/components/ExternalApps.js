@@ -5,6 +5,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import 'whatwg-fetch';
 
 export default function ExternalApps({ lat, lon, zoom, mapType }) {
   function openIn(where) {

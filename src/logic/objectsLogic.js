@@ -5,6 +5,7 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
 import { exportGpx, createElement } from 'fm3/gpxExporter';
+import 'whatwg-fetch';
 
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
