@@ -13,26 +13,27 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
+    // TODO improve validation
     case 'MAP_LOAD_STATE': {
       const s = { ...state };
       const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat } = action.payload;
       if (mapType) {
         s.mapType = mapType;
       }
-      if (lat) {
+      if (typeof lat === 'number') {
         s.lat = lat;
       }
-      if (lon) {
+      if (typeof lon === 'number') {
         s.lon = lon;
       }
-      if (zoom) {
+      if (typeof zoom === 'number') {
         s.zoom = zoom;
       }
-      if (overlays) {
-        s.overlays = overlays;
+      if (Array.isArray(overlays)) {
+        s.overlays = [...overlays];
       }
       if (overlayOpacity) {
-        s.overlayOpacity = overlayOpacity;
+        s.overlayOpacity = { ...initialState.overlayOpacity, ...overlayOpacity };
       }
       if (tileFormat) {
         s.tileFormat = tileFormat;

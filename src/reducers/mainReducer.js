@@ -9,6 +9,7 @@ const initialState = {
 
 export default function main(state = initialState, action) {
   switch (action.type) {
+    // TODO improve validation
     case 'MAIN_LOAD_STATE': {
       const s = { ...state };
       const { homeLocation, expertMode } = action.payload;
