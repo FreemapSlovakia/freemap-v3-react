@@ -58,7 +58,7 @@ function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, 
   return (
     <LayersControl position="topright">
       {
-        baseLayers.map((item) => {
+        baseLayers.filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode).map((item) => {
           const { type, name } = item;
           return (
             <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
@@ -70,12 +70,10 @@ function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, 
       {
         overlayLayers && overlayLayers.map((item) => {
           const { type, name } = item;
-          const isAvailableToUser = !item.showOnlyInExpertMode || (item.showOnlyInExpertMode && expertMode);
-          return (
-            isAvailableToUser &&
-              <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
-                  {getTileLayer(item)}
-              </LayersControl.Overlay>
+          return !item.showOnlyInExpertMode || expertMode && (
+            <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
+                {getTileLayer(item)}
+            </LayersControl.Overlay>
           );
         })
       }

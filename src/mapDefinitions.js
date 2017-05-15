@@ -15,6 +15,15 @@ export const baseLayers = [
     name: 'Satelitná',
     type: 'S',
   },
+  {
+    name: 'mtbmap.cz',
+    type: 'M',
+    url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
+    minZoom: 3,
+    maxNativeZoom: 18,
+    showOnlyInExpertMode: true,
+    attribution: 'Martin Tesař, osmmtb (at) gmail.com, prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+  },
 ];
 
 export const overlayLayers = [
@@ -34,7 +43,7 @@ export const overlayLayers = [
     maxNativeZoom: 16,
   },
   {
-    name: 'Turist. trasy',
+    name: 'Turistické trasy',
     type: 't',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
     minZoom: 8,
@@ -50,3 +59,7 @@ export const overlayLayers = [
     showOnlyInExpertMode: true,
   },
 ];
+
+// http://tile.mtbmap.cz/mtbmap_tiles/11/1135/705.png
+// http://mtbmap.cz/
+// 3 - 18
