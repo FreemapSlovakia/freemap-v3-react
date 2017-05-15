@@ -77,6 +77,7 @@ class ObjectsMenu extends React.Component {
       <div>
         <Navbar.Form pullLeft>
           <Dropdown
+            className="dropdown-long"
             id="objectsMenuDropdown"
             onToggle={this.handleToggle}
             open={this.state.dropdownOpened}
