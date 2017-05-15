@@ -3,13 +3,19 @@
   right: 0px;
   top: 0px;
   z-index: 100000;
+}
 
-  & .toast {
-    margin: 10px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5),
-  }
+.toast {
+  margin: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5),
+}
 
-  & .toast-message {
-    padding-right: 12px;
+.toast-message {
+  padding-right: 12px;
+}
+
+.toast-message a {
+  &, &:hover {
+    text-decoration: underline;
   }
 }

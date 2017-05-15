@@ -143,7 +143,7 @@ class Main extends React.Component {
       <div className="container-fluid">
         <Toasts />
         <Row>
-          <Navbar fluid style={{ marginBottom: 0 }}>
+          <Navbar fluid>
             <NavbarHeader />
             <Navbar.Collapse>
               {tool === 'objects' && <ObjectsMenu />}

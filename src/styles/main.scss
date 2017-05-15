@@ -1,14 +1,21 @@
 @import "variables";
 
-#toast-container > div.toast-info {
-  background-color: $theme-primary-color;
-  opacity: 1.0;
+.map-holder {
+  position: fixed;
 }
 
-.toast-message a {
-  &, &:hover {
-    text-decoration: underline;
-  }
+.leaflet-container {
+  z-index: 1;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 56px;
+}
+
+.navbar {
+  margin-bottom: 0;
+  z-index: 2;
 }
 
 a.leaflet-control-layers-toggle {
