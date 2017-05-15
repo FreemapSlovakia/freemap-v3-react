@@ -42,10 +42,9 @@ class Settings extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      homeLocationCssClasses: '',
       tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
-      homeLocationCssClasses: '',
-      userMadeChanges: false,
       nlcOpacity: props.nlcOpacity,
       touristOverlayOpacity: props.touristOverlayOpacity,
       cycloOverlayOpacity: props.cycloOverlayOpacity,
@@ -55,12 +54,6 @@ class Settings extends React.Component {
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.onHomeLocationSelected);
-  }
-
-  componentWillUpdate(nextProps, nextState) {
-    if (!nextState.userMadeChanges) {
-      this.setState({ userMadeChanges: true });
-    }
   }
 
   componentWillUnmount() {
@@ -84,8 +77,11 @@ class Settings extends React.Component {
 
   render() {
     const { onClosePopup, onSelectHomeLocation, tool, zoom } = this.props;
-    const { homeLocation, homeLocationCssClasses, userMadeChanges } = this.state;
+    const { homeLocation, homeLocationCssClasses } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
+
+    const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity', 'cycloOverlayOpacity', 'expertMode']
+      .some(prop => this.state[prop] !== this.props[prop]);
 
     let homeLocationInfo = 'neurčená';
     if (homeLocation.lat && homeLocation.lon) {
@@ -124,7 +120,6 @@ class Settings extends React.Component {
           <Button onClick={() => onSelectHomeLocation()}>
             <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
           </Button>
-
           <hr />
           Viditeľnosť vrstvy Lesné cesty NLC: {this.state.nlcOpacity.toFixed(1) * 100}%
           <Slider
@@ -138,8 +133,8 @@ class Settings extends React.Component {
           {nlcOverlayIsNotVisible &&
             <Alert>
               NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
-            </Alert> }
-
+            </Alert>
+          }
           <hr />
           <div style={{ marginBottom: '10px' }}>
             Expertný mód:<br />
@@ -161,8 +156,8 @@ class Settings extends React.Component {
           {!this.state.expertMode &&
             <Alert>
               V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
-            </Alert> }
-
+            </Alert>
+          }
           {this.state.expertMode &&
             <div>
                 Viditeľnosť vrstvy Turistické trasy: {(this.state.touristOverlayOpacity).toFixed(1) * 100}%
@@ -174,8 +169,8 @@ class Settings extends React.Component {
                 tooltip={false}
                 onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
               />
-            </div>}
-
+            </div>
+          }
           {this.state.expertMode &&
             <div>
                 Viditeľnosť vrstvy Cyklotrasy: {(this.state.cycloOverlayOpacity).toFixed(1) * 100}%
@@ -187,7 +182,8 @@ class Settings extends React.Component {
                 tooltip={false}
                 onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
               />
-            </div>}
+            </div>
+          }
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
