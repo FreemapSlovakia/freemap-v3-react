@@ -29,19 +29,13 @@ export const trackViewerSetTrackDataLogic = createLogic({
           startTime = times[0];
           finishTime = times[times.length - 1];
         }
-        const start = { lat: startLonlat[1], lon: startLonlat[0], startTime };
-        startPoints.push(start);
+        startPoints.push({ lat: startLonlat[1], lon: startLonlat[0], startTime });
 
         const finishLonLat = coords[coords.length - 1];
-        const finish = { lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm, finishTime };
-        finishPoints.push(finish);
+        finishPoints.push({ lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm, finishTime });
       }
     });
-    const enahancedAction = Object.assign({}, action);
-    enahancedAction.payload.trackGeojson = trackGeojson;
-    enahancedAction.payload.startPoints = startPoints;
-    enahancedAction.payload.finishPoints = finishPoints;
-    next(enahancedAction);
+    next({ ...action, payload: { ...action.payload, trackGeojson, startPoints, finishPoints } });
   },
 });
 
@@ -80,4 +74,3 @@ export default [
   trackViewerSetTrackDataLogic,
   trackViewerDownloadTrackLogic,
 ];
-
