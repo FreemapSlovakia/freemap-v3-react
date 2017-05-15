@@ -4,7 +4,6 @@ import toGeoJSON from '@mapbox/togeojson';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getNodejsBackendURL } from 'fm3/backendDefinitions';
-import 'whatwg-fetch';
 
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 

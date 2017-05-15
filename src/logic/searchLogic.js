@@ -2,7 +2,6 @@ import { createLogic } from 'redux-logic';
 import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import 'whatwg-fetch';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',

@@ -19,7 +19,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getNodejsBackendURL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
-import 'whatwg-fetch';
 import 'fm3/styles/trackViewer.scss';
 
 class TrackViewerMenu extends React.Component {

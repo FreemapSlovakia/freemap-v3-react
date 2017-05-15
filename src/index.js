@@ -11,7 +11,7 @@ import { mainLoadState } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 
 import Main from 'fm3/components/Main';
-
+import 'whatwg-fetch';
 import 'fm3/styles/global.scss';
 
 const middleware = applyMiddleware(

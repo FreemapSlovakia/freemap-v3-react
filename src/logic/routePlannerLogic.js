@@ -4,7 +4,6 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { exportGpx, createElement } from 'fm3/gpxExporter';
-import 'whatwg-fetch';
 
 const updateRouteTypes = [
   'ROUTE_PLANNER_SET_START',
