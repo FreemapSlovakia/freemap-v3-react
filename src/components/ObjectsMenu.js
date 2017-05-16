@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { withRouter } from 'react-router';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
@@ -152,4 +151,4 @@ export default connect(
       }));
     },
   }),
-)(withRouter(ObjectsMenu));
+)(ObjectsMenu);

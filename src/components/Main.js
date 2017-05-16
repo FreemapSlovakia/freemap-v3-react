@@ -45,7 +45,6 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { setTool, setActivePopup, setLocation } from 'fm3/actions/mainActions';
 
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/main.scss';
@@ -70,6 +69,12 @@ class Main extends React.Component {
     onTrackViewerDownloadTrack: PropTypes.func.isRequired, // eslint-disable-line
   };
 
+  constructor(props) {
+    super(props);
+    this.foo = 'bar';
+  }
+
+  // TODO do it different way
   componentWillMount() {
     const urlParams = queryString.parse(location.search);
     const tool = urlParams.tool;
@@ -79,33 +84,10 @@ class Main extends React.Component {
         this.props.onTrackViewerDownloadTrack(urlParams['track-uid']);
       }
     }
-
-    // set redux according to URL
-    this.props.onMapRefocus(getMapDiff(this.props));
   }
 
   componentDidMount() {
     setMapLeafletElement(this.map.leafletElement);
-  }
-
-  componentWillReceiveProps(newProps) {
-    this.ignoreMapMoveEndEvent = true;
-
-    const stateChanged = ['mapType', 'overlays', 'zoom', 'lat', 'lon'].some(prop => newProps[prop] !== this.props[prop]);
-    if (stateChanged) {
-      // update URL
-      updateUrl(newProps);
-    } else {
-      // set redux according to URL
-      const changes = getMapDiff(newProps);
-      if (Object.keys(changes).length) {
-        newProps.onMapRefocus(changes);
-      }
-    }
-  }
-
-  componentDidUpdate() {
-    this.ignoreMapMoveEndEvent = false;
   }
 
   componentWillUnmount() {
@@ -113,7 +95,8 @@ class Main extends React.Component {
   }
 
   handleMapMoveEnd = () => {
-    if (this.ignoreMapMoveEndEvent) {
+    // TODO analyze why this can be null
+    if (!this.map) {
       return;
     }
 
@@ -291,66 +274,6 @@ export default connect(
     },
   }),
 )(Main);
-
-
-const baseLetters = baseLayers.map(({ type }) => type).join('');
-const overlayLetters = overlayLayers.map(({ type }) => type).join('');
-const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
-
-function getMapDiff(props) {
-  const { location: { search } } = props;
-
-  const query = queryString.parse(search);
-
-  const [zoomFrag, latFrag, lonFrag] = (query.map || '').split('/');
-
-  const lat = parseFloat(latFrag);
-  const lon = parseFloat(lonFrag);
-  const zoom = parseInt(zoomFrag, 10);
-
-  const layers = query.layers || '';
-
-  const layersOK = layersRegExp.test(layers);
-
-  if (!layersOK || isNaN(lat) || isNaN(lon) || isNaN(zoom)) {
-    updateUrl(props);
-    return {};
-  }
-
-  const mapType = layers.charAt(0);
-  const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
-
-  const changes = {};
-
-  if (mapType !== props.mapType) {
-    changes.mapType = mapType;
-  }
-
-  if (overlays.join('') !== props.overlays.join('')) {
-    changes.overlays = overlays;
-  }
-
-  if (Math.abs(lat - props.lat) > 0.00001) {
-    changes.lat = lat;
-  }
-
-  if (Math.abs(lon - props.lon) > 0.00001) {
-    changes.lon = lon;
-  }
-
-  if (zoom !== props.zoom) {
-    changes.zoom = zoom;
-  }
-
-  return changes;
-}
-
-function updateUrl(props) {
-  const { mapType, overlays, zoom, lat, lon } = props;
-  props.history.replace({
-    search: `?map=${zoom}/${lat.toFixed(5)}/${lon.toFixed(5)}&layers=${mapType}${overlays.join('')}`,
-  });
-}
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);
