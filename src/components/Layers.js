@@ -70,7 +70,7 @@ function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, 
       {
         overlayLayers && overlayLayers.map((item) => {
           const { type, name } = item;
-          return item.showOnlyInExpertMode && !expertMode ? null : (
+          return (!item.showOnlyInExpertMode || expertMode) && (
             <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
               {getTileLayer(item)}
             </LayersControl.Overlay>
