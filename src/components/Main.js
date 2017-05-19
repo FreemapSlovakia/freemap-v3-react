@@ -137,7 +137,12 @@ class Main extends React.Component {
     return [
       cmi(1, 'cog', 'Nastavenia', () => this.props.onLaunchPopup('settings')),
       ele === MenuItem ? <MenuItem divider /> : null,
-      cmi(2, 'exclamation-triangle', 'Nahlás chybu v mape', () => window.open('http://wiki.freemap.sk/NahlasenieChyby')),
+      cmi(6, 'mobile', 'Exporty mapy', () => window.open('http://wiki.freemap.sk/FileDownload')),
+      ele === MenuItem ? <MenuItem divider /> : null,
+      cmi(7, 'book', 'Pre začiatočníkov', () => window.open('http://wiki.freemap.sk/StarterGuide')),
+      cmi(4, 'github', 'Projekt na GitHub-e', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react')),
+      ele === MenuItem ? <MenuItem divider /> : null,
+      cmi(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', () => window.open('http://wiki.freemap.sk/NahlasenieChyby')),
       cmi(3, 'exclamation-triangle', 'Nahlás chybu v portáli', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react/issues')),
     ];
   }
