@@ -136,12 +136,12 @@ class Main extends React.Component {
 
     return [
       cmi(1, 'cog', 'Nastavenia', () => this.props.onLaunchPopup('settings')),
-      ele === MenuItem ? <MenuItem divider /> : null,
+      ele === MenuItem ? <MenuItem divider key="_1" /> : null,
       cmi(6, 'mobile', 'Exporty mapy', () => window.open('http://wiki.freemap.sk/FileDownload')),
-      ele === MenuItem ? <MenuItem divider /> : null,
+      ele === MenuItem ? <MenuItem divider key="_2" /> : null,
       cmi(7, 'book', 'Pre začiatočníkov', () => window.open('http://wiki.freemap.sk/StarterGuide')),
       cmi(4, 'github', 'Projekt na GitHub-e', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react')),
-      ele === MenuItem ? <MenuItem divider /> : null,
+      ele === MenuItem ? <MenuItem divider key="_3" /> : null,
       cmi(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', () => window.open('http://wiki.freemap.sk/NahlasenieChyby')),
       cmi(3, 'exclamation-triangle', 'Nahlás chybu v portáli', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react/issues')),
     ];
@@ -267,7 +267,7 @@ export default connect(
 )(Main);
 
 function createMenuItem(ele, key, icon, title, onClick) {
-  return React.createElement(ele, { key, onClick }, [<FontAwesomeIcon icon={icon} />], ` ${title}`);
+  return React.createElement(ele, { key, onClick }, <FontAwesomeIcon icon={icon} />, ` ${title}`);
 }
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
