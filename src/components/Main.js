@@ -145,7 +145,7 @@ class Main extends React.Component {
   render() {
     // eslint-disable-next-line
     const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, lat, lon, zoom, mapType } = this.props;
-    const showDefaultMenu = [null, 'select-home-location', 'location'].indexOf(tool) !== -1;
+    const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
       <div className="container-fluid">
