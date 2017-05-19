@@ -21,7 +21,6 @@ Then open the application by visiting `http://localhost:8080/` (address printed 
 ## Compiling for the production
 
 ```
-sudo npm i -g webpack
 npm i
-NODE_ENV=production webpack
+NODE_ENV=production ./node_modules/.bin/webpack
 ```
