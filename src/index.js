@@ -18,12 +18,13 @@ import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 
 import 'fm3/styles/global.scss';
 
-const middleware = applyMiddleware(
-  createLogger(),
-  createLogicMiddleware(logics),
-);
+const middlewares = [createLogicMiddleware(logics)];
 
-const store = createStore(reducer, middleware);
+if (__ENV__ !== 'production') {
+  middlewares.push(createLogger());
+}
+
+const store = createStore(reducer, applyMiddleware(...middlewares));
 
 let appState;
 try {
