@@ -36,13 +36,17 @@ if (appState) {
   store.dispatch(mapLoadState(appState.map));
 }
 
-history.listen((location) => {
+function handleLocationChange(location) {
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);
 
   if (diff && Object.keys(diff).length) {
     store.dispatch(mapRefocus(diff));
   }
-});
+}
+
+history.listen(handleLocationChange);
+
+handleLocationChange(history.location);
 
 render((
   <Provider store={store}>
