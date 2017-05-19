@@ -117,6 +117,31 @@ class Main extends React.Component {
     this.props.onSetTool(this.props.tool === tool ? null : tool);
   }
 
+  createToolMenu(ele) {
+    // eslint-disable-next-line
+    const cmi = createMenuItem.bind(this, ele);
+
+    return [
+      cmi(1, 'map-marker', 'Miesta', () => this.handleToggleTool('objects')),
+      cmi(2, 'map-signs', 'Plánovač', () => this.handleToggleTool('route-planner')),
+      cmi(3, 'arrows-h', 'Meranie', () => this.handleToggleTool('measure')),
+      cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToggleTool('location')),
+      cmi(5, 'road', 'Prehliadač trás', () => this.handleToggleTool('track-viewer')),
+    ];
+  }
+
+  createMoreMenu(ele) {
+    // eslint-disable-next-line
+    const cmi = createMenuItem.bind(this, ele);
+
+    return [
+      cmi(1, 'cog', 'Nastavenia', () => this.props.onLaunchPopup('settings')),
+      ele === MenuItem ? <MenuItem divider /> : null,
+      cmi(2, 'exclamation-triangle', 'Nahlás chybu v mape', () => window.open('http://wiki.freemap.sk/NahlasenieChyby')),
+      cmi(3, 'exclamation-triangle', 'Nahlás chybu v portáli', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react/issues')),
+    ];
+  }
+
   render() {
     // eslint-disable-next-line
     const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, lat, lon, zoom, mapType } = this.props;
@@ -137,67 +162,28 @@ class Main extends React.Component {
               {activePopup === 'settings' && <Settings />}
               {showDefaultMenu &&
                 <Nav className="hidden-sm hidden-md hidden-lg">
-                  <NavItem onClick={() => this.handleToggleTool('objects')}>
-                    <FontAwesomeIcon icon="map-marker" /> Miesta
-                  </NavItem>
-                  <NavItem onClick={() => this.handleToggleTool('route-planner')}>
-                    <FontAwesomeIcon icon="map-signs" /> Plánovač
-                  </NavItem>
-                  <NavItem onClick={() => this.handleToggleTool('measure')}>
-                    <FontAwesomeIcon icon="arrows-h" /> Meranie
-                  </NavItem>
-                  <NavItem onClick={() => this.handleToggleTool('location')}>
-                    <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
-                  </NavItem>
-                  <NavItem onClick={() => this.handleToggleTool('track-viewer')}>
-                    <FontAwesomeIcon icon="road" /> Prehliadač trás
-                  </NavItem>
+                  {this.createToolMenu(NavItem)}
                   {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
                 </Nav>
               }
               {showDefaultMenu &&
                 <Nav pullRight className="hidden-xs">
                   <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                    <MenuItem onClick={() => onLaunchPopup('settings')}>
-                      <FontAwesomeIcon icon="cog" /> Nastavenia
-                    </MenuItem>
-                    <MenuItem divider />
-                    <MenuItem onClick={() => window.open('http://wiki.freemap.sk/NahlasenieChyby')}>
-                      <FontAwesomeIcon icon="exclamation-triangle" /> Nahlás chybu
-                    </MenuItem>
+                    {this.createMoreMenu(MenuItem)}
                   </NavDropdown>
                 </Nav>
               }
               {showDefaultMenu &&
                 <Nav className="hidden-xs">
                   <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
-                    <MenuItem onClick={() => this.handleToggleTool('objects')}>
-                      <FontAwesomeIcon icon="map-marker" /> Miesta
-                    </MenuItem>
-                    <MenuItem onClick={() => this.handleToggleTool('route-planner')}>
-                      <FontAwesomeIcon icon="map-signs" /> Plánovač
-                    </MenuItem>
-                    <MenuItem onClick={() => this.handleToggleTool('measure')}>
-                      <FontAwesomeIcon icon="arrows-h" /> Meranie
-                    </MenuItem>
-                    <MenuItem onClick={() => this.handleToggleTool('location')}>
-                      <FontAwesomeIcon icon="dot-circle-o" /> Kde som?
-                    </MenuItem>
-                    <MenuItem onClick={() => this.handleToggleTool('track-viewer')}>
-                      <FontAwesomeIcon icon="road" /> Prehliadač trás
-                    </MenuItem>
+                    {this.createToolMenu(MenuItem)}
                   </NavDropdown>
                   {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
                 </Nav>
               }
               {showDefaultMenu &&
                 <Nav pullRight className="hidden-sm hidden-md hidden-lg">
-                  <NavItem onClick={() => onLaunchPopup('settings')}>
-                    <FontAwesomeIcon icon="cog" /> Nastavenia
-                  </NavItem>
-                  <NavItem onClick={() => window.open('http://wiki.freemap.sk/NahlasenieChyby')}>
-                    <FontAwesomeIcon icon="exclamation-triangle" /> Nahlás chybu
-                  </NavItem>
+                  {this.createMoreMenu(NavItem)}
                 </Nav>
               }
             </Navbar.Collapse>
@@ -274,6 +260,10 @@ export default connect(
     },
   }),
 )(Main);
+
+function createMenuItem(ele, key, icon, title, onClick) {
+  return React.createElement(ele, { key, onClick }, [<FontAwesomeIcon icon={icon} />], ` ${title}`);
+}
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);
