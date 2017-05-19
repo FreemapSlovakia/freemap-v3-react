@@ -1,3 +1,6 @@
+import 'babel-polyfill';
+import 'whatwg-fetch';
+
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
@@ -12,8 +15,6 @@ import { mainLoadState } from 'fm3/actions/mainActions';
 import { mapLoadState, mapRefocus } from 'fm3/actions/mapActions';
 import history from 'fm3/history';
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
-
-import 'whatwg-fetch';
 
 import 'fm3/styles/global.scss';
 
