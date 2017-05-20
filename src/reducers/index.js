@@ -10,6 +10,7 @@ import objects from 'fm3/reducers/objectsReducer';
 import search from 'fm3/reducers/searchReducer';
 import trackViewer from 'fm3/reducers/trackViewerReducer';
 import toasts from 'fm3/reducers/toastsReducer';
+import elevationChart from 'fm3/reducers/elevationChartReducer';
 
 export default combineReducers({
   main,
@@ -22,4 +23,5 @@ export default combineReducers({
   search,
   trackViewer,
   toasts,
+  elevationChart,
 });

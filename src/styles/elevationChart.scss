@@ -1,0 +1,18 @@
+@import "variables";
+
+#elevationChart {
+  position: absolute;
+  z-index: 10001;
+  background-color: rgba(255, 255, 255, 0.88);
+  bottom: 4px;
+  left: 4px;
+  border-radius: 10px;
+  min-width: 45%;
+  padding: 5px;
+}
+
+@media ($smartphone-screen) {
+  #elevationChart {
+    width: calc(100% - 10px);
+  }
+}

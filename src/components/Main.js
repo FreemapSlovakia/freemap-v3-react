@@ -38,6 +38,7 @@ import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
+import ElevationChart from 'fm3/components/ElevationChart';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -227,6 +228,7 @@ class Main extends React.Component {
             {tool === 'location' && <LocationResult />}
 
             {tool === 'track-viewer' && <TrackViewerResult />}
+            <ElevationChart />
           </Map>
         </Row>
       </div>

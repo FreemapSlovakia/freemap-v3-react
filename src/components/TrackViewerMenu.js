@@ -15,6 +15,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerResetData, trackViewerSetTrackUID, trackViewerResetTrackUID } from 'fm3/actions/trackViewerActions';
+import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -46,6 +47,7 @@ class TrackViewerMenu extends React.Component {
         this.props.onResetTrackUID();
         this.props.onTrackViewerSetData(gpxAsString);
         this.props.onClosePopup();
+        this.props.onElevationChartClose();
       };
 
       reader.onerror = (e) => {
@@ -84,8 +86,27 @@ class TrackViewerMenu extends React.Component {
     }
   }
 
+  toggleElevationChart = () => {
+    const isActive = this.props.elevationChartTrackGeojson;
+    if (isActive) {
+      this.props.onElevationChartClose();
+    } else {
+      this.props.onElevationChartSetTrackGeojson(this.props.trackGeojson);
+    }
+  }
+
+  trackGeojsonIsSuitableForElevationChart = () => {
+    const trackGeojson = this.props.trackGeojson;
+    const isLineString = trackGeojson && trackGeojson.features.length && trackGeojson.features[0] && trackGeojson.features[0].geometry.type === 'LineString';
+    if (isLineString) {
+      const hasEle = trackGeojson.features[0].geometry.coordinates[0].length === 3;
+      return hasEle;
+    }
+    return false;
+  }
+
   render() {
-    const { activePopup, onCancel, onLaunchPopup, onClosePopup, trackGpx, trackUID } = this.props;
+    const { activePopup, onCancel, onLaunchPopup, onClosePopup, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -101,6 +122,12 @@ class TrackViewerMenu extends React.Component {
           {trackGpx &&
             <Button onClick={this.shareTrack}>
               <FontAwesomeIcon icon="share-alt" /> Zdieľať
+            </Button>
+          }
+          {' '}
+          {this.trackGeojsonIsSuitableForElevationChart() &&
+            <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
+              <FontAwesomeIcon icon="bar-chart" /> Výškový profil
             </Button>
           }
         </Navbar.Form>
@@ -153,6 +180,9 @@ TrackViewerMenu.propTypes = {
   trackGeojson: PropTypes.object,  // eslint-disable-line
   trackGpx: PropTypes.string,
   trackUID: PropTypes.string,
+  onElevationChartSetTrackGeojson: PropTypes.func.isRequired,
+  onElevationChartClose: PropTypes.func.isRequired,
+  elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
 };
 
 export default connect(
@@ -161,11 +191,13 @@ export default connect(
     trackGeojson: state.trackViewer.trackGeojson,
     trackGpx: state.trackViewer.trackGpx,
     trackUID: state.trackViewer.trackUID,
+    elevationChartTrackGeojson: state.elevationChart.trackGeojson,
   }),
   dispatch => ({
     onCancel() {
       dispatch(trackViewerResetData());
       dispatch(setTool(null));
+      dispatch(elevationChartClose());
     },
     onLaunchPopup(popupName) {
       dispatch(setActivePopup(popupName));
@@ -181,6 +213,12 @@ export default connect(
     },
     onResetTrackUID() {
       dispatch(trackViewerResetTrackUID());
+    },
+    onElevationChartSetTrackGeojson(trackGeojson) {
+      dispatch(elevationChartSetTrackGeojson(trackGeojson));
+    },
+    onElevationChartClose() {
+      dispatch(elevationChartClose());
     },
     onLoadError(message) {
       dispatch(toastsAdd({
