@@ -18,6 +18,7 @@ export default function elevationChart(state = initialState, action) {
       };
     case 'ELEVATION_CHART_REMOVE_ACTIVE_POINT':
       return { ...state, activePoint: initialState.activePoint };
+    case 'MAP_RESET':
     case 'ELEVATION_CHART_CLOSE':
       return initialState;
     default:

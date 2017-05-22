@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { mapReset } from 'fm3/actions/mapActions';
 import * as FmPropTypes from 'fm3/propTypes';
 
@@ -54,7 +53,6 @@ export default connect(
   }),
   dispatch => ({
     onResetMap() {
-      dispatch(elevationChartClose());
       dispatch(mapReset());
     },
   }),
