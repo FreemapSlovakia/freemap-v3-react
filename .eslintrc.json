@@ -43,7 +43,8 @@
     "react/no-string-refs": 1,
     "no-unused-vars": 1,
     "new-cap": 0,
-    "react/prefer-stateless-function": 1
+    "react/prefer-stateless-function": 1,
+    "react/no-array-index-key": 0
   },
   "globals": {
     "L": true,
