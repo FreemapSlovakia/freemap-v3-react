@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import turfLineDistance from '@turf/line-distance';
-import { distance } from 'fm3/geoutils';
 import { Line } from 'react-chartjs-2';
+import turfLineDistance from '@turf/line-distance';
+
+import { distance } from 'fm3/geoutils';
+
 import { elevationChartSetActivePoint, elevationChartRemoveActivePoint } from 'fm3/actions/elevationChartActions';
+
 import 'fm3/styles/elevationChart.scss';
 
 class ElevationChart extends React.Component {
@@ -15,7 +18,8 @@ class ElevationChart extends React.Component {
   }
 
   computeChartData = () => {
-    const trackGeojson = this.props.trackGeojson;
+    const { trackGeojson } = this.props;
+
     const totalDistanceInMeters = turfLineDistance(trackGeojson) * 1000;
     const xAxisPointsCount = 100;
     const deltaInMeters = totalDistanceInMeters / xAxisPointsCount;
@@ -71,10 +75,11 @@ class ElevationChart extends React.Component {
   }
 
   render() {
-    const showChart = this.props.trackGeojson;
+    const { trackGeojson, setActivePoint, removeActivePoint } = this.props;
     let dataForChartJS = {};
     let fullDetailChartPoints = [];
-    if (showChart) {
+
+    if (trackGeojson) {
       const result = this.computeChartData();
       dataForChartJS = result.dataForChartJS;
       fullDetailChartPoints = result.fullDetailChartPoints;
@@ -87,9 +92,9 @@ class ElevationChart extends React.Component {
           if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
             const dataPoint = tooltip.dataPoints[0];
             const fullDetailPoint = fullDetailChartPoints[dataPoint.index];
-            this.props.setActivePoint(fullDetailPoint);
+            setActivePoint(fullDetailPoint);
           } else {
-            this.props.removeActivePoint();
+            removeActivePoint();
           }
         },
       },
@@ -117,10 +122,11 @@ class ElevationChart extends React.Component {
     };
 
     return (
-      showChart &&
+      trackGeojson &&
       <div id="elevationChart">
         <Line options={chartJSOptions} data={dataForChartJS} />
-      </div>);
+      </div>
+    );
   }
 }
 
