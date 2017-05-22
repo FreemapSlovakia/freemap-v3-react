@@ -20,9 +20,19 @@ class ElevationChart extends React.Component {
   computeChartData = () => {
     const { trackGeojson } = this.props;
 
-    const totalDistanceInMeters = turfLineDistance(trackGeojson) * 1000;
-    const xAxisPointsCount = 100;
-    const deltaInMeters = totalDistanceInMeters / xAxisPointsCount;
+    const totalDistanceInKm = turfLineDistance(trackGeojson);
+    let deltaInMeters;
+    if (totalDistanceInKm < 1.0) {
+      deltaInMeters = 5;
+    } else if (totalDistanceInKm < 5.0) {
+      deltaInMeters = 25;
+    } else if (totalDistanceInKm < 10.0) {
+      deltaInMeters = 50;
+    } else if (totalDistanceInKm < 50.0) {
+      deltaInMeters = 250;
+    } else {
+      deltaInMeters = 500;
+    }
 
     const lonLatEleCoords = trackGeojson.features[0].geometry.coordinates;
     let distanceFromStartInMeters = 0.0;
@@ -51,7 +61,7 @@ class ElevationChart extends React.Component {
         {
           fill: true,
           lineTension: 0.1,
-          backgroundColor: '#38f',
+          backgroundColor: 'rgba(51, 136, 255, 0.54)',
           borderColor: '#38f',
           borderCapStyle: 'butt',
           borderDash: [],
@@ -78,7 +88,6 @@ class ElevationChart extends React.Component {
     const { trackGeojson, setActivePoint, removeActivePoint } = this.props;
     let dataForChartJS = {};
     let fullDetailChartPoints = [];
-
     if (trackGeojson) {
       const result = this.computeChartData();
       dataForChartJS = result.dataForChartJS;
@@ -104,8 +113,12 @@ class ElevationChart extends React.Component {
       scales: {
         xAxes: [{
           ticks: {
-            autoSkip: true,
-            maxTicksLimit: 5,
+            userCallback: (label, index, labels) => {
+              if (index % 10 === 0 || index === labels.length - 1) {
+                return label;
+              }
+              return null;
+            },
           },
           scaleLabel: {
             display: true,
