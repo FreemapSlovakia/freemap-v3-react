@@ -12,6 +12,7 @@ const updateRouteTypes = [
   'ROUTE_PLANNER_SET_MIDPOINT',
   'ROUTE_PLANNER_REMOVE_MIDPOINT',
   'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
+  'ROUTE_PLANNER_SET_PARAMS',
 ];
 
 export const routePlannerFindRouteLogic = createLogic({

@@ -19,6 +19,14 @@ export default function routePlanner(state = initialState, action) {
     case 'MAP_RESET':
     case 'SET_TOOL':
       return initialState;
+    case 'ROUTE_PLANNER_SET_PARAMS':
+      return {
+        ...state,
+        start: action.payload.start,
+        finish: action.payload.finish,
+        midpoints: action.payload.midpoints,
+        transportType: action.payload.transportType,
+      };
     case 'ROUTE_PLANNER_SET_START':
       return { ...state, start: action.payload, pickMode: state.finish ? null : 'finish' };
     case 'ROUTE_PLANNER_SET_FINISH':

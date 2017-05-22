@@ -12,9 +12,9 @@ import Main from 'fm3/components/Main';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 import { mainLoadState } from 'fm3/actions/mainActions';
-import { mapLoadState, mapRefocus } from 'fm3/actions/mapActions';
+import { mapLoadState } from 'fm3/actions/mapActions';
 import history from 'fm3/history';
-import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
+import handleLocationChange from 'fm3/locationChangeHandler';
 
 import 'fm3/styles/global.scss';
 
@@ -38,17 +38,10 @@ if (appState) {
   store.dispatch(mapLoadState(appState.map));
 }
 
-function handleLocationChange(location) {
-  const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);
+// NOTE so far there is no need to listen this because manual change reloads the app
+// history.listen(handleLocationChange.bind(undefined, store));
 
-  if (diff && Object.keys(diff).length) {
-    store.dispatch(mapRefocus(diff));
-  }
-}
-
-history.listen(handleLocationChange);
-
-handleLocationChange(history.location);
+handleLocationChange(store, history.location);
 
 render((
   <Provider store={store}>

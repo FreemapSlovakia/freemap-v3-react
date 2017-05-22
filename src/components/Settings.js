@@ -207,6 +207,7 @@ export default connect(
   }),
   dispatch => ({
     onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode) {
+      // TODO replace with signle dispatch (for goot pratcice)
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
       dispatch(mapSetOverlayOpacity('N', nlcOpacity));
@@ -225,10 +226,12 @@ export default connect(
       dispatch(closePopup());
     },
     onSelectHomeLocation() {
+      // TODO replace with signle dispatch (for goot pratcice)
       dispatch(setTool('select-home-location'));
       dispatch(setMouseCursorToCrosshair());
     },
     onSelectHomeLocationFinished() {
+      // TODO replace with signle dispatch (for goot pratcice)
       dispatch(setTool(null));
       dispatch(resetMouseCursor());
     },

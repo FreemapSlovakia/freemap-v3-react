@@ -21,6 +21,8 @@ export default function main(state = initialState, action) {
       }
       return s;
     }
+    case 'ROUTE_PLANNER_SET_PARAMS':
+      return { ...state, tool: 'route-planner' };
     case 'SET_ACTIVE_POPUP':
       return { ...state, activePopup: action.payload };
     case 'CLOSE_POPUP':
