@@ -32,7 +32,6 @@ export default function ExternalApps({ lat, lon, zoom, mapType }) {
         window.open(`https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${zoom > 19 ? 19 : zoom}&base=ophoto`);
         break;
       case 'oma.sk':
-        console.log(`http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`);
         window.open(`http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`);
         break;
       default:
