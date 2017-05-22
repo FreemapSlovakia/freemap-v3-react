@@ -4,11 +4,14 @@ import { connect } from 'react-redux';
 import turfLineDistance from '@turf/line-distance';
 import { distance } from 'fm3/geoutils';
 import { Line } from 'react-chartjs-2';
+import { elevationChartSetActivePoint, elevationChartRemoveActivePoint } from 'fm3/actions/elevationChartActions';
 import 'fm3/styles/elevationChart.scss';
 
 class ElevationChart extends React.Component {
   static propTypes = {
     trackGeojson: PropTypes.object, // eslint-disable-line
+    setActivePoint: PropTypes.func.isRequired,
+    removeActivePoint: PropTypes.func.isRequired,
   }
 
   computeChartData = () => {
@@ -22,6 +25,7 @@ class ElevationChart extends React.Component {
     let currentXAxisPointCounter = 0;
     let prevLonlatEle = null;
     const eleForXAxisPoints = [];
+    const fullDetailChartPoints = [];
     lonLatEleCoords.forEach(([lon, lat, ele]) => {
       if (prevLonlatEle) {
         const [prevLon, prevLat] = prevLonlatEle;
@@ -29,18 +33,19 @@ class ElevationChart extends React.Component {
         distanceFromStartInMeters += distanceToPreviousPointInMeters;
         if (currentXAxisPointCounter * deltaInMeters <= distanceFromStartInMeters) {
           eleForXAxisPoints.push(ele);
+          fullDetailChartPoints.push({ lat, lon, ele, distanceFromStartInMeters });
           currentXAxisPointCounter += 1;
         }
       }
       prevLonlatEle = [lon, lat, ele];
     });
 
-    const labels = eleForXAxisPoints.map((ele, i) => (i * deltaInMeters / 1000).toFixed(0));
-    const chartData = {
-      labels,
+    const xAxisLabels = eleForXAxisPoints.map((ele, i) => (i * deltaInMeters / 1000).toFixed(1));
+    const dataForChartJS = {
+      xLabels: xAxisLabels,
       datasets: [
         {
-          fill: false,
+          fill: true,
           lineTension: 0.1,
           backgroundColor: '#38f',
           borderColor: '#38f',
@@ -49,32 +54,44 @@ class ElevationChart extends React.Component {
           borderDashOffset: 0.0,
           borderJoinStyle: 'miter',
           pointBorderColor: '#38f',
-          pointBackgroundColor: '#fff',
+          pointBackgroundColor: '#38f',
           pointBorderWidth: 1,
-          pointHoverRadius: 5,
-          pointHoverBackgroundColor: '#38f',
+          pointHoverRadius: 3,
+          pointHoverBackgroundColor: 'white',
           pointHoverBorderColor: '#38f',
-          pointHoverBorderWidth: 2,
+          pointHoverBorderWidth: 1,
           pointRadius: 1,
-          pointHitRadius: 10,
+          pointHitRadius: 5,
           data: eleForXAxisPoints,
         },
       ],
     };
 
-    return chartData;
+    return { dataForChartJS, fullDetailChartPoints };
   }
 
   render() {
     const showChart = this.props.trackGeojson;
-    let chartData = {};
+    let dataForChartJS = {};
+    let fullDetailChartPoints = [];
     if (showChart) {
-      chartData = this.computeChartData();
+      const result = this.computeChartData();
+      dataForChartJS = result.dataForChartJS;
+      fullDetailChartPoints = result.fullDetailChartPoints;
     }
 
-    const chartOptions = {
+    const chartJSOptions = {
       tooltips: {
         enabled: false,
+        custom: (tooltip) => {
+          if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
+            const dataPoint = tooltip.dataPoints[0];
+            const fullDetailPoint = fullDetailChartPoints[dataPoint.index];
+            this.props.setActivePoint(fullDetailPoint);
+          } else {
+            this.props.removeActivePoint();
+          }
+        },
       },
       legend: {
         display: false,
@@ -102,7 +119,7 @@ class ElevationChart extends React.Component {
     return (
       showChart &&
       <div id="elevationChart">
-        <Line options={chartOptions} data={chartData} />
+        <Line options={chartJSOptions} data={dataForChartJS} />
       </div>);
   }
 }
@@ -110,5 +127,13 @@ class ElevationChart extends React.Component {
 export default connect(
   state => ({
     trackGeojson: state.elevationChart.trackGeojson,
+  }),
+  dispatch => ({
+    setActivePoint(activePoint) {
+      dispatch(elevationChartSetActivePoint(activePoint));
+    },
+    removeActivePoint() {
+      dispatch(elevationChartRemoveActivePoint());
+    },
   }),
 )(ElevationChart);

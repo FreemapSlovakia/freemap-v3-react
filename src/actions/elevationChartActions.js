@@ -5,3 +5,11 @@ export function elevationChartSetTrackGeojson(trackGeojson) {
 export function elevationChartClose() {
   return { type: 'ELEVATION_CHART_CLOSE' };
 }
+
+export function elevationChartSetActivePoint(activePoint) {
+  return { type: 'ELEVATION_CHART_SET_ACTIVE_POINT', payload: { activePoint } };
+}
+
+export function elevationChartRemoveActivePoint() {
+  return { type: 'ELEVATION_CHART_REMOVE_ACTIVE_POINT' };
+}

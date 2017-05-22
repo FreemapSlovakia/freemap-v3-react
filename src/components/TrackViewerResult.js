@@ -22,6 +22,12 @@ class TrackViewerResult extends React.Component {
       lengthInKm: PropTypes.number.isRequired,
       finishTime: PropTypes.string,
     })),
+    elevationChartActivePoint: PropTypes.shape({
+      lat: PropTypes.number,
+      lon: PropTypes.number,
+      ele: PropTypes.number,
+      distanceFromStartInMeters: PropTypes.number,
+    }),
   }
 
   state = {
@@ -66,7 +72,7 @@ class TrackViewerResult extends React.Component {
   }
 
   render() {
-    const { trackGeojson, startPoints, finishPoints } = this.props;
+    const { trackGeojson, startPoints, finishPoints, elevationChartActivePoint } = this.props;
     const keyToAssureProperRefresh = JSON.stringify(trackGeojson).length; // otherwise GeoJSON will still display the first data
 
     return trackGeojson && (
@@ -125,6 +131,21 @@ class TrackViewerResult extends React.Component {
                 </span>
               </Tooltip>
             </MarkerWithInnerLabel>}
+
+          {elevationChartActivePoint.lat &&
+            <MarkerWithInnerLabel
+              faIcon="info"
+              faIconLeftPadding="2px"
+              color="grey"
+              interactive={false}
+              position={L.latLng(elevationChartActivePoint.lat, elevationChartActivePoint.lon)}
+            >
+              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+                <span>
+                  {(elevationChartActivePoint.distanceFromStartInMeters / 1000).toFixed(1)}km, {elevationChartActivePoint.ele.toFixed(0)} m.n.m
+                </span>
+              </Tooltip>
+            </MarkerWithInnerLabel>}
       </div>
     );
   }
@@ -135,6 +156,7 @@ export default connect(
     trackGeojson: state.trackViewer.trackGeojson,
     startPoints: state.trackViewer.startPoints,
     finishPoints: state.trackViewer.finishPoints,
+    elevationChartActivePoint: state.elevationChart.activePoint,
   }),
   () => ({}),
 )(TrackViewerResult);

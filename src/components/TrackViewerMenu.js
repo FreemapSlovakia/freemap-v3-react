@@ -119,15 +119,15 @@ class TrackViewerMenu extends React.Component {
             <FontAwesomeIcon icon="upload" /> Nahrať trasu
           </Button>
           {' '}
-          {trackGpx &&
-            <Button onClick={this.shareTrack}>
-              <FontAwesomeIcon icon="share-alt" /> Zdieľať
-            </Button>
-          }
-          {' '}
           {this.trackGeojsonIsSuitableForElevationChart() &&
             <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
               <FontAwesomeIcon icon="bar-chart" /> Výškový profil
+            </Button>
+          }
+          {' '}
+          {trackGpx &&
+            <Button onClick={this.shareTrack}>
+              <FontAwesomeIcon icon="share-alt" /> Zdieľať
             </Button>
           }
         </Navbar.Form>
