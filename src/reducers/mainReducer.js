@@ -23,6 +23,8 @@ export default function main(state = initialState, action) {
     }
     case 'ROUTE_PLANNER_SET_PARAMS':
       return { ...state, tool: 'route-planner' };
+    case 'TRACK_VIEWER_DOWNLOAD_TRACK':
+      return { ...state, tool: 'track-viewer' };
     case 'SET_ACTIVE_POPUP':
       return { ...state, activePopup: action.payload };
     case 'CLOSE_POPUP':

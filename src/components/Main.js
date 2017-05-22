@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
-import queryString from 'query-string';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
@@ -34,7 +33,6 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
-import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
@@ -67,24 +65,11 @@ class Main extends React.Component {
     onSetLocation: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
     expertMode: PropTypes.bool.isRequired,
-    onTrackViewerDownloadTrack: PropTypes.func.isRequired, // eslint-disable-line
   };
 
   constructor(props) {
     super(props);
     this.foo = 'bar';
-  }
-
-  // TODO do it different way
-  componentWillMount() {
-    const urlParams = queryString.parse(location.search);
-    const tool = urlParams.tool;
-    if (tool === 'track-viewer' && this.props.tool !== 'track-viewer') {
-      this.props.onSetTool(tool);
-      if (urlParams['track-uid']) {
-        this.props.onTrackViewerDownloadTrack(urlParams['track-uid']);
-      }
-    }
   }
 
   componentDidMount() {
@@ -261,9 +246,6 @@ export default connect(
     },
     onSetLocation(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));
-    },
-    onTrackViewerDownloadTrack(trackUID) {
-      dispatch(trackViewerDownloadTrack(trackUID));
     },
   }),
 )(Main);

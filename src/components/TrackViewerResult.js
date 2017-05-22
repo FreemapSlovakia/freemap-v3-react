@@ -158,5 +158,4 @@ export default connect(
     finishPoints: state.trackViewer.finishPoints,
     elevationChartActivePoint: state.elevationChart.activePoint,
   }),
-  () => ({}),
 )(TrackViewerResult);

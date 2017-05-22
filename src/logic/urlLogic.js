@@ -8,6 +8,7 @@ export const urlLogic = createLogic({
       map: { mapType, overlays, zoom, lat, lon },
       main: { tool },
       routePlanner: { start, finish, midpoints, transportType },
+      trackViewer: { trackUID },
     } = getState();
 
     const queryParts = [
@@ -20,6 +21,13 @@ export const urlLogic = createLogic({
         `tool=${tool}`,
         `transport=${transportType}`,
         `points=${[start, ...midpoints, finish].map(point => `${point.lat.toFixed(5)}/${point.lon.toFixed(5)}`).join(',')}`,
+      );
+    }
+
+    if (tool === 'track-viewer' && trackUID) {
+      queryParts.push(
+        `tool=${tool}`,
+        `track-uid=${trackUID}`,
       );
     }
 
