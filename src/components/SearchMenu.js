@@ -58,6 +58,7 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
               key={result.label + result.id}
               onMouseEnter={b(onSuggestionHighlightChange, result)}
               onMouseLeave={b(onSuggestionHighlightChange, null)}
+              onFocus={() => console.log('I am focused')}
             >
               <span>{result.tags.name} </span><br />
               <span>({result.geojson.type})</span>

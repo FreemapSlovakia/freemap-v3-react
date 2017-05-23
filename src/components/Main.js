@@ -65,6 +65,7 @@ class Main extends React.Component {
     onSetLocation: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
     expertMode: PropTypes.bool.isRequired,
+    embeddedMode: PropTypes.bool.isRequired,
   };
 
   constructor(props) {
@@ -79,6 +80,10 @@ class Main extends React.Component {
         this.props.onSetTool(null);
       }
     });
+
+    if (this.props.embeddedMode) {
+      document.body.classList.add('embedded');
+    }
   }
 
   componentWillUnmount() {
@@ -140,54 +145,58 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, lat, lon, zoom, mapType } = this.props;
+    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
       <div className="container-fluid">
         <Toasts />
-        <Row>
-          <Navbar fluid>
-            <NavbarHeader />
-            <Navbar.Collapse>
-              {tool === 'objects' && <ObjectsMenu />}
-              {(showDefaultMenu || tool === 'search') && <SearchMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu />}
-              {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
-              {tool === 'track-viewer' && <TrackViewerMenu />}
-              {activePopup === 'settings' && <Settings />}
-              {showDefaultMenu &&
-                <Nav className="hidden-sm hidden-md hidden-lg">
-                  {this.createToolMenu(NavItem)}
-                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
-                </Nav>
-              }
-              {showDefaultMenu &&
-                <Nav pullRight className="hidden-xs">
-                  <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                    {this.createMoreMenu(MenuItem)}
-                  </NavDropdown>
-                </Nav>
-              }
-              {showDefaultMenu &&
-                <Nav className="hidden-xs">
-                  <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
-                    {this.createToolMenu(MenuItem)}
-                  </NavDropdown>
-                  {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
-                </Nav>
-              }
-              {showDefaultMenu &&
-                <Nav pullRight className="hidden-sm hidden-md hidden-lg">
-                  {this.createMoreMenu(NavItem)}
-                </Nav>
-              }
-            </Navbar.Collapse>
-          </Navbar>
-        </Row>
-        <Row>
-          <ProgressIndicator active={progress} />
-        </Row>
+        {!embeddedMode &&
+          <Row>
+            <Navbar fluid>
+              <NavbarHeader />
+              <Navbar.Collapse>
+                {tool === 'objects' && <ObjectsMenu />}
+                {(showDefaultMenu || tool === 'search') && <SearchMenu />}
+                {tool === 'route-planner' && <RoutePlannerMenu />}
+                {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
+                {tool === 'track-viewer' && <TrackViewerMenu />}
+                {activePopup === 'settings' && <Settings />}
+                {showDefaultMenu &&
+                  <Nav className="hidden-sm hidden-md hidden-lg">
+                    {this.createToolMenu(NavItem)}
+                    {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
+                  </Nav>
+                }
+                {showDefaultMenu &&
+                  <Nav pullRight className="hidden-xs">
+                    <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
+                      {this.createMoreMenu(MenuItem)}
+                    </NavDropdown>
+                  </Nav>
+                }
+                {showDefaultMenu &&
+                  <Nav className="hidden-xs">
+                    <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
+                      {this.createToolMenu(MenuItem)}
+                    </NavDropdown>
+                    {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
+                  </Nav>
+                }
+                {showDefaultMenu &&
+                  <Nav pullRight className="hidden-sm hidden-md hidden-lg">
+                    {this.createMoreMenu(NavItem)}
+                  </Nav>
+                }
+              </Navbar.Collapse>
+            </Navbar>
+          </Row>
+        }
+        {!embeddedMode &&
+          <Row>
+            <ProgressIndicator active={progress} />
+          </Row>
+        }
         <Row className={`map-holder active-map-type-${mapType}`}>
           <Map
             ref={(map) => { this.map = map; }}
@@ -238,6 +247,7 @@ export default connect(
     progress: state.main.progress,
     mouseCursor: state.map.mouseCursor,
     expertMode: state.main.expertMode,
+    embeddedMode: state.main.embeddedMode,
   }),
   dispatch => ({
     onSetTool(tool) {

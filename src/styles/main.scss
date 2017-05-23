@@ -13,6 +13,10 @@
   top: 56px;
 }
 
+body.embedded .leaflet-container {
+  top: 0;
+}
+
 .navbar {
   margin-bottom: 0;
   z-index: 2;
