@@ -74,6 +74,11 @@ class Main extends React.Component {
 
   componentDidMount() {
     setMapLeafletElement(this.map.leafletElement);
+    document.addEventListener('keydown', (event) => {
+      if (event.keyCode === 27) { // Escape key
+        this.props.onSetTool(null);
+      }
+    });
   }
 
   componentWillUnmount() {
