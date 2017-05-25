@@ -91,17 +91,19 @@ class TrackViewerMenu extends React.Component {
     if (isActive) {
       this.props.onElevationChartClose();
     } else {
-      this.props.onElevationChartSetTrackGeojson(this.props.trackGeojson);
+      // this is bit confusing. TrackViewerMenu.props.trackGeojson is actually a feature set of geojsons (thought typically contains only one geojson), while in ElevationChart.props.trackGeojson we use first "real" feature, e.g. LineString
+      this.props.onElevationChartSetTrackGeojson(this.props.trackGeojson.features[0]);
     }
   }
 
   trackGeojsonIsSuitableForElevationChart = () => {
     const trackGeojson = this.props.trackGeojson;
-    const isLineString = trackGeojson && trackGeojson.features.length && trackGeojson.features[0] && trackGeojson.features[0].geometry.type === 'LineString';
-    if (isLineString) {
-      const hasEle = trackGeojson.features[0].geometry.coordinates[0].length === 3;
-      return hasEle;
+    if (trackGeojson && trackGeojson.features) {
+      const firstGeojsonFeature = trackGeojson.features[0];
+      const isLineString = firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString';
+      return isLineString;
     }
+
     return false;
   }
 

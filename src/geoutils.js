@@ -108,3 +108,6 @@ export function sliceToGeojsonPoylines(polylineLatLons, splitPoints) {
   return slices;
 }
 
+export function containsElevations(geojson) {
+  return geojson.geometry.coordinates[0].length === 3;
+}
