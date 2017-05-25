@@ -6,6 +6,7 @@ import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import strftime from 'strftime';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
+import { elevationChartProfilePoint } from 'fm3/propTypes';
 
 class TrackViewerResult extends React.Component {
 
@@ -22,12 +23,7 @@ class TrackViewerResult extends React.Component {
       lengthInKm: PropTypes.number.isRequired,
       finishTime: PropTypes.string,
     })),
-    elevationChartActivePoint: PropTypes.shape({
-      lat: PropTypes.number,
-      lon: PropTypes.number,
-      ele: PropTypes.number,
-      distanceFromStartInMeters: PropTypes.number,
-    }),
+    elevationChartActivePoint: elevationChartProfilePoint,
   }
 
   state = {

@@ -1,20 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Line } from 'react-chartjs-2';
+import PropTypes from 'prop-types';
 
 import { elevationChartSetActivePoint, elevationChartRemoveActivePoint } from 'fm3/actions/elevationChartActions';
+import { elevationChartProfilePoint } from 'fm3/propTypes';
 
 import 'fm3/styles/elevationChart.scss';
 
 class ElevationChart extends React.Component {
   static propTypes = {
-    elevationProfilePoints: PropTypes.arrayOf(PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-      ele: PropTypes.number.isRequired,
-      distanceFromStartInMeters: PropTypes.number.isRequired,
-    })),
+    elevationProfilePoints: PropTypes.arrayOf(elevationChartProfilePoint),
     setActivePoint: PropTypes.func.isRequired,
     removeActivePoint: PropTypes.func.isRequired,
   }

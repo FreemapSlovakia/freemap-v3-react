@@ -34,6 +34,13 @@ export const point = PropTypes.shape({
   lon: PropTypes.number.isRequired,
 });
 
+export const elevationChartProfilePoint = PropTypes.shape({
+  lat: PropTypes.number,
+  lon: PropTypes.number,
+  ele: PropTypes.number,
+  distanceFromStartInMeters: PropTypes.number,
+});
+
 export const points = PropTypes.arrayOf(point);
 
 export const tool = PropTypes.oneOf(['search', 'objects', 'route-planner',
