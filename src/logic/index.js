@@ -1,4 +1,5 @@
 import routePlannerLogic from 'fm3/logic/routePlannerLogic';
+import elevationChartLogic from 'fm3/logic/elevationChartLogic';
 import elevationMeasurementLogic from 'fm3/logic/elevationMeasurementLogic';
 import objectsLogic from 'fm3/logic/objectsLogic';
 import searchLogic from 'fm3/logic/searchLogic';
@@ -11,6 +12,7 @@ import urlLogic from 'fm3/logic/urlLogic';
 
 export default [
   ...routePlannerLogic,
+  elevationChartLogic,
   elevationMeasurementLogic,
   searchLogic,
   ...objectsLogic,

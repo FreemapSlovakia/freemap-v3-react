@@ -6,6 +6,7 @@ const initialState = {
     ele: null,
     distanceFromStartInMeters: null,
   },
+  elevationProfilePoints: null,
 };
 
 export default function elevationChart(state = initialState, action) {
@@ -18,6 +19,8 @@ export default function elevationChart(state = initialState, action) {
       };
     case 'ELEVATION_CHART_REMOVE_ACTIVE_POINT':
       return { ...state, activePoint: initialState.activePoint };
+    case 'ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS':
+      return { ...state, elevationProfilePoints: action.payload.elevationProfilePoints };
     case 'MAP_RESET':
     case 'ELEVATION_CHART_CLOSE':
       return initialState;

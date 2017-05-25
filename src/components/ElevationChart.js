@@ -2,9 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Line } from 'react-chartjs-2';
-import turfLineDistance from '@turf/line-distance';
-
-import { distance } from 'fm3/geoutils';
 
 import { elevationChartSetActivePoint, elevationChartRemoveActivePoint } from 'fm3/actions/elevationChartActions';
 
@@ -12,50 +9,20 @@ import 'fm3/styles/elevationChart.scss';
 
 class ElevationChart extends React.Component {
   static propTypes = {
-    trackGeojson: PropTypes.object, // eslint-disable-line
+    elevationProfilePoints: PropTypes.arrayOf(PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+      ele: PropTypes.number.isRequired,
+      distanceFromStartInMeters: PropTypes.number.isRequired,
+    })),
     setActivePoint: PropTypes.func.isRequired,
     removeActivePoint: PropTypes.func.isRequired,
   }
 
-  computeChartData = () => {
-    const { trackGeojson } = this.props;
-
-    const totalDistanceInKm = turfLineDistance(trackGeojson);
-    let deltaInMeters;
-    if (totalDistanceInKm < 1.0) {
-      deltaInMeters = 5;
-    } else if (totalDistanceInKm < 5.0) {
-      deltaInMeters = 25;
-    } else if (totalDistanceInKm < 10.0) {
-      deltaInMeters = 50;
-    } else if (totalDistanceInKm < 50.0) {
-      deltaInMeters = 250;
-    } else {
-      deltaInMeters = 500;
-    }
-
-    const lonLatEleCoords = trackGeojson.features[0].geometry.coordinates;
-    let distanceFromStartInMeters = 0.0;
-    let currentXAxisPointCounter = 0;
-    let prevLonlatEle = null;
-    const eleForXAxisPoints = [];
-    const fullDetailChartPoints = [];
-    lonLatEleCoords.forEach(([lon, lat, ele]) => {
-      if (prevLonlatEle) {
-        const [prevLon, prevLat] = prevLonlatEle;
-        const distanceToPreviousPointInMeters = distance(lat, lon, prevLat, prevLon);
-        distanceFromStartInMeters += distanceToPreviousPointInMeters;
-        if (currentXAxisPointCounter * deltaInMeters <= distanceFromStartInMeters) {
-          eleForXAxisPoints.push(ele);
-          fullDetailChartPoints.push({ lat, lon, ele, distanceFromStartInMeters });
-          currentXAxisPointCounter += 1;
-        }
-      }
-      prevLonlatEle = [lon, lat, ele];
-    });
-
-    const xAxisLabels = eleForXAxisPoints.map((ele, i) => (i * deltaInMeters / 1000).toFixed(1));
-    const dataForChartJS = {
+  dataForChartJS = () => {
+    const elevationProfilePoints = this.props.elevationProfilePoints;
+    const xAxisLabels = elevationProfilePoints.map(({ distanceFromStartInMeters }) => (distanceFromStartInMeters / 1000).toFixed(1));
+    return {
       xLabels: xAxisLabels,
       datasets: [
         {
@@ -76,32 +43,22 @@ class ElevationChart extends React.Component {
           pointHoverBorderWidth: 1,
           pointRadius: 1,
           pointHitRadius: 5,
-          data: eleForXAxisPoints,
+          data: elevationProfilePoints.map(p => p.ele),
         },
       ],
     };
-
-    return { dataForChartJS, fullDetailChartPoints };
   }
 
-  render() {
-    const { trackGeojson, setActivePoint, removeActivePoint } = this.props;
-    let dataForChartJS = {};
-    let fullDetailChartPoints = [];
-    if (trackGeojson) {
-      const result = this.computeChartData();
-      dataForChartJS = result.dataForChartJS;
-      fullDetailChartPoints = result.fullDetailChartPoints;
-    }
-
-    const chartJSOptions = {
+  optionsForChartJS = () => {
+    const { elevationProfilePoints, setActivePoint, removeActivePoint } = this.props;
+    return {
       tooltips: {
         enabled: false,
         custom: (tooltip) => {
           if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
             const dataPoint = tooltip.dataPoints[0];
-            const fullDetailPoint = fullDetailChartPoints[dataPoint.index];
-            setActivePoint(fullDetailPoint);
+            const eleDetailPoint = elevationProfilePoints[dataPoint.index];
+            setActivePoint(eleDetailPoint);
           } else {
             removeActivePoint();
           }
@@ -133,11 +90,14 @@ class ElevationChart extends React.Component {
         }],
       },
     };
+  }
 
+  render() {
+    const { elevationProfilePoints } = this.props;
     return (
-      trackGeojson &&
+      elevationProfilePoints &&
       <div id="elevationChart">
-        <Line options={chartJSOptions} data={dataForChartJS} />
+        <Line options={this.optionsForChartJS()} data={this.dataForChartJS()} />
       </div>
     );
   }
@@ -145,7 +105,7 @@ class ElevationChart extends React.Component {
 
 export default connect(
   state => ({
-    trackGeojson: state.elevationChart.trackGeojson,
+    elevationProfilePoints: state.elevationChart.elevationProfilePoints,
   }),
   dispatch => ({
     setActivePoint(activePoint) {
