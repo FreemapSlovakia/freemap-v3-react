@@ -22,6 +22,8 @@ export default function elevationChart(state = initialState, action) {
     case 'ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS':
       return { ...state, elevationProfilePoints: action.payload.elevationProfilePoints };
     case 'MAP_RESET':
+    case 'SET_TOOL':
+    case 'ROUTE_PLANNER_SET_RESULT':
     case 'ELEVATION_CHART_CLOSE':
       return initialState;
     default:

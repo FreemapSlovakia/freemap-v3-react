@@ -14,13 +14,15 @@ import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportTy
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerExportGpx } from 'fm3/actions/routePlannerActions';
 import { setTool, setActivePopup, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
 
 function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportType,
     onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
-    onToggleItineraryVisibility, itineraryIsVisible, onStartProgress, onStopProgress, onGpxExport, routeFound }) {
+    onToggleItineraryVisibility, itineraryIsVisible, onToggleElevationChartVisibility, elevationProfileIsVisible, onStartProgress, onStopProgress,
+    onGpxExport, routeFound, shapePoints }) {
   // TODO move to logic
   function setFromCurrentPosition(pointType) {
     onStartProgress();
@@ -89,6 +91,11 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
           <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
         </Button>
         {' '}
+        { routeFound &&
+          <Button onClick={() => onToggleElevationChartVisibility(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
+          </Button> }
+        {' '}
         <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
           <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
         </Button>
@@ -116,10 +123,13 @@ RoutePlannerMenu.propTypes = {
   }),
   onToggleItineraryVisibility: PropTypes.func.isRequired,
   itineraryIsVisible: PropTypes.bool.isRequired,
+  onToggleElevationChartVisibility: PropTypes.func.isRequired,
+  elevationProfileIsVisible: PropTypes.bool.isRequired,
   onStartProgress: PropTypes.func.isRequired,
   onStopProgress: PropTypes.func.isRequired,
   onGpxExport: PropTypes.func.isRequired,
   routeFound: PropTypes.bool.isRequired,
+  shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
   onGetCurrentPositionError: PropTypes.func.isRequired,
   onMissingHomeLocation: PropTypes.func.isRequired,
 };
@@ -131,6 +141,8 @@ export default connect(
     pickPointMode: state.routePlanner.pickMode,
     itineraryIsVisible: state.routePlanner.itineraryIsVisible,
     routeFound: !!state.routePlanner.shapePoints,
+    shapePoints: state.routePlanner.shapePoints,
+    elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
   }),
   dispatch => ({
     onSetStart(start) {
@@ -141,6 +153,20 @@ export default connect(
     },
     onToggleItineraryVisibility() {
       dispatch(routePlannerToggleItineraryVisibility());
+    },
+    onToggleElevationChartVisibility(shapePoints, elevationProfileIsVisible) {
+      if (elevationProfileIsVisible) {
+        dispatch(elevationChartClose());
+      } else {
+        const geojson = {
+          type: 'Feature',
+          geometry: {
+            type: 'LineString',
+            coordinates: shapePoints.map(latlon => [latlon[1], latlon[0]]),
+          },
+        };
+        dispatch(elevationChartSetTrackGeojson(geojson));
+      }
     },
     onChangeTransportType(transportType) {
       dispatch(routePlannerSetTransportType(transportType));
