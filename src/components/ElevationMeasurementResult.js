@@ -42,17 +42,17 @@ class ElevationMeasurementResult extends React.Component {
     this.props.onPointSet({ lat, lon });
   }
 
-  handleDragStart() {
+  handleDragStart = () => {
     this.props.onClearElevation(null);
   }
 
-  handleDragEnd(event) {
+  handleDragEnd = (event) => {
     const { lat, lng: lon } = event.target.getLatLng();
     this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
   }
 
-  handleDrag(event) {
+  handleDrag = (event) => {
     const { lat, lng: lon } = event.target.getLatLng();
     this.setState({ point: { lat, lon } });
   }
@@ -60,16 +60,15 @@ class ElevationMeasurementResult extends React.Component {
   render() {
     const { point, elevation } = this.props;
     const { point: tmpPoint } = this.state;
-    const b = (fn, ...args) => fn.bind(this, ...args);
 
     const p = tmpPoint || point;
 
     return point && (
       <MarkerWithAutoOpeningPopup
         position={L.latLng(p.lat, p.lon)}
-        onDragstart={b(this.handleDragStart)}
-        onDragend={b(this.handleDragEnd)}
-        onDrag={b(this.handleDrag)}
+        onDragstart={this.handleDragStart}
+        onDragend={this.handleDragEnd}
+        onDrag={this.handleDrag}
         draggable
       >
 
