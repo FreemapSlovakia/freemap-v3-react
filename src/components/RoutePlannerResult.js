@@ -6,7 +6,7 @@ import turfAlong from '@turf/along';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
-
+import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -88,7 +88,7 @@ class RoutePlannerResult extends React.Component {
   }
 
   render() {
-    const { start, midpoints, finish, shapePoints, time, distance, itinerary, itineraryIsVisible, elevationChartActivePoint } = this.props;
+    const { start, midpoints, finish, shapePoints, time, distance, itinerary, itineraryIsVisible } = this.props;
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
@@ -181,20 +181,7 @@ class RoutePlannerResult extends React.Component {
           />
         }
 
-        {elevationChartActivePoint.lat &&
-          <MarkerWithInnerLabel
-            faIcon="info"
-            faIconLeftPadding="2px"
-            color="grey"
-            interactive={false}
-            position={L.latLng(elevationChartActivePoint.lat, elevationChartActivePoint.lon)}
-          >
-            <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-              <span>
-                {(elevationChartActivePoint.distanceFromStartInMeters / 1000).toFixed(1)}km, {elevationChartActivePoint.ele.toFixed(0)} m.n.m
-              </span>
-            </Tooltip>
-          </MarkerWithInnerLabel>}
+        <ElevationChartActivePoint />
       </div>
     );
   }
@@ -222,7 +209,6 @@ RoutePlannerResult.propTypes = {
   pickMode: PropTypes.string,
   onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
   onResetMouseCursor: PropTypes.func.isRequired,
-  elevationChartActivePoint: FmPropTypes.elevationChartProfilePoint,
 };
 
 export default connect(
@@ -236,7 +222,6 @@ export default connect(
     distance: state.routePlanner.distance,
     itinerary: state.routePlanner.itinerary,
     itineraryIsVisible: state.routePlanner.itineraryIsVisible,
-    elevationChartActivePoint: state.elevationChart.activePoint,
   }),
   dispatch => ({
     onSetStart(start) {

@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
+import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import strftime from 'strftime';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
-import { elevationChartProfilePoint } from 'fm3/propTypes';
 
 class TrackViewerResult extends React.Component {
 
@@ -23,7 +23,6 @@ class TrackViewerResult extends React.Component {
       lengthInKm: PropTypes.number.isRequired,
       finishTime: PropTypes.string,
     })),
-    elevationChartActivePoint: elevationChartProfilePoint,
   }
 
   state = {
@@ -68,7 +67,7 @@ class TrackViewerResult extends React.Component {
   }
 
   render() {
-    const { trackGeojson, startPoints, finishPoints, elevationChartActivePoint } = this.props;
+    const { trackGeojson, startPoints, finishPoints } = this.props;
     const keyToAssureProperRefresh = JSON.stringify(trackGeojson).length; // otherwise GeoJSON will still display the first data
 
     return trackGeojson && (
@@ -128,20 +127,7 @@ class TrackViewerResult extends React.Component {
               </Tooltip>
             </MarkerWithInnerLabel>}
 
-          {elevationChartActivePoint.lat &&
-            <MarkerWithInnerLabel
-              faIcon="info"
-              faIconLeftPadding="2px"
-              color="grey"
-              interactive={false}
-              position={L.latLng(elevationChartActivePoint.lat, elevationChartActivePoint.lon)}
-            >
-              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-                <span>
-                  {(elevationChartActivePoint.distanceFromStartInMeters / 1000).toFixed(1)}km, {elevationChartActivePoint.ele.toFixed(0)} m.n.m
-                </span>
-              </Tooltip>
-            </MarkerWithInnerLabel>}
+        <ElevationChartActivePoint />
       </div>
     );
   }
@@ -152,6 +138,5 @@ export default connect(
     trackGeojson: state.trackViewer.trackGeojson,
     startPoints: state.trackViewer.startPoints,
     finishPoints: state.trackViewer.finishPoints,
-    elevationChartActivePoint: state.elevationChart.activePoint,
   }),
 )(TrackViewerResult);
