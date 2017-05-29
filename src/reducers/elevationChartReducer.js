@@ -24,6 +24,9 @@ export default function elevationChart(state = initialState, action) {
     case 'MAP_RESET':
     case 'SET_TOOL':
     case 'ROUTE_PLANNER_SET_RESULT':
+    case 'DISTANCE_MEASUREMENT_ADD_POINT':
+    case 'DISTANCE_MEASUREMENT_UPDATE_POINT':
+    case 'DISTANCE_MEASUREMENT_REMOVE_POINT':
     case 'ELEVATION_CHART_CLOSE':
       return initialState;
     default:
