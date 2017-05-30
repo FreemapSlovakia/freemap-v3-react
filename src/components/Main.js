@@ -143,6 +143,11 @@ class Main extends React.Component {
     ];
   }
 
+  openFreemapInNonEmbedMode = () => {
+    const currentURL = window.location.href;
+    window.open(currentURL.replace('&embed=true', ''), '_blank');
+  }
+
   render() {
     // eslint-disable-next-line
     const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
@@ -150,6 +155,7 @@ class Main extends React.Component {
 
     return (
       <div className="container-fluid">
+        {embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} />}
         <Toasts />
         {!embeddedMode &&
           <Row>

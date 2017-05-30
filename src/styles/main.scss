@@ -46,9 +46,20 @@ a.leaflet-control-layers-toggle {
   background-image: url(../images/icon-satellite.png);
 }
 
+button#freemap-logo.embedded {
+  position: absolute;
+  bottom: 2px;
+  left: 9px;
+  z-index: 1;
+}
+
 @media ($smartphone-screen) { // issue #71
   .navbar-form {
     border-top: 0;
     margin-top: 0;
+  }
+
+  button#freemap-logo.embedded {
+    left: 0;
   }
 }
