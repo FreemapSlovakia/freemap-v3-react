@@ -2,11 +2,11 @@ import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
 
 export const urlLogic = createLogic({
-  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL'],
+  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE'],
   process({ getState }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
-      main: { tool },
+      main: { embeddedMode, tool },
       routePlanner: { start, finish, midpoints, transportType },
       trackViewer: { trackUID },
     } = getState();
@@ -29,6 +29,10 @@ export const urlLogic = createLogic({
         `tool=${tool}`,
         `track-uid=${trackUID}`,
       );
+    }
+
+    if (embeddedMode) {
+      queryParts.push('embed=true');
     }
 
     history.replace({

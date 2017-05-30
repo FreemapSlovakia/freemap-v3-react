@@ -2,6 +2,7 @@ import queryString from 'query-string';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 
+import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
@@ -22,6 +23,10 @@ export default function handleLocationChange(store, location) {
   // TODO once we start listening for the location changes then we should not dispatch actions if nothing changes here
   if (query.tool === 'track-viewer' && query['track-uid']) {
     store.dispatch(trackViewerDownloadTrack(query['track-uid']));
+  }
+
+  if (query.embed === 'true') {
+    store.dispatch(setEmbeddedMode());
   }
 
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);

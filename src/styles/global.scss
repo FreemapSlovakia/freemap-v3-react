@@ -3,6 +3,10 @@
 body {
     margin: 0;
     height: calc(100% - 56px);
+
+    &.embedded{
+      height: 100%;
+    }
 }
 
 html, .map-holder, #app, #app > div, .container-fluid {
