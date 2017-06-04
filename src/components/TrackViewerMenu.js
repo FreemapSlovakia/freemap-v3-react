@@ -73,7 +73,7 @@ class TrackViewerMenu extends React.Component {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          data: btoa(this.props.trackGpx),
+          data: btoa(unescape(encodeURIComponent(this.props.trackGpx))),
           mediaType: 'application/gpx+xml',
         }),
       }).then(res => res.json())
