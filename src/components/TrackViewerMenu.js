@@ -13,7 +13,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
+import { setTool, setActivePopup, closePopup, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerResetData, trackViewerSetTrackUID, trackViewerResetTrackUID } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -66,6 +66,7 @@ class TrackViewerMenu extends React.Component {
     } else if (this.props.trackGpx.length > (MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
       this.props.onLoadError(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`);
     } else {
+      this.props.onStartProgress();
       fetch(`${API_URL}/tracklogs`, {
         method: 'POST',
         headers: {
@@ -80,8 +81,12 @@ class TrackViewerMenu extends React.Component {
       .then((res) => {
         this.props.onSetTrackUID(res.uid);
         this.props.onLaunchPopup('track-viewer-share');
-      }).catch((e) => {
+      })
+      .catch((e) => {
         this.props.onLoadError(`Nepodarilo sa nahrať súbor: ${e}`);
+      })
+      .then(() => {
+        this.props.onStopProgress();
       });
     }
   }
@@ -185,6 +190,8 @@ TrackViewerMenu.propTypes = {
   onElevationChartSetTrackGeojson: PropTypes.func.isRequired,
   onElevationChartClose: PropTypes.func.isRequired,
   elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
+  onStartProgress: PropTypes.func.isRequired,
+  onStopProgress: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -221,6 +228,12 @@ export default connect(
     },
     onElevationChartClose() {
       dispatch(elevationChartClose());
+    },
+    onStartProgress() {
+      dispatch(startProgress());
+    },
+    onStopProgress() {
+      dispatch(stopProgress());
     },
     onLoadError(message) {
       dispatch(toastsAdd({
