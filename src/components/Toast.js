@@ -9,7 +9,7 @@ import 'fm3/styles/toasts.scss';
 export default class Toast extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
-    message: PropTypes.string.isRequired,
+    message: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]),
     style: PropTypes.string,
     onAction: PropTypes.func.isRequired,
     onStopTimeout: PropTypes.func.isRequired,

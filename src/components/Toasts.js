@@ -33,7 +33,7 @@ Toasts.propTypes = {
   toasts: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
-      message: PropTypes.string.isRequired,
+      message: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]),
       style: PropTypes.string,
       actions: PropTypes.arrayOf(
         PropTypes.shape({

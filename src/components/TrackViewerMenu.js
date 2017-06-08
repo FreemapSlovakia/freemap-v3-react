@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
+import strftime from 'strftime';
 
 import Nav from 'react-bootstrap/lib/Nav';
 import Navbar from 'react-bootstrap/lib/Navbar';
@@ -93,6 +94,22 @@ class TrackViewerMenu extends React.Component {
     return false;
   }
 
+  showTrackInfo = () => {
+    const startTime = new Date(this.props.startPoints[0].startTime);
+    const finishTime = new Date(this.props.finishPoints[0].finishTime);
+    const duration = new Date(finishTime - startTime);
+    const lengthInKm = this.props.finishPoints[0].lengthInKm;
+    const infoMessage = (
+      <div style={{ whiteSpace: 'nowrap' }}>
+        <div>čas štartu: {strftime('%H:%M', startTime)}</div>
+        <div>čas v cieli: {strftime('%H:%M', finishTime)}</div>
+        <div>trvanie: {strftime('%k', duration)}h {strftime('%M', duration)}m</div>
+        <div>vzdialenosť: {lengthInKm.toFixed(1)}km</div>
+      </div>
+    );
+    this.props.onShowTrackInfo(infoMessage);
+  }
+
   render() {
     const { activePopup, onCancel, onLaunchPopup, onClosePopup, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
 
@@ -110,6 +127,12 @@ class TrackViewerMenu extends React.Component {
           {this.trackGeojsonIsSuitableForElevationChart() &&
             <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
               <FontAwesomeIcon icon="bar-chart" /> Výškový profil
+            </Button>
+          }
+          {' '}
+          {this.trackGeojsonIsSuitableForElevationChart() &&
+            <Button onClick={this.showTrackInfo}>
+              <FontAwesomeIcon icon="info-circle" /> Viac info
             </Button>
           }
           {' '}
@@ -171,6 +194,14 @@ TrackViewerMenu.propTypes = {
   onElevationChartSetTrackGeojson: PropTypes.func.isRequired,
   onElevationChartClose: PropTypes.func.isRequired,
   elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
+  onShowTrackInfo: PropTypes.func.isRequired,
+  startPoints: PropTypes.arrayOf(PropTypes.shape({
+    startTime: PropTypes.string,
+  })),
+  finishPoints: PropTypes.arrayOf(PropTypes.shape({
+    lengthInKm: PropTypes.number.isRequired,
+    finishTime: PropTypes.string,
+  })),
 };
 
 export default connect(
@@ -178,6 +209,8 @@ export default connect(
     activePopup: state.main.activePopup,
     trackGeojson: state.trackViewer.trackGeojson,
     trackGpx: state.trackViewer.trackGpx,
+    startPoints: state.trackViewer.startPoints,
+    finishPoints: state.trackViewer.finishPoints,
     trackUID: state.trackViewer.trackUID,
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
   }),
@@ -207,6 +240,13 @@ export default connect(
     },
     onElevationChartClose() {
       dispatch(elevationChartClose());
+    },
+    onShowTrackInfo(message) {
+      dispatch(toastsAdd({
+        collapseKey: 'trackViewer.trackInfo',
+        message,
+        style: 'info',
+      }));
     },
     onLoadError(message) {
       dispatch(toastsAdd({
