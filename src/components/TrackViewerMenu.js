@@ -95,16 +95,43 @@ class TrackViewerMenu extends React.Component {
   }
 
   showTrackInfo = () => {
+    const tableData = [];
     const startTime = new Date(this.props.startPoints[0].startTime);
     const finishTime = new Date(this.props.finishPoints[0].finishTime);
     const duration = new Date(finishTime - startTime);
     const lengthInKm = this.props.finishPoints[0].lengthInKm;
+
+    const firstRealFeature = this.props.trackGeojson.features[0];
+    const coords = firstRealFeature.geometry.coordinates;
+    let minEle = Infinity;
+    let maxEle = -Infinity;
+    coords.forEach((latLonEle) => {
+      const ele = latLonEle[2];
+      if (ele < minEle) {
+        minEle = ele;
+      }
+      if (maxEle < ele) {
+        maxEle = ele;
+      }
+    });
+    tableData.push(['čas štartu', strftime('%H:%M', startTime)]);
+    tableData.push(['čas v cieli', strftime('%H:%M', finishTime)]);
+    tableData.push(['trvanie', `${strftime('%k', duration)}h ${strftime('%M', duration)}m`]);
+    tableData.push(['vzdialenosť', `${lengthInKm.toFixed(1)}km`]);
+    tableData.push(['najvyšší bod', `${maxEle.toFixed(0)} m.n.m.`]);
+    tableData.push(['najnižší bod', `${minEle.toFixed(0)} m.n.m.`]);
     const infoMessage = (
-      <div style={{ whiteSpace: 'nowrap' }}>
-        <div>čas štartu: {strftime('%H:%M', startTime)}</div>
-        <div>čas v cieli: {strftime('%H:%M', finishTime)}</div>
-        <div>trvanie: {strftime('%k', duration)}h {strftime('%M', duration)}m</div>
-        <div>vzdialenosť: {lengthInKm.toFixed(1)}km</div>
+      <div className="trackInfo">
+        <table className="trackInfoTable">
+          <tbody>
+            { tableData.map(labelAndValue => (
+              <tr key={labelAndValue[0]}>
+                <td>{labelAndValue[0]}:</td>
+                <td className="infoValue">{labelAndValue[1]}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     );
     this.props.onShowTrackInfo(infoMessage);
