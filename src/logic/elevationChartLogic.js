@@ -9,7 +9,7 @@ import { MAPQUEST_API_KEY } from 'fm3/backendDefinitions';
 
 export default createLogic({
   type: 'ELEVATION_CHART_SET_TRACK_GEOJSON',
-  cancelType: ['ELEVATION_CHART_SET_TRACK_GEOJSON', 'SET_TOOL'],
+  cancelType: ['ELEVATION_CHART_SET_TRACK_GEOJSON', 'SET_TOOL', 'MAP_RESET'],
   process({ getState }, dispatch, done) {
     const trackGeojson = getState().elevationChart.trackGeojson;
     const totalDistanceInKm = turfLineDistance(trackGeojson);

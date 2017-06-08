@@ -8,7 +8,7 @@ import { exportGpx, createElement } from 'fm3/gpxExporter';
 
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
-  cancelType: ['OBJECTS_SET_FILTER', 'SET_TOOL'],
+  cancelType: ['OBJECTS_SET_FILTER', 'SET_TOOL', 'MAP_RESET'],
   process({ getState, action: { payload } }, dispatch, done) {
     const b = getMapLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
@@ -32,7 +32,7 @@ export const objectsFetchLogic = createLogic({
         }));
         dispatch(objectsSetResult(result));
       })
-      // .catch(e => console.error(e))
+      .catch(() => {})
       .then(() => {
         dispatch(stopProgress());
         done();

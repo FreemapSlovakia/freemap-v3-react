@@ -4,7 +4,7 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 export default createLogic({
   type: 'ELEVATION_MEASUREMENT_SET_POINT',
-  cancelType: ['ELEVATION_MEASUREMENT_SET_POINT', 'SET_TOOL'],
+  cancelType: ['ELEVATION_MEASUREMENT_SET_POINT', 'SET_TOOL', 'MAP_RESET'],
   process({ getState }, dispatch, done) {
     const point = getState().elevationMeasurement.point;
     if (point) {

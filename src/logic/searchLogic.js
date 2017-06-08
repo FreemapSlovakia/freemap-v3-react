@@ -5,7 +5,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
-  cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL'],
+  cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL', 'MAP_RESET'],
   process({ getState }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {

@@ -33,6 +33,7 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
+import GalleryResult from 'fm3/components/GalleryResult';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
@@ -233,6 +234,8 @@ class Main extends React.Component {
             {tool === 'location' && <LocationResult />}
 
             {tool === 'track-viewer' && <TrackViewerResult />}
+
+            {tool === null && overlays.includes('I') && <GalleryResult />}
             <ElevationChart />
           </Map>
         </Row>

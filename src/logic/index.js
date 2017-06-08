@@ -9,6 +9,7 @@ import trackViewerLogic from 'fm3/logic/trackViewerLogic';
 import distanceMeasurementExportGpxLogic from 'fm3/logic/distanceMeasurementLogic';
 import toastsLogic from 'fm3/logic/toastsLogic';
 import urlLogic from 'fm3/logic/urlLogic';
+import galleryLogic from 'fm3/logic/galleryLogic';
 
 export default [
   ...routePlannerLogic,
@@ -22,4 +23,5 @@ export default [
   distanceMeasurementExportGpxLogic,
   ...toastsLogic,
   urlLogic,
+  ...galleryLogic,
 ];
