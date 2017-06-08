@@ -35,7 +35,7 @@ class GalleryResult extends React.Component {
   render() {
     const { images, onClose } = this.props;
     return (
-      <Modal show={images.length} onHide={onClose}>
+      <Modal show={images.length > 0} onHide={onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Obrázky</Modal.Title>
         </Modal.Header>

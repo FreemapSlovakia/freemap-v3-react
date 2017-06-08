@@ -38,8 +38,7 @@ if (appState) {
   store.dispatch(mapLoadState(appState.map));
 }
 
-// NOTE so far there is no need to listen this because manual change reloads the app
-// history.listen(handleLocationChange.bind(undefined, store));
+history.listen(handleLocationChange.bind(undefined, store));
 
 handleLocationChange(store, history.location);
 

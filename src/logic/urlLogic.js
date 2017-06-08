@@ -35,9 +35,11 @@ export const urlLogic = createLogic({
       queryParts.push('embed=true');
     }
 
-    history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({
-      search: `?${queryParts.join('&')}`,
-    });
+    const search = `?${queryParts.join('&')}`;
+
+    if (location.search !== search) {
+      history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ search });
+    }
 
     done();
   },
