@@ -17,3 +17,7 @@ export function trackViewerResetTrackUID() {
 export function trackViewerDownloadTrack(trackUID) {
   return { type: 'TRACK_VIEWER_DOWNLOAD_TRACK', payload: { trackUID } };
 }
+
+export function trackViewerUploadTrack() {
+  return { type: 'TRACK_VIEWER_UPLOAD_TRACK' };
+}

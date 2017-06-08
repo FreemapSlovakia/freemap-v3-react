@@ -1,9 +1,11 @@
 import { createLogic } from 'redux-logic';
 import turfLineDistance from '@turf/line-distance';
 import toGeoJSON from '@mapbox/togeojson';
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { trackViewerSetData, trackViewerSetTrackUID } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { API_URL } from 'fm3/backendDefinitions';
+
+import { API_URL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
 
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
@@ -45,14 +47,14 @@ export const trackViewerDownloadTrackLogic = createLogic({
     fetch(`${API_URL}/tracklogs/${trackUID}`)
       .then(res => res.json()).then((payload) => {
         if (payload.error) {
-          dispatch(createErrorToast(payload.error));
+          dispatch(createErrorToast(`Nastala chyba pri získavaní GPX záznamu: ${payload.error}`));
         } else {
           const trackGpx = atob(payload.data);
           dispatch(trackViewerSetData(trackGpx));
         }
       })
       .catch((e) => {
-        dispatch(createErrorToast(e));
+        dispatch(createErrorToast(`Nastala chyba pri získavaní GPX záznamu: ${e}`));
       })
       .then(() => {
         done();
@@ -60,9 +62,42 @@ export const trackViewerDownloadTrackLogic = createLogic({
   },
 });
 
+export const trackViewerUploadTrackLogic = createLogic({
+  type: 'TRACK_VIEWER_UPLOAD_TRACK',
+  process({ getState }, dispatch, done) {
+    const trackGpx = getState().trackViewer.trackGpx;
+    if (trackGpx.length > (MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
+      dispatch(createErrorToast(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`));
+    } else {
+      dispatch(startProgress());
+      fetch(`${API_URL}/tracklogs`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          data: btoa(unescape(encodeURIComponent(trackGpx))),
+          mediaType: 'application/gpx+xml',
+        }),
+      }).then(res => res.json())
+      .then((res) => {
+        dispatch(trackViewerSetTrackUID(res.uid));
+      })
+      .catch((e) => {
+        dispatch(createErrorToast(`Nepodarilo sa nahrať súbor: ${e}`));
+      })
+      .then(() => {
+        dispatch(stopProgress());
+        done();
+      });
+    }
+  },
+});
+
 function createErrorToast(errorText) {
   return toastsAdd({
-    message: `Nastala chyba pri získavaní GPX záznamu: ${errorText}`,
+    message: errorText,
     style: 'danger',
     timeout: 3000,
     actions: [{ name: 'OK' }],
@@ -72,4 +107,5 @@ function createErrorToast(errorText) {
 export default [
   trackViewerSetTrackDataLogic,
   trackViewerDownloadTrackLogic,
+  trackViewerUploadTrackLogic,
 ];
