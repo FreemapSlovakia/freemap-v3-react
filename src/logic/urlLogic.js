@@ -2,7 +2,7 @@ import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
 
 export const urlLogic = createLogic({
-  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE'],
+  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE', 'MAP_RESET'],
   process({ getState }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
