@@ -97,10 +97,17 @@ class TrackViewerMenu extends React.Component {
   showTrackInfo = () => {
     const tableData = [];
     const startTime = new Date(this.props.startPoints[0].startTime);
+    tableData.push(['čas štartu', strftime('%H:%M', startTime)]);
     const finishTime = new Date(this.props.finishPoints[0].finishTime);
-    const duration = new Date(finishTime - startTime);
+    tableData.push(['čas v cieli', strftime('%H:%M', finishTime)]);
+    const durationWithTimezone = new Date(finishTime - startTime);
+    const duration = new Date(durationWithTimezone.getTime() + durationWithTimezone.getTimezoneOffset() * 60 * 1000);
+    tableData.push(['trvanie', `${strftime('%k', duration)}h ${strftime('%M', duration)}m`]);
     const lengthInKm = this.props.finishPoints[0].lengthInKm;
-
+    tableData.push(['vzdialenosť', `${lengthInKm.toFixed(1)}km`]);
+    const durationInHours = duration.getHours() + duration.getMinutes() / 60.0;
+    const avgSpeed = lengthInKm / durationInHours;
+    tableData.push(['priem. rýchlosť', `${avgSpeed.toFixed(1)}km/h`]);
     const firstRealFeature = this.props.trackGeojson.features[0];
     const coords = firstRealFeature.geometry.coordinates;
     let minEle = Infinity;
@@ -114,10 +121,6 @@ class TrackViewerMenu extends React.Component {
         maxEle = ele;
       }
     });
-    tableData.push(['čas štartu', strftime('%H:%M', startTime)]);
-    tableData.push(['čas v cieli', strftime('%H:%M', finishTime)]);
-    tableData.push(['trvanie', `${strftime('%k', duration)}h ${strftime('%M', duration)}m`]);
-    tableData.push(['vzdialenosť', `${lengthInKm.toFixed(1)}km`]);
     tableData.push(['najvyšší bod', `${maxEle.toFixed(0)} m.n.m.`]);
     tableData.push(['najnižší bod', `${minEle.toFixed(0)} m.n.m.`]);
     const infoMessage = (
