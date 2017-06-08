@@ -275,6 +275,7 @@ export default connect(
       dispatch(toastsAdd({
         collapseKey: 'trackViewer.trackInfo',
         message,
+        cancelType: ['SET_TOOL', 'TRACK_VIEWER_SET_TRACK_DATA'],
         style: 'info',
       }));
     },
