@@ -1,11 +1,14 @@
 import { createLogic } from 'redux-logic';
 import turfAlong from '@turf/along';
 import turfLineDistance from '@turf/line-distance';
+
 import { distance, containsElevations } from 'fm3/geoutils';
+
+import { MAPQUEST_API_KEY } from 'fm3/backendDefinitions';
 
 import { elevationChartSetElevationProfile } from 'fm3/actions/elevationChartActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { MAPQUEST_API_KEY } from 'fm3/backendDefinitions';
+import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: 'ELEVATION_CHART_SET_TRACK_GEOJSON',
@@ -75,8 +78,8 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
         elevationProfilePoints[i].ele = height;
       });
       dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
-    }).catch(() => {
-        // TODO display toast with error
+    }).catch((e) => {
+      dispatch(toastsAddError(`Nastala chyba pri získavani výškoveho profilu: ${e.message}`));
     })
     .then(() => {
       dispatch(stopProgress());

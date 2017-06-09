@@ -7,7 +7,7 @@ import Toast from 'fm3/components/Toast';
 
 import 'fm3/styles/toasts.scss';
 
-function Toasts({ toasts, onAction, onStopTimeout, onRestartTimeout }) {
+function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart }) {
   return (
     <div className="toasts">
       {toasts.map(({ message, id, actions, style }) => (
@@ -18,8 +18,8 @@ function Toasts({ toasts, onAction, onStopTimeout, onRestartTimeout }) {
           style={style}
           onAction={onAction}
           actions={actions}
-          onStopTimeout={onStopTimeout}
-          onRestartTimeout={onRestartTimeout}
+          onTimeoutStop={onTimeoutStop}
+          onTimeoutRestart={onTimeoutRestart}
         />
       ))}
     </div>
@@ -28,8 +28,8 @@ function Toasts({ toasts, onAction, onStopTimeout, onRestartTimeout }) {
 
 Toasts.propTypes = {
   onAction: PropTypes.func.isRequired,
-  onStopTimeout: PropTypes.func.isRequired,
-  onRestartTimeout: PropTypes.func.isRequired,
+  onTimeoutStop: PropTypes.func.isRequired,
+  onTimeoutRestart: PropTypes.func.isRequired,
   toasts: PropTypes.arrayOf(
     PropTypes.shape({
       id: PropTypes.number.isRequired,
@@ -63,10 +63,10 @@ export default connect(
         }
       }
     },
-    onStopTimeout(id) {
+    onTimeoutStop(id) {
       dispatch(toastsStopTimeout(id));
     },
-    onRestartTimeout(id) {
+    onTimeoutRestart(id) {
       dispatch(toastsRestartTimeout(id));
     },
   }),

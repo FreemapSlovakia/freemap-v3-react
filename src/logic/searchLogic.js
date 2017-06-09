@@ -1,7 +1,7 @@
 import { createLogic } from 'redux-logic';
 import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
@@ -36,12 +36,7 @@ export default createLogic({
         dispatch(searchSetResults(results));
       })
       .catch((e) => {
-        dispatch(toastsAdd({
-          message: `Nastala chyba pri spracovaní výsledkov vyhľadávania: ${e.message}`,
-          style: 'danger',
-          timeout: 3000,
-          actions: [{ name: 'OK' }],
-        }));
+        dispatch(toastsAddError(`Nastala chyba pri spracovaní výsledkov vyhľadávania: ${e.message}`));
       })
       .then(() => {
         dispatch(stopProgress());

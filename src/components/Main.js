@@ -58,12 +58,12 @@ class Main extends React.Component {
     tool: FmPropTypes.tool,
     overlays: FmPropTypes.overlays.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
-    onSetTool: PropTypes.func.isRequired,
+    onToolSet: PropTypes.func.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
     activePopup: PropTypes.string,
-    onLaunchPopup: PropTypes.func.isRequired,
+    onPopupLaunch: PropTypes.func.isRequired,
     progress: PropTypes.bool,
-    onSetLocation: PropTypes.func.isRequired,
+    onLocationSet: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
     expertMode: PropTypes.bool.isRequired,
     embeddedMode: PropTypes.bool.isRequired,
@@ -78,7 +78,7 @@ class Main extends React.Component {
     setMapLeafletElement(this.map.leafletElement);
     document.addEventListener('keydown', (event) => {
       if (event.keyCode === 27) { // Escape key
-        this.props.onSetTool(null);
+        this.props.onToolSet(null);
       }
     });
 
@@ -107,11 +107,11 @@ class Main extends React.Component {
   }
 
   handleLocationFound = (e) => {
-    this.props.onSetLocation(e.latitude, e.longitude, e.accuracy);
+    this.props.onLocationSet(e.latitude, e.longitude, e.accuracy);
   }
 
-  handleToggleTool(tool) {
-    this.props.onSetTool(this.props.tool === tool ? null : tool);
+  handleToolSelect(tool) {
+    this.props.onToolSet(this.props.tool === tool ? null : tool);
   }
 
   createToolMenu(ele) {
@@ -119,11 +119,11 @@ class Main extends React.Component {
     const cmi = createMenuItem.bind(this, ele);
 
     return [
-      cmi(1, 'map-marker', 'Miesta', () => this.handleToggleTool('objects')),
-      cmi(2, 'map-signs', 'Plánovač', () => this.handleToggleTool('route-planner')),
-      cmi(3, 'arrows-h', 'Meranie', () => this.handleToggleTool('measure')),
-      cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToggleTool('location')),
-      cmi(5, 'road', 'Prehliadač trás', () => this.handleToggleTool('track-viewer')),
+      cmi(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
+      cmi(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
+      cmi(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
+      cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
+      cmi(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
     ];
   }
 
@@ -132,7 +132,7 @@ class Main extends React.Component {
     const cmi = createMenuItem.bind(this, ele);
 
     return [
-      cmi(1, 'cog', 'Nastavenia', () => this.props.onLaunchPopup('settings')),
+      cmi(1, 'cog', 'Nastavenia', () => this.props.onPopupLaunch('settings')),
       ele === MenuItem ? <MenuItem divider key="_1" /> : null,
       cmi(6, 'mobile', 'Exporty mapy', () => window.open('http://wiki.freemap.sk/FileDownload')),
       ele === MenuItem ? <MenuItem divider key="_2" /> : null,
@@ -151,7 +151,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activePopup, onLaunchPopup, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
+    const { tool, activePopup, onPopupLaunch, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
@@ -259,16 +259,16 @@ export default connect(
     embeddedMode: state.main.embeddedMode,
   }),
   dispatch => ({
-    onSetTool(tool) {
+    onToolSet(tool) {
       dispatch(setTool(tool));
     },
     onMapRefocus(changes) {
       dispatch(mapRefocus(changes));
     },
-    onLaunchPopup(popupName) {
+    onPopupLaunch(popupName) {
       dispatch(setActivePopup(popupName));
     },
-    onSetLocation(lat, lon, accuracy) {
+    onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));
     },
   }),

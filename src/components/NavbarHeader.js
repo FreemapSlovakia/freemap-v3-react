@@ -27,11 +27,11 @@ const iconForTool = {
   objects: 'map-marker',
 };
 
-function NavbarHeader({ tool, onResetMap }) {
+function NavbarHeader({ tool, onMapReset }) {
   return (
     <Navbar.Header>
       <Navbar.Brand>
-        <button id="freemap-logo" onClick={onResetMap} />
+        <button id="freemap-logo" onClick={onMapReset} />
       </Navbar.Brand>
       {humanNameForToolToShowInNavbar[tool] &&
         <Navbar.Text style={{ display: 'inline-block', paddingLeft: '10px' }}>
@@ -44,7 +44,7 @@ function NavbarHeader({ tool, onResetMap }) {
 
 NavbarHeader.propTypes = {
   tool: FmPropTypes.tool,
-  onResetMap: PropTypes.func.isRequired,
+  onMapReset: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -52,7 +52,7 @@ export default connect(
     tool: state.main.tool,
   }),
   dispatch => ({
-    onResetMap() {
+    onMapReset() {
       dispatch(mapReset());
     },
   }),

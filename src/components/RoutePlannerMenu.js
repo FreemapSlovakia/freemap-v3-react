@@ -19,22 +19,22 @@ import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
 
-function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportType,
-    onChangeTransportType, onChangePickPointMode, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
-    onToggleItineraryVisibility, itineraryIsVisible, onToggleElevationChartVisibility, elevationProfileIsVisible, onStartProgress, onStopProgress,
+function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportType,
+    onTransportTypeChange, onPickPointModeChange, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
+    onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible, onProgressStart, onProgressStop,
     onGpxExport, routeFound, shapePoints }) {
   // TODO move to logic
   function setFromCurrentPosition(pointType) {
-    onStartProgress();
+    onProgressStart();
     getCurrentPosition().then(({ lat, lon }) => {
-      onStopProgress();
+      onProgressStop();
       if (pointType === 'start') {
-        onSetStart({ lat, lon });
+        onStartSet({ lat, lon });
       } else if (pointType === 'finish') {
-        onSetFinish({ lat, lon });
+        onFinishSet({ lat, lon });
       } // else fail
     }, (e) => {
-      onStopProgress();
+      onProgressStop();
       onGetCurrentPositionError(e);
     });
   }
@@ -44,9 +44,9 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
     if (!lat) {
       onMissingHomeLocation();
     } else if (pointType === 'start') {
-      onSetStart({ lat, lon });
+      onStartSet({ lat, lon });
     } else if (pointType === 'finish') {
-      onSetFinish({ lat, lon });
+      onFinishSet({ lat, lon });
     }
   }
 
@@ -58,7 +58,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
           <DropdownButton
             title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
             id="add-start-dropdown"
-            onClick={() => onChangePickPointMode('start')}
+            onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
           >
             <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
@@ -68,7 +68,7 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
           <DropdownButton
             title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
             id="add-finish-dropdown"
-            onClick={() => onChangePickPointMode('finish')}
+            onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
           >
             <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
@@ -80,19 +80,19 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
         <ButtonGroup>
           {
             [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon]) => (
-              <Button key={type} active={transportType === type} onClick={() => onChangeTransportType(type)}>
+              <Button key={type} active={transportType === type} onClick={() => onTransportTypeChange(type)}>
                 <FontAwesomeIcon icon={icon} />
               </Button>
             ))
           }
         </ButtonGroup>
         {' '}
-        <Button onClick={() => onToggleItineraryVisibility()} active={itineraryIsVisible} title="Itinerár">
+        <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
           <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
         </Button>
         {' '}
         { routeFound &&
-          <Button onClick={() => onToggleElevationChartVisibility(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
+          <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
           </Button> }
         {' '}
@@ -110,23 +110,23 @@ function RoutePlannerMenu({ onSetStart, onSetFinish, pickPointMode, transportTyp
 }
 
 RoutePlannerMenu.propTypes = {
-  onSetStart: PropTypes.func.isRequired,
-  onSetFinish: PropTypes.func.isRequired,
+  onStartSet: PropTypes.func.isRequired,
+  onFinishSet: PropTypes.func.isRequired,
   transportType: PropTypes.string,
   pickPointMode: PropTypes.string,
-  onChangeTransportType: PropTypes.func.isRequired,
-  onChangePickPointMode: PropTypes.func.isRequired,
+  onTransportTypeChange: PropTypes.func.isRequired,
+  onPickPointModeChange: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   homeLocation: PropTypes.shape({
     lat: PropTypes.number,
     lon: PropTypes.number,
   }),
-  onToggleItineraryVisibility: PropTypes.func.isRequired,
+  onItineraryVisibilityToggle: PropTypes.func.isRequired,
   itineraryIsVisible: PropTypes.bool.isRequired,
-  onToggleElevationChartVisibility: PropTypes.func.isRequired,
+  onElevationChartVisibilityToggle: PropTypes.func.isRequired,
   elevationProfileIsVisible: PropTypes.bool.isRequired,
-  onStartProgress: PropTypes.func.isRequired,
-  onStopProgress: PropTypes.func.isRequired,
+  onProgressStart: PropTypes.func.isRequired,
+  onProgressStop: PropTypes.func.isRequired,
   onGpxExport: PropTypes.func.isRequired,
   routeFound: PropTypes.bool.isRequired,
   shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
@@ -145,16 +145,16 @@ export default connect(
     elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
   }),
   dispatch => ({
-    onSetStart(start) {
+    onStartSet(start) {
       dispatch(routePlannerSetStart(start));
     },
-    onSetFinish(finish) {
+    onFinishSet(finish) {
       dispatch(routePlannerSetFinish(finish));
     },
-    onToggleItineraryVisibility() {
+    onItineraryVisibilityToggle() {
       dispatch(routePlannerToggleItineraryVisibility());
     },
-    onToggleElevationChartVisibility(shapePoints, elevationProfileIsVisible) {
+    onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible) {
       if (elevationProfileIsVisible) {
         dispatch(elevationChartClose());
       } else {
@@ -168,19 +168,19 @@ export default connect(
         dispatch(elevationChartSetTrackGeojson(geojson));
       }
     },
-    onChangeTransportType(transportType) {
+    onTransportTypeChange(transportType) {
       dispatch(routePlannerSetTransportType(transportType));
     },
-    onChangePickPointMode(pickMode) {
+    onPickPointModeChange(pickMode) {
       dispatch(routePlannerSetPickMode(pickMode));
     },
     onCancel() {
       dispatch(setTool(null));
     },
-    onStartProgress() {
+    onProgressStart() {
       dispatch(startProgress());
     },
-    onStopProgress() {
+    onProgressStop() {
       dispatch(stopProgress());
     },
     onGpxExport() {
@@ -191,7 +191,7 @@ export default connect(
         collapseKey: 'routePlanner.gpsError',
         message: 'Nepodarilo sa získať aktuálnu polohu.',
         style: 'danger',
-        timeout: 3000,
+        timeout: 5000,
       }));
     },
     onMissingHomeLocation() {

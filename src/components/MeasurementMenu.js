@@ -28,24 +28,24 @@ class MeasurementMenu extends React.Component {
           coordinates: this.props.points.map(p => [p.lon, p.lat]),
         },
       };
-      this.props.onElevationChartSetTrackGeojson(geojson);
+      this.props.onElevationChartTrackGeojsonSet(geojson);
     }
   }
 
   render() {
-    const { onCancel, onSetTool, tool, onGpxExport, routeDefined, elevationChartTrackGeojson } = this.props;
+    const { onCancel, onToolSet, tool, onGpxExport, routeDefined, elevationChartTrackGeojson } = this.props;
     // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
     return (
       <div>
         <Navbar.Form pullLeft>
           <ButtonGroup>
-            <Button onClick={() => onSetTool('measure')} active={tool === 'measure'} title="Vzdialenosť">
+            <Button onClick={() => onToolSet('measure')} active={tool === 'measure'} title="Vzdialenosť">
               <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
             </Button>
-            <Button onClick={() => onSetTool('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
+            <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
               <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-sm"> Výška a poloha</span>
             </Button>
-            <Button onClick={() => onSetTool('measure-area')} active={tool === 'measure-area'} title="Plocha">
+            <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
               <FontAwesomeIcon icon="square" /><span className="hidden-sm"> Plocha</span>
             </Button>
           </ButtonGroup>
@@ -72,12 +72,12 @@ class MeasurementMenu extends React.Component {
 
 MeasurementMenu.propTypes = {
   tool: FmPropTypes.tool,
-  onSetTool: PropTypes.func.isRequired,
+  onToolSet: PropTypes.func.isRequired,
   onCancel: PropTypes.func.isRequired,
   onGpxExport: PropTypes.func.isRequired,
   points: FmPropTypes.points.isRequired,
   routeDefined: PropTypes.bool.isRequired,
-  onElevationChartSetTrackGeojson: PropTypes.func.isRequired,
+  onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
   onElevationChartClose: PropTypes.func.isRequired,
   elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
 };
@@ -90,7 +90,7 @@ export default connect(
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
   }),
   dispatch => ({
-    onSetTool(tool) {
+    onToolSet(tool) {
       dispatch(setTool(tool));
     },
     onCancel() {
@@ -99,7 +99,7 @@ export default connect(
     onGpxExport() {
       dispatch(distanceMeasurementExportGpx());
     },
-    onElevationChartSetTrackGeojson(trackGeojson) {
+    onElevationChartTrackGeojsonSet(trackGeojson) {
       dispatch(elevationChartSetTrackGeojson(trackGeojson));
     },
     onElevationChartClose() {

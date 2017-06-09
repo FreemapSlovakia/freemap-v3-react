@@ -30,25 +30,25 @@ class DistanceMeasurementResult extends React.Component {
     points: FmPropTypes.points.isRequired,
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
-    onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
-    onResetMouseCursor: PropTypes.func.isRequired,
+    onOpen: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdded);
+    mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 
   componentDidMount() {
-    this.props.onSetMouseCursorToCrosshair();
+    this.props.onOpen();
   }
 
   componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
-    this.props.onResetMouseCursor();
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
+    this.props.onClose();
   }
 
-  handlePoiAdded = (lat, lon, position, id0) => {
+  handlePoiAdd = (lat, lon, position, id0) => {
     const { points } = this.props;
     const pos = position ? Math.ceil(position / 2) : points.length;
     let id;
@@ -68,7 +68,7 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
-  handlePointClicked(id) {
+  handlePointClick(id) {
     this.props.onPointRemove(id);
   }
 
@@ -104,13 +104,13 @@ class DistanceMeasurementResult extends React.Component {
           const props = i % 2 ? {
             icon: circularIcon,
             opacity: 0.5,
-            onDragstart: e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
+            onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
           } : {
             // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
             icon: circularIcon,
             opacity: 1,
             onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-            onClick: () => this.handlePointClicked(p.id),
+            onClick: () => this.handlePointClick(p.id),
           };
 
           return (
@@ -146,10 +146,10 @@ export default connect(
     onPointUpdate(i, point) {
       dispatch(distanceMeasurementUpdatePoint(i, point));
     },
-    onSetMouseCursorToCrosshair() {
+    onOpen() {
       dispatch(setMouseCursorToCrosshair());
     },
-    onResetMouseCursor() {
+    onClose() {
       dispatch(resetMouseCursor());
     },
     onPointRemove(id) {

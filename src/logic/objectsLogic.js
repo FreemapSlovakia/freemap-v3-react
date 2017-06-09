@@ -1,10 +1,12 @@
 import { createLogic } from 'redux-logic';
 
-import { objectsSetResult } from 'fm3/actions/objectsActions';
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
 import { exportGpx, createElement } from 'fm3/gpxExporter';
+
+import { objectsSetResult } from 'fm3/actions/objectsActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
@@ -32,7 +34,9 @@ export const objectsFetchLogic = createLogic({
         }));
         dispatch(objectsSetResult(result));
       })
-      .catch(() => {})
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri získavani objektov: ${e.message}`));
+      })
       .then(() => {
         dispatch(stopProgress());
         done();

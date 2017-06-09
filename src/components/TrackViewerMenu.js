@@ -27,7 +27,7 @@ class TrackViewerMenu extends React.Component {
   componentWillMount() {
     const startingWithBlankTrackViewer = this.props.trackUID === null;
     if (startingWithBlankTrackViewer) {
-      this.props.onLaunchPopup('upload-track');
+      this.props.onModalLaunch('upload-track');
     }
   }
 
@@ -39,7 +39,7 @@ class TrackViewerMenu extends React.Component {
 
     const userHasUploadedTrackAndWantsToShareIt = this.props.trackUID === null && newProps.trackUID != null;
     if (userHasUploadedTrackAndWantsToShareIt) {
-      this.props.onLaunchPopup('track-viewer-share');
+      this.props.onModalLaunch('track-viewer-share');
     }
   }
 
@@ -49,9 +49,9 @@ class TrackViewerMenu extends React.Component {
       reader.readAsText(acceptedFiles[0], 'UTF-8');
       reader.onload = (event) => {
         const gpxAsString = event.target.result;
-        this.props.onResetTrackUID();
-        this.props.onTrackViewerSetData(gpxAsString);
-        this.props.onClosePopup();
+        this.props.onTrackUIDReset();
+        this.props.onTrackViewerDataSet(gpxAsString);
+        this.props.onModalClose();
         this.props.onElevationChartClose();
       };
 
@@ -65,9 +65,10 @@ class TrackViewerMenu extends React.Component {
     }
   }
 
+  // TODO mode to logic
   shareTrack = () => {
     if (this.props.trackUID) {
-      this.props.onLaunchPopup('track-viewer-share');
+      this.props.onModalLaunch('track-viewer-share');
     } else {
       this.props.onTrackViewerUploadTrack();
     }
@@ -79,7 +80,7 @@ class TrackViewerMenu extends React.Component {
       this.props.onElevationChartClose();
     } else {
       // this is bit confusing. TrackViewerMenu.props.trackGeojson is actually a feature set of geojsons (thought typically contains only one geojson), while in ElevationChart.props.trackGeojson we use first "real" feature, e.g. LineString
-      this.props.onElevationChartSetTrackGeojson(this.props.trackGeojson.features[0]);
+      this.props.onElevationChartTrackGeojsonSet(this.props.trackGeojson.features[0]);
     }
   }
 
@@ -141,7 +142,7 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activePopup, onCancel, onLaunchPopup, onClosePopup, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
+    const { activePopup, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -150,7 +151,7 @@ class TrackViewerMenu extends React.Component {
     return (
       <div>
         <Navbar.Form pullLeft>
-          <Button onClick={() => onLaunchPopup('upload-track')}>
+          <Button onClick={() => onModalLaunch('upload-track')}>
             <FontAwesomeIcon icon="upload" /> Nahrať trasu
           </Button>
           {' '}
@@ -176,7 +177,7 @@ class TrackViewerMenu extends React.Component {
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
 
-        <Modal show={activePopup === 'upload-track'} onHide={onClosePopup}>
+        <Modal show={activePopup === 'upload-track'} onHide={onModalClose}>
           <Modal.Header closeButton>
             <Modal.Title>Nahrať záznam trasy</Modal.Title>
           </Modal.Header>
@@ -186,11 +187,11 @@ class TrackViewerMenu extends React.Component {
             </Dropzone>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={onClosePopup}><Glyphicon glyph="remove" /> Zrušiť</Button>
+            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
           </Modal.Footer>
         </Modal>
 
-        <Modal show={activePopup === 'track-viewer-share'} onHide={onClosePopup}>
+        <Modal show={activePopup === 'track-viewer-share'} onHide={onModalClose}>
           <Modal.Header closeButton>
             <Modal.Title>Zdieľať záznam trasy</Modal.Title>
           </Modal.Header>
@@ -201,7 +202,7 @@ class TrackViewerMenu extends React.Component {
             </Alert>
           </Modal.Body>
           <Modal.Footer>
-            <Button onClick={onClosePopup}><Glyphicon glyph="remove" /> Zavrieť</Button>
+            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
           </Modal.Footer>
         </Modal>
       </div>
@@ -212,16 +213,16 @@ class TrackViewerMenu extends React.Component {
 TrackViewerMenu.propTypes = {
   activePopup: PropTypes.string,
   onCancel: PropTypes.func.isRequired,
-  onClosePopup: PropTypes.func.isRequired,
-  onLaunchPopup: PropTypes.func.isRequired,
+  onModalClose: PropTypes.func.isRequired,
+  onModalLaunch: PropTypes.func.isRequired,
   onTrackViewerUploadTrack: PropTypes.func.isRequired,
-  onTrackViewerSetData: PropTypes.func.isRequired,
+  onTrackViewerDataSet: PropTypes.func.isRequired,
   onLoadError: PropTypes.func.isRequired,
-  onResetTrackUID: PropTypes.func.isRequired,
+  onTrackUIDReset: PropTypes.func.isRequired,
   trackGeojson: PropTypes.object,  // eslint-disable-line
   trackGpx: PropTypes.string,
   trackUID: PropTypes.string,
-  onElevationChartSetTrackGeojson: PropTypes.func.isRequired,
+  onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
   onElevationChartClose: PropTypes.func.isRequired,
   elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
   onShowTrackInfo: PropTypes.func.isRequired,
@@ -250,16 +251,16 @@ export default connect(
       dispatch(setTool(null));
       dispatch(elevationChartClose());
     },
-    onLaunchPopup(popupName) {
+    onModalLaunch(popupName) {
       dispatch(setActivePopup(popupName));
     },
-    onClosePopup() {
+    onModalClose() {
       dispatch(closePopup());
     },
-    onTrackViewerSetData(gpx) {
+    onTrackViewerDataSet(gpx) {
       dispatch(trackViewerSetData(gpx));
     },
-    onResetTrackUID() {
+    onTrackUIDReset() {
       dispatch(trackViewerResetTrackUID());
     },
     onTrackViewerUploadTrack() {
@@ -284,7 +285,7 @@ export default connect(
         collapseKey: 'trackViewer.loadError',
         message,
         style: 'danger',
-        timeout: 3000,
+        timeout: 5000,
       }));
     },
   }),

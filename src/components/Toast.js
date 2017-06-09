@@ -12,8 +12,8 @@ export default class Toast extends React.Component {
     message: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]),
     style: PropTypes.string,
     onAction: PropTypes.func.isRequired,
-    onStopTimeout: PropTypes.func.isRequired,
-    onRestartTimeout: PropTypes.func.isRequired,
+    onTimeoutStop: PropTypes.func.isRequired,
+    onTimeoutRestart: PropTypes.func.isRequired,
     actions: PropTypes.arrayOf(
       PropTypes.shape({
         name: PropTypes.string,
@@ -24,11 +24,11 @@ export default class Toast extends React.Component {
   }
 
   handleMouseEnter = () => {
-    this.props.onStopTimeout(this.props.id);
+    this.props.onTimeoutStop(this.props.id);
   }
 
   handleMouseLeave = () => {
-    this.props.onRestartTimeout(this.props.id);
+    this.props.onTimeoutRestart(this.props.id);
   }
 
   handleAlertDismiss = () => {

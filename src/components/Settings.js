@@ -28,9 +28,9 @@ class Settings extends React.Component {
     }),
     tileFormat: FmPropTypes.tileFormat.isRequired,
     onSave: PropTypes.func.isRequired,
-    onClosePopup: PropTypes.func.isRequired,
-    onSelectHomeLocation: PropTypes.func.isRequired,
-    onSelectHomeLocationFinished: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
+    onHomeLocationSelect: PropTypes.func.isRequired,
+    onHomeLocationSelectionFinish: PropTypes.func.isRequired,
     tool: FmPropTypes.tool,
     nlcOpacity: PropTypes.number.isRequired,
     touristOverlayOpacity: PropTypes.number.isRequired,
@@ -62,7 +62,7 @@ class Settings extends React.Component {
 
   onHomeLocationSelected = (lat, lon) => {
     this.setState({ homeLocation: { lat, lon }, homeLocationCssClasses: 'animated flash' }); // via animate.css
-    this.props.onSelectHomeLocationFinished();
+    this.props.onHomeLocationSelectionFinish();
   }
 
   handleSave = () => {
@@ -76,7 +76,7 @@ class Settings extends React.Component {
   }
 
   render() {
-    const { onClosePopup, onSelectHomeLocation, tool, zoom } = this.props;
+    const { onClose, onHomeLocationSelect, tool, zoom } = this.props;
     const { homeLocation, homeLocationCssClasses } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
 
@@ -89,7 +89,7 @@ class Settings extends React.Component {
     }
 
     return (
-      <Modal show={tool !== 'select-home-location'} onHide={onClosePopup}>
+      <Modal show={tool !== 'select-home-location'} onHide={onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
@@ -117,7 +117,7 @@ class Settings extends React.Component {
           </Alert>
           <hr />
           Domovská poloha: <span className={homeLocationCssClasses}>{homeLocationInfo}</span> <br />
-          <Button onClick={() => onSelectHomeLocation()}>
+          <Button onClick={() => onHomeLocationSelect()}>
             <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
           </Button>
           <hr />
@@ -187,7 +187,7 @@ class Settings extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-          <Button onClick={onClosePopup}><Glyphicon glyph="remove" /> Zrušiť</Button>
+          <Button onClick={onClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -219,18 +219,18 @@ export default connect(
         collapseKey: 'settings.saved',
         message: 'Zmeny boli uložené.',
         style: 'info',
-        timeout: 3000,
+        timeout: 5000,
       }));
     },
-    onClosePopup() {
+    onClose() {
       dispatch(closePopup());
     },
-    onSelectHomeLocation() {
+    onHomeLocationSelect() {
       // TODO replace with signle dispatch (for good pratcice)
       dispatch(setTool('select-home-location'));
       dispatch(setMouseCursorToCrosshair());
     },
-    onSelectHomeLocationFinished() {
+    onHomeLocationSelectionFinish() {
       // TODO replace with signle dispatch (for good pratcice)
       dispatch(setTool(null));
       dispatch(resetMouseCursor());

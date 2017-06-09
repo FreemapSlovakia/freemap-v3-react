@@ -3,7 +3,7 @@ import turfLineDistance from '@turf/line-distance';
 import toGeoJSON from '@mapbox/togeojson';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerSetTrackUID } from 'fm3/actions/trackViewerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { toastsAddError } from 'fm3/actions/toastsActions';
 
 import { API_URL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
 
@@ -45,16 +45,17 @@ export const trackViewerDownloadTrackLogic = createLogic({
   process({ getState }, dispatch, done) {
     const trackUID = getState().trackViewer.trackUID;
     fetch(`${API_URL}/tracklogs/${trackUID}`)
-      .then(res => res.json()).then((payload) => {
+      .then(res => res.json())
+      .then((payload) => {
         if (payload.error) {
-          dispatch(createErrorToast(`Nastala chyba pri získavaní GPX záznamu: ${payload.error}`));
+          dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${payload.error}`));
         } else {
           const trackGpx = atob(payload.data);
           dispatch(trackViewerSetData(trackGpx));
         }
       })
       .catch((e) => {
-        dispatch(createErrorToast(`Nastala chyba pri získavaní GPX záznamu: ${e}`));
+        dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${e.message}`));
       })
       .then(() => {
         done();
@@ -67,7 +68,7 @@ export const trackViewerUploadTrackLogic = createLogic({
   process({ getState }, dispatch, done) {
     const trackGpx = getState().trackViewer.trackGpx;
     if (trackGpx.length > (MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
-      dispatch(createErrorToast(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`));
+      dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`));
     } else {
       dispatch(startProgress());
       fetch(`${API_URL}/tracklogs`, {
@@ -85,7 +86,7 @@ export const trackViewerUploadTrackLogic = createLogic({
         dispatch(trackViewerSetTrackUID(res.uid));
       })
       .catch((e) => {
-        dispatch(createErrorToast(`Nepodarilo sa nahrať súbor: ${e}`));
+        dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
       })
       .then(() => {
         dispatch(stopProgress());
@@ -94,15 +95,6 @@ export const trackViewerUploadTrackLogic = createLogic({
     }
   },
 });
-
-function createErrorToast(errorText) {
-  return toastsAdd({
-    message: errorText,
-    style: 'danger',
-    timeout: 3000,
-    actions: [{ name: 'OK' }],
-  });
-}
 
 export default [
   trackViewerSetTrackDataLogic,

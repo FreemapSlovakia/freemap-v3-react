@@ -14,3 +14,14 @@ export function toastsStopTimeout(id) {
 export function toastsRestartTimeout(id) {
   return { type: 'TOASTS_RESTART_TIMEOUT', payload: id };
 }
+
+// helpers
+
+export function toastsAddError(message) {
+  return toastsAdd({
+    message,
+    style: 'danger',
+    timeout: 5000,
+    actions: [{ name: 'OK' }],
+  });
+}

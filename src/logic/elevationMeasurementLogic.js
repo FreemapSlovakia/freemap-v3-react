@@ -1,6 +1,8 @@
 import { createLogic } from 'redux-logic';
+
 import { elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: 'ELEVATION_MEASUREMENT_SET_POINT',
@@ -10,10 +12,13 @@ export default createLogic({
     if (point) {
       dispatch(startProgress());
       fetch(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`)
-        .then(res => res.json()).then((data) => {
+        .then(res => res.json())
+        .then((data) => {
           dispatch(elevationMeasurementSetElevation(parseFloat(data.ele)));
         })
-        .catch(() => {})
+        .catch((e) => {
+          dispatch(toastsAddError(`Nastala chyba pri získavani výšky bodu: ${e.message}`));
+        })
         .then(() => {
           dispatch(stopProgress());
           done();

@@ -21,21 +21,21 @@ class AreaMeasurementResult extends React.Component {
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
-    onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
-    onResetMouseCursor: PropTypes.func.isRequired,
+    onOpen: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdded);
+    mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 
   componentDidMount() {
-    this.props.onSetMouseCursorToCrosshair();
+    this.props.onOpen();
   }
 
   componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
-    this.props.onResetMouseCursor();
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
+    this.props.onClose();
   }
 
   futurePoints = () => {
@@ -55,7 +55,7 @@ class AreaMeasurementResult extends React.Component {
     return fps;
   }
 
-  handlePoiAdded = (lat, lon, position) => {
+  handlePoiAdd = (lat, lon, position) => {
     const pos = position || 0;
     this.props.onPointAdd({ lat, lon }, pos);
   }
@@ -64,7 +64,7 @@ class AreaMeasurementResult extends React.Component {
     this.props.onPointUpdate(i, { lat, lon });
   }
 
-  pointClicked(position) {
+  handleMarkerClick(position) {
     this.props.onPointRemove(position);
   }
 
@@ -108,7 +108,7 @@ class AreaMeasurementResult extends React.Component {
             key={i}
             position={L.latLng(p.lat, p.lon)}
             draggable
-            onClick={() => this.pointClicked(i)}
+            onClick={() => this.handleMarkerClick(i)}
             onDrag={e => this.handleMeasureMarkerDrag(i, e)}
           />
         ))}
@@ -120,7 +120,7 @@ class AreaMeasurementResult extends React.Component {
             key={i}
             draggable
             icon={circularIcon}
-            onDragend={e => this.handlePoiAdded(e.target.getLatLng().lat, e.target.getLatLng().lng, i + 1)}
+            onDragend={e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i + 1)}
             position={L.latLng(p.lat, p.lon)}
           />
         ))}
@@ -153,10 +153,10 @@ export default connect(
         ],
       }));
     },
-    onSetMouseCursorToCrosshair() {
+    onOpen() {
       dispatch(setMouseCursorToCrosshair());
     },
-    onResetMouseCursor() {
+    onClose() {
       dispatch(resetMouseCursor());
     },
   }),

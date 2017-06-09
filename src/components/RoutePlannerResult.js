@@ -18,28 +18,28 @@ import * as FmPropTypes from 'fm3/propTypes';
 class RoutePlannerResult extends React.Component {
 
   componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdded);
-    this.props.onSetMouseCursorToCrosshair();
+    mapEventEmitter.on('mapClick', this.handlePoiAdd);
+    this.props.onOpen();
   }
 
   componentWillReceiveProps(nextProps) {
     if (nextProps.pickMode) {
-      this.props.onSetMouseCursorToCrosshair();
+      this.props.onOpen(); // TODO use different callback name
     } else {
-      this.props.onResetMouseCursor();
+      this.props.onClose(); // TODO use different callback name
     }
   }
 
   componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
-    this.props.onResetMouseCursor();
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
+    this.props.onClose();
   }
 
-  handlePoiAdded = (lat, lon) => {
+  handlePoiAdd = (lat, lon) => {
     if (this.props.pickMode === 'start') {
-      this.props.onSetStart({ lat, lon });
+      this.props.onStartSet({ lat, lon });
     } else if (this.props.pickMode === 'finish') {
-      this.props.onSetFinish({ lat, lon });
+      this.props.onFinishSet({ lat, lon });
     }
   }
 
@@ -48,13 +48,13 @@ class RoutePlannerResult extends React.Component {
 
     switch (movedPointType) {
       case 'start':
-        this.props.onSetStart({ lat, lon });
+        this.props.onStartSet({ lat, lon });
         break;
       case 'finish':
-        this.props.onSetFinish({ lat, lon });
+        this.props.onFinishSet({ lat, lon });
         break;
       case 'midpoint':
-        this.props.onSetMidpoint(position, { lat, lon });
+        this.props.onMidpointSet(position, { lat, lon });
         break;
       default:
         throw new Error('unknown pointType');
@@ -201,14 +201,14 @@ RoutePlannerResult.propTypes = {
     km: PropTypes.number.isRequired,
   })),
   itineraryIsVisible: PropTypes.bool.isRequired,
-  onSetStart: PropTypes.func.isRequired,
-  onSetFinish: PropTypes.func.isRequired,
-  onSetMidpoint: PropTypes.func.isRequired,
+  onStartSet: PropTypes.func.isRequired,
+  onFinishSet: PropTypes.func.isRequired,
+  onMidpointSet: PropTypes.func.isRequired,
   onAddMidpoint: PropTypes.func.isRequired,
   onRemoveMidpoint: PropTypes.func.isRequired,
   pickMode: PropTypes.string,
-  onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
-  onResetMouseCursor: PropTypes.func.isRequired,
+  onOpen: PropTypes.func.isRequired,
+  onClose: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -224,16 +224,16 @@ export default connect(
     itineraryIsVisible: state.routePlanner.itineraryIsVisible,
   }),
   dispatch => ({
-    onSetStart(start) {
+    onStartSet(start) {
       dispatch(routePlannerSetStart(start));
     },
-    onSetFinish(finish) {
+    onFinishSet(finish) {
       dispatch(routePlannerSetFinish(finish));
     },
     onAddMidpoint(position, midpoint) {
       dispatch(routePlannerAddMidpoint(midpoint, position));
     },
-    onSetMidpoint(position, midpoint) {
+    onMidpointSet(position, midpoint) {
       dispatch(routePlannerSetMidpoint(position, midpoint));
     },
     onRemoveMidpoint(position) {
@@ -248,10 +248,10 @@ export default connect(
         ],
       }));
     },
-    onSetMouseCursorToCrosshair() {
+    onOpen() {
       dispatch(setMouseCursorToCrosshair());
     },
-    onResetMouseCursor() {
+    onClose() {
       dispatch(resetMouseCursor());
     },
   }),

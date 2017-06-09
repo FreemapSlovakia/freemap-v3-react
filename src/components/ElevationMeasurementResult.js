@@ -15,35 +15,35 @@ class ElevationMeasurementResult extends React.Component {
 
   static propTypes = {
     onPointSet: PropTypes.func.isRequired,
-    onClearElevation: PropTypes.func.isRequired,
+    onElevationClear: PropTypes.func.isRequired,
     point: FmPropTypes.point,
     elevation: PropTypes.number,
-    onSetMouseCursorToCrosshair: PropTypes.func.isRequired,
-    onResetMouseCursor: PropTypes.func.isRequired,
+    onOpen: PropTypes.func.isRequired,
+    onClose: PropTypes.func.isRequired,
   }
 
   state = {};
 
   componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdded);
+    mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 
   componentDidMount() {
-    this.props.onSetMouseCursorToCrosshair();
+    this.props.onOpen();
   }
 
   componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdded);
-    this.props.onResetMouseCursor();
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
+    this.props.onClose();
   }
 
-  handlePoiAdded = (lat, lon) => {
+  handlePoiAdd = (lat, lon) => {
     this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
   }
 
   handleDragStart = () => {
-    this.props.onClearElevation(null);
+    this.props.onElevationClear(null);
   }
 
   handleDragEnd = (event) => {
@@ -93,13 +93,13 @@ export default connect(
     onPointSet(point) {
       dispatch(elevationMeasurementSetPoint(point));
     },
-    onClearElevation() {
+    onElevationClear() {
       dispatch(elevationMeasurementSetElevation(null));
     },
-    onSetMouseCursorToCrosshair() {
+    onOpen() {
       dispatch(setMouseCursorToCrosshair());
     },
-    onResetMouseCursor() {
+    onClose() {
       dispatch(resetMouseCursor());
     },
   }),

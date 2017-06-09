@@ -14,10 +14,10 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 import 'fm3/styles/search.scss';
 
-function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlannerWithStart,
-    onInitRoutePlannerWithFinish, selectedResult, onDoSearch, results }) {
+function SearchMenu({ tool, onResultHiglight, onResultSelect, onRoutePlannerWithStartInit,
+    onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results }) {
   function onSelectionChange(resultsSelectedByUser) {
-    onSelectResult(resultsSelectedByUser[0], tool);
+    onResultSelect(resultsSelectedByUser[0], tool);
   }
 
   function onSuggestionHighlightChange(result) {
@@ -30,12 +30,11 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
       const geojsonBounds = L.geoJson(geojson).getBounds();
       getMapLeafletElement().fitBounds(geojsonBounds, options);
     }
-    onHiglightResult(result);
+    onResultHiglight(result);
   }
 
   const b = (fn, ...args) => fn.bind(null, ...args);
 
-  // FIXME wrapper element can't be used
   return (
     <div>
       <Navbar.Form pullLeft>
@@ -68,10 +67,10 @@ function SearchMenu({ tool, onHiglightResult, onSelectResult, onInitRoutePlanner
       {tool === 'search' &&
         <Navbar.Form pullLeft>
           <ButtonGroup>
-            <Button onClick={b(onInitRoutePlannerWithStart, selectedResult)}>
+            <Button onClick={b(onRoutePlannerWithStartInit, selectedResult)}>
               <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} /> Navigovať odtiaľto
             </Button>
-            <Button onClick={b(onInitRoutePlannerWithFinish, selectedResult)}>
+            <Button onClick={b(onRoutePlannerWithFinishInit, selectedResult)}>
               <Glyphicon glyph="record" style={{ color: '#FF6347' }} /> Navigovať sem
             </Button>
           </ButtonGroup>
@@ -86,10 +85,10 @@ SearchMenu.propTypes = {
   selectedResult: FmPropTypes.searchResult,
   results: PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
   onDoSearch: PropTypes.func.isRequired,
-  onHiglightResult: PropTypes.func.isRequired,
-  onSelectResult: PropTypes.func.isRequired,
-  onInitRoutePlannerWithStart: PropTypes.func.isRequired,
-  onInitRoutePlannerWithFinish: PropTypes.func.isRequired,
+  onResultHiglight: PropTypes.func.isRequired,
+  onResultSelect: PropTypes.func.isRequired,
+  onRoutePlannerWithStartInit: PropTypes.func.isRequired,
+  onRoutePlannerWithFinishInit: PropTypes.func.isRequired,
 };
 
 
@@ -103,19 +102,19 @@ export default connect(
     onDoSearch(query) {
       dispatch(searchSetQuery(query));
     },
-    onHiglightResult(result) {
+    onResultHiglight(result) {
       dispatch(searchHighlightResult(result));
     },
-    onSelectResult(result) {
+    onResultSelect(result) {
       dispatch(setTool(result ? 'search' : null));
       dispatch(searchSelectResult(result));
     },
-    onInitRoutePlannerWithStart(result) {
+    onRoutePlannerWithStartInit(result) {
       const start = { lat: result.lat, lon: result.lon };
       dispatch(setTool('route-planner'));
       dispatch(routePlannerSetStart(start));
     },
-    onInitRoutePlannerWithFinish(result) {
+    onRoutePlannerWithFinishInit(result) {
       const finish = { lat: result.lat, lon: result.lon };
       dispatch(setTool('route-planner'));
       dispatch(routePlannerSetFinish(finish));
