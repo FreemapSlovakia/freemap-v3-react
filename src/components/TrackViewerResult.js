@@ -8,6 +8,8 @@ import strftime from 'strftime';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
 
+const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
 class TrackViewerResult extends React.Component {
 
   static propTypes = {
@@ -107,7 +109,7 @@ class TrackViewerResult extends React.Component {
               <span>
                 {p.finishTime ? strftime('%H:%M', new Date(p.finishTime)) : ''}
                 {p.finishTime ? ', ' : ''}
-                {p.lengthInKm.toFixed(1)}km</span>
+                {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km</span>
             </Tooltip>
           </MarkerWithInnerLabel>
           ))}
@@ -122,7 +124,7 @@ class TrackViewerResult extends React.Component {
             >
               <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
                 <span>
-                  {this.state.infoDistanceKm.toFixed(1)}km
+                  {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
                 </span>
               </Tooltip>
             </MarkerWithInnerLabel>}

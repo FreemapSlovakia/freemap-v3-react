@@ -5,6 +5,9 @@ import { Tooltip } from 'react-leaflet';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import * as FmPropTypes from 'fm3/propTypes';
 
+const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
 function ElevationChartActivePoint({ elevationChartActivePoint }) {
   return (
     elevationChartActivePoint.lat &&
@@ -17,7 +20,7 @@ function ElevationChartActivePoint({ elevationChartActivePoint }) {
       >
         <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
           <span>
-            {(elevationChartActivePoint.distanceFromStartInMeters / 1000).toFixed(1)}km, {elevationChartActivePoint.ele.toFixed(0)} m.n.m
+            {oneDecimalDigitNumberFormat.format(elevationChartActivePoint.distanceFromStartInMeters / 1000)} km, {noDecimalDigitsNumberFormat.format(elevationChartActivePoint.ele)} m.n.m
           </span>
         </Tooltip>
       </MarkerWithInnerLabel>
