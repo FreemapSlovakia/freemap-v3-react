@@ -138,7 +138,7 @@ class TrackViewerMenu extends React.Component {
         </table>
       </div>
     );
-    this.props.onShowTrackInfo(infoMessage);
+    this.props.onTrackInfoShow(infoMessage);
   }
 
   render() {
@@ -225,7 +225,7 @@ TrackViewerMenu.propTypes = {
   onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
   onElevationChartClose: PropTypes.func.isRequired,
   elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
-  onShowTrackInfo: PropTypes.func.isRequired,
+  onTrackInfoShow: PropTypes.func.isRequired,
   startPoints: PropTypes.arrayOf(PropTypes.shape({
     startTime: PropTypes.string,
   })),
@@ -266,13 +266,13 @@ export default connect(
     onTrackViewerUploadTrack() {
       dispatch(trackViewerUploadTrack());
     },
-    onElevationChartSetTrackGeojson(trackGeojson) {
+    onElevationChartTrackGeojsonSet(trackGeojson) {
       dispatch(elevationChartSetTrackGeojson(trackGeojson));
     },
     onElevationChartClose() {
       dispatch(elevationChartClose());
     },
-    onShowTrackInfo(message) {
+    onTrackInfoShow(message) {
       dispatch(toastsAdd({
         collapseKey: 'trackViewer.trackInfo',
         message,
