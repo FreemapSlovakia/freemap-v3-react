@@ -23,6 +23,9 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/trackViewer.scss';
 
+const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
 class TrackViewerMenu extends React.Component {
   componentWillMount() {
     const startingWithBlankTrackViewer = this.props.trackUID === null;
@@ -105,10 +108,10 @@ class TrackViewerMenu extends React.Component {
     const duration = new Date(durationWithTimezone.getTime() + durationWithTimezone.getTimezoneOffset() * 60 * 1000);
     tableData.push(['trvanie', `${strftime('%k', duration)}h ${strftime('%M', duration)}m`]);
     const lengthInKm = this.props.finishPoints[0].lengthInKm;
-    tableData.push(['vzdialenosť', `${lengthInKm.toFixed(1)}km`]);
+    tableData.push(['vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
     const durationInHours = duration.getHours() + duration.getMinutes() / 60.0;
     const avgSpeed = lengthInKm / durationInHours;
-    tableData.push(['priem. rýchlosť', `${avgSpeed.toFixed(1)}km/h`]);
+    tableData.push(['priem. rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
     const firstRealFeature = this.props.trackGeojson.features[0];
     const coords = firstRealFeature.geometry.coordinates;
     let minEle = Infinity;
@@ -122,8 +125,8 @@ class TrackViewerMenu extends React.Component {
         maxEle = ele;
       }
     });
-    tableData.push(['najvyšší bod', `${maxEle.toFixed(0)} m.n.m.`]);
-    tableData.push(['najnižší bod', `${minEle.toFixed(0)} m.n.m.`]);
+    tableData.push(['najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
+    tableData.push(['najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
     const infoMessage = (
       <div className="trackInfo">
         <table className="trackInfoTable">
