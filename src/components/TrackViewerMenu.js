@@ -14,7 +14,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setTool, setActivePopup, closePopup } from 'fm3/actions/mainActions';
+import { setTool, setActiveModal, closeModal } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerResetData, trackViewerResetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -142,7 +142,7 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activePopup, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
+    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -177,7 +177,7 @@ class TrackViewerMenu extends React.Component {
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
 
-        <Modal show={activePopup === 'upload-track'} onHide={onModalClose}>
+        <Modal show={activeModal === 'upload-track'} onHide={onModalClose}>
           <Modal.Header closeButton>
             <Modal.Title>Nahrať záznam trasy</Modal.Title>
           </Modal.Header>
@@ -191,7 +191,7 @@ class TrackViewerMenu extends React.Component {
           </Modal.Footer>
         </Modal>
 
-        <Modal show={activePopup === 'track-viewer-share'} onHide={onModalClose}>
+        <Modal show={activeModal === 'track-viewer-share'} onHide={onModalClose}>
           <Modal.Header closeButton>
             <Modal.Title>Zdieľať záznam trasy</Modal.Title>
           </Modal.Header>
@@ -211,7 +211,7 @@ class TrackViewerMenu extends React.Component {
 }
 
 TrackViewerMenu.propTypes = {
-  activePopup: PropTypes.string,
+  activeModal: PropTypes.string,
   onCancel: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired,
   onModalLaunch: PropTypes.func.isRequired,
@@ -237,7 +237,7 @@ TrackViewerMenu.propTypes = {
 
 export default connect(
   state => ({
-    activePopup: state.main.activePopup,
+    activeModal: state.main.activeModal,
     trackGeojson: state.trackViewer.trackGeojson,
     trackGpx: state.trackViewer.trackGpx,
     startPoints: state.trackViewer.startPoints,
@@ -251,11 +251,11 @@ export default connect(
       dispatch(setTool(null));
       dispatch(elevationChartClose());
     },
-    onModalLaunch(popupName) {
-      dispatch(setActivePopup(popupName));
+    onModalLaunch(modalName) {
+      dispatch(setActiveModal(modalName));
     },
     onModalClose() {
-      dispatch(closePopup());
+      dispatch(closeModal());
     },
     onTrackViewerDataSet(gpx) {
       dispatch(trackViewerSetData(gpx));

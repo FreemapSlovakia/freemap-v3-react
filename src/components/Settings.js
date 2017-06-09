@@ -11,7 +11,7 @@ import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 import { mapSetTileFormat, mapSetOverlayOpacity, setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
-import { setTool, setHomeLocation, closePopup, setExpertMode } from 'fm3/actions/mainActions';
+import { setTool, setHomeLocation, closeModal, setExpertMode } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -213,7 +213,7 @@ export default connect(
       dispatch(mapSetOverlayOpacity('N', nlcOpacity));
       dispatch(mapSetOverlayOpacity('t', touristOverlayOpacity));
       dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
-      dispatch(closePopup());
+      dispatch(closeModal());
       dispatch(setExpertMode(expertMode));
       dispatch(toastsAdd({
         collapseKey: 'settings.saved',
@@ -223,7 +223,7 @@ export default connect(
       }));
     },
     onClose() {
-      dispatch(closePopup());
+      dispatch(closeModal());
     },
     onHomeLocationSelect() {
       // TODO replace with signle dispatch (for good pratcice)

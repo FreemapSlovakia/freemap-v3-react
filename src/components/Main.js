@@ -43,7 +43,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { setTool, setActivePopup, setLocation } from 'fm3/actions/mainActions';
+import { setTool, setActiveModal, setLocation } from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -60,7 +60,7 @@ class Main extends React.Component {
     mapType: FmPropTypes.mapType.isRequired,
     onToolSet: PropTypes.func.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
-    activePopup: PropTypes.string,
+    activeModal: PropTypes.string,
     onPopupLaunch: PropTypes.func.isRequired,
     progress: PropTypes.bool,
     onLocationSet: PropTypes.func.isRequired,
@@ -151,7 +151,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activePopup, onPopupLaunch, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
+    const { tool, activeModal, onPopupLaunch, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
@@ -168,7 +168,7 @@ class Main extends React.Component {
                 {tool === 'route-planner' && <RoutePlannerMenu />}
                 {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
-                {activePopup === 'settings' && <Settings />}
+                {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
                   <Nav className="hidden-sm hidden-md hidden-lg">
                     {this.createToolMenu(NavItem)}
@@ -252,7 +252,7 @@ export default connect(
     tool: state.main.tool,
     mapType: state.map.mapType,
     overlays: state.map.overlays,
-    activePopup: state.main.activePopup,
+    activeModal: state.main.activeModal,
     progress: state.main.progress,
     mouseCursor: state.map.mouseCursor,
     expertMode: state.main.expertMode,
@@ -265,8 +265,8 @@ export default connect(
     onMapRefocus(changes) {
       dispatch(mapRefocus(changes));
     },
-    onPopupLaunch(popupName) {
-      dispatch(setActivePopup(popupName));
+    onPopupLaunch(modalName) {
+      dispatch(setActiveModal(modalName));
     },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));

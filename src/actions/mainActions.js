@@ -1,9 +1,9 @@
-export function setActivePopup(activePopup) {
-  return { type: 'SET_ACTIVE_POPUP', payload: activePopup };
+export function setActiveModal(activeModal) {
+  return { type: 'SET_ACTIVE_MODAL', payload: activeModal };
 }
 
-export function closePopup() {
-  return { type: 'CLOSE_POPUP' };
+export function closeModal() {
+  return { type: 'CLOSE_MODAL' };
 }
 
 export function setTool(tool) {

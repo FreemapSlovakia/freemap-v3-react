@@ -1,5 +1,5 @@
 const initialState = {
-  activePopup: null,
+  activeModal: null,
   tool: null,
   homeLocation: { lat: null, lon: null },
   progress: false,
@@ -26,10 +26,10 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'route-planner' };
     case 'TRACK_VIEWER_DOWNLOAD_TRACK':
       return { ...state, tool: 'track-viewer' };
-    case 'SET_ACTIVE_POPUP':
-      return { ...state, activePopup: action.payload };
-    case 'CLOSE_POPUP':
-      return { ...state, activePopup: null };
+    case 'SET_ACTIVE_MODAL':
+      return { ...state, activeModal: action.payload };
+    case 'CLOSE_MODAL':
+      return { ...state, activeModal: null };
     case 'MAP_RESET':
       return { ...state, tool: null };
     case 'SET_TOOL':

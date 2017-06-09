@@ -12,7 +12,7 @@ import { connect } from 'react-redux';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerExportGpx } from 'fm3/actions/routePlannerActions';
-import { setTool, setActivePopup, startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { setTool, setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
@@ -201,7 +201,7 @@ export default connect(
         style: 'warning',
         cancelType: 'SET_TOOL',
         actions: [
-          { name: 'Nastav', action: setActivePopup('settings') },
+          { name: 'Nastav', action: setActiveModal('settings') },
           { name: 'Zavri' },
         ],
       }));
