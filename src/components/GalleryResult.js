@@ -41,7 +41,7 @@ class GalleryResult extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {images.map(({ path, title, description }) => (
-            <div>
+            <div key={path}>
               <Thumbnail
                 src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
                 alt={title}
