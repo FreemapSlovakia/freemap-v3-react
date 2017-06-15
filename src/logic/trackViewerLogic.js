@@ -81,7 +81,8 @@ export const trackViewerUploadTrackLogic = createLogic({
           data: btoa(unescape(encodeURIComponent(trackGpx))),
           mediaType: 'application/gpx+xml',
         }),
-      }).then(res => res.json())
+      })
+      .then(res => res.json())
       .then((res) => {
         dispatch(trackViewerSetTrackUID(res.uid));
       })
