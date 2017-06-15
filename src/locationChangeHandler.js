@@ -10,13 +10,23 @@ import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
 
-  // TODO once we start listening for the location changes then we should not dispatch actions if nothing changes here
   if (query.tool === 'route-planner' && /car|walk|bicycle/.test(query.transport)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 
+    const { start, finish, midpoints, transportType } = store.getState().routePlanner;
+
     if (points.length > 1 && points.every(point => point.length === 2)) {
       const latLons = points.map(([lat, lon]) => ({ lat, lon }));
-      store.dispatch(routePlannerSetParams(latLons[0], latLons[latLons.length - 1], latLons.slice(1, latLons.length - 1), query.transport));
+      const nextStart = latLons[0];
+      const nextMidpoints = latLons.slice(1, latLons.length - 1);
+      const nextFinish = latLons[latLons.length - 1];
+      if (query.transport !== transportType
+          || !latLonEquals(start, nextStart)
+          || !latLonEquals(finish, nextFinish)
+          || midpoints.length !== nextMidpoints.length
+          || midpoints.some((midpoint, i) => !latLonEquals(midpoint, nextMidpoints[i]))) {
+        store.dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport));
+      }
     }
   }
 
@@ -34,4 +44,8 @@ export default function handleLocationChange(store, location) {
   if (diff && Object.keys(diff).length) {
     store.dispatch(mapRefocus(diff));
   }
+}
+
+function latLonEquals(ll1, ll2) {
+  return !ll1 && !ll2 || ll1 && ll2 && ll1.lat === ll2.lat && ll1.lon === ll2.lon;
 }
