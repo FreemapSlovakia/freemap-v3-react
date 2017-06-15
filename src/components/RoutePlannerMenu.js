@@ -93,11 +93,11 @@ function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportTyp
         {' '}
         { routeFound &&
           <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
           </Button> }
         {' '}
         <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
-          <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
+          <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
         </Button>
       </Navbar.Form>
       <Nav pullRight>
