@@ -12,7 +12,8 @@ const galleryRequestImagesLogic = createLogic({
     fetch(`http://www.freemap.sk:3000/gallery/pictures?lat=${lat}&lon=${lon}&distance=${1900 / 2 ** getState().map.zoom}`)
       .then(res => res.json())
       .then((payload) => {
-        dispatch(gallerySetImages(payload)); // TODO validate payload
+        const images = payload.map(image => ({ ...image, createdAt: new Date(image.createdAt) }));
+        dispatch(gallerySetImages(images)); // TODO validate payload
       })
       .catch(() => {}) // TODO toast with error
       .then(() => {

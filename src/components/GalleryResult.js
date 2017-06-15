@@ -11,6 +11,8 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { galleryRequestImages, gallerySetImages } from 'fm3/actions/galleryActions';
 
+const dateFormat = new Intl.DateTimeFormat('sk');
+
 class GalleryResult extends React.Component {
   static propTypes = {
     onImageRequest: PropTypes.func.isRequired,
@@ -40,7 +42,7 @@ class GalleryResult extends React.Component {
           <Modal.Title>Obrázky</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {images.map(({ path, title, description }) => (
+          {images.map(({ path, title, description, author, createdAt }) => (
             <div key={path}>
               <Thumbnail
                 src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
@@ -49,6 +51,7 @@ class GalleryResult extends React.Component {
                 target="freemap_gallery_image"
               >
                 {title && title !== '-' && <h3>{title}</h3>}
+                <p>Nahral {author} dňa {dateFormat.format(createdAt)}</p>
                 {description && description !== '-' && <p>{description}</p>}
               </Thumbnail>
             </div>
