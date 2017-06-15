@@ -30,8 +30,7 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  // TODO once we start listening for the location changes then we should not dispatch actions if nothing changes here
-  if (query.tool === 'track-viewer' && query['track-uid']) {
+  if (query.tool === 'track-viewer' && query['track-uid'] && store.getState().trackViewer.trackUID !== query['track-uid']) {
     store.dispatch(trackViewerDownloadTrack(query['track-uid']));
   }
 
