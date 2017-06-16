@@ -69,9 +69,10 @@ class RoutePlannerResult extends React.Component {
     const { start, finish, midpoints, shapePoints } = this.props;
     const futureMidpoints = [];
     const midpointDistancesFromStart = [];
+    let routeSlices = [];
     if ((start && finish && shapePoints)) {
       const splitPoints = [start, ...midpoints, finish];
-      const routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
+      routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
       let distanceFromStart = 0;
 
       routeSlices.forEach((routeSlice) => {
@@ -84,18 +85,18 @@ class RoutePlannerResult extends React.Component {
       });
     }
 
-    return { futureMidpoints, midpointDistancesFromStart };
+    return { futureMidpoints, midpointDistancesFromStart, routeSlices };
   }
 
   render() {
-    const { start, midpoints, finish, shapePoints, time, distance, itinerary, itineraryIsVisible } = this.props;
+    const { start, midpoints, finish, time, distance, itinerary, itineraryIsVisible } = this.props;
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
       iconAnchor: [7, 7],
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
-    const { futureMidpoints, midpointDistancesFromStart } = this.futureMidpointsAndDistances();
+    const { futureMidpoints, midpointDistancesFromStart, routeSlices } = this.futureMidpointsAndDistances();
 
     return (
       <div>
@@ -172,13 +173,16 @@ class RoutePlannerResult extends React.Component {
           ),
         )}
 
-        {shapePoints &&
+        {routeSlices.map((routeSlice, i) => (
           <Polyline
-            positions={shapePoints}
+            positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
             weight="8"
-            opacity="0.8"
+            key={i}
+            color={i % 2 === 0 ? '#38f' : 'black'}
+            opacity={i % 2 === 0 ? 0.8 : 0.4}
             interactive={false}
           />
+        ))
         }
 
         <ElevationChartActivePoint />
