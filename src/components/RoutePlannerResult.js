@@ -113,20 +113,21 @@ class RoutePlannerResult extends React.Component {
         }
 
         {midpoints.map(({ lat, lon }, i) => (
-          <MarkerWithInnerLabel
-            draggable
-            onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
-            onClick={() => this.midpointClicked(i)}
-            key={i}
-            zIndexOffset={9}
-            label={i + 1}
-            position={L.latLng(lat, lon)}
-          >
-            {!itineraryIsVisible &&
-              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-                <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
-              </Tooltip>}
-          </MarkerWithInnerLabel>
+          midpointDistancesFromStart[i] &&
+            <MarkerWithInnerLabel
+              draggable
+              onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
+              onClick={() => this.midpointClicked(i)}
+              key={i}
+              zIndexOffset={9}
+              label={i + 1}
+              position={L.latLng(lat, lon)}
+            >
+              {!itineraryIsVisible &&
+                <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+                  <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
+                </Tooltip>}
+            </MarkerWithInnerLabel>
         ))}
 
         {finish &&
