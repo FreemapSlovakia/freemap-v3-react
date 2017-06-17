@@ -6,7 +6,7 @@ import { exportGpx, createElement } from 'fm3/gpxExporter';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
-import { toastsAddError } from 'fm3/actions/toastsActions';
+import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 
 const updateRouteTypes = [
   'ROUTE_PLANNER_SET_START',
@@ -40,8 +40,16 @@ export const routePlannerFindRouteLogic = createLogic({
       .then(res => res.json())
       .then(({ route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } }) => {
         const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
-        const betterItinerary = itinerary.map(step => ({ lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km }));
-        dispatch(routePlannerSetResult(routeLatLons, betterItinerary, distance_in_km, time_in_minutes));
+        if (routeLatLons.length === 0) {
+          dispatch(toastsAdd({
+            message: 'Cez zvolené body sa nepodarilo naplánovať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
+            style: 'warning',
+            timeout: 3000,
+          }));
+        } else {
+          const betterItinerary = itinerary.map(step => ({ lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km }));
+          dispatch(routePlannerSetResult(routeLatLons, betterItinerary, distance_in_km, time_in_minutes));
+        }
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
