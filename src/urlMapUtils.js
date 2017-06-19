@@ -7,6 +7,33 @@ const overlayLetters = overlayLayers.map(({ type }) => type).join('');
 const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
 
 export function getMapStateFromUrl(location) {
+  const isFromOldFreemapUrlFormat1 = location.hash && (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
+  const isFromOldFreemapUrlFormat2 = location.search && location.search.indexOf('m=') >= 0; // "?m=A&p=48.1855|17.4029|14"
+
+  if (isFromOldFreemapUrlFormat1 || isFromOldFreemapUrlFormat2) {
+    const oldFreemapUrlParams = {};
+    let oldFreemapRawUrlParams;
+    if (isFromOldFreemapUrlFormat1) {
+      oldFreemapRawUrlParams = location.hash.substring(1).split(','); // #m=T,p=48.21836|17.4166|16|T
+    } else { // isFromOldFreemapUrlFormat2
+      oldFreemapRawUrlParams = location.search.substring(1).split('&'); // ?m=A&p=48.1855|17.4029|14
+    }
+    oldFreemapRawUrlParams.forEach((s) => {
+      const [key, value] = s.split('=');
+      oldFreemapUrlParams[key] = value;
+    });  // {'m': 'T', 'p' : '48.21836|17.4166|16|T'}
+
+    const [latFrag, lonFrag, zoomFrag, anotherMapTypeParam] = oldFreemapUrlParams.p.split('|');
+    const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'T';
+    return {
+      lat: parseFloat(latFrag),
+      lon: parseFloat(lonFrag),
+      zoom: parseInt(zoomFrag, 10),
+      mapType,
+      overlays: [],
+    };
+  }
+
   const query = queryString.parse(location.search);
 
   const [zoomFrag, latFrag, lonFrag] = (query.map || '').split('/');
