@@ -38,6 +38,7 @@ import GalleryResult from 'fm3/components/GalleryResult';
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
 import ElevationChart from 'fm3/components/ElevationChart';
+import InfoPoint from 'fm3/components/InfoPoint';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -234,6 +235,8 @@ class Main extends React.Component {
             {tool === 'location' && <LocationResult />}
 
             {tool === 'track-viewer' && <TrackViewerResult />}
+
+            {tool === 'info-point' && <InfoPoint />}
 
             {tool === null && overlays.includes('I') && <GalleryResult />}
             <ElevationChart />

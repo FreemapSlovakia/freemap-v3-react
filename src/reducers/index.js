@@ -6,6 +6,7 @@ import routePlanner from 'fm3/reducers/routePlannerReducer';
 import areaMeasurement from 'fm3/reducers/areaMeasurementReducer';
 import distanceMeasurement from 'fm3/reducers/distanceMeasurementReducer';
 import elevationMeasurement from 'fm3/reducers/elevationMeasurementReducer';
+import infoPoint from 'fm3/reducers/infoPointReducer';
 import objects from 'fm3/reducers/objectsReducer';
 import search from 'fm3/reducers/searchReducer';
 import trackViewer from 'fm3/reducers/trackViewerReducer';
@@ -20,6 +21,7 @@ export default combineReducers({
   areaMeasurement,
   distanceMeasurement,
   elevationMeasurement,
+  infoPoint,
   objects,
   search,
   trackViewer,

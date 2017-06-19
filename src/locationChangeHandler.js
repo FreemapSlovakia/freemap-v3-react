@@ -6,6 +6,7 @@ import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
+import { infoPointAdd } from 'fm3/actions/infoPointActions';
 
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
@@ -32,6 +33,14 @@ export default function handleLocationChange(store, location) {
 
   if (query.tool === 'track-viewer' && query['track-uid'] && store.getState().trackViewer.trackUID !== query['track-uid']) {
     store.dispatch(trackViewerDownloadTrack(query['track-uid']));
+  }
+
+  if (query.tool === 'info-point') {
+    const lat = parseFloat(query['info-point-lat']);
+    const lon = parseFloat(query['info-point-lon']);
+    if (!isNaN(lat) && !isNaN(lon)) {
+      store.dispatch(infoPointAdd(lat, lon, query['info-point-label']));
+    }
   }
 
   if (query.embed === 'true') {

@@ -26,6 +26,8 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'route-planner' };
     case 'TRACK_VIEWER_DOWNLOAD_TRACK':
       return { ...state, tool: 'track-viewer' };
+    case 'INFO_POINT_ADD':
+      return { ...state, tool: 'info-point' };
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
     case 'CLOSE_MODAL':
