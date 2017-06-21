@@ -36,6 +36,7 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS') {
   }
 }
 
+// distance in meters
 export function distance(lat1, lon1, lat2, lon2) {
   const a = 0.5 - Math.cos(toRad(lat2 - lat1)) / 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * (1 - Math.cos(toRad(lon2 - lon1))) / 2;
   return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km

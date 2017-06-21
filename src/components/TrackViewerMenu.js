@@ -18,6 +18,7 @@ import { setTool, setActiveModal, closeModal } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerResetData, trackViewerResetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { distance } from 'fm3/geoutils';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -26,6 +27,8 @@ import 'fm3/styles/trackViewer.scss';
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
+const MIN_ELE_DIFF_IN_METERS = 10;
+const MIN_DISTANCE_FROM_OTHER_POINT_IN_METERS = 20;
 class TrackViewerMenu extends React.Component {
   componentWillMount() {
     const startingWithBlankTrackViewer = this.props.trackUID === null;
@@ -116,6 +119,9 @@ class TrackViewerMenu extends React.Component {
     const coords = firstRealFeature.geometry.coordinates;
     let minEle = Infinity;
     let maxEle = -Infinity;
+    let uphillEleSum = 0;
+    let downhillEleSum = 0;
+    let lastPointTakenIntoAccount = coords[0];
     coords.forEach((latLonEle) => {
       const ele = latLonEle[2];
       if (ele < minEle) {
@@ -124,9 +130,21 @@ class TrackViewerMenu extends React.Component {
       if (maxEle < ele) {
         maxEle = ele;
       }
+
+      const eleDiff = ele - lastPointTakenIntoAccount[2];
+      const distanceFromLastPoint = distance(latLonEle[0], latLonEle[1], lastPointTakenIntoAccount[0], lastPointTakenIntoAccount[1]);
+      if (eleDiff < (MIN_ELE_DIFF_IN_METERS * -1) && distanceFromLastPoint > MIN_DISTANCE_FROM_OTHER_POINT_IN_METERS) {
+        lastPointTakenIntoAccount = latLonEle;
+        downhillEleSum += eleDiff * -1;
+      } else if (eleDiff > MIN_ELE_DIFF_IN_METERS && distanceFromLastPoint > MIN_DISTANCE_FROM_OTHER_POINT_IN_METERS) {
+        lastPointTakenIntoAccount = latLonEle;
+        uphillEleSum += eleDiff;
+      }
     });
-    tableData.push(['najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
     tableData.push(['najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
+    tableData.push(['najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
+    tableData.push(['celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
+    tableData.push(['celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
     const infoMessage = (
       <div className="trackInfo">
         <table className="trackInfoTable">
