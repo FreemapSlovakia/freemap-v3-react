@@ -1,6 +1,6 @@
 import queryString from 'query-string';
 
-import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
+import { getMapStateFromUrl, getMapStateDiffFromUrl, getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/urlMapUtils';
 
 import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
@@ -45,6 +45,12 @@ export default function handleLocationChange(store, location) {
 
   if (query.embed === 'true') {
     store.dispatch(setEmbeddedMode());
+  }
+
+  if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
+    const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+    store.dispatch(setEmbeddedMode());
+    store.dispatch(infoPointAdd(lat, lon));
   }
 
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);
