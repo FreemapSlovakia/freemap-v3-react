@@ -67,7 +67,7 @@ class InfoPointMenu extends React.Component {
       <div>
         <Navbar.Form pullLeft>
           <Button onClick={() => this.toggleEditMode()} active={inEditMode}>
-            <FontAwesomeIcon icon="arrows" /> Zmeniť polohu
+            <FontAwesomeIcon icon="arrows" /> Posunúť
           </Button>
           {' '}
           <Button onClick={() => onModalLaunch('info-point-change-label')}>
