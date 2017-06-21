@@ -16,6 +16,7 @@ const humanNameForToolToShowInNavbar = {
   'measure-area': 'Meranie',
   'track-viewer': 'Prehliadač trás',
   objects: 'Miesta',
+  'info-point': 'Odkaz na mapu',
 };
 
 const iconForTool = {
@@ -25,6 +26,7 @@ const iconForTool = {
   'measure-area': 'square',
   'track-viewer': 'road',
   objects: 'map-marker',
+  'info-point': 'link',
 };
 
 function NavbarHeader({ tool, onMapReset }) {

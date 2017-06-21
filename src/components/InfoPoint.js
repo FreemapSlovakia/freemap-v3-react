@@ -7,7 +7,7 @@ import PropTypes from 'prop-types';
 
 function InfoPoint({ lat, lon, label }) {
   return (
-    <MarkerWithInnerLabel
+    lat && <MarkerWithInnerLabel
       faIcon="info"
       faIconLeftPadding="2px"
       interactive={false}

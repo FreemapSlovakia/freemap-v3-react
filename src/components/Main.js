@@ -38,6 +38,8 @@ import GalleryResult from 'fm3/components/GalleryResult';
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
 import ElevationChart from 'fm3/components/ElevationChart';
+
+import InfoPointMenu from 'fm3/components/InfoPointMenu';
 import InfoPoint from 'fm3/components/InfoPoint';
 
 import * as FmPropTypes from 'fm3/propTypes';
@@ -125,6 +127,7 @@ class Main extends React.Component {
       cmi(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
       cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
       cmi(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
+      cmi(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
     ];
   }
 
@@ -169,6 +172,7 @@ class Main extends React.Component {
                 {tool === 'route-planner' && <RoutePlannerMenu />}
                 {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
+                {tool === 'info-point' && <InfoPointMenu />}
                 {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
                   <Nav className="hidden-sm hidden-md hidden-lg">

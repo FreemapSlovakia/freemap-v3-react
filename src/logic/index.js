@@ -10,6 +10,7 @@ import distanceMeasurementExportGpxLogic from 'fm3/logic/distanceMeasurementLogi
 import toastsLogic from 'fm3/logic/toastsLogic';
 import urlLogic from 'fm3/logic/urlLogic';
 import galleryLogic from 'fm3/logic/galleryLogic';
+import infoPointLogic from 'fm3/logic/infoPointLogic';
 
 export default [
   ...routePlannerLogic,
@@ -24,4 +25,5 @@ export default [
   ...toastsLogic,
   urlLogic,
   ...galleryLogic,
+  infoPointLogic,
 ];
