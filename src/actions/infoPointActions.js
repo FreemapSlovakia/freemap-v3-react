@@ -9,3 +9,8 @@ export function infoPointChangePosition(lat, lon) {
 export function infoPointSetInEditMode(inEditMode) {
   return { type: 'INFO_POINT_SET_IN_EDIT_MODE', payload: { inEditMode } };
 }
+
+export function infoPointChangeLabel(label) {
+  return { type: 'INFO_POINT_CHANGE_LABEL', payload: { label } };
+}
+

@@ -16,6 +16,9 @@ export default function infoPoint(state = initialState, action) {
     case 'INFO_POINT_SET_IN_EDIT_MODE': {
       return { ...state, inEditMode: action.payload.inEditMode };
     }
+    case 'INFO_POINT_CHANGE_LABEL': {
+      return { ...state, label: action.payload.label };
+    }
     case 'SET_TOOL':
       return initialState;
     default:
