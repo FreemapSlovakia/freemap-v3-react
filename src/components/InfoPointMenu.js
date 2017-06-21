@@ -77,6 +77,10 @@ class InfoPointMenu extends React.Component {
           <Button onClick={() => onModalLaunch('info-point-share')}>
             <FontAwesomeIcon icon="share-alt" /> Zdieľať
           </Button>
+          {' '}
+          <Button onClick={() => onModalLaunch('info-point-embed')}>
+            <FontAwesomeIcon icon="share-alt" /> Vložiť do webstránky
+          </Button>
         </Navbar.Form>
         <Nav pullRight>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
@@ -87,7 +91,7 @@ class InfoPointMenu extends React.Component {
             <Modal.Title>Zdieľať odkaz na mapu</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Zvolený pohľad na mapu je dostupný na tejto adrese:
+            Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
             <Alert>
               <a href={shareURL}>{shareURL}</a>
             </Alert>
@@ -121,6 +125,28 @@ class InfoPointMenu extends React.Component {
           <Modal.Footer>
             <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
             <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+          </Modal.Footer>
+        </Modal>
+
+        <Modal show={activeModal === 'info-point-embed'} onHide={onModalClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>Vložit do webstránky</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            Vložte na vašu stránku tento html kód:
+            <Alert style={{ 'font-family': 'monospace' }}>
+              {`<iframe src="${shareURL}&embed=true"`}<br />
+              {'style="width: 500px; height: 300px; border: 0" />'}
+            </Alert>
+            Výsledok bude vyzerať nasledovne:
+            <iframe
+              title="Freemap.sk"
+              style={{ width: '100%', height: '300px', border: '0' }}
+              src={`${shareURL}&embed=true`}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
           </Modal.Footer>
         </Modal>
       </div>
