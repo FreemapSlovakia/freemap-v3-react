@@ -21,3 +21,11 @@ export function trackViewerDownloadTrack(trackUID) {
 export function trackViewerUploadTrack() {
   return { type: 'TRACK_VIEWER_UPLOAD_TRACK' };
 }
+
+export function trackViewerSetEleSmoothingFactor(eleSmoothingFactor) {
+  return { type: 'TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR', payload: { eleSmoothingFactor } };
+}
+
+export function trackViewerLoadState(payload) {
+  return { type: 'TRACK_VIEWER_LOAD_STATE', payload };
+}

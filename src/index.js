@@ -13,6 +13,7 @@ import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 import { mainLoadState } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
+import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
 
@@ -36,6 +37,7 @@ try {
 if (appState) {
   store.dispatch(mainLoadState(appState.main));
   store.dispatch(mapLoadState(appState.map));
+  store.dispatch(trackViewerLoadState(appState.trackViewer));
 }
 
 history.listen(handleLocationChange.bind(undefined, store));

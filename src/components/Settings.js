@@ -13,6 +13,7 @@ import 'react-rangeslider/lib/index.css';
 import { mapSetTileFormat, mapSetOverlayOpacity, setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { setTool, setHomeLocation, closeModal, setExpertMode } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
@@ -37,6 +38,7 @@ class Settings extends React.Component {
     cycloOverlayOpacity: PropTypes.number.isRequired,
     zoom: PropTypes.number,
     expertMode: PropTypes.bool.isRequired,
+    trackViewerEleSmoothingFactor: PropTypes.number.isRequired,
   };
 
   constructor(props) {
@@ -49,6 +51,7 @@ class Settings extends React.Component {
       touristOverlayOpacity: props.touristOverlayOpacity,
       cycloOverlayOpacity: props.cycloOverlayOpacity,
       expertMode: props.expertMode,
+      trackViewerEleSmoothingFactor: props.trackViewerEleSmoothingFactor,
     };
   }
 
@@ -72,6 +75,7 @@ class Settings extends React.Component {
       this.state.touristOverlayOpacity,
       this.state.cycloOverlayOpacity,
       this.state.expertMode,
+      this.state.trackViewerEleSmoothingFactor,
     );
   }
 
@@ -80,7 +84,7 @@ class Settings extends React.Component {
     const { homeLocation, homeLocationCssClasses } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
 
-    const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity', 'cycloOverlayOpacity', 'expertMode']
+    const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity', 'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor']
       .some(prop => this.state[prop] !== this.props[prop]);
 
     let homeLocationInfo = 'neurčená';
@@ -184,6 +188,24 @@ class Settings extends React.Component {
               />
             </div>
           }
+          {this.state.expertMode &&
+            <div>
+               Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {(this.state.trackViewerEleSmoothingFactor)}
+              <Slider
+                value={this.state.trackViewerEleSmoothingFactor}
+                min={1}
+                max={10}
+                step={1}
+                tooltip={false}
+                onChange={newValue => this.setState({ trackViewerEleSmoothingFactor: newValue })}
+              />
+            </div>
+          }
+          {this.state.expertMode &&
+            <Alert>
+              Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
+            </Alert>
+          }
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
@@ -204,9 +226,10 @@ export default connect(
     touristOverlayOpacity: state.map.overlayOpacity.t,
     cycloOverlayOpacity: state.map.overlayOpacity.c,
     expertMode: state.main.expertMode,
+    trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode) {
+    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor) {
       // TODO replace with signle dispatch (for good pratcice)
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
@@ -215,6 +238,7 @@ export default connect(
       dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
       dispatch(closeModal());
       dispatch(setExpertMode(expertMode));
+      dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
       dispatch(toastsAdd({
         collapseKey: 'settings.saved',
         message: 'Zmeny boli uložené.',

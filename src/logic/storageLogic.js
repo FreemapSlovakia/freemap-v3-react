@@ -26,6 +26,9 @@ export default createLogic({
         tileFormat: mapState.tileFormat,
         mouseCursor: 'auto',
       },
+      trackViewer: {
+        eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+      },
     };
 
     localStorage.setItem('appState', JSON.stringify(appState));

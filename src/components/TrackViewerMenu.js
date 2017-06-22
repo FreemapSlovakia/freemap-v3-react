@@ -18,7 +18,6 @@ import { setTool, setActiveModal, closeModal } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerResetData, trackViewerResetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { distance } from 'fm3/geoutils';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -27,8 +26,6 @@ import 'fm3/styles/trackViewer.scss';
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
-const MIN_ELE_DIFF_IN_METERS = 10;
-const MIN_DISTANCE_FROM_OTHER_POINT_IN_METERS = 20;
 class TrackViewerMenu extends React.Component {
   componentWillMount() {
     const startingWithBlankTrackViewer = this.props.trackUID === null;
@@ -121,8 +118,8 @@ class TrackViewerMenu extends React.Component {
     let maxEle = -Infinity;
     let uphillEleSum = 0;
     let downhillEleSum = 0;
-    let lastPointTakenIntoAccount = coords[0];
-    coords.forEach((latLonEle) => {
+    let previousFlotingWindowEle = null;
+    coords.forEach((latLonEle, i) => {
       const ele = latLonEle[2];
       if (ele < minEle) {
         minEle = ele;
@@ -131,15 +128,23 @@ class TrackViewerMenu extends React.Component {
         maxEle = ele;
       }
 
-      const eleDiff = ele - lastPointTakenIntoAccount[2];
-      const distanceFromLastPoint = distance(latLonEle[0], latLonEle[1], lastPointTakenIntoAccount[0], lastPointTakenIntoAccount[1]);
-      if (eleDiff < (MIN_ELE_DIFF_IN_METERS * -1) && distanceFromLastPoint > MIN_DISTANCE_FROM_OTHER_POINT_IN_METERS) {
-        lastPointTakenIntoAccount = latLonEle;
+      const floatingWindow = coords.slice(i, i + this.props.eleSmoothingFactor).filter(e => !!e).sort();
+      let floatingWindowWithoutExtremes = floatingWindow;
+      if (this.props.eleSmoothingFactor >= 5) { // ignore highest and smallest value
+        floatingWindowWithoutExtremes = floatingWindow.splice(1, floatingWindow.length - 2);
+      }
+
+      const flotingWindowEle = floatingWindowWithoutExtremes.reduce((a, b) => a[2] || 0 + b[2], 0) / floatingWindowWithoutExtremes.length;
+      let eleDiff = 0;
+      if (previousFlotingWindowEle) {
+        eleDiff = flotingWindowEle - previousFlotingWindowEle;
+      }
+      if (eleDiff < 0) {
         downhillEleSum += eleDiff * -1;
-      } else if (eleDiff > MIN_ELE_DIFF_IN_METERS && distanceFromLastPoint > MIN_DISTANCE_FROM_OTHER_POINT_IN_METERS) {
-        lastPointTakenIntoAccount = latLonEle;
+      } else if (eleDiff > 0) {
         uphillEleSum += eleDiff;
       }
+      previousFlotingWindowEle = flotingWindowEle;
     });
     tableData.push(['najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
     tableData.push(['najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
@@ -254,6 +259,7 @@ TrackViewerMenu.propTypes = {
     lengthInKm: PropTypes.number.isRequired,
     finishTime: PropTypes.string,
   })),
+  eleSmoothingFactor: PropTypes.number.isRequired,
 };
 
 export default connect(
@@ -265,6 +271,7 @@ export default connect(
     finishPoints: state.trackViewer.finishPoints,
     trackUID: state.trackViewer.trackUID,
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
+    eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
   }),
   dispatch => ({
     onCancel() {
