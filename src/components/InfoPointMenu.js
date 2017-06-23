@@ -134,7 +134,7 @@ class InfoPointMenu extends React.Component {
           </Modal.Header>
           <Modal.Body>
             Vložte na vašu stránku tento html kód:
-            <Alert style={{ 'font-family': 'monospace' }}>
+            <Alert style={{ fontFamily: 'monospace' }}>
               {`<iframe src="${shareURL}&embed=true"`}<br />
               {'style="width: 500px; height: 300px; border: 0" />'}
             </Alert>
