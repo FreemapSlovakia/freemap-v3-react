@@ -1,13 +1,13 @@
 import queryString from 'query-string';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
-import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/oldFreemapUtils';
+import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl, getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2 } from 'fm3/oldFreemapUtils';
 
 import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
-import { infoPointAdd } from 'fm3/actions/infoPointActions';
+import { infoPointAdd, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
@@ -52,6 +52,15 @@ export default function handleLocationChange(store, location) {
     const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
     store.dispatch(setEmbeddedMode());
     store.dispatch(infoPointAdd(lat, lon));
+  }
+
+  if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
+    const { lat, lon, label } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
+    store.dispatch(setEmbeddedMode());
+    store.dispatch(infoPointAdd(lat, lon));
+    if (label) {
+      store.dispatch(infoPointChangeLabel(label));
+    }
   }
 
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);

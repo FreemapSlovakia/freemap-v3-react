@@ -27,7 +27,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl(location) {
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location) {
-  if (location.search.indexOf('marker=1') >= 0 || location.search.indexOf('markerLat') >= 0) {
+  if (location.search && (location.search.indexOf('marker=1') >= 0 || location.search.indexOf('markerLat') >= 0)) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
     const out = {
       lat: parseFloat(oldFreemapUrlParams.lat),
@@ -37,6 +37,19 @@ export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location) {
       overlays: [],
     };
     return out;
+  }
+  return false;
+}
+
+// http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
+export function getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location) {
+  if (location.search && location.search.indexOf('markerLat') >= 0) {
+    const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
+    return {
+      lat: parseFloat(oldFreemapUrlParams.markerLat),
+      lon: parseFloat(oldFreemapUrlParams.markerLon),
+      label: oldFreemapUrlParams.markerHtml,
+    };
   }
   return false;
 }
