@@ -1,6 +1,7 @@
 import queryString from 'query-string';
 
-import { getMapStateFromUrl, getMapStateDiffFromUrl, getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/urlMapUtils';
+import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
+import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/oldFreemapUtils';
 
 import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
