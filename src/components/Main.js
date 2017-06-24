@@ -154,7 +154,7 @@ class Main extends React.Component {
     const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
-      <div className="container-fluid">
+      <div className="container-fluid" onDragOver={() => this.handleToolSelect('track-viewer')}>
         {embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} />}
         <Toasts />
         {!embeddedMode &&
