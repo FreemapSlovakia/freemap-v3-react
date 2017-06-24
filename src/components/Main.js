@@ -72,11 +72,6 @@ class Main extends React.Component {
     embeddedMode: PropTypes.bool.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    this.foo = 'bar';
-  }
-
   componentDidMount() {
     setMapLeafletElement(this.map.leafletElement);
     document.addEventListener('keydown', (event) => {
