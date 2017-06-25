@@ -8,6 +8,8 @@ import PropTypes from 'prop-types';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
+import 'fm3/styles/changesets.scss';
+
 function Changesets({ changesets, onShowChangesetDetail }) {
   return (
     <div>
@@ -21,7 +23,7 @@ function Changesets({ changesets, onShowChangesetDetail }) {
         >
           <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
             <span>
-              {changeset.userName}: {(changeset.description || '/bez popisu/').substring(0, 20)} {changeset.description && changeset.description.length >= 20 ? '...' : ''}
+              <span className="bold">{changeset.userName}</span>: {(changeset.description || '/bez popisu/').substring(0, 20)} {changeset.description && changeset.description.length >= 20 ? '...' : ''}
             </span>
           </Tooltip>
         </MarkerWithInnerLabel>
@@ -50,9 +52,16 @@ export default connect(
     onShowChangesetDetail(changeset) {
       const message = (
         <div>
-          <div><span style={{ fontWeight: '500' }} >autor:</span> {changeset.userName}</div>
-          <div><span style={{ fontWeight: '500' }} >popis:</span> {changeset.description || '/bez popisu/'}</div>
-          <div><span style={{ fontWeight: '500' }} >čas:</span> {strftime('%d. %m. %H:%M', changeset.closedAt)}</div>
+          <div>
+            <span className="bold">autor</span>:{' '}
+            <a
+              href={`https://www.openstreetmap.org/user/${encodeURIComponent(changeset.userName)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >{changeset.userName}</a>
+          </div>
+          <div><span className="bold">popis:</span> {changeset.description || '/bez popisu/'}</div>
+          <div><span className="bold">čas:</span> {strftime('%d. %m. %H:%M', changeset.closedAt)}</div>
           <div>
             <Button bsSize="small" onClick={() => window.open(`https://www.openstreetmap.org/changeset/${changeset.id}`)}>Viac detailov na osm.org</Button>
           </div>

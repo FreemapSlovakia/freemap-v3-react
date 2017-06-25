@@ -28,7 +28,7 @@ const iconForTool = {
   'track-viewer': 'road',
   objects: 'map-marker',
   'info-point': 'link',
-  changesets: 'calendar',
+  changesets: 'pencil',
 };
 
 function NavbarHeader({ tool, onMapReset }) {

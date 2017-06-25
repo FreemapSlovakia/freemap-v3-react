@@ -126,7 +126,7 @@ class Main extends React.Component {
       cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
       cmi(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
       cmi(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
-      cmi(7, 'calendar', 'Posledné zmeny', () => this.handleToolSelect('changesets')),
+      cmi(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
     ];
   }
 
