@@ -13,6 +13,7 @@ import trackViewer from 'fm3/reducers/trackViewerReducer';
 import toasts from 'fm3/reducers/toastsReducer';
 import elevationChart from 'fm3/reducers/elevationChartReducer';
 import gallery from 'fm3/reducers/galleryReducer';
+import changesets from 'fm3/reducers/changesetsReducer';
 
 export default combineReducers({
   main,
@@ -28,4 +29,5 @@ export default combineReducers({
   toasts,
   elevationChart,
   gallery,
+  changesets,
 });

@@ -42,6 +42,9 @@ import ElevationChart from 'fm3/components/ElevationChart';
 import InfoPointMenu from 'fm3/components/InfoPointMenu';
 import InfoPoint from 'fm3/components/InfoPoint';
 
+import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
+import Changesets from 'fm3/components/Changesets';
+
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -123,6 +126,7 @@ class Main extends React.Component {
       cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
       cmi(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
       cmi(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
+      cmi(7, 'calendar', 'Posledné zmeny', () => this.handleToolSelect('changesets')),
     ];
   }
 
@@ -168,6 +172,7 @@ class Main extends React.Component {
                 {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'info-point' && <InfoPointMenu />}
+                {tool === 'changesets' && <ChangesetsMenu />}
                 {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
                   <Nav className="hidden-sm hidden-md hidden-lg">
@@ -236,6 +241,8 @@ class Main extends React.Component {
             {tool === 'track-viewer' && <TrackViewerResult />}
 
             {tool === 'info-point' && <InfoPoint />}
+
+            {tool === 'changesets' && <Changesets />}
 
             {tool === null && overlays.includes('I') && <GalleryResult />}
             <ElevationChart />

@@ -17,6 +17,7 @@ const humanNameForToolToShowInNavbar = {
   'track-viewer': 'Prehliadač trás',
   objects: 'Miesta',
   'info-point': 'Odkaz na mapu',
+  changesets: 'Zmeny za posledné 3 dni',
 };
 
 const iconForTool = {
@@ -27,6 +28,7 @@ const iconForTool = {
   'track-viewer': 'road',
   objects: 'map-marker',
   'info-point': 'link',
+  changesets: 'calendar',
 };
 
 function NavbarHeader({ tool, onMapReset }) {
