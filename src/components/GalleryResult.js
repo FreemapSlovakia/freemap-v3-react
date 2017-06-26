@@ -60,7 +60,7 @@ class GalleryResult extends React.Component {
           maxZoom={20}
           minZoom={8}
           maxNativeZoom={16}
-          zIndex={2}
+          zIndex={100}
         />
 
         {this.state.lat && this.state.lon &&
