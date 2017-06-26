@@ -4,6 +4,7 @@ import strftime from 'strftime';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { changesetsAdd } from 'fm3/actions/changesetsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
@@ -42,9 +43,22 @@ export const changesetsLogic = createLogic({
                 changeset.description = tag.getAttribute('v');
               }
             });
-            changesets.push(changeset);
+
+            const centerIsInSlovakia = 47.63617 < changeset.centerLat && changeset.centerLat< 49.66746 && 16.69965 < changeset.centerLon && changeset.centerLon < 22.67475; // eslint-disable-line
+            if (centerIsInSlovakia) {
+              changesets.push(changeset);
+            }
           });
           dispatch(changesetsAdd(changesets));
+          if (changesets.length === 0) {
+            dispatch(toastsAdd({
+              collapseKey: 'changeset.detail',
+              message: 'Neboli nájdené žiadne zmeny',
+              cancelType: ['SET_TOOL', 'CHANGESETS_REFRESH'],
+              timeout: 3000,
+              style: 'info',
+            }));
+          }
         }).then(() => {
           dispatch(stopProgress());
           done();

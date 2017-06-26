@@ -63,7 +63,9 @@ export default connect(
           <div><span className="bold">popis:</span> {changeset.description || '/bez popisu/'}</div>
           <div><span className="bold">čas:</span> {strftime('%d. %m. %H:%M', changeset.closedAt)}</div>
           <div>
-            <Button bsSize="small" onClick={() => window.open(`https://www.openstreetmap.org/changeset/${changeset.id}`)}>Viac detailov na osm.org</Button>
+            Viac detailov na{' '}
+            <Button bsSize="small" onClick={() => window.open(`https://www.openstreetmap.org/changeset/${changeset.id}`)}>osm.org</Button>
+            <Button bsSize="small" onClick={() => window.open(`https://overpass-api.de/achavi/?changeset=${changeset.id}`)}>achawi</Button>
           </div>
         </div>
       );
@@ -71,7 +73,7 @@ export default connect(
       dispatch(toastsAdd({
         collapseKey: 'changeset.detail',
         message,
-        cancelType: ['SET_TOOL'],
+        cancelType: ['SET_TOOL', 'CHANGESETS_REFRESH'],
         style: 'info',
       }));
     },
