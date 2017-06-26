@@ -102,11 +102,11 @@ class TrackViewerMenu extends React.Component {
     const tableData = [];
     const startTime = this.props.startPoints[0].startTime;
     if (startTime) {
-      tableData.push(['čas štartu', timeFormat.format(new Date(startTime))]);
+      tableData.push(['Čas štartu', timeFormat.format(new Date(startTime))]);
     }
     const finishTime = this.props.finishPoints[0].finishTime;
     if (finishTime) {
-      tableData.push(['čas v cieli', timeFormat.format(new Date(finishTime))]);
+      tableData.push(['Čas v cieli', timeFormat.format(new Date(finishTime))]);
     }
 
     let duration = 0;
@@ -114,15 +114,15 @@ class TrackViewerMenu extends React.Component {
       duration = (new Date(finishTime) - new Date(startTime)) / 1000;
       const hours = Math.floor(duration / 3600);
       const minutes = Math.floor((duration - hours * 3600) / 60);
-      tableData.push(['trvanie', `${hours} hodín ${minutes} minút`]);
+      tableData.push(['Trvanie', `${hours} hodín ${minutes} minút`]);
     }
 
     const lengthInKm = this.props.finishPoints[0].lengthInKm;
-    tableData.push(['vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
+    tableData.push(['Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
 
     if (duration) {
       const avgSpeed = lengthInKm / duration;
-      tableData.push(['priem. rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
+      tableData.push(['Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
     }
 
     const firstRealFeature = this.props.trackGeojson.features[0];
@@ -160,26 +160,22 @@ class TrackViewerMenu extends React.Component {
       previousFlotingWindowEle = flotingWindowEle;
     });
     if (minEle !== Infinity) {
-      tableData.push(['najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
+      tableData.push(['Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
     }
     if (maxEle !== -Infinity) {
-      tableData.push(['najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
+      tableData.push(['Najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
     }
-    tableData.push(['celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
-    tableData.push(['celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
+    tableData.push(['Celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
+    tableData.push(['Celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
     const infoMessage = (
-      <div className="trackInfo">
-        <table className="trackInfoTable">
-          <tbody>
-            { tableData.map(labelAndValue => (
-              <tr key={labelAndValue[0]}>
-                <td>{labelAndValue[0]}:</td>
-                <td className="infoValue">{labelAndValue[1]}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <dl className="trackInfo dl-horizontal">
+        {
+          tableData.map(labelAndValue => ([
+            <dt>{labelAndValue[0]}:</dt>,
+            <dd className="infoValue">{labelAndValue[1]}</dd>,
+          ]))
+        }
+      </dl>
     );
     this.props.onTrackInfoShow(infoMessage);
   }
