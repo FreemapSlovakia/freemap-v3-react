@@ -53,29 +53,39 @@ export default connect(
     onShowChangesetDetail(changeset) {
       const message = (
         <div>
-          <div>
-            <span className="bold">autor</span>:{' '}
-            <a
-              href={`https://www.openstreetmap.org/user/${encodeURIComponent(changeset.userName)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >{changeset.userName}</a>
-          </div>
-          <div><span className="bold">popis:</span> {changeset.description || '/bez popisu/'}</div>
-          <div><span className="bold">čas:</span> {timeFormat.format(changeset.closedAt)}</div>
-          <div>
+          <dl className="dl-horizontal">
+            <dt>Autor:</dt>
+            <dd>
+              <a
+                href={`https://www.openstreetmap.org/user/${encodeURIComponent(changeset.userName)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >{changeset.userName}</a>
+            </dd>
+            <dt>Popis:</dt>
+            <dd>{changeset.description || <i>bez popisu</i>}</dd>
+            <dt>Čas:</dt>
+            <dd>{timeFormat.format(changeset.closedAt)}</dd>
+          </dl>
+          <p>
             Viac detailov na{' '}
             <a
               href={`https://www.openstreetmap.org/changeset/${changeset.id}`}
               target="_blank"
               rel="noopener noreferrer"
-            >osm.org</a>,{' '}
+            >
+              osm.org
+            </a>
+            {', alebo '}
             <a
               href={`https://overpass-api.de/achavi/?changeset=${changeset.id}`}
               target="_blank"
               rel="noopener noreferrer"
-            >Achavi</a>
-          </div>
+            >
+              Achavi
+            </a>
+            .
+          </p>
         </div>
       );
 
