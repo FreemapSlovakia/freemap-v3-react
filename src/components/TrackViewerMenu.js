@@ -121,7 +121,7 @@ class TrackViewerMenu extends React.Component {
     tableData.push(['Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
 
     if (duration) {
-      const avgSpeed = lengthInKm / duration;
+      const avgSpeed = lengthInKm / duration * 3600;
       tableData.push(['Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
     }
 
