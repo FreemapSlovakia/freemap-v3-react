@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map, ScaleControl, TileLayer } from 'react-leaflet';
+import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
 import Navbar from 'react-bootstrap/lib/Navbar';

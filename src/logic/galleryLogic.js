@@ -10,7 +10,7 @@ const galleryRequestImagesLogic = createLogic({
   process({ action: { payload: { lat, lon } }, getState }, dispatch, done) {
     dispatch(startProgress());
 
-    fetch(`http://www.freemap.sk:3000/gallery/pictures?lat=${lat}&lon=${lon}&distance=${3000 / 2 ** getState().map.zoom}`)
+    fetch(`http://www.freemap.sk:3000/gallery/pictures?lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`)
       .then(res => res.json())
       .then((payload) => {
         const images = payload.map(image => ({ ...image, createdAt: new Date(image.createdAt) }));
