@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Circle } from 'react-leaflet';
+import { Circle, TileLayer } from 'react-leaflet';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -55,6 +55,14 @@ class GalleryResult extends React.Component {
 
     return (
       <div>
+        <TileLayer
+          url="http://t1.freemap.sk/data/layers/presets/X~I/{z}/{x}/{y}t.png"
+          maxZoom={20}
+          minZoom={8}
+          maxNativeZoom={16}
+          zIndex={2}
+        />
+
         {this.state.lat && this.state.lon &&
           <Circle
             center={[this.state.lat, this.state.lon]}
