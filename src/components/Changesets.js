@@ -1,13 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
-import strftime from 'strftime';
 import PropTypes from 'prop-types';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import 'fm3/styles/changesets.scss';
+
+const timeFormat = new Intl.DateTimeFormat('sk',
+  { day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit' });
 
 function Changesets({ changesets, onShowChangesetDetail }) {
   return (
@@ -60,7 +62,7 @@ export default connect(
             >{changeset.userName}</a>
           </div>
           <div><span className="bold">popis:</span> {changeset.description || '/bez popisu/'}</div>
-          <div><span className="bold">čas:</span> {strftime('%d. %m. %H:%M', changeset.closedAt)}</div>
+          <div><span className="bold">čas:</span> {timeFormat.format(changeset.closedAt)}</div>
           <div>
             Viac detailov na{' '}
             <a

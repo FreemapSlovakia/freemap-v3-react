@@ -1,5 +1,4 @@
 import { createLogic } from 'redux-logic';
-import strftime from 'strftime';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { changesetsAdd } from 'fm3/actions/changesetsActions';
@@ -17,7 +16,7 @@ export const changesetsLogic = createLogic({
     if (tool === 'changesets') {
       const fromTime = new Date();
       fromTime.setDate(fromTime.getDate() - state.changesets.days);
-      const timestamp = strftime('%y/%m/%d', fromTime);
+      const timestamp = `${fromTime.getFullYear()}/${fromTime.getMonth() + 1}/${fromTime.getDate()}`;
       const bounds = getMapLeafletElement().getBounds();
       dispatch(startProgress());
       fetch(`//api.openstreetmap.org/api/0.6/changesets?bbox=${bounds.toBBoxString()}&time=${timestamp}T00:00:00+00:00`)
