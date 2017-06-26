@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 import strftime from 'strftime';
-import Button from 'react-bootstrap/lib/Button';
 import PropTypes from 'prop-types';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
@@ -64,8 +63,16 @@ export default connect(
           <div><span className="bold">čas:</span> {strftime('%d. %m. %H:%M', changeset.closedAt)}</div>
           <div>
             Viac detailov na{' '}
-            <Button bsSize="small" onClick={() => window.open(`https://www.openstreetmap.org/changeset/${changeset.id}`)}>osm.org</Button>
-            <Button bsSize="small" onClick={() => window.open(`https://overpass-api.de/achavi/?changeset=${changeset.id}`)}>achawi</Button>
+            <a
+              href={`https://www.openstreetmap.org/changeset/${changeset.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >osm.org</a>,{' '}
+            <a
+              href={`https://overpass-api.de/achavi/?changeset=${changeset.id}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >Achavi</a>
           </div>
         </div>
       );
