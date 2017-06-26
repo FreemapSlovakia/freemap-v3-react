@@ -23,9 +23,10 @@ function Changesets({ changesets, onShowChangesetDetail }) {
           onClick={() => onShowChangesetDetail(changeset)}
         >
           <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>
-              <span className="bold">{changeset.userName}</span>: {(changeset.description || '/bez popisu/').substring(0, 20)} {changeset.description && changeset.description.length >= 20 ? '...' : ''}
-            </span>
+            <div className="shortened">
+              <b>{changeset.userName}: </b>
+              {changeset.description}
+            </div>
           </Tooltip>
         </MarkerWithInnerLabel>
       )) }

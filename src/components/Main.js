@@ -215,6 +215,9 @@ class Main extends React.Component {
             center={L.latLng(lat, lon)}
             zoom={zoom}
             onMoveend={this.handleMapMoveEnd}
+            onMousemove={handleMapMouseMove}
+            onMouseover={handleMapMouseOver}
+            onMouseout={handleMapMouseOut}
             onClick={handleMapClick}
             onLocationfound={this.handleLocationFound}
             style={{ cursor: mouseCursor }}
@@ -289,4 +292,16 @@ function createMenuItem(ele, key, icon, title, onClick) {
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);
+}
+
+function handleMapMouseMove({ latlng: { lat, lng: lon } }) {
+  mapEventEmitter.emit('mouseMove', lat, lon);
+}
+
+function handleMapMouseOver({ latlng: { lat, lng: lon } }) {
+  mapEventEmitter.emit('mouseOver', lat, lon);
+}
+
+function handleMapMouseOut({ latlng: { lat, lng: lon } }) {
+  mapEventEmitter.emit('mouseOut', lat, lon);
 }
