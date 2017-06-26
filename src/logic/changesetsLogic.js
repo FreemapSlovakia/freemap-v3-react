@@ -2,22 +2,24 @@ import { createLogic } from 'redux-logic';
 import strftime from 'strftime';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { addChangesets } from 'fm3/actions/changesetsActions';
+import { changesetsAdd } from 'fm3/actions/changesetsActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
 export const changesetsLogic = createLogic({
-  type: 'SET_TOOL',
-  cancelType: ['SET_TOOL'],
+  type: ['SET_TOOL', 'CHANGESETS_REFRESH'],
+  cancelType: ['SET_TOOL', 'CHANGESETS_REFRESH'],
   process({ getState }, dispatch, done) {
     const state = getState();
     const tool = state.main.tool;
     if (tool === 'changesets') {
       const fromTime = new Date();
-      fromTime.setDate(fromTime.getDate() - 3);
+      fromTime.setDate(fromTime.getDate() - state.changesets.days);
       const timestamp = strftime('%y/%m/%d', fromTime);
+      const bounds = getMapLeafletElement().getBounds();
       dispatch(startProgress());
-      fetch(`//api.openstreetmap.org/api/0.6/changesets?bbox=16.69965,47.63617,22.67475,49.66746&time=${timestamp}T00:00:00+00:00`)
+      fetch(`//api.openstreetmap.org/api/0.6/changesets?bbox=${bounds.toBBoxString()}&time=${timestamp}T00:00:00+00:00`)
         .then(response => response.text())
         .then((data) => {
           const xml = new DOMParser().parseFromString(data);
@@ -42,7 +44,7 @@ export const changesetsLogic = createLogic({
             });
             changesets.push(changeset);
           });
-          dispatch(addChangesets(changesets));
+          dispatch(changesetsAdd(changesets));
         }).then(() => {
           dispatch(stopProgress());
           done();
