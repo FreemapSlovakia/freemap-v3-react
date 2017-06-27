@@ -21,8 +21,8 @@ function ChangesetsMenu({ days, zoom, onChangesetsSetDays, onChangesetsRefresh, 
         <ButtonGroup>
           <DropdownButton title={`Zmeny novšie ako ${days} dni`} id="days">
             <MenuItem onClick={() => onChangesetsSetDays(3)}>3 dni</MenuItem>
-            <MenuItem disabled={zoom <= 9} onClick={() => (zoom <= 9 ? false : onChangesetsSetDays(14))}>14 dní</MenuItem>
-            <MenuItem disabled={zoom <= 10} onClick={() => (zoom <= 10 ? false : onChangesetsSetDays(30))}>30 dní</MenuItem>
+            <MenuItem disabled={zoom <= 9} onClick={() => (zoom <= 9 ? false : onChangesetsSetDays(7))}>7 dní</MenuItem>
+            <MenuItem disabled={zoom <= 10} onClick={() => (zoom <= 10 ? false : onChangesetsSetDays(14))}>14 dní</MenuItem>
           </DropdownButton>
         </ButtonGroup>
         {' '}
