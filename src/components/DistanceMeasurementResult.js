@@ -68,7 +68,7 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
-  handlePointClick(id) {
+  handleMarkerClick(id) {
     this.props.onPointRemove(id);
   }
 
@@ -110,7 +110,7 @@ class DistanceMeasurementResult extends React.Component {
             icon: circularIcon,
             opacity: 1,
             onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-            onClick: () => this.handlePointClick(p.id),
+            onClick: () => this.handleMarkerClick(p.id),
           };
 
           return (

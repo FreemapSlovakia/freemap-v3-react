@@ -14,10 +14,17 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
+const circularIcon = new L.divIcon({ // CircleMarker is not draggable
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  tooltipAnchor: [10, 0],
+  html: '<div class="circular-leaflet-marker-icon"></div>',
+});
+
 class AreaMeasurementResult extends React.Component {
 
   static propTypes = {
-    points: FmPropTypes.points,
+    points: FmPropTypes.points.isRequired,
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
@@ -38,92 +45,97 @@ class AreaMeasurementResult extends React.Component {
     this.props.onClose();
   }
 
-  futurePoints = () => {
-    const fps = [];
-    if (this.props.points.length > 2) {
-      for (let i = 0; i < this.props.points.length; i += 1) {
-        const p1 = this.props.points[i];
-        const isLast = i === this.props.points.length - 1;
-        const p2 = isLast ? this.props.points[0] : this.props.points[i + 1];
-
-        const lat = (p1.lat + p2.lat) / 2;
-        const lon = (p1.lon + p2.lon) / 2;
-        fps.push({ lat, lon });
-      }
+  handlePoiAdd = (lat, lon, position, id0) => {
+    const { points } = this.props;
+    const pos = position ? Math.ceil(position / 2) : points.length;
+    let id;
+    if (id0) {
+      id = id0;
+    } else if (pos === 0) {
+      id = points.length ? points[pos].id - 1 : 0;
+    } else if (pos === points.length) {
+      id = points[pos - 1].id + 1;
+    } else {
+      id = (points[pos - 1].id + points[pos].id) / 2;
     }
-
-    return fps;
+    this.props.onPointAdd({ lat, lon, id }, pos);
   }
 
-  handlePoiAdd = (lat, lon, position) => {
-    const pos = position || 0;
-    this.props.onPointAdd({ lat, lon }, pos);
+  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }, id) {
+    this.props.onPointUpdate(i, { lat, lon, id });
   }
 
-  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }) {
-    this.props.onPointUpdate(i, { lat, lon });
-  }
-
-  handleMarkerClick(position) {
-    this.props.onPointRemove(position);
+  handleMarkerClick(id) {
+    this.props.onPointRemove(id);
   }
 
   render() {
     const { points } = this.props;
-
-    const areaSize = points.length > 2 ? area(points) : NaN;
+    const ps = [];
+    for (let i = 0; i < points.length; i += 1) {
+      ps.push(points[i]);
+      const p1 = points[i];
+      const p2 = points[(i + 1) % points.length];
+      const lat = (p1.lat + p2.lat) / 2;
+      const lon = (p1.lon + p2.lon) / 2;
+      ps.push({ lat, lon, id: (i + 1) === points.length ? p1.id + 1 : (p1.id + p2.id) / 2 });
+    }
+    const areaSize = points.length >= 3 ? area(points) : NaN;
     let northmostPoint = points[0];
     points.forEach((p) => {
       if (northmostPoint.lat < p.lat) {
         northmostPoint = p;
       }
     });
-    const Icon = L.divIcon;
-    const circularIcon = new Icon({ // CircleMarker is not draggable
-      iconSize: [14, 14],
-      iconAnchor: [7, 7],
-      html: '<div class="circular-leaflet-marker-icon"></div>',
-    });
 
     return (
       <div>
-        {points.length > 2 &&
-        <MarkerWithAutoOpeningPopup
-          interactive={false}
-          opacity={0}
-          position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
-        >
-          <Popup closeButton={false} autoClose={false} autoPan={false}>
-            <span>
-              <div>{nf.format(areaSize)} m<sup>2</sup></div>
-              <div>{nf.format(areaSize / 100)} a</div>
-              <div>{nf.format(areaSize / 10000)} ha</div>
-              <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
-            </span>
-          </Popup>
-        </MarkerWithAutoOpeningPopup>
+        {!isNaN(areaSize) &&
+          <MarkerWithAutoOpeningPopup
+            interactive={false}
+            opacity={0}
+            position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
+          >
+            <Popup closeButton={false} autoClose={false} autoPan={false}>
+              <span>
+                <div>{nf.format(areaSize)} m<sup>2</sup></div>
+                <div>{nf.format(areaSize / 100)} a</div>
+                <div>{nf.format(areaSize / 10000)} ha</div>
+                <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
+              </span>
+            </Popup>
+          </MarkerWithAutoOpeningPopup>
         }
-        {points.map((p, i) => (
-          <Marker
-            key={i}
-            position={L.latLng(p.lat, p.lon)}
-            draggable
-            onClick={() => this.handleMarkerClick(i)}
-            onDrag={e => this.handleMeasureMarkerDrag(i, e)}
-          />
-        ))}
+        {ps.map((p, i) => {
+          const props = i % 2 ? {
+            icon: circularIcon,
+            opacity: 0.5,
+            onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
+          } : {
+            // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+            icon: circularIcon,
+            opacity: 1,
+            onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
+            onClick: () => this.handleMarkerClick(p.id),
+          };
 
-        {points.length > 1 && <Polygon positions={points.map(({ lat, lon }) => [lat, lon])} /> }
+          return (
+            <Marker
+              key={p.id}
+              draggable
+              position={L.latLng(p.lat, p.lon)}
+              {...props}
+            >
+              {/* i % 2 === 0 &&
+                <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
+                  <span>{nf.format(dist / 1000)} km</span>
+                </Tooltip>
+              */}
+            </Marker>
+          );
+        })}
 
-        {this.futurePoints().map((p, i) => (
-          <Marker
-            key={i}
-            draggable
-            icon={circularIcon}
-            onDragend={e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i + 1)}
-            position={L.latLng(p.lat, p.lon)}
-          />
-        ))}
+        {ps.length > 2 && <Polygon positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} /> }
       </div>
     );
   }
