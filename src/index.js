@@ -35,9 +35,15 @@ try {
 }
 
 if (appState) {
-  store.dispatch(mainLoadState(appState.main));
-  store.dispatch(mapLoadState(appState.map));
-  store.dispatch(trackViewerLoadState(appState.trackViewer));
+  if (appState.main) {
+    store.dispatch(mainLoadState(appState.main));
+  }
+  if (appState.map) {
+    store.dispatch(mapLoadState(appState.map));
+  }
+  if (appState.trackViewer) {
+    store.dispatch(trackViewerLoadState(appState.trackViewer));
+  }
 }
 
 history.listen(handleLocationChange.bind(undefined, store));

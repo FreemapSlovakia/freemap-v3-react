@@ -1,13 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
-import strftime from 'strftime';
 import PropTypes from 'prop-types';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import 'fm3/styles/changesets.scss';
+
+const timeFormat = new Intl.DateTimeFormat('sk',
+  { day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit' });
 
 function Changesets({ changesets, onShowChangesetDetail }) {
   return (
@@ -21,9 +23,10 @@ function Changesets({ changesets, onShowChangesetDetail }) {
           onClick={() => onShowChangesetDetail(changeset)}
         >
           <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>
-              <span className="bold">{changeset.userName}</span>: {(changeset.description || '/bez popisu/').substring(0, 20)} {changeset.description && changeset.description.length >= 20 ? '...' : ''}
-            </span>
+            <div className="shortened">
+              <b>{changeset.userName}: </b>
+              {changeset.description}
+            </div>
           </Tooltip>
         </MarkerWithInnerLabel>
       )) }
@@ -51,29 +54,39 @@ export default connect(
     onShowChangesetDetail(changeset) {
       const message = (
         <div>
-          <div>
-            <span className="bold">autor</span>:{' '}
-            <a
-              href={`https://www.openstreetmap.org/user/${encodeURIComponent(changeset.userName)}`}
-              target="_blank"
-              rel="noopener noreferrer"
-            >{changeset.userName}</a>
-          </div>
-          <div><span className="bold">popis:</span> {changeset.description || '/bez popisu/'}</div>
-          <div><span className="bold">čas:</span> {strftime('%d. %m. %H:%M', changeset.closedAt)}</div>
-          <div>
+          <dl className="dl-horizontal">
+            <dt>Autor:</dt>
+            <dd>
+              <a
+                href={`https://www.openstreetmap.org/user/${encodeURIComponent(changeset.userName)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >{changeset.userName}</a>
+            </dd>
+            <dt>Popis:</dt>
+            <dd>{changeset.description || <i>bez popisu</i>}</dd>
+            <dt>Čas:</dt>
+            <dd>{timeFormat.format(changeset.closedAt)}</dd>
+          </dl>
+          <p>
             Viac detailov na{' '}
             <a
               href={`https://www.openstreetmap.org/changeset/${changeset.id}`}
               target="_blank"
               rel="noopener noreferrer"
-            >osm.org</a>,{' '}
+            >
+              osm.org
+            </a>
+            {', alebo '}
             <a
               href={`https://overpass-api.de/achavi/?changeset=${changeset.id}`}
               target="_blank"
               rel="noopener noreferrer"
-            >Achavi</a>
-          </div>
+            >
+              Achavi
+            </a>
+            .
+          </p>
         </div>
       );
 

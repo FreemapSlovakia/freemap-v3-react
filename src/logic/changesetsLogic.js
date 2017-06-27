@@ -1,5 +1,4 @@
 import { createLogic } from 'redux-logic';
-import strftime from 'strftime';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { changesetsAdd } from 'fm3/actions/changesetsActions';
@@ -17,7 +16,7 @@ export const changesetsLogic = createLogic({
     if (tool === 'changesets') {
       const t = new Date();
       t.setDate(t.getDate() - state.changesets.days);
-      const fromTime = `${strftime('%y-%m-%d', t)}T00:00:00+00:00`;
+      const fromTime = `${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()}T00:00:00+00:00`;
       const toTime = null;
       const bbox = getMapLeafletElement().getBounds().toBBoxString();
 

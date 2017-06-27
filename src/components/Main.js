@@ -33,6 +33,8 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
+
+import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
 
 import Settings from 'fm3/components/Settings';
@@ -62,7 +64,6 @@ class Main extends React.Component {
     lon: PropTypes.number.isRequired,
     zoom: PropTypes.number.isRequired,
     tool: FmPropTypes.tool,
-    overlays: FmPropTypes.overlays.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
     onToolSet: PropTypes.func.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
@@ -120,10 +121,11 @@ class Main extends React.Component {
     const cmi = createMenuItem.bind(this, ele);
 
     return [
-      cmi(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
       cmi(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
-      cmi(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
+      cmi(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
       cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
+      cmi(8, 'picture-o', 'Galéria obrázkov', () => this.handleToolSelect('gallery')),
+      cmi(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
       cmi(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
       cmi(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
       cmi(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
@@ -154,7 +156,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activeModal, onPopupLaunch, progress, mouseCursor, overlays, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
+    const { tool, activeModal, progress, mouseCursor, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
@@ -173,6 +175,7 @@ class Main extends React.Component {
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'info-point' && <InfoPointMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
+                {tool === 'gallery' && <GalleryMenu />}
                 {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
                   <Nav className="hidden-sm hidden-md hidden-lg">
@@ -215,36 +218,27 @@ class Main extends React.Component {
             center={L.latLng(lat, lon)}
             zoom={zoom}
             onMoveend={this.handleMapMoveEnd}
+            onMousemove={handleMapMouseMove}
+            onMouseover={handleMapMouseOver}
+            onMouseout={handleMapMouseOut}
             onClick={handleMapClick}
             onLocationfound={this.handleLocationFound}
             style={{ cursor: mouseCursor }}
             maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
           >
             <Layers />
-
             <ScaleControl imperial={false} position="bottomright" />
-
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
-
             {tool === 'objects' && <ObjectsResult />}
-
             {tool === 'route-planner' && <RoutePlannerResult />}
-
             {tool === 'measure' && <DistanceMeasurementResult />}
-
             {tool === 'measure-ele' && <ElevationMeasurementResult />}
-
             {tool === 'measure-area' && <AreaMeasurementResult />}
-
             {tool === 'location' && <LocationResult />}
-
             {tool === 'track-viewer' && <TrackViewerResult />}
-
             {tool === 'info-point' && <InfoPoint />}
-
+            {tool === 'gallery' && <GalleryResult />}
             {tool === 'changesets' && <Changesets />}
-
-            {tool === null && overlays.includes('I') && <GalleryResult />}
             <ElevationChart />
           </Map>
         </Row>
@@ -260,7 +254,6 @@ export default connect(
     zoom: state.map.zoom,
     tool: state.main.tool,
     mapType: state.map.mapType,
-    overlays: state.map.overlays,
     activeModal: state.main.activeModal,
     progress: state.main.progress,
     mouseCursor: state.map.mouseCursor,
@@ -289,4 +282,16 @@ function createMenuItem(ele, key, icon, title, onClick) {
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);
+}
+
+function handleMapMouseMove({ latlng: { lat, lng: lon } }) {
+  mapEventEmitter.emit('mouseMove', lat, lon);
+}
+
+function handleMapMouseOver({ latlng: { lat, lng: lon } }) {
+  mapEventEmitter.emit('mouseOver', lat, lon);
+}
+
+function handleMapMouseOut({ latlng: { lat, lng: lon } }) {
+  mapEventEmitter.emit('mouseOut', lat, lon);
 }

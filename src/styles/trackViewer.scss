@@ -11,14 +11,5 @@
 }
 
 .trackInfo {
-  white-space: nowrap;
-
-  table.trackInfoTable {
-    display: inline;
-    
-    tr td.infoValue {
-      font-weight: 500;
-      padding-left: 5px;
-    }
-  }
+  margin: 0;
 }

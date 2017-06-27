@@ -66,19 +66,19 @@ class InfoPointMenu extends React.Component {
     return (
       <div>
         <Navbar.Form pullLeft>
-          <Button onClick={() => this.toggleEditMode()} active={inEditMode}>
-            <FontAwesomeIcon icon="arrows" />Posunúť
+          <Button onClick={() => this.toggleEditMode()} active={inEditMode} title="Posunúť">
+            <FontAwesomeIcon icon="arrows" /><span className="hidden-sm">Posunúť</span>
           </Button>
           {' '}
           <Button onClick={() => onModalLaunch('info-point-change-label')}>
             <FontAwesomeIcon icon="tag" />Zmeniť popis
           </Button>
           {' '}
-          <Button onClick={() => onModalLaunch('info-point-share')}>
-            <FontAwesomeIcon icon="share-alt" />Zdieľať
+          <Button onClick={() => onModalLaunch('info-point-share')} title="Zdieľať">
+            <FontAwesomeIcon icon="share-alt" /><span className="hidden-sm">Zdieľať</span>
           </Button>
           {' '}
-          <Button onClick={() => onModalLaunch('info-point-embed')}>
+          <Button onClick={() => onModalLaunch('info-point-embed')} title="Vložiť do webstránky">
             <FontAwesomeIcon icon="code" /><span className="hidden-sm"> Vložiť do webstránky</span>
           </Button>
         </Navbar.Form>

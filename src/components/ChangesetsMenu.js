@@ -27,8 +27,12 @@ function ChangesetsMenu({ days, zoom, onChangesetsSetDays, onChangesetsRefresh, 
         </ButtonGroup>
         {' '}
         <ButtonGroup>
-          <Button disabled={(zoom <= 9 && days === 14) || (zoom <= 10 && days === 30)} onClick={() => onChangesetsRefresh()}>
-            <FontAwesomeIcon icon="refresh" /> Stiahnuť zmeny
+          <Button
+            disabled={(zoom <= 9 && days === 14) || (zoom <= 10 && days === 30)}
+            onClick={() => onChangesetsRefresh()}
+            title="Stiahnuť zmeny"
+          >
+            <FontAwesomeIcon icon="refresh" /><span className="hidden-sm"> Stiahnuť zmeny</span>
           </Button>
         </ButtonGroup>
       </Navbar.Form>
@@ -64,4 +68,3 @@ export default connect(
     },
   }),
 )(ChangesetsMenu);
-

@@ -36,13 +36,6 @@ export const overlayLayers = [
     maxNativeZoom: 16,
   },
   {
-    name: 'Galéria obrázkov',
-    type: 'I',
-    url: 'http://t1.freemap.sk/data/layers/presets/X~I/{z}/{x}/{y}t.png',
-    minZoom: 8,
-    maxNativeZoom: 16,
-  },
-  {
     name: 'Turistické trasy',
     type: 't',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',

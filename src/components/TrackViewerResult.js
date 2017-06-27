@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
-import strftime from 'strftime';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
 
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
 class TrackViewerResult extends React.Component {
 
   static propTypes = {
-    trackGeojson: PropTypes.any, // eslint-disable-line
+    trackGeojson: PropTypes.shape({}),
     startPoints: PropTypes.arrayOf(PropTypes.shape({
       lat: PropTypes.number.isRequired,
       lon: PropTypes.number.isRequired,
@@ -92,7 +92,7 @@ class TrackViewerResult extends React.Component {
           >
             { p.startTime &&
               <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-                <span>{strftime('%H:%M', new Date(p.startTime))}</span>
+                <span>{timeFormat.format(new Date(p.startTime))}</span>
               </Tooltip> }
           </MarkerWithInnerLabel>
           ))}
@@ -107,7 +107,7 @@ class TrackViewerResult extends React.Component {
           >
             <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
               <span>
-                {p.finishTime ? strftime('%H:%M', new Date(p.finishTime)) : ''}
+                {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
                 {p.finishTime ? ', ' : ''}
                 {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km</span>
             </Tooltip>
