@@ -28,7 +28,7 @@ function ChangesetsMenu({ days, zoom, onChangesetsSetDays, onChangesetsRefresh, 
         {' '}
         <ButtonGroup>
           <Button
-            disabled={(zoom <= 9 && days === 14) || (zoom <= 10 && days === 30)}
+            disabled={(zoom <= 9 && days === 7) || (zoom <= 10 && days === 14)}
             onClick={() => onChangesetsRefresh()}
             title="Stiahnuť zmeny"
           >
