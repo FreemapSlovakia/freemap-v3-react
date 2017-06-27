@@ -13,6 +13,8 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { galleryRequestImages, gallerySetImages, gallerySetActiveImageId } from 'fm3/actions/galleryActions';
 import DisqusThread from 'fm3/components/DisqusThread';
 
+import 'fm3/styles/gallery.scss';
+
 const dateFormat = new Intl.DateTimeFormat('sk');
 
 class GalleryResult extends React.Component {
@@ -93,7 +95,7 @@ class GalleryResult extends React.Component {
         }
 
         {activeImageId &&
-          <Modal show onHide={onClose}>
+          <Modal show onHide={onClose} bsSize="large">
             <Modal.Header closeButton>
               <Modal.Title>
                 Obrázky {title && title !== '-' && `:: ${title}`}
@@ -107,7 +109,7 @@ class GalleryResult extends React.Component {
                     target="freemap_gallery_image"
                   >
                     <Image
-                      style={{ width: '100%' }}
+                      className="gallery-image"
                       // src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
                       src={`http://www.freemap.sk/upload/gallery/${path}`}
                       alt={title}
