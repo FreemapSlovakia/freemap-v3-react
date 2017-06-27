@@ -129,8 +129,12 @@ class GalleryResult extends React.Component {
                   <Glyphicon glyph="chevron-right" />
                 </a>
               </div>
-              <p>Nahral {author} dňa {dateFormat.format(createdAt)}</p>
-              {description && description !== '-' && <p>{description}</p>}
+              <p>
+                <br />
+                Nahral <b>{author}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+                {description && description !== '-' && `: ${description}`}
+              </p>
+              <hr />
               <DisqusThread id={`gi_${id}`} path={`http://www.freemap.sk/upload/gallery/${path}`} title={title} />
             </Modal.Body>
             <Modal.Footer>
