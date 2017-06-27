@@ -53,13 +53,15 @@ class GalleryResult extends React.Component {
     this.setState({ lat: undefined, lon: undefined });
   }
 
-  handlePreviousClick = () => {
+  handlePreviousClick = (e) => {
+    e.preventDefault();
     const { images, activeImageId, onImageSelect } = this.props;
     const index = (images.findIndex(({ id }) => id === activeImageId) - 1 + images.length) % images.length;
     onImageSelect(images[index].id);
   }
 
-  handleNextClick = () => {
+  handleNextClick = (e) => {
+    e.preventDefault();
     const { images, activeImageId, onImageSelect } = this.props;
     const index = (images.findIndex(({ id }) => id === activeImageId) + 1) % images.length;
     onImageSelect(images[index].id);
@@ -93,24 +95,31 @@ class GalleryResult extends React.Component {
         {activeImageId &&
           <Modal show onHide={onClose}>
             <Modal.Header closeButton>
-              <Modal.Title>Obrázky</Modal.Title>
-              <Button onClick={this.handlePreviousClick} disabled={index < 1}>
-                <Glyphicon glyph="triangle-left" /> Predošlý
-              </Button>
-              <Button onClick={this.handleNextClick} disabled={index >= images.length - 1}>
-                <Glyphicon glyph="triangle-right" /> Ďalší
-              </Button>
+              <Modal.Title>
+                Obrázky
+              </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <a
-                href={`http://www.freemap.sk/upload/gallery/${path}`}
-                target="freemap_gallery_image"
-              >
-                <Image
-                  src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
-                  alt={title}
-                />
-              </a>
+              <div className="carousel">
+                <div className="item active">
+                  <a
+                    href={`http://www.freemap.sk/upload/gallery/${path}`}
+                    target="freemap_gallery_image"
+                  >
+                    <Image
+                      style={{ width: '100%' }}
+                      src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
+                      alt={title}
+                    />
+                  </a>
+                </div>
+                <a className="left carousel-control" onClick={this.handlePreviousClick} disabled={index < 1}>
+                  <Glyphicon glyph="chevron-left" />
+                </a>
+                <a className="right carousel-control" onClick={this.handleNextClick} disabled={index >= images.length - 1}>
+                  <Glyphicon glyph="chevron-right" />
+                </a>
+              </div>
               {title && title !== '-' && <h3>{title}</h3>}
               <p>Nahral {author} dňa {dateFormat.format(createdAt)}</p>
               {description && description !== '-' && <p>{description}</p>}
