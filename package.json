@@ -13,7 +13,7 @@
     "file-saver": "1.3.3",
     "history": "4.6.3",
     "immutability-helper": "2.2.2",
-    "leaflet": "1.0.3",
+    "leaflet": "1.1.0",
     "prop-types": "15.5.10",
     "query-string": "4.3.4",
     "react": "15.6.1",
