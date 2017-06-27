@@ -11,7 +11,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
   cancelType: ['OBJECTS_SET_FILTER', 'SET_TOOL', 'MAP_RESET'],
-  process({ getState, action: { payload } }, dispatch, done) {
+  process({ getState, action: { payload }, cancelled$ }, dispatch, done) {
     const b = getMapLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
 
@@ -19,7 +19,12 @@ export const objectsFetchLogic = createLogic({
 
     const query = `[out:json][timeout:60]; ${poiType.overpassFilter.replace(/\{\{bbox\}\}/g, bbox)}; out center;`;
 
-    dispatch(startProgress());
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
     fetch('//overpass-api.de/api/interpreter', {
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`,
@@ -38,7 +43,7 @@ export const objectsFetchLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri získavani objektov: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress());
+        dispatch(stopProgress(pid));
         done();
       });
   },

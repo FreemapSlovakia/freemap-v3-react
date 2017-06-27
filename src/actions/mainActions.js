@@ -14,12 +14,12 @@ export function setHomeLocation(homeLocation) {
   return { type: 'SET_HOME_LOCATION', payload: homeLocation };
 }
 
-export function startProgress() {
-  return { type: 'START_PROGRESS' };
+export function startProgress(pid) {
+  return { type: 'START_PROGRESS', payload: pid };
 }
 
-export function stopProgress() {
-  return { type: 'STOP_PROGRESS' };
+export function stopProgress(pid) {
+  return { type: 'STOP_PROGRESS', payload: pid };
 }
 
 export function setLocation(lat, lon, accuracy) {

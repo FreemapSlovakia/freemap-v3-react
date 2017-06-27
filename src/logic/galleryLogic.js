@@ -7,8 +7,12 @@ import { gallerySetImages } from 'fm3/actions/galleryActions';
 const galleryRequestImagesLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_REQUEST_IMAGES',
-  process({ action: { payload: { lat, lon } }, getState }, dispatch, done) {
-    dispatch(startProgress());
+  process({ action: { payload: { lat, lon } }, getState, cancelled$ }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
 
     fetch(`http://www.freemap.sk:3000/gallery/pictures?lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`)
       .then(res => res.json())
@@ -20,7 +24,7 @@ const galleryRequestImagesLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri načítavaní obrázkov: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress());
+        dispatch(stopProgress(pid));
         done();
       });
   },

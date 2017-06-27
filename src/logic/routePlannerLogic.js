@@ -21,7 +21,7 @@ const updateRouteTypes = [
 export const routePlannerFindRouteLogic = createLogic({
   type: updateRouteTypes,
   cancelType: ['SET_TOOL', ...updateRouteTypes],
-  process({ getState }, dispatch, done) {
+  process({ getState, cancelled$ }, dispatch, done) {
     const { start, finish, midpoints, transportType } = getState().routePlanner;
     if (!start || !finish) {
       done();
@@ -34,7 +34,12 @@ export const routePlannerFindRouteLogic = createLogic({
       [finish.lat, finish.lon].join(','),
     ].join(',');
 
-    dispatch(startProgress());
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
     const url = `//www.freemap.sk/api/0.3/route-planner/${allPoints}?transport_type=${transportType}`;
     fetch(url)
       .then(res => res.json())
@@ -55,7 +60,7 @@ export const routePlannerFindRouteLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress());
+        dispatch(stopProgress(pid));
         done();
       });
   },

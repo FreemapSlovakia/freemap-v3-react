@@ -2,7 +2,7 @@ const initialState = {
   activeModal: null,
   tool: null,
   homeLocation: { lat: null, lon: null },
-  progress: false,
+  progress: [],
   location: null,
   expertMode: false,
   embeddedMode: false,
@@ -35,13 +35,13 @@ export default function main(state = initialState, action) {
     case 'MAP_RESET':
       return { ...state, tool: null };
     case 'SET_TOOL':
-      return { ...state, tool: action.payload, progress: false };
+      return { ...state, tool: action.payload };
     case 'SET_HOME_LOCATION':
       return { ...state, homeLocation: action.payload };
     case 'START_PROGRESS':
-      return { ...state, progress: true };
+      return { ...state, progress: [...state.progress, action.payload] };
     case 'STOP_PROGRESS':
-      return { ...state, progress: false };
+      return { ...state, progress: state.progress.filter(pid => pid !== action.payload) };
     case 'SET_LOCATION':
       return { ...state, location: { lat: action.payload.lat, lon: action.payload.lon, accuracy: action.payload.accuracy } };
     case 'SET_EXPERT_MODE':

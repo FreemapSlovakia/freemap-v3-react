@@ -6,14 +6,19 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
   cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL', 'MAP_RESET'],
-  process({ getState }, dispatch, done) {
+  process({ getState, cancelled$ }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {
       done();
       return;
     }
 
-    dispatch(startProgress());
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
     fetch(`//www.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}&max_count=10`)
       .then(res => res.json())
       .then((data) => {
@@ -39,7 +44,7 @@ export default createLogic({
         dispatch(toastsAddError(`Nastala chyba pri spracovaní výsledkov vyhľadávania: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress());
+        dispatch(stopProgress(pid));
         done();
       });
   },

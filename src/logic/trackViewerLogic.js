@@ -65,12 +65,17 @@ export const trackViewerDownloadTrackLogic = createLogic({
 
 export const trackViewerUploadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_UPLOAD_TRACK',
-  process({ getState }, dispatch, done) {
+  process({ getState, cancelled$ }, dispatch, done) {
     const trackGpx = getState().trackViewer.trackGpx;
     if (trackGpx.length > (MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
       dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`));
     } else {
-      dispatch(startProgress());
+      const pid = Math.random();
+      dispatch(startProgress(pid));
+      cancelled$.subscribe(() => {
+        dispatch(stopProgress(pid));
+      });
+
       fetch(`${API_URL}/tracklogs`, {
         method: 'POST',
         headers: {
@@ -90,7 +95,7 @@ export const trackViewerUploadTrackLogic = createLogic({
         dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress());
+        dispatch(stopProgress(pid));
         done();
       });
     }

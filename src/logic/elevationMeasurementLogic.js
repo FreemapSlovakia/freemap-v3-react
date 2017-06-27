@@ -7,10 +7,15 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export default createLogic({
   type: 'ELEVATION_MEASUREMENT_SET_POINT',
   cancelType: ['ELEVATION_MEASUREMENT_SET_POINT', 'SET_TOOL', 'MAP_RESET'],
-  process({ getState }, dispatch, done) {
+  process({ getState, cancelled$ }, dispatch, done) {
     const point = getState().elevationMeasurement.point;
     if (point) {
-      dispatch(startProgress());
+      const pid = Math.random();
+      dispatch(startProgress(pid));
+      cancelled$.subscribe(() => {
+        dispatch(stopProgress(pid));
+      });
+
       fetch(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`)
         .then(res => res.json())
         .then((data) => {
@@ -20,7 +25,7 @@ export default createLogic({
           dispatch(toastsAddError(`Nastala chyba pri získavani výšky bodu: ${e.message}`));
         })
         .then(() => {
-          dispatch(stopProgress());
+          dispatch(stopProgress(pid));
           done();
         });
     } else {
