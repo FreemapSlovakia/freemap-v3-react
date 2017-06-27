@@ -108,7 +108,8 @@ class GalleryResult extends React.Component {
                   >
                     <Image
                       style={{ width: '100%' }}
-                      src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
+                      // src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
+                      src={`http://www.freemap.sk/upload/gallery/${path}`}
                       alt={title}
                     />
                   </a>
