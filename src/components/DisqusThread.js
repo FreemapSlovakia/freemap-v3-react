@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 const SHORTNAME = 'freemap';
-const WEBSITE_URL = 'http://next.freemap.sk';
+// const WEBSITE_URL = 'http://local.freemap.sk';
 
 function renderDisqus() {
   if (window.DISQUS === undefined) {
@@ -43,7 +43,7 @@ export default class DisqusThread extends React.Component {
       window.disqus_shortname = SHORTNAME;
       window.disqus_identifier = id;
       window.disqus_title = title;
-      window.disqus_url = WEBSITE_URL + path;
+      window.disqus_url = /* WEBSITE_URL +*/ path;
     }
 
     return <div {...other} id="disqus_thread" />;

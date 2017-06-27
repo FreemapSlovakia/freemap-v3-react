@@ -96,7 +96,7 @@ class GalleryResult extends React.Component {
           <Modal show onHide={onClose}>
             <Modal.Header closeButton>
               <Modal.Title>
-                Obrázky
+                Obrázky {title && title !== '-' && `:: ${title}`}
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -114,14 +114,21 @@ class GalleryResult extends React.Component {
                     />
                   </a>
                 </div>
-                <a className="left carousel-control" onClick={this.handlePreviousClick} disabled={index < 1}>
+                <a
+                  className="left carousel-control"
+                  onClick={this.handlePreviousClick}
+                  disabled={index < 1}
+                >
                   <Glyphicon glyph="chevron-left" />
                 </a>
-                <a className="right carousel-control" onClick={this.handleNextClick} disabled={index >= images.length - 1}>
+                <a
+                  className="right carousel-control"
+                  onClick={this.handleNextClick}
+                  disabled={index >= images.length - 1}
+                >
                   <Glyphicon glyph="chevron-right" />
                 </a>
               </div>
-              {title && title !== '-' && <h3>{title}</h3>}
               <p>Nahral {author} dňa {dateFormat.format(createdAt)}</p>
               {description && description !== '-' && <p>{description}</p>}
               <DisqusThread id={`gi_${id}`} path={`http://www.freemap.sk/upload/gallery/${path}`} title={title} />

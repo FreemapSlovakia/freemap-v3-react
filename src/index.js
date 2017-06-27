@@ -21,7 +21,7 @@ import 'fm3/styles/global.scss';
 
 const middlewares = [createLogicMiddleware(logics)];
 
-if (__ENV__ !== 'production') {
+if (process.env.NODE_ENV !== 'production') {
   middlewares.push(createLogger());
 }
 

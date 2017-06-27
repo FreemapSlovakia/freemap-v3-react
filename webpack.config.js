@@ -67,10 +67,13 @@ module.exports = {
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV), // for react
+        BROWSER: JSON.stringify(true),
       },
-      __ENV__: JSON.stringify(process.env.NODE_ENV),
     }),
   ],
+  devServer: {
+    disableHostCheck: true,   // That solved it
+  }
 };
 
 if (process.env.NODE_ENV === 'production') {
