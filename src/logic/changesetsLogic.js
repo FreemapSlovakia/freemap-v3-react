@@ -13,7 +13,8 @@ export const changesetsLogic = createLogic({
   process({ getState }, dispatch, done) {
     const state = getState();
     const tool = state.main.tool;
-    if (tool === 'changesets') {
+    const zoom = state.map.zoom;
+    if (tool === 'changesets' && zoom >= 9) {
       const t = new Date();
       t.setDate(t.getDate() - state.changesets.days);
       const fromTime = `${t.getFullYear()}/${t.getMonth() + 1}/${t.getDate()}T00:00:00+00:00`;

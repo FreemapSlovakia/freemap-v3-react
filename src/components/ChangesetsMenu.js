@@ -20,7 +20,7 @@ function ChangesetsMenu({ days, zoom, onChangesetsSetDays, onChangesetsRefresh, 
       <Navbar.Form pullLeft>
         <ButtonGroup>
           <DropdownButton title={`Zmeny novšie ako ${days} dni`} id="days">
-            <MenuItem onClick={() => onChangesetsSetDays(3)}>3 dni</MenuItem>
+            <MenuItem disabled={zoom <= 8} onClick={() => (zoom <= 8 ? false : onChangesetsSetDays(3))}>3 dni</MenuItem>
             <MenuItem disabled={zoom <= 9} onClick={() => (zoom <= 9 ? false : onChangesetsSetDays(7))}>7 dní</MenuItem>
             <MenuItem disabled={zoom <= 10} onClick={() => (zoom <= 10 ? false : onChangesetsSetDays(14))}>14 dní</MenuItem>
           </DropdownButton>
@@ -28,7 +28,7 @@ function ChangesetsMenu({ days, zoom, onChangesetsSetDays, onChangesetsRefresh, 
         {' '}
         <ButtonGroup>
           <Button
-            disabled={(zoom <= 9 && days === 7) || (zoom <= 10 && days === 14)}
+            disabled={(zoom <= 8 && days === 3) || (zoom <= 9 && days === 7) || (zoom <= 10 && days === 14)}
             onClick={() => onChangesetsRefresh()}
             title="Stiahnuť zmeny"
           >
