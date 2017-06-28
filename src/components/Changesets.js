@@ -11,28 +11,43 @@ import 'fm3/styles/changesets.scss';
 const timeFormat = new Intl.DateTimeFormat('sk',
   { day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit' });
 
-function Changesets({ changesets, onShowChangesetDetail }) {
-  return (
-    <div>
-      { changesets.map(changeset => (
-        <MarkerWithInnerLabel
-          faIcon="pencil"
-          key={changeset.id}
-          faIconLeftPadding="2px"
-          position={L.latLng(changeset.centerLat, changeset.centerLon)}
-          onClick={() => onShowChangesetDetail(changeset)}
-        >
-          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <div className="shortened">
-              <b>{changeset.userName}: </b>
-              {changeset.description}
-            </div>
-          </Tooltip>
-        </MarkerWithInnerLabel>
-      )) }
-    </div>
-  );
+const ONE_DAY = (1000 * 60 * 60 * 24);
+
+class Changesets extends React.Component {
+  opacityOf = (changeset, now) => {
+    const changesetAgeInDays = (now - changeset.closedAt) / ONE_DAY;
+    const freshness = (changesetAgeInDays / this.props.days); // <0.0, 1.0>
+    return freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
+  }
+
+  render() {
+    const { changesets, onShowChangesetDetail } = this.props;
+    const now = new Date();
+    return (
+      <div>
+        { changesets.map((changeset) => {
+          const opacity = this.opacityOf(changeset, now);
+          return (<MarkerWithInnerLabel
+            faIcon="pencil"
+            opacity={opacity}
+            key={changeset.id}
+            faIconLeftPadding="2px"
+            position={L.latLng(changeset.centerLat, changeset.centerLon)}
+            onClick={() => onShowChangesetDetail(changeset)}
+          >
+            <Tooltip opacity={opacity} className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+              <div className="shortened">
+                <b>{changeset.userName}: </b>
+                {changeset.description}
+              </div>
+            </Tooltip>
+          </MarkerWithInnerLabel>);
+        }) }
+      </div>
+    );
+  }
 }
+
 
 Changesets.propTypes = {
   changesets: PropTypes.arrayOf(PropTypes.shape({
@@ -43,12 +58,14 @@ Changesets.propTypes = {
     description: PropTypes.string,
     closedAt: PropTypes.instanceOf(Date).isRequired,
   })),
+  days: PropTypes.number.isRequired,
   onShowChangesetDetail: PropTypes.func.isRequired,
 };
 
 export default connect(
   state => ({
     changesets: state.changesets.changesets,
+    days: state.changesets.days,
   }),
   dispatch => ({
     onShowChangesetDetail(changeset) {
