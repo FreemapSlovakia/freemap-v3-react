@@ -14,6 +14,7 @@ import toasts from 'fm3/reducers/toastsReducer';
 import elevationChart from 'fm3/reducers/elevationChartReducer';
 import gallery from 'fm3/reducers/galleryReducer';
 import changesets from 'fm3/reducers/changesetsReducer';
+import auth from 'fm3/reducers/authReducer';
 
 export default combineReducers({
   main,
@@ -30,4 +31,5 @@ export default combineReducers({
   elevationChart,
   gallery,
   changesets,
+  auth,
 });

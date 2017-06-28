@@ -83,6 +83,7 @@ if (process.env.NODE_ENV === 'production') {
 module.exports.plugins.push(
   new CopyWebpackPlugin([
     { from: 'index.html' },
+    { from: 'land.html' },
     { from: 'favicon.ico' },
   ]),
   extractSass

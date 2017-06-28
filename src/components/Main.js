@@ -52,6 +52,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { setTool, setActiveModal, setLocation } from 'fm3/actions/mainActions';
+import { authLogin, authLogout, checkLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -74,7 +75,15 @@ class Main extends React.Component {
     mouseCursor: PropTypes.string.isRequired,
     expertMode: PropTypes.bool.isRequired,
     embeddedMode: PropTypes.bool.isRequired,
+    onLogin: PropTypes.func.isRequired,
+    onLogout: PropTypes.func.isRequired,
+    onCheckLogin: PropTypes.func.isRequired,
+    user: PropTypes.string,
   };
+
+  componentWillMount() {
+    this.props.onCheckLogin();
+  }
 
   componentDidMount() {
     setMapLeafletElement(this.map.leafletElement);
@@ -136,8 +145,14 @@ class Main extends React.Component {
     // eslint-disable-next-line
     const cmi = createMenuItem.bind(this, ele);
 
+    const { user, onLogout, onLogin, onPopupLaunch } = this.props;
+
     return [
-      cmi(1, 'cog', 'Nastavenia', () => this.props.onPopupLaunch('settings')),
+      user ?
+        cmi('login', 'sign-out', `Odhlás ${user}`, () => onLogout())
+        :
+        cmi('login', 'sign-in', 'Prihlásenie', () => onLogin()),
+      cmi(1, 'cog', 'Nastavenia', () => onPopupLaunch('settings')),
       ele === MenuItem ? <MenuItem divider key="_1" /> : null,
       cmi(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
       ele === MenuItem ? <MenuItem divider key="_2" /> : null,
@@ -259,6 +274,7 @@ export default connect(
     mouseCursor: state.map.mouseCursor,
     expertMode: state.main.expertMode,
     embeddedMode: state.main.embeddedMode,
+    user: state.auth.user,
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -272,6 +288,15 @@ export default connect(
     },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));
+    },
+    onLogin() {
+      dispatch(authLogin());
+    },
+    onLogout() {
+      dispatch(authLogout());
+    },
+    onCheckLogin() {
+      dispatch(checkLogin());
     },
   }),
 )(Main);
