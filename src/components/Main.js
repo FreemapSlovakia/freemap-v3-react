@@ -139,13 +139,13 @@ class Main extends React.Component {
     return [
       cmi(1, 'cog', 'Nastavenia', () => this.props.onPopupLaunch('settings')),
       ele === MenuItem ? <MenuItem divider key="_1" /> : null,
-      cmi(6, 'mobile', 'Exporty mapy', () => window.open('http://wiki.freemap.sk/FileDownload')),
+      cmi(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
       ele === MenuItem ? <MenuItem divider key="_2" /> : null,
-      cmi(7, 'book', 'Pre začiatočníkov', () => window.open('http://wiki.freemap.sk/StarterGuide')),
-      cmi(4, 'github', 'Projekt na GitHub-e', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react')),
+      cmi(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
+      cmi(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
       ele === MenuItem ? <MenuItem divider key="_3" /> : null,
-      cmi(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', () => window.open('http://wiki.freemap.sk/NahlasenieChyby')),
-      cmi(3, 'exclamation-triangle', 'Nahlás chybu v portáli', () => window.open('https://github.com/FreemapSlovakia/freemap-v3-react/issues')),
+      cmi(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
+      cmi(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
     ];
   }
 
@@ -277,7 +277,14 @@ export default connect(
 )(Main);
 
 function createMenuItem(ele, key, icon, title, onClick) {
-  return React.createElement(ele, { key, onClick }, <FontAwesomeIcon icon={icon} />, ` ${title}`);
+  const p = { key };
+  if (typeof onClick === 'function') {
+    p.onClick = onClick;
+  } else {
+    p.href = onClick;
+    p.target = '_blank';
+  }
+  return React.createElement(ele, p, <FontAwesomeIcon icon={icon} />, ` ${title}`);
 }
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
