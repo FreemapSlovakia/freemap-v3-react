@@ -52,7 +52,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { setTool, setActiveModal, setLocation } from 'fm3/actions/mainActions';
-import { authLogin, authLogout, checkLogin } from 'fm3/actions/authActions';
+import { authLogin, authLogout, authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -296,7 +296,7 @@ export default connect(
       dispatch(authLogout());
     },
     onCheckLogin() {
-      dispatch(checkLogin());
+      dispatch(authCheckLogin());
     },
   }),
 )(Main);

@@ -1,5 +1,5 @@
-export function checkLogin() {
-  return { type: 'CHECK_LOGIN' };
+export function authCheckLogin() {
+  return { type: 'AUTH_CHECK_LOGIN' };
 }
 
 export function authLogin() {

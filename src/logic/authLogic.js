@@ -10,7 +10,7 @@ const auth = osmAuth({
 });
 
 const checkLoginLogic = createLogic({
-  type: 'CHECK_LOGIN',
+  type: 'AUTH_CHECK_LOGIN',
   process: processGetUser,
 });
 
