@@ -100,7 +100,7 @@ class ObjectsMenu extends React.Component {
             <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
           </Button>
         </Navbar.Form>
-        <Nav pullRight>
+        <Nav pullLeft>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
       </div>

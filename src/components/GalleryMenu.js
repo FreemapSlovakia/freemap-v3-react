@@ -10,7 +10,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 function GalleryMenu({ onCancel }) {
   return (
-    <Nav pullRight>
+    <Nav>
       <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
     </Nav>
   );

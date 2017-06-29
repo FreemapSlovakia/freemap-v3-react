@@ -82,7 +82,7 @@ class InfoPointMenu extends React.Component {
             <FontAwesomeIcon icon="code" /><span className="hidden-sm"> Vložiť do webstránky</span>
           </Button>
         </Navbar.Form>
-        <Nav pullRight>
+        <Nav pullLeft>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
 

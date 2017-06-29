@@ -18,6 +18,7 @@ const humanNameForToolToShowInNavbar = {
   objects: 'Miesta',
   'info-point': 'Odkaz na mapu',
   changesets: 'Zmeny v mape',
+  gallery: 'Galéria obrázkov',
 };
 
 const iconForTool = {
@@ -29,6 +30,7 @@ const iconForTool = {
   objects: 'map-marker',
   'info-point': 'link',
   changesets: 'pencil',
+  gallery: 'picture-o',
 };
 
 function NavbarHeader({ tool, onMapReset }) {

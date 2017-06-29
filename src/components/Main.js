@@ -201,10 +201,8 @@ class Main extends React.Component {
                   </Nav>
                 }
                 {showDefaultMenu &&
-                  <Nav pullRight className="hidden-xs">
-                    <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                      {this.createMoreMenu(MenuItem)}
-                    </NavDropdown>
+                  <Nav className="hidden-sm hidden-md hidden-lg">
+                    {this.createMoreMenu(NavItem)}
                   </Nav>
                 }
                 {showDefaultMenu &&
@@ -216,8 +214,10 @@ class Main extends React.Component {
                   </Nav>
                 }
                 {showDefaultMenu &&
-                  <Nav pullRight className="hidden-sm hidden-md hidden-lg">
-                    {this.createMoreMenu(NavItem)}
+                  <Nav className="hidden-xs">
+                    <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
+                      {this.createMoreMenu(MenuItem)}
+                    </NavDropdown>
                   </Nav>
                 }
               </Navbar.Collapse>

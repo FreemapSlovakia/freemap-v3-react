@@ -212,7 +212,7 @@ class TrackViewerMenu extends React.Component {
             </Button>
           }
         </Navbar.Form>
-        <Nav pullRight>
+        <Nav pullLeft>
           <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
         </Nav>
 

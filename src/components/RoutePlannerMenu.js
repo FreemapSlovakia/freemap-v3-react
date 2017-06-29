@@ -99,7 +99,7 @@ function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportTyp
           <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
         </Button>
       </Navbar.Form>
-      <Nav pullRight>
+      <Nav pullLeft>
         <NavItem onClick={onCancel} title="Zavrieť">
           <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
         </NavItem>
