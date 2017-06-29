@@ -40,13 +40,12 @@ function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportTyp
   }
 
   function setFromHomeLocation(pointType) {
-    const { lat, lon } = homeLocation;
-    if (!lat) {
+    if (!homeLocation) {
       onMissingHomeLocation();
     } else if (pointType === 'start') {
-      onStartSet({ lat, lon });
+      onStartSet(homeLocation);
     } else if (pointType === 'finish') {
-      onFinishSet({ lat, lon });
+      onFinishSet(homeLocation);
     }
   }
 

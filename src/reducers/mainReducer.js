@@ -1,7 +1,7 @@
 const initialState = {
   activeModal: null,
   tool: null,
-  homeLocation: { lat: null, lon: null },
+  homeLocation: null,
   progress: [],
   location: null,
   expertMode: false,
@@ -10,16 +10,13 @@ const initialState = {
 
 export default function main(state = initialState, action) {
   switch (action.type) {
-    // TODO improve validation
     case 'MAIN_LOAD_STATE': {
       const s = { ...state };
       const { homeLocation, expertMode } = action.payload;
-      if (homeLocation) {
-        s.homeLocation = { ...homeLocation };
+      if (homeLocation && typeof homeLocation.lat === 'number' && homeLocation.lon === 'number') {
+        s.homeLocation = { lat: homeLocation.lat, lon: homeLocation.lon };
       }
-      if (expertMode) {
-        s.expertMode = expertMode;
-      }
+      s.expertMode = !!expertMode;
       return s;
     }
     case 'ROUTE_PLANNER_SET_PARAMS':
@@ -37,7 +34,7 @@ export default function main(state = initialState, action) {
     case 'SET_TOOL':
       return { ...state, tool: action.payload };
     case 'SET_HOME_LOCATION':
-      return { ...state, homeLocation: action.payload };
+      return { ...state, homeLocation: { ...action.payload } };
     case 'START_PROGRESS':
       return { ...state, progress: [...state.progress, action.payload] };
     case 'STOP_PROGRESS':

@@ -2,6 +2,7 @@ import { createLogic } from 'redux-logic';
 import osmAuth from 'osm-auth';
 
 import { authSetUser } from 'fm3/actions/authActions';
+import { setHomeLocation } from 'fm3/actions/mainActions';
 // TODO import { toastsAdd, toastsAddError } from 'fm3/actions/toastActions';
 
 const auth = osmAuth({
@@ -29,20 +30,33 @@ const authLoginLogic = createLogic({
 });
 
 // TODO show toast on success/error
-function processGetUser(_, dispatch, done) {
+function processGetUser({ getState }, dispatch, done) {
   // TODO progress
   auth.xhr({
     method: 'GET',
     path: '/api/0.6/user/details',
   }, (err, details) => {
     if (details) {
-      const x = document.evaluate('/osm/user/@display_name', details, null, XPathResult.STRING_TYPE, null);
-      dispatch(authSetUser(x.stringValue));
+      const lat = parseFloat(getString(details, '/osm/user/home/@lat'));
+      const lon = parseFloat(getString(details, '/osm/user/home/@lon'));
+      dispatch(authSetUser({
+        id: parseInt(getString(details, '/osm/user/@id'), 10),
+        name: getString(details, '/osm/user/@display_name'),
+      }));
+
+      if (!getState().main.homeLocation) {
+        dispatch(setHomeLocation({ lat, lon }));
+      }
     } else {
       dispatch(authSetUser(null));
     }
     done();
   });
+}
+
+function getString(doc, xpath) {
+  const x = document.evaluate(xpath, doc, null, XPathResult.STRING_TYPE, null);
+  return x && x.stringValue;
 }
 
 const authLogoutLogic = createLogic({

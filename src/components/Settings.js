@@ -87,10 +87,9 @@ class Settings extends React.Component {
     const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity', 'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor']
       .some(prop => this.state[prop] !== this.props[prop]);
 
-    let homeLocationInfo = 'neurčená';
-    if (homeLocation.lat && homeLocation.lon) {
-      homeLocationInfo = `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`;
-    }
+    const homeLocationInfo = homeLocation
+      ? `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`
+      : 'neurčená';
 
     return (
       <Modal show={tool !== 'select-home-location'} onHide={onClose}>

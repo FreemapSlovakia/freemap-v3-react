@@ -78,7 +78,9 @@ class Main extends React.Component {
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
     onCheckLogin: PropTypes.func.isRequired,
-    user: PropTypes.string,
+    user: PropTypes.shape({
+      name: PropTypes.string.isRequired,
+    }),
   };
 
   componentWillMount() {
@@ -149,7 +151,7 @@ class Main extends React.Component {
 
     return [
       user ?
-        cmi('login', 'sign-out', `Odhlás ${user}`, () => onLogout())
+        cmi('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
         :
         cmi('login', 'sign-in', 'Prihlásenie', () => onLogin()),
       cmi(1, 'cog', 'Nastavenia', () => onPopupLaunch('settings')),
