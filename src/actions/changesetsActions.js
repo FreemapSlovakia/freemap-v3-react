@@ -5,6 +5,6 @@ export function changesetsSetDays(days) {
   return { type: 'CHANGESETS_SET_DAYS', payload: { days } };
 }
 
-export function changesetsRefresh() {
-  return { type: 'CHANGESETS_REFRESH' };
+export function changesetsSetAuthorNameAndRefresh(authorName) {
+  return { type: 'CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH', payload: { authorName } };
 }

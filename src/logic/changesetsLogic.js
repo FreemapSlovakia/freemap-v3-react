@@ -8,16 +8,10 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
 export const changesetsLogic = createLogic({
-  type: ['SET_TOOL', 'CHANGESETS_REFRESH'],
-  cancelType: ['SET_TOOL', 'CHANGESETS_REFRESH'],
+  type: ['CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH'],
+  cancelType: ['CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH', 'SET_TOOL'],
   process({ getState, cancelled$ }, dispatch, done) {
     const state = getState();
-    const tool = state.main.tool;
-    const zoom = state.map.zoom;
-    if (tool !== 'changesets' || zoom < 9) {
-      done();
-      return;
-    }
 
     const t = new Date();
     t.setDate(t.getDate() - state.changesets.days);
@@ -51,7 +45,12 @@ export const changesetsLogic = createLogic({
         time += `,${toTime0}`;
       }
 
-      return fetch(`//api.openstreetmap.org/api/0.6/changesets?bbox=${bbox}&time=${time}`)
+      let url = `//api.openstreetmap.org/api/0.6/changesets?bbox=${bbox}&time=${time}`;
+      if (state.changesets.authorName) {
+        url += `&display_name=${encodeURIComponent(state.changesets.authorName)}`;
+      }
+
+      return fetch(url)
         .then(response => response.text())
         .then((data) => {
           const xml = new DOMParser().parseFromString(data);
@@ -96,7 +95,7 @@ export const changesetsLogic = createLogic({
             dispatch(toastsAdd({
               collapseKey: 'changeset.detail',
               message: 'Neboli nájdené žiadne zmeny',
-              cancelType: ['SET_TOOL', 'CHANGESETS_REFRESH'],
+              cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH'],
               timeout: 3000,
               style: 'info',
             }));
