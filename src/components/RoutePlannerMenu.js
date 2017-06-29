@@ -1,8 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Nav from 'react-bootstrap/lib/Nav';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -98,12 +96,11 @@ function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportTyp
         <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
           <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
         </Button>
-      </Navbar.Form>
-      <Nav pullLeft>
-        <NavItem onClick={onCancel} title="Zavrieť">
+        {' '}
+        <Button onClick={onCancel} title="Zavrieť">
           <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
-        </NavItem>
-      </Nav>
+        </Button>
+      </Navbar.Form>
     </div>
   );
 }

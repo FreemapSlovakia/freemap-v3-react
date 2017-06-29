@@ -4,15 +4,15 @@ import { connect } from 'react-redux';
 
 import { setTool } from 'fm3/actions/mainActions';
 
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
+import Navbar from 'react-bootstrap/lib/Navbar';
+import Button from 'react-bootstrap/lib/Button';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 function GalleryMenu({ onCancel }) {
   return (
-    <Nav>
-      <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-    </Nav>
+    <Navbar.Form>
+      <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
+    </Navbar.Form>
   );
 }
 

@@ -1,8 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
@@ -81,10 +79,9 @@ class ChangesetsMenu extends React.Component {
               <FontAwesomeIcon icon="refresh" /><span className="hidden-sm"> Stiahnuť zmeny</span>
             </Button>
           </ButtonGroup>
+          {' '}
+          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
-        <Nav pullLeft>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-        </Nav>
       </div>
     );
   }

@@ -99,10 +99,9 @@ class ObjectsMenu extends React.Component {
           <Button onClick={onGpxExport} disabled={!objectsFound} title="Exportuj do GPX">
             <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
           </Button>
+          {' '}
+          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
-        <Nav pullLeft>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-        </Nav>
       </div>
     );
   }

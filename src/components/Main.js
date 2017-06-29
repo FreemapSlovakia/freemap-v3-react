@@ -6,7 +6,6 @@ import { connect } from 'react-redux';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
 import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
@@ -73,7 +72,6 @@ class Main extends React.Component {
     progress: PropTypes.bool.isRequired,
     onLocationSet: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
-    expertMode: PropTypes.bool.isRequired,
     embeddedMode: PropTypes.bool.isRequired,
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
@@ -173,7 +171,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activeModal, progress, mouseCursor, expertMode, embeddedMode, lat, lon, zoom, mapType } = this.props;
+    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType } = this.props;
     const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
 
     return (
@@ -195,29 +193,16 @@ class Main extends React.Component {
                 {tool === 'gallery' && <GalleryMenu />}
                 {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
-                  <Nav className="hidden-sm hidden-md hidden-lg">
-                    {this.createToolMenu(NavItem)}
-                    {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
-                  </Nav>
-                }
-                {showDefaultMenu &&
-                  <Nav className="hidden-sm hidden-md hidden-lg">
-                    {this.createMoreMenu(NavItem)}
-                  </Nav>
-                }
-                {showDefaultMenu &&
-                  <Nav className="hidden-xs">
+                  <Nav>
                     <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
                       {this.createToolMenu(MenuItem)}
                     </NavDropdown>
-                    {expertMode && <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />}
-                  </Nav>
-                }
-                {showDefaultMenu &&
-                  <Nav className="hidden-xs">
-                    <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                      {this.createMoreMenu(MenuItem)}
-                    </NavDropdown>
+                    <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                    {showDefaultMenu &&
+                      <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
+                        {this.createMoreMenu(MenuItem)}
+                      </NavDropdown>
+                    }
                   </Nav>
                 }
               </Navbar.Collapse>
@@ -274,7 +259,6 @@ export default connect(
     activeModal: state.main.activeModal,
     progress: !!state.main.progress.length,
     mouseCursor: state.map.mouseCursor,
-    expertMode: state.main.expertMode,
     embeddedMode: state.main.embeddedMode,
     user: state.auth.user,
   }),

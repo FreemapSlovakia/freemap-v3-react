@@ -2,8 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -81,10 +79,9 @@ class InfoPointMenu extends React.Component {
           <Button onClick={() => onModalLaunch('info-point-embed')} title="Vložiť do webstránky">
             <FontAwesomeIcon icon="code" /><span className="hidden-sm"> Vložiť do webstránky</span>
           </Button>
+          {' '}
+          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
-        <Nav pullLeft>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-        </Nav>
 
         <Modal show={activeModal === 'info-point-share'} onHide={onModalClose}>
           <Modal.Header closeButton>

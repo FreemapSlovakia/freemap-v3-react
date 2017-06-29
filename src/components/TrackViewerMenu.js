@@ -3,9 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 
-import Nav from 'react-bootstrap/lib/Nav';
 import Navbar from 'react-bootstrap/lib/Navbar';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -211,10 +209,9 @@ class TrackViewerMenu extends React.Component {
               <FontAwesomeIcon icon="share-alt" /> Zdieľať
             </Button>
           }
+          {' '}
+          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
-        <Nav pullLeft>
-          <NavItem onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</NavItem>
-        </Nav>
 
         <Modal show={activeModal === 'upload-track'} onHide={onModalClose}>
           <Modal.Header closeButton>
