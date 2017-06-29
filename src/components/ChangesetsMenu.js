@@ -7,6 +7,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -53,21 +54,23 @@ class ChangesetsMenu extends React.Component {
           </ButtonGroup>
           {' '}
           <FormGroup>
-            <FormControl
-              type="text"
-              placeholder="Všetci autori"
-              onChange={e => this.setState({ authorName: e.target.value === '' ? null : e.target.value })}
-              value={this.state.authorName || ''}
-            />
+            <InputGroup>
+              <FormControl
+                type="text"
+                placeholder="Všetci autori"
+                onChange={e => this.setState({ authorName: e.target.value === '' ? null : e.target.value })}
+                value={this.state.authorName || ''}
+              />
+              <InputGroup.Button>
+                <Button
+                  disabled={!this.state.authorName}
+                  onClick={() => this.setState({ authorName: null })}
+                >
+                  <FontAwesomeIcon icon="times" />
+                </Button>
+              </InputGroup.Button>
+            </InputGroup>
           </FormGroup>
-          <Button
-            bsSize="small"
-            bsStyle="link"
-            disabled={!this.state.authorName}
-            onClick={() => this.setState({ authorName: null })}
-          >
-            <FontAwesomeIcon icon="times" />
-          </Button>
           {' '}
           <ButtonGroup>
             <Button
