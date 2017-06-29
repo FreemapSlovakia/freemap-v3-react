@@ -9,6 +9,8 @@ const initialState = {
 
 export default function trackViewer(state = initialState, action) {
   switch (action.type) {
+    case 'SET_TOOL':
+      return { ...initialState, eleSmoothingFactor: state.eleSmoothingFactor };
     case 'TRACK_VIEWER_LOAD_STATE': {
       const s = { ...state };
       const { eleSmoothingFactor } = action.payload;
@@ -17,11 +19,6 @@ export default function trackViewer(state = initialState, action) {
       }
       return s;
     }
-    case 'TRACK_VIEWER_RESET_TRACK_DATA':
-      return {
-        ...initialState,
-        eleSmoothingFactor: state.eleSmoothingFactor,
-      };
     case 'TRACK_VIEWER_SET_TRACK_DATA':
       return {
         ...state,
@@ -30,14 +27,11 @@ export default function trackViewer(state = initialState, action) {
         startPoints: action.payload.startPoints,
         finishPoints: action.payload.finishPoints,
       };
-    case 'TRACK_VIEWER_RESET_TRACK_UID':
-      return { ...state, trackUID: null };
     case 'TRACK_VIEWER_SET_TRACK_UID':
-      return { ...state, trackUID: action.payload.trackUID };
     case 'TRACK_VIEWER_DOWNLOAD_TRACK':
-      return { ...state, trackUID: action.payload.trackUID };
+      return { ...state, trackUID: action.payload };
     case 'TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR':
-      return { ...state, eleSmoothingFactor: action.payload.eleSmoothingFactor };
+      return { ...state, eleSmoothingFactor: action.payload };
     default:
       return state;
   }

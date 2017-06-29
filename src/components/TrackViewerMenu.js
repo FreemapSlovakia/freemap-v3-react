@@ -12,7 +12,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActiveModal, closeModal } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerResetData, trackViewerResetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -285,7 +285,6 @@ export default connect(
   }),
   dispatch => ({
     onCancel() {
-      dispatch(trackViewerResetData());
       dispatch(setTool(null));
       dispatch(elevationChartClose());
     },
@@ -299,7 +298,7 @@ export default connect(
       dispatch(trackViewerSetData(gpx));
     },
     onTrackUIDReset() {
-      dispatch(trackViewerResetTrackUID());
+      dispatch(trackViewerSetTrackUID(null));
     },
     onTrackViewerUploadTrack() {
       dispatch(trackViewerUploadTrack());
