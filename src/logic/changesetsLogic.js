@@ -8,8 +8,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
 
 export const changesetsLogic = createLogic({
-  type: ['CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH'],
-  cancelType: ['CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH', 'SET_TOOL'],
+  type: ['CHANGESETS_SET_AUTHOR_NAME'],
+  cancelType: ['CHANGESETS_SET_AUTHOR_NAME', 'SET_TOOL'],
   process({ getState, cancelled$ }, dispatch, done) {
     const state = getState();
 
@@ -95,7 +95,7 @@ export const changesetsLogic = createLogic({
             dispatch(toastsAdd({
               collapseKey: 'changeset.detail',
               message: 'Neboli nájdené žiadne zmeny',
-              cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH'],
+              cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME'],
               timeout: 3000,
               style: 'info',
             }));

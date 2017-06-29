@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { changesetsSetAuthorNameAndRefresh } from 'fm3/actions/changesetsActions';
+import { changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 
 import 'fm3/styles/changesets.scss';
 
@@ -75,7 +75,7 @@ export default connect(
           <dl className="dl-horizontal">
             <dt>Autor:</dt>
             <dd>
-              <a role="link" tabIndex={0} style={{ cursor: 'pointer' }} onClick={() => { dispatch(changesetsSetAuthorNameAndRefresh(changeset.userName)); }}>{changeset.userName}</a>
+              <a role="link" tabIndex={0} style={{ cursor: 'pointer' }} onClick={() => { dispatch(changesetsSetAuthorName(changeset.userName)); }}>{changeset.userName}</a>
             </dd>
             <dt>Popis:</dt>
             <dd>{changeset.description || <i>bez popisu</i>}</dd>
@@ -107,7 +107,7 @@ export default connect(
       dispatch(toastsAdd({
         collapseKey: 'changeset.detail',
         message,
-        cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME_AND_REFRESH'],
+        cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME'],
         style: 'info',
       }));
     },

@@ -12,7 +12,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { changesetsSetDays, changesetsSetAuthorNameAndRefresh } from 'fm3/actions/changesetsActions';
+import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 import { setTool } from 'fm3/actions/mainActions';
 
 class ChangesetsMenu extends React.Component {
@@ -107,7 +107,7 @@ export default connect(
       dispatch(changesetsSetDays(days));
     },
     onChangesetsSetAuthorNameAndRefresh(authorName) {
-      dispatch(changesetsSetAuthorNameAndRefresh(authorName));
+      dispatch(changesetsSetAuthorName(authorName));
     },
     onCancel() {
       dispatch(setTool(null));
