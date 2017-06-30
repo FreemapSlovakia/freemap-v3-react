@@ -125,42 +125,36 @@ class Main extends React.Component {
     this.props.onToolSet(this.props.tool === tool ? null : tool);
   }
 
-  createToolMenu(ele) {
-    // eslint-disable-next-line
-    const cmi = createMenuItem.bind(this, ele);
-
+  createToolMenu() {
     return [
-      cmi(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
-      cmi(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
-      cmi(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
-      cmi(8, 'picture-o', 'Galéria obrázkov', () => this.handleToolSelect('gallery')),
-      cmi(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
-      cmi(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
-      cmi(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
-      cmi(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
+      createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
+      createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
+      createMenuItem(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
+      createMenuItem(8, 'picture-o', 'Galéria obrázkov', () => this.handleToolSelect('gallery')),
+      createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
+      createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
+      createMenuItem(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
+      createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
     ];
   }
 
-  createMoreMenu(ele) {
-    // eslint-disable-next-line
-    const cmi = createMenuItem.bind(this, ele);
-
+  createMoreMenu() {
     const { user, onLogout, onLogin, onPopupLaunch } = this.props;
 
     return [
       user ?
-        cmi('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
+        createMenuItem('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
         :
-        cmi('login', 'sign-in', 'Prihlásenie', () => onLogin()),
-      cmi(1, 'cog', 'Nastavenia', () => onPopupLaunch('settings')),
-      ele === MenuItem ? <MenuItem divider key="_1" /> : null,
-      cmi(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
-      ele === MenuItem ? <MenuItem divider key="_2" /> : null,
-      cmi(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
-      cmi(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
-      ele === MenuItem ? <MenuItem divider key="_3" /> : null,
-      cmi(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
-      cmi(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
+        createMenuItem('login', 'sign-in', 'Prihlásenie', () => onLogin()),
+      createMenuItem(1, 'cog', 'Nastavenia', () => onPopupLaunch('settings')),
+      <MenuItem divider key="_1" />,
+      createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
+      <MenuItem divider key="_2" />,
+      createMenuItem(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
+      createMenuItem(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
+      <MenuItem divider key="_3" />,
+      createMenuItem(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
+      createMenuItem(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
     ];
   }
 
@@ -195,12 +189,12 @@ class Main extends React.Component {
                 {showDefaultMenu &&
                   <Nav>
                     <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
-                      {this.createToolMenu(MenuItem)}
+                      {this.createToolMenu()}
                     </NavDropdown>
                     <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
                     {showDefaultMenu &&
                       <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                        {this.createMoreMenu(MenuItem)}
+                        {this.createMoreMenu()}
                       </NavDropdown>
                     }
                   </Nav>
@@ -287,7 +281,7 @@ export default connect(
   }),
 )(Main);
 
-function createMenuItem(ele, key, icon, title, onClick) {
+function createMenuItem(key, icon, title, onClick) {
   const p = { key };
   if (typeof onClick === 'function') {
     p.onClick = onClick;
@@ -295,7 +289,7 @@ function createMenuItem(ele, key, icon, title, onClick) {
     p.href = onClick;
     p.target = '_blank';
   }
-  return React.createElement(ele, p, <FontAwesomeIcon icon={icon} />, ` ${title}`);
+  return React.createElement(MenuItem, p, <FontAwesomeIcon icon={icon} />, ` ${title}`);
 }
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
