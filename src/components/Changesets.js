@@ -17,8 +17,9 @@ const ONE_DAY = (1000 * 60 * 60 * 24);
 class Changesets extends React.Component {
   opacityOf = (changeset, now) => {
     const changesetAgeInDays = (now - changeset.closedAt) / ONE_DAY;
-    const freshness = (changesetAgeInDays / this.props.days); // <0.0, 1.0>
-    return freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
+    const freshness = ((this.props.days - changesetAgeInDays) / this.props.days); // <0.0, 1.0>
+    const opacity = freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
+    return opacity;
   }
 
   render() {
