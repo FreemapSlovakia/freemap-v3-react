@@ -68,7 +68,7 @@ class Main extends React.Component {
     onToolSet: PropTypes.func.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
     activeModal: PropTypes.string,
-    onPopupLaunch: PropTypes.func.isRequired,
+    onModalLaunch: PropTypes.func.isRequired,
     progress: PropTypes.bool.isRequired,
     onLocationSet: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
@@ -79,6 +79,7 @@ class Main extends React.Component {
     user: PropTypes.shape({
       name: PropTypes.string.isRequired,
     }),
+    ignoreEscape: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
@@ -88,7 +89,7 @@ class Main extends React.Component {
   componentDidMount() {
     setMapLeafletElement(this.map.leafletElement);
     document.addEventListener('keydown', (event) => {
-      if (event.keyCode === 27) { // Escape key
+      if (event.keyCode === 27 /* escape key */ && !this.props.ignoreEscape) {
         this.props.onToolSet(null);
       }
     });
@@ -139,14 +140,14 @@ class Main extends React.Component {
   }
 
   createMoreMenu() {
-    const { user, onLogout, onLogin, onPopupLaunch } = this.props;
+    const { user, onLogout, onLogin, onModalLaunch } = this.props;
 
     return [
       user ?
         createMenuItem('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
         :
         createMenuItem('login', 'sign-in', 'Prihlásenie', () => onLogin()),
-      createMenuItem(1, 'cog', 'Nastavenia', () => onPopupLaunch('settings')),
+      createMenuItem(1, 'cog', 'Nastavenia', () => onModalLaunch('settings')),
       <MenuItem divider key="_1" />,
       createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
       <MenuItem divider key="_2" />,
@@ -255,6 +256,7 @@ export default connect(
     mouseCursor: state.map.mouseCursor,
     embeddedMode: state.main.embeddedMode,
     user: state.auth.user,
+    ignoreEscape: !!(state.main.activeModal || state.gallery.activeImageId),
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -263,7 +265,7 @@ export default connect(
     onMapRefocus(changes) {
       dispatch(mapRefocus(changes));
     },
-    onPopupLaunch(modalName) {
+    onModalLaunch(modalName) {
       dispatch(setActiveModal(modalName));
     },
     onLocationSet(lat, lon, accuracy) {
