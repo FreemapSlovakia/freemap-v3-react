@@ -62,7 +62,7 @@ const galleryShowOnTheMapLogic = createLogic({
     const { images, activeImageId } = getState().gallery;
     const activeImage = activeImageId ? images.find(({ id }) => id === activeImageId) : null;
     if (activeImage) {
-      dispatch(infoPointSet({ lat: activeImage.lat, lon: activeImage.lon, label: activeImage.title }));
+      dispatch(infoPointSet(activeImage.lat, activeImage.lon, activeImage.title));
       dispatch(mapRefocus({ lat: activeImage.lat, lon: activeImage.lon }));
     }
     done();
