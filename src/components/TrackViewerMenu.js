@@ -66,7 +66,7 @@ class TrackViewerMenu extends React.Component {
     }
   }
 
-  // TODO mode to logic
+  // TODO move to logic
   shareTrack = () => {
     if (this.props.trackUID) {
       this.props.onModalLaunch('track-viewer-share');
