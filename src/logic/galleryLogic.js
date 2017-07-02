@@ -4,7 +4,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImages } from 'fm3/actions/galleryActions';
-import { infoPointAdd } from 'fm3/actions/infoPointActions';
+import { infoPointSet } from 'fm3/actions/infoPointActions';
 
 const galleryRequestImagesLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
@@ -62,7 +62,7 @@ const galleryShowOnTheMapLogic = createLogic({
     const { images, activeImageId } = getState().gallery;
     const activeImage = activeImageId ? images.find(({ id }) => id === activeImageId) : null;
     if (activeImage) {
-      dispatch(infoPointAdd({ lat: activeImage.lat, lon: activeImage.lon, label: activeImage.title }));
+      dispatch(infoPointSet({ lat: activeImage.lat, lon: activeImage.lon, label: activeImage.title }));
       dispatch(mapRefocus({ lat: activeImage.lat, lon: activeImage.lon }));
     }
     done();

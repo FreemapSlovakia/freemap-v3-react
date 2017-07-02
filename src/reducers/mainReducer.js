@@ -23,7 +23,7 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'route-planner' };
     case 'TRACK_VIEWER_DOWNLOAD_TRACK':
       return { ...state, tool: 'track-viewer' };
-    case 'INFO_POINT_ADD':
+    case 'INFO_POINT_SET':
       return { ...state, tool: 'info-point' };
     case 'GALLERY_SET_IMAGES':
       return { ...state, tool: 'gallery' };

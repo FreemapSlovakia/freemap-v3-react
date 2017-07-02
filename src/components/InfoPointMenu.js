@@ -56,11 +56,8 @@ class InfoPointMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, inEditMode, onModalLaunch, lat, lon, label, activeModal, onModalClose } = this.props;
-    let shareURL = `${window.location.href}&info-point-lat=${lat.toFixed(5)}&info-point-lon=${lon.toFixed(5)}`;
-    if (label) {
-      shareURL += `&info-point-label=${encodeURIComponent(label)}`;
-    }
+    const { onCancel, inEditMode, onModalLaunch, activeModal, onModalClose } = this.props;
+    const shareURL = `${window.location.href}`;
     return (
       <div>
         <Navbar.Form pullLeft>
@@ -88,7 +85,9 @@ class InfoPointMenu extends React.Component {
             <Modal.Title>Zdieľať odkaz na mapu</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
+            <p>
+              Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
+            </p>
             <Alert>
               <a href={shareURL}>{shareURL}</a>
             </Alert>
@@ -130,12 +129,12 @@ class InfoPointMenu extends React.Component {
             <Modal.Title>Vložit do webstránky</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Vložte na vašu stránku tento html kód:
+            <p>Vložte na vašu stránku tento html kód:</p>
             <Alert style={{ fontFamily: 'monospace' }}>
               {`<iframe src="${shareURL}&embed=true"`}<br />
               {'style="width: 500px; height: 300px; border: 0" />'}
             </Alert>
-            Výsledok bude vyzerať nasledovne:
+            <p>Výsledok bude vyzerať následovne:</p>
             <iframe
               title="Freemap.sk"
               style={{ width: '100%', height: '300px', border: '0' }}
@@ -155,8 +154,6 @@ InfoPointMenu.propTypes = {
   activeModal: PropTypes.string,
   onModalClose: PropTypes.func.isRequired,
   onModalLaunch: PropTypes.func.isRequired,
-  lat: PropTypes.number,
-  lon: PropTypes.number,
   label: PropTypes.string,
   onCancel: PropTypes.func.isRequired,
   onInfoPointChangePosition: PropTypes.func.isRequired,
@@ -168,8 +165,6 @@ InfoPointMenu.propTypes = {
 export default connect(
   state => ({
     activeModal: state.main.activeModal,
-    lat: state.infoPoint.lat,
-    lon: state.infoPoint.lon,
     label: state.infoPoint.label,
     inEditMode: state.infoPoint.inEditMode,
   }),

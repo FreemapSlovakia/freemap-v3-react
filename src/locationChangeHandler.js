@@ -7,7 +7,7 @@ import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
-import { infoPointAdd, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
+import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { galleryRequestImage } from 'fm3/actions/galleryActions';
 
 export default function handleLocationChange(store, location) {
@@ -41,10 +41,12 @@ export default function handleLocationChange(store, location) {
   const ipLat = query['info-point-lat'];
   const ipLon = query['info-point-lon'];
   if (ipLat && ipLon) {
+    const { infoPoint } = store.getState();
     const lat = parseFloat(ipLat);
     const lon = parseFloat(ipLon);
-    if (!isNaN(lat) && !isNaN(lon)) {
-      store.dispatch(infoPointAdd(lat, lon, query['info-point-label']));
+    const label = query['info-point-label'];
+    if (infoPoint.lat !== lat || infoPoint.lon !== lon || infoPoint.label !== label) {
+      store.dispatch(infoPointSet(lat, lon, label));
     }
   }
 
@@ -62,13 +64,13 @@ export default function handleLocationChange(store, location) {
   if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
     const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
     store.dispatch(setEmbeddedMode());
-    store.dispatch(infoPointAdd(lat, lon));
+    store.dispatch(infoPointSet(lat, lon));
   }
 
   if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
     const { lat, lon, label } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
     store.dispatch(setEmbeddedMode());
-    store.dispatch(infoPointAdd(lat, lon));
+    store.dispatch(infoPointSet(lat, lon));
     if (label) {
       store.dispatch(infoPointChangeLabel(label));
     }

@@ -1,5 +1,5 @@
 import { createLogic } from 'redux-logic';
-import { infoPointAdd } from 'fm3/actions/infoPointActions';
+import { infoPointSet } from 'fm3/actions/infoPointActions';
 
 export const infoPointLogic = createLogic({
   type: 'SET_TOOL',
@@ -11,7 +11,7 @@ export const infoPointLogic = createLogic({
     if (userOpenedToolButThereIsNoInfoPointYet) {
       const mapCenterLat = state.map.lat;
       const mapCenterLon = state.map.lon;
-      dispatch(infoPointAdd(mapCenterLat, mapCenterLon, null));
+      dispatch(infoPointSet(mapCenterLat, mapCenterLon, null));
     }
     done();
   },

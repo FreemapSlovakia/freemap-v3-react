@@ -1,5 +1,5 @@
-export function infoPointAdd(lat, lon, label) {
-  return { type: 'INFO_POINT_ADD', payload: { lat, lon, label } };
+export function infoPointSet(lat, lon, label) {
+  return { type: 'INFO_POINT_SET', payload: { lat, lon, label } };
 }
 
 export function infoPointChangePosition(lat, lon) {
