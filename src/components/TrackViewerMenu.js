@@ -232,7 +232,7 @@ class TrackViewerMenu extends React.Component {
             <Modal.Title>Zdieľať záznam trasy</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            Trasa je dostupná na následovnej adrese:
+            <p>Trasa je dostupná na následovnej adrese:</p>
             <Alert>
               <a href={shareURL}>{shareURL}</a>
             </Alert>

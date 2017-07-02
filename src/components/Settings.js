@@ -98,7 +98,7 @@ class Settings extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <div style={{ marginBottom: '10px' }}>
-            Formát dlaždíc:<br />
+            <p>Formát dlaždíc:</p>
             <ButtonGroup>
               <Button
                 active={this.state.tileFormat === 'png'}
@@ -119,12 +119,15 @@ class Settings extends React.Component {
             Pri pomalom internete preto odporúčame zvoliť JPG.
           </Alert>
           <hr />
-          Domovská poloha: <span className={homeLocationCssClasses}>{homeLocationInfo}</span> <br />
+          <p>
+            {'Domovská poloha: '}
+            <span className={homeLocationCssClasses}>{homeLocationInfo}</span>
+          </p>
           <Button onClick={() => onHomeLocationSelect()}>
             <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
           </Button>
           <hr />
-          Viditeľnosť vrstvy Lesné cesty NLC: {this.state.nlcOpacity.toFixed(1) * 100}%
+          <p>Viditeľnosť vrstvy Lesné cesty NLC: {this.state.nlcOpacity.toFixed(1) * 100}%</p>
           <Slider
             value={this.state.nlcOpacity}
             min={0.1}
@@ -140,7 +143,7 @@ class Settings extends React.Component {
           }
           <hr />
           <div style={{ marginBottom: '10px' }}>
-            Expertný mód:<br />
+            <p>Expertný mód:</p>
             <ButtonGroup>
               <Button
                 active={!this.state.expertMode}
@@ -163,7 +166,10 @@ class Settings extends React.Component {
           }
           {this.state.expertMode &&
             <div>
-                Viditeľnosť vrstvy Turistické trasy: {(this.state.touristOverlayOpacity).toFixed(1) * 100}%
+              <p>
+                {'Viditeľnosť vrstvy Turistické trasy: '}
+                {this.state.touristOverlayOpacity.toFixed(1) * 100}%
+              </p>
               <Slider
                 value={this.state.touristOverlayOpacity}
                 min={0.1}
@@ -176,7 +182,10 @@ class Settings extends React.Component {
           }
           {this.state.expertMode &&
             <div>
-                Viditeľnosť vrstvy Cyklotrasy: {(this.state.cycloOverlayOpacity).toFixed(1) * 100}%
+              <p>
+                {'Viditeľnosť vrstvy Cyklotrasy: '}
+                {this.state.cycloOverlayOpacity.toFixed(1) * 100}%
+              </p>
               <Slider
                 value={this.state.cycloOverlayOpacity}
                 min={0.1}
@@ -189,7 +198,7 @@ class Settings extends React.Component {
           }
           {this.state.expertMode &&
             <div>
-               Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {(this.state.trackViewerEleSmoothingFactor)}
+              <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {(this.state.trackViewerEleSmoothingFactor)}</p>
               <Slider
                 value={this.state.trackViewerEleSmoothingFactor}
                 min={1}
