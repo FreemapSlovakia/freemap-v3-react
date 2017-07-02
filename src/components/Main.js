@@ -35,6 +35,7 @@ import TrackViewerResult from 'fm3/components/TrackViewerResult';
 
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
+import GalleryUploadModal from 'fm3/components/GalleryUploadModal';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
@@ -239,6 +240,8 @@ class Main extends React.Component {
             <ElevationChart />
           </Map>
         </Row>
+
+        <GalleryUploadModal />
       </div>
     );
   }

@@ -44,7 +44,7 @@ class TrackViewerMenu extends React.Component {
     }
   }
 
-  onFileDrop = (acceptedFiles, rejectedFiles) => {
+  handleFileDrop = (acceptedFiles, rejectedFiles) => {
     if (acceptedFiles.length > 0) {
       const reader = new FileReader();
       reader.readAsText(acceptedFiles[0], 'UTF-8');
@@ -218,7 +218,7 @@ class TrackViewerMenu extends React.Component {
             <Modal.Title>Nahrať záznam trasy</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Dropzone onDrop={this.onFileDrop} multiple={false} accept=".gpx" className="dropzone">
+            <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone">
               <div>Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.</div>
             </Dropzone>
           </Modal.Body>
