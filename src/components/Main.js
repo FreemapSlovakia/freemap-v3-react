@@ -233,7 +233,7 @@ class Main extends React.Component {
             {tool === 'measure-area' && <AreaMeasurementResult />}
             {tool === 'location' && <LocationResult />}
             {tool === 'track-viewer' && <TrackViewerResult />}
-            {tool === 'info-point' && <InfoPoint />}
+            <InfoPoint />
             {tool === 'gallery' && <GalleryResult />}
             {tool === 'changesets' && <Changesets />}
             <ElevationChart />

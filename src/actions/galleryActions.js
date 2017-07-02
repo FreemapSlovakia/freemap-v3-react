@@ -13,3 +13,7 @@ export function gallerySetImages(images) {
 export function gallerySetActiveImageId(activeImageId) {
   return { type: 'GALLERY_SET_ACTIVE_IMAGE_ID', payload: activeImageId };
 }
+
+export function galleryShowOnTheMap() {
+  return { type: 'GALLERY_SHOW_ON_THE_MAP' };
+}

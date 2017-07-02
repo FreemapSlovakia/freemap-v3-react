@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Circle, TileLayer } from 'react-leaflet';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -10,7 +11,8 @@ import Image from 'react-bootstrap/lib/Image';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import { galleryRequestImages, gallerySetImages, gallerySetActiveImageId } from 'fm3/actions/galleryActions';
+import { galleryRequestImages, gallerySetImages, gallerySetActiveImageId, galleryShowOnTheMap }
+  from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
 
@@ -26,6 +28,7 @@ class GalleryResult extends React.Component {
     onClose: PropTypes.func.isRequired,
     zoom: PropTypes.number.isRequired,
     onImageSelect: PropTypes.func.isRequired,
+    onShowOnTheMap: PropTypes.func.isRequired,
   }
 
   state = {};
@@ -43,7 +46,7 @@ class GalleryResult extends React.Component {
   }
 
   getModal() {
-    const { images, activeImageId, onClose } = this.props;
+    const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
     const { path, title, description, author, createdAt } = images[index];
 
@@ -51,7 +54,7 @@ class GalleryResult extends React.Component {
       <Modal show onHide={onClose} bsSize="large">
         <Modal.Header closeButton>
           <Modal.Title>
-            Obrázky {title && title !== '-' && `:: ${title}`}
+            Obrázky {title && `:: ${title}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -85,10 +88,11 @@ class GalleryResult extends React.Component {
           <p>
             <br />
             Nahral <b>{author}</b> dňa <b>{dateFormat.format(createdAt)}</b>
-            {description && description !== '-' && `: ${description}`}
+            {description && `: ${description}`}
           </p>
         </Modal.Body>
         <Modal.Footer>
+          <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Modal.Footer>
       </Modal>
@@ -164,6 +168,10 @@ export default connect(
       dispatch(galleryRequestImages(lat, lon));
     },
     onClose() {
+      dispatch(gallerySetImages([]));
+    },
+    onShowOnTheMap() {
+      dispatch(galleryShowOnTheMap());
       dispatch(gallerySetImages([]));
     },
     onImageSelect(id) {
