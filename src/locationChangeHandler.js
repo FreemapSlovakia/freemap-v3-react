@@ -8,6 +8,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 import { infoPointAdd, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
+import { galleryRequestImage } from 'fm3/actions/galleryActions';
 
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
@@ -48,7 +49,10 @@ export default function handleLocationChange(store, location) {
   }
 
   if (query.image) {
-    // TODO
+    const imageId = parseInt(query.image, 10);
+    if (store.getState().gallery.activeImageId !== imageId) {
+      store.dispatch(galleryRequestImage(imageId));
+    }
   }
 
   if (query.embed === 'true') {
