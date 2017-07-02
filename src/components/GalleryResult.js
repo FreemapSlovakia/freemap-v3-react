@@ -11,7 +11,6 @@ import Image from 'react-bootstrap/lib/Image';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { galleryRequestImages, gallerySetImages, gallerySetActiveImageId } from 'fm3/actions/galleryActions';
-import DisqusThread from 'fm3/components/DisqusThread';
 
 import 'fm3/styles/gallery.scss';
 
@@ -57,16 +56,21 @@ class GalleryResult extends React.Component {
 
   handlePreviousClick = (e) => {
     e.preventDefault();
+
     const { images, activeImageId, onImageSelect } = this.props;
-    const index = (images.findIndex(({ id }) => id === activeImageId) - 1 + images.length) % images.length;
-    onImageSelect(images[index].id);
+    const index = images.findIndex(({ id }) => id === activeImageId);
+    if (index > 0) {
+      onImageSelect(images[index - 1].id);
+    }
   }
 
   handleNextClick = (e) => {
     e.preventDefault();
     const { images, activeImageId, onImageSelect } = this.props;
-    const index = (images.findIndex(({ id }) => id === activeImageId) + 1) % images.length;
-    onImageSelect(images[index].id);
+    const index = images.findIndex(({ id }) => id === activeImageId);
+    if (index + 1 < images.length) {
+      onImageSelect(images[index + 1].id);
+    }
   }
 
   render() {
@@ -74,7 +78,7 @@ class GalleryResult extends React.Component {
 
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
 
-    const { id, path, title, description, author, createdAt } = index === -1 ? {} : images[index];
+    const { path, title, description, author, createdAt } = index === -1 ? {} : images[index];
 
     return (
       <div>
@@ -117,16 +121,14 @@ class GalleryResult extends React.Component {
                   </a>
                 </div>
                 <a
-                  className="left carousel-control"
+                  className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
                   onClick={this.handlePreviousClick}
-                  disabled={index < 1}
                 >
                   <Glyphicon glyph="chevron-left" />
                 </a>
                 <a
-                  className="right carousel-control"
+                  className={`right carousel-control ${index >= images.length - 1 ? 'disabled' : ''}`}
                   onClick={this.handleNextClick}
-                  disabled={index >= images.length - 1}
                 >
                   <Glyphicon glyph="chevron-right" />
                 </a>
@@ -136,8 +138,6 @@ class GalleryResult extends React.Component {
                 Nahral <b>{author}</b> dňa <b>{dateFormat.format(createdAt)}</b>
                 {description && description !== '-' && `: ${description}`}
               </p>
-              <hr />
-              <DisqusThread id={`gi_${id}`} path={`http://www.freemap.sk/upload/gallery/${path}`} title={title} />
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>

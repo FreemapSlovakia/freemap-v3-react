@@ -10,3 +10,8 @@
     max-height: 200px;
   }
 }
+
+.carousel-control.disabled, .carousel-control.disabled:hover {
+  cursor: not-allowed;
+  opacity: 0.2;
+}
