@@ -73,12 +73,61 @@ class GalleryResult extends React.Component {
     }
   }
 
-  render() {
-    const { images, activeImageId, onClose, zoom } = this.props;
-
+  getModal() {
+    const { images, activeImageId, onClose } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
+    const { path, title, description, author, createdAt } = images[index];
 
-    const { path, title, description, author, createdAt } = index === -1 ? {} : images[index];
+    return (
+      <Modal show onHide={onClose} bsSize="large">
+        <Modal.Header closeButton>
+          <Modal.Title>
+            Obrázky {title && title !== '-' && `:: ${title}`}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <div className="carousel">
+            <div className="item active">
+              <a
+                href={`http://www.freemap.sk/upload/gallery/${path}`}
+                target="freemap_gallery_image"
+              >
+                <Image
+                  className="gallery-image"
+                  // src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
+                  src={`http://www.freemap.sk/upload/gallery/${path}`}
+                  alt={title}
+                />
+              </a>
+            </div>
+            <a
+              className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
+              onClick={this.handlePreviousClick}
+            >
+              <Glyphicon glyph="chevron-left" />
+            </a>
+            <a
+              className={`right carousel-control ${index >= images.length - 1 ? 'disabled' : ''}`}
+              onClick={this.handleNextClick}
+            >
+              <Glyphicon glyph="chevron-right" />
+            </a>
+          </div>
+          <p>
+            <br />
+            Nahral <b>{author}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+            {description && description !== '-' && `: ${description}`}
+          </p>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+        </Modal.Footer>
+      </Modal>
+    );
+  }
+
+  render() {
+    const { activeImageId, zoom } = this.props;
 
     return (
       <div>
@@ -98,52 +147,7 @@ class GalleryResult extends React.Component {
           />
         }
 
-        {activeImageId &&
-          <Modal show onHide={onClose} bsSize="large">
-            <Modal.Header closeButton>
-              <Modal.Title>
-                Obrázky {title && title !== '-' && `:: ${title}`}
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="carousel">
-                <div className="item active">
-                  <a
-                    href={`http://www.freemap.sk/upload/gallery/${path}`}
-                    target="freemap_gallery_image"
-                  >
-                    <Image
-                      className="gallery-image"
-                      // src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
-                      src={`http://www.freemap.sk/upload/gallery/${path}`}
-                      alt={title}
-                    />
-                  </a>
-                </div>
-                <a
-                  className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
-                  onClick={this.handlePreviousClick}
-                >
-                  <Glyphicon glyph="chevron-left" />
-                </a>
-                <a
-                  className={`right carousel-control ${index >= images.length - 1 ? 'disabled' : ''}`}
-                  onClick={this.handleNextClick}
-                >
-                  <Glyphicon glyph="chevron-right" />
-                </a>
-              </div>
-              <p>
-                <br />
-                Nahral <b>{author}</b> dňa <b>{dateFormat.format(createdAt)}</b>
-                {description && description !== '-' && `: ${description}`}
-              </p>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
-            </Modal.Footer>
-          </Modal>
-        }
+        {activeImageId && this.getModal()}
       </div>
     );
   }
