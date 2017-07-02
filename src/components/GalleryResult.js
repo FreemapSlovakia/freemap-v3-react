@@ -42,37 +42,6 @@ class GalleryResult extends React.Component {
     mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
   }
 
-  handleMapClick = (lat, lon) => {
-    this.props.onImageRequest(lat, lon);
-  }
-
-  handleMouseMove = (lat, lon) => {
-    this.setState({ lat, lon });
-  }
-
-  handleMouseOut = () => {
-    this.setState({ lat: undefined, lon: undefined });
-  }
-
-  handlePreviousClick = (e) => {
-    e.preventDefault();
-
-    const { images, activeImageId, onImageSelect } = this.props;
-    const index = images.findIndex(({ id }) => id === activeImageId);
-    if (index > 0) {
-      onImageSelect(images[index - 1].id);
-    }
-  }
-
-  handleNextClick = (e) => {
-    e.preventDefault();
-    const { images, activeImageId, onImageSelect } = this.props;
-    const index = images.findIndex(({ id }) => id === activeImageId);
-    if (index + 1 < images.length) {
-      onImageSelect(images[index + 1].id);
-    }
-  }
-
   getModal() {
     const { images, activeImageId, onClose } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
@@ -124,6 +93,37 @@ class GalleryResult extends React.Component {
         </Modal.Footer>
       </Modal>
     );
+  }
+
+  handleMapClick = (lat, lon) => {
+    this.props.onImageRequest(lat, lon);
+  }
+
+  handleMouseMove = (lat, lon) => {
+    this.setState({ lat, lon });
+  }
+
+  handleMouseOut = () => {
+    this.setState({ lat: undefined, lon: undefined });
+  }
+
+  handlePreviousClick = (e) => {
+    e.preventDefault();
+
+    const { images, activeImageId, onImageSelect } = this.props;
+    const index = images.findIndex(({ id }) => id === activeImageId);
+    if (index > 0) {
+      onImageSelect(images[index - 1].id);
+    }
+  }
+
+  handleNextClick = (e) => {
+    e.preventDefault();
+    const { images, activeImageId, onImageSelect } = this.props;
+    const index = images.findIndex(({ id }) => id === activeImageId);
+    if (index + 1 < images.length) {
+      onImageSelect(images[index + 1].id);
+    }
   }
 
   render() {
