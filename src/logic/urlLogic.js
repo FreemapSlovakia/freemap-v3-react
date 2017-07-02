@@ -2,13 +2,15 @@ import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
 
 export const urlLogic = createLogic({
-  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE', 'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID'],
+  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE',
+    'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID', 'GALLERY_SET_ACTIVE_IMAGE_ID', 'GALLERY_SET_IMAGES'],
   process({ getState, action }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
       main: { embeddedMode, tool },
       routePlanner: { start, finish, midpoints, transportType },
       trackViewer: { trackUID },
+      gallery: { activeImageId },
     } = getState();
 
     const queryParts = [
@@ -18,7 +20,6 @@ export const urlLogic = createLogic({
 
     if (tool === 'route-planner' && start && finish) {
       queryParts.push(
-        `tool=${tool}`,
         `transport=${transportType}`,
         `points=${[start, ...midpoints, finish].map(point => `${point.lat.toFixed(5)}/${point.lon.toFixed(5)}`).join(',')}`,
       );
@@ -26,8 +27,13 @@ export const urlLogic = createLogic({
 
     if (tool === 'track-viewer' && trackUID) {
       queryParts.push(
-        `tool=${tool}`,
         `track-uid=${trackUID}`,
+      );
+    }
+
+    if (tool === 'gallery' && activeImageId) {
+      queryParts.push(
+        `image=${activeImageId}`,
       );
     }
 

@@ -12,7 +12,7 @@ import { infoPointAdd, infoPointChangeLabel } from 'fm3/actions/infoPointActions
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
 
-  if (query.tool === 'route-planner' && /car|walk|bicycle/.test(query.transport)) {
+  if (/car|walk|bicycle/.test(query.transport) && /^\d+(\.\d+)?\/\d+(\.\d+)?(,\d+(\.\d+)?\/\d+(\.\d+)?)+$/.test(query.points)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 
     const { start, finish, midpoints, transportType } = store.getState().routePlanner;
@@ -32,16 +32,23 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  if (query.tool === 'track-viewer' && query['track-uid'] && store.getState().trackViewer.trackUID !== query['track-uid']) {
-    store.dispatch(trackViewerDownloadTrack(query['track-uid']));
+  const trackUID = query['track-uid'];
+  if (trackUID && store.getState().trackViewer.trackUID !== trackUID) {
+    store.dispatch(trackViewerDownloadTrack(trackUID));
   }
 
-  if (query.tool === 'info-point') {
-    const lat = parseFloat(query['info-point-lat']);
-    const lon = parseFloat(query['info-point-lon']);
+  const ipLat = query['info-point-lat'];
+  const ipLon = query['info-point-lon'];
+  if (ipLat && ipLon) {
+    const lat = parseFloat(ipLat);
+    const lon = parseFloat(ipLon);
     if (!isNaN(lat) && !isNaN(lon)) {
       store.dispatch(infoPointAdd(lat, lon, query['info-point-label']));
     }
+  }
+
+  if (query.image) {
+    // TODO
   }
 
   if (query.embed === 'true') {

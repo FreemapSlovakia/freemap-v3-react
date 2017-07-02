@@ -57,7 +57,7 @@ class InfoPointMenu extends React.Component {
 
   render() {
     const { onCancel, inEditMode, onModalLaunch, lat, lon, label, activeModal, onModalClose } = this.props;
-    let shareURL = `${window.location.href}&tool=info-point&info-point-lat=${lat.toFixed(5)}&info-point-lon=${lon.toFixed(5)}`;
+    let shareURL = `${window.location.href}&info-point-lat=${lat.toFixed(5)}&info-point-lon=${lon.toFixed(5)}`;
     if (label) {
       shareURL += `&info-point-label=${encodeURIComponent(label)}`;
     }
