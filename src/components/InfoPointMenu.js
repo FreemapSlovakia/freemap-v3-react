@@ -80,71 +80,75 @@ class InfoPointMenu extends React.Component {
           <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
 
-        <Modal show={activeModal === 'info-point-share'} onHide={onModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Zdieľať odkaz na mapu</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>
-              Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
-            </p>
-            <Alert>
-              <a href={shareURL}>{shareURL}</a>
-            </Alert>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
-          </Modal.Footer>
-        </Modal>
+        {activeModal === 'info-point-share' &&
+          <Modal show onHide={onModalClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Zdieľať odkaz na mapu</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>
+                Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
+              </p>
+              <Alert>
+                <a href={shareURL}>{shareURL}</a>
+              </Alert>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+            </Modal.Footer>
+          </Modal>
+        }
+        {activeModal === 'info-point-change-label' &&
+          <Modal show onHide={onModalClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Zmeniť popis infobodu</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
 
-        <Modal show={activeModal === 'info-point-change-label'} onHide={onModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Zmeniť popis infobodu</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-
-            <form>
-              <FormGroup>
-                <ControlLabel>Popis infobodu:</ControlLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Tu sa stretneme"
-                  value={this.state.editedLabel || ''}
-                  onChange={e => this.handleLocalLabelChange(e.target.value)}
-                />
-              </FormGroup>
-            </form>
-            <Alert>
-              Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
-            </Alert>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Modal show={activeModal === 'info-point-embed'} onHide={onModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Vložit do webstránky</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Vložte na vašu stránku tento html kód:</p>
-            <Alert style={{ fontFamily: 'monospace' }}>
-              {`<iframe src="${shareURL}&embed=true"`}<br />
-              {'style="width: 500px; height: 300px; border: 0" />'}
-            </Alert>
-            <p>Výsledok bude vyzerať následovne:</p>
-            <iframe
-              title="Freemap.sk"
-              style={{ width: '100%', height: '300px', border: '0' }}
-              src={`${shareURL}&embed=true`}
-            />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
-          </Modal.Footer>
-        </Modal>
+              <form>
+                <FormGroup>
+                  <ControlLabel>Popis infobodu:</ControlLabel>
+                  <FormControl
+                    type="text"
+                    placeholder="Tu sa stretneme"
+                    value={this.state.editedLabel || ''}
+                    onChange={e => this.handleLocalLabelChange(e.target.value)}
+                  />
+                </FormGroup>
+              </form>
+              <Alert>
+                Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
+              </Alert>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
+              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+            </Modal.Footer>
+          </Modal>
+        }
+        {activeModal === 'info-point-embed' &&
+          <Modal show onHide={onModalClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Vložit do webstránky</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>Vložte na vašu stránku tento html kód:</p>
+              <Alert style={{ fontFamily: 'monospace' }}>
+                {`<iframe src="${shareURL}&embed=true"`}<br />
+                {'style="width: 500px; height: 300px; border: 0" />'}
+              </Alert>
+              <p>Výsledok bude vyzerať následovne:</p>
+              <iframe
+                title="Freemap.sk"
+                style={{ width: '100%', height: '300px', border: '0' }}
+                src={`${shareURL}&embed=true`}
+              />
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+            </Modal.Footer>
+          </Modal>
+        }
       </div>
     );
   }

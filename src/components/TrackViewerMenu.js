@@ -213,34 +213,37 @@ class TrackViewerMenu extends React.Component {
           <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
 
-        <Modal show={activeModal === 'upload-track'} onHide={onModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Nahrať záznam trasy</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone">
-              <div>Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.</div>
-            </Dropzone>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
-          </Modal.Footer>
-        </Modal>
-
-        <Modal show={activeModal === 'track-viewer-share'} onHide={onModalClose}>
-          <Modal.Header closeButton>
-            <Modal.Title>Zdieľať záznam trasy</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <p>Trasa je dostupná na následovnej adrese:</p>
-            <Alert>
-              <a href={shareURL}>{shareURL}</a>
-            </Alert>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
-          </Modal.Footer>
-        </Modal>
+        {activeModal === 'upload-track' &&
+          <Modal show onHide={onModalClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Nahrať záznam trasy</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone">
+                <div>Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.</div>
+              </Dropzone>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+            </Modal.Footer>
+          </Modal>
+        }
+        {activeModal === 'track-viewer-share' &&
+          <Modal show onHide={onModalClose}>
+            <Modal.Header closeButton>
+              <Modal.Title>Zdieľať záznam trasy</Modal.Title>
+            </Modal.Header>
+            <Modal.Body>
+              <p>Trasa je dostupná na následovnej adrese:</p>
+              <Alert>
+                <a href={shareURL}>{shareURL}</a>
+              </Alert>
+            </Modal.Body>
+            <Modal.Footer>
+              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+            </Modal.Footer>
+          </Modal>
+        }
       </div>
     );
   }
