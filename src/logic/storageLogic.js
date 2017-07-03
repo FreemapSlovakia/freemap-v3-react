@@ -24,7 +24,6 @@ export default createLogic({
         overlays: mapState.overlays,
         overlayOpacity: mapState.overlayOpacity,
         tileFormat: mapState.tileFormat,
-        mouseCursor: 'auto',
       },
       trackViewer: {
         eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,

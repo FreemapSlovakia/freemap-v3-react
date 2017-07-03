@@ -29,8 +29,6 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'gallery' };
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
-    case 'CLOSE_MODAL':
-      return { ...state, activeModal: null };
     case 'MAP_RESET':
       return { ...state, tool: null };
     case 'SET_TOOL':

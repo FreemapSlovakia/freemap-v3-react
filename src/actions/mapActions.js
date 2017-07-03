@@ -23,14 +23,6 @@ export function mapSetOverlayOpacity(overlayType, overlayOpacity) {
   return { type: 'MAP_SET_OVERLAY_OPACITY', overlayType, overlayOpacity };
 }
 
-export function setMouseCursorToCrosshair() {
-  return { type: 'MAP_SET_MOUSE_CURSOR', payload: 'crosshair' };
-}
-
-export function resetMouseCursor() {
-  return { type: 'MAP_SET_MOUSE_CURSOR', payload: 'auto' };
-}
-
 export function mapLoadState(payload) {
   return { type: 'MAP_LOAD_STATE', payload };
 }

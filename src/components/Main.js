@@ -33,6 +33,8 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
 
+import SelectHomeLocationMenu from 'fm3/components/SelectHomeLocationMenu';
+
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
 import GalleryUploadModal from 'fm3/components/GalleryUploadModal';
@@ -168,7 +170,7 @@ class Main extends React.Component {
   render() {
     // eslint-disable-next-line
     const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType } = this.props;
-    const showDefaultMenu = [null, 'select-home-location', 'location'].includes(tool);
+    const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
       <div className="container-fluid" onDragOver={() => this.handleToolSelect('track-viewer')}>
@@ -187,6 +189,7 @@ class Main extends React.Component {
                 {tool === 'info-point' && <InfoPointMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'gallery' && <GalleryMenu />}
+                {tool === 'select-home-location' && <SelectHomeLocationMenu />}
                 {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
                   <Nav>
@@ -256,10 +259,11 @@ export default connect(
     mapType: state.map.mapType,
     activeModal: state.main.activeModal,
     progress: !!state.main.progress.length,
-    mouseCursor: state.map.mouseCursor,
+    mouseCursor: selectMouseCursor(state),
     embeddedMode: state.main.embeddedMode,
     user: state.auth.user,
-    ignoreEscape: !!(state.main.activeModal || state.gallery.activeImageId),
+    ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
+      || state.gallery.activeImageId),
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -311,4 +315,18 @@ function handleMapMouseOver({ latlng: { lat, lng: lon } }) {
 
 function handleMapMouseOut({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mouseOut', lat, lon);
+}
+
+function selectMouseCursor(state) {
+  switch (state.main.tool) {
+    case 'measure':
+    case 'measure-ele':
+    case 'measure-area':
+    case 'select-home-location':
+      return 'crosshair';
+    case 'route-planner':
+      return state.routePlanner.pickMode ? 'crosshair' : 'auto';
+    default:
+      return 'auto';
+  }
 }

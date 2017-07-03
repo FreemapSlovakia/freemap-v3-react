@@ -2,10 +2,6 @@ export function setActiveModal(activeModal) {
   return { type: 'SET_ACTIVE_MODAL', payload: activeModal };
 }
 
-export function closeModal() {
-  return { type: 'CLOSE_MODAL' };
-}
-
 export function setTool(tool) {
   return { type: 'SET_TOOL', payload: tool };
 }

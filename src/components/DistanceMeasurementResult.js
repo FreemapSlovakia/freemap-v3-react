@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
-import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint } from 'fm3/actions/distanceMeasurementActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -30,8 +29,6 @@ class DistanceMeasurementResult extends React.Component {
     points: FmPropTypes.points.isRequired,
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
-    onOpen: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
   };
 
@@ -39,13 +36,8 @@ class DistanceMeasurementResult extends React.Component {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 
-  componentDidMount() {
-    this.props.onOpen();
-  }
-
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-    this.props.onClose();
   }
 
   handlePoiAdd = (lat, lon, position, id0) => {
@@ -145,12 +137,6 @@ export default connect(
     },
     onPointUpdate(i, point) {
       dispatch(distanceMeasurementUpdatePoint(i, point));
-    },
-    onOpen() {
-      dispatch(setMouseCursorToCrosshair());
-    },
-    onClose() {
-      dispatch(resetMouseCursor());
     },
     onPointRemove(id) {
       dispatch(toastsAdd({

@@ -13,7 +13,7 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import { infoPointChangePosition, infoPointSetInEditMode, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
-import { setTool, setActiveModal, closeModal } from 'fm3/actions/mainActions';
+import { setTool, setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 class InfoPointMenu extends React.Component {
@@ -185,7 +185,7 @@ export default connect(
       dispatch(setActiveModal(modalName));
     },
     onModalClose() {
-      dispatch(closeModal());
+      dispatch(setActiveModal(null));
     },
   }),
 )(InfoPointMenu);

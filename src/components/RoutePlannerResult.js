@@ -8,7 +8,6 @@ import { Polyline, Tooltip, Marker } from 'react-leaflet';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
-import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -19,20 +18,10 @@ class RoutePlannerResult extends React.Component {
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
-    this.props.onOpen();
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.pickMode) {
-      this.props.onOpen(); // TODO use different callback name
-    } else {
-      this.props.onClose(); // TODO use different callback name
-    }
   }
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-    this.props.onClose();
   }
 
   handlePoiAdd = (lat, lon) => {
@@ -212,8 +201,6 @@ RoutePlannerResult.propTypes = {
   onAddMidpoint: PropTypes.func.isRequired,
   onRemoveMidpoint: PropTypes.func.isRequired,
   pickMode: PropTypes.string,
-  onOpen: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -252,12 +239,6 @@ export default connect(
           { name: 'Nie' },
         ],
       }));
-    },
-    onOpen() {
-      dispatch(setMouseCursorToCrosshair());
-    },
-    onClose() {
-      dispatch(resetMouseCursor());
     },
   }),
 )(RoutePlannerResult);

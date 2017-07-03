@@ -10,8 +10,8 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
-import { mapSetTileFormat, mapSetOverlayOpacity, setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
-import { setTool, setHomeLocation, closeModal, setExpertMode } from 'fm3/actions/mainActions';
+import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
+import { setTool, setHomeLocation, setActiveModal, setExpertMode } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 
@@ -238,13 +238,12 @@ export default connect(
   }),
   dispatch => ({
     onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor) {
-      // TODO replace with signle dispatch (for good pratcice)
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
       dispatch(mapSetOverlayOpacity('N', nlcOpacity));
       dispatch(mapSetOverlayOpacity('t', touristOverlayOpacity));
       dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
-      dispatch(closeModal());
+      dispatch(setActiveModal(null));
       dispatch(setExpertMode(expertMode));
       dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
       dispatch(toastsAdd({
@@ -255,17 +254,13 @@ export default connect(
       }));
     },
     onClose() {
-      dispatch(closeModal());
+      dispatch(setActiveModal(null));
     },
     onHomeLocationSelect() {
-      // TODO replace with signle dispatch (for good pratcice)
       dispatch(setTool('select-home-location'));
-      dispatch(setMouseCursorToCrosshair());
     },
     onHomeLocationSelectionFinish() {
-      // TODO replace with signle dispatch (for good pratcice)
       dispatch(setTool(null));
-      dispatch(resetMouseCursor());
     },
   }),
 )(Settings);

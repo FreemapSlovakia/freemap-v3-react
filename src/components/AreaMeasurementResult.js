@@ -5,7 +5,6 @@ import { Marker, Popup, Polygon } from 'react-leaflet';
 import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
 
 import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
-import { setMouseCursorToCrosshair, resetMouseCursor } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { area } from 'fm3/geoutils';
@@ -28,21 +27,14 @@ class AreaMeasurementResult extends React.Component {
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
-    onOpen: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 
-  componentDidMount() {
-    this.props.onOpen();
-  }
-
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-    this.props.onClose();
   }
 
   handlePoiAdd = (lat, lon, position, id0) => {
@@ -164,12 +156,6 @@ export default connect(
           { name: 'Nie' },
         ],
       }));
-    },
-    onOpen() {
-      dispatch(setMouseCursorToCrosshair());
-    },
-    onClose() {
-      dispatch(resetMouseCursor());
     },
   }),
 )(AreaMeasurementResult);
