@@ -29,6 +29,12 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'changesets' };
     case 'GALLERY_SET_IMAGES':
       return { ...state, tool: 'gallery' };
+    case 'DISTANCE_MEASUREMENT_SET_POINTS':
+      return { ...state, tool: 'measure-dist' };
+    case 'AREA_MEASUREMENT_SET_POINTS':
+      return { ...state, tool: 'measure-area' };
+    case 'ELEVATION_MEASUREMENT_SET_POINT':
+      return { ...state, tool: 'measure-ele' };
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
     case 'MAP_RESET':

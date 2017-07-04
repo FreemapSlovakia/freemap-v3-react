@@ -13,3 +13,7 @@ export function distanceMeasurementRemovePoint(id) {
 export function distanceMeasurementExportGpx() {
   return { type: 'DISTANCE_MEASUREMENT_EXPORT_GPX' };
 }
+
+export function distanceMeasurementSetPoints(points) {
+  return { type: 'DISTANCE_MEASUREMENT_SET_POINTS', payload: points };
+}

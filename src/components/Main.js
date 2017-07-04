@@ -135,7 +135,7 @@ class Main extends React.Component {
       createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
       createMenuItem(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
       createMenuItem(8, 'picture-o', 'Galéria obrázkov', () => this.handleToolSelect('gallery')),
-      createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure')),
+      createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
       createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
       createMenuItem(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
       createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
@@ -184,7 +184,7 @@ class Main extends React.Component {
                 {tool === 'objects' && <ObjectsMenu />}
                 {(showDefaultMenu || tool === 'search') && <SearchMenu />}
                 {tool === 'route-planner' && <RoutePlannerMenu />}
-                {(tool === 'measure' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
+                {(tool === 'measure-dist' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'info-point' && <InfoPointMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
@@ -232,7 +232,7 @@ class Main extends React.Component {
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
             {tool === 'objects' && <ObjectsResult />}
             {tool === 'route-planner' && <RoutePlannerResult />}
-            {tool === 'measure' && <DistanceMeasurementResult />}
+            {tool === 'measure-dist' && <DistanceMeasurementResult />}
             {tool === 'measure-ele' && <ElevationMeasurementResult />}
             {tool === 'measure-area' && <AreaMeasurementResult />}
             {tool === 'location' && <LocationResult />}
@@ -319,7 +319,7 @@ function handleMapMouseOut({ latlng: { lat, lng: lon } }) {
 
 function selectMouseCursor(state) {
   switch (state.main.tool) {
-    case 'measure':
+    case 'measure-dist':
     case 'measure-ele':
     case 'measure-area':
     case 'select-home-location':

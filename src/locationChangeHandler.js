@@ -10,11 +10,15 @@ import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { galleryRequestImage } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
+import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
+import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
+import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
 
-  if (/car|walk|bicycle/.test(query.transport) && /^\d+(\.\d+)?\/\d+(\.\d+)?(,\d+(\.\d+)?\/\d+(\.\d+)?)+$/.test(query.points)) {
+  if (/car|walk|bicycle/.test(query.transport)
+      && /^-?\d+(\.\d+)?\/-?\d+(\.\d+)?(,-?\d+(\.\d+)?\/-?\d+(\.\d+)?)+$/.test(query.points)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 
     const { start, finish, midpoints, transportType } = store.getState().routePlanner;
@@ -39,15 +43,13 @@ export default function handleLocationChange(store, location) {
     store.dispatch(trackViewerDownloadTrack(trackUID));
   }
 
-  const ipLat = query['info-point-lat'];
-  const ipLon = query['info-point-lon'];
-  if (ipLat && ipLon) {
+  const ipMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(query['info-point'] || '');
+  if (ipMatch) {
     const { infoPoint } = store.getState();
-    const lat = parseFloat(ipLat);
-    const lon = parseFloat(ipLon);
+    const point = { lat: parseFloat(ipMatch[1]), lon: parseFloat(ipMatch[2]) };
     const label = query['info-point-label'];
-    if (infoPoint.lat !== lat || infoPoint.lon !== lon || infoPoint.label !== label) {
-      store.dispatch(infoPointSet(lat, lon, label));
+    if (serializePoint(point) !== serializePoint(infoPoint) || infoPoint.label !== label) {
+      store.dispatch(infoPointSet(point.lat, point.lon, label));
     }
   }
 
@@ -76,8 +78,28 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  if (query.embed === 'true') {
+  if (query.embed === 'true' && !store.getState().main.embeddedMode) {
     store.dispatch(setEmbeddedMode());
+  }
+
+  ['distance', 'area'].forEach((type) => {
+    const pq = query[`${type}-measurement-points`];
+    if (pq) {
+      const points = pq.split(',')
+        .map(point => point.split('/').map(coord => parseFloat(coord))) // TODO handle NaN
+        .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
+      if (serializePoints(points) !== serializePoints(store.getState().distanceMeasurement.points)) {
+        store.dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)(points));
+      }
+    }
+  });
+
+  const emMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(query['elevation-measurement-point'] || '');
+  if (emMatch) {
+    const point = { lat: parseFloat(emMatch[1]), lon: parseFloat(emMatch[2]) };
+    if (serializePoint(point) !== serializePoint(store.getState().elevationMeasurement.point)) {
+      store.dispatch(elevationMeasurementSetPoint(point));
+    }
   }
 
   if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
@@ -100,6 +122,15 @@ export default function handleLocationChange(store, location) {
   if (diff && Object.keys(diff).length) {
     store.dispatch(mapRefocus(diff));
   }
+}
+
+function serializePoints(points) {
+  return points.map(point => serializePoint(point)).join(',');
+}
+
+function serializePoint(point) {
+  return point && typeof point.lat === 'number' && typeof point.lon === 'number'
+    ? `${point.lat.toFixed(5)}/${point.lon.toFixed(5)}` : '';
 }
 
 function latLonEquals(ll1, ll2) {

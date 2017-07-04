@@ -39,7 +39,7 @@ class MeasurementMenu extends React.Component {
       <div>
         <Navbar.Form pullLeft>
           <ButtonGroup>
-            <Button onClick={() => onToolSet('measure')} active={tool === 'measure'} title="Vzdialenosť">
+            <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
               <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
             </Button>
             <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
@@ -50,13 +50,13 @@ class MeasurementMenu extends React.Component {
             </Button>
           </ButtonGroup>
           {' '}
-          {tool === 'measure' && routeDefined &&
+          {tool === 'measure-dist' && routeDefined &&
             <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
               <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
             </Button>
           }
           {' '}
-          {tool === 'measure' &&
+          {tool === 'measure-dist' &&
             <Button onClick={onGpxExport} disabled={!routeDefined} title="Exportuj do GPX">
               <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
             </Button>
