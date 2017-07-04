@@ -45,7 +45,7 @@ export const urlLogic = createLogic({
     if (tool === 'changesets' && days) {
       queryParts.push(`changesets-days=${days}`);
       if (authorName) {
-        queryParts.push(`changesets-author=${authorName}`);
+        queryParts.push(`changesets-author=${encodeURIComponent(authorName)}`);
       }
     }
 
