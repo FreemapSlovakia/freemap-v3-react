@@ -29,7 +29,7 @@ class GalleryUploadModal extends React.Component {
 
   nextId = 0;
 
-  handleFileDrop = (acceptedFiles, rejectedFiles) => {
+  handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
     let n = 0;
     const results = [];
 

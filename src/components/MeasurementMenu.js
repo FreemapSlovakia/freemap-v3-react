@@ -6,8 +6,6 @@ import { setTool } from 'fm3/actions/mainActions';
 import { distanceMeasurementExportGpx } from 'fm3/actions/distanceMeasurementActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
-import Nav from 'react-bootstrap/lib/Nav';
-import NavItem from 'react-bootstrap/lib/NavItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Navbar from 'react-bootstrap/lib/Navbar';
