@@ -9,6 +9,7 @@ import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { galleryRequestImage } from 'fm3/actions/galleryActions';
+import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
@@ -54,6 +55,24 @@ export default function handleLocationChange(store, location) {
     const imageId = parseInt(query.image, 10);
     if (store.getState().gallery.activeImageId !== imageId) {
       store.dispatch(galleryRequestImage(imageId));
+    }
+  }
+
+  if (query['changesets-days']) {
+    const reduxDays = store.getState().changesets.days;
+    const urlDays = parseInt(query['changesets-days'], 10);
+
+    if (reduxDays !== urlDays) {
+      store.dispatch(changesetsSetDays(urlDays));
+    }
+
+    if (query['changesets-author']) {
+      const reduxAuthor = store.getState().changesets.authorName;
+      const urlAuthor = query['changesets-author'];
+
+      if (reduxAuthor !== urlAuthor) {
+        store.dispatch(changesetsSetAuthorName(urlAuthor));
+      }
     }
   }
 

@@ -5,15 +5,17 @@ export const urlLogic = createLogic({
   type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE',
     'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID',
     'GALLERY_SET_ACTIVE_IMAGE_ID', 'GALLERY_SET_IMAGES',
+    'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
     /^INFO_POINT_.*/],
   process({ getState, action }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
-      main: { embeddedMode },
+      main: { embeddedMode, tool },
       routePlanner: { start, finish, midpoints, transportType },
       trackViewer: { trackUID },
       gallery: { activeImageId },
       infoPoint,
+      changesets: { days, authorName },
     } = getState();
 
     const queryParts = [
@@ -38,6 +40,13 @@ export const urlLogic = createLogic({
 
     if (embeddedMode) {
       queryParts.push('embed=true');
+    }
+
+    if (tool === 'changesets' && days) {
+      queryParts.push(`changesets-days=${days}`);
+      if (authorName) {
+        queryParts.push(`changesets-author=${authorName}`);
+      }
     }
 
     if (infoPoint.lat && infoPoint.lon) {
