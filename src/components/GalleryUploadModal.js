@@ -3,6 +3,7 @@ import Dropzone from 'react-dropzone';
 import piexif from 'piexifjs';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
+import ExifReader from 'exifreader';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -13,6 +14,7 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Alert from 'react-bootstrap/lib/Alert';
 
+import { toPromise } from 'fm3/PromisedReader';
 import { formatGpsCoord } from 'fm3/geoutils';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -51,7 +53,6 @@ class GalleryUploadModal extends React.Component {
         coords,
         title: zeroth[piexif.ImageIFD.DocumentName] || '',
         description: zeroth[piexif.ImageIFD.ImageDescription] || '',
-        orientation: zeroth[piexif.ImageIFD.Orientation],
       });
       handle();
     };
@@ -69,15 +70,66 @@ class GalleryUploadModal extends React.Component {
       }
     };
 
-    acceptedFiles.forEach((file) => {
+    const loadImg = (file) => {
+      const img = new Image();
+      const p = toPromise(img);
+      const url = URL.createObjectURL(file);
+      img.src = url;
+      return p.then((result) => {
+        URL.revokeObjectURL(url);
+        return result;
+      }, (err) => {
+        URL.revokeObjectURL(url);
+        throw err;
+      });
+      // img.onload = () => {
+      //   URL.revokeObjectURL(url);
+      //   const canvas = document.createElement('canvas');
+      //   canvas.width = this.naturalWidth;
+      //   canvas.height = this.naturalHeight;
+      //   canvas.getContext('2d').drawImage(img, 0, 0);
+      //   results.push({
+      //     id: this.nextId,
+      //     filename: file.name,
+      //     dataURL: canvas.toDataURL('image/jpeg'),
+      //     coords: null,
+      //     title: null, // zeroth[piexif.ImageIFD.DocumentName] || '',
+      //     description: null, // zeroth[piexif.ImageIFD.ImageDescription] || '',
+      //   });
+      //   this.nextId += 1;
+      //   handle();
+      // };
+      // img.onerror = () => {
+      //   URL.revokeObjectURL(url);
+      //   handle();
+      // };
+      // img.src = url;
+    };
+
+    const loadData = (file) => {
       const reader = new FileReader();
-      reader.id = this.nextId;
-      this.nextId += 1;
-      reader.file = file;
-      reader.onload = fileLoadSuccessHandler;
-      reader.onerror = fileLoadErrorHandler;
-      n += 1;
-      reader.readAsDataURL(file);
+      const p = toPromise(reader);
+      reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
+      return p;
+      // reader.id = this.nextId;
+      // this.nextId += 1;
+      // reader.file = file;
+      // reader.onload = fileLoadSuccessHandler;
+      // reader.onerror = fileLoadErrorHandler;
+      // n += 1;
+    };
+
+    Promise.all(acceptedFiles.map(file => loadData(file))).then((headers) => {
+      // TODO
+    });
+
+    Promise.all(acceptedFiles.map(file => loadImg(file))).then((headers) => {
+      // TODO
+    });
+
+    acceptedFiles.forEach((file) => {
+      loadImg(file);
+      loadData(file);
     });
   }
 
