@@ -1,6 +1,6 @@
-# Freemap 3
+# Freemap v3
 
-Freemap Portal.
+Latest version of web portal maintained by [Slovak OpenStreetMap community](https://groups.google.com/forum/#!forum/osm_sk). Provides access to maps rendered specifically for Slovakia, e.g., map of touristic trails, map of cycle routes and (cross-country) skiing map.
 
 ## Compiling and running in development mode
 
