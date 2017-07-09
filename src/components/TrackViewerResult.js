@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
+import LeafletHotline from 'leaflet-hotline'; // eslint-disable-line
 
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
@@ -25,6 +27,7 @@ class TrackViewerResult extends React.Component {
       lengthInKm: PropTypes.number.isRequired,
       finishTime: PropTypes.string,
     })),
+    displayingElevationChart: PropTypes.bool,
   }
 
   state = {
@@ -33,6 +36,9 @@ class TrackViewerResult extends React.Component {
     infoDistanceKm: undefined,
   }
 
+  componentWillUnmount() {
+    this.removeColorizedEleTrackFromMap();
+  }
   // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
   onEachFeature = (feature, layer) => {
     if (feature.geometry.type === 'Point' && feature.properties.name) {
@@ -47,6 +53,37 @@ class TrackViewerResult extends React.Component {
       });
     }
   };
+
+  setColorizedEleTrackOnMap = () => {
+    this.removeColorizedEleTrackFromMap();
+    if (this.props.displayingElevationChart) {
+      const firstRealFeature = this.props.trackGeojson.features[0]; // eslint-disable-line
+      const coords = firstRealFeature.geometry.coordinates;
+      const eles = coords.map(lonLatEle => lonLatEle[2]);
+      const maxEle = Math.max(...eles);
+      const minEle = Math.min(...eles);
+      const colorLineData = coords.map((lonLatEle) => {
+        const lat = lonLatEle[1];
+        const lon = lonLatEle[0];
+        const ele = lonLatEle[2];
+        const color = (ele - minEle) / (maxEle - minEle);
+
+        return [lat, lon, color];
+      });
+      const line = L.hotline(colorLineData, { weight: 4 });
+      line.isColorizedElePath = true;
+      line.addTo(getMapLeafletElement());
+    }
+  }
+
+  removeColorizedEleTrackFromMap = () => {
+    const map = getMapLeafletElement();
+    map.eachLayer((layer) => {
+      if (layer.isColorizedElePath) {
+        map.removeLayer(layer);
+      }
+    });
+  }
 
   showInfoPoint = (e, feature) => {
     const infoLat = e.latlng.lat;
@@ -69,16 +106,16 @@ class TrackViewerResult extends React.Component {
   }
 
   render() {
-    const { trackGeojson, startPoints, finishPoints } = this.props;
-    const keyToAssureProperRefresh = JSON.stringify(trackGeojson).length; // otherwise GeoJSON will still display the first data
-
+    const { trackGeojson, startPoints, finishPoints, displayingElevationChart } = this.props;
+    const keyToAssureProperRefresh = (JSON.stringify(trackGeojson) + displayingElevationChart).length; // otherwise GeoJSON will still display the first data
+    this.setColorizedEleTrackOnMap();
     return trackGeojson && (
       <div>
         <GeoJSON
           data={trackGeojson}
           key={keyToAssureProperRefresh}
           onEachFeature={this.onEachFeature}
-          style={{ weight: 6, opacity: 0.85 }}
+          style={{ weight: 6, opacity: displayingElevationChart ? 0 : 0.85 }}
         />
 
         {startPoints.map((p, i) => (
@@ -140,5 +177,6 @@ export default connect(
     trackGeojson: state.trackViewer.trackGeojson,
     startPoints: state.trackViewer.startPoints,
     finishPoints: state.trackViewer.finishPoints,
+    displayingElevationChart: state.elevationChart.trackGeojson !== null,
   }),
 )(TrackViewerResult);
