@@ -9,6 +9,8 @@ import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
 import LeafletHotline from 'leaflet-hotline'; // eslint-disable-line
 
+import { distance, smoothElevations } from 'fm3/geoutils';
+
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
@@ -28,6 +30,7 @@ class TrackViewerResult extends React.Component {
       finishTime: PropTypes.string,
     })),
     displayingElevationChart: PropTypes.bool,
+    colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
   }
 
   state = {
@@ -37,10 +40,16 @@ class TrackViewerResult extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    if (!this.props.displayingElevationChart && nextProps.displayingElevationChart) {
-      this.showColorizedEleTrackOnMap();
-    } else if (this.props.displayingElevationChart && !nextProps.displayingElevationChart) {
+    const userTurnedOnEleProfile = !this.props.displayingElevationChart && nextProps.displayingElevationChart;
+    const userTurnedOffEleProfile = this.props.displayingElevationChart && !nextProps.displayingElevationChart;
+    const userToggledColorizeTrackBy = this.props.colorizeTrackBy !== nextProps.colorizeTrackBy;
+    if (userTurnedOnEleProfile) {
+      this.showColorizedEleTrackOnMap(nextProps.colorizeTrackBy);
+    } else if (userTurnedOffEleProfile) {
       this.removeColorizedEleTrackFromMap();
+    } else if (userToggledColorizeTrackBy) {
+      this.removeColorizedEleTrackFromMap();
+      this.showColorizedEleTrackOnMap(nextProps.colorizeTrackBy);
     }
   }
 
@@ -62,21 +71,48 @@ class TrackViewerResult extends React.Component {
     }
   };
 
-  showColorizedEleTrackOnMap = () => {
+  colorLineDataForElevation = () => {
     const firstRealFeature = this.props.trackGeojson.features[0]; // eslint-disable-line
-    const coords = firstRealFeature.geometry.coordinates;
-    const eles = coords.map(lonLatEle => lonLatEle[2]);
+    const latLonSmoothEles = smoothElevations(firstRealFeature, 5);
+    const eles = latLonSmoothEles.map(lonLatEle => lonLatEle[2]);
     const maxEle = Math.max(...eles);
     const minEle = Math.min(...eles);
-    const colorLineData = coords.map((lonLatEle) => {
-      const lat = lonLatEle[1];
-      const lon = lonLatEle[0];
-      const ele = lonLatEle[2];
-      const color = (ele - minEle) / (maxEle - minEle);
+    return latLonSmoothEles.map((latLonEle) => {
+      const color = (latLonEle[2] - minEle) / (maxEle - minEle);
+      return [latLonEle[0], latLonEle[1], color];
+    });
+  }
 
+  colorLineDataForSteepness = () => {
+    const firstRealFeature = this.props.trackGeojson.features[0]; // eslint-disable-line
+    const latLonSmoothEles = smoothElevations(firstRealFeature, 5);
+    let prevLatLonEle = latLonSmoothEles[0];
+    return latLonSmoothEles.map((latLonEle) => {
+      const lat = latLonEle[0];
+      const lon = latLonEle[1];
+      const ele = latLonEle[2];
+      const d = distance(lat, lon, prevLatLonEle[0], prevLatLonEle[1]);
+      let angle = 0;
+      if (d > 0) {
+        angle = (ele - prevLatLonEle[2]) / d;
+      }
+      prevLatLonEle = latLonEle;
+      const color = angle / 0.5 + 0.5;
       return [lat, lon, color];
     });
-    const line = L.hotline(colorLineData, { weight: 4 });
+  }
+
+  showColorizedEleTrackOnMap = (colorizeTrackBy) => {
+    let colorLineData;
+    let palette;
+    if (colorizeTrackBy === 'elevation') {
+      colorLineData = this.colorLineDataForElevation();
+      palette = { 0.0: 'green', 0.5: 'yellow', 1.0: 'red' };
+    } else if (colorizeTrackBy === 'steepness') {
+      colorLineData = this.colorLineDataForSteepness();
+      palette = { 0.0: 'green', 0.5: 'white', 1.0: 'red' };
+    }
+    const line = L.hotline(colorLineData, { weight: 4, palette });
     line.isColorizedElePath = true;
     line.addTo(getMapLeafletElement());
   }
@@ -182,5 +218,6 @@ export default connect(
     startPoints: state.trackViewer.startPoints,
     finishPoints: state.trackViewer.finishPoints,
     displayingElevationChart: state.elevationChart.trackGeojson !== null,
+    colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   }),
 )(TrackViewerResult);

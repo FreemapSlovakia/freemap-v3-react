@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -12,7 +13,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActiveModal } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -179,7 +180,7 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
+    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -196,6 +197,17 @@ class TrackViewerMenu extends React.Component {
             <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
               <FontAwesomeIcon icon="bar-chart" /> Výškový profil
             </Button>
+          }
+          {' '}
+          {elevationChartTrackGeojson &&
+            <ButtonGroup bsSize="small">
+              <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
+                Nadm. výška
+              </Button>
+              <Button active={colorizeTrackBy === 'steepness'} onClick={() => onColorizeTrackBy('steepness')}>
+                Sklon
+              </Button>
+            </ButtonGroup>
           }
           {' '}
           {this.trackGeojsonIsSuitableForElevationChart() &&
@@ -273,6 +285,8 @@ TrackViewerMenu.propTypes = {
     finishTime: PropTypes.string,
   })),
   eleSmoothingFactor: PropTypes.number.isRequired,
+  colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
+  onColorizeTrackBy: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -285,6 +299,7 @@ export default connect(
     trackUID: state.trackViewer.trackUID,
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
     eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+    colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   }),
   dispatch => ({
     onCancel() {
@@ -311,6 +326,9 @@ export default connect(
     },
     onElevationChartClose() {
       dispatch(elevationChartClose());
+    },
+    onColorizeTrackBy(approach) {
+      dispatch(trackViewerColorizeTrackBy(approach));
     },
     onTrackInfoShow(message) {
       dispatch(toastsAdd({

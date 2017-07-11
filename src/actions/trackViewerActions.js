@@ -21,3 +21,7 @@ export function trackViewerSetEleSmoothingFactor(eleSmoothingFactor) {
 export function trackViewerLoadState(payload) {
   return { type: 'TRACK_VIEWER_LOAD_STATE', payload };
 }
+
+export function trackViewerColorizeTrackBy(colorizeTrackBy) {
+  return { type: 'TRACK_VIEWER_COLORIZE_TRACK_BY', payload: colorizeTrackBy };
+}

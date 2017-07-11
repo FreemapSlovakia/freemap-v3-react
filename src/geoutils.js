@@ -112,3 +112,28 @@ export function sliceToGeojsonPoylines(polylineLatLons, splitPoints) {
 export function containsElevations(geojson) {
   return geojson.geometry.coordinates[0].length === 3;
 }
+
+// returns array of [lat, lon, smoothedEle] triplets
+export function smoothElevations(geojson, eleSmoothingFactor) {
+  const coords = geojson.geometry.coordinates;
+  let prevFloatingWindowEle = 0;
+  return coords.map((lonLatEle, i) => {
+    const floatingWindow = coords.slice(i, i + eleSmoothingFactor).filter(e => !!e).sort();
+    let floatingWindowWithoutExtremes = floatingWindow;
+    if (eleSmoothingFactor >= 5) { // ignore highest and smallest value
+      floatingWindowWithoutExtremes = floatingWindow.splice(1, floatingWindow.length - 2);
+    }
+
+    let eleSum = 0;
+    floatingWindowWithoutExtremes.forEach((lle) => {
+      eleSum += lle[2];
+    });
+
+    let flotingWindowEle = eleSum / floatingWindowWithoutExtremes.length;
+    if (isNaN(flotingWindowEle)) {
+      flotingWindowEle = prevFloatingWindowEle;
+    }
+    prevFloatingWindowEle = flotingWindowEle;
+    return [lonLatEle[1], lonLatEle[0], flotingWindowEle];
+  });
+}
