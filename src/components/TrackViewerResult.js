@@ -31,6 +31,7 @@ class TrackViewerResult extends React.Component {
     })),
     displayingElevationChart: PropTypes.bool,
     colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
+    eleSmoothingFactor: PropTypes.number.isRequired,
   }
 
   state = {
@@ -73,7 +74,7 @@ class TrackViewerResult extends React.Component {
 
   colorLineDataForElevation = () => {
     const firstRealFeature = this.props.trackGeojson.features[0]; // eslint-disable-line
-    const latLonSmoothEles = smoothElevations(firstRealFeature, 5);
+    const latLonSmoothEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
     const eles = latLonSmoothEles.map(lonLatEle => lonLatEle[2]);
     const maxEle = Math.max(...eles);
     const minEle = Math.min(...eles);
@@ -85,7 +86,7 @@ class TrackViewerResult extends React.Component {
 
   colorLineDataForSteepness = () => {
     const firstRealFeature = this.props.trackGeojson.features[0]; // eslint-disable-line
-    const latLonSmoothEles = smoothElevations(firstRealFeature, 5);
+    const latLonSmoothEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
     let prevLatLonEle = latLonSmoothEles[0];
     return latLonSmoothEles.map((latLonEle) => {
       const lat = latLonEle[0];
@@ -219,5 +220,6 @@ export default connect(
     finishPoints: state.trackViewer.finishPoints,
     displayingElevationChart: state.elevationChart.trackGeojson !== null,
     colorizeTrackBy: state.trackViewer.colorizeTrackBy,
+    eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
   }),
 )(TrackViewerResult);
