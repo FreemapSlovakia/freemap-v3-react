@@ -19,6 +19,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
+import { smoothElevations, distance } from 'fm3/geoutils';
+
 import 'fm3/styles/trackViewer.scss';
 
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -125,38 +127,31 @@ class TrackViewerMenu extends React.Component {
     }
 
     const firstRealFeature = this.props.trackGeojson.features[0];
-    const coords = firstRealFeature.geometry.coordinates;
     let minEle = Infinity;
     let maxEle = -Infinity;
     let uphillEleSum = 0;
     let downhillEleSum = 0;
-    let previousFlotingWindowEle = null;
-    coords.forEach((latLonEle, i) => {
-      const ele = latLonEle[2];
-      if (ele < minEle) {
-        minEle = ele;
-      }
-      if (maxEle < ele) {
-        maxEle = ele;
-      }
+    const smoothedLatLonEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
+    let previousLatLonEle = smoothedLatLonEles[0];
+    smoothedLatLonEles.forEach((latLonEle) => {
+      const distanceFromPrevPointInMeters = distance(latLonEle[0], latLonEle[1], previousLatLonEle[0], previousLatLonEle[1]);
+      if (10 * this.props.eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
+        const ele = latLonEle[2];
+        if (ele < minEle) {
+          minEle = ele;
+        }
+        if (maxEle < ele) {
+          maxEle = ele;
+        }
 
-      const floatingWindow = coords.slice(i, i + this.props.eleSmoothingFactor).filter(e => !!e).sort();
-      let floatingWindowWithoutExtremes = floatingWindow;
-      if (this.props.eleSmoothingFactor >= 5) { // ignore highest and smallest value
-        floatingWindowWithoutExtremes = floatingWindow.splice(1, floatingWindow.length - 2);
+        const eleDiff = ele - previousLatLonEle[2];
+        if (eleDiff < 0) {
+          downhillEleSum += eleDiff * -1;
+        } else if (eleDiff > 0) {
+          uphillEleSum += eleDiff;
+        }
+        previousLatLonEle = latLonEle;
       }
-
-      const flotingWindowEle = floatingWindowWithoutExtremes.reduce((a, b) => a[2] || 0 + b[2], 0) / floatingWindowWithoutExtremes.length;
-      let eleDiff = 0;
-      if (previousFlotingWindowEle) {
-        eleDiff = flotingWindowEle - previousFlotingWindowEle;
-      }
-      if (eleDiff < 0) {
-        downhillEleSum += eleDiff * -1;
-      } else if (eleDiff > 0) {
-        uphillEleSum += eleDiff;
-      }
-      previousFlotingWindowEle = flotingWindowEle;
     });
     if (minEle !== Infinity) {
       tableData.push(['Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
