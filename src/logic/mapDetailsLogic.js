@@ -1,7 +1,9 @@
 import { createLogic } from 'redux-logic';
+import React from 'react';
 import { mapDetailsSetTrackInfoPoints } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack, translate } from 'fm3/osmOntologyTools';
 
 export default createLogic({
   type: 'MAP_DETAILS_SET_USER_SELECTED_POSITION',
@@ -22,9 +24,10 @@ export default createLogic({
         .then((payload) => {
           if (payload.elements && payload.elements.length > 0) {
             const way = payload.elements[0];
+            const isBicycleMap = state.map.mapType === 'C';
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
-              message: JSON.stringify(way.tags),
+              message: toToastMessage(way.tags, isBicycleMap),
               cancelType: ['SET_TOOL', 'MAP_DETAILS_SET_USER_SELECTED_POSITION'],
               style: 'info',
             }));
@@ -51,3 +54,21 @@ export default createLogic({
     }
   },
 });
+
+function toToastMessage(tags, isBicycleMap) {
+  const trackClass = resolveTrackClass(tags);
+  const surface = resolveTrackSurface(tags);
+  const bicycleType = resolveBicycleTypeSuitableForTrack(tags);
+  return (
+    <div>
+      <dl className="dl-horizontal">
+        <dt>Typ cesty:</dt>
+        <dd style={{ 'white-space': 'nowrap' }}>{translate('track-class', trackClass)}</dd>
+        <dt>Povrch:</dt>
+        <dd>{translate('surface', surface)}</dd>
+        { isBicycleMap && <dt>Vhodný typ bicykla:</dt> }
+        { isBicycleMap && <dd style={{ 'white-space': 'nowrap' }}>{translate('bicycle-type', bicycleType)}</dd> }
+      </dl>
+    </div>
+  );
+}
