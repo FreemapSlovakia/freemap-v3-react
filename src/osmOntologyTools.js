@@ -53,6 +53,7 @@ const translations = {
     unpaved: 'nespevnený',
     'concrete:plates': 'betónové platne',
     concrete: 'betón',
+    grass: 'trávnatý',
   },
   'track-class': {
     motorway: 'diaľnica',
@@ -68,6 +69,9 @@ const translations = {
     grade3: 'spevená cesta  (3. stupeň)',
     grade4: 'poľná cesta/zvážnica (4. stupeň)',
     grade5: 'ťazko priestupná/zarastená cesta (5. stupeň)',
+    path: 'chodník',
+    footway: 'chodník',
+    pedestrian: 'pešia zóna',
     unknown: 'neznámy',
   },
   'bicycle-type': {
