@@ -16,8 +16,12 @@ export default function mapDetails(state = initialState, action) {
     case 'MAP_DETAILS_SET_TRACK_INFO_POINTS': {
       return { ...state, trackInfoPoints: action.payload.trackInfoPoints };
     }
-    case 'SET_TOOL':
+    case 'SET_TOOL': {
+      if (action.payload === 'map-details') {
+        return { ...state, subtool: 'track-info' };
+      }
       return initialState;
+    }
     default:
       return state;
   }

@@ -51,6 +51,8 @@ const translations = {
     compacted: 'spevnený',
     unknown: 'neznámy',
     unpaved: 'nespevnený',
+    'concrete:plates': 'betónové platne',
+    concrete: 'betón',
   },
   'track-class': {
     motorway: 'diaľnica',
