@@ -329,6 +329,7 @@ function selectMouseCursor(state) {
     case 'measure-ele':
     case 'measure-area':
     case 'select-home-location':
+    case 'map-details':
       return 'crosshair';
     case 'route-planner':
       return state.routePlanner.pickMode ? 'crosshair' : 'auto';
