@@ -40,6 +40,7 @@ export default createLogic({
               timeout: 3000,
               style: 'info',
             }));
+            dispatch(mapDetailsSetTrackInfoPoints(null));
           }
         })
         .catch((e) => {

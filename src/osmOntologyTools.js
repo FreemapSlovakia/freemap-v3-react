@@ -73,6 +73,7 @@ const translations = {
     'trekking-bike': 'trekkingový',
     'mtb-bike': 'horský',
     'no-bike': 'nevhodné pre bicykel',
+    unknown: 'neznámy',
   },
 };
 
