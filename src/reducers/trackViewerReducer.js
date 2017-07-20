@@ -5,6 +5,7 @@ const initialState = {
   startPoints: [],
   finishPoints: [],
   eleSmoothingFactor: 5,
+  colorizeTrackBy: 'elevation',
 };
 
 export default function trackViewer(state = initialState, action) {
@@ -32,6 +33,8 @@ export default function trackViewer(state = initialState, action) {
       return { ...state, trackUID: action.payload };
     case 'TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR':
       return { ...state, eleSmoothingFactor: action.payload };
+    case 'TRACK_VIEWER_COLORIZE_TRACK_BY':
+      return { ...state, colorizeTrackBy: action.payload };
     default:
       return state;
   }

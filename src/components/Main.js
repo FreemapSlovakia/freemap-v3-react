@@ -49,6 +49,9 @@ import InfoPoint from 'fm3/components/InfoPoint';
 import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
 import Changesets from 'fm3/components/Changesets';
 
+import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
+import MapDetails from 'fm3/components/MapDetails';
+
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -139,6 +142,7 @@ class Main extends React.Component {
       createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
       createMenuItem(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
       createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
+      createMenuItem(9, 'info', 'Detaily v mape', () => this.handleToolSelect('map-details')),
     ];
   }
 
@@ -190,6 +194,7 @@ class Main extends React.Component {
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'gallery' && <GalleryMenu />}
                 {tool === 'select-home-location' && <SelectHomeLocationMenu />}
+                {tool === 'map-details' && <MapDetailsMenu />}
                 {activeModal === 'settings' && <Settings />}
                 {showDefaultMenu &&
                   <Nav>
@@ -240,6 +245,7 @@ class Main extends React.Component {
             <InfoPoint />
             {tool === 'gallery' && <GalleryResult />}
             {tool === 'changesets' && <Changesets />}
+            {tool === 'map-details' && <MapDetails />}
             <ElevationChart />
           </Map>
         </Row>
@@ -323,6 +329,7 @@ function selectMouseCursor(state) {
     case 'measure-ele':
     case 'measure-area':
     case 'select-home-location':
+    case 'map-details':
       return 'crosshair';
     case 'route-planner':
       return state.routePlanner.pickMode ? 'crosshair' : 'auto';

@@ -45,4 +45,5 @@ export const points = PropTypes.arrayOf(point);
 
 export const tool = PropTypes.oneOf(['search', 'objects', 'route-planner',
   'measure-dist', 'measure-ele', 'measure-area', 'select-home-location',
-  'route-planner', 'location', 'track-viewer', 'info-point', 'changesets', 'gallery']);
+  'route-planner', 'location', 'track-viewer', 'info-point', 'changesets',
+  'gallery', 'map-details']);

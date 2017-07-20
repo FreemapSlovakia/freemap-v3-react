@@ -15,6 +15,7 @@
     "history": "4.6.3",
     "immutability-helper": "2.2.3",
     "leaflet": "1.1.0",
+    "leaflet-hotline": "0.4.0",
     "osm-auth": "1.0.2",
     "piexifjs": "1.0.3",
     "prop-types": "15.5.10",

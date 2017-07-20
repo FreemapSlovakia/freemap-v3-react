@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -12,11 +13,13 @@ import Alert from 'react-bootstrap/lib/Alert';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setTool, setActiveModal } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+
+import { smoothElevations, distance } from 'fm3/geoutils';
 
 import 'fm3/styles/trackViewer.scss';
 
@@ -124,38 +127,31 @@ class TrackViewerMenu extends React.Component {
     }
 
     const firstRealFeature = this.props.trackGeojson.features[0];
-    const coords = firstRealFeature.geometry.coordinates;
     let minEle = Infinity;
     let maxEle = -Infinity;
     let uphillEleSum = 0;
     let downhillEleSum = 0;
-    let previousFlotingWindowEle = null;
-    coords.forEach((latLonEle, i) => {
-      const ele = latLonEle[2];
-      if (ele < minEle) {
-        minEle = ele;
-      }
-      if (maxEle < ele) {
-        maxEle = ele;
-      }
+    const smoothedLatLonEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
+    let previousLatLonEle = smoothedLatLonEles[0];
+    smoothedLatLonEles.forEach((latLonEle) => {
+      const distanceFromPrevPointInMeters = distance(latLonEle[0], latLonEle[1], previousLatLonEle[0], previousLatLonEle[1]);
+      if (10 * this.props.eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
+        const ele = latLonEle[2];
+        if (ele < minEle) {
+          minEle = ele;
+        }
+        if (maxEle < ele) {
+          maxEle = ele;
+        }
 
-      const floatingWindow = coords.slice(i, i + this.props.eleSmoothingFactor).filter(e => !!e).sort();
-      let floatingWindowWithoutExtremes = floatingWindow;
-      if (this.props.eleSmoothingFactor >= 5) { // ignore highest and smallest value
-        floatingWindowWithoutExtremes = floatingWindow.splice(1, floatingWindow.length - 2);
+        const eleDiff = ele - previousLatLonEle[2];
+        if (eleDiff < 0) {
+          downhillEleSum += eleDiff * -1;
+        } else if (eleDiff > 0) {
+          uphillEleSum += eleDiff;
+        }
+        previousLatLonEle = latLonEle;
       }
-
-      const flotingWindowEle = floatingWindowWithoutExtremes.reduce((a, b) => a[2] || 0 + b[2], 0) / floatingWindowWithoutExtremes.length;
-      let eleDiff = 0;
-      if (previousFlotingWindowEle) {
-        eleDiff = flotingWindowEle - previousFlotingWindowEle;
-      }
-      if (eleDiff < 0) {
-        downhillEleSum += eleDiff * -1;
-      } else if (eleDiff > 0) {
-        uphillEleSum += eleDiff;
-      }
-      previousFlotingWindowEle = flotingWindowEle;
     });
     if (minEle !== Infinity) {
       tableData.push(['Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
@@ -179,7 +175,7 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson } = this.props;
+    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -196,6 +192,17 @@ class TrackViewerMenu extends React.Component {
             <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
               <FontAwesomeIcon icon="bar-chart" /> Výškový profil
             </Button>
+          }
+          {' '}
+          {elevationChartTrackGeojson &&
+            <ButtonGroup bsSize="small">
+              <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
+                Nadm. výška
+              </Button>
+              <Button active={colorizeTrackBy === 'steepness'} onClick={() => onColorizeTrackBy('steepness')}>
+                Sklon
+              </Button>
+            </ButtonGroup>
           }
           {' '}
           {this.trackGeojsonIsSuitableForElevationChart() &&
@@ -273,6 +280,8 @@ TrackViewerMenu.propTypes = {
     finishTime: PropTypes.string,
   })),
   eleSmoothingFactor: PropTypes.number.isRequired,
+  colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
+  onColorizeTrackBy: PropTypes.func.isRequired,
 };
 
 export default connect(
@@ -285,6 +294,7 @@ export default connect(
     trackUID: state.trackViewer.trackUID,
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
     eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+    colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   }),
   dispatch => ({
     onCancel() {
@@ -311,6 +321,9 @@ export default connect(
     },
     onElevationChartClose() {
       dispatch(elevationChartClose());
+    },
+    onColorizeTrackBy(approach) {
+      dispatch(trackViewerColorizeTrackBy(approach));
     },
     onTrackInfoShow(message) {
       dispatch(toastsAdd({

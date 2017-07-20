@@ -20,6 +20,7 @@ const humanNameForToolToShowInNavbar = {
   changesets: 'Zmeny v mape',
   gallery: 'Galéria obrázkov',
   'select-home-location': 'Nastavenie domovskej polohy',
+  'map-details': 'Detaily v mape',
 };
 
 const iconForTool = {
@@ -33,6 +34,7 @@ const iconForTool = {
   changesets: 'pencil',
   gallery: 'picture-o',
   'select-home-location': 'home',
+  'map-details': 'info',
 };
 
 function NavbarHeader({ tool, onMapReset }) {

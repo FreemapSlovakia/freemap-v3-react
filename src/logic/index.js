@@ -13,6 +13,7 @@ import galleryLogic from 'fm3/logic/galleryLogic';
 import infoPointLogic from 'fm3/logic/infoPointLogic';
 import changesetsLogic from 'fm3/logic/changesetsLogic';
 import authLogic from 'fm3/logic/authLogic';
+import mapDetailsLogic from 'fm3/logic/mapDetailsLogic';
 
 export default [
   ...routePlannerLogic,
@@ -30,4 +31,5 @@ export default [
   infoPointLogic,
   changesetsLogic,
   ...authLogic,
+  mapDetailsLogic,
 ];
