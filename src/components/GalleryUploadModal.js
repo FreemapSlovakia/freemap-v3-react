@@ -1,9 +1,9 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import piexif from 'piexifjs';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import ExifReader from 'exifreader';
+import map from 'async/map';
+// import ExifReader from 'exifreader';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -14,10 +14,11 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import { toPromise } from 'fm3/PromisedReader';
 import { formatGpsCoord } from 'fm3/geoutils';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
+
+const ExifReader = require('exifreader');
 
 class GalleryUploadModal extends React.Component {
   static propTypes = {
@@ -32,104 +33,69 @@ class GalleryUploadModal extends React.Component {
   nextId = 0;
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
-    let n = 0;
-    const results = [];
-
-    const fileLoadSuccessHandler = (e) => {
-      const { id, file, result } = e.target;
-      const exif = piexif.load(result);
-      const gps = exif.GPS;
-      let coords = null;
-      if (gps[piexif.GPSIFD.GPSVersionID]) {
-        const lat = (gps[piexif.GPSIFD.GPSLatitudeRef] === 'N' ? 1 : -1) * toCoord(gps[piexif.GPSIFD.GPSLatitude]);
-        const lon = (gps[piexif.GPSIFD.GPSLongitudeRef] === 'E' ? 1 : -1) * toCoord(gps[piexif.GPSIFD.GPSLongitude]);
-        coords = { lat, lon };
-      }
-
-      const zeroth = exif['0th'];
-      results.push({ id,
-        filename: file.name,
-        dataURL: result,
-        coords,
-        title: zeroth[piexif.ImageIFD.DocumentName] || '',
-        description: zeroth[piexif.ImageIFD.ImageDescription] || '',
-      });
-      handle();
-    };
-
-    const fileLoadErrorHandler = () => {
-      handle();
-    };
-
-    const handle = () => {
-      n -= 1;
-      if (n === 0) {
-        this.setState({
-          results: [...this.state.results, ...results],
-        });
-      }
-    };
-
-    const loadImg = (file) => {
-      const img = new Image();
-      const p = toPromise(img);
-      const url = URL.createObjectURL(file);
-      img.src = url;
-      return p.then((result) => {
-        URL.revokeObjectURL(url);
-        return result;
-      }, (err) => {
-        URL.revokeObjectURL(url);
-        throw err;
-      });
-      // img.onload = () => {
-      //   URL.revokeObjectURL(url);
-      //   const canvas = document.createElement('canvas');
-      //   canvas.width = this.naturalWidth;
-      //   canvas.height = this.naturalHeight;
-      //   canvas.getContext('2d').drawImage(img, 0, 0);
-      //   results.push({
-      //     id: this.nextId,
-      //     filename: file.name,
-      //     dataURL: canvas.toDataURL('image/jpeg'),
-      //     coords: null,
-      //     title: null, // zeroth[piexif.ImageIFD.DocumentName] || '',
-      //     description: null, // zeroth[piexif.ImageIFD.ImageDescription] || '',
-      //   });
-      //   this.nextId += 1;
-      //   handle();
-      // };
-      // img.onerror = () => {
-      //   URL.revokeObjectURL(url);
-      //   handle();
-      // };
-      // img.src = url;
-    };
-
-    const loadData = (file) => {
+    map(acceptedFiles, (file, cb) => {
       const reader = new FileReader();
-      const p = toPromise(reader);
+      reader.onerror = (err) => {
+        cb(err);
+      };
+      reader.onload = () => {
+        const tags = ExifReader.load(reader.result);
+
+        const img = new Image();
+        const url = URL.createObjectURL(file);
+        img.onerror = (err) => {
+          URL.revokeObjectURL(url);
+          cb(err);
+        };
+        img.onload = () => {
+          URL.revokeObjectURL(url);
+
+          const canvas = document.createElement('canvas');
+          const ctx = canvas.getContext('2d');
+          const width = img.naturalWidth;
+          const height = img.naturalHeight;
+          canvas.width = width;
+          canvas.height = height;
+
+          const transformations = [
+            [1, 0, 0, 1, 0, 0],
+            [-1, 0, 0, 1, width, 0],
+            [-1, 0, 0, -1, width, height],
+            [1, 0, 0, -1, 0, height],
+            [0, 1, 1, 0, 0, 0],
+            [0, 1, -1, 0, height, 0],
+            [0, -1, -1, 0, height, width],
+            [0, -1, 1, 0, 0, width],
+          ];
+
+          ctx.transform(...transformations[tags.Orientation.value - 1]);
+
+          // TODO scale (with pica?)
+          cb(null, {
+            id: this.nextId += 1,
+            filename: file.name,
+            dataURL: canvas.toDataURL(),
+            coords: tags.GPSLatitude && tags.GPSLongitude ? {
+              lat: tags.GPSLatitude.description, // TODO NS
+              lon: tags.GPSLongitude.description, // TODO WE
+            } : null,
+            title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
+            description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
+          });
+        };
+
+        img.src = url;
+      };
+
       reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
-      return p;
-      // reader.id = this.nextId;
-      // this.nextId += 1;
-      // reader.file = file;
-      // reader.onload = fileLoadSuccessHandler;
-      // reader.onerror = fileLoadErrorHandler;
-      // n += 1;
-    };
-
-    Promise.all(acceptedFiles.map(file => loadData(file))).then((headers) => {
-      // TODO
-    });
-
-    Promise.all(acceptedFiles.map(file => loadImg(file))).then((headers) => {
-      // TODO
-    });
-
-    acceptedFiles.forEach((file) => {
-      loadImg(file);
-      loadData(file);
+    }, (err, results) => {
+      if (err) {
+        // TODO
+        return;
+      }
+      this.setState({
+        results: [...this.state.results, ...results],
+      });
     });
   }
 
@@ -176,8 +142,13 @@ class GalleryUploadModal extends React.Component {
   }
 }
 
-function toCoord(raw) {
-  return raw[0][0] / raw[0][1] + raw[1][0] / raw[1][1] / 60 + raw[2][0] / raw[2][1] / 3600;
+function callbackify(reader, callback) {
+  reader.onload = (result) => {
+    callback(null, result);
+  };
+  reader.onerror = (err) => {
+    callback(err);
+  };
 }
 
 export default connect(

@@ -28,14 +28,12 @@
     "import/prefer-default-export": 0,
     "react/require-default-props": 0,
     "react/forbid-prop-types": 1,
-    "react/no-array-index-key": 1,
     "no-mixed-operators": 0,
     "global-require": 0,
     "import/no-dynamic-require": 0,
     "no-use-before-define": 0,
     "max-len": 0,
     "default-case": 1,
-    "new-cap": 1,
     "no-param-reassign": 1,
     "no-underscore-dangle": 1,
     "react/jsx-no-bind": 1,
@@ -45,7 +43,8 @@
     "no-unused-vars": 1,
     "new-cap": 0,
     "react/prefer-stateless-function": 1,
-    "react/no-array-index-key": 0
+    "react/no-array-index-key": 0,
+    "no-nested-ternary": 0
   },
   "globals": {
     "L": true,
