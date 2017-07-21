@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import Button from 'react-bootstrap/lib/Button';
 import Thumbnail from 'react-bootstrap/lib/Thumbnail';
@@ -53,9 +54,9 @@ export default class GalleryUploadModal extends React.Component {
           <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
         </FormGroup>
         {coords && <p>{formatGpsCoord(coords.lat, 'SN')}, {formatGpsCoord(coords.lon, 'WE')}</p>}
-        <Button onClick={this.handlePositionPick}>Nastav pozíciu</Button>
+        <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
         {' '}
-        <Button onClick={this.handleRemove} bsStyle="danger">Odstráň</Button>
+        <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>
       </Thumbnail>
     );
   }

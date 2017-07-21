@@ -13,7 +13,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemUrl } from 'fm3/actions/galleryActions';
+import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemUrl, galleryPickItemPosition } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 
@@ -41,6 +41,7 @@ class GalleryUploadModal extends React.Component {
     onPositionPick: PropTypes.func.isRequired,
     onTitleChange: PropTypes.func.isRequired,
     onDescriptionChange: PropTypes.func.isRequired,
+    visible: PropTypes.bool,
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
@@ -126,9 +127,9 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange } = this.props;
+    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, visible } = this.props;
     return (
-      <Modal show bsSize="large" onHide={onClose}>
+      <Modal show={visible} bsSize="large" onHide={onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Nahrať obrázky</Modal.Title>
         </Modal.Header>
@@ -168,6 +169,7 @@ class GalleryUploadModal extends React.Component {
 export default connect(
   state => ({
     items: state.gallery.items,
+    visible: state.gallery.pickingPositionForId === null,
   }),
   dispatch => ({
     onItemAdd(item) {
@@ -182,8 +184,8 @@ export default connect(
     onClose() {
       dispatch(setActiveModal(null));
     },
-    onPositionPick() {
-      // TODO
+    onPositionPick(id) {
+      dispatch(galleryPickItemPosition(id));
     },
     onTitleChange(id, title) {
       dispatch(gallerySetItemTitle(id, title));

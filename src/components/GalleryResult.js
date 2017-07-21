@@ -22,13 +22,14 @@ class GalleryResult extends React.Component {
   static propTypes = {
     onImageRequest: PropTypes.func.isRequired,
     images: PropTypes.arrayOf(PropTypes.shape({
-      // TODO
+      id: PropTypes.number.isRequired,
     })).isRequired,
     activeImageId: PropTypes.number,
     onClose: PropTypes.func.isRequired,
     zoom: PropTypes.number.isRequired,
     onImageSelect: PropTypes.func.isRequired,
     onShowOnTheMap: PropTypes.func.isRequired,
+    pickingPosition: PropTypes.bool,
   }
 
   state = {};
@@ -45,6 +46,7 @@ class GalleryResult extends React.Component {
     mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
   }
 
+  // TODO separate to standalone component
   getModal() {
     const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
@@ -100,7 +102,11 @@ class GalleryResult extends React.Component {
   }
 
   handleMapClick = (lat, lon) => {
-    this.props.onImageRequest(lat, lon);
+    if (this.props.pickingPosition) {
+      // TODO
+    } else {
+      this.props.onImageRequest(lat, lon);
+    }
   }
 
   handleMouseMove = (lat, lon) => {
@@ -131,19 +137,21 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, zoom } = this.props;
+    const { activeImageId, zoom, pickingPosition } = this.props;
 
     return (
       <div>
-        <TileLayer
-          url="http://t1.freemap.sk/data/layers/presets/X~I/{z}/{x}/{y}t.png"
-          maxZoom={20}
-          minZoom={8}
-          maxNativeZoom={16}
-          zIndex={100}
-        />
+        {!pickingPosition &&
+          <TileLayer
+            url="http://t1.freemap.sk/data/layers/presets/X~I/{z}/{x}/{y}t.png"
+            maxZoom={20}
+            minZoom={8}
+            maxNativeZoom={16}
+            zIndex={100}
+          />
+        }
 
-        {this.state.lat && this.state.lon &&
+        {this.state.lat && this.state.lon && !pickingPosition &&
           <Circle
             center={[this.state.lat, this.state.lon]}
             radius={5000 / 2 ** zoom * 1000}
@@ -162,6 +170,7 @@ export default connect(
     images: state.gallery.images,
     activeImageId: state.gallery.activeImageId,
     zoom: state.map.zoom,
+    pickingPosition: state.gallery.pickingPositionForId !== null,
   }),
   dispatch => ({
     onImageRequest(lat, lon) {

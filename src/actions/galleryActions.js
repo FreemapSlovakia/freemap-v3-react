@@ -41,3 +41,7 @@ export function gallerySetItemDescription(id, description) {
 export function gallerySetItemPosition(id, position) {
   return { type: 'GALLERY_SET_ITEM_POSITION', payload: { id, value: position } };
 }
+
+export function galleryPickItemPosition(id) {
+  return { type: 'GALLERY_PICK_ITEM_POSITION', payload: id };
+}

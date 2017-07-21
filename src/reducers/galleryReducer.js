@@ -3,6 +3,7 @@ const initialState = {
   activeImageId: null,
 
   items: [],
+  pickingPositionForId: null,
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -30,6 +31,8 @@ export default function elevationMeasurement(state = initialState, action) {
       return { ...state, items: state.items.map(item => (item.id === action.payload.id ? { ...item, description: action.payload.value } : item)) };
     case 'GALLERY_SET_ITEM_POSITION':
       return { ...state, items: state.items.map(item => (item.id === action.payload.id ? { ...item, position: action.payload.value } : item)) };
+    case 'GALLERY_PICK_ITEM_POSITION':
+      return { ...state, pickingPositionForId: action.payload };
     default:
       return state;
   }
