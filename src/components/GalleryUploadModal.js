@@ -151,15 +151,6 @@ class GalleryUploadModal extends React.Component {
   }
 }
 
-function callbackify(reader, callback) {
-  reader.onload = (result) => {
-    callback(null, result);
-  };
-  reader.onerror = (err) => {
-    callback(err);
-  };
-}
-
 export default connect(
   state => ({
     shown: state.main.activeModal === 'gallery-upload',
