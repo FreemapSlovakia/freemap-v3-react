@@ -2,7 +2,7 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
-import map from 'async/map';
+import each from 'async/each';
 // import ExifReader from 'exifreader';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -10,23 +10,33 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Alert from 'react-bootstrap/lib/Alert';
 
+import * as FmPropTypes from 'fm3/propTypes';
+
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { galleryAddItems, galleryRemoveItem, gallerySetTitle, gallerySetDescription } from 'fm3/actions/galleryActions';
+import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemUrl } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
 
+let nextId = 0;
+
 class GalleryUploadModal extends React.Component {
   static propTypes = {
     items: PropTypes.arrayOf(
       PropTypes.shape({
-
+        id: PropTypes.number.isRequired,
+        file: PropTypes.object.isRequired,
+        dataURL: PropTypes.string,
+        coords: FmPropTypes.point,
+        title: PropTypes.string,
+        description: PropTypes.string,
       }).isRequired,
     ).isRequired,
-    onAddItems: PropTypes.func.isRequired,
-    onRemoveItem: PropTypes.func.isRequired,
+    onItemAdd: PropTypes.func.isRequired,
+    onItemUrlSet: PropTypes.func.isRequired,
+    onItemRemove: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
     onTitleChange: PropTypes.func.isRequired,
@@ -34,13 +44,26 @@ class GalleryUploadModal extends React.Component {
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
-    map(acceptedFiles, (file, cb) => {
+    each(acceptedFiles, (file, cb) => {
       const reader = new FileReader();
       reader.onerror = (err) => {
         cb(err);
       };
       reader.onload = () => {
         const tags = ExifReader.load(reader.result);
+        const id = nextId;
+        nextId += 1;
+
+        this.props.onItemAdd({
+          id,
+          file,
+          coords: tags.GPSLatitude && tags.GPSLongitude ? {
+            lat: tags.GPSLatitude.description * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
+            lon: tags.GPSLongitude.description * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
+          } : null,
+          title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
+          description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
+        });
 
         const img = new Image();
         const url = URL.createObjectURL(file);
@@ -78,16 +101,12 @@ class GalleryUploadModal extends React.Component {
             ctx.transform(...transformations[o - 1]);
             ctx.drawImage(canvas, 0, 0);
 
-            cb(null, {
-              filename: file.name,
-              dataURL: canvas2.toDataURL(), // TODO play with toBlob (not supported in safari)
-              coords: tags.GPSLatitude && tags.GPSLongitude ? {
-                lat: tags.GPSLatitude.description * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
-                lon: tags.GPSLongitude.description * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
-              } : null,
-              title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
-              description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
-            });
+            // canvas2.toBlob((blob) => {
+            //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
+            //   cb();
+            // });
+            this.props.onItemUrlSet(id, canvas2.toDataURL()); // TODO play with toBlob (not supported in safari)
+            cb();
           });
         };
 
@@ -95,17 +114,15 @@ class GalleryUploadModal extends React.Component {
       };
 
       reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
-    }, (err, results) => {
+    }, (err) => {
       if (err) {
         // TODO
-        return;
       }
-      this.props.onAddItems(results);
     });
   }
 
   handleRemove = (id) => {
-    this.props.onRemoveItem(id);
+    this.props.onItemRemove(id);
   }
 
   render() {
@@ -123,11 +140,11 @@ class GalleryUploadModal extends React.Component {
             <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
           </Dropzone>
           {
-            items.map(({ id, filename, dataURL, coords, title, description }) => (
+            items.map(({ id, file, dataURL, coords, title, description }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
-                filename={filename}
+                filename={file.name}
                 dataURL={dataURL}
                 coords={coords}
                 title={title}
@@ -153,11 +170,14 @@ export default connect(
     items: state.gallery.items,
   }),
   dispatch => ({
-    onAddItems(items) {
-      dispatch(galleryAddItems(items));
+    onItemAdd(item) {
+      dispatch(galleryAddItem(item));
     },
-    onRemoveItem(id) {
+    onItemRemove(id) {
       dispatch(galleryRemoveItem(id));
+    },
+    onItemUrlSet(id, url) {
+      dispatch(gallerySetItemUrl(id, url));
     },
     onClose() {
       dispatch(setActiveModal(null));
@@ -166,10 +186,10 @@ export default connect(
       // TODO
     },
     onTitleChange(id, title) {
-      dispatch(gallerySetTitle(id, title));
+      dispatch(gallerySetItemTitle(id, title));
     },
     onDescriptionChange(id, description) {
-      dispatch(gallerySetDescription(id, description));
+      dispatch(gallerySetItemDescription(id, description));
     },
   }),
 )(GalleryUploadModal);

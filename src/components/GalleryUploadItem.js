@@ -14,7 +14,7 @@ export default class GalleryUploadModal extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     filename: PropTypes.string,
-    dataURL: PropTypes.string.isRequired,
+    dataURL: PropTypes.string,
     coords: FmPropTypes.point,
     title: PropTypes.string,
     description: PropTypes.string,
@@ -43,7 +43,7 @@ export default class GalleryUploadModal extends React.Component {
   render() {
     const { id, filename, dataURL, coords, title, description } = this.props;
     return (
-      <Thumbnail key={id} src={dataURL} alt={filename}>
+      <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
         <FormGroup>
           <ControlLabel>Názov</ControlLabel>
           <FormControl type="text" value={title} onChange={this.handleTitleChange} />
