@@ -19,6 +19,7 @@ import { formatGpsCoord } from 'fm3/geoutils';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 const ExifReader = require('exifreader');
+const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
 
 class GalleryUploadModal extends React.Component {
   static propTypes = {
@@ -51,9 +52,10 @@ class GalleryUploadModal extends React.Component {
           URL.revokeObjectURL(url);
 
           const canvas = document.createElement('canvas');
-          const ctx = canvas.getContext('2d');
-          const width = img.naturalWidth;
-          const height = img.naturalHeight;
+          const ratio = 858 / img.naturalWidth;
+          const width = img.naturalWidth * ratio;
+          const height = img.naturalHeight * ratio;
+          const o = tags.Orientation.value;
           canvas.width = width;
           canvas.height = height;
 
@@ -68,19 +70,25 @@ class GalleryUploadModal extends React.Component {
             [0, -1, 1, 0, 0, width],
           ];
 
-          ctx.transform(...transformations[tags.Orientation.value - 1]);
+          pica.resize(img, canvas).then(() => {
+            const canvas2 = document.createElement('canvas');
+            const ctx = canvas2.getContext('2d');
+            canvas2.width = o > 4 ? height : width;
+            canvas2.height = o > 4 ? width : height;
+            ctx.transform(...transformations[o - 1]);
+            ctx.drawImage(canvas, 0, 0);
 
-          // TODO scale (with pica?)
-          cb(null, {
-            id: this.nextId += 1,
-            filename: file.name,
-            dataURL: canvas.toDataURL(),
-            coords: tags.GPSLatitude && tags.GPSLongitude ? {
-              lat: tags.GPSLatitude.description, // TODO NS
-              lon: tags.GPSLongitude.description, // TODO WE
-            } : null,
-            title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
-            description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
+            cb(null, {
+              id: this.nextId += 1,
+              filename: file.name,
+              dataURL: canvas2.toDataURL(), // TODO play with toBlob (not supported in safari)
+              coords: tags.GPSLatitude && tags.GPSLongitude ? {
+                lat: tags.GPSLatitude.description, // TODO NS
+                lon: tags.GPSLongitude.description, // TODO WE
+              } : null,
+              title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
+              description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
+            });
           });
         };
 
@@ -93,6 +101,7 @@ class GalleryUploadModal extends React.Component {
         // TODO
         return;
       }
+      console.log('DONE');
       this.setState({
         results: [...this.state.results, ...results],
       });
