@@ -250,7 +250,7 @@ class Main extends React.Component {
           </Map>
         </Row>
 
-        <GalleryUploadModal />
+        {activeModal === 'gallery-upload' && <GalleryUploadModal />}
       </div>
     );
   }
