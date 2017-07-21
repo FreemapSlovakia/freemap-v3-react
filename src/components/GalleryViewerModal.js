@@ -8,8 +8,6 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Image from 'react-bootstrap/lib/Image';
 
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-
 import { gallerySetImages, gallerySetActiveImageId, galleryShowOnTheMap }
   from 'fm3/actions/galleryActions';
 
