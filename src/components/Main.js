@@ -37,11 +37,11 @@ import SelectHomeLocationMenu from 'fm3/components/SelectHomeLocationMenu';
 
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
-import GalleryUploadModal from 'fm3/components/GalleryUploadModal';
+import AsyncGalleryUploadModal from 'fm3/components/AsyncGalleryUploadModal';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
-import ElevationChart from 'fm3/components/ElevationChart';
+import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
 
 import InfoPointMenu from 'fm3/components/InfoPointMenu';
 import InfoPoint from 'fm3/components/InfoPoint';
@@ -246,11 +246,11 @@ class Main extends React.Component {
             {tool === 'gallery' && <GalleryResult />}
             {tool === 'changesets' && <Changesets />}
             {tool === 'map-details' && <MapDetails />}
-            <ElevationChart />
+            <AsyncElevationChart />
           </Map>
         </Row>
 
-        {activeModal === 'gallery-upload' && <GalleryUploadModal />}
+        {activeModal === 'gallery-upload' && <AsyncGalleryUploadModal />}
       </div>
     );
   }
