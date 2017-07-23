@@ -13,9 +13,11 @@ import Alert from 'react-bootstrap/lib/Alert';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemUrl, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
+import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription,
+  gallerySetItemUrl, gallerySetItemForPositionPicking, galleryUpload } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
@@ -42,6 +44,8 @@ class GalleryUploadModal extends React.Component {
     onTitleChange: PropTypes.func.isRequired,
     onDescriptionChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
+    onUpload: PropTypes.func.isRequired,
+    uploading: PropTypes.bool,
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
@@ -132,7 +136,7 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, visible } = this.props;
+    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, visible, onUpload, uploading } = this.props;
     return (
       <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
@@ -142,9 +146,11 @@ class GalleryUploadModal extends React.Component {
           <Alert bsStyle="danger">
             Implementácia nahrávania obrázkov ešte nie je dokončená.
           </Alert>
-          <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg,.png" className="dropzone" disablePreview>
-            <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
-          </Dropzone>
+          {!uploading &&
+            <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg,.png" className="dropzone" disablePreview>
+              <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
+            </Dropzone>
+          }
           {
             items.map(({ id, file, dataURL, position, title, description }) => (
               <GalleryUploadItem
@@ -159,12 +165,14 @@ class GalleryUploadModal extends React.Component {
                 onPositionPick={onPositionPick}
                 onTitleChange={onTitleChange}
                 onDescriptionChange={onDescriptionChange}
+                disabled={uploading}
               />
             ))
           }
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+          <Button onClick={onUpload} disabled={uploading}><FontAwesomeIcon icon="upload" /> Nahrať</Button>
+          <Button onClick={onClose} bsStyle="danger"><Glyphicon glyph="remove" /> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -175,6 +183,7 @@ export default connect(
   state => ({
     items: state.gallery.items,
     visible: state.gallery.pickingPositionForId === null,
+    uploading: state.gallery.uploadingId,
   }),
   dispatch => ({
     onItemAdd(item) {
@@ -185,6 +194,9 @@ export default connect(
     },
     onItemUrlSet(id, url) {
       dispatch(gallerySetItemUrl(id, url));
+    },
+    onUpload() {
+      dispatch(galleryUpload());
     },
     onClose() {
       dispatch(setActiveModal(null));

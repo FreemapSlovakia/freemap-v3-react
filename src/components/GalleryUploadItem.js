@@ -23,6 +23,7 @@ export default class GalleryUploadItem extends React.Component {
     onPositionPick: PropTypes.func.isRequired,
     onTitleChange: PropTypes.func.isRequired,
     onDescriptionChange: PropTypes.func.isRequired,
+    disabled: PropTypes.bool,
   }
 
   handleRemove = () => {
@@ -42,21 +43,23 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const { id, filename, dataURL, position, title, description } = this.props;
+    const { id, filename, dataURL, position, title, description, disabled } = this.props;
     return (
       <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
-        <FormGroup>
-          <ControlLabel>Názov</ControlLabel>
-          <FormControl type="text" value={title} onChange={this.handleTitleChange} />
-        </FormGroup>
-        <FormGroup>
-          <ControlLabel>Popis</ControlLabel>
-          <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
-        </FormGroup>
-        {position && <p>{formatGpsCoord(position.lat, 'SN')}, {formatGpsCoord(position.lon, 'WE')}</p>}
-        <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
-        {' '}
-        <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>
+        <fieldset disabled={disabled}>
+          <FormGroup>
+            <ControlLabel>Názov</ControlLabel>
+            <FormControl type="text" value={title} onChange={this.handleTitleChange} />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel>Popis</ControlLabel>
+            <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
+          </FormGroup>
+          {position && <p>{formatGpsCoord(position.lat, 'SN')}, {formatGpsCoord(position.lon, 'WE')}</p>}
+          <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
+          {' '}
+          <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>
+        </fieldset>
       </Thumbnail>
     );
   }

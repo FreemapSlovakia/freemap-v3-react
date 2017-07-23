@@ -4,6 +4,8 @@ const initialState = {
 
   items: [],
   pickingPositionForId: null,
+
+  uploadingId: null,
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -71,6 +73,11 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         pickingPositionForId: action.payload,
         pickingPosition: typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
+      };
+    case 'GALLERY_UPLOAD':
+      return {
+        ...state,
+        uploadingId: state.items.length ? state.items[0].id : null,
       };
     default:
       return state;

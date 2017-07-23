@@ -49,3 +49,7 @@ export function galleryConfirmPickedPosition() {
 export function gallerySetItemForPositionPicking(id) {
   return { type: 'GALLERY_SET_ITEM_FOR_POSITION_PICKING', payload: id };
 }
+
+export function galleryUpload() {
+  return { type: 'GALLERY_UPLOAD' };
+}

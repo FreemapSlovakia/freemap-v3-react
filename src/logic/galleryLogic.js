@@ -1,9 +1,9 @@
 import { createLogic } from 'redux-logic';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImages } from 'fm3/actions/galleryActions';
+import { gallerySetImages, galleryRemoveItem, galleryUpload } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 
 const galleryRequestImagesLogic = createLogic({
@@ -69,7 +69,7 @@ const galleryShowOnTheMapLogic = createLogic({
   },
 });
 
-const galleryUploadLogic = createLogic({
+const galleryUploadModalLogic = createLogic({
   type: 'SET_ACTIVE_MODAL',
   transform({ getState, action }, next) {
     if (action.payload === 'gallery-upload' && !getState().auth.user) {
@@ -80,9 +80,44 @@ const galleryUploadLogic = createLogic({
   },
 });
 
+const galleryItemUploadLogic = createLogic({
+  type: ['GALLERY_UPLOAD', 'GALLERY_START_ITEM_UPLOAD'],
+  cancelType: 'SET_ACTIVE_MODAL',
+  process({ getState }, dispatch, done) {
+    const { items, uploadingId } = getState().gallery;
+
+    if (uploadingId === null) {
+      dispatch(setActiveModal(null));
+      done();
+      return;
+    }
+
+    const item = items.find(({ id }) => id === uploadingId);
+
+    const formData = new FormData();
+    formData.append('image', item.file);
+    const data = JSON.stringify({
+      title: item.title,
+      description: item.description,
+      position: item.position,
+    });
+    formData.append('meta', new Blob([data], { type: 'application/json' }));
+
+    fetch('https://www.posttestserver.com/', {
+      method: 'POST',
+      body: formData,
+      mode: 'no-cors',
+    }).then(() => {
+      dispatch(galleryRemoveItem(item.id));
+      dispatch(galleryUpload());
+      done();
+    });
+  },
+});
 
 function toImage(payload) {
   return { ...payload, createdAt: new Date(payload.createdAt) }; // TODO validate payload
 }
 
-export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic, galleryUploadLogic];
+export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic,
+  galleryUploadModalLogic, galleryItemUploadLogic];
