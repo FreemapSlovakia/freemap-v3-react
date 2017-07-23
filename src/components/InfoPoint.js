@@ -6,30 +6,39 @@ import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
 import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 import PropTypes from 'prop-types';
 
-function InfoPoint({ lat, lon, label, inEditMode, onInfoPointChangePosition }) {
-  return (
-    lat && <MarkerWithInnerLabel
-      faIcon="info"
-      faIconLeftPadding="2px"
-      draggable={inEditMode}
-      onDragend={e => onInfoPointChangePosition(e.target.getLatLng().lat, e.target.getLatLng().lng)}
-      position={L.latLng(lat, lon)}
-    >
-      { label && <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-        <span>
-          {label}
-        </span>
-      </Tooltip> }
-    </MarkerWithInnerLabel>
-  );
-}
+class InfoPoint extends React.Component {
+  static propTypes = {
+    lat: PropTypes.number,
+    lon: PropTypes.number,
+    label: PropTypes.string,
+    inEditMode: PropTypes.bool.isRequired,
+    onInfoPointPositionChange: PropTypes.func.isRequired,
+  };
 
-InfoPoint.propTypes = {
-  lat: PropTypes.number,
-  lon: PropTypes.number,
-  label: PropTypes.string,
-  inEditMode: PropTypes.bool.isRequired,
-};
+  handleDragEnd = (e) => {
+    const coords = e.target.getLatLng();
+    this.props.onInfoPointPositionChange(coords.lat, coords.lng);
+  }
+
+  render() {
+    const { lat, lon, label, inEditMode } = this.props;
+    return (
+      lat && <MarkerWithInnerLabel
+        faIcon="info"
+        faIconLeftPadding="2px"
+        draggable={inEditMode}
+        onDragend={this.handleDragEnd}
+        position={L.latLng(lat, lon)}
+      >
+        { label && <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+          <span>
+            {label}
+          </span>
+        </Tooltip> }
+      </MarkerWithInnerLabel>
+    );
+  }
+}
 
 export default connect(
   state => ({
@@ -37,10 +46,9 @@ export default connect(
     lon: state.infoPoint.lon,
     label: state.infoPoint.label,
     inEditMode: state.infoPoint.inEditMode,
-    onInfoPointChangePosition: PropTypes.func.isRequired,
   }),
   dispatch => ({
-    onInfoPointChangePosition(lat, lon) {
+    onInfoPointPositionChange(lat, lon) {
       dispatch(infoPointChangePosition(lat, lon));
     },
   }),
