@@ -11,12 +11,12 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
-export default class GalleryUploadModal extends React.Component {
+export default class GalleryUploadItem extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     filename: PropTypes.string,
     dataURL: PropTypes.string,
-    coords: FmPropTypes.point,
+    position: FmPropTypes.point,
     title: PropTypes.string,
     description: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
@@ -42,7 +42,7 @@ export default class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { id, filename, dataURL, coords, title, description } = this.props;
+    const { id, filename, dataURL, position, title, description } = this.props;
     return (
       <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
         <FormGroup>
@@ -53,7 +53,7 @@ export default class GalleryUploadModal extends React.Component {
           <ControlLabel>Popis</ControlLabel>
           <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
         </FormGroup>
-        {coords && <p>{formatGpsCoord(coords.lat, 'SN')}, {formatGpsCoord(coords.lon, 'WE')}</p>}
+        {position && <p>{formatGpsCoord(position.lat, 'SN')}, {formatGpsCoord(position.lon, 'WE')}</p>}
         <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
         {' '}
         <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>

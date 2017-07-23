@@ -38,10 +38,14 @@ export function gallerySetItemDescription(id, description) {
   return { type: 'GALLERY_SET_ITEM_DESCRIPTION', payload: { id, value: description } };
 }
 
-export function gallerySetItemPosition(id, position) {
-  return { type: 'GALLERY_SET_ITEM_POSITION', payload: { id, value: position } };
+export function gallerySetPickingPosition(lat, lon) {
+  return { type: 'GALLERY_SET_PICKING_POSITION', payload: { lat, lon } };
 }
 
-export function galleryPickItemPosition(id) {
-  return { type: 'GALLERY_PICK_ITEM_POSITION', payload: id };
+export function galleryConfirmPickedPosition() {
+  return { type: 'GALLERY_CONFIRM_PICKED_POSITION' };
+}
+
+export function gallerySetItemForPositionPicking(id) {
+  return { type: 'GALLERY_SET_ITEM_FOR_POSITION_PICKING', payload: id };
 }

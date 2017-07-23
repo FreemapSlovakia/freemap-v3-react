@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { setTool, setActiveModal } from 'fm3/actions/mainActions';
-import { galleryPickItemPosition } from 'fm3/actions/galleryActions';
+import { gallerySetItemForPositionPicking, galleryConfirmPickedPosition } from 'fm3/actions/galleryActions';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import { Static } from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
@@ -15,6 +16,8 @@ function GalleryMenu({ onUpload, onCancel, pickingPosition, onPositionConfirm, o
   return (
     pickingPosition ?
       <Navbar.Form>
+        <Static>Zvoľte pozíciu fotografie</Static>
+        {' '}
         <Button onClick={onPositionConfirm}><FontAwesomeIcon icon="check" /> Zvoliť</Button>
         {' '}
         <Button onClick={onPositionCancel}><FontAwesomeIcon icon="times" /> Zrušiť</Button>
@@ -48,10 +51,10 @@ export default connect(
       dispatch(setTool(null));
     },
     onPositionConfirm() {
-      // TODO
+      dispatch(galleryConfirmPickedPosition());
     },
     onPositionCancel() {
-      dispatch(galleryPickItemPosition(null));
+      dispatch(gallerySetItemForPositionPicking(null));
     },
   }),
 )(GalleryMenu);

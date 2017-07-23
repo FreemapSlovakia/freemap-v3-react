@@ -13,14 +13,14 @@ import Alert from 'react-bootstrap/lib/Alert';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemUrl, galleryPickItemPosition } from 'fm3/actions/galleryActions';
+import { galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemUrl, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
 
-let nextId = 0;
+let nextId = 1;
 
 class GalleryUploadModal extends React.Component {
   static propTypes = {
@@ -29,7 +29,7 @@ class GalleryUploadModal extends React.Component {
         id: PropTypes.number.isRequired,
         file: PropTypes.object.isRequired,
         dataURL: PropTypes.string,
-        coords: FmPropTypes.point,
+        position: FmPropTypes.point,
         title: PropTypes.string,
         description: PropTypes.string,
       }).isRequired,
@@ -58,7 +58,7 @@ class GalleryUploadModal extends React.Component {
         this.props.onItemAdd({
           id,
           file,
-          coords: tags.GPSLatitude && tags.GPSLongitude ? {
+          position: tags.GPSLatitude && tags.GPSLongitude ? {
             lat: tags.GPSLatitude.description * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
             lon: tags.GPSLongitude.description * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
           } : null,
@@ -141,13 +141,13 @@ class GalleryUploadModal extends React.Component {
             <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
           </Dropzone>
           {
-            items.map(({ id, file, dataURL, coords, title, description }) => (
+            items.map(({ id, file, dataURL, position, title, description }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
                 filename={file.name}
                 dataURL={dataURL}
-                coords={coords}
+                position={position}
                 title={title}
                 description={description}
                 onRemove={this.handleRemove}
@@ -185,7 +185,7 @@ export default connect(
       dispatch(setActiveModal(null));
     },
     onPositionPick(id) {
-      dispatch(galleryPickItemPosition(id));
+      dispatch(gallerySetItemForPositionPicking(id));
     },
     onTitleChange(id, title) {
       dispatch(gallerySetItemTitle(id, title));
