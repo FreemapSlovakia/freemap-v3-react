@@ -16,6 +16,15 @@ export const baseLayers = [
     type: 'S',
   },
   {
+    name: 'OpenStreetMap',
+    type: 'O',
+    url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    minZoom: 0,
+    maxNativeZoom: 19,
+    // showOnlyInExpertMode: true,
+    attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+  },
+  {
     name: 'mtbmap.cz',
     type: 'M',
     url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
