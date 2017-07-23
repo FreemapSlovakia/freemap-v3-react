@@ -7,13 +7,11 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 
 import { API_URL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
 
-const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
-
 export const trackViewerSetTrackDataLogic = createLogic({
   type: 'TRACK_VIEWER_SET_TRACK_DATA',
   transform({ getState, action }, next) {
     // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
-    const gpxAsXml = new DOMParser().parseFromString(action.payload.trackGpx);
+    const gpxAsXml = new DOMParser().parseFromString(action.payload.trackGpx, 'text/xml');
     const trackGeojson = toGeoJSON.gpx(gpxAsXml);
 
     const startPoints = [];

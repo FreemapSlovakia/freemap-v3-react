@@ -3,9 +3,7 @@ import { createLogic } from 'redux-logic';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { changesetsAdd } from 'fm3/actions/changesetsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-const DOMParser = require('xmldom').DOMParser; // TODO browsers have native DOM implementation - use that
+import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 
 export const changesetsLogic = createLogic({
   type: ['CHANGESETS_SET_AUTHOR_NAME'],
@@ -53,7 +51,7 @@ export const changesetsLogic = createLogic({
       return fetch(url)
         .then(response => response.text())
         .then((data) => {
-          const xml = new DOMParser().parseFromString(data);
+          const xml = new DOMParser().parseFromString(data, 'text/xml');
           const rawChangesets = xml.getElementsByTagName('changeset');
           const arrayOfrawChangesets = Array.from(rawChangesets);
           const changesetsFromThisRequest = arrayOfrawChangesets.map((rawChangeset) => {
@@ -101,6 +99,9 @@ export const changesetsLogic = createLogic({
             }));
           }
           return Promise.resolve();
+        })
+        .catch((e) => {
+          dispatch(toastsAddError(`Nastala chyba pri získavaní zmien: ${e.message}`));
         });
     }
   },
