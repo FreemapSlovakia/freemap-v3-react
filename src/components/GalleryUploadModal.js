@@ -51,7 +51,12 @@ class GalleryUploadModal extends React.Component {
         cb(err);
       };
       reader.onload = () => {
-        const tags = ExifReader.load(reader.result);
+        let tags;
+        try {
+          tags = ExifReader.load(reader.result);
+        } catch (e) {
+          tags = {};
+        }
         const id = nextId;
         nextId += 1;
 
@@ -79,7 +84,7 @@ class GalleryUploadModal extends React.Component {
           const ratio = 618 / img.naturalWidth;
           const width = img.naturalWidth * ratio;
           const height = img.naturalHeight * ratio;
-          const o = tags.Orientation.value;
+          const o = tags.Orientation ? tags.Orientation.value : 1;
           canvas.width = width;
           canvas.height = height;
 
