@@ -69,8 +69,20 @@ const galleryShowOnTheMapLogic = createLogic({
   },
 });
 
+const galleryUploadLogic = createLogic({
+  type: 'SET_ACTIVE_MODAL',
+  transform({ getState, action }, next) {
+    if (action.payload === 'gallery-upload' && !getState().auth.user) {
+      next(toastsAddError('Pre nahrávanie obrázkov do galérie musíte byť prihlásený.'));
+    } else {
+      next(action);
+    }
+  },
+});
+
+
 function toImage(payload) {
   return { ...payload, createdAt: new Date(payload.createdAt) }; // TODO validate payload
 }
 
-export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic];
+export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic, galleryUploadLogic];
