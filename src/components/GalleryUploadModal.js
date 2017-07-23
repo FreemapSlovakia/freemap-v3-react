@@ -76,7 +76,7 @@ class GalleryUploadModal extends React.Component {
           URL.revokeObjectURL(url);
 
           const canvas = document.createElement('canvas');
-          const ratio = 858 / img.naturalWidth;
+          const ratio = 618 / img.naturalWidth;
           const width = img.naturalWidth * ratio;
           const height = img.naturalHeight * ratio;
           const o = tags.Orientation.value;
@@ -129,7 +129,7 @@ class GalleryUploadModal extends React.Component {
   render() {
     const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, visible } = this.props;
     return (
-      <Modal show={visible} bsSize="large" onHide={onClose}>
+      <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Nahrať obrázky</Modal.Title>
         </Modal.Header>
