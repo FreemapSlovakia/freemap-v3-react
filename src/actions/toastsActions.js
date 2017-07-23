@@ -22,6 +22,5 @@ export function toastsAddError(message) {
     message,
     style: 'danger',
     timeout: 5000,
-    actions: [{ name: 'OK' }],
   });
 }
