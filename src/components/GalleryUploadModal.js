@@ -142,7 +142,7 @@ class GalleryUploadModal extends React.Component {
           <Alert bsStyle="danger">
             Implementácia nahrávania obrázkov ešte nie je dokončená.
           </Alert>
-          <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg,.png" className="dropzone">
+          <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg,.png" className="dropzone" disablePreview>
             <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
           </Dropzone>
           {

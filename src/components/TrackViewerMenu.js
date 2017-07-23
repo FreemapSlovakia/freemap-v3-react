@@ -226,7 +226,7 @@ class TrackViewerMenu extends React.Component {
               <Modal.Title>Nahrať záznam trasy</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone">
+              <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone" disablePreview>
                 <div>Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.</div>
               </Dropzone>
             </Modal.Body>
