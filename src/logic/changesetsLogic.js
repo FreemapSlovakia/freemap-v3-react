@@ -72,8 +72,7 @@ export const changesetsLogic = createLogic({
             };
 
             return changeset;
-          })
-          .filter(changeset => changeset.centerLat > 47.63617
+          }).filter(changeset => changeset.centerLat > 47.63617
             && changeset.centerLat < 49.66746
             && changeset.centerLon > 16.69965
             && changeset.centerLon < 22.67475);

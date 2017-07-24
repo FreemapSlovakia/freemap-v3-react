@@ -21,7 +21,6 @@ const circularIcon = new L.divIcon({ // CircleMarker is not draggable
 });
 
 class AreaMeasurementResult extends React.Component {
-
   static propTypes = {
     points: FmPropTypes.points.isRequired,
     onPointAdd: PropTypes.func.isRequired,
@@ -131,7 +130,6 @@ class AreaMeasurementResult extends React.Component {
       </div>
     );
   }
-
 }
 
 export default connect(

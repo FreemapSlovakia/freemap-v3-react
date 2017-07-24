@@ -15,7 +15,6 @@ import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class RoutePlannerResult extends React.Component {
-
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
@@ -160,7 +159,7 @@ class RoutePlannerResult extends React.Component {
               <span>{desc} ({km}km)</span>
             </Tooltip>
           </MarkerWithInnerLabel>
-          ),
+        ),
         )}
 
         {routeSlices.map((routeSlice, i) => (

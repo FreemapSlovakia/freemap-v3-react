@@ -9,7 +9,7 @@ import { API_URL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
 
 export const trackViewerSetTrackDataLogic = createLogic({
   type: 'TRACK_VIEWER_SET_TRACK_DATA',
-  transform({ getState, action }, next) {
+  transform({ action }, next) {
     // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
     const gpxAsXml = new DOMParser().parseFromString(action.payload.trackGpx, 'text/xml');
     const trackGeojson = toGeoJSON.gpx(gpxAsXml);
@@ -85,17 +85,17 @@ export const trackViewerUploadTrackLogic = createLogic({
           mediaType: 'application/gpx+xml',
         }),
       })
-      .then(res => res.json())
-      .then((res) => {
-        dispatch(trackViewerSetTrackUID(res.uid));
-      })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
-      })
-      .then(() => {
-        dispatch(stopProgress(pid));
-        done();
-      });
+        .then(res => res.json())
+        .then((res) => {
+          dispatch(trackViewerSetTrackUID(res.uid));
+        })
+        .catch((e) => {
+          dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
+        })
+        .then(() => {
+          dispatch(stopProgress(pid));
+          done();
+        });
     }
   },
 });

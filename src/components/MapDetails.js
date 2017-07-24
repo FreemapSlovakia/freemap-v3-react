@@ -7,9 +7,9 @@ import { Polyline } from 'react-leaflet';
 function MapDetails({ trackInfoPoints }) {
   return (
     <div>
-      (trackInfoPoints &&
+      {trackInfoPoints &&
         <Polyline positions={(trackInfoPoints || []).map(point => [point.lat, point.lon])} interactive={false} weight={8} />
-      )
+      }
     </div>
   );
 }

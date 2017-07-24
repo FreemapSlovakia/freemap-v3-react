@@ -15,7 +15,8 @@ import * as FmPropTypes from 'fm3/propTypes';
 import 'fm3/styles/search.scss';
 
 function SearchMenu({ tool, onResultHiglight, onResultSelect, onRoutePlannerWithStartInit,
-    onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results }) {
+  onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results,
+}) {
   function onSelectionChange(resultsSelectedByUser) {
     onResultSelect(resultsSelectedByUser[0], tool);
   }

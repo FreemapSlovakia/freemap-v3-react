@@ -1,4 +1,4 @@
-  // it's amazing that old freemap is using at least three different url param formats
+// it's amazing that old freemap is using at least three different url param formats
 
 // either freemap.sk/#m=T,p=48.21836|17.4166|16|T or freemap.sk/?m=A&p=48.1855|17.4029|14
 export function getTrasformedParamsIfIsOldFreemapUrl(location) {

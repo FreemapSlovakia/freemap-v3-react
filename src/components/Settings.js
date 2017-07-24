@@ -21,7 +21,6 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class Settings extends React.Component {
-
   static propTypes = {
     homeLocation: PropTypes.shape({
       lat: PropTypes.number,

@@ -18,9 +18,10 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
 
 function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportType,
-    onTransportTypeChange, onPickPointModeChange, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
-    onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible, onProgressStart, onProgressStop,
-    onGpxExport, routeFound, shapePoints }) {
+  onTransportTypeChange, onPickPointModeChange, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
+  onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible, onProgressStart, onProgressStop,
+  onGpxExport, routeFound, shapePoints,
+}) {
   // TODO move to logic
   function setFromCurrentPosition(pointType) {
     onProgressStart();

@@ -15,7 +15,6 @@ const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDig
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
 class TrackViewerResult extends React.Component {
-
   static propTypes = {
     trackGeojson: PropTypes.shape({}),
     startPoints: PropTypes.arrayOf(PropTypes.shape({
@@ -173,7 +172,7 @@ class TrackViewerResult extends React.Component {
                 <span>{timeFormat.format(new Date(p.startTime))}</span>
               </Tooltip> }
           </MarkerWithInnerLabel>
-          ))}
+        ))}
         {finishPoints.map((p, i) => (
           <MarkerWithInnerLabel
             faIcon="stop"
@@ -190,22 +189,22 @@ class TrackViewerResult extends React.Component {
                 {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km</span>
             </Tooltip>
           </MarkerWithInnerLabel>
-          ))}
+        ))}
 
-          {this.state.infoLat &&
-            <MarkerWithInnerLabel
-              faIcon="info"
-              faIconLeftPadding="2px"
-              color="grey"
-              interactive={false}
-              position={L.latLng(this.state.infoLat, this.state.infoLon)}
-            >
-              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-                <span>
-                  {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
-                </span>
-              </Tooltip>
-            </MarkerWithInnerLabel>}
+        {this.state.infoLat &&
+        <MarkerWithInnerLabel
+          faIcon="info"
+          faIconLeftPadding="2px"
+          color="grey"
+          interactive={false}
+          position={L.latLng(this.state.infoLat, this.state.infoLon)}
+        >
+          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+            <span>
+              {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
+            </span>
+          </Tooltip>
+        </MarkerWithInnerLabel>}
 
         <ElevationChartActivePoint />
       </div>

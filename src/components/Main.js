@@ -64,7 +64,6 @@ import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import 'fm3/styles/main.scss';
 
 class Main extends React.Component {
-
   static propTypes = {
     lat: PropTypes.number.isRequired,
     lon: PropTypes.number.isRequired,

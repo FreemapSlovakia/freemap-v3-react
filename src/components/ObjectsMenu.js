@@ -18,7 +18,6 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 class ObjectsMenu extends React.Component {
-
   state = {
     filter: '',
     dropdownOpened: false,

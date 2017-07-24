@@ -11,7 +11,6 @@ import * as FmPropTypes from 'fm3/propTypes';
 const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 class ElevationMeasurementResult extends React.Component {
-
   static propTypes = {
     onPointSet: PropTypes.func.isRequired,
     onElevationClear: PropTypes.func.isRequired,
@@ -73,7 +72,6 @@ class ElevationMeasurementResult extends React.Component {
       </MarkerWithAutoOpeningPopup>
     );
   }
-
 }
 
 export default connect(

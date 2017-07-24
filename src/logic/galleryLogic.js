@@ -34,7 +34,7 @@ const galleryRequestImagesLogic = createLogic({
 const galleryRequestImageLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_REQUEST_IMAGE',
-  process({ action: { payload: id }, getState, cancelled$ }, dispatch, done) {
+  process({ action: { payload: id }, cancelled$ }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     cancelled$.subscribe(() => {
