@@ -29,7 +29,14 @@ export const objectsFetchLogic = createLogic({
       method: 'POST',
       body: `data=${encodeURIComponent(query)}`,
     })
-      .then(res => res.json()).then((data) => {
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
+      .then((data) => {
         const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
           id,
           lat: center && center.lat || lat,

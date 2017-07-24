@@ -22,7 +22,13 @@ export default createLogic({
       bbox = [userSelectedLat - 0.0004, userSelectedLon - 0.0005, userSelectedLat + 0.0004, userSelectedLon + 0.0005];
       const body = `[out:json][bbox:${bbox.join(',')}];way['highway'];out geom;`; // definitely the worst query language syntax ever
       fetch('http://overpass-api.de/api/interpreter', { method: 'POST', body })
-        .then(res => res.json())
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+          } else {
+            return res.json();
+          }
+        })
         .then((payload) => {
           if (payload.elements && payload.elements.length > 0) {
             way = payload.elements[0];

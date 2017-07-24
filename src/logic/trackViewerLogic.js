@@ -43,7 +43,13 @@ export const trackViewerDownloadTrackLogic = createLogic({
   process({ getState }, dispatch, done) {
     const trackUID = getState().trackViewer.trackUID;
     fetch(`${API_URL}/tracklogs/${trackUID}`)
-      .then(res => res.json())
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
       .then((payload) => {
         if (payload.error) {
           dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${payload.error}`));
@@ -85,7 +91,13 @@ export const trackViewerUploadTrackLogic = createLogic({
           mediaType: 'application/gpx+xml',
         }),
       })
-        .then(res => res.json())
+        .then((res) => {
+          if (res.status !== 201) {
+            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+          } else {
+            return res.json();
+          }
+        })
         .then((res) => {
           dispatch(trackViewerSetTrackUID(res.uid));
         })

@@ -76,7 +76,13 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
   });
   const url = `//open.mapquestapi.com/elevation/v1/profile?key=${MAPQUEST_API_KEY}&latLngCollection=${latlonsForMapQuest}`;
   fetch(url)
-    .then(res => res.json())
+    .then((res) => {
+      if (res.status !== 200) {
+        throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+      } else {
+        return res.json();
+      }
+    })
     .then(({ elevationProfile }) => {
       elevationProfile.forEach(({ height }, i) => {
         elevationProfilePoints[i].ele = height;

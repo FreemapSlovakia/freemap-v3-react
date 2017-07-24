@@ -42,7 +42,13 @@ export const routePlannerFindRouteLogic = createLogic({
 
     const url = `//www.freemap.sk/api/0.3/route-planner/${allPoints}?transport_type=${transportType}`;
     fetch(url)
-      .then(res => res.json())
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
       .then(({ route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } }) => {
         const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
         if (routeLatLons.length === 0) {

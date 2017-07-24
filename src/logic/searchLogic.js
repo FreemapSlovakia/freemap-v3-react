@@ -20,7 +20,13 @@ export default createLogic({
     });
 
     fetch(`//www.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}&max_count=10`)
-      .then(res => res.json())
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
       .then((data) => {
         const results = data.results.map((d, id) => {
           const name = d.properties.name;

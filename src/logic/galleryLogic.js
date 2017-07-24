@@ -17,7 +17,13 @@ const galleryRequestImagesLogic = createLogic({
     });
 
     fetch(`http://www.freemap.sk:3000/gallery/pictures?lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`)
-      .then(res => res.json())
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
       .then((payload) => {
         dispatch(gallerySetImages(payload.map(item => toImage(item))));
       })
@@ -42,7 +48,13 @@ const galleryRequestImageLogic = createLogic({
     });
 
     fetch(`http://www.freemap.sk:3000/gallery/picture/${id}`)
-      .then(res => res.json())
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
       .then((payload) => {
         dispatch(gallerySetImages([toImage(payload)]));
       })

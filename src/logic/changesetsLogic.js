@@ -49,7 +49,13 @@ export const changesetsLogic = createLogic({
       }
 
       return fetch(url)
-        .then(response => response.text())
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+          } else {
+            return res.text();
+          }
+        })
         .then((data) => {
           const xml = new DOMParser().parseFromString(data, 'text/xml');
           const rawChangesets = xml.getElementsByTagName('changeset');

@@ -17,7 +17,13 @@ export default createLogic({
       });
 
       fetch(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`)
-        .then(res => res.json())
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+          } else {
+            return res.json();
+          }
+        })
         .then((data) => {
           dispatch(elevationMeasurementSetElevation(parseFloat(data.ele)));
         })
