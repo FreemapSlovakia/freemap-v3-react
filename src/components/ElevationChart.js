@@ -16,10 +16,9 @@ class ElevationChart extends React.Component {
   }
 
   dataForChartJS = () => {
-    const elevationProfilePoints = this.props.elevationProfilePoints;
-    const xAxisLabels = elevationProfilePoints.map(({ distanceFromStartInMeters }) => (distanceFromStartInMeters / 1000).toFixed(1));
+    const { elevationProfilePoints } = this.props;
     return {
-      xLabels: xAxisLabels,
+      xLabels: elevationProfilePoints.map(({ distanceFromStartInMeters }) => (distanceFromStartInMeters / 1000).toFixed(1)),
       datasets: [
         {
           fill: true,
@@ -50,7 +49,7 @@ class ElevationChart extends React.Component {
     return {
       tooltips: {
         enabled: false,
-        custom: (tooltip) => {
+        custom(tooltip) {
           if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
             const dataPoint = tooltip.dataPoints[0];
             const eleDetailPoint = elevationProfilePoints[dataPoint.index];
@@ -66,12 +65,7 @@ class ElevationChart extends React.Component {
       scales: {
         xAxes: [{
           ticks: {
-            userCallback: (label, index, labels) => {
-              if (index % 10 === 0 || index === labels.length - 1) {
-                return label;
-              }
-              return null;
-            },
+            userCallback: (label, index, labels) => (index % 10 === 0 || index === labels.length - 1 ? label : null),
           },
           scaleLabel: {
             display: true,
@@ -89,10 +83,8 @@ class ElevationChart extends React.Component {
   }
 
   render() {
-    const { elevationProfilePoints } = this.props;
     return (
-      elevationProfilePoints &&
-      <div id="elevationChart">
+      <div className="elevationChart">
         <Line options={this.optionsForChartJS()} data={this.dataForChartJS()} />
       </div>
     );

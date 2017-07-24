@@ -86,6 +86,7 @@ class Main extends React.Component {
       name: PropTypes.string.isRequired,
     }),
     ignoreEscape: PropTypes.bool.isRequired,
+    showElevationChart: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
@@ -173,7 +174,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType } = this.props;
+    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart } = this.props;
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
@@ -246,7 +247,8 @@ class Main extends React.Component {
             {tool === 'gallery' && <GalleryResult />}
             {tool === 'changesets' && <Changesets />}
             {tool === 'map-details' && <MapDetails />}
-            <AsyncElevationChart />
+
+            {showElevationChart && <AsyncElevationChart />}
           </Map>
         </Row>
 
@@ -270,6 +272,7 @@ export default connect(
     user: state.auth.user,
     ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
       || state.gallery.activeImageId),
+    showElevationChart: !!state.elevationChart.elevationProfilePoints,
   }),
   dispatch => ({
     onToolSet(tool) {

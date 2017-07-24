@@ -1,6 +1,6 @@
 @import "variables";
 
-#elevationChart {
+.elevationChart {
   position: absolute;
   z-index: 10001;
   background-color: rgba(255, 255, 255, 0.88);
@@ -10,10 +10,8 @@
   min-width: 45%;
   padding: 10px;
   margin: 10px;
-}
 
-@media ($smartphone-screen) {
-  #elevationChart {
+  @media ($smartphone-screen) {
     width: calc(100% - 10px);
   }
 }
