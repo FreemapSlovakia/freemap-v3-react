@@ -3,13 +3,12 @@
   max-height: calc(100vh - 200px);
   margin: 0 auto;
   display: block;
-}
 
-@media screen and (max-height: 400px) {
-  .gallery-image {
+  @media screen and (max-height: 400px) {
     max-height: 200px;
   }
 }
+
 
 .carousel-control.disabled, .carousel-control.disabled:hover {
   cursor: not-allowed;

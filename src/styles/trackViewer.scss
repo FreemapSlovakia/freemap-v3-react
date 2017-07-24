@@ -4,10 +4,10 @@
   padding: 30px;
   border-radius: 5px;
   cursor: default;
-}
 
-.dropzone:hover {
-  background-color: #d9edf7;
+  &:hover {
+    background-color: #d9edf7;
+  }
 }
 
 .trackInfo {

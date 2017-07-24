@@ -12,10 +12,10 @@
 
 .toast-message {
   padding-right: 12px;
-}
 
-.toast-message a {
-  &, &:hover {
-    text-decoration: underline;
+  a {
+    &, &:hover {
+      text-decoration: underline;
+    }
   }
 }
