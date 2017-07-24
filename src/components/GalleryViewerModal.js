@@ -1,3 +1,5 @@
+/* eslint-disable jsx-a11y/no-static-element-interactions */ // prevented warning in bootstrap code
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
