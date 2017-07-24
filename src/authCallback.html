@@ -8,7 +8,7 @@
 
   <body>
     <script>
-      opener.authComplete(window.location.href);
+      opener.postMessage({ __freemap: { oauthParams: window.location.search } }, location.origin);
       window.close();
     </script>
   </body>

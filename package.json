@@ -17,7 +17,6 @@
     "immutability-helper": "2.3.0",
     "leaflet": "1.1.0",
     "leaflet-hotline": "0.4.0",
-    "osm-auth": "1.0.2",
     "pica": "3.0.6",
     "prop-types": "15.5.10",
     "query-string": "5.0.0",

@@ -16,6 +16,7 @@ import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
+import initAuthHelper from 'fm3/authHelper';
 
 import 'fm3/styles/global.scss';
 
@@ -49,6 +50,8 @@ if (appState) {
 history.listen(handleLocationChange.bind(undefined, store));
 
 handleLocationChange(store, history.location);
+
+initAuthHelper(store);
 
 render((
   <Provider store={store}>
