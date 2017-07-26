@@ -35,7 +35,6 @@ export default createLogic({
         .then((payload) => {
           if (payload.elements && payload.elements.length === 1) {
             way = payload.elements[0];
-            console.log(way);
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
               message: toToastMessage(),
