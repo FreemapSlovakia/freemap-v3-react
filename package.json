@@ -5,9 +5,9 @@
   "dependencies": {
     "@mapbox/geojson-area": "0.2.2",
     "@mapbox/togeojson": "0.16.0",
-    "@turf/along": "4.5.2",
-    "@turf/line-distance": "4.5.2",
-    "@turf/line-slice": "4.5.2",
+    "@turf/along": "4.6.0",
+    "@turf/line-distance": "4.6.0",
+    "@turf/line-slice": "4.6.0",
     "async": "2.5.0",
     "chart.js": "2.6.0",
     "eventemitter3": "2.0.3",
