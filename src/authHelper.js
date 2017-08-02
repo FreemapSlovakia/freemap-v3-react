@@ -9,6 +9,36 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 
 export default function initAuthHelper(store) {
+  const authToken = localStorage.getItem('authToken');
+
+  if (authToken) {
+    const pid = Math.random();
+    store.dispatch(startProgress(pid));
+    fetch(`${API_URL}/auth/validate`, {
+      method: 'POST',
+      headers: {
+        Accept: 'applicaction/json',
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
+      .then((data) => {
+        store.dispatch(authSetUser(data));
+      })
+      .catch((err) => {
+        store.dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+      })
+      .then(() => {
+        store.dispatch(stopProgress(pid));
+      });
+  }
+
   window.addEventListener('message', (e) => {
     if (e.origin !== location.origin || typeof e.data !== 'object' || !e.data.__freemap || !e.data.__freemap.oauthParams) {
       return;
