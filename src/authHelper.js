@@ -4,8 +4,9 @@ import qs from 'query-string';
 
 import { API_URL } from 'fm3/backendDefinitions';
 
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { toastsAddError } from 'fm3/actions/toastsActions';
+import { setHomeLocation, startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
+import { authSetUser } from 'fm3/actions/authActions';
 
 export default function initAuthHelper(store) {
   window.addEventListener('message', (e) => {
@@ -33,7 +34,19 @@ export default function initAuthHelper(store) {
         }
       })
       .then((data) => {
-        console.log('SUCCESS', data); // TODO
+        localStorage.setItem('authToken', data.authToken);
+
+        if (!store.getState().main.homeLocation) {
+          store.dispatch(setHomeLocation({ lat: data.lat, lon: data.lon }));
+        }
+
+        store.dispatch(toastsAdd({
+          collapseKey: 'login',
+          message: 'Boli ste úspešne prihlásený.',
+          style: 'info',
+          timeout: 5000,
+        }));
+        store.dispatch(authSetUser(data));
       })
       .catch((err) => {
         store.dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));

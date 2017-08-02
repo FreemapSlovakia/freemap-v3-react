@@ -108,12 +108,11 @@ const galleryItemUploadLogic = createLogic({
 
     const formData = new FormData();
     formData.append('image', item.file);
-    const data = JSON.stringify({
+    formData.append('meta', JSON.stringify({
       title: item.title,
       description: item.description,
       position: item.position,
-    });
-    formData.append('meta', new Blob([data], { type: 'application/json' }));
+    }));
 
     fetch('https://www.posttestserver.com/', {
       method: 'POST',

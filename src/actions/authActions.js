@@ -10,6 +10,10 @@ export function authLogout() {
   return { type: 'AUTH_LOGOUT' };
 }
 
+export function authStartLogout() {
+  return { type: 'AUTH_START_LOGOUT' };
+}
+
 export function authSetUser(user) {
   return { type: 'AUTH_SET_USER', payload: user };
 }
