@@ -19,7 +19,6 @@ class Layers extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  // eslint-disable-next-line
   getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
     if (type === 'S') {
       return (
