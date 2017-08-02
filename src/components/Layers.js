@@ -8,15 +8,25 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 
-function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, overlayOpacity, expertMode }) {
+const keyToLayer = { t: 'T', a: 'A', s: 'S', c: 'C', o: 'O', l: 'K' };
+
+class Layers extends React.Component {
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeydown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
+
   // eslint-disable-next-line
-  function getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
+  getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
     if (type === 'S') {
       return (
         <BingLayer
           bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-          onAdd={() => handleAdd(type)}
-          onRemove={() => handleRemove(type)}
+          onAdd={() => this.handleAdd(type)}
+          onRemove={() => this.handleRemove(type)}
           maxZoom={20}
           maxNativeZoom={18}
         />
@@ -26,59 +36,74 @@ function Layers({ onMapChange, onOverlaysChange, tileFormat, overlays, mapType, 
     return (
       <TileLayer
         attribution={attribution}
-        url={url.replace('{tileFormat}', tileFormat)}
-        onAdd={() => handleAdd(type)}
-        onRemove={() => handleRemove(type)}
+        url={url.replace('{tileFormat}', this.props.tileFormat)}
+        onAdd={() => this.handleAdd(type)}
+        onRemove={() => this.handleRemove(type)}
         maxZoom={20}
         minZoom={minZoom}
         maxNativeZoom={maxNativeZoom}
-        opacity={overlayOpacity[type] || 1.0}
+        opacity={this.props.overlayOpacity[type] || 1.0}
       />
     );
   }
 
-  function handleAdd(type) {
+  handleAdd(type) {
     if (baseLayers.some(x => x.type === type)) {
-      onMapChange(type);
+      this.props.onMapChange(type);
     } else {
-      const next = new Set(overlays);
+      const next = new Set(this.props.overlays);
       next.add(type);
-      onOverlaysChange([...next]);
+      this.props.onOverlaysChange([...next]);
     }
   }
 
-  function handleRemove(type) {
+  handleRemove(type) {
     if (overlayLayers.some(x => x.type === type)) {
-      const next = [...overlays];
+      const next = [...this.props.overlays];
       next.splice(next.indexOf(type));
-      onOverlaysChange(next);
+      this.props.onOverlaysChange(next);
     }
   }
 
-  return (
-    <LayersControl position="topright">
-      {
-        baseLayers.filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode).map((item) => {
-          const { type, name } = item;
-          return (
-            <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
-              {getTileLayer(item)}
-            </LayersControl.BaseLayer>
-          );
-        })
-      }
-      {
-        overlayLayers && overlayLayers.map((item) => {
-          const { type, name } = item;
-          return (!item.showOnlyInExpertMode || expertMode) && (
-            <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
-              {getTileLayer(item)}
-            </LayersControl.Overlay>
-          );
-        })
-      }
-    </LayersControl>
-  );
+  handleKeydown = (event) => {
+    if (this.props.disableKeyboard || ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())) {
+      return;
+    }
+
+    const layer = keyToLayer[event.key];
+    if (layer) {
+      this.props.onMapChange(layer);
+    }
+  }
+
+  render() {
+    const { overlays, mapType, expertMode } = this.props;
+
+    return (
+      <LayersControl position="topright">
+        {
+          baseLayers.filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode).map((item) => {
+            const { type, name } = item;
+            return (
+              <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
+                {this.getTileLayer(item)}
+              </LayersControl.BaseLayer>
+            );
+          })
+        }
+        {
+          overlayLayers && overlayLayers.map((item) => {
+            const { type, name } = item;
+            return (!item.showOnlyInExpertMode || expertMode) && (
+              <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
+                {this.getTileLayer(item)}
+              </LayersControl.Overlay>
+            );
+          })
+        }
+      </LayersControl>
+    );
+  }
 }
 
 Layers.propTypes = {
@@ -89,6 +114,7 @@ Layers.propTypes = {
   mapType: FmPropTypes.mapType.isRequired,
   overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
   expertMode: PropTypes.bool,
+  disableKeyboard: PropTypes.bool,
 };
 
 export default connect(
@@ -98,6 +124,7 @@ export default connect(
     mapType: state.map.mapType,
     overlayOpacity: state.map.overlayOpacity,
     expertMode: state.main.expertMode,
+    disableKeyboard: !!(state.main.activeModal || state.gallery.activeImageId), // NOTE there can be lot more things
   }),
   (dispatch, props) => ({
     onMapChange(mapType) {
