@@ -22,14 +22,18 @@ export default function initAuthHelper(store) {
       },
     })
       .then((res) => {
-        if (res.status !== 200) {
+        if (res.status === 401) {
+          return null;
+        } else if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
         } else {
           return res.json();
         }
       })
       .then((data) => {
-        store.dispatch(authSetUser(data));
+        if (data) {
+          store.dispatch(authSetUser(data));
+        }
       })
       .catch((err) => {
         store.dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
