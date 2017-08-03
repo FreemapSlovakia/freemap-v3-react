@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Circle, TileLayer, Marker } from 'react-leaflet';
+import { Circle, Marker } from 'react-leaflet';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
@@ -14,6 +14,13 @@ import { galleryRequestImages, gallerySetPickingPosition } from 'fm3/actions/gal
 
 import 'fm3/styles/gallery.scss';
 
+const circularIcon = new L.divIcon({ // CircleMarker is not draggable
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  tooltipAnchor: [10, 0],
+  html: '<div class="circular-leaflet-marker-icon"></div>',
+});
+
 class GalleryResult extends React.Component {
   static propTypes = {
     onImageRequest: PropTypes.func.isRequired,
@@ -22,6 +29,7 @@ class GalleryResult extends React.Component {
     zoom: PropTypes.number.isRequired,
     isPickingPosition: PropTypes.bool,
     pickingPosition: FmPropTypes.point,
+    imagesInView: PropTypes.arrayOf(FmPropTypes.point),
   }
 
   state = {};
@@ -60,20 +68,10 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, zoom, isPickingPosition, pickingPosition } = this.props;
+    const { activeImageId, zoom, isPickingPosition, pickingPosition, imagesInView } = this.props;
 
     return (
       <div>
-        {!isPickingPosition &&
-          <TileLayer
-            url="http://t1.freemap.sk/data/layers/presets/X~I/{z}/{x}/{y}t.png"
-            maxZoom={20}
-            minZoom={8}
-            maxNativeZoom={16}
-            zIndex={100}
-          />
-        }
-
         {pickingPosition &&
           <Marker
             draggable
@@ -90,6 +88,8 @@ class GalleryResult extends React.Component {
           />
         }
 
+        {imagesInView.map(({ id, lat, lon }) => <Marker key={id} icon={circularIcon} position={L.latLng(lat, lon)} />)}
+
         {activeImageId && <GalleryViewerModal />}
       </div>
     );
@@ -103,6 +103,7 @@ export default connect(
     zoom: state.map.zoom,
     isPickingPosition: state.gallery.pickingPositionForId !== null,
     pickingPosition: state.gallery.pickingPosition,
+    imagesInView: state.gallery.imagesInView,
   }),
   dispatch => ({
     onImageRequest(lat, lon) {

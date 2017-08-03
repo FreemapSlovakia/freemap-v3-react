@@ -1,6 +1,7 @@
 const initialState = {
   images: [],
   activeImageId: null,
+  imagesInView: [],
 
   items: [],
   pickingPositionForId: null,
@@ -78,6 +79,11 @@ export default function elevationMeasurement(state = initialState, action) {
       return {
         ...state,
         uploadingId: state.items.length ? state.items[0].id : null,
+      };
+    case 'GALLERY_SET_IMAGES_IN_VIEW':
+      return {
+        ...state,
+        imagesInView: action.payload,
       };
     default:
       return state;

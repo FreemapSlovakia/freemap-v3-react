@@ -3,8 +3,9 @@ import { createLogic } from 'redux-logic';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImages, galleryRemoveItem, galleryUpload } from 'fm3/actions/galleryActions';
+import { gallerySetImages, galleryRemoveItem, galleryUpload, gallerySetImagesInView, galleryUploadFinished } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { API_URL } from 'fm3/backendDefinitions';
 
 const galleryRequestImagesLogic = createLogic({
@@ -100,6 +101,7 @@ const galleryItemUploadLogic = createLogic({
     const { items, uploadingId } = getState().gallery;
 
     if (uploadingId === null) {
+      dispatch(galleryUploadFinished());
       dispatch(setActiveModal(null));
       done();
       return;
@@ -130,9 +132,48 @@ const galleryItemUploadLogic = createLogic({
   },
 });
 
+const galleryMapRefocusLogic = createLogic({
+  type: ['MAP_REFOCUS', 'SET_TOOL', 'GALLERY_UPLOAD_FINISHED'],
+  cancelType: 'SET_TOOL',
+  process({ getState, cancelled$ }, dispatch, done) {
+    if (getState().main.tool !== 'gallery') {
+      done();
+      return;
+    }
+
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
+    const bounds = getMapLeafletElement().getBounds();
+
+    fetch(`${API_URL}/gallery/pictures?by=bbox&bbox=${bounds.toBBoxString()}`)
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
+      .then((payload) => {
+        dispatch(gallerySetImagesInView(payload));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri načítavaní obrázkov: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
+  },
+});
+
+
 function toImage(payload) {
   return { ...payload, createdAt: new Date(payload.createdAt) }; // TODO validate payload
 }
 
 export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic,
-  galleryUploadModalLogic, galleryItemUploadLogic];
+  galleryUploadModalLogic, galleryItemUploadLogic, galleryMapRefocusLogic];

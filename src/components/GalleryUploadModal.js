@@ -3,12 +3,10 @@ import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import each from 'async/each';
-// import ExifReader from 'exifreader';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
-import Alert from 'react-bootstrap/lib/Alert';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
@@ -143,9 +141,6 @@ class GalleryUploadModal extends React.Component {
           <Modal.Title>Nahrať obrázky</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Alert bsStyle="danger">
-            Implementácia nahrávania obrázkov ešte nie je dokončená.
-          </Alert>
           {!uploading &&
             <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg,.png" className="dropzone" disablePreview>
               <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
@@ -183,7 +178,7 @@ export default connect(
   state => ({
     items: state.gallery.items,
     visible: state.gallery.pickingPositionForId === null,
-    uploading: state.gallery.uploadingId,
+    uploading: !!state.gallery.uploadingId,
   }),
   dispatch => ({
     onItemAdd(item) {

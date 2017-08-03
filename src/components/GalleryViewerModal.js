@@ -10,6 +10,8 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Image from 'react-bootstrap/lib/Image';
 
+import { API_URL } from 'fm3/backendDefinitions';
+
 import { gallerySetImages, gallerySetActiveImageId, galleryShowOnTheMap }
   from 'fm3/actions/galleryActions';
 
@@ -50,7 +52,7 @@ class GalleryViewerModal extends React.Component {
   render() {
     const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
-    const { path, title, description, author, createdAt } = images[index];
+    const { pathname, title, description, user, createdAt } = images[index];
 
     return (
       <Modal show onHide={onClose} bsSize="large">
@@ -63,13 +65,12 @@ class GalleryViewerModal extends React.Component {
           <div className="carousel">
             <div className="item active">
               <a
-                href={`http://www.freemap.sk/upload/gallery/${path}`}
+                href={`${API_URL}/static/gallery/${pathname}`}
                 target="freemap_gallery_image"
               >
                 <Image
                   className="gallery-image"
-                  // src={`http://www.freemap.sk/lib/image.php?width=558&height=558&filename=upload/gallery/${path}`}
-                  src={`http://www.freemap.sk/upload/gallery/${path}`}
+                  src={`${API_URL}/static/gallery/${pathname}`}
                   alt={title}
                 />
               </a>
@@ -89,7 +90,7 @@ class GalleryViewerModal extends React.Component {
           </div>
           <p>
             <br />
-            Nahral <b>{author}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+            Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
             {description && `: ${description}`}
           </p>
         </Modal.Body>

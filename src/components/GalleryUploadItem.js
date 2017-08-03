@@ -35,11 +35,11 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   handleTitleChange = (e) => {
-    this.props.onTitleChange(this.props.id, e.target.value);
+    this.props.onTitleChange(this.props.id, e.target.value || null);
   }
 
   handleDescriptionChange = (e) => {
-    this.props.onDescriptionChange(this.props.id, e.target.value);
+    this.props.onDescriptionChange(this.props.id, e.target.value || null);
   }
 
   render() {
