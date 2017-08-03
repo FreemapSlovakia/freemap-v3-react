@@ -18,7 +18,7 @@ const authLoginLogic = createLogic({
     fetch(`${API_URL}/auth/login`, {
       method: 'POST',
       headers: {
-        Accept: 'applicaction/json',
+        Accept: 'application/json',
       },
     })
       .then((res) => {
@@ -53,7 +53,7 @@ const authLogoutLogic = createLogic({
     fetch(`${API_URL}/auth/logout`, {
       method: 'POST',
       headers: {
-        Accept: 'applicaction/json',
+        Accept: 'application/json',
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
     })

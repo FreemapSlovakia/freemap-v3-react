@@ -117,6 +117,10 @@ const galleryItemUploadLogic = createLogic({
 
     fetch(`${API_URL}/gallery/picture`, {
       method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${getState().auth.user.authToken}`,
+      },
       body: formData,
     }).then(() => {
       dispatch(galleryRemoveItem(item.id));

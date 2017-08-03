@@ -17,7 +17,7 @@ export default function initAuthHelper(store) {
     fetch(`${API_URL}/auth/validate`, {
       method: 'POST',
       headers: {
-        Accept: 'applicaction/json',
+        Accept: 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
     })
