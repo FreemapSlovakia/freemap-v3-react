@@ -5,6 +5,7 @@ import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainAct
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImages, galleryRemoveItem, galleryUpload } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
+import { API_URL } from 'fm3/backendDefinitions';
 
 const galleryRequestImagesLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
@@ -16,7 +17,7 @@ const galleryRequestImagesLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`http://www.freemap.sk:3000/gallery/pictures?lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`)
+    fetch(`${API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -47,7 +48,7 @@ const galleryRequestImageLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`http://www.freemap.sk:3000/gallery/picture/${id}`)
+    fetch(`${API_URL}/gallery/picture/${id}`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -114,10 +115,9 @@ const galleryItemUploadLogic = createLogic({
       position: item.position,
     }));
 
-    fetch('https://www.posttestserver.com/', {
+    fetch(`${API_URL}/gallery/picture`, {
       method: 'POST',
       body: formData,
-      mode: 'no-cors',
     }).then(() => {
       dispatch(galleryRemoveItem(item.id));
       dispatch(galleryUpload());
