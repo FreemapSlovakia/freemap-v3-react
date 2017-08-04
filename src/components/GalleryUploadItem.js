@@ -55,6 +55,15 @@ export default class GalleryUploadItem extends React.Component {
             <ControlLabel>Popis</ControlLabel>
             <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
           </FormGroup>
+          <FormGroup>
+            <ControlLabel>Kategória</ControlLabel>
+            <FormControl componentClass="select" placeholder="Kategória">
+              <option value="" />
+              <option value="guidepost">Rázcestníky</option>
+              <option value="nature">Príroda</option>
+              <option value="doc">Dokumentačné</option>
+            </FormControl>
+          </FormGroup>
           {position && <p>{formatGpsCoord(position.lat, 'SN')}, {formatGpsCoord(position.lon, 'WE')}</p>}
           <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
           {' '}

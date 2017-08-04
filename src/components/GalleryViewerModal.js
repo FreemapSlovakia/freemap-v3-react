@@ -65,12 +65,12 @@ class GalleryViewerModal extends React.Component {
           <div className="carousel">
             <div className="item active">
               <a
-                href={`${API_URL}/static/gallery/${pathname}`}
+                href={pathname.startsWith(':') ? `http://www.freemap.sk/upload/gallery/${pathname.substring(1)}` : `${API_URL}/static/gallery/${pathname}`}
                 target="freemap_gallery_image"
               >
                 <Image
                   className="gallery-image"
-                  src={`${API_URL}/static/gallery/${pathname}`}
+                  src={pathname.startsWith(':') ? `http://www.freemap.sk/upload/gallery/${pathname.substring(1)}` : `${API_URL}/static/gallery/${pathname}`}
                   alt={title}
                 />
               </a>

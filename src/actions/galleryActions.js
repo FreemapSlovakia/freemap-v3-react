@@ -54,10 +54,6 @@ export function galleryUpload() {
   return { type: 'GALLERY_UPLOAD' };
 }
 
-export function gallerySetImagesInView(images) {
-  return { type: 'GALLERY_SET_IMAGES_IN_VIEW', payload: images };
-}
-
 export function galleryUploadFinished() {
   return { type: 'GALLERY_UPLOAD_FINISHED' };
 }

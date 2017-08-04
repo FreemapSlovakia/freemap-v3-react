@@ -11,6 +11,7 @@ import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
 
 import { galleryRequestImages, gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
+import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import 'fm3/styles/gallery.scss';
 
@@ -29,7 +30,6 @@ class GalleryResult extends React.Component {
     zoom: PropTypes.number.isRequired,
     isPickingPosition: PropTypes.bool,
     pickingPosition: FmPropTypes.point,
-    imagesInView: PropTypes.arrayOf(FmPropTypes.point),
   }
 
   state = {};
@@ -68,7 +68,7 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, zoom, isPickingPosition, pickingPosition, imagesInView } = this.props;
+    const { activeImageId, zoom, isPickingPosition, pickingPosition } = this.props;
 
     return (
       <div>
@@ -88,7 +88,7 @@ class GalleryResult extends React.Component {
           />
         }
 
-        {imagesInView.map(({ id, lat, lon }) => <Marker key={id} icon={circularIcon} position={L.latLng(lat, lon)} />)}
+        {!pickingPosition && <GalleryLayer />}
 
         {activeImageId && <GalleryViewerModal />}
       </div>
@@ -103,7 +103,6 @@ export default connect(
     zoom: state.map.zoom,
     isPickingPosition: state.gallery.pickingPositionForId !== null,
     pickingPosition: state.gallery.pickingPosition,
-    imagesInView: state.gallery.imagesInView,
   }),
   dispatch => ({
     onImageRequest(lat, lon) {
