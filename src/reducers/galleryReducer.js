@@ -56,6 +56,16 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         items: state.items.map(item => (item.id === action.payload.id ? { ...item, description: action.payload.value } : item)),
       };
+    case 'GALLERY_SET_ITEM_TIMESTAMP':
+      return {
+        ...state,
+        items: state.items.map(item => (item.id === action.payload.id ? { ...item, timestamp: action.payload.value } : item)),
+      };
+    case 'GALLERY_SET_ITEM_ERROR':
+      return {
+        ...state,
+        items: state.items.map(item => (item.id === action.payload.id ? { ...item, error: action.payload.value } : item)),
+      };
     case 'GALLERY_SET_PICKING_POSITION':
       return {
         ...state,
@@ -75,10 +85,16 @@ export default function elevationMeasurement(state = initialState, action) {
         pickingPosition: typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
       };
     case 'GALLERY_UPLOAD':
+    {
+      const items = state.uploadingId === null ? state.items.map(item => ({ ...item, error: null })) : state.items;
+      const next = items.find(item => !item.error);
+
       return {
         ...state,
-        uploadingId: state.items.length ? state.items[0].id : null,
+        items,
+        uploadingId: next ? next.id : null,
       };
+    }
     default:
       return state;
   }

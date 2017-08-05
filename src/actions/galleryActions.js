@@ -38,6 +38,14 @@ export function gallerySetItemDescription(id, description) {
   return { type: 'GALLERY_SET_ITEM_DESCRIPTION', payload: { id, value: description } };
 }
 
+export function gallerySetItemTimestamp(id, timestamp) {
+  return { type: 'GALLERY_SET_ITEM_TIMESTAMP', payload: { id, value: timestamp } };
+}
+
+export function gallerySetItemError(id, error) {
+  return { type: 'GALLERY_SET_ITEM_ERROR', payload: { id, value: error } };
+}
+
 export function gallerySetPickingPosition(lat, lon) {
   return { type: 'GALLERY_SET_PICKING_POSITION', payload: { lat, lon } };
 }

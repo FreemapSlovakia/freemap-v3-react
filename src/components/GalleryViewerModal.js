@@ -52,7 +52,7 @@ class GalleryViewerModal extends React.Component {
   render() {
     const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
-    const { pathname, title, description, user, createdAt } = images[index];
+    const { pathname, title, description, user, createdAt, takenAt } = images[index];
 
     return (
       <Modal show onHide={onClose} bsSize="large">
@@ -91,6 +91,7 @@ class GalleryViewerModal extends React.Component {
           <p>
             <br />
             Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+            {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
             {description && `: ${description}`}
           </p>
         </Modal.Body>

@@ -3,9 +3,8 @@ import { createLogic } from 'redux-logic';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImages, galleryRemoveItem, galleryUpload, galleryUploadFinished } from 'fm3/actions/galleryActions';
+import { gallerySetImages, galleryRemoveItem, galleryUpload, galleryUploadFinished, gallerySetItemError } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { API_URL } from 'fm3/backendDefinitions';
 
 const galleryRequestImagesLogic = createLogic({
@@ -102,7 +101,9 @@ const galleryItemUploadLogic = createLogic({
 
     if (uploadingId === null) {
       dispatch(galleryUploadFinished());
-      dispatch(setActiveModal(null));
+      if (getState().gallery.items.length === 0) {
+        dispatch(setActiveModal(null));
+      }
       done();
       return;
     }
@@ -115,6 +116,7 @@ const galleryItemUploadLogic = createLogic({
       title: item.title,
       description: item.description,
       position: item.position,
+      timestamp: item.timestamp.toISOString(),
     }));
 
     fetch(`${API_URL}/gallery/picture`, {
@@ -124,16 +126,29 @@ const galleryItemUploadLogic = createLogic({
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
       body: formData,
-    }).then(() => {
-      dispatch(galleryRemoveItem(item.id));
+    }).then((res) => {
+      if (res.status !== 200) {
+        throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+      } else {
+        dispatch(galleryRemoveItem(item.id));
+        dispatch(galleryUpload());
+      }
+    }).catch((err) => {
+      dispatch(gallerySetItemError(item.id, err.message));
       dispatch(galleryUpload());
+    }).then(() => {
       done();
     });
   },
 });
 
 function toImage(payload) {
-  return { ...payload, createdAt: new Date(payload.createdAt) }; // TODO validate payload
+  return {
+    // TODO validate payload
+    ...payload,
+    createdAt: new Date(payload.createdAt),
+    takenAt: payload.takenAt && new Date(payload.takenAt),
+  };
 }
 
 export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic,

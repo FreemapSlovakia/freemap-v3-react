@@ -7,6 +7,8 @@ import Thumbnail from 'react-bootstrap/lib/Thumbnail';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
+import Alert from 'react-bootstrap/lib/Alert';
 
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -19,10 +21,13 @@ export default class GalleryUploadItem extends React.Component {
     position: FmPropTypes.point,
     title: PropTypes.string,
     description: PropTypes.string,
+    timestamp: PropTypes.instanceOf(Date),
+    error: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
     onTitleChange: PropTypes.func.isRequired,
     onDescriptionChange: PropTypes.func.isRequired,
+    onTimestampChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
   }
 
@@ -42,10 +47,15 @@ export default class GalleryUploadItem extends React.Component {
     this.props.onDescriptionChange(this.props.id, e.target.value || null);
   }
 
+  handleTimestampChange = (e) => {
+    this.props.onTimestampChange(this.props.id, e.target.value ? new Date(e.target.value) : null);
+  }
+
   render() {
-    const { id, filename, dataURL, position, title, description, disabled } = this.props;
+    const { id, filename, dataURL, position, title, description, disabled, timestamp, error } = this.props;
     return (
       <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
+        {error && <Alert bsStyle="danger">{error}</Alert>}
         <fieldset disabled={disabled}>
           <FormGroup>
             <ControlLabel>Názov</ControlLabel>
@@ -56,20 +66,36 @@ export default class GalleryUploadItem extends React.Component {
             <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Kategória</ControlLabel>
-            <FormControl componentClass="select" placeholder="Kategória">
-              <option value="" />
-              <option value="guidepost">Rázcestníky</option>
-              <option value="nature">Príroda</option>
-              <option value="doc">Dokumentačné</option>
-            </FormControl>
+            <ControlLabel>Dátum a čas fotenia</ControlLabel>
+            <FormControl
+              type="datetime-local"
+              value={timestamp && `${zeropad(timestamp.getFullYear(), 4)}-${zeropad(timestamp.getMonth() + 1)}-${zeropad(timestamp.getDate())}T${zeropad(timestamp.getHours())}:${zeropad(timestamp.getMinutes())}:${zeropad(timestamp.getSeconds())}`}
+              onChange={this.handleTimestampChange}
+            />
           </FormGroup>
-          {position && <p>{formatGpsCoord(position.lat, 'SN')}, {formatGpsCoord(position.lon, 'WE')}</p>}
-          <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
+          <FormGroup>
+            <ControlLabel>Pozícia</ControlLabel>
+            <InputGroup>
+              <FormControl
+                type="text"
+                value={position ? `${formatGpsCoord(position.lat, 'SN')}, ${formatGpsCoord(position.lon, 'WE')}` : ''}
+                onChange={this.handleTimestampChange}
+                readOnly
+              />
+              <InputGroup.Button>
+                <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
+              </InputGroup.Button>
+            </InputGroup>
+          </FormGroup>
           {' '}
           <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>
         </fieldset>
       </Thumbnail>
     );
   }
+}
+
+function zeropad(v, n = 2) {
+  const raw = `0000${v}`;
+  return raw.substring(raw.length - n, raw.length);
 }
