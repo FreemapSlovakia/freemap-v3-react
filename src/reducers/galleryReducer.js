@@ -56,10 +56,10 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         items: state.items.map(item => (item.id === action.payload.id ? { ...item, description: action.payload.value } : item)),
       };
-    case 'GALLERY_SET_ITEM_TIMESTAMP':
+    case 'GALLERY_SET_ITEM_TAKEN_AT':
       return {
         ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, timestamp: action.payload.value } : item)),
+        items: state.items.map(item => (item.id === action.payload.id ? { ...item, takenAt: action.payload.value } : item)),
       };
     case 'GALLERY_SET_ITEM_ERROR':
       return {
@@ -86,7 +86,7 @@ export default function elevationMeasurement(state = initialState, action) {
       };
     case 'GALLERY_UPLOAD':
     {
-      const items = state.uploadingId === null ? state.items.map(item => ({ ...item, error: null })) : state.items;
+      const items = state.uploadingId === null ? state.items.map(item => ({ ...item, error: getError(item) })) : state.items;
       const next = items.find(item => !item.error);
 
       return {
@@ -98,4 +98,15 @@ export default function elevationMeasurement(state = initialState, action) {
     default:
       return state;
   }
+}
+
+function getError(item) {
+  const errors = [];
+  if (!item.position) {
+    errors.push('Chýba pozícía.');
+  }
+  if (item.takenAt && isNaN(item.takenAt)) {
+    errors.push('Nevalidný dátum a čas fotenia.');
+  }
+  return errors.length ? errors.join('\n') : null;
 }

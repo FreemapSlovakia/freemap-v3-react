@@ -38,8 +38,8 @@ export function gallerySetItemDescription(id, description) {
   return { type: 'GALLERY_SET_ITEM_DESCRIPTION', payload: { id, value: description } };
 }
 
-export function gallerySetItemTimestamp(id, timestamp) {
-  return { type: 'GALLERY_SET_ITEM_TIMESTAMP', payload: { id, value: timestamp } };
+export function gallerySetItemTimestamp(id, takenAt) {
+  return { type: 'GALLERY_SET_ITEM_TAKEN_AT', payload: { id, value: takenAt } };
 }
 
 export function gallerySetItemError(id, error) {

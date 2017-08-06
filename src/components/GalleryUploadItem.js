@@ -21,7 +21,7 @@ export default class GalleryUploadItem extends React.Component {
     position: FmPropTypes.point,
     title: PropTypes.string,
     description: PropTypes.string,
-    timestamp: PropTypes.instanceOf(Date),
+    takenAt: PropTypes.instanceOf(Date),
     error: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
@@ -52,7 +52,7 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const { id, filename, dataURL, position, title, description, disabled, timestamp, error } = this.props;
+    const { id, filename, dataURL, position, title, description, disabled, takenAt, error } = this.props;
     return (
       <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
         {error && <Alert bsStyle="danger">{error}</Alert>}
@@ -69,7 +69,7 @@ export default class GalleryUploadItem extends React.Component {
             <ControlLabel>Dátum a čas fotenia</ControlLabel>
             <FormControl
               type="datetime-local"
-              value={timestamp && `${zeropad(timestamp.getFullYear(), 4)}-${zeropad(timestamp.getMonth() + 1)}-${zeropad(timestamp.getDate())}T${zeropad(timestamp.getHours())}:${zeropad(timestamp.getMinutes())}:${zeropad(timestamp.getSeconds())}`}
+              value={takenAt ? `${zeropad(takenAt.getFullYear(), 4)}-${zeropad(takenAt.getMonth() + 1)}-${zeropad(takenAt.getDate())}T${zeropad(takenAt.getHours())}:${zeropad(takenAt.getMinutes())}:${zeropad(takenAt.getSeconds())}` : ''}
               onChange={this.handleTimestampChange}
             />
           </FormGroup>

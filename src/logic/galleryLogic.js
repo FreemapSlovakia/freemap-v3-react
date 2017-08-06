@@ -94,7 +94,7 @@ const galleryUploadModalLogic = createLogic({
 });
 
 const galleryItemUploadLogic = createLogic({
-  type: ['GALLERY_UPLOAD', 'GALLERY_START_ITEM_UPLOAD'],
+  type: ['GALLERY_UPLOAD'],
   cancelType: 'SET_ACTIVE_MODAL',
   process({ getState }, dispatch, done) {
     const { items, uploadingId } = getState().gallery;
@@ -116,7 +116,7 @@ const galleryItemUploadLogic = createLogic({
       title: item.title,
       description: item.description,
       position: item.position,
-      timestamp: item.timestamp.toISOString(),
+      takenAt: item.takenAt && item.takenAt.toISOString(),
     }));
 
     fetch(`${API_URL}/gallery/picture`, {

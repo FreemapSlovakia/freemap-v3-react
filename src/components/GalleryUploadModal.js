@@ -33,7 +33,7 @@ class GalleryUploadModal extends React.Component {
         position: FmPropTypes.point,
         title: PropTypes.string,
         description: PropTypes.string,
-        timestamp: PropTypes.date,
+        takenAt: PropTypes.date,
         error: PropTypes.string,
       }).isRequired,
     ).isRequired,
@@ -75,7 +75,7 @@ class GalleryUploadModal extends React.Component {
           } : null,
           title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
           description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
-          timestamp: new Date((tags.DateTimeOriginal || tags.DateTime).description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')),
+          takenAt: new Date((tags.DateTimeOriginal || tags.DateTime).description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')),
         });
 
         const img = new Image();
@@ -152,7 +152,7 @@ class GalleryUploadModal extends React.Component {
             </Dropzone>
           }
           {
-            items.map(({ id, file, dataURL, position, title, description, timestamp, error }) => (
+            items.map(({ id, file, dataURL, position, title, description, takenAt, error }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
@@ -161,7 +161,7 @@ class GalleryUploadModal extends React.Component {
                 position={position}
                 title={title}
                 description={description}
-                timestamp={timestamp}
+                takenAt={takenAt}
                 error={error}
                 onRemove={this.handleRemove}
                 onPositionPick={onPositionPick}
@@ -213,8 +213,8 @@ export default connect(
     onDescriptionChange(id, description) {
       dispatch(gallerySetItemDescription(id, description));
     },
-    onTimestampChange(id, timestamp) {
-      dispatch(gallerySetItemTimestamp(id, timestamp));
+    onTimestampChange(id, takenAt) {
+      dispatch(gallerySetItemTimestamp(id, takenAt));
     },
   }),
 )(GalleryUploadModal);
