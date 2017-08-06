@@ -112,7 +112,7 @@ export default function elevationMeasurement(state = initialState, action) {
 function getError(item) {
   const errors = [];
   if (!item.position) {
-    errors.push('Chýba pozícía.');
+    errors.push('Chýba pozícia.');
   }
   if (item.takenAt && isNaN(item.takenAt)) {
     errors.push('Nevalidný dátum a čas fotenia.');
