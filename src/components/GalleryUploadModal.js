@@ -38,6 +38,7 @@ class GalleryUploadModal extends React.Component {
         error: PropTypes.string,
       }).isRequired,
     ).isRequired,
+    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     onItemAdd: PropTypes.func.isRequired,
     onItemUrlSet: PropTypes.func.isRequired,
     onItemRemove: PropTypes.func.isRequired,
@@ -142,7 +143,7 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, onTakenAtChange, onTagsChange, visible, onUpload, uploading } = this.props;
+    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, onTakenAtChange, onTagsChange, visible, onUpload, uploading, allTags } = this.props;
     return (
       <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
@@ -161,6 +162,7 @@ class GalleryUploadModal extends React.Component {
                 description={description}
                 takenAt={takenAt}
                 tags={tags}
+                allTags={allTags}
                 error={error}
                 onRemove={this.handleRemove}
                 onPositionPick={onPositionPick}
@@ -192,6 +194,7 @@ export default connect(
     items: state.gallery.items,
     visible: state.gallery.pickingPositionForId === null,
     uploading: !!state.gallery.uploadingId,
+    allTags: state.gallery.tags,
   }),
   dispatch => ({
     onItemAdd(item) {

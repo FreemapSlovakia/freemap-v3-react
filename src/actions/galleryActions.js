@@ -69,3 +69,7 @@ export function galleryUpload() {
 export function galleryUploadFinished() {
   return { type: 'GALLERY_UPLOAD_FINISHED' };
 }
+
+export function gallerySetTags(tags) {
+  return { type: 'GALLERY_SET_TAGS', payload: tags };
+}

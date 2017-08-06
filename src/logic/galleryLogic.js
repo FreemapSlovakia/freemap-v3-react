@@ -3,7 +3,7 @@ import { createLogic } from 'redux-logic';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImages, galleryRemoveItem, galleryUpload, galleryUploadFinished, gallerySetItemError } from 'fm3/actions/galleryActions';
+import { gallerySetImages, galleryRemoveItem, galleryUpload, galleryUploadFinished, gallerySetItemError, gallerySetTags } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 import { API_URL } from 'fm3/backendDefinitions';
 
@@ -89,6 +89,33 @@ const galleryUploadModalLogic = createLogic({
       next(toastsAddError('Pre nahrávanie obrázkov do galérie musíte byť prihlásený.'));
     } else {
       next(action);
+    }
+  },
+  process({ action }, dispatch, done) {
+    if (action.payload === 'gallery-upload') {
+      const pid = Math.random();
+      dispatch(startProgress(pid));
+
+      fetch(`${API_URL}/gallery/picture-tags`)
+        .then((res) => {
+          if (res.status !== 200) {
+            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+          } else {
+            return res.json();
+          }
+        })
+        .then((payload) => {
+          dispatch(gallerySetTags(payload));
+        })
+        .catch((e) => {
+          dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
+        })
+        .then(() => {
+          dispatch(stopProgress(pid));
+          done();
+        });
+    } else {
+      done();
     }
   },
 });

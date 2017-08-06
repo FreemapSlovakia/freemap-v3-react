@@ -24,6 +24,7 @@ export default class GalleryUploadItem extends React.Component {
     description: PropTypes.string,
     takenAt: PropTypes.instanceOf(Date),
     tags: PropTypes.arrayOf(PropTypes.string.isRequired),
+    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     error: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
@@ -67,7 +68,7 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const { id, filename, dataURL, position, title, description, disabled, takenAt, tags, error } = this.props;
+    const { id, filename, dataURL, position, title, description, disabled, takenAt, tags, allTags, error } = this.props;
     return (
       <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
         {error && <Alert bsStyle="danger">{error}</Alert>}
@@ -104,6 +105,7 @@ export default class GalleryUploadItem extends React.Component {
             <ReactTags
               placeholder="Tagy"
               tags={tags.map(tag => ({ id: tag, name: tag }))}
+              suggestions={allTags.map(tag => ({ id: tag, name: tag }))}
               handleAddition={this.handleTagAdded}
               handleDelete={this.handleTagDeleted}
               allowNew

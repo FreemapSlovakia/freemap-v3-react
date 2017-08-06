@@ -6,6 +6,8 @@ const initialState = {
   pickingPositionForId: null,
 
   uploadingId: null,
+
+  tags: [],
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -100,6 +102,8 @@ export default function elevationMeasurement(state = initialState, action) {
         uploadingId: next ? next.id : null,
       };
     }
+    case 'GALLERY_SET_TAGS':
+      return { ...state, tags: action.payload };
     default:
       return state;
   }
