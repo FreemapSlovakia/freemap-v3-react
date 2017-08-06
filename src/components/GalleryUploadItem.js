@@ -102,6 +102,7 @@ export default class GalleryUploadItem extends React.Component {
           </FormGroup>
           <FormGroup>
             <ReactTags
+              placeholder="Tagy"
               tags={tags.map(tag => ({ id: tag, name: tag }))}
               handleAddition={this.handleTagAdded}
               handleDelete={this.handleTagDeleted}
