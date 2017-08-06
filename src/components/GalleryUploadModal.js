@@ -146,11 +146,6 @@ class GalleryUploadModal extends React.Component {
           <Modal.Title>Nahrať obrázky</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {!uploading &&
-            <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg" className="dropzone" disablePreview>
-              <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
-            </Dropzone>
-          }
           {
             items.map(({ id, file, dataURL, position, title, description, takenAt, error }) => (
               <GalleryUploadItem
@@ -171,6 +166,11 @@ class GalleryUploadModal extends React.Component {
                 disabled={uploading}
               />
             ))
+          }
+          {!uploading &&
+            <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg" className="dropzone" disablePreview>
+              <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
+            </Dropzone>
           }
         </Modal.Body>
         <Modal.Footer>
