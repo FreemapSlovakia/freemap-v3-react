@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import ReactTags from 'react-tag-autocomplete';
+import 'react-tag-autocomplete/example/styles.css';
 
 import Button from 'react-bootstrap/lib/Button';
 import Thumbnail from 'react-bootstrap/lib/Thumbnail';
@@ -21,12 +23,14 @@ export default class GalleryUploadItem extends React.Component {
     title: PropTypes.string,
     description: PropTypes.string,
     takenAt: PropTypes.instanceOf(Date),
+    tags: PropTypes.arrayOf(PropTypes.string.isRequired),
     error: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
     onTitleChange: PropTypes.func.isRequired,
     onDescriptionChange: PropTypes.func.isRequired,
-    onTimestampChange: PropTypes.func.isRequired,
+    onTakenAtChange: PropTypes.func.isRequired,
+    onTagsChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
   }
 
@@ -46,12 +50,24 @@ export default class GalleryUploadItem extends React.Component {
     this.props.onDescriptionChange(this.props.id, e.target.value || null);
   }
 
-  handleTimestampChange = (e) => {
-    this.props.onTimestampChange(this.props.id, e.target.value ? new Date(e.target.value) : null);
+  handleTakenAtChange = (e) => {
+    this.props.onTakenAtChange(this.props.id, e.target.value ? new Date(e.target.value) : null);
+  }
+
+  handleTagAdded = ({ name }) => {
+    if (!this.props.tags.includes(name)) {
+      this.props.onTagsChange(this.props.id, [...this.props.tags, name]);
+    }
+  }
+
+  handleTagDeleted = (i) => {
+    const newTags = [...this.props.tags];
+    newTags.splice(i, 1);
+    this.props.onTagsChange(this.props.id, newTags);
   }
 
   render() {
-    const { id, filename, dataURL, position, title, description, disabled, takenAt, error } = this.props;
+    const { id, filename, dataURL, position, title, description, disabled, takenAt, tags, error } = this.props;
     return (
       <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
         {error && <Alert bsStyle="danger">{error}</Alert>}
@@ -67,7 +83,7 @@ export default class GalleryUploadItem extends React.Component {
               type="datetime-local"
               placeholder="Dátum a čas fotenia"
               value={takenAt ? `${zeropad(takenAt.getFullYear(), 4)}-${zeropad(takenAt.getMonth() + 1)}-${zeropad(takenAt.getDate())}T${zeropad(takenAt.getHours())}:${zeropad(takenAt.getMinutes())}:${zeropad(takenAt.getSeconds())}` : ''}
-              onChange={this.handleTimestampChange}
+              onChange={this.handleTakenAtChange}
             />
           </FormGroup>
           <FormGroup>
@@ -83,6 +99,14 @@ export default class GalleryUploadItem extends React.Component {
                 <Button onClick={this.handlePositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
               </InputGroup.Button>
             </InputGroup>
+          </FormGroup>
+          <FormGroup>
+            <ReactTags
+              tags={tags.map(tag => ({ id: tag, name: tag }))}
+              handleAddition={this.handleTagAdded}
+              handleDelete={this.handleTagDeleted}
+              allowNew
+            />
           </FormGroup>
           {' '}
           <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>

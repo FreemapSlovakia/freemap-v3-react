@@ -12,7 +12,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import {
-  galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemTimestamp,
+  galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemTakenAt, gallerySetItemTags,
   gallerySetItemUrl, gallerySetItemForPositionPicking, galleryUpload } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
@@ -33,6 +33,7 @@ class GalleryUploadModal extends React.Component {
         position: FmPropTypes.point,
         title: PropTypes.string,
         description: PropTypes.string,
+        tags: PropTypes.arrayOf(PropTypes.string),
         takenAt: PropTypes.date,
         error: PropTypes.string,
       }).isRequired,
@@ -44,7 +45,8 @@ class GalleryUploadModal extends React.Component {
     onPositionPick: PropTypes.func.isRequired,
     onTitleChange: PropTypes.func.isRequired,
     onDescriptionChange: PropTypes.func.isRequired,
-    onTimestampChange: PropTypes.func.isRequired,
+    onTakenAtChange: PropTypes.func.isRequired,
+    onTagsChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
     onUpload: PropTypes.func.isRequired,
     uploading: PropTypes.bool,
@@ -76,6 +78,7 @@ class GalleryUploadModal extends React.Component {
           title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
           description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
           takenAt: new Date((tags.DateTimeOriginal || tags.DateTime).description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')),
+          tags: [],
         });
 
         const img = new Image();
@@ -139,7 +142,7 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, onTimestampChange, visible, onUpload, uploading } = this.props;
+    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, onTakenAtChange, onTagsChange, visible, onUpload, uploading } = this.props;
     return (
       <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
@@ -147,7 +150,7 @@ class GalleryUploadModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {
-            items.map(({ id, file, dataURL, position, title, description, takenAt, error }) => (
+            items.map(({ id, file, dataURL, position, title, description, takenAt, tags, error }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
@@ -157,12 +160,14 @@ class GalleryUploadModal extends React.Component {
                 title={title}
                 description={description}
                 takenAt={takenAt}
+                tags={tags}
                 error={error}
                 onRemove={this.handleRemove}
                 onPositionPick={onPositionPick}
                 onTitleChange={onTitleChange}
                 onDescriptionChange={onDescriptionChange}
-                onTimestampChange={onTimestampChange}
+                onTakenAtChange={onTakenAtChange}
+                onTagsChange={onTagsChange}
                 disabled={uploading}
               />
             ))
@@ -213,8 +218,11 @@ export default connect(
     onDescriptionChange(id, description) {
       dispatch(gallerySetItemDescription(id, description));
     },
-    onTimestampChange(id, takenAt) {
-      dispatch(gallerySetItemTimestamp(id, takenAt));
+    onTakenAtChange(id, takenAt) {
+      dispatch(gallerySetItemTakenAt(id, takenAt));
+    },
+    onTagsChange(id, tags) {
+      dispatch(gallerySetItemTags(id, tags));
     },
   }),
 )(GalleryUploadModal);

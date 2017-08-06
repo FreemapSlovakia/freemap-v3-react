@@ -9,6 +9,7 @@ import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Image from 'react-bootstrap/lib/Image';
+import Label from 'react-bootstrap/lib/Label';
 
 import { API_URL } from 'fm3/backendDefinitions';
 
@@ -52,7 +53,7 @@ class GalleryViewerModal extends React.Component {
   render() {
     const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
-    const { pathname, title, description, user, createdAt, takenAt } = images[index];
+    const { pathname, title, description, user, createdAt, takenAt, tags } = images[index];
 
     return (
       <Modal show onHide={onClose} bsSize="large">
@@ -93,6 +94,7 @@ class GalleryViewerModal extends React.Component {
             Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
             {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
             {description && `: ${description}`}
+            {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
           </p>
         </Modal.Body>
         <Modal.Footer>

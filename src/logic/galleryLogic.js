@@ -117,6 +117,7 @@ const galleryItemUploadLogic = createLogic({
       description: item.description,
       position: item.position,
       takenAt: item.takenAt && item.takenAt.toISOString(),
+      tags: item.tags,
     }));
 
     fetch(`${API_URL}/gallery/picture`, {

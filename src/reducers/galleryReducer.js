@@ -61,6 +61,11 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         items: state.items.map(item => (item.id === action.payload.id ? { ...item, takenAt: action.payload.value } : item)),
       };
+    case 'GALLERY_SET_ITEM_TAGS':
+      return {
+        ...state,
+        items: state.items.map(item => (item.id === action.payload.id ? { ...item, tags: action.payload.value } : item)),
+      };
     case 'GALLERY_SET_ITEM_ERROR':
       return {
         ...state,
