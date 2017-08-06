@@ -5,7 +5,6 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
 import Thumbnail from 'react-bootstrap/lib/Thumbnail';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Alert from 'react-bootstrap/lib/Alert';
@@ -58,28 +57,26 @@ export default class GalleryUploadItem extends React.Component {
         {error && <Alert bsStyle="danger">{error}</Alert>}
         <fieldset disabled={disabled}>
           <FormGroup>
-            <ControlLabel>Názov</ControlLabel>
-            <FormControl type="text" value={title} onChange={this.handleTitleChange} />
+            <FormControl placeholder="Názov" type="text" value={title} onChange={this.handleTitleChange} />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Popis</ControlLabel>
-            <FormControl componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
+            <FormControl placeholder="Popis" componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Dátum a čas fotenia</ControlLabel>
             <FormControl
               type="datetime-local"
+              placeholder="Dátum a čas fotenia"
               value={takenAt ? `${zeropad(takenAt.getFullYear(), 4)}-${zeropad(takenAt.getMonth() + 1)}-${zeropad(takenAt.getDate())}T${zeropad(takenAt.getHours())}:${zeropad(takenAt.getMinutes())}:${zeropad(takenAt.getSeconds())}` : ''}
               onChange={this.handleTimestampChange}
             />
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Pozícia</ControlLabel>
             <InputGroup>
               <FormControl
                 type="text"
+                placeholder="Pozícia"
                 value={position ? `${formatGpsCoord(position.lat, 'SN')}, ${formatGpsCoord(position.lon, 'WE')}` : ''}
-                onChange={this.handleTimestampChange}
+                onClick={this.handlePositionPick}
                 readOnly
               />
               <InputGroup.Button>
