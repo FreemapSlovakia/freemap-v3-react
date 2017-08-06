@@ -1,5 +1,3 @@
-// import React from 'react';
-import PropTypes from 'prop-types';
 import { GridLayer } from 'react-leaflet';
 import { API_URL } from 'fm3/backendDefinitions';
 

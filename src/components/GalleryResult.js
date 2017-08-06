@@ -15,13 +15,6 @@ import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import 'fm3/styles/gallery.scss';
 
-const circularIcon = new L.divIcon({ // CircleMarker is not draggable
-  iconSize: [14, 14],
-  iconAnchor: [7, 7],
-  tooltipAnchor: [10, 0],
-  html: '<div class="circular-leaflet-marker-icon"></div>',
-});
-
 class GalleryResult extends React.Component {
   static propTypes = {
     onImageRequest: PropTypes.func.isRequired,
