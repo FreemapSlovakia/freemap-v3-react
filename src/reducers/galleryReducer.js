@@ -8,13 +8,15 @@ const initialState = {
   uploadingId: null,
 
   tags: [],
+
+  uploadSeq: 0,
 };
 
 export default function elevationMeasurement(state = initialState, action) {
   switch (action.type) {
     case 'MAP_RESET':
     case 'SET_TOOL':
-      return initialState;
+      return { ...initialState, uploadSeq: state.uploadSeq };
     case 'SET_ACTIVE_MODAL':
       return {
         ...state,
@@ -104,6 +106,8 @@ export default function elevationMeasurement(state = initialState, action) {
     }
     case 'GALLERY_SET_TAGS':
       return { ...state, tags: action.payload };
+    case 'GALLERY_UPLOAD_FINISHED':
+      return { ...state, uploadSeq: state.uploadSeq + 1 };
     default:
       return state;
   }

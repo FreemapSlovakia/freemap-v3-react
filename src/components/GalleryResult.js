@@ -23,6 +23,7 @@ class GalleryResult extends React.Component {
     zoom: PropTypes.number.isRequired,
     isPickingPosition: PropTypes.bool,
     pickingPosition: FmPropTypes.point,
+    uploadSeq: PropTypes.number.isRequired,
   }
 
   state = {};
@@ -61,7 +62,7 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, zoom, isPickingPosition, pickingPosition } = this.props;
+    const { activeImageId, zoom, isPickingPosition, pickingPosition, uploadSeq } = this.props;
 
     return (
       <div>
@@ -81,7 +82,7 @@ class GalleryResult extends React.Component {
           />
         }
 
-        {!pickingPosition && <GalleryLayer />}
+        {!isPickingPosition && <GalleryLayer key={uploadSeq} />}
 
         {activeImageId && <GalleryViewerModal />}
       </div>
@@ -96,6 +97,7 @@ export default connect(
     zoom: state.map.zoom,
     isPickingPosition: state.gallery.pickingPositionForId !== null,
     pickingPosition: state.gallery.pickingPosition,
+    uploadSeq: state.gallery.uploadSeq,
   }),
   dispatch => ({
     onImageRequest(lat, lon) {

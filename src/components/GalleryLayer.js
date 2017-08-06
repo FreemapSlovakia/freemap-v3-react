@@ -60,7 +60,6 @@ export default class FooLayer extends GridLayer {
   static propTypes = {
     userId: PropTypes.number,
     tag: PropTypes.string,
-    own: PropTypes.bool,
   };
 
   // eslint-disable-next-line
@@ -69,7 +68,7 @@ export default class FooLayer extends GridLayer {
   }
 
   updateLeafletElement(fromProps, toProps) {
-    if (['userId', 'tag', 'own'].some(p => fromProps[p] !== toProps[p])) {
+    if (['userId', 'tag'].some(p => fromProps[p] !== toProps[p])) {
       this.leafletElement.redraw();
     }
   }
