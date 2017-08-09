@@ -69,6 +69,7 @@ class GalleryUploadModal extends React.Component {
         const id = nextId;
         nextId += 1;
 
+        const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
         this.props.onItemAdd({
           id,
           file,
@@ -78,7 +79,7 @@ class GalleryUploadModal extends React.Component {
           } : null,
           title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
           description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
-          takenAt: new Date((tags.DateTimeOriginal || tags.DateTime).description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')),
+          takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
           tags: [],
         });
 
