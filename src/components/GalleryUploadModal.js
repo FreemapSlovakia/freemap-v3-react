@@ -96,7 +96,7 @@ class GalleryUploadModal extends React.Component {
           const ratio = 618 / img.naturalWidth;
           const width = img.naturalWidth * ratio;
           const height = img.naturalHeight * ratio;
-          const o = tags.Orientation ? tags.Orientation.value : 1;
+          const o = tags.Orientation && tags.Orientation.value || 1;
           canvas.width = width;
           canvas.height = height;
 
@@ -112,12 +112,17 @@ class GalleryUploadModal extends React.Component {
           ];
 
           pica.resize(img, canvas).then(() => {
-            const canvas2 = document.createElement('canvas');
-            const ctx = canvas2.getContext('2d');
-            canvas2.width = o > 4 ? height : width;
-            canvas2.height = o > 4 ? width : height;
-            ctx.transform(...transformations[o - 1]);
-            ctx.drawImage(canvas, 0, 0);
+            let canvas2;
+            if (o === 1) {
+              canvas2 = canvas;
+            } else {
+              canvas2 = document.createElement('canvas');
+              const ctx = canvas2.getContext('2d');
+              canvas2.width = o > 4 ? height : width;
+              canvas2.height = o > 4 ? width : height;
+              ctx.transform(...transformations[o - 1]);
+              ctx.drawImage(canvas, 0, 0);
+            }
 
             // canvas2.toBlob((blob) => {
             //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
