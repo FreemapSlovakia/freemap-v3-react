@@ -153,7 +153,7 @@ class GalleryUploadModal extends React.Component {
     return (
       <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Nahrať obrázky</Modal.Title>
+          <Modal.Title>Nahrať fotky</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {
@@ -182,7 +182,7 @@ class GalleryUploadModal extends React.Component {
           }
           {!uploading &&
             <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg" className="dropzone" disablePreview>
-              <div>Potiahnite sem obrázky, alebo sem kliknite pre ich výber.</div>
+              <div>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</div>
             </Dropzone>
           }
         </Modal.Body>

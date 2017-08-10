@@ -137,7 +137,7 @@ class Main extends React.Component {
       createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
       createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
       createMenuItem(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
-      createMenuItem(8, 'picture-o', 'Galéria obrázkov', () => this.handleToolSelect('gallery')),
+      createMenuItem(8, 'picture-o', 'Galéria fotiek', () => this.handleToolSelect('gallery')),
       createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
       createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
       createMenuItem(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),

@@ -29,7 +29,7 @@ const galleryRequestImagesLogic = createLogic({
         dispatch(gallerySetImages(payload.map(item => toImage(item))));
       })
       .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri načítavaní obrázkov: ${e.message}`));
+        dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
       })
       .then(() => {
         dispatch(stopProgress(pid));
@@ -60,7 +60,7 @@ const galleryRequestImageLogic = createLogic({
         dispatch(gallerySetImages([toImage(payload)]));
       })
       .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri načítavaní obrázku: ${e.message}`));
+        dispatch(toastsAddError(`Nastala chyba pri načítavaní fotky: ${e.message}`));
       })
       .then(() => {
         dispatch(stopProgress(pid));
@@ -86,7 +86,7 @@ const galleryUploadModalLogic = createLogic({
   type: 'SET_ACTIVE_MODAL',
   transform({ getState, action }, next) {
     if (action.payload === 'gallery-upload' && !getState().auth.user) {
-      next(toastsAddError('Pre nahrávanie obrázkov do galérie musíte byť prihlásený.'));
+      next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
     } else {
       next(action);
     }
