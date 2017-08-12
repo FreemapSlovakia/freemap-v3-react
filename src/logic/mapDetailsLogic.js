@@ -69,7 +69,7 @@ export default createLogic({
       const surface = resolveTrackSurface(way.tags);
       const bicycleType = resolveBicycleTypeSuitableForTrack(way.tags);
       const isBicycleMap = state.map.mapType === 'C';
-      const lastEditAt = dateFormat.format(new Date(way.takenAt));
+      const lastEditAt = dateFormat.format(new Date(way.timestamp));
       return (
         <div>
           <dl className="dl-horizontal">
