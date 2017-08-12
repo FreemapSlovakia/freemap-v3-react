@@ -20,6 +20,7 @@ export default function infoPoint(state = initialState, action) {
       return { ...state, label: action.payload.label };
     }
     case 'SET_TOOL':
+    case 'MAP_RESET':
       return initialState;
     default:
       return state;
