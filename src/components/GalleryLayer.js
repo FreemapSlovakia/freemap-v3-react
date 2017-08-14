@@ -25,6 +25,8 @@ const galleryLayer = L.GridLayer.extend({
     ctx.fillStyle = '#ff0';
     ctx.lineWidth = 1.5;
 
+    const k = 2 ** coords.z;
+
     fetch(`${API_URL}/gallery/pictures?by=bbox&bbox=${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`
       + `${this.options.tag ? `&tag=${encodeURIComponent(this.options.tag)}` : ''}${this.options.userId ? `&userId=${this.options.userId}` : ''}`,
     )
@@ -36,7 +38,26 @@ const galleryLayer = L.GridLayer.extend({
         }
       })
       .then((payload) => {
-        payload.forEach(({ lat, lon }) => {
+        const s = new Set();
+        const mangled = payload
+          .map(({ lat, lon }) => {
+            const la = Math.round(lat * k);
+            const lo = Math.round(lon * k);
+            return { la, lo };
+          })
+          .filter(({ la, lo }) => {
+            const key = `${la},${lo}`;
+            const has = s.has(key);
+            if (!has) {
+              s.add(key);
+            }
+            return !has;
+          })
+          .map(({ la, lo }) => ({ lat: la / k, lon: lo / k }));
+
+        // console.log('xxxxxxxxxxx', payload.length, mangled.length);
+
+        mangled.forEach(({ lat, lon }) => {
           const y = size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat) * size.y);
           const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng) * size.x);
 
