@@ -53,7 +53,7 @@ class GalleryViewerModal extends React.Component {
   render() {
     const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
     const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
-    const { pathname, title, description, user, createdAt, takenAt, tags } = images[index];
+    const { id, title, description, user, createdAt, takenAt, tags } = images[index];
 
     return (
       <Modal show onHide={onClose} bsSize="large">
@@ -66,12 +66,12 @@ class GalleryViewerModal extends React.Component {
           <div className="carousel">
             <div className="item active">
               <a
-                href={pathname.startsWith(':') ? `http://www.freemap.sk/upload/gallery/${pathname.substring(1)}` : `${API_URL}/static/gallery/${pathname}`}
+                href={`${API_URL}/gallery/pictures/${id}/image`}
                 target="freemap_gallery_image"
               >
                 <Image
                   className="gallery-image"
-                  src={pathname.startsWith(':') ? `http://www.freemap.sk/upload/gallery/${pathname.substring(1)}` : `${API_URL}/static/gallery/${pathname}`}
+                  src={`${API_URL}/gallery/pictures/${id}/image`}
                   alt={title}
                 />
               </a>
