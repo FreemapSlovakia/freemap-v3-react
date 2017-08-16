@@ -48,7 +48,7 @@ const galleryRequestImageLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`${API_URL}/gallery/picture/${id}`)
+    fetch(`${API_URL}/gallery/pictures/${id}`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -147,7 +147,7 @@ const galleryItemUploadLogic = createLogic({
       tags: item.tags,
     }));
 
-    fetch(`${API_URL}/gallery/picture`, {
+    fetch(`${API_URL}/gallery/pictures`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
