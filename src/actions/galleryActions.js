@@ -6,12 +6,16 @@ export function galleryRequestImage(id) {
   return { type: 'GALLERY_REQUEST_IMAGE', payload: id };
 }
 
-export function gallerySetImages(images) {
-  return { type: 'GALLERY_SET_IMAGES', payload: images };
+export function gallerySetImageIds(imageIds) {
+  return { type: 'GALLERY_SET_IMAGE_IDS', payload: imageIds };
 }
 
-export function gallerySetActiveImageId(activeImageId) {
-  return { type: 'GALLERY_SET_ACTIVE_IMAGE_ID', payload: activeImageId };
+export function gallerySetImage(image) {
+  return { type: 'GALLERY_SET_IMAGE', payload: image };
+}
+
+export function galleryClear() {
+  return { type: 'GALLERY_CLEAR' };
 }
 
 export function galleryShowOnTheMap() {

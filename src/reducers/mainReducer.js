@@ -27,7 +27,7 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'info-point' };
     case 'CHANGESETS_SET_DAYS':
       return { ...state, tool: 'changesets' };
-    case 'GALLERY_SET_IMAGES':
+    case 'GALLERY_REQUEST_IMAGE':
       return { ...state, tool: 'gallery' };
     case 'DISTANCE_MEASUREMENT_SET_POINTS':
       return { ...state, tool: 'measure-dist' };

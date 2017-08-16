@@ -3,7 +3,7 @@ import { createLogic } from 'redux-logic';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImages, galleryRemoveItem, galleryUpload, galleryUploadFinished, gallerySetItemError, gallerySetTags } from 'fm3/actions/galleryActions';
+import { gallerySetImageIds, galleryRequestImage, gallerySetImage, galleryRemoveItem, galleryUpload, galleryUploadFinished, gallerySetItemError, gallerySetTags } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 import { API_URL } from 'fm3/backendDefinitions';
 
@@ -26,7 +26,9 @@ const galleryRequestImagesLogic = createLogic({
         }
       })
       .then((payload) => {
-        dispatch(gallerySetImages(payload.map(item => toImage(item))));
+        const ids = payload.map(item => item.id);
+        dispatch(gallerySetImageIds(ids));
+        dispatch(galleryRequestImage(ids[0]));
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
@@ -57,7 +59,11 @@ const galleryRequestImageLogic = createLogic({
         }
       })
       .then((payload) => {
-        dispatch(gallerySetImages([toImage(payload)]));
+        dispatch(gallerySetImage({
+          ...payload,
+          createdAt: new Date(payload.createdAt),
+          takenAt: payload.takenAt && new Date(payload.takenAt),
+        }));
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri načítavaní fotky: ${e.message}`));
@@ -169,15 +175,6 @@ const galleryItemUploadLogic = createLogic({
     });
   },
 });
-
-function toImage(payload) {
-  return {
-    // TODO validate payload
-    ...payload,
-    createdAt: new Date(payload.createdAt),
-    takenAt: payload.takenAt && new Date(payload.takenAt),
-  };
-}
 
 export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic,
   galleryUploadModalLogic, galleryItemUploadLogic];

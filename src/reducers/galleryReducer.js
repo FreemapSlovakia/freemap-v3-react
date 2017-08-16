@@ -1,6 +1,7 @@
 const initialState = {
-  images: [],
+  imageIds: null,
   activeImageId: null,
+  image: null,
 
   items: [],
   pickingPositionForId: null,
@@ -23,18 +24,28 @@ export default function elevationMeasurement(state = initialState, action) {
         items: [],
         pickingPositionForId: null,
       };
-    case 'GALLERY_SET_IMAGES':
+    case 'GALLERY_SET_IMAGE_IDS':
       return {
         ...state,
-        images: action.payload,
-        activeImageId: action.payload.length ? action.payload[0].id : null,
+        imageIds: action.payload,
       };
-    case 'GALLERY_SET_ACTIVE_IMAGE_ID':
+    case 'GALLERY_CLEAR':
+      return {
+        ...state,
+        imageIds: null,
+        image: null,
+        activeImageId: null,
+      };
+    case 'GALLERY_SET_IMAGE':
+      return {
+        ...state,
+        image: action.payload,
+      };
+    case 'GALLERY_REQUEST_IMAGE':
       return {
         ...state,
         activeImageId: action.payload,
       };
-
     case 'GALLERY_ADD_ITEM':
       return {
         ...state,

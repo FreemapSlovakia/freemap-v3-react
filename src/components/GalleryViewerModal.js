@@ -13,7 +13,7 @@ import Label from 'react-bootstrap/lib/Label';
 
 import { API_URL } from 'fm3/backendDefinitions';
 
-import { gallerySetImages, gallerySetActiveImageId, galleryShowOnTheMap }
+import { galleryClear, galleryRequestImage, galleryShowOnTheMap }
   from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
@@ -22,10 +22,11 @@ const dateFormat = new Intl.DateTimeFormat('sk');
 
 class GalleryViewerModal extends React.Component {
   static propTypes = {
-    images: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number.isRequired,
-    })).isRequired,
-    activeImageId: PropTypes.number,
+    imageIds: PropTypes.arrayOf(PropTypes.number.isRequired),
+    image: PropTypes.shape({
+      // TODO
+    }),
+    activeImageId: PropTypes.number.isRequired,
     onClose: PropTypes.func.isRequired,
     onImageSelect: PropTypes.func.isRequired,
     onShowOnTheMap: PropTypes.func.isRequired,
@@ -34,68 +35,76 @@ class GalleryViewerModal extends React.Component {
   handlePreviousClick = (e) => {
     e.preventDefault();
 
-    const { images, activeImageId, onImageSelect } = this.props;
-    const index = images.findIndex(({ id }) => id === activeImageId);
+    const { imageIds, activeImageId, onImageSelect } = this.props;
+    const index = imageIds.findIndex(id => id === activeImageId);
     if (index > 0) {
-      onImageSelect(images[index - 1].id);
+      onImageSelect(imageIds[index - 1]);
     }
   }
 
   handleNextClick = (e) => {
     e.preventDefault();
-    const { images, activeImageId, onImageSelect } = this.props;
-    const index = images.findIndex(({ id }) => id === activeImageId);
-    if (index + 1 < images.length) {
-      onImageSelect(images[index + 1].id);
+    const { imageIds, activeImageId, onImageSelect } = this.props;
+    const index = imageIds.findIndex(id => id === activeImageId);
+    if (index + 1 < imageIds.length) {
+      onImageSelect(imageIds[index + 1]);
     }
   }
 
   render() {
-    const { images, activeImageId, onClose, onShowOnTheMap } = this.props;
-    const index = activeImageId ? images.findIndex(({ id }) => id === activeImageId) : -1;
-    const { id, title, description, user, createdAt, takenAt, tags } = images[index];
+    const { imageIds, activeImageId, onClose, onShowOnTheMap, image } = this.props;
+    const index = imageIds && imageIds.findIndex(id => id === activeImageId);
+    const { title = '...', description, user, createdAt, takenAt, tags } = image || {};
+
+    const loadingMeta = !image || image.id !== activeImageId;
 
     return (
       <Modal show onHide={onClose} bsSize="large">
         <Modal.Header closeButton>
           <Modal.Title>
-            Fotka {index + 1} / {images.length}{title && ` - ${title}`}
+            Fotka {imageIds ? `${index + 1} / ${imageIds.length} ` : ''}{title && `- ${title}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <div className="carousel">
             <div className="item active">
               <a
-                href={`${API_URL}/gallery/pictures/${id}/image`}
+                href={`${API_URL}/gallery/pictures/${activeImageId}/image`}
                 target="freemap_gallery_image"
               >
                 <Image
                   className="gallery-image"
-                  src={`${API_URL}/gallery/pictures/${id}/image`}
+                  src={`${API_URL}/gallery/pictures/${activeImageId}/image`}
                   alt={title}
                 />
               </a>
             </div>
-            <a
-              className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
-              onClick={this.handlePreviousClick}
-            >
-              <Glyphicon glyph="chevron-left" />
-            </a>
-            <a
-              className={`right carousel-control ${index >= images.length - 1 ? 'disabled' : ''}`}
-              onClick={this.handleNextClick}
-            >
-              <Glyphicon glyph="chevron-right" />
-            </a>
+            {imageIds &&
+              <a
+                className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
+                onClick={this.handlePreviousClick}
+              >
+                <Glyphicon glyph="chevron-left" />
+              </a>
+            }
+            {imageIds &&
+              <a
+                className={`right carousel-control ${index >= imageIds.length - 1 ? 'disabled' : ''}`}
+                onClick={this.handleNextClick}
+              >
+                <Glyphicon glyph="chevron-right" />
+              </a>
+            }
           </div>
-          <p>
-            <br />
-            Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
-            {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
-            {description && `: ${description}`}
-            {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
-          </p>
+          {image &&
+            <p>
+              <br />
+              Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+              {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
+              {description && `: ${description}`}
+              {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
+            </p>
+          }
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
@@ -108,21 +117,22 @@ class GalleryViewerModal extends React.Component {
 
 export default connect(
   state => ({
-    images: state.gallery.images,
+    imageIds: state.gallery.imageIds,
+    image: state.gallery.image,
     activeImageId: state.gallery.activeImageId,
     zoom: state.map.zoom,
     pickingPosition: state.gallery.pickingPositionForId !== null,
   }),
   dispatch => ({
     onClose() {
-      dispatch(gallerySetImages([]));
+      dispatch(galleryClear(null));
     },
     onShowOnTheMap() {
       dispatch(galleryShowOnTheMap());
-      dispatch(gallerySetImages([]));
+      dispatch(galleryClear(null));
     },
     onImageSelect(id) {
-      dispatch(gallerySetActiveImageId(id));
+      dispatch(galleryRequestImage(id));
     },
   }),
 )(GalleryViewerModal);
