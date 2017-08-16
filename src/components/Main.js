@@ -62,6 +62,7 @@ import { authLogin, authStartLogout, authCheckLogin } from 'fm3/actions/authActi
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/main.scss';
+import 'leaflet/dist/leaflet.css';
 
 class Main extends React.Component {
   static propTypes = {
