@@ -10,15 +10,18 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Image from 'react-bootstrap/lib/Image';
 import Label from 'react-bootstrap/lib/Label';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
+import FormControl from 'react-bootstrap/lib/FormControl';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { API_URL } from 'fm3/backendDefinitions';
 
-import { galleryClear, galleryRequestImage, galleryShowOnTheMap }
+import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment }
   from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
 
-const dateFormat = new Intl.DateTimeFormat('sk');
+const dateFormat = new Intl.DateTimeFormat('sk', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
 
 class GalleryViewerModal extends React.Component {
   static propTypes = {
@@ -29,7 +32,10 @@ class GalleryViewerModal extends React.Component {
     activeImageId: PropTypes.number.isRequired,
     onClose: PropTypes.func.isRequired,
     onImageSelect: PropTypes.func.isRequired,
+    comment: PropTypes.string.isRequired,
     onShowOnTheMap: PropTypes.func.isRequired,
+    onCommentChange: PropTypes.func.isRequired,
+    onCommentSubmit: PropTypes.func.isRequired,
   }
 
   handlePreviousClick = (e) => {
@@ -51,10 +57,19 @@ class GalleryViewerModal extends React.Component {
     }
   }
 
+  handleCommentFormSubmit = (e) => {
+    e.preventDefault();
+    this.props.onCommentSubmit();
+  }
+
+  handleCommentChange = (e) => {
+    this.props.onCommentChange(e.target.value);
+  }
+
   render() {
-    const { imageIds, activeImageId, onClose, onShowOnTheMap, image } = this.props;
+    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
-    const { title = '...', description, user, createdAt, takenAt, tags } = image || {};
+    const { title = '...', description, user, createdAt, takenAt, tags, comments } = image || {};
 
     const loadingMeta = !image || image.id !== activeImageId;
 
@@ -96,15 +111,32 @@ class GalleryViewerModal extends React.Component {
               </a>
             }
           </div>
-          {image &&
-            <p>
+          {image && [
+            <p key="meta">
               <br />
               Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
               {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
               {description && `: ${description}`}
               {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
-            </p>
-          }
+            </p>,
+            <hr key="hr" />,
+            <h5 key="comments-header">Komentáre</h5>,
+            ...comments.map(c => (
+              <p key={c.id}>
+                {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
+              </p>
+            )),
+            <form key="form" onSubmit={this.handleCommentFormSubmit}>
+              <FormGroup>
+                <InputGroup>
+                  <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
+                  <InputGroup.Button>
+                    <Button type="submit" disabled={comment.length < 1}>Pridaj</Button>
+                  </InputGroup.Button>
+                </InputGroup>
+              </FormGroup>
+            </form>,
+          ]}
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
@@ -122,6 +154,7 @@ export default connect(
     activeImageId: state.gallery.activeImageId,
     zoom: state.map.zoom,
     pickingPosition: state.gallery.pickingPositionForId !== null,
+    comment: state.gallery.comment,
   }),
   dispatch => ({
     onClose() {
@@ -133,6 +166,12 @@ export default connect(
     },
     onImageSelect(id) {
       dispatch(galleryRequestImage(id));
+    },
+    onCommentChange(comment) {
+      dispatch(gallerySetComment(comment));
+    },
+    onCommentSubmit() {
+      dispatch(gallerySubmitComment());
     },
   }),
 )(GalleryViewerModal);

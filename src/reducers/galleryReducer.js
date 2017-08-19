@@ -11,6 +11,7 @@ const initialState = {
   tags: [],
 
   uploadSeq: 0,
+  comment: '',
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -45,6 +46,7 @@ export default function elevationMeasurement(state = initialState, action) {
       return {
         ...state,
         activeImageId: action.payload,
+        comment: '',
       };
     case 'GALLERY_ADD_ITEM':
       return {
@@ -119,6 +121,8 @@ export default function elevationMeasurement(state = initialState, action) {
       return { ...state, tags: action.payload };
     case 'GALLERY_UPLOAD_FINISHED':
       return { ...state, uploadSeq: state.uploadSeq + 1 };
+    case 'GALLERY_SET_COMMENT':
+      return { ...state, comment: action.payload };
     default:
       return state;
   }

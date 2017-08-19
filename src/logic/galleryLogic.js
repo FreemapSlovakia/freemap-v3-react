@@ -63,6 +63,7 @@ const galleryRequestImageLogic = createLogic({
           ...payload,
           createdAt: new Date(payload.createdAt),
           takenAt: payload.takenAt && new Date(payload.takenAt),
+          comments: payload.comments.map(comment => ({ ...comment, createdAt: new Date(comment.createdAt) })),
         }));
       })
       .catch((e) => {
@@ -176,5 +177,54 @@ const galleryItemUploadLogic = createLogic({
   },
 });
 
-export default [galleryRequestImagesLogic, galleryRequestImageLogic, galleryShowOnTheMapLogic,
-  galleryUploadModalLogic, galleryItemUploadLogic];
+const gallerySubmitCommentLogic = createLogic({
+  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  type: 'GALLERY_SUBMIT_COMMENT',
+  process({ getState, cancelled$ }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
+    const id = getState().gallery.activeImageId;
+
+    fetch(`${API_URL}/gallery/pictures/${id}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+        Authorization: `Bearer ${getState().auth.user.authToken}`,
+      },
+      body: JSON.stringify({
+        comment: getState().gallery.comment,
+      }),
+    })
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        } else {
+          return res.json();
+        }
+      })
+      .then(() => {
+        dispatch(galleryRequestImage(id));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri pridávani komentára: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
+  },
+});
+
+export default [
+  galleryRequestImagesLogic,
+  galleryRequestImageLogic,
+  galleryShowOnTheMapLogic,
+  galleryUploadModalLogic,
+  galleryItemUploadLogic,
+  gallerySubmitCommentLogic,
+];

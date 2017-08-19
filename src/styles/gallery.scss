@@ -1,14 +1,13 @@
 .gallery-image {
   max-width: 100%;
-  max-height: calc(100vh - 200px);
+  max-height: calc(100vh - 300px);
   margin: 0 auto;
   display: block;
 
-  @media screen and (max-height: 400px) {
-    max-height: 200px;
+  @media screen and (max-height: 600px) {
+    max-height: 300px;
   }
 }
-
 
 .carousel-control.disabled, .carousel-control.disabled:hover {
   cursor: not-allowed;

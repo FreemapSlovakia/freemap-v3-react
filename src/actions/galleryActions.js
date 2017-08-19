@@ -77,3 +77,11 @@ export function galleryUploadFinished() {
 export function gallerySetTags(tags) {
   return { type: 'GALLERY_SET_TAGS', payload: tags };
 }
+
+export function gallerySetComment(comment) {
+  return { type: 'GALLERY_SET_COMMENT', payload: comment };
+}
+
+export function gallerySubmitComment() {
+  return { type: 'GALLERY_SUBMIT_COMMENT' };
+}
