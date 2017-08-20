@@ -60,6 +60,14 @@ export const overlayLayers = [
     maxNativeZoom: 16,
     showOnlyInExpertMode: true,
   },
+  {
+    name: 'Render. klienti',
+    type: 'r',
+    url: '//www.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
+    minZoom: 8,
+    maxNativeZoom: 12,
+    showOnlyInExpertMode: true,
+  },
 ];
 
 // http://tile.mtbmap.cz/mtbmap_tiles/11/1135/705.png
