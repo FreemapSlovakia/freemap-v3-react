@@ -1,13 +1,16 @@
+import React from 'react';
 import { Marker } from 'react-leaflet';
 
-export default class MarkerWithAutoOpeningPopup extends Marker {
+export default class MarkerWithAutoOpeningPopup extends React.Component {
   componentDidMount() {
-    super.componentDidMount();
-    this.leafletElement.openPopup();
+    this.marker.leafletElement.openPopup();
   }
 
-  componentDidUpdate(prevProps, prevState) {
-    super.componentDidUpdate(prevProps, prevState);
-    this.leafletElement.openPopup();
+  componentDidUpdate() {
+    this.marker.leafletElement.openPopup();
+  }
+
+  render() {
+    return <Marker ref={(m) => { this.marker = m; }} {...this.props} />;
   }
 }
