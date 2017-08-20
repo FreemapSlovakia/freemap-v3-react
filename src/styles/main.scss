@@ -23,7 +23,13 @@ body.embedded .leaflet-container {
 }
 
 a.leaflet-control-layers-toggle {
-  background-size: 36px 36px;
+  background-size: 30px 30px;
+}
+
+.leaflet-touch {
+  a.leaflet-control-layers-toggle {
+    background-size: 36px 36px;
+  }
 }
 
 .active-map-type-T a.leaflet-control-layers-toggle {
