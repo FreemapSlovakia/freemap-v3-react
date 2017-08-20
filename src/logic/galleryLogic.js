@@ -189,7 +189,13 @@ const gallerySubmitCommentLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const id = getState().gallery.activeImageId;
+    const image = getState().gallery.image;
+    if (!image) {
+      done();
+      return;
+    }
+
+    const { id } = image;
 
     fetch(`${API_URL}/gallery/pictures/${id}/comments`, {
       method: 'POST',
@@ -209,7 +215,7 @@ const gallerySubmitCommentLogic = createLogic({
         return res.json();
       })
       .then(() => {
-        dispatch(galleryRequestImage(id));
+        dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri pridávani komentára: ${e.message}`));
@@ -231,7 +237,13 @@ const gallerySubmitStarsLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const id = getState().gallery.activeImageId;
+    const image = getState().gallery.image;
+    if (!image) {
+      done();
+      return;
+    }
+
+    const { id } = image;
 
     fetch(`${API_URL}/gallery/pictures/${id}/rating`, {
       method: 'POST',
@@ -247,7 +259,7 @@ const gallerySubmitStarsLogic = createLogic({
         if (res.status !== 204) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
         }
-        dispatch(galleryRequestImage(id));
+        dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri hodnotení: ${e.message}`));
@@ -269,9 +281,13 @@ const galleryDeletePictureLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const id = getState().gallery.activeImageId;
+    const image = getState().gallery.image;
+    if (!image) {
+      done();
+      return;
+    }
 
-    fetch(`${API_URL}/gallery/pictures/${id}`, {
+    fetch(`${API_URL}/gallery/pictures/${image.id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,

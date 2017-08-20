@@ -45,7 +45,11 @@ class GalleryViewerModal extends React.Component {
     onCommentChange: PropTypes.func.isRequired,
     onCommentSubmit: PropTypes.func.isRequired,
     onStarsChange: PropTypes.func.isRequired,
-    authenticated: PropTypes.bool,
+    user: PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      isAdmin: PropTypes.bool,
+    }),
     onDelete: PropTypes.func.isRequired,
   }
 
@@ -78,9 +82,9 @@ class GalleryViewerModal extends React.Component {
   }
 
   render() {
-    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment, onStarsChange, authenticated, onDelete } = this.props;
+    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment, onStarsChange, user, onDelete } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
-    const { title = '...', description, user, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
+    const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
 
     const loadingMeta = !image || image.id !== activeImageId;
 
@@ -124,7 +128,7 @@ class GalleryViewerModal extends React.Component {
           </div>
           {image && [
             <div key="meta">
-              Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+              Nahral <b>{image.user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
               {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
               {' '}
               <ReactStars className="stars" size={22} value={rating / 2} edit={false} />
@@ -138,7 +142,7 @@ class GalleryViewerModal extends React.Component {
                 {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
               </p>
             )),
-            authenticated && <form key="form" onSubmit={this.handleCommentFormSubmit}>
+            user && <form key="form" onSubmit={this.handleCommentFormSubmit}>
               <FormGroup>
                 <InputGroup>
                   <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
@@ -148,13 +152,15 @@ class GalleryViewerModal extends React.Component {
                 </InputGroup>
               </FormGroup>
             </form>,
-            authenticated && <div key="yourRating">
+            user && <div key="yourRating">
               Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
             </div>,
           ]}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onDelete} bsStyle="danger"><Glyphicon glyph="remove" /> Zmazať</Button>
+          {image && user && (user.isAdmin || user.id === image.user.id) &&
+            <Button onClick={onDelete} bsStyle="danger"><Glyphicon glyph="remove" /> Zmazať</Button>
+          }
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Modal.Footer>
@@ -171,7 +177,7 @@ export default connect(
     zoom: state.map.zoom,
     pickingPosition: state.gallery.pickingPositionForId !== null,
     comment: state.gallery.comment,
-    authenticated: !!state.auth.user,
+    user: state.auth.user,
   }),
   dispatch => ({
     onClose() {
