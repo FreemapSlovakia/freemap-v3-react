@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';

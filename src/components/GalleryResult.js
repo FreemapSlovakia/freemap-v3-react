@@ -9,7 +9,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
 import GalleryLayer from 'fm3/components/GalleryLayer';
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 
 import { galleryRequestImages, gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 

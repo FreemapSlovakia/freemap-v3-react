@@ -1,5 +1,5 @@
 import React from 'react';
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import * as FmPropTypes from 'fm3/propTypes';
 
 export default function MultiPoint({ searchResult }) {

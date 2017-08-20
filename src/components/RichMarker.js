@@ -13,7 +13,20 @@ export default class RichMarker extends React.Component {
     image: PropTypes.string,
     faIcon: PropTypes.string,
     faIconLeftPadding: PropTypes.string,
+    autoOpenPopup: PropTypes.bool,
   };
+
+  componentDidMount() {
+    if (this.props.autoOpenPopup) {
+      this.markerRef.leafletElement.openPopup();
+    }
+  }
+
+  componentDidUpdate() {
+    if (this.props.autoOpenPopup) {
+      this.markerRef.leafletElement.openPopup();
+    }
+  }
 
   render() {
     const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = this.props;

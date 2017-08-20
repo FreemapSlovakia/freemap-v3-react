@@ -5,7 +5,7 @@ import turfLineDistance from '@turf/line-distance';
 import turfAlong from '@turf/along';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
-import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
+import RichMarker from 'fm3/components/RichMarker';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -43,7 +43,8 @@ class ElevationMeasurementResult extends React.Component {
     const { point, elevation } = this.props;
 
     return point && (
-      <MarkerWithAutoOpeningPopup
+      <RichMarker
+        autoOpenPopup
         position={L.latLng(point.lat, point.lon)}
         // onDragstart={this.handleDragStart}
         onDragend={this.handleDragEnd}
@@ -56,7 +57,7 @@ class ElevationMeasurementResult extends React.Component {
             {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
           </span>
         </Popup>
-      </MarkerWithAutoOpeningPopup>
+      </RichMarker>
     );
   }
 }

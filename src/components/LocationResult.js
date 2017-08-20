@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Circle } from 'react-leaflet';
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 
 function LocationResult({ gpsLocation }) {
   return gpsLocation ? (

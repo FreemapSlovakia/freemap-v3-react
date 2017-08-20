@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Popup } from 'react-leaflet';
 
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import { toHtml, getPoiType } from 'fm3/poiTypes';
 import * as FmPropTypes from 'fm3/propTypes';
 

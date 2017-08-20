@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 import PropTypes from 'prop-types';
 
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 

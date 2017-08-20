@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Popup, Polygon } from 'react-leaflet';
-import MarkerWithAutoOpeningPopup from 'fm3/components/leaflet/MarkerWithAutoOpeningPopup';
+import RichMarker from 'fm3/components/RichMarker';
 
 import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -82,7 +82,8 @@ class AreaMeasurementResult extends React.Component {
     return (
       <div>
         {!isNaN(areaSize) &&
-          <MarkerWithAutoOpeningPopup
+          <RichMarker
+            autoOpenPopup
             interactive={false}
             opacity={0}
             position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
@@ -95,7 +96,7 @@ class AreaMeasurementResult extends React.Component {
                 <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
               </span>
             </Popup>
-          </MarkerWithAutoOpeningPopup>
+          </RichMarker>
         }
         {ps.map((p, i) => {
           const props = i % 2 ? {

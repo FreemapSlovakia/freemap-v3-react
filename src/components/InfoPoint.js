@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
 import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
-import RichMarker from 'fm3/components/leaflet/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import PropTypes from 'prop-types';
 
 class InfoPoint extends React.Component {
