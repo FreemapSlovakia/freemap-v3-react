@@ -48,61 +48,58 @@ function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportTyp
     }
   }
 
-  // FIXME wrapper element can't be used
   return (
-    <div>
-      <Navbar.Form pullLeft>
-        <ButtonGroup>
-          <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
-            id="add-start-dropdown"
-            onClick={() => onPickPointModeChange('start')}
-            active={pickPointMode === 'start'}
-          >
-            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
-            <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
-            <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
-          </DropdownButton>
-          <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
-            id="add-finish-dropdown"
-            onClick={() => onPickPointModeChange('finish')}
-            active={pickPointMode === 'finish'}
-          >
-            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
-            <MenuItem onClick={() => setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
-            <MenuItem onClick={() => setFromHomeLocation('finish')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
-          </DropdownButton>
-        </ButtonGroup>
-        {' '}
-        <ButtonGroup>
-          {
-            [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon]) => (
-              <Button key={type} active={transportType === type} onClick={() => onTransportTypeChange(type)}>
-                <FontAwesomeIcon icon={icon} />
-              </Button>
-            ))
-          }
-        </ButtonGroup>
-        {' '}
-        <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
-          <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
-        </Button>
-        {' '}
-        { routeFound &&
-          <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
-          </Button> }
-        {' '}
-        <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
-          <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
-        </Button>
-        {' '}
-        <Button onClick={onCancel} title="Zavrieť">
-          <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
-        </Button>
-      </Navbar.Form>
-    </div>
+    <Navbar.Form pullLeft>
+      <ButtonGroup>
+        <DropdownButton
+          title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
+          id="add-start-dropdown"
+          onClick={() => onPickPointModeChange('start')}
+          active={pickPointMode === 'start'}
+        >
+          <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
+          <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
+          <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
+        </DropdownButton>
+        <DropdownButton
+          title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
+          id="add-finish-dropdown"
+          onClick={() => onPickPointModeChange('finish')}
+          active={pickPointMode === 'finish'}
+        >
+          <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
+          <MenuItem onClick={() => setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
+          <MenuItem onClick={() => setFromHomeLocation('finish')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
+        </DropdownButton>
+      </ButtonGroup>
+      {' '}
+      <ButtonGroup>
+        {
+          [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon]) => (
+            <Button key={type} active={transportType === type} onClick={() => onTransportTypeChange(type)}>
+              <FontAwesomeIcon icon={icon} />
+            </Button>
+          ))
+        }
+      </ButtonGroup>
+      {' '}
+      <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
+        <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
+      </Button>
+      {' '}
+      { routeFound &&
+        <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
+          <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
+        </Button> }
+      {' '}
+      <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
+        <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
+      </Button>
+      {' '}
+      <Button onClick={onCancel} title="Zavrieť">
+        <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
+      </Button>
+    </Navbar.Form>
   );
 }
 

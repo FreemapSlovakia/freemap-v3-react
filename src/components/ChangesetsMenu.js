@@ -41,48 +41,46 @@ class ChangesetsMenu extends React.Component {
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh, onCancel } = this.props;
     return (
-      <div>
-        <Navbar.Form pullLeft>
-          <ButtonGroup>
-            <DropdownButton title={`Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`} id="days">
-              {[3, 7, 14, 30].map(d => (
-                <MenuItem key={d} disabled={!this.canSearchWithThisAmountOfDays(d)} onClick={() => (this.canSearchWithThisAmountOfDays(d) ? onChangesetsSetDays(d) : false)}>{d} dn{d === 3 ? 'i' : 'í'}</MenuItem>
-              ))}
-            </DropdownButton>
-          </ButtonGroup>
-          {' '}
-          <FormGroup>
-            <InputGroup>
-              <FormControl
-                type="text"
-                placeholder="Všetci autori"
-                onChange={e => this.setState({ authorName: e.target.value === '' ? null : e.target.value })}
-                value={this.state.authorName || ''}
-              />
-              <InputGroup.Button>
-                <Button
-                  disabled={!this.state.authorName}
-                  onClick={() => this.setState({ authorName: null })}
-                >
-                  <FontAwesomeIcon icon="times" />
-                </Button>
-              </InputGroup.Button>
-            </InputGroup>
-          </FormGroup>
-          {' '}
-          <ButtonGroup>
-            <Button
-              disabled={!this.canSearchWithThisAmountOfDays(days)}
-              onClick={() => onChangesetsSetAuthorNameAndRefresh(this.state.authorName)}
-              title="Stiahnuť zmeny"
-            >
-              <FontAwesomeIcon icon="refresh" /><span className="hidden-sm"> Stiahnuť zmeny</span>
-            </Button>
-          </ButtonGroup>
-          {' '}
-          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-        </Navbar.Form>
-      </div>
+      <Navbar.Form pullLeft>
+        <ButtonGroup>
+          <DropdownButton title={`Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`} id="days">
+            {[3, 7, 14, 30].map(d => (
+              <MenuItem key={d} disabled={!this.canSearchWithThisAmountOfDays(d)} onClick={() => (this.canSearchWithThisAmountOfDays(d) ? onChangesetsSetDays(d) : false)}>{d} dn{d === 3 ? 'i' : 'í'}</MenuItem>
+            ))}
+          </DropdownButton>
+        </ButtonGroup>
+        {' '}
+        <FormGroup>
+          <InputGroup>
+            <FormControl
+              type="text"
+              placeholder="Všetci autori"
+              onChange={e => this.setState({ authorName: e.target.value === '' ? null : e.target.value })}
+              value={this.state.authorName || ''}
+            />
+            <InputGroup.Button>
+              <Button
+                disabled={!this.state.authorName}
+                onClick={() => this.setState({ authorName: null })}
+              >
+                <FontAwesomeIcon icon="times" />
+              </Button>
+            </InputGroup.Button>
+          </InputGroup>
+        </FormGroup>
+        {' '}
+        <ButtonGroup>
+          <Button
+            disabled={!this.canSearchWithThisAmountOfDays(days)}
+            onClick={() => onChangesetsSetAuthorNameAndRefresh(this.state.authorName)}
+            title="Stiahnuť zmeny"
+          >
+            <FontAwesomeIcon icon="refresh" /><span className="hidden-sm"> Stiahnuť zmeny</span>
+          </Button>
+        </ButtonGroup>
+        {' '}
+        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
+      </Navbar.Form>
     );
   }
 }

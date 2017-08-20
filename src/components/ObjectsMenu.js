@@ -68,38 +68,35 @@ class ObjectsMenu extends React.Component {
   render() {
     const { onCancel, onGpxExport, objectsFound } = this.props;
 
-    // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
     return (
-      <div>
-        <Navbar.Form pullLeft>
-          <Dropdown
-            className="dropdown-long"
-            id="objectsMenuDropdown"
-            onToggle={this.handleToggle}
-            open={this.state.dropdownOpened}
-          >
-            <FormGroup bsRole="toggle">
-              <FormControl
-                type="text"
-                placeholder="Typ"
-                onChange={this.handleFilterSet}
-                value={this.state.filter}
-                onFocus={this.handleFilterFocus}
-                onBlur={this.handleFilterBlur}
-              />
-            </FormGroup>
-            <Dropdown.Menu>
-              {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
-            </Dropdown.Menu>
-          </Dropdown>
-          {' '}
-          <Button onClick={onGpxExport} disabled={!objectsFound} title="Exportuj do GPX">
-            <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
-          </Button>
-          {' '}
-          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-        </Navbar.Form>
-      </div>
+      <Navbar.Form pullLeft>
+        <Dropdown
+          className="dropdown-long"
+          id="objectsMenuDropdown"
+          onToggle={this.handleToggle}
+          open={this.state.dropdownOpened}
+        >
+          <FormGroup bsRole="toggle">
+            <FormControl
+              type="text"
+              placeholder="Typ"
+              onChange={this.handleFilterSet}
+              value={this.state.filter}
+              onFocus={this.handleFilterFocus}
+              onBlur={this.handleFilterBlur}
+            />
+          </FormGroup>
+          <Dropdown.Menu>
+            {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
+          </Dropdown.Menu>
+        </Dropdown>
+        {' '}
+        <Button onClick={onGpxExport} disabled={!objectsFound} title="Exportuj do GPX">
+          <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
+        </Button>
+        {' '}
+        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
+      </Navbar.Form>
     );
   }
 }

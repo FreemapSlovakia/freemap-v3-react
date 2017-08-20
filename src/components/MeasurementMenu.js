@@ -32,37 +32,35 @@ class MeasurementMenu extends React.Component {
 
   render() {
     const { onCancel, onToolSet, tool, onGpxExport, routeDefined, elevationChartTrackGeojson } = this.props;
-    // FIXME wrapper element Nav is not OK here. Actually no wrapper element must be used.
+
     return (
-      <div>
-        <Navbar.Form pullLeft>
-          <ButtonGroup>
-            <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
-              <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
-            </Button>
-            <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
-              <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-sm"> Výška a poloha</span>
-            </Button>
-            <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
-              <FontAwesomeIcon icon="square" /><span className="hidden-sm"> Plocha</span>
-            </Button>
-          </ButtonGroup>
-          {' '}
-          {tool === 'measure-dist' && routeDefined &&
-            <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
-              <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
-            </Button>
-          }
-          {' '}
-          {tool === 'measure-dist' &&
-            <Button onClick={onGpxExport} disabled={!routeDefined} title="Exportuj do GPX">
-              <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
-            </Button>
-          }
-          {' '}
-          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-        </Navbar.Form>
-      </div>
+      <Navbar.Form pullLeft>
+        <ButtonGroup>
+          <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
+            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
+          </Button>
+          <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
+            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-sm"> Výška a poloha</span>
+          </Button>
+          <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
+            <FontAwesomeIcon icon="square" /><span className="hidden-sm"> Plocha</span>
+          </Button>
+        </ButtonGroup>
+        {' '}
+        {tool === 'measure-dist' && routeDefined &&
+          <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
+          </Button>
+        }
+        {' '}
+        {tool === 'measure-dist' &&
+          <Button onClick={onGpxExport} disabled={!routeDefined} title="Exportuj do GPX">
+            <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
+          </Button>
+        }
+        {' '}
+        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
+      </Navbar.Form>
     );
   }
 }
