@@ -15,6 +15,8 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 
+import { toastsAdd } from 'fm3/actions/toastsActions';
+
 import { API_URL } from 'fm3/backendDefinitions';
 
 import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars, galleryDeletePicture }
@@ -200,7 +202,16 @@ export default connect(
       dispatch(gallerySubmitStars(stars));
     },
     onDelete() {
-      dispatch(galleryDeletePicture());
+      dispatch(toastsAdd({
+        collapseKey: 'gallery.deletePicture',
+        message: 'Zmazať obrázok?',
+        style: 'warning',
+        cancelType: ['GALLERY_CLEAR', 'GALLERY_REQUEST_IMAGE'],
+        actions: [
+          { name: 'Áno', action: galleryDeletePicture(), style: 'danger' },
+          { name: 'Nie' },
+        ],
+      }));
     },
   }),
 )(GalleryViewerModal);
