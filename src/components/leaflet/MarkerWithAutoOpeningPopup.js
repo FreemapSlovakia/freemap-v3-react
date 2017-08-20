@@ -1,16 +1,16 @@
 import React from 'react';
-import { Marker } from 'react-leaflet';
+import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 
 export default class MarkerWithAutoOpeningPopup extends React.Component {
   componentDidMount() {
-    this.marker.leafletElement.openPopup();
+    this.marker.markerRef.leafletElement.openPopup();
   }
 
   componentDidUpdate() {
-    this.marker.leafletElement.openPopup();
+    this.marker.markerRef.leafletElement.openPopup();
   }
 
   render() {
-    return <Marker ref={(m) => { this.marker = m; }} {...this.props} />;
+    return <MarkerWithInnerLabel ref={(m) => { this.marker = m; }} {...this.props} />;
   }
 }

@@ -1,17 +1,18 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Circle, Marker } from 'react-leaflet';
+import { Circle } from 'react-leaflet';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
+import GalleryLayer from 'fm3/components/GalleryLayer';
+import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 
 import { galleryRequestImages, gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
-import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import 'fm3/styles/gallery.scss';
 
@@ -67,7 +68,7 @@ class GalleryResult extends React.Component {
     return (
       <div>
         {pickingPosition &&
-          <Marker
+          <MarkerWithInnerLabel
             draggable
             position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
             onDragend={this.handlePositionMarkerDragEnd}

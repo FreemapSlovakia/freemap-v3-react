@@ -18,8 +18,6 @@ class ElevationMeasurementResult extends React.Component {
     elevation: PropTypes.number,
   }
 
-  state = {};
-
   componentWillMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
@@ -29,7 +27,6 @@ class ElevationMeasurementResult extends React.Component {
   }
 
   handlePoiAdd = (lat, lon) => {
-    this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
   }
 
@@ -39,33 +36,23 @@ class ElevationMeasurementResult extends React.Component {
 
   handleDragEnd = (event) => {
     const { lat, lng: lon } = event.target.getLatLng();
-    this.setState({ point: undefined });
     this.props.onPointSet({ lat, lon });
-  }
-
-  handleDrag = (event) => {
-    const { lat, lng: lon } = event.target.getLatLng();
-    this.setState({ point: { lat, lon } });
   }
 
   render() {
     const { point, elevation } = this.props;
-    const { point: tmpPoint } = this.state;
-
-    const p = tmpPoint || point;
 
     return point && (
       <MarkerWithAutoOpeningPopup
-        position={L.latLng(p.lat, p.lon)}
-        onDragstart={this.handleDragStart}
+        position={L.latLng(point.lat, point.lon)}
+        // onDragstart={this.handleDragStart}
         onDragend={this.handleDragEnd}
         onDrag={this.handleDrag}
         draggable
       >
-
         <Popup closeButton={false} autoClose={false} autoPan={false}>
           <span>
-            {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(p.lat, 'SN', format)} {formatGpsCoord(p.lon, 'WE', format)}</div>)}
+            {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(point.lat, 'SN', format)} {formatGpsCoord(point.lon, 'WE', format)}</div>)}
             {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
           </span>
         </Popup>

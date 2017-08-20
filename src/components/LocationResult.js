@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Circle, Marker } from 'react-leaflet';
+import { Circle } from 'react-leaflet';
+import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
 
 function LocationResult({ gpsLocation }) {
   return gpsLocation ? (
     <div>
       <Circle center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />
-      <Marker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} />
+      <MarkerWithInnerLabel position={L.latLng(gpsLocation.lat, gpsLocation.lon)} />
     </div>
   ) : null;
 }
