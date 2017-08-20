@@ -3,7 +3,8 @@ import { createLogic } from 'redux-logic';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImageIds, galleryRequestImage, gallerySetImage, galleryRemoveItem, galleryUpload, galleryUploadFinished, gallerySetItemError, gallerySetTags } from 'fm3/actions/galleryActions';
+import { gallerySetImageIds, galleryRequestImage, gallerySetImage, galleryRemoveItem,
+  galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 import { API_URL } from 'fm3/backendDefinitions';
 
@@ -136,7 +137,7 @@ const galleryItemUploadLogic = createLogic({
     const { items, uploadingId } = getState().gallery;
 
     if (uploadingId === null) {
-      dispatch(galleryUploadFinished());
+      dispatch(gallerySetLayerDirty());
       if (getState().gallery.items.length === 0) {
         dispatch(setActiveModal(null));
       }
@@ -258,6 +259,41 @@ const gallerySubmitStarsLogic = createLogic({
   },
 });
 
+const galleryDeletePictureLogic = createLogic({
+  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  type: 'GALLERY_DELETE_PICTURE',
+  process({ getState, cancelled$ }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
+    const id = getState().gallery.activeImageId;
+
+    fetch(`${API_URL}/gallery/pictures/${id}`, {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${getState().auth.user.authToken}`,
+      },
+    })
+      .then((res) => {
+        if (res.status !== 204) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        }
+        dispatch(gallerySetLayerDirty());
+        dispatch(galleryClear());
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri hodnotení: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
+  },
+});
+
 export default [
   galleryRequestImagesLogic,
   galleryRequestImageLogic,
@@ -266,4 +302,5 @@ export default [
   galleryItemUploadLogic,
   gallerySubmitCommentLogic,
   gallerySubmitStarsLogic,
+  galleryDeletePictureLogic,
 ];

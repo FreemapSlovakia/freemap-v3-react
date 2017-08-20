@@ -119,7 +119,7 @@ export default function elevationMeasurement(state = initialState, action) {
     }
     case 'GALLERY_SET_TAGS':
       return { ...state, tags: action.payload };
-    case 'GALLERY_UPLOAD_FINISHED':
+    case 'GALLERY_SET_LAYER_DIRTY':
       return { ...state, uploadSeq: state.uploadSeq + 1 };
     case 'GALLERY_SET_COMMENT':
       return { ...state, comment: action.payload };

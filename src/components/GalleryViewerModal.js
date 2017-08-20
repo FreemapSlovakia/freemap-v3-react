@@ -17,7 +17,7 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { API_URL } from 'fm3/backendDefinitions';
 
-import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars }
+import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars, galleryDeletePicture }
   from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
@@ -46,6 +46,7 @@ class GalleryViewerModal extends React.Component {
     onCommentSubmit: PropTypes.func.isRequired,
     onStarsChange: PropTypes.func.isRequired,
     authenticated: PropTypes.bool,
+    onDelete: PropTypes.func.isRequired,
   }
 
   handlePreviousClick = (e) => {
@@ -77,7 +78,7 @@ class GalleryViewerModal extends React.Component {
   }
 
   render() {
-    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment, onStarsChange, authenticated } = this.props;
+    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment, onStarsChange, authenticated, onDelete } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
     const { title = '...', description, user, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
 
@@ -153,6 +154,7 @@ class GalleryViewerModal extends React.Component {
           ]}
         </Modal.Body>
         <Modal.Footer>
+          <Button onClick={onDelete} bsStyle="danger"><Glyphicon glyph="remove" /> Zmazať</Button>
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Modal.Footer>
@@ -190,6 +192,9 @@ export default connect(
     },
     onStarsChange(stars) {
       dispatch(gallerySubmitStars(stars));
+    },
+    onDelete() {
+      dispatch(galleryDeletePicture());
     },
   }),
 )(GalleryViewerModal);
