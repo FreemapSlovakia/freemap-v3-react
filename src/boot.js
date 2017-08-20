@@ -4,7 +4,7 @@ if (!global.Intl) {
     'intl/locale-data/jsonp/sk.js',
   ], (require) => {
     require('intl');
-    require('intl/locale-data/jsonp/en.js');
+    require('intl/locale-data/jsonp/sk.js');
     require('.');
   });
 } else {
