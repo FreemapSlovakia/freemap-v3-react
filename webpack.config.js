@@ -73,8 +73,8 @@ module.exports = {
     }),
   ],
   devServer: {
-    disableHostCheck: true,   // That solved it
-  }
+    disableHostCheck: true, // That solved it
+  },
 };
 
 if (process.env.NODE_ENV === 'production') {
@@ -87,5 +87,5 @@ module.exports.plugins.push(
     { from: 'authCallback.html' },
     { from: 'favicon.ico' },
   ]),
-  extractSass
+  extractSass,
 );
