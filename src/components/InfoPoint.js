@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
 import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import PropTypes from 'prop-types';
 
 class InfoPoint extends React.Component {
@@ -23,7 +23,7 @@ class InfoPoint extends React.Component {
   render() {
     const { lat, lon, label, inEditMode } = this.props;
     return (
-      lat && <MarkerWithInnerLabel
+      lat && <RichMarker
         faIcon="info"
         faIconLeftPadding="2px"
         draggable={inEditMode}
@@ -35,7 +35,7 @@ class InfoPoint extends React.Component {
             {label}
           </span>
         </Tooltip> }
-      </MarkerWithInnerLabel>
+      </RichMarker>
     );
   }
 }

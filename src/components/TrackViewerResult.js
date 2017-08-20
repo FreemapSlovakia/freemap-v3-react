@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
@@ -159,7 +159,7 @@ class TrackViewerResult extends React.Component {
         />
 
         {startPoints.map((p, i) => (
-          <MarkerWithInnerLabel
+          <RichMarker
             faIcon="play"
             key={i}
             faIconLeftPadding="2px"
@@ -171,10 +171,10 @@ class TrackViewerResult extends React.Component {
               <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
                 <span>{timeFormat.format(new Date(p.startTime))}</span>
               </Tooltip> }
-          </MarkerWithInnerLabel>
+          </RichMarker>
         ))}
         {finishPoints.map((p, i) => (
-          <MarkerWithInnerLabel
+          <RichMarker
             faIcon="stop"
             key={i}
             faIconLeftPadding="2px"
@@ -188,11 +188,11 @@ class TrackViewerResult extends React.Component {
                 {p.finishTime ? ', ' : ''}
                 {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km</span>
             </Tooltip>
-          </MarkerWithInnerLabel>
+          </RichMarker>
         ))}
 
         {this.state.infoLat &&
-        <MarkerWithInnerLabel
+        <RichMarker
           faIcon="info"
           faIconLeftPadding="2px"
           color="grey"
@@ -204,7 +204,7 @@ class TrackViewerResult extends React.Component {
               {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
             </span>
           </Tooltip>
-        </MarkerWithInnerLabel>}
+        </RichMarker>}
 
         <ElevationChartActivePoint />
       </div>

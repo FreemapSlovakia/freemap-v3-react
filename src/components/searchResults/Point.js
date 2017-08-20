@@ -1,10 +1,10 @@
 import React from 'react';
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import * as FmPropTypes from 'fm3/propTypes';
 
 export default function Point({ searchResult }) {
   return (
-    <MarkerWithInnerLabel
+    <RichMarker
       interactive={false}
       position={L.latLng(searchResult.lat, searchResult.lon)}
     />

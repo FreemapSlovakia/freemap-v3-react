@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -11,7 +11,7 @@ const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDig
 function ElevationChartActivePoint({ elevationChartActivePoint }) {
   return (
     elevationChartActivePoint.lat &&
-      <MarkerWithInnerLabel
+      <RichMarker
         faIcon="info"
         faIconLeftPadding="2px"
         color="grey"
@@ -23,7 +23,7 @@ function ElevationChartActivePoint({ elevationChartActivePoint }) {
             {oneDecimalDigitNumberFormat.format(elevationChartActivePoint.distanceFromStartInMeters / 1000)} km, {noDecimalDigitsNumberFormat.format(elevationChartActivePoint.ele)} m.n.m
           </span>
         </Tooltip>
-      </MarkerWithInnerLabel>
+      </RichMarker>
   );
 }
 

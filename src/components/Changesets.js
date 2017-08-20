@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 import PropTypes from 'prop-types';
 
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 
@@ -27,7 +27,7 @@ class Changesets extends React.Component {
     const now = new Date();
     return changesets.map((changeset) => {
       const opacity = this.opacityOf(changeset, now);
-      return (<MarkerWithInnerLabel
+      return (<RichMarker
         faIcon="pencil"
         opacity={opacity}
         key={changeset.id}
@@ -41,7 +41,7 @@ class Changesets extends React.Component {
             {changeset.description}
           </div>
         </Tooltip>
-      </MarkerWithInnerLabel>);
+      </RichMarker>);
     });
   }
 }

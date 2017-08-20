@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Marker } from 'react-leaflet';
 
-export default class MarkerWithInnerLabel extends React.Component {
+export default class RichMarker extends React.Component {
   static propTypes = {
     ...Marker.propTypes,
     label: PropTypes.oneOfType([

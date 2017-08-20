@@ -1,5 +1,5 @@
 import React from 'react';
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 
 export default class MarkerWithAutoOpeningPopup extends React.Component {
   componentDidMount() {
@@ -11,6 +11,6 @@ export default class MarkerWithAutoOpeningPopup extends React.Component {
   }
 
   render() {
-    return <MarkerWithInnerLabel ref={(m) => { this.marker = m; }} {...this.props} />;
+    return <RichMarker ref={(m) => { this.marker = m; }} {...this.props} />;
   }
 }

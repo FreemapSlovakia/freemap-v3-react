@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Popup } from 'react-leaflet';
 
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import { toHtml, getPoiType } from 'fm3/poiTypes';
 import * as FmPropTypes from 'fm3/propTypes';
 
@@ -17,7 +17,7 @@ function ObjectsResult({ objects }) {
         const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
         return (
-          <MarkerWithInnerLabel key={id} position={L.latLng(lat, lon)} image={img}>
+          <RichMarker key={id} position={L.latLng(lat, lon)} image={img}>
             {html &&
               <Popup autoPan={false}>
                 <span
@@ -26,7 +26,7 @@ function ObjectsResult({ objects }) {
                 />
               </Popup>
             }
-          </MarkerWithInnerLabel>
+          </RichMarker>
         );
       })}
     </div>

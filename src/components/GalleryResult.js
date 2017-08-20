@@ -9,7 +9,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
 import GalleryLayer from 'fm3/components/GalleryLayer';
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 
 import { galleryRequestImages, gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
@@ -68,7 +68,7 @@ class GalleryResult extends React.Component {
     return (
       <div>
         {pickingPosition &&
-          <MarkerWithInnerLabel
+          <RichMarker
             draggable
             position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
             onDragend={this.handlePositionMarkerDragEnd}

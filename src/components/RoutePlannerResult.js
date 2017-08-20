@@ -5,7 +5,7 @@ import turfLineDistance from '@turf/line-distance';
 import turfAlong from '@turf/along';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
-import MarkerWithInnerLabel from 'fm3/components/leaflet/MarkerWithInnerLabel';
+import RichMarker from 'fm3/components/leaflet/RichMarker';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -89,7 +89,7 @@ class RoutePlannerResult extends React.Component {
     return (
       <div>
         {start &&
-          <MarkerWithInnerLabel
+          <RichMarker
             faIcon="play"
             zIndexOffset={10}
             faIconLeftPadding="2px"
@@ -102,7 +102,7 @@ class RoutePlannerResult extends React.Component {
 
         {midpoints.map(({ lat, lon }, i) => (
           midpointDistancesFromStart[i] &&
-            <MarkerWithInnerLabel
+            <RichMarker
               draggable
               onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
               onClick={() => this.midpointClicked(i)}
@@ -115,11 +115,11 @@ class RoutePlannerResult extends React.Component {
                 <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
                   <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
                 </Tooltip>}
-            </MarkerWithInnerLabel>
+            </RichMarker>
         ))}
 
         {finish &&
-          <MarkerWithInnerLabel
+          <RichMarker
             faIcon="stop"
             color="#d9534f"
             zIndexOffset={10}
@@ -132,7 +132,7 @@ class RoutePlannerResult extends React.Component {
                 <span>{distance}km, {Math.floor(time / 60)}h {time % 60}m</span>
               </Tooltip>
             }
-          </MarkerWithInnerLabel>
+          </RichMarker>
         }
 
         {futureMidpoints.map((p, i) => (
@@ -149,7 +149,7 @@ class RoutePlannerResult extends React.Component {
         ))}
 
         {itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
-          <MarkerWithInnerLabel
+          <RichMarker
             faIcon="info"
             color="grey"
             key={i}
@@ -158,7 +158,7 @@ class RoutePlannerResult extends React.Component {
             <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
               <span>{desc} ({km}km)</span>
             </Tooltip>
-          </MarkerWithInnerLabel>
+          </RichMarker>
         ),
         )}
 
