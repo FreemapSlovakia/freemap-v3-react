@@ -27,7 +27,9 @@ const galleryRequestImagesLogic = createLogic({
       .then((payload) => {
         const ids = payload.map(item => item.id);
         dispatch(gallerySetImageIds(ids));
-        dispatch(galleryRequestImage(ids[0]));
+        if (ids.length) {
+          dispatch(galleryRequestImage(ids[0]));
+        }
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
