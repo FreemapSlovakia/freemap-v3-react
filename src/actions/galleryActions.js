@@ -85,3 +85,7 @@ export function gallerySetComment(comment) {
 export function gallerySubmitComment() {
   return { type: 'GALLERY_SUBMIT_COMMENT' };
 }
+
+export function gallerySubmitStars(stars) {
+  return { type: 'GALLERY_SUBMIT_STARS', payload: stars };
+}

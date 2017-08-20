@@ -32,6 +32,7 @@
     "react-leaflet-bing": "2.0.0",
     "react-rangeslider": "2.1.0",
     "react-redux": "5.0.6",
+    "react-stars": "2.2.3",
     "react-tag-autocomplete": "5.4.1",
     "redux": "3.7.2",
     "redux-logger": "3.0.6",

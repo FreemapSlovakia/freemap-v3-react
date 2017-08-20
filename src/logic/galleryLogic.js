@@ -21,9 +21,8 @@ const galleryRequestImagesLogic = createLogic({
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
         }
+        return res.json();
       })
       .then((payload) => {
         const ids = payload.map(item => item.id);
@@ -43,20 +42,23 @@ const galleryRequestImagesLogic = createLogic({
 const galleryRequestImageLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_REQUEST_IMAGE',
-  process({ action: { payload: id }, cancelled$ }, dispatch, done) {
+  process({ action: { payload: id }, getState, cancelled$ }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     cancelled$.subscribe(() => {
       dispatch(stopProgress(pid));
     });
 
-    fetch(`${API_URL}/gallery/pictures/${id}`)
+    fetch(`${API_URL}/gallery/pictures/${id}`, {
+      headers: getState().auth.user ? {
+        Authorization: `Bearer ${getState().auth.user.authToken}`,
+      } : {},
+    })
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
         }
+        return res.json();
       })
       .then((payload) => {
         dispatch(gallerySetImage({
@@ -107,9 +109,8 @@ const galleryUploadModalLogic = createLogic({
         .then((res) => {
           if (res.status !== 200) {
             throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-          } else {
-            return res.json();
           }
+          return res.json();
         })
         .then((payload) => {
           dispatch(gallerySetTags(payload));
@@ -164,10 +165,9 @@ const galleryItemUploadLogic = createLogic({
     }).then((res) => {
       if (res.status !== 200) {
         throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-      } else {
-        dispatch(galleryRemoveItem(item.id));
-        dispatch(galleryUpload());
       }
+      dispatch(galleryRemoveItem(item.id));
+      dispatch(galleryUpload());
     }).catch((err) => {
       dispatch(gallerySetItemError(item.id, err.message));
       dispatch(galleryUpload());
@@ -203,15 +203,52 @@ const gallerySubmitCommentLogic = createLogic({
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
         }
+        return res.json();
       })
       .then(() => {
         dispatch(galleryRequestImage(id));
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri pridávani komentára: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
+  },
+});
+
+const gallerySubmitStarsLogic = createLogic({
+  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  type: 'GALLERY_SUBMIT_STARS',
+  process({ action: { payload: stars }, getState, cancelled$ }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
+    const id = getState().gallery.activeImageId;
+
+    fetch(`${API_URL}/gallery/pictures/${id}/rating`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${getState().auth.user.authToken}`,
+      },
+      body: JSON.stringify({
+        stars,
+      }),
+    })
+      .then((res) => {
+        if (res.status !== 204) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        }
+        dispatch(galleryRequestImage(id));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri hodnotení: ${e.message}`));
       })
       .then(() => {
         dispatch(stopProgress(pid));
@@ -227,4 +264,5 @@ export default [
   galleryUploadModalLogic,
   galleryItemUploadLogic,
   gallerySubmitCommentLogic,
+  gallerySubmitStarsLogic,
 ];

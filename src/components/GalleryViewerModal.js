@@ -4,6 +4,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import ReactStars from 'react-stars';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -16,7 +17,7 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { API_URL } from 'fm3/backendDefinitions';
 
-import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment }
+import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars }
   from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
@@ -27,7 +28,14 @@ class GalleryViewerModal extends React.Component {
   static propTypes = {
     imageIds: PropTypes.arrayOf(PropTypes.number.isRequired),
     image: PropTypes.shape({
-      // TODO
+      title: PropTypes.string,
+      description: PropTypes.string,
+      user: PropTypes.shape({
+        // TODO
+      }),
+      // TODO , createdAt, takenAt, tags, comments
+      rating: PropTypes.number.isRequired,
+      myStars: PropTypes.number,
     }),
     activeImageId: PropTypes.number.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -36,6 +44,8 @@ class GalleryViewerModal extends React.Component {
     onShowOnTheMap: PropTypes.func.isRequired,
     onCommentChange: PropTypes.func.isRequired,
     onCommentSubmit: PropTypes.func.isRequired,
+    onStarsChange: PropTypes.func.isRequired,
+    authenticated: PropTypes.bool,
   }
 
   handlePreviousClick = (e) => {
@@ -67,9 +77,9 @@ class GalleryViewerModal extends React.Component {
   }
 
   render() {
-    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment } = this.props;
+    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment, onStarsChange, authenticated } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
-    const { title = '...', description, user, createdAt, takenAt, tags, comments } = image || {};
+    const { title = '...', description, user, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
 
     const loadingMeta = !image || image.id !== activeImageId;
 
@@ -112,13 +122,14 @@ class GalleryViewerModal extends React.Component {
             }
           </div>
           {image && [
-            <p key="meta">
-              <br />
+            <div key="meta">
               Nahral <b>{user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
               {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
-              {description && `: ${description}`}
+              {' '}
+              <ReactStars className="stars" size={22} value={rating / 2} edit={false} />
+              {description && ` ${description}`}
               {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
-            </p>,
+            </div>,
             <hr key="hr" />,
             <h5 key="comments-header">Komentáre</h5>,
             ...comments.map(c => (
@@ -126,7 +137,7 @@ class GalleryViewerModal extends React.Component {
                 {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
               </p>
             )),
-            <form key="form" onSubmit={this.handleCommentFormSubmit}>
+            authenticated && <form key="form" onSubmit={this.handleCommentFormSubmit}>
               <FormGroup>
                 <InputGroup>
                   <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
@@ -136,6 +147,9 @@ class GalleryViewerModal extends React.Component {
                 </InputGroup>
               </FormGroup>
             </form>,
+            authenticated && <div key="yourRating">
+              Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
+            </div>,
           ]}
         </Modal.Body>
         <Modal.Footer>
@@ -155,6 +169,7 @@ export default connect(
     zoom: state.map.zoom,
     pickingPosition: state.gallery.pickingPositionForId !== null,
     comment: state.gallery.comment,
+    authenticated: !!state.auth.user,
   }),
   dispatch => ({
     onClose() {
@@ -172,6 +187,9 @@ export default connect(
     },
     onCommentSubmit() {
       dispatch(gallerySubmitComment());
+    },
+    onStarsChange(stars) {
+      dispatch(gallerySubmitStars(stars));
     },
   }),
 )(GalleryViewerModal);
