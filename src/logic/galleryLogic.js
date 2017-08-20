@@ -81,11 +81,10 @@ const galleryRequestImageLogic = createLogic({
 const galleryShowOnTheMapLogic = createLogic({
   type: 'GALLERY_SHOW_ON_THE_MAP',
   process({ getState }, dispatch, done) {
-    const { images, activeImageId } = getState().gallery;
-    const activeImage = activeImageId ? images.find(({ id }) => id === activeImageId) : null;
-    if (activeImage) {
-      dispatch(infoPointSet(activeImage.lat, activeImage.lon, activeImage.title));
-      dispatch(mapRefocus({ lat: activeImage.lat, lon: activeImage.lon }));
+    const { image } = getState().gallery;
+    if (image) {
+      dispatch(infoPointSet(image.lat, image.lon, image.title));
+      dispatch(mapRefocus({ lat: image.lat, lon: image.lon }));
     }
     done();
   },
