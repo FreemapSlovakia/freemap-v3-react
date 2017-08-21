@@ -10,6 +10,7 @@ const dateFormat = new Intl.DateTimeFormat('sk',
 
 export default createLogic({
   type: 'MAP_DETAILS_SET_USER_SELECTED_POSITION',
+  cancelType: 'SET_TOOL',
   process({ getState, cancelled$ }, dispatch, done) {
     let way;
     let bbox;
