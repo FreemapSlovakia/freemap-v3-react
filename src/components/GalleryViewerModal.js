@@ -55,8 +55,27 @@ class GalleryViewerModal extends React.Component {
     onDelete: PropTypes.func.isRequired,
   }
 
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeydown);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
+
+  handleKeydown = (event) => {
+    const thereIsMoreThanOneImage = this.props.imageIds;
+    if (thereIsMoreThanOneImage && event.keyCode === 37 /* left key */) {
+      this.handlePreviousClick();
+    } else if (thereIsMoreThanOneImage && event.keyCode === 39 /* right key */) {
+      this.handleNextClick();
+    }
+  }
+
   handlePreviousClick = (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
 
     const { imageIds, activeImageId, onImageSelect } = this.props;
     const index = imageIds.findIndex(id => id === activeImageId);
@@ -66,7 +85,10 @@ class GalleryViewerModal extends React.Component {
   }
 
   handleNextClick = (e) => {
-    e.preventDefault();
+    if (e) {
+      e.preventDefault();
+    }
+
     const { imageIds, activeImageId, onImageSelect } = this.props;
     const index = imageIds.findIndex(id => id === activeImageId);
     if (index + 1 < imageIds.length) {
