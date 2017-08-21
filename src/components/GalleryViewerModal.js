@@ -111,17 +111,17 @@ class GalleryViewerModal extends React.Component {
                 />
               </a>
             </div>
-            {imageIds &&
+            {imageIds && index >= 1 &&
               <a
-                className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
+                className="left carousel-control"
                 onClick={this.handlePreviousClick}
               >
                 <Glyphicon glyph="chevron-left" />
               </a>
             }
-            {imageIds &&
+            {imageIds && index < imageIds.length - 1 &&
               <a
-                className={`right carousel-control ${index >= imageIds.length - 1 ? 'disabled' : ''}`}
+                className="right carousel-control"
                 onClick={this.handleNextClick}
               >
                 <Glyphicon glyph="chevron-right" />
