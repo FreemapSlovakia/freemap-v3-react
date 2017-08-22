@@ -1,9 +1,10 @@
+import React from 'react';
 import { createLogic } from 'redux-logic';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImageIds, galleryRequestImage, gallerySetImage, galleryRemoveItem,
+import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
+import { gallerySetImageIds, galleryRequestImage, gallerySetImage, gallerySetItemIsUploaded,
   galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 import { API_URL } from 'fm3/backendDefinitions';
@@ -138,7 +139,15 @@ const galleryItemUploadLogic = createLogic({
 
     if (uploadingId === null) {
       dispatch(gallerySetLayerDirty());
-      if (getState().gallery.items.length === 0) {
+      const allItemsUploadedSuccessfully = items.find(item => item.error) === undefined;
+      if (allItemsUploadedSuccessfully) {
+        dispatch(toastsAdd({
+          collapseKey: 'gallery.upload',
+          message: (<span>Všetky fotky boli úspešne nahraté.<br />Počet fotiek: {items.length}</span>),
+          cancelType: ['SET_TOOL'],
+          timeout: 4000,
+          style: 'info',
+        }));
         dispatch(setActiveModal(null));
       }
       done();
@@ -168,7 +177,7 @@ const galleryItemUploadLogic = createLogic({
       if (res.status !== 200) {
         throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
       }
-      dispatch(galleryRemoveItem(item.id));
+      dispatch(gallerySetItemIsUploaded(item.id));
       dispatch(galleryUpload());
     }).catch((err) => {
       dispatch(gallerySetItemError(item.id, err.message));
