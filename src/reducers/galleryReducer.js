@@ -12,6 +12,7 @@ const initialState = {
 
   uploadSeq: 0,
   comment: '',
+  showFilter: false,
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -128,6 +129,8 @@ export default function elevationMeasurement(state = initialState, action) {
       return { ...state, uploadSeq: state.uploadSeq + 1 };
     case 'GALLERY_SET_COMMENT':
       return { ...state, comment: action.payload };
+    case 'GALLERY_SET_FILTER_SHOWN':
+      return { ...state, showFilter: action.payload };
     default:
       return state;
   }

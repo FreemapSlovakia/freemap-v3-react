@@ -97,3 +97,7 @@ export function gallerySubmitStars(stars) {
 export function galleryDeletePicture() {
   return { type: 'GALLERY_DELETE_PICTURE' };
 }
+
+export function gallerySetFilterShown(show) {
+  return { type: 'GALLERY_SET_FILTER_SHOWN', payload: show };
+}

@@ -8,6 +8,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
+import GalleryFilterModal from 'fm3/components/GalleryFilterModal';
 import GalleryLayer from 'fm3/components/GalleryLayer';
 import RichMarker from 'fm3/components/RichMarker';
 
@@ -25,6 +26,7 @@ class GalleryResult extends React.Component {
     isPickingPosition: PropTypes.bool,
     pickingPosition: FmPropTypes.point,
     uploadSeq: PropTypes.number.isRequired,
+    showFilter: PropTypes.bool,
   }
 
   state = {};
@@ -63,7 +65,7 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, zoom, isPickingPosition, pickingPosition, uploadSeq } = this.props;
+    const { activeImageId, zoom, isPickingPosition, pickingPosition, uploadSeq, showFilter } = this.props;
 
     return (
       <div>
@@ -86,6 +88,8 @@ class GalleryResult extends React.Component {
         {!isPickingPosition && <GalleryLayer key={uploadSeq} />}
 
         {activeImageId && <GalleryViewerModal />}
+
+        {showFilter && <GalleryFilterModal />}
       </div>
     );
   }
@@ -99,6 +103,7 @@ export default connect(
     isPickingPosition: state.gallery.pickingPositionForId !== null,
     pickingPosition: state.gallery.pickingPosition,
     uploadSeq: state.gallery.uploadSeq,
+    showFilter: state.gallery.showFilter,
   }),
   dispatch => ({
     onImageRequest(lat, lon) {
