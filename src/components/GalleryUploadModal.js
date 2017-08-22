@@ -148,6 +148,16 @@ class GalleryUploadModal extends React.Component {
     this.props.onItemRemove(id);
   }
 
+  uploadProgressInPercents = () => {
+    const { items, uploading } = this.props;
+    if (uploading) {
+      const alreadyUploadedCount = items.filter(item => item.uploaded || item.error).length;
+      return (alreadyUploadedCount / items.length * 100).toFixed(0);
+    }
+
+    return 0;
+  }
+
   render() {
     const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, onTakenAtChange, onTagsChange, visible, onUpload, uploading, allTags } = this.props;
     return (
@@ -187,7 +197,9 @@ class GalleryUploadModal extends React.Component {
           }
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onUpload} disabled={uploading}><FontAwesomeIcon icon="upload" /> Nahrať</Button>
+          <Button onClick={onUpload} disabled={uploading}><FontAwesomeIcon icon="upload" />
+            {uploading ? `Nahrávam ${this.uploadProgressInPercents()}%` : 'Nahrať' }
+          </Button>
           <Button onClick={onClose} bsStyle="danger"><Glyphicon glyph="remove" /> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
