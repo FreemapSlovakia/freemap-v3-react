@@ -2,8 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { setTool, setActiveModal } from 'fm3/actions/mainActions';
-import { gallerySetItemForPositionPicking, galleryConfirmPickedPosition, gallerySetFilterShown } from 'fm3/actions/galleryActions';
+import { setTool } from 'fm3/actions/mainActions';
+import { gallerySetItemForPositionPicking, galleryConfirmPickedPosition, galleryShowFilter, galleryShowUploadModal } from 'fm3/actions/galleryActions';
 
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
@@ -48,7 +48,7 @@ export default connect(
   }),
   dispatch => ({
     onUpload() {
-      dispatch(setActiveModal('gallery-upload'));
+      dispatch(galleryShowUploadModal());
     },
     onCancel() {
       dispatch(setTool(null));
@@ -60,7 +60,7 @@ export default connect(
       dispatch(gallerySetItemForPositionPicking(null));
     },
     onFilterShow() {
-      dispatch(gallerySetFilterShown(true));
+      dispatch(galleryShowFilter());
     },
   }),
 )(GalleryMenu);

@@ -82,6 +82,10 @@ export function gallerySetTags(tags) {
   return { type: 'GALLERY_SET_TAGS', payload: tags };
 }
 
+export function gallerySetUsers(users) {
+  return { type: 'GALLERY_SET_USERS', payload: users };
+}
+
 export function gallerySetComment(comment) {
   return { type: 'GALLERY_SET_COMMENT', payload: comment };
 }
@@ -98,6 +102,22 @@ export function galleryDeletePicture() {
   return { type: 'GALLERY_DELETE_PICTURE' };
 }
 
-export function gallerySetFilterShown(show) {
-  return { type: 'GALLERY_SET_FILTER_SHOWN', payload: show };
+export function galleryShowFilter() {
+  return { type: 'GALLERY_SHOW_FILTER' };
+}
+
+export function galleryHideFilter() {
+  return { type: 'GALLERY_HIDE_FILTER' };
+}
+
+export function galleryShowUploadModal() {
+  return { type: 'GALLERY_SHOW_UPLOAD_MODAL' };
+}
+
+export function galleryHideUploadModal() {
+  return { type: 'GALLERY_HIDE_UPLOAD_MODAL' };
+}
+
+export function gallerySetFilter(filter) {
+  return { type: 'GALLERY_SET_FILTER', payload: filter };
 }

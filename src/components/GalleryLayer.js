@@ -27,8 +27,9 @@ const galleryLayer = L.GridLayer.extend({
 
     const k = 2 ** coords.z;
 
+    const { tag, userId } = this.options.filter;
     fetch(`${API_URL}/gallery/pictures?by=bbox&bbox=${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`
-      + `${this.options.tag ? `&tag=${encodeURIComponent(this.options.tag)}` : ''}${this.options.userId ? `&userId=${this.options.userId}` : ''}`,
+      + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`,
     )
       .then((res) => {
         if (res.status !== 200) {
@@ -79,8 +80,7 @@ const galleryLayer = L.GridLayer.extend({
 
 export default class FooLayer extends GridLayer {
   static propTypes = {
-    userId: PropTypes.number,
-    tag: PropTypes.string,
+    filter: PropTypes.object.isRequired,
   };
 
   // eslint-disable-next-line
@@ -88,9 +88,9 @@ export default class FooLayer extends GridLayer {
     return new galleryLayer({ zIndex: 1000, ...props });
   }
 
-  updateLeafletElement(fromProps, toProps) {
-    if (['userId', 'tag'].some(p => fromProps[p] !== toProps[p])) {
-      this.leafletElement.redraw();
-    }
-  }
+  // updateLeafletElement(fromProps, toProps) {
+  //   if (['uploadSeq', 'filter'].some(p => JSON.stringify(fromProps[p]) !== JSON.stringify(toProps[p]))) {
+  //     this.leafletElement.redraw();
+  //   }
+  // }
 }

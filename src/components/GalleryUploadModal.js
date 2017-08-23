@@ -10,10 +10,9 @@ import Modal from 'react-bootstrap/lib/Modal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
-import { setActiveModal } from 'fm3/actions/mainActions';
 import {
   galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemTakenAt, gallerySetItemTags,
-  gallerySetItemUrl, gallerySetItemForPositionPicking, galleryUpload } from 'fm3/actions/galleryActions';
+  gallerySetItemUrl, gallerySetItemForPositionPicking, galleryUpload, galleryHideUploadModal } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -228,7 +227,7 @@ export default connect(
       dispatch(galleryUpload());
     },
     onClose() {
-      dispatch(setActiveModal(null));
+      dispatch(galleryHideUploadModal());
     },
     onPositionPick(id) {
       dispatch(gallerySetItemForPositionPicking(id));

@@ -2,10 +2,11 @@ import React from 'react';
 import { createLogic } from 'redux-logic';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImageIds, galleryRequestImage, gallerySetImage, gallerySetItemIsUploaded,
-  galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear } from 'fm3/actions/galleryActions';
+  galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear, galleryHideUploadModal, gallerySetUsers,
+} from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 import { API_URL } from 'fm3/backendDefinitions';
 
@@ -19,7 +20,10 @@ const galleryRequestImagesLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`${API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`)
+    const { tag, userId } = getState().gallery.filter;
+
+    fetch(`${API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`
+        + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -95,45 +99,67 @@ const galleryShowOnTheMapLogic = createLogic({
 });
 
 const galleryUploadModalLogic = createLogic({
-  type: 'SET_ACTIVE_MODAL',
+  type: ['GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_SHOW_FILTER'],
   transform({ getState, action }, next) {
-    if (action.payload === 'gallery-upload' && !getState().auth.user) {
+    if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
       next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
     } else {
       next(action);
     }
   },
-  process({ action }, dispatch, done) {
-    if (action.payload === 'gallery-upload') {
-      const pid = Math.random();
-      dispatch(startProgress(pid));
+  process(_, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
 
-      fetch(`${API_URL}/gallery/picture-tags`)
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-          }
-          return res.json();
-        })
-        .then((payload) => {
-          dispatch(gallerySetTags(payload));
-        })
-        .catch((e) => {
-          dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
-        })
-        .then(() => {
-          dispatch(stopProgress(pid));
-          done();
-        });
-    } else {
-      done();
-    }
+    fetch(`${API_URL}/gallery/picture-tags`)
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((payload) => {
+        dispatch(gallerySetTags(payload));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
+  },
+});
+
+const galleryFetchUsersLogic = createLogic({
+  type: ['GALLERY_SHOW_FILTER'],
+  process(_, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
+    fetch(`${API_URL}/gallery/picture-users`)
+      .then((res) => {
+        if (res.status !== 200) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        }
+        return res.json();
+      })
+      .then((payload) => {
+        dispatch(gallerySetUsers(payload));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
   },
 });
 
 const galleryItemUploadLogic = createLogic({
   type: ['GALLERY_UPLOAD'],
-  cancelType: 'SET_ACTIVE_MODAL',
+  cancelType: 'GALLERY_HIDE_UPLOAD_MODAL',
   process({ getState }, dispatch, done) {
     const { items, uploadingId } = getState().gallery;
 
@@ -148,7 +174,7 @@ const galleryItemUploadLogic = createLogic({
           timeout: 4000,
           style: 'info',
         }));
-        dispatch(setActiveModal(null));
+        dispatch(galleryHideUploadModal());
       }
       done();
       return;
@@ -328,4 +354,5 @@ export default [
   gallerySubmitCommentLogic,
   gallerySubmitStarsLogic,
   galleryDeletePictureLogic,
+  galleryFetchUsersLogic,
 ];

@@ -37,7 +37,6 @@ import SelectHomeLocationMenu from 'fm3/components/SelectHomeLocationMenu';
 
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
-import AsyncGalleryUploadModal from 'fm3/components/AsyncGalleryUploadModal';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
@@ -251,8 +250,6 @@ class Main extends React.Component {
             {showElevationChart && <AsyncElevationChart />}
           </Map>
         </Row>
-
-        {activeModal === 'gallery-upload' && <AsyncGalleryUploadModal />}
       </div>
     );
   }

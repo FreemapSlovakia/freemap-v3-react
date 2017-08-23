@@ -3,16 +3,26 @@ const initialState = {
   activeImageId: null,
   image: null,
 
+  showUploadModal: false,
   items: [],
   pickingPositionForId: null,
 
   uploadingId: null,
 
   tags: [],
+  users: [],
 
   uploadSeq: 0,
   comment: '',
   showFilter: false,
+  filter: {
+    tag: null,
+    userId: null,
+    takenAtFrom: null,
+    takenAtTo: null,
+    ratingFrom: null,
+    ratingTo: null,
+  },
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -125,12 +135,22 @@ export default function elevationMeasurement(state = initialState, action) {
     }
     case 'GALLERY_SET_TAGS':
       return { ...state, tags: action.payload };
+    case 'GALLERY_SET_USERS':
+      return { ...state, users: action.payload };
     case 'GALLERY_SET_LAYER_DIRTY':
       return { ...state, uploadSeq: state.uploadSeq + 1 };
     case 'GALLERY_SET_COMMENT':
       return { ...state, comment: action.payload };
-    case 'GALLERY_SET_FILTER_SHOWN':
-      return { ...state, showFilter: action.payload };
+    case 'GALLERY_SHOW_FILTER':
+      return { ...state, showFilter: true };
+    case 'GALLERY_SET_FILTER':
+      return { ...state, filter: action.payload, showFilter: false };
+    case 'GALLERY_HIDE_FILTER':
+      return { ...state, showFilter: false };
+    case 'GALLERY_SHOW_UPLOAD_MODAL':
+      return { ...state, showUploadModal: true };
+    case 'GALLERY_HIDE_UPLOAD_MODAL':
+      return { ...state, showUploadModal: false };
     default:
       return state;
   }
