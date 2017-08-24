@@ -12,7 +12,7 @@ import { Static } from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function GalleryMenu({ onUpload, onCancel, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow }) {
+function GalleryMenu({ onUpload, onCancel, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive }) {
   return (
     pickingPosition ?
       <Navbar.Form>
@@ -24,7 +24,7 @@ function GalleryMenu({ onUpload, onCancel, pickingPosition, onPositionConfirm, o
       </Navbar.Form>
       :
       <Navbar.Form>
-        <Button onClick={onFilterShow}><FontAwesomeIcon icon="filter" /> Nastaviť filter</Button>
+        <Button onClick={onFilterShow} active={filterIsActive}><FontAwesomeIcon icon="filter" /> Nastaviť filter</Button>
         {' '}
         <Button onClick={onUpload}><FontAwesomeIcon icon="upload" /> Nahrať</Button>
         {' '}
@@ -40,11 +40,13 @@ GalleryMenu.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onUpload: PropTypes.func.isRequired,
   onFilterShow: PropTypes.func.isRequired,
+  filterIsActive: PropTypes.bool,
 };
 
 export default connect(
   state => ({
     pickingPosition: state.gallery.pickingPositionForId !== null,
+    filterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
   }),
   dispatch => ({
     onUpload() {
