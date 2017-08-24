@@ -8,7 +8,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
-import { galleryRequestImage } from 'fm3/actions/galleryActions';
+import { galleryRequestImage, gallerySetFilter } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
 import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
@@ -117,10 +117,47 @@ export default function handleLocationChange(store, location) {
     }
   }
 
+  handleGallery(store, query);
+
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);
 
   if (diff && Object.keys(diff).length) {
     store.dispatch(mapRefocus(diff));
+  }
+}
+
+function handleGallery(store, query) {
+  const qUserId = parseInt(query['gallery-user-id'], 10);
+  const qGalleryTag = query['gallery-tag'];
+  const qRatingFrom = parseFloat(query['gallery-rating-from']);
+  const qRatingTo = parseFloat(query['gallery-rating-to']);
+  const qTakenAtFrom = new Date(query['gallery-taken-at-from']);
+  const qTakenAtTo = new Date(query['gallery-taken-at-to']);
+
+  if (qUserId || qGalleryTag) {
+    const { filter } = store.getState().gallery;
+    const newFilter = { ...filter };
+    if (qUserId && filter.userId !== qUserId) {
+      newFilter.userId = qUserId;
+    }
+    if (qGalleryTag && filter.tag !== qGalleryTag) {
+      newFilter.tag = qGalleryTag;
+    }
+    if (qRatingFrom && filter.ratingFrom !== qRatingFrom) {
+      newFilter.ratingFrom = qRatingFrom;
+    }
+    if (qRatingTo && filter.ratingTo !== qRatingTo) {
+      newFilter.ratingTo = qRatingTo;
+    }
+    if (!isNaN(qTakenAtFrom) && (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !== qTakenAtFrom.getTime()) {
+      newFilter.takenAtFrom = qTakenAtFrom;
+    }
+    if (!isNaN(qTakenAtTo) && (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !== qTakenAtTo.getTime()) {
+      newFilter.takenAtTo = qTakenAtTo;
+    }
+    if (Object.keys(newFilter).length !== 0) {
+      store.dispatch(gallerySetFilter(newFilter));
+    }
   }
 }
 

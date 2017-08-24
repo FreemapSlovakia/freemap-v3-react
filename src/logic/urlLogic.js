@@ -2,12 +2,15 @@ import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
 
 export const urlLogic = createLogic({
-  type: ['MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE',
+  type: [
+    'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE',
     'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID',
     'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
-    'ELEVATION_MEASUREMENT_SET_POINT'],
+    'ELEVATION_MEASUREMENT_SET_POINT',
+    'GALLERY_SET_FILTER',
+  ],
   process({ getState, action }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
@@ -20,6 +23,7 @@ export const urlLogic = createLogic({
       distanceMeasurement: { points: distanceMeasurementPoints },
       areaMeasurement: { points: areaMeasurementPoints },
       elevationMeasurement: { point: elevationMeasurementPoint },
+      gallery: { filter: galleryFilter },
     } = getState();
 
     const queryParts = [
@@ -79,6 +83,42 @@ export const urlLogic = createLogic({
     if (elevationMeasurementPoint) {
       queryParts.push(
         `elevation-measurement-point=${serializePoint(elevationMeasurementPoint)}`,
+      );
+    }
+
+    if (galleryFilter.userId) {
+      queryParts.push(
+        `gallery-user-id=${galleryFilter.userId}`,
+      );
+    }
+
+    if (galleryFilter.tag) {
+      queryParts.push(
+        `gallery-tag=${encodeURIComponent(galleryFilter.tag)}`,
+      );
+    }
+
+    if (galleryFilter.ratingFrom) {
+      queryParts.push(
+        `gallery-rating-from=${galleryFilter.ratingFrom}`,
+      );
+    }
+
+    if (galleryFilter.ratingTo) {
+      queryParts.push(
+        `gallery-rating-to=${galleryFilter.ratingTo}`,
+      );
+    }
+
+    if (galleryFilter.takenAtFrom) {
+      queryParts.push(
+        `gallery-taken-at-from=${galleryFilter.takenAtFrom.toISOString().replace(/T.*/, '')}`,
+      );
+    }
+
+    if (galleryFilter.takenAtTo) {
+      queryParts.push(
+        `gallery-taken-at-to=${galleryFilter.takenAtTo.toISOString().replace(/T.*/, '')}`,
       );
     }
 

@@ -4,24 +4,23 @@
 export function getTrasformedParamsIfIsOldFreemapUrl(location) {
   const isFromOldFreemapUrlFormat1 = location.hash && (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
   const isFromOldFreemapUrlFormat2 = location.search && /[?&]m=/.test(location.search); // "?m=A&p=48.1855|17.4029|14"
-  if (isFromOldFreemapUrlFormat1 || isFromOldFreemapUrlFormat2) {
-    let oldFreemapUrlParams;
-    if (isFromOldFreemapUrlFormat1) {
-      oldFreemapUrlParams = rawUrlParamsToHash(location.hash, ','); // #m=T,p=48.21836|17.4166|16|T -> {'m': 'T', 'p' : '48.21836|17.4166|16|T'}
-    } else { // isFromOldFreemapUrlFormat2
-      oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&'); // ?m=A&p=48.1855|17.4029|14
-    }
-    const [latFrag, lonFrag, zoomFrag, anotherMapTypeParam] = oldFreemapUrlParams.p.split('|');
-    const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'T';
-    return {
-      lat: parseFloat(latFrag),
-      lon: parseFloat(lonFrag),
-      zoom: parseInt(zoomFrag, 10),
-      mapType,
-      overlays: [],
-    };
+  if (!isFromOldFreemapUrlFormat1 && !isFromOldFreemapUrlFormat2) {
+    return false;
   }
-  return false;
+
+  const oldFreemapUrlParams = isFromOldFreemapUrlFormat1
+    ? rawUrlParamsToHash(location.hash, ',') // #m=T,p=48.21836|17.4166|16|T -> {'m': 'T', 'p' : '48.21836|17.4166|16|T'}
+    : rawUrlParamsToHash(location.search, '&'); // ?m=A&p=48.1855|17.4029|14
+
+  const [latFrag, lonFrag, zoomFrag, anotherMapTypeParam] = oldFreemapUrlParams.p.split('|');
+  const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'T';
+  return {
+    lat: parseFloat(latFrag),
+    lon: parseFloat(lonFrag),
+    zoom: parseInt(zoomFrag, 10),
+    mapType,
+    overlays: [],
+  };
 }
 
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
