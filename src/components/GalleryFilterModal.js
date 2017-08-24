@@ -77,6 +77,17 @@ class GalleryViewerModal extends React.Component {
     });
   }
 
+  handleEraseClick = () => {
+    this.props.onOk({
+      tag: null,
+      userId: null,
+      takenAtFrom: null,
+      takenAtTo: null,
+      ratingFrom: null,
+      ratingTo: null,
+    });
+  }
+
   render() {
     const { onClose, tags, users } = this.props;
 
@@ -148,6 +159,7 @@ class GalleryViewerModal extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button type="submit"><Glyphicon glyph="floppy-disk" /> Použiť</Button>
+            <Button type="button" onClick={this.handleEraseClick}><Glyphicon glyph="erase" /> Zmazať</Button>
             <Button type="button" onClick={onClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
           </Modal.Footer>
         </form>
