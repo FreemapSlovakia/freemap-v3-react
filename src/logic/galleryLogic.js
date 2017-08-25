@@ -20,10 +20,15 @@ const galleryRequestImagesLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const { tag, userId } = getState().gallery.filter;
+    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = getState().gallery.filter;
 
     fetch(`${API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`
-        + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`)
+      + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`
+      + `${ratingFrom ? `&ratingFrom=${ratingFrom}` : ''}`
+      + `${ratingTo ? `&ratingTo=${ratingTo}` : ''}`
+      + `${takenAtFrom ? `&takenAtFrom=${takenAtFrom.toISOString().replace(/T.*/, '')}` : ''}`
+      + `${takenAtTo ? `&takenAtTo=${takenAtTo.toISOString().replace(/T.*/, '')}` : ''}`,
+    )
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);

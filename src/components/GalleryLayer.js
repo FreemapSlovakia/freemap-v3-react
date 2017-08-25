@@ -27,9 +27,15 @@ const galleryLayer = L.GridLayer.extend({
 
     const k = 2 ** coords.z;
 
-    const { tag, userId } = this.options.filter;
+    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = this.options.filter;
     fetch(`${API_URL}/gallery/pictures?by=bbox&bbox=${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`
-      + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`,
+      + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`
+      + `${userId ? `&userId=${userId}` : ''}`
+      + `${ratingFrom ? `&ratingFrom=${ratingFrom}` : ''}`
+      + `${ratingTo ? `&ratingTo=${ratingTo}` : ''}`
+      + `${takenAtFrom ? `&takenAtFrom=${takenAtFrom.toISOString().replace(/T.*/, '')}` : ''}`
+      + `${takenAtTo ? `&takenAtTo=${takenAtTo.toISOString().replace(/T.*/, '')}` : ''}`
+      ,
     )
       .then((res) => {
         if (res.status !== 200) {

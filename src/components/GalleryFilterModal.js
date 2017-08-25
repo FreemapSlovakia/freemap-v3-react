@@ -143,6 +143,7 @@ class GalleryViewerModal extends React.Component {
                   type="number"
                   min={1}
                   max={this.state.ratingTo || 5}
+                  step="any"
                   value={this.state.ratingFrom}
                   onChange={this.handleRatingFromChange}
                 />
@@ -151,6 +152,7 @@ class GalleryViewerModal extends React.Component {
                   type="number"
                   min={this.state.ratingFrom || 1}
                   max={5}
+                  step="any"
                   value={this.state.ratingTo}
                   onChange={this.handleRatingToChange}
                 />

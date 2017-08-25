@@ -134,7 +134,7 @@ function handleGallery(store, query) {
   const qTakenAtFrom = new Date(query['gallery-taken-at-from']);
   const qTakenAtTo = new Date(query['gallery-taken-at-to']);
 
-  if (qUserId || qGalleryTag) {
+  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || qTakenAtFrom || qTakenAtTo) {
     const { filter } = store.getState().gallery;
     const newFilter = { ...filter };
     if (qUserId && filter.userId !== qUserId) {

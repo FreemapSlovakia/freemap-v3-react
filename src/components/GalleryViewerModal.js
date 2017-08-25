@@ -155,7 +155,7 @@ class GalleryViewerModal extends React.Component {
               Nahral <b>{image.user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
               {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
               {' '}
-              <ReactStars className="stars" size={22} value={rating / 2} edit={false} />
+              <ReactStars className="stars" size={22} value={rating} edit={false} />
               {description && ` ${description}`}
               {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
             </div>,
