@@ -28,7 +28,7 @@
     "react-chartjs-2": "2.6.1",
     "react-dom": "15.6.1",
     "react-dropzone": "4.1.0",
-    "react-leaflet": "1.6.3",
+    "react-leaflet": "1.6.4",
     "react-leaflet-bing": "2.0.0",
     "react-rangeslider": "2.1.0",
     "react-redux": "5.0.6",
