@@ -136,7 +136,7 @@ function handleGallery(store, query) {
 
   if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || qTakenAtFrom || qTakenAtTo) {
     const { filter } = store.getState().gallery;
-    const newFilter = { ...filter };
+    const newFilter = {};
     if (qUserId && filter.userId !== qUserId) {
       newFilter.userId = qUserId;
     }
@@ -156,7 +156,7 @@ function handleGallery(store, query) {
       newFilter.takenAtTo = qTakenAtTo;
     }
     if (Object.keys(newFilter).length !== 0) {
-      store.dispatch(gallerySetFilter(newFilter));
+      store.dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
   }
 }
