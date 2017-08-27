@@ -80,13 +80,13 @@ class GalleryViewerModal extends React.Component {
   }
 
   handleEraseClick = () => {
-    this.props.onOk({
-      tag: null,
-      userId: null,
-      takenAtFrom: null,
-      takenAtTo: null,
-      ratingFrom: null,
-      ratingTo: null,
+    this.setState({
+      tag: '',
+      userId: '',
+      takenAtFrom: '',
+      takenAtTo: '',
+      ratingFrom: '',
+      ratingTo: '',
     });
   }
 
