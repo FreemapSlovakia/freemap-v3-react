@@ -1,7 +1,7 @@
 import { GridLayer } from 'react-leaflet';
-import PropTypes from 'prop-types';
 
 import { API_URL } from 'fm3/backendDefinitions';
+import { galleryFilter } from 'fm3/propTypes';
 
 const galleryLayer = L.GridLayer.extend({
   createTile(coords, done) {
@@ -86,7 +86,7 @@ const galleryLayer = L.GridLayer.extend({
 
 export default class FooLayer extends GridLayer {
   static propTypes = {
-    filter: PropTypes.object.isRequired,
+    filter: galleryFilter.isRequired,
   };
 
   // eslint-disable-next-line

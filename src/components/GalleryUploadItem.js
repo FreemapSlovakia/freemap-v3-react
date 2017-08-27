@@ -18,20 +18,19 @@ export default class GalleryUploadItem extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
     filename: PropTypes.string,
-    dataURL: PropTypes.string,
-    position: FmPropTypes.point,
-    title: PropTypes.string,
-    description: PropTypes.string,
-    takenAt: PropTypes.instanceOf(Date),
-    tags: PropTypes.arrayOf(PropTypes.string.isRequired),
+    url: PropTypes.string,
+    model: PropTypes.shape({
+      position: FmPropTypes.point,
+      title: PropTypes.string,
+      description: PropTypes.string,
+      takenAt: PropTypes.instanceOf(Date),
+      tags: PropTypes.arrayOf(PropTypes.string.isRequired),
+    }),
     allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     error: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
-    onTitleChange: PropTypes.func.isRequired,
-    onDescriptionChange: PropTypes.func.isRequired,
-    onTakenAtChange: PropTypes.func.isRequired,
-    onTagsChange: PropTypes.func.isRequired,
+    onModelChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
   }
 
@@ -44,46 +43,46 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   handleTitleChange = (e) => {
-    this.props.onTitleChange(this.props.id, e.target.value || null);
+    this.props.onModelChange(this.props.id, { ...this.props.model, title: e.target.value || null });
   }
 
   handleDescriptionChange = (e) => {
-    this.props.onDescriptionChange(this.props.id, e.target.value || null);
+    this.props.onModelChange(this.props.id, { ...this.props.model, description: e.target.value || null });
   }
 
   handleTakenAtChange = (e) => {
-    this.props.onTakenAtChange(this.props.id, e.target.value ? new Date(e.target.value) : null);
+    this.props.onModelChange(this.props.id, { ...this.props.model, takenAt: e.target.value ? new Date(e.target.value) : null });
   }
 
   handleTagAdded = ({ name }) => {
-    if (!this.props.tags.includes(name)) {
-      this.props.onTagsChange(this.props.id, [...this.props.tags, name]);
+    if (!this.props.model.tags.includes(name)) {
+      this.props.onModelChange(this.props.id, { ...this.props.model, tags: [...this.props.model.tags, name] });
     }
   }
 
   handleTagDeleted = (i) => {
-    const newTags = [...this.props.tags];
-    newTags.splice(i, 1);
-    this.props.onTagsChange(this.props.id, newTags);
+    const tags = [...this.props.model.tags];
+    tags.splice(i, 1);
+    this.props.onModelChange(this.props.id, { ...this.props.model, tags });
   }
 
   render() {
-    const { id, filename, dataURL, position, title, description, disabled, takenAt, tags, allTags, error } = this.props;
+    const { id, filename, url, disabled, model, allTags, error } = this.props;
     return (
-      <Thumbnail key={id} src={dataURL || require('fm3/images/spinnerbar.gif')} alt={filename}>
+      <Thumbnail key={id} src={url || require('fm3/images/spinnerbar.gif')} alt={filename}>
         {error && <Alert bsStyle="danger">{error}</Alert>}
         <fieldset disabled={disabled}>
           <FormGroup>
-            <FormControl placeholder="Názov" type="text" value={title} onChange={this.handleTitleChange} />
+            <FormControl placeholder="Názov" type="text" value={model.title} onChange={this.handleTitleChange} />
           </FormGroup>
           <FormGroup>
-            <FormControl placeholder="Popis" componentClass="textarea" value={description} onChange={this.handleDescriptionChange} />
+            <FormControl placeholder="Popis" componentClass="textarea" value={model.description} onChange={this.handleDescriptionChange} />
           </FormGroup>
           <FormGroup>
             <FormControl
               type="datetime-local"
               placeholder="Dátum a čas fotenia"
-              value={takenAt ? `${zeropad(takenAt.getFullYear(), 4)}-${zeropad(takenAt.getMonth() + 1)}-${zeropad(takenAt.getDate())}T${zeropad(takenAt.getHours())}:${zeropad(takenAt.getMinutes())}:${zeropad(takenAt.getSeconds())}` : ''}
+              value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}T${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
               onChange={this.handleTakenAtChange}
             />
           </FormGroup>
@@ -92,7 +91,7 @@ export default class GalleryUploadItem extends React.Component {
               <FormControl
                 type="text"
                 placeholder="Pozícia"
-                value={position ? `${formatGpsCoord(position.lat, 'SN')}, ${formatGpsCoord(position.lon, 'WE')}` : ''}
+                value={model.position ? `${formatGpsCoord(model.position.lat, 'SN')}, ${formatGpsCoord(model.position.lon, 'WE')}` : ''}
                 onClick={this.handlePositionPick}
                 readOnly
               />
@@ -104,7 +103,7 @@ export default class GalleryUploadItem extends React.Component {
           <FormGroup>
             <ReactTags
               placeholder="Tagy"
-              tags={tags.map(tag => ({ id: tag, name: tag }))}
+              tags={model.tags.map(tag => ({ id: tag, name: tag }))}
               suggestions={allTags.map(tag => ({ id: tag, name: tag }))}
               handleAddition={this.handleTagAdded}
               handleDelete={this.handleTagDeleted}

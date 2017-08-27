@@ -74,35 +74,10 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         items: state.items.map(item => (item.id === action.payload ? { ...item, uploaded: true } : item)),
       };
-    case 'GALLERY_SET_ITEM_URL':
+    case 'GALLERY_SET_ITEM':
       return {
         ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, dataURL: action.payload.value } : item)),
-      };
-    case 'GALLERY_SET_ITEM_TITLE':
-      return {
-        ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, title: action.payload.value } : item)),
-      };
-    case 'GALLERY_SET_ITEM_DESCRIPTION':
-      return {
-        ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, description: action.payload.value } : item)),
-      };
-    case 'GALLERY_SET_ITEM_TAKEN_AT':
-      return {
-        ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, takenAt: action.payload.value } : item)),
-      };
-    case 'GALLERY_SET_ITEM_TAGS':
-      return {
-        ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, tags: action.payload.value } : item)),
-      };
-    case 'GALLERY_SET_ITEM_ERROR':
-      return {
-        ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, error: action.payload.value } : item)),
+        items: state.items.map(item => (item.id === action.payload.id ? action.payload.value : item)),
       };
     case 'GALLERY_SET_PICKING_POSITION':
       return {

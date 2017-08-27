@@ -11,8 +11,8 @@ import Modal from 'react-bootstrap/lib/Modal';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import {
-  galleryAddItem, galleryRemoveItem, gallerySetItemTitle, gallerySetItemDescription, gallerySetItemTakenAt, gallerySetItemTags,
-  gallerySetItemUrl, gallerySetItemForPositionPicking, galleryUpload, galleryHideUploadModal } from 'fm3/actions/galleryActions';
+  galleryAddItem, galleryRemoveItem, gallerySetItem,
+  gallerySetItemForPositionPicking, galleryUpload, galleryHideUploadModal } from 'fm3/actions/galleryActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -28,7 +28,7 @@ class GalleryUploadModal extends React.Component {
       PropTypes.shape({
         id: PropTypes.number.isRequired,
         file: PropTypes.object.isRequired,
-        dataURL: PropTypes.string,
+        url: PropTypes.string,
         position: FmPropTypes.point,
         title: PropTypes.string,
         description: PropTypes.string,
@@ -39,108 +39,109 @@ class GalleryUploadModal extends React.Component {
     ).isRequired,
     allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     onItemAdd: PropTypes.func.isRequired,
-    onItemUrlSet: PropTypes.func.isRequired,
     onItemRemove: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,
-    onTitleChange: PropTypes.func.isRequired,
-    onDescriptionChange: PropTypes.func.isRequired,
-    onTakenAtChange: PropTypes.func.isRequired,
-    onTagsChange: PropTypes.func.isRequired,
+    onItemChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
     onUpload: PropTypes.func.isRequired,
     uploading: PropTypes.bool,
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
-    each(acceptedFiles, (file, cb) => {
-      const reader = new FileReader();
-      reader.onerror = (err) => {
-        cb(err);
-      };
-      reader.onload = () => {
-        let tags;
-        try {
-          tags = ExifReader.load(reader.result);
-        } catch (e) {
-          tags = {};
-        }
-        const id = nextId;
-        nextId += 1;
-
-        const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
-        this.props.onItemAdd({
-          id,
-          file,
-          position: tags.GPSLatitude && tags.GPSLongitude ? {
-            lat: tags.GPSLatitude.description * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
-            lon: tags.GPSLongitude.description * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
-          } : null,
-          title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
-          description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
-          takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
-          tags: [],
-        });
-
-        const img = new Image();
-        const url = URL.createObjectURL(file);
-        img.onerror = (err) => {
-          URL.revokeObjectURL(url);
-          cb(err);
-        };
-        img.onload = () => {
-          URL.revokeObjectURL(url);
-
-          const canvas = document.createElement('canvas');
-          const ratio = 618 / img.naturalWidth;
-          const width = img.naturalWidth * ratio;
-          const height = img.naturalHeight * ratio;
-          const o = tags.Orientation && tags.Orientation.value || 1;
-          canvas.width = width;
-          canvas.height = height;
-
-          const transformations = [
-            [1, 0, 0, 1, 0, 0],
-            [-1, 0, 0, 1, width, 0],
-            [-1, 0, 0, -1, width, height],
-            [1, 0, 0, -1, 0, height],
-            [0, 1, 1, 0, 0, 0],
-            [0, 1, -1, 0, height, 0],
-            [0, -1, -1, 0, height, width],
-            [0, -1, 1, 0, 0, width],
-          ];
-
-          pica.resize(img, canvas).then(() => {
-            let canvas2;
-            if (o === 1) {
-              canvas2 = canvas;
-            } else {
-              canvas2 = document.createElement('canvas');
-              const ctx = canvas2.getContext('2d');
-              canvas2.width = o > 4 ? height : width;
-              canvas2.height = o > 4 ? width : height;
-              ctx.transform(...transformations[o - 1]);
-              ctx.drawImage(canvas, 0, 0);
-            }
-
-            // canvas2.toBlob((blob) => {
-            //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
-            //   cb();
-            // });
-            this.props.onItemUrlSet(id, canvas2.toDataURL()); // TODO play with toBlob (not supported in safari)
-            cb();
-          });
-        };
-
-        img.src = url;
-      };
-
-      reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
-    }, (err) => {
+    each(acceptedFiles, this.processFile, (err) => {
       if (err) {
         // TODO
       }
     });
+  }
+
+  processFile = (file, cb) => {
+    const reader = new FileReader();
+    reader.onerror = (err) => {
+      cb(err);
+    };
+    reader.onload = () => {
+      let tags;
+      try {
+        tags = ExifReader.load(reader.result);
+      } catch (e) {
+        tags = {};
+      }
+      const id = nextId;
+      nextId += 1;
+
+      const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
+      this.props.onItemAdd({
+        id,
+        file,
+        position: tags.GPSLatitude && tags.GPSLongitude ? {
+          lat: tags.GPSLatitude.description * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
+          lon: tags.GPSLongitude.description * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
+        } : null,
+        title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
+        description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
+        takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
+        tags: [],
+      });
+
+      const img = new Image();
+      const url = URL.createObjectURL(file);
+      img.onerror = (err) => {
+        URL.revokeObjectURL(url);
+        cb(err);
+      };
+      img.onload = () => {
+        URL.revokeObjectURL(url);
+
+        const canvas = document.createElement('canvas');
+        const ratio = 618 / img.naturalWidth;
+        const width = img.naturalWidth * ratio;
+        const height = img.naturalHeight * ratio;
+        const o = tags.Orientation && tags.Orientation.value || 1;
+        canvas.width = width;
+        canvas.height = height;
+
+        const transformations = [
+          [1, 0, 0, 1, 0, 0],
+          [-1, 0, 0, 1, width, 0],
+          [-1, 0, 0, -1, width, height],
+          [1, 0, 0, -1, 0, height],
+          [0, 1, 1, 0, 0, 0],
+          [0, 1, -1, 0, height, 0],
+          [0, -1, -1, 0, height, width],
+          [0, -1, 1, 0, 0, width],
+        ];
+
+        pica.resize(img, canvas).then(() => {
+          let canvas2;
+          if (o === 1) {
+            canvas2 = canvas;
+          } else {
+            canvas2 = document.createElement('canvas');
+            const ctx = canvas2.getContext('2d');
+            canvas2.width = o > 4 ? height : width;
+            canvas2.height = o > 4 ? width : height;
+            ctx.transform(...transformations[o - 1]);
+            ctx.drawImage(canvas, 0, 0);
+          }
+
+          // canvas2.toBlob((blob) => {
+          //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
+          //   cb();
+          // });
+          const item = this.props.items.find(itm => itm.id === id);
+          if (item) {
+            this.props.onItemChange(id, { ...item, url: canvas2.toDataURL() }); // TODO play with toBlob (not supported in safari)
+          }
+          cb();
+        });
+      };
+
+      img.src = url;
+    };
+
+    reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
   }
 
   handleRemove = (id) => {
@@ -157,8 +158,15 @@ class GalleryUploadModal extends React.Component {
     return 0;
   }
 
+  handleModelChange = (id, model) => {
+    const item = this.props.items.find(itm => itm.id === id);
+    if (item) {
+      this.props.onItemChange(id, { ...item, ...model });
+    }
+  }
+
   render() {
-    const { items, onClose, onPositionPick, onTitleChange, onDescriptionChange, onTakenAtChange, onTagsChange, visible, onUpload, uploading, allTags } = this.props;
+    const { items, onClose, onPositionPick, visible, onUpload, uploading, allTags } = this.props;
     return (
       <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
@@ -166,25 +174,18 @@ class GalleryUploadModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {
-            items.map(({ id, file, dataURL, position, title, description, takenAt, tags, error }) => (
+            items.map(({ id, file, url, position, title, description, takenAt, tags, error }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
                 filename={file.name}
-                dataURL={dataURL}
-                position={position}
-                title={title}
-                description={description}
-                takenAt={takenAt}
-                tags={tags}
+                url={url}
+                model={{ position, title, description, takenAt, tags }}
                 allTags={allTags}
                 error={error}
                 onRemove={this.handleRemove}
                 onPositionPick={onPositionPick}
-                onTitleChange={onTitleChange}
-                onDescriptionChange={onDescriptionChange}
-                onTakenAtChange={onTakenAtChange}
-                onTagsChange={onTagsChange}
+                onModelChange={this.handleModelChange}
                 disabled={uploading}
               />
             ))
@@ -220,9 +221,6 @@ export default connect(
     onItemRemove(id) {
       dispatch(galleryRemoveItem(id));
     },
-    onItemUrlSet(id, url) {
-      dispatch(gallerySetItemUrl(id, url));
-    },
     onUpload() {
       dispatch(galleryUpload());
     },
@@ -232,17 +230,8 @@ export default connect(
     onPositionPick(id) {
       dispatch(gallerySetItemForPositionPicking(id));
     },
-    onTitleChange(id, title) {
-      dispatch(gallerySetItemTitle(id, title));
-    },
-    onDescriptionChange(id, description) {
-      dispatch(gallerySetItemDescription(id, description));
-    },
-    onTakenAtChange(id, takenAt) {
-      dispatch(gallerySetItemTakenAt(id, takenAt));
-    },
-    onTagsChange(id, tags) {
-      dispatch(gallerySetItemTags(id, tags));
+    onItemChange(id, item) {
+      dispatch(gallerySetItem(id, item));
     },
   }),
 )(GalleryUploadModal);

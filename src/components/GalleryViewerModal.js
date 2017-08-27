@@ -110,7 +110,7 @@ class GalleryViewerModal extends React.Component {
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
     const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
 
-    const loadingMeta = !image || image.id !== activeImageId;
+    // TODO const loadingMeta = !image || image.id !== activeImageId;
 
     return (
       <Modal show onHide={onClose} bsSize="large">

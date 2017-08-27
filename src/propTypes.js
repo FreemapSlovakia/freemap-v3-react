@@ -47,3 +47,12 @@ export const tool = PropTypes.oneOf(['search', 'objects', 'route-planner',
   'measure-dist', 'measure-ele', 'measure-area', 'select-home-location',
   'route-planner', 'location', 'track-viewer', 'info-point', 'changesets',
   'gallery', 'map-details']);
+
+export const galleryFilter = PropTypes.shape({
+  tag: PropTypes.string,
+  userId: PropTypes.number,
+  takenAtFrom: PropTypes.instanceOf(Date),
+  takenAtTo: PropTypes.instanceOf(Date),
+  ratingFrom: PropTypes.number,
+  ratingTo: PropTypes.number,
+});

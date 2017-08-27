@@ -29,7 +29,7 @@ class GalleryResult extends React.Component {
     uploadSeq: PropTypes.number.isRequired,
     showFilter: PropTypes.bool,
     showUploadModal: PropTypes.bool,
-    filter: PropTypes.object.isRequired,
+    filter: FmPropTypes.galleryFilter.isRequired,
   }
 
   state = {};

@@ -12,12 +12,14 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 
+import { galleryFilter } from 'fm3/propTypes';
+
 import { gallerySetFilter, galleryHideFilter } from 'fm3/actions/galleryActions';
 
 class GalleryViewerModal extends React.Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
-    filter: PropTypes.object.isRequired,
+    filter: galleryFilter.isRequired,
     onClose: PropTypes.func.isRequired,
     tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     users: PropTypes.arrayOf(

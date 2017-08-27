@@ -34,28 +34,8 @@ export function gallerySetItemIsUploaded(id) {
   return { type: 'GALLERY_SET_ITEM_IS_UPLOADED', payload: id };
 }
 
-export function gallerySetItemUrl(id, url) {
-  return { type: 'GALLERY_SET_ITEM_URL', payload: { id, value: url } };
-}
-
-export function gallerySetItemTitle(id, title) {
-  return { type: 'GALLERY_SET_ITEM_TITLE', payload: { id, value: title } };
-}
-
-export function gallerySetItemDescription(id, description) {
-  return { type: 'GALLERY_SET_ITEM_DESCRIPTION', payload: { id, value: description } };
-}
-
-export function gallerySetItemTakenAt(id, takenAt) {
-  return { type: 'GALLERY_SET_ITEM_TAKEN_AT', payload: { id, value: takenAt } };
-}
-
-export function gallerySetItemTags(id, tags) {
-  return { type: 'GALLERY_SET_ITEM_TAGS', payload: { id, value: tags } };
-}
-
-export function gallerySetItemError(id, error) {
-  return { type: 'GALLERY_SET_ITEM_ERROR', payload: { id, value: error } };
+export function gallerySetItem(id, item) {
+  return { type: 'GALLERY_SET_ITEM', payload: { id, value: item } };
 }
 
 export function gallerySetPickingPosition(lat, lon) {
