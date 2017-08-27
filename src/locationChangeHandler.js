@@ -53,13 +53,6 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  if (query.image) {
-    const imageId = parseInt(query.image, 10);
-    if (store.getState().gallery.activeImageId !== imageId) {
-      store.dispatch(galleryRequestImage(imageId));
-    }
-  }
-
   if (query['changesets-days']) {
     const reduxDays = store.getState().changesets.days;
     const urlDays = parseInt(query['changesets-days'], 10);
@@ -157,6 +150,11 @@ function handleGallery(store, query) {
     }
     if (Object.keys(newFilter).length !== 0) {
       store.dispatch(gallerySetFilter({ ...filter, ...newFilter }));
+    }
+  } else if (query.image) {
+    const imageId = parseInt(query.image, 10);
+    if (store.getState().gallery.activeImageId !== imageId) {
+      store.dispatch(galleryRequestImage(imageId));
     }
   } else if ('gallery' in query) {
     store.dispatch(setTool('gallery'));
