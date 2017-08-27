@@ -78,6 +78,14 @@ export function gallerySubmitStars(stars) {
   return { type: 'GALLERY_SUBMIT_STARS', payload: stars };
 }
 
+export function galleryEditPicture() {
+  return { type: 'GALLERY_EDIT_PICTURE' };
+}
+
+export function gallerySetEditModel(editModel) {
+  return { type: 'GALLERY_SET_EDIT_MODEL', payload: editModel };
+}
+
 export function galleryDeletePicture() {
   return { type: 'GALLERY_DELETE_PICTURE' };
 }
@@ -100,4 +108,8 @@ export function galleryHideUploadModal() {
 
 export function gallerySetFilter(filter) {
   return { type: 'GALLERY_SET_FILTER', payload: filter };
+}
+
+export function gallerySavePicture() {
+  return { type: 'GALLERY_SAVE_PICTURE' };
 }

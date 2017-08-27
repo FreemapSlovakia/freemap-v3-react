@@ -17,10 +17,14 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
+import GalleryEditForm from 'fm3/components/GalleryEditForm';
+
+import * as FmPropTypes from 'fm3/propTypes';
+
 import { API_URL } from 'fm3/backendDefinitions';
 
-import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars, galleryDeletePicture }
-  from 'fm3/actions/galleryActions';
+import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars,
+  galleryEditPicture, galleryDeletePicture, gallerySetEditModel, gallerySavePicture, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
 
@@ -52,7 +56,13 @@ class GalleryViewerModal extends React.Component {
       name: PropTypes.string.isRequired,
       isAdmin: PropTypes.bool,
     }),
+    onEdit: PropTypes.func.isRequired,
     onDelete: PropTypes.func.isRequired,
+    editModel: FmPropTypes.galleryPictureModel,
+    onEditModelChange: PropTypes.func.isRequired,
+    onSave: PropTypes.func.isRequired,
+    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    onPositionPick: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
@@ -63,11 +73,16 @@ class GalleryViewerModal extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  handleKeydown = (event) => {
-    const thereIsMoreThanOneImage = this.props.imageIds;
-    if (thereIsMoreThanOneImage && event.keyCode === 37 /* left key */) {
+  handleEditModelChange = (editModel) => {
+    this.props.onEditModelChange(editModel);
+  }
+
+  handleKeydown = ({ keyCode }) => {
+    if (this.props.imageIds && this.props.imageIds.length < 2) {
+      // nothing
+    } else if (keyCode === 37 /* left key */) {
       this.handlePreviousClick();
-    } else if (thereIsMoreThanOneImage && event.keyCode === 39 /* right key */) {
+    } else if (keyCode === 39 /* right key */) {
       this.handleNextClick();
     }
   }
@@ -106,7 +121,8 @@ class GalleryViewerModal extends React.Component {
   }
 
   render() {
-    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment, onStarsChange, user, onDelete } = this.props;
+    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
+      onStarsChange, user, onDelete, onEdit, editModel, onSave, allTags, onPositionPick } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
     const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
 
@@ -159,6 +175,23 @@ class GalleryViewerModal extends React.Component {
               {description && ` ${description}`}
               {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
             </div>,
+
+            editModel &&
+              <div key="editForm">
+                <hr />
+                <h5>Úprava</h5>
+
+                <GalleryEditForm
+                  model={editModel}
+                  allTags={allTags}
+                  error={null}
+                  onPositionPick={onPositionPick}
+                  onModelChange={this.handleEditModelChange}
+                />
+                {/* TODO put inside a form and save in onSubmit */}
+                <Button bsStyle="primary" onClick={onSave}><Glyphicon glyph="save" /> Uložiť</Button>
+              </div>,
+
             <hr key="hr" />,
             <h5 key="comments-header">Komentáre</h5>,
             ...comments.map(c => (
@@ -182,9 +215,10 @@ class GalleryViewerModal extends React.Component {
           ]}
         </Modal.Body>
         <Modal.Footer>
-          {image && user && (user.isAdmin || user.id === image.user.id) &&
-            <Button onClick={onDelete} bsStyle="danger"><Glyphicon glyph="remove" /> Zmazať</Button>
-          }
+          {image && user && (user.isAdmin || user.id === image.user.id) && [
+            <Button key="b" onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /> Upraviť</Button>,
+            <Button key="a" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="remove" /> Zmazať</Button>,
+          ]}
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Modal.Footer>
@@ -201,7 +235,9 @@ export default connect(
     zoom: state.map.zoom,
     pickingPosition: state.gallery.pickingPositionForId !== null,
     comment: state.gallery.comment,
+    editModel: state.gallery.editModel,
     user: state.auth.user,
+    allTags: state.gallery.tags,
   }),
   dispatch => ({
     onClose() {
@@ -223,6 +259,9 @@ export default connect(
     onStarsChange(stars) {
       dispatch(gallerySubmitStars(stars));
     },
+    onEdit() {
+      dispatch(galleryEditPicture());
+    },
     onDelete() {
       dispatch(toastsAdd({
         collapseKey: 'gallery.deletePicture',
@@ -234,6 +273,15 @@ export default connect(
           { name: 'Nie' },
         ],
       }));
+    },
+    onEditModelChange(editModel) {
+      dispatch(gallerySetEditModel(editModel));
+    },
+    onSave() {
+      dispatch(gallerySavePicture());
+    },
+    onPositionPick() {
+      dispatch(gallerySetItemForPositionPicking(-1));
     },
   }),
 )(GalleryViewerModal);

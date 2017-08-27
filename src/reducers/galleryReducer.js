@@ -23,6 +23,8 @@ const initialState = {
     ratingFrom: null,
     ratingTo: null,
   },
+
+  editModel: null,
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -47,17 +49,20 @@ export default function elevationMeasurement(state = initialState, action) {
         imageIds: null,
         image: null,
         activeImageId: null,
+        editModel: null,
       };
     case 'GALLERY_SET_IMAGE':
       return {
         ...state,
         image: action.payload,
+        editModel: null,
       };
     case 'GALLERY_REQUEST_IMAGE':
       return {
         ...state,
         activeImageId: action.payload,
         comment: '',
+        editModel: null,
       };
     case 'GALLERY_ADD_ITEM':
       return {
@@ -84,18 +89,25 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         pickingPosition: action.payload,
       };
-    case 'GALLERY_CONFIRM_PICKED_POSITION':
-      return {
+    case 'GALLERY_CONFIRM_PICKED_POSITION': {
+      const s = {
         ...state,
         pickingPositionForId: null,
         pickingPosition: null,
-        items: state.items.map(item => (item.id === state.pickingPositionForId ? { ...item, position: state.pickingPosition } : item)),
       };
+      if (state.pickingPositionForId === -1) {
+        s.editModel = { ...state.editModel, position: state.pickingPosition };
+      } else {
+        s.items = state.items.map(item => (item.id === state.pickingPositionForId ? { ...item, position: state.pickingPosition } : item));
+      }
+      return s;
+    }
     case 'GALLERY_SET_ITEM_FOR_POSITION_PICKING':
       return {
         ...state,
         pickingPositionForId: action.payload,
-        pickingPosition: typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
+        pickingPosition: action.payload === -1 ? state.editModel.position :
+          typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
       };
     case 'GALLERY_UPLOAD':
     {
@@ -126,6 +138,19 @@ export default function elevationMeasurement(state = initialState, action) {
       return { ...state, showUploadModal: true };
     case 'GALLERY_HIDE_UPLOAD_MODAL':
       return { ...state, showUploadModal: false };
+    case 'GALLERY_EDIT_PICTURE':
+      return {
+        ...state,
+        editModel: state.editModel ? null : {
+          title: state.image.title,
+          description: state.image.description,
+          takenAt: state.image.takenAt,
+          tags: [...state.image.tags],
+          position: { lat: state.image.lat, lon: state.image.lon },
+        },
+      };
+    case 'GALLERY_SET_EDIT_MODEL':
+      return { ...state, editModel: action.payload };
     default:
       return state;
   }

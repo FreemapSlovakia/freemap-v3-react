@@ -104,7 +104,7 @@ const galleryShowOnTheMapLogic = createLogic({
 });
 
 const galleryUploadModalLogic = createLogic({
-  type: ['GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_SHOW_FILTER'],
+  type: ['GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_SHOW_FILTER', 'GALLERY_EDIT_PICTURE'],
   transform({ getState, action }, next) {
     if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
       next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
@@ -112,7 +112,13 @@ const galleryUploadModalLogic = createLogic({
       next(action);
     }
   },
-  process(_, dispatch, done) {
+  process({ action, getState }, dispatch, done) {
+    // don't load tags when canceling editing
+    if (action.type === 'GALLERY_EDIT_PICTURE' && !getState().gallery.editModel) {
+      done();
+      return;
+    }
+
     const pid = Math.random();
     dispatch(startProgress(pid));
 
@@ -229,7 +235,7 @@ const gallerySubmitCommentLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const image = getState().gallery.image;
+    const { image } = getState().gallery;
     if (!image) {
       done();
       return;
@@ -277,7 +283,7 @@ const gallerySubmitStarsLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const image = getState().gallery.image;
+    const { image } = getState().gallery;
     if (!image) {
       done();
       return;
@@ -321,7 +327,7 @@ const galleryDeletePictureLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const image = getState().gallery.image;
+    const { image } = getState().gallery;
     if (!image) {
       done();
       return;
@@ -350,6 +356,49 @@ const galleryDeletePictureLogic = createLogic({
   },
 });
 
+const gallerySavePictureLogic = createLogic({
+  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  type: 'GALLERY_SAVE_PICTURE',
+  process({ getState, cancelled$ }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    cancelled$.subscribe(() => {
+      dispatch(stopProgress(pid));
+    });
+
+    const { image, editModel } = getState().gallery;
+    if (!image || !editModel) {
+      done();
+      return;
+    }
+
+    const { id } = image;
+
+    fetch(`${API_URL}/gallery/pictures/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${getState().auth.user.authToken}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(editModel),
+    })
+      .then((res) => {
+        if (res.status !== 204) {
+          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+        }
+        dispatch(gallerySetLayerDirty());
+        dispatch(galleryRequestImage(id));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri ukladaní: ${e.message}`));
+      })
+      .then(() => {
+        dispatch(stopProgress(pid));
+        done();
+      });
+  },
+});
+
 export default [
   galleryRequestImagesLogic,
   galleryRequestImageLogic,
@@ -360,4 +409,5 @@ export default [
   gallerySubmitStarsLogic,
   galleryDeletePictureLogic,
   galleryFetchUsersLogic,
+  gallerySavePictureLogic,
 ];

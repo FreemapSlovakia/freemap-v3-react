@@ -90,7 +90,7 @@ class GalleryResult extends React.Component {
 
         {!isPickingPosition && <GalleryLayer key={`${uploadSeq}-${JSON.stringify(filter)}`} filter={filter} />}
 
-        {activeImageId && <GalleryViewerModal />}
+        {!isPickingPosition && activeImageId && <GalleryViewerModal />}
 
         {showFilter && <GalleryFilterModal />}
 
