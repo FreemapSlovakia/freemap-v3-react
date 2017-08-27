@@ -3,7 +3,7 @@ import queryString from 'query-string';
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl, getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2 } from 'fm3/oldFreemapUtils';
 
-import { setEmbeddedMode } from 'fm3/actions/mainActions';
+import { setEmbeddedMode, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
@@ -134,7 +134,7 @@ function handleGallery(store, query) {
   const qTakenAtFrom = new Date(query['gallery-taken-at-from']);
   const qTakenAtTo = new Date(query['gallery-taken-at-to']);
 
-  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || qTakenAtFrom || qTakenAtTo) {
+  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || !isNaN(qTakenAtFrom) || !isNaN(qTakenAtTo)) {
     const { filter } = store.getState().gallery;
     const newFilter = {};
     if (qUserId && filter.userId !== qUserId) {
@@ -158,6 +158,8 @@ function handleGallery(store, query) {
     if (Object.keys(newFilter).length !== 0) {
       store.dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
+  } else if ('gallery' in query) {
+    store.dispatch(setTool('gallery'));
   }
 }
 

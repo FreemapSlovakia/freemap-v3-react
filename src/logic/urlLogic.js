@@ -86,40 +86,32 @@ export const urlLogic = createLogic({
       );
     }
 
+    if (tool === 'gallery') {
+      queryParts.push('gallery');
+    }
+
     if (galleryFilter.userId) {
-      queryParts.push(
-        `gallery-user-id=${galleryFilter.userId}`,
-      );
+      queryParts.push(`gallery-user-id=${galleryFilter.userId}`);
     }
 
     if (galleryFilter.tag) {
-      queryParts.push(
-        `gallery-tag=${encodeURIComponent(galleryFilter.tag)}`,
-      );
+      queryParts.push(`gallery-tag=${encodeURIComponent(galleryFilter.tag)}`);
     }
 
     if (galleryFilter.ratingFrom) {
-      queryParts.push(
-        `gallery-rating-from=${galleryFilter.ratingFrom}`,
-      );
+      queryParts.push(`gallery-rating-from=${galleryFilter.ratingFrom}`);
     }
 
     if (galleryFilter.ratingTo) {
-      queryParts.push(
-        `gallery-rating-to=${galleryFilter.ratingTo}`,
-      );
+      queryParts.push(`gallery-rating-to=${galleryFilter.ratingTo}`);
     }
 
     if (galleryFilter.takenAtFrom) {
-      queryParts.push(
-        `gallery-taken-at-from=${galleryFilter.takenAtFrom.toISOString().replace(/T.*/, '')}`,
-      );
+      queryParts.push(`gallery-taken-at-from=${galleryFilter.takenAtFrom.toISOString().replace(/T.*/, '')}`);
     }
 
     if (galleryFilter.takenAtTo) {
-      queryParts.push(
-        `gallery-taken-at-to=${galleryFilter.takenAtTo.toISOString().replace(/T.*/, '')}`,
-      );
+      queryParts.push(`gallery-taken-at-to=${galleryFilter.takenAtTo.toISOString().replace(/T.*/, '')}`);
     }
 
     const search = `?${queryParts.join('&')}`;
