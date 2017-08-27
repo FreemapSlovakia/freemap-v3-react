@@ -43,27 +43,31 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   handleTitleChange = (e) => {
-    this.props.onModelChange(this.props.id, { ...this.props.model, title: e.target.value || null });
+    this.changeModel('title', e.target.value || null);
   }
 
   handleDescriptionChange = (e) => {
-    this.props.onModelChange(this.props.id, { ...this.props.model, description: e.target.value || null });
+    this.changeModel('description', e.target.value || null);
   }
 
   handleTakenAtChange = (e) => {
-    this.props.onModelChange(this.props.id, { ...this.props.model, takenAt: e.target.value ? new Date(e.target.value) : null });
+    this.changeModel('takenAt', e.target.value ? new Date(e.target.value) : null);
   }
 
   handleTagAdded = ({ name }) => {
     if (!this.props.model.tags.includes(name)) {
-      this.props.onModelChange(this.props.id, { ...this.props.model, tags: [...this.props.model.tags, name] });
+      this.changeModel('tags', [...this.props.model.tags, name]);
     }
   }
 
   handleTagDeleted = (i) => {
     const tags = [...this.props.model.tags];
     tags.splice(i, 1);
-    this.props.onModelChange(this.props.id, { ...this.props.model, tags });
+    this.changeModel('tags', tags);
+  }
+
+  changeModel(key, value) {
+    this.props.onModelChange(this.props.id, { ...this.props.model, [key]: value });
   }
 
   render() {
