@@ -12,7 +12,7 @@ const initialState = {
   tags: [],
   users: [],
 
-  uploadSeq: 0,
+  dirtySeq: 0,
   comment: '',
   showFilter: false,
   filter: {
@@ -31,7 +31,7 @@ export default function elevationMeasurement(state = initialState, action) {
   switch (action.type) {
     case 'MAP_RESET':
     case 'SET_TOOL':
-      return { ...initialState, uploadSeq: state.uploadSeq };
+      return { ...initialState, dirtySeq: state.dirtySeq };
     case 'GALLERY_SET_IMAGE_IDS':
       return {
         ...state,
@@ -119,7 +119,7 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'GALLERY_SET_USERS':
       return { ...state, users: action.payload };
     case 'GALLERY_SET_LAYER_DIRTY':
-      return { ...state, uploadSeq: state.uploadSeq + 1 };
+      return { ...state, dirtySeq: state.dirtySeq + 1 };
     case 'GALLERY_SET_COMMENT':
       return { ...state, comment: action.payload };
     case 'GALLERY_SHOW_FILTER':

@@ -26,7 +26,7 @@ class GalleryResult extends React.Component {
     zoom: PropTypes.number.isRequired,
     isPickingPosition: PropTypes.bool,
     pickingPosition: FmPropTypes.point,
-    uploadSeq: PropTypes.number.isRequired,
+    dirtySeq: PropTypes.number.isRequired,
     showFilter: PropTypes.bool,
     showUploadModal: PropTypes.bool,
     filter: FmPropTypes.galleryFilter.isRequired,
@@ -68,7 +68,7 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, zoom, isPickingPosition, pickingPosition, uploadSeq, showFilter, showUploadModal, filter } = this.props;
+    const { activeImageId, zoom, isPickingPosition, pickingPosition, dirtySeq, showFilter, showUploadModal, filter } = this.props;
 
     return (
       <div>
@@ -88,7 +88,7 @@ class GalleryResult extends React.Component {
           />
         }
 
-        {!isPickingPosition && <GalleryLayer key={`${uploadSeq}-${JSON.stringify(filter)}`} filter={filter} />}
+        {!isPickingPosition && <GalleryLayer key={`${dirtySeq}-${JSON.stringify(filter)}`} filter={filter} />}
 
         {!isPickingPosition && activeImageId && <GalleryViewerModal />}
 
@@ -107,7 +107,7 @@ export default connect(
     zoom: state.map.zoom,
     isPickingPosition: state.gallery.pickingPositionForId !== null,
     pickingPosition: state.gallery.pickingPosition,
-    uploadSeq: state.gallery.uploadSeq,
+    dirtySeq: state.gallery.dirtySeq,
     showFilter: state.gallery.showFilter,
     showUploadModal: state.gallery.showUploadModal,
     filter: state.gallery.filter,

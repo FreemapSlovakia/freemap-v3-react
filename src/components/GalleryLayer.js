@@ -95,7 +95,7 @@ export default class FooLayer extends GridLayer {
   }
 
   // updateLeafletElement(fromProps, toProps) {
-  //   if (['uploadSeq', 'filter'].some(p => JSON.stringify(fromProps[p]) !== JSON.stringify(toProps[p]))) {
+  //   if (['dirtySeq', 'filter'].some(p => JSON.stringify(fromProps[p]) !== JSON.stringify(toProps[p]))) {
   //     this.leafletElement.redraw();
   //   }
   // }

@@ -5,7 +5,8 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImageIds, galleryRequestImage, gallerySetImage, gallerySetItemIsUploaded,
-  galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear, galleryHideUploadModal, gallerySetUsers,
+  galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear, galleryHideUploadModal,
+  gallerySetUsers,
 } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 import { API_URL } from 'fm3/backendDefinitions';
@@ -333,7 +334,9 @@ const galleryDeletePictureLogic = createLogic({
       return;
     }
 
-    fetch(`${API_URL}/gallery/pictures/${image.id}`, {
+    const { id } = image;
+
+    fetch(`${API_URL}/gallery/pictures/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
@@ -343,11 +346,26 @@ const galleryDeletePictureLogic = createLogic({
         if (res.status !== 204) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
         }
+
         dispatch(gallerySetLayerDirty());
-        dispatch(galleryClear());
+
+        const { imageIds, activeImageId } = getState().gallery;
+        if (imageIds && activeImageId) {
+          const idx = imageIds.findIndex(imgId => imgId === activeImageId);
+          if (idx !== -1) {
+            const newImageIds = imageIds.filter(imgId => imgId !== activeImageId);
+            dispatch(gallerySetImageIds(newImageIds));
+            if (!newImageIds.length) {
+              dispatch(galleryClear());
+            } else {
+              const newActiveImageId = newImageIds.length > idx ? newImageIds[idx] : newImageIds[newImageIds.length - 1];
+              dispatch(galleryRequestImage(newActiveImageId));
+            }
+          }
+        }
       })
       .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri hodnotení: ${e.message}`));
+        dispatch(toastsAddError(`Nastala chyba pri mazaní obrázka: ${e.message}`));
       })
       .then(() => {
         dispatch(stopProgress(pid));
