@@ -30,10 +30,6 @@ export function galleryRemoveItem(id) {
   return { type: 'GALLERY_REMOVE_ITEM', payload: id };
 }
 
-export function gallerySetItemIsUploaded(id) {
-  return { type: 'GALLERY_SET_ITEM_IS_UPLOADED', payload: id };
-}
-
 export function gallerySetItem(id, item) {
   return { type: 'GALLERY_SET_ITEM', payload: { id, value: item } };
 }

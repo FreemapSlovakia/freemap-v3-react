@@ -4,7 +4,8 @@ import { createLogic } from 'redux-logic';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImageIds, galleryRequestImage, gallerySetImage, gallerySetItemIsUploaded,
+import {
+  gallerySetImageIds, galleryRequestImage, gallerySetImage, galleryRemoveItem,
   galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear, galleryHideUploadModal,
   gallerySetUsers,
 } from 'fm3/actions/galleryActions';
@@ -177,13 +178,11 @@ const galleryItemUploadLogic = createLogic({
 
     if (uploadingId === null) {
       dispatch(gallerySetLayerDirty());
-      const allItemsUploadedSuccessfully = items.find(item => item.error) === undefined;
-      if (allItemsUploadedSuccessfully) {
+      if (getState().gallery.items.length === 0) {
         dispatch(toastsAdd({
           collapseKey: 'gallery.upload',
-          message: (<span>Všetky fotky boli úspešne nahraté.<br />Počet fotiek: {items.length}</span>),
-          cancelType: ['SET_TOOL'],
-          timeout: 4000,
+          message: <span>Fotky boli úspešne nahrané.</span>,
+          timeout: 5000,
           style: 'info',
         }));
         dispatch(galleryHideUploadModal());
@@ -215,7 +214,7 @@ const galleryItemUploadLogic = createLogic({
       if (res.status !== 200) {
         throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
       }
-      dispatch(gallerySetItemIsUploaded(item.id));
+      dispatch(galleryRemoveItem(item.id));
       dispatch(galleryUpload());
     }).catch((err) => {
       dispatch(gallerySetItemError(item.id, err.message));

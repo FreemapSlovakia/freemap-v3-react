@@ -48,7 +48,7 @@ export default createLogic({
               collapseKey: 'mapDetails.trackInfo.detail',
               message: 'Nebola nájdená žiadna cesta',
               cancelType: ['SET_TOOL', 'MAP_DETAILS_SET_USER_SELECTED_POSITION'],
-              timeout: 3000,
+              timeout: 5000,
               style: 'info',
             }));
             dispatch(mapDetailsSetTrackInfoPoints(null));

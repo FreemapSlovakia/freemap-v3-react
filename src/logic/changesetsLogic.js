@@ -99,7 +99,7 @@ export const changesetsLogic = createLogic({
               collapseKey: 'changeset.detail',
               message: 'Neboli nájdené žiadne zmeny',
               cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME'],
-              timeout: 3000,
+              timeout: 5000,
               style: 'info',
             }));
           }

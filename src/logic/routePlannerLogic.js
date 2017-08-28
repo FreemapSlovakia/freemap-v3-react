@@ -55,7 +55,7 @@ export const routePlannerFindRouteLogic = createLogic({
           dispatch(toastsAdd({
             message: 'Cez zvolené body sa nepodarilo naplánovať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
             style: 'warning',
-            timeout: 3000,
+            timeout: 5000,
           }));
         } else {
           const betterItinerary = itinerary.map(step => ({ lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km }));

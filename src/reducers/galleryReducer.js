@@ -68,11 +68,6 @@ export default function elevationMeasurement(state = initialState, action) {
         ...state,
         items: state.items.filter(({ id }) => action.payload !== id),
       };
-    case 'GALLERY_SET_ITEM_IS_UPLOADED':
-      return {
-        ...state,
-        items: state.items.map(item => (item.id === action.payload ? { ...item, uploaded: true } : item)),
-      };
     case 'GALLERY_SET_ITEM':
       return {
         ...state,
@@ -106,7 +101,7 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'GALLERY_UPLOAD':
     {
       const items = state.uploadingId === null ? state.items.map(item => ({ ...item, error: getError(item) })) : state.items;
-      const next = items.find(item => !item.error && !item.uploaded);
+      const next = items.find(item => !item.error);
 
       return {
         ...state,
