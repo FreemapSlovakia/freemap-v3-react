@@ -32,12 +32,6 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'MAP_RESET':
     case 'SET_TOOL':
       return { ...initialState, uploadSeq: state.uploadSeq };
-    case 'SET_ACTIVE_MODAL':
-      return {
-        ...state,
-        items: [],
-        pickingPositionForId: null,
-      };
     case 'GALLERY_SET_IMAGE_IDS':
       return {
         ...state,
@@ -137,7 +131,12 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'GALLERY_SHOW_UPLOAD_MODAL':
       return { ...state, showUploadModal: true };
     case 'GALLERY_HIDE_UPLOAD_MODAL':
-      return { ...state, showUploadModal: false };
+      return {
+        ...state,
+        showUploadModal: false,
+        items: [],
+        pickingPositionForId: null,
+      };
     case 'GALLERY_EDIT_PICTURE':
       return {
         ...state,
