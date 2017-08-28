@@ -144,7 +144,8 @@ class GalleryViewerModal extends React.Component {
               >
                 <Image
                   className="gallery-image"
-                  src={`${API_URL}/gallery/pictures/${activeImageId}/image`}
+                  src={`${API_URL}/gallery/pictures/${activeImageId}/image?width=${window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
+                  sizes="(min-width: 992px) 868px, 568px"
                   alt={title}
                 />
               </a>
