@@ -41,3 +41,7 @@ export function exportGpx() {
 export function clearMap() {
   return { type: 'CLEAR_MAP' };
 }
+
+export function toggleLocate() {
+  return { type: 'LOCATE' };
+}

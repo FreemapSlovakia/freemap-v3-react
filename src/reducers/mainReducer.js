@@ -6,6 +6,7 @@ const initialState = {
   location: null,
   expertMode: false,
   embeddedMode: false,
+  locate: false,
 };
 
 export default function main(state = initialState, action) {
@@ -43,6 +44,8 @@ export default function main(state = initialState, action) {
       return { ...state, expertMode: action.payload };
     case 'SET_EMBEDDED_MODE':
       return { ...state, embeddedMode: true };
+    case 'LOCATE':
+      return { ...state, locate: !state.locate };
     default:
       return state;
   }

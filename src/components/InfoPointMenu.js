@@ -57,7 +57,6 @@ class InfoPointMenu extends React.Component {
 
   render() {
     const { onCancel, inEditMode, onModalLaunch, activeModal, onModalClose } = this.props;
-    const shareURL = `${window.location.href}`;
     return (
       <div>
         <Navbar.Form pullLeft>
@@ -69,35 +68,9 @@ class InfoPointMenu extends React.Component {
             <FontAwesomeIcon icon="tag" />Zmeniť popis
           </Button>
           {' '}
-          <Button onClick={() => onModalLaunch('info-point-share')} title="Zdieľať">
-            <FontAwesomeIcon icon="share-alt" /><span className="hidden-sm">Zdieľať</span>
-          </Button>
-          {' '}
-          <Button onClick={() => onModalLaunch('info-point-embed')} title="Vložiť do webstránky">
-            <FontAwesomeIcon icon="code" /><span className="hidden-sm"> Vložiť do webstránky</span>
-          </Button>
-          {' '}
           <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
         </Navbar.Form>
 
-        {activeModal === 'info-point-share' &&
-          <Modal show onHide={onModalClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Zdieľať odkaz na mapu</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p>
-                Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
-              </p>
-              <Alert>
-                <a href={shareURL}>{shareURL}</a>
-              </Alert>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
-            </Modal.Footer>
-          </Modal>
-        }
         {activeModal === 'info-point-change-label' &&
           <Modal show onHide={onModalClose}>
             <Modal.Header closeButton>
@@ -123,29 +96,6 @@ class InfoPointMenu extends React.Component {
             <Modal.Footer>
               <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
               <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
-            </Modal.Footer>
-          </Modal>
-        }
-        {activeModal === 'info-point-embed' &&
-          <Modal show onHide={onModalClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Vložit do webstránky</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <p>Vložte na vašu stránku tento html kód:</p>
-              <Alert style={{ fontFamily: 'monospace' }}>
-                {`<iframe src="${shareURL}&embed=true"`}<br />
-                {'style="width: 500px; height: 300px; border: 0" />'}
-              </Alert>
-              <p>Výsledok bude vyzerať následovne:</p>
-              <iframe
-                title="Freemap.sk"
-                style={{ width: '100%', height: '300px', border: '0' }}
-                src={`${shareURL}&embed=true`}
-              />
-            </Modal.Body>
-            <Modal.Footer>
-              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
             </Modal.Footer>
           </Modal>
         }

@@ -52,11 +52,14 @@ import Changesets from 'fm3/components/Changesets';
 import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
 import MapDetails from 'fm3/components/MapDetails';
 
+import ShareMapModal from 'fm3/components/ShareMapModal';
+import EmbedMapModal from 'fm3/components/EmbedMapModal';
+
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { setTool, setActiveModal, setLocation, exportGpx, clearMap } from 'fm3/actions/mainActions';
+import { setTool, setActiveModal, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
 import { authLogin, authStartLogout, authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -90,6 +93,8 @@ class Main extends React.Component {
     showGalleryPicker: PropTypes.bool.isRequired,
     onGpxExport: PropTypes.func.isRequired,
     onMapClear: PropTypes.func.isRequired,
+    onLocate: PropTypes.func.isRequired,
+    locate: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
@@ -143,11 +148,11 @@ class Main extends React.Component {
       <MenuItem divider key="_1" />,
       createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
       createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
-      createMenuItem(4, 'dot-circle-o', 'Kde som?', () => this.handleToolSelect('location')),
+      createMenuItem(4, 'dot-circle-o', 'Kde som?', this.props.onLocate, { active: this.props.locate }),
       createMenuItem(8, 'picture-o', 'Galéria fotiek', () => this.handleToolSelect('gallery')),
       createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
       createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
-      createMenuItem(6, 'link', 'Odkaz na mapu', () => this.handleToolSelect('info-point')),
+      createMenuItem(6, 'thumb-tack', 'Bod v mape', () => this.handleToolSelect('info-point')),
       createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
       createMenuItem(9, 'info', 'Detaily v mape', () => this.handleToolSelect('map-details')),
     ];
@@ -164,6 +169,8 @@ class Main extends React.Component {
       createMenuItem(1, 'cog', 'Nastavenia', () => onModalLaunch('settings')),
       <MenuItem divider key="_1" />,
       createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
+      createMenuItem(8, 'share-alt', 'Zdieľať mapu', () => onModalLaunch('share')),
+      createMenuItem(9, 'code', 'Vložiť do webstránky', () => onModalLaunch('embed')),
       <MenuItem divider key="_2" />,
       createMenuItem(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
       createMenuItem(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
@@ -203,6 +210,8 @@ class Main extends React.Component {
                 {tool === 'select-home-location' && <SelectHomeLocationMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
                 {activeModal === 'settings' && <Settings />}
+                {activeModal === 'share' && <ShareMapModal />}
+                {activeModal === 'embed' && <EmbedMapModal />}
                 {showDefaultMenu &&
                   <Nav>
                     <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
@@ -244,25 +253,17 @@ class Main extends React.Component {
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
 
             <ObjectsResult />
-
             <RoutePlannerResult />
-
             <DistanceMeasurementResult />
-
             <ElevationMeasurementResult />
-
             <AreaMeasurementResult />
-
-            {tool === 'location' && <LocationResult />}
+            <LocationResult />
             <TrackViewerResult />
-
             <InfoPoint />
 
             {tool === 'changesets' && <Changesets />}
             {tool === 'map-details' && <MapDetails />}
-
             {showElevationChart && <AsyncElevationChart />}
-
             {(tool === null || tool === 'gallery') && showGalleryPicker && <GalleryPicker />}
             <GalleryResult />
           </Map>
@@ -288,6 +289,7 @@ export default connect(
       || state.gallery.activeImageId),
     showElevationChart: !!state.elevationChart.elevationProfilePoints,
     showGalleryPicker: state.map.overlays.includes('I'),
+    locate: state.main.locate,
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -317,11 +319,14 @@ export default connect(
     onMapClear() {
       dispatch(clearMap());
     },
+    onLocate() {
+      dispatch(toggleLocate());
+    },
   }),
 )(Main);
 
-function createMenuItem(key, icon, title, onClick) {
-  const p = { key };
+function createMenuItem(key, icon, title, onClick, props = {}) {
+  const p = { key, ...props };
   if (typeof onClick === 'function') {
     p.onClick = onClick;
   } else {
