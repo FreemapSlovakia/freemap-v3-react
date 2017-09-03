@@ -179,7 +179,7 @@ class TrackViewerMenu extends React.Component {
 
     let shareURL = '';
     if (trackUID) {
-      shareURL = `${window.location.origin}/?tool=track-viewer&track-uid=${trackUID}`;
+      shareURL = `${window.location.origin}/?track-uid=${trackUID}`;
     }
     return (
       <div>
