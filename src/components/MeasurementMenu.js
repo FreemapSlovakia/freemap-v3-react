@@ -3,7 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { setTool } from 'fm3/actions/mainActions';
-import { distanceMeasurementExportGpx } from 'fm3/actions/distanceMeasurementActions';
+import { distanceMeasurementExportGpx, distanceMeasurementAddPoint } from 'fm3/actions/distanceMeasurementActions';
+import { areaMeasurementAddPoint } from 'fm3/actions/areaMeasurementActions';
+import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
+
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -12,8 +15,61 @@ import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import * as FmPropTypes from 'fm3/propTypes';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 class MeasurementMenu extends React.Component {
+  static propTypes = {
+    tool: FmPropTypes.tool,
+    onToolSet: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    onGpxExport: PropTypes.func.isRequired,
+    areaPoints: FmPropTypes.points.isRequired,
+    distancePoints: FmPropTypes.points.isRequired,
+    routeDefined: PropTypes.bool.isRequired,
+    onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
+    onElevationChartClose: PropTypes.func.isRequired,
+    elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
+    onAreaPointAdd: PropTypes.func.isRequired,
+    onDistPointAdd: PropTypes.func.isRequired,
+    onElePointSet: PropTypes.func.isRequired,
+  };
+
+  componentWillMount() {
+    mapEventEmitter.on('mapClick', this.handlePoiAdd);
+  }
+
+  componentWillUnmount() {
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
+  }
+
+  handlePoiAdd = (lat, lon, position, id0) => {
+    if (this.props.tool === 'measure-ele') {
+      this.props.onElePointSet({ lat, lon });
+      return;
+    }
+
+    const points = this.props.tool === 'area-measure-area' ? this.props.areaPoints : this.props.distancePoints;
+    const pos = position ? Math.ceil(position / 2) : points.length;
+    let id;
+    if (id0) {
+      id = id0;
+    } else if (pos === 0) {
+      id = points.length ? points[pos].id - 1 : 0;
+    } else if (pos === points.length) {
+      id = points[pos - 1].id + 1;
+    } else {
+      id = (points[pos - 1].id + points[pos].id) / 2;
+    }
+
+    if (this.props.tool === 'measure-dist') {
+      this.props.onDistPointAdd({ lat, lon, id }, pos);
+    }
+
+    if (this.props.tool === 'measure-area') {
+      this.props.onAreaPointAdd({ lat, lon, id }, pos);
+    }
+  }
+
   toggleElevationChart = () => {
     const isActive = this.props.elevationChartTrackGeojson;
     if (isActive) {
@@ -23,7 +79,7 @@ class MeasurementMenu extends React.Component {
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: this.props.points.map(p => [p.lon, p.lat]),
+          coordinates: this.props.distancePoints.map(p => [p.lon, p.lat]),
         },
       };
       this.props.onElevationChartTrackGeojsonSet(geojson);
@@ -65,22 +121,11 @@ class MeasurementMenu extends React.Component {
   }
 }
 
-MeasurementMenu.propTypes = {
-  tool: FmPropTypes.tool,
-  onToolSet: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  onGpxExport: PropTypes.func.isRequired,
-  points: FmPropTypes.points.isRequired,
-  routeDefined: PropTypes.bool.isRequired,
-  onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
-  onElevationChartClose: PropTypes.func.isRequired,
-  elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
-};
-
 export default connect(
   state => ({
     tool: state.main.tool,
-    points: state.distanceMeasurement.points,
+    distancePoints: state.distanceMeasurement.points,
+    areaPoints: state.areaMeasurement.points,
     routeDefined: state.distanceMeasurement.points.length > 1,
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
   }),
@@ -99,6 +144,15 @@ export default connect(
     },
     onElevationChartClose() {
       dispatch(elevationChartClose());
+    },
+    onAreaPointAdd(coordinates, position) {
+      dispatch(areaMeasurementAddPoint(coordinates, position));
+    },
+    onDistPointAdd(coordinates, position) {
+      dispatch(distanceMeasurementAddPoint(coordinates, position));
+    },
+    onElePointSet(point) {
+      dispatch(elevationMeasurementSetPoint(point));
     },
   }),
 )(MeasurementMenu);

@@ -237,14 +237,22 @@ class Main extends React.Component {
             <Layers />
             <ScaleControl imperial={false} position="bottomright" />
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
-            {tool === 'objects' && <ObjectsResult />}
-            {tool === 'route-planner' && <RoutePlannerResult />}
-            {tool === 'measure-dist' && <DistanceMeasurementResult />}
-            {tool === 'measure-ele' && <ElevationMeasurementResult />}
-            {tool === 'measure-area' && <AreaMeasurementResult />}
+
+            <ObjectsResult />
+
+            <RoutePlannerResult />
+
+            <DistanceMeasurementResult />
+
+            <ElevationMeasurementResult />
+
+            <AreaMeasurementResult />
+
             {tool === 'location' && <LocationResult />}
             {tool === 'track-viewer' && <TrackViewerResult />}
+
             <InfoPoint />
+
             {tool === 'changesets' && <Changesets />}
             {tool === 'map-details' && <MapDetails />}
 

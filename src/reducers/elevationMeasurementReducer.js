@@ -6,7 +6,6 @@ const initialState = {
 export default function elevationMeasurement(state = initialState, action) {
   switch (action.type) {
     case 'MAP_RESET':
-    case 'SET_TOOL':
       return initialState;
     case 'ELEVATION_MEASUREMENT_SET_ELEVATION':
       return { ...state, elevation: action.payload };

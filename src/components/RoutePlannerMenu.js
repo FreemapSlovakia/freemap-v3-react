@@ -16,120 +16,158 @@ import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-function RoutePlannerMenu({ onStartSet, onFinishSet, pickPointMode, transportType,
-  onTransportTypeChange, onPickPointModeChange, onCancel, homeLocation, onGetCurrentPositionError, onMissingHomeLocation,
-  onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible, onProgressStart, onProgressStop,
-  onGpxExport, routeFound, shapePoints,
-}) {
+class RoutePlannerMenu extends React.Component {
+  static propTypes = {
+    onStartSet: PropTypes.func.isRequired,
+    onFinishSet: PropTypes.func.isRequired,
+    transportType: PropTypes.string,
+    pickPointMode: PropTypes.string,
+    onTransportTypeChange: PropTypes.func.isRequired,
+    onPickPointModeChange: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    homeLocation: PropTypes.shape({
+      lat: PropTypes.number,
+      lon: PropTypes.number,
+    }),
+    onItineraryVisibilityToggle: PropTypes.func.isRequired,
+    itineraryIsVisible: PropTypes.bool.isRequired,
+    onElevationChartVisibilityToggle: PropTypes.func.isRequired,
+    elevationProfileIsVisible: PropTypes.bool.isRequired,
+    onProgressStart: PropTypes.func.isRequired,
+    onProgressStop: PropTypes.func.isRequired,
+    onGpxExport: PropTypes.func.isRequired,
+    routeFound: PropTypes.bool.isRequired,
+    shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+    onGetCurrentPositionError: PropTypes.func.isRequired,
+    onMissingHomeLocation: PropTypes.func.isRequired,
+    pickMode: PropTypes.string,
+  };
+
+  componentWillMount() {
+    mapEventEmitter.on('mapClick', this.handlePoiAdd);
+  }
+
+  componentWillUnmount() {
+    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
+  }
+
   // TODO move to logic
-  function setFromCurrentPosition(pointType) {
-    onProgressStart();
+  setFromCurrentPosition(pointType) {
+    this.props.onProgressStart();
     getCurrentPosition().then(({ lat, lon }) => {
-      onProgressStop();
+      this.props.onProgressStop();
       if (pointType === 'start') {
-        onStartSet({ lat, lon });
+        this.props.onStartSet({ lat, lon });
       } else if (pointType === 'finish') {
-        onFinishSet({ lat, lon });
+        this.props.onFinishSet({ lat, lon });
       } // else fail
     }, (e) => {
-      onProgressStop();
-      onGetCurrentPositionError(e);
+      this.props.onProgressStop();
+      this.props.onGetCurrentPositionError(e);
     });
   }
 
-  function setFromHomeLocation(pointType) {
+  setFromHomeLocation(pointType) {
+    const { homeLocation } = this.props;
     if (!homeLocation) {
-      onMissingHomeLocation();
+      this.props.onMissingHomeLocation();
     } else if (pointType === 'start') {
-      onStartSet(homeLocation);
+      this.props.onStartSet(homeLocation);
     } else if (pointType === 'finish') {
-      onFinishSet(homeLocation);
+      this.props.onFinishSet(homeLocation);
     }
   }
 
-  return (
-    <Navbar.Form pullLeft>
-      <ButtonGroup>
-        <DropdownButton
-          title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
-          id="add-start-dropdown"
-          onClick={() => onPickPointModeChange('start')}
-          active={pickPointMode === 'start'}
-        >
-          <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
-          <MenuItem onClick={() => setFromCurrentPosition('start')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
-          <MenuItem onClick={() => setFromHomeLocation('start')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
-        </DropdownButton>
-        <DropdownButton
-          title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
-          id="add-finish-dropdown"
-          onClick={() => onPickPointModeChange('finish')}
-          active={pickPointMode === 'finish'}
-        >
-          <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
-          <MenuItem onClick={() => setFromCurrentPosition('finish')}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
-          <MenuItem onClick={() => setFromHomeLocation('finish')}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
-        </DropdownButton>
-      </ButtonGroup>
-      {' '}
-      <ButtonGroup>
-        {
-          [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon]) => (
-            <Button key={type} active={transportType === type} onClick={() => onTransportTypeChange(type)}>
-              <FontAwesomeIcon icon={icon} />
-            </Button>
-          ))
-        }
-      </ButtonGroup>
-      {' '}
-      <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
-        <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
-      </Button>
-      {' '}
-      { routeFound &&
-        <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
-          <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
-        </Button> }
-      {' '}
-      <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
-        <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
-      </Button>
-      {' '}
-      <Button onClick={onCancel} title="Zavrieť">
-        <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
-      </Button>
-    </Navbar.Form>
-  );
-}
+  handleStartCurrent = () => {
+    this.setFromCurrentPosition('start');
+  }
 
-RoutePlannerMenu.propTypes = {
-  onStartSet: PropTypes.func.isRequired,
-  onFinishSet: PropTypes.func.isRequired,
-  transportType: PropTypes.string,
-  pickPointMode: PropTypes.string,
-  onTransportTypeChange: PropTypes.func.isRequired,
-  onPickPointModeChange: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  homeLocation: PropTypes.shape({
-    lat: PropTypes.number,
-    lon: PropTypes.number,
-  }),
-  onItineraryVisibilityToggle: PropTypes.func.isRequired,
-  itineraryIsVisible: PropTypes.bool.isRequired,
-  onElevationChartVisibilityToggle: PropTypes.func.isRequired,
-  elevationProfileIsVisible: PropTypes.bool.isRequired,
-  onProgressStart: PropTypes.func.isRequired,
-  onProgressStop: PropTypes.func.isRequired,
-  onGpxExport: PropTypes.func.isRequired,
-  routeFound: PropTypes.bool.isRequired,
-  shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-  onGetCurrentPositionError: PropTypes.func.isRequired,
-  onMissingHomeLocation: PropTypes.func.isRequired,
-};
+  handleStartHome = () => {
+    this.setFromHomeLocation('start');
+  }
+
+  handleFinishCurrent = () => {
+    this.setFromCurrentPosition('finish');
+  }
+
+  handleFinishHome = () => {
+    this.setFromHomeLocation('finish');
+  }
+
+  handlePoiAdd = (lat, lon) => {
+    if (this.props.pickMode === 'start') {
+      this.props.onStartSet({ lat, lon });
+    } else if (this.props.pickMode === 'finish') {
+      this.props.onFinishSet({ lat, lon });
+    }
+  }
+
+  render() {
+    const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange, onCancel,
+      onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
+      onGpxExport, routeFound, shapePoints } = this.props;
+
+    return (
+      <Navbar.Form pullLeft>
+        <ButtonGroup>
+          <DropdownButton
+            title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
+            id="add-start-dropdown"
+            onClick={() => onPickPointModeChange('start')}
+            active={pickPointMode === 'start'}
+          >
+            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
+            <MenuItem onClick={this.handleStartCurrent}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
+            <MenuItem onClick={this.handleStartHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
+          </DropdownButton>
+          <DropdownButton
+            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
+            id="add-finish-dropdown"
+            onClick={() => onPickPointModeChange('finish')}
+            active={pickPointMode === 'finish'}
+          >
+            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
+            <MenuItem onClick={this.handleFinishCurrent}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
+            <MenuItem onClick={this.handleFinishHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
+          </DropdownButton>
+        </ButtonGroup>
+        {' '}
+        <ButtonGroup>
+          {
+            [['car', 'car'], ['walk', 'male'], ['bicycle', 'bicycle']].map(([type, icon]) => (
+              <Button key={type} active={transportType === type} onClick={() => onTransportTypeChange(type)}>
+                <FontAwesomeIcon icon={icon} />
+              </Button>
+            ))
+          }
+        </ButtonGroup>
+        {' '}
+        <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
+          <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
+        </Button>
+        {' '}
+        {routeFound &&
+          <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
+          </Button>}
+        {' '}
+        <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
+          <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
+        </Button>
+        {' '}
+        <Button onClick={onCancel} title="Zavrieť">
+          <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
+        </Button>
+      </Navbar.Form>
+    );
+  }
+}
 
 export default connect(
   state => ({
+    pickMode: state.routePlanner.pickMode,
     homeLocation: state.main.homeLocation,
     transportType: state.routePlanner.transportType,
     pickPointMode: state.routePlanner.pickMode,

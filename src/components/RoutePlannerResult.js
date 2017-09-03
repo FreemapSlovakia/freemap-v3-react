@@ -7,30 +7,14 @@ import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint }
+  from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
 class RoutePlannerResult extends React.Component {
-  componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdd);
-  }
-
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-  }
-
-  handlePoiAdd = (lat, lon) => {
-    if (this.props.pickMode === 'start') {
-      this.props.onStartSet({ lat, lon });
-    } else if (this.props.pickMode === 'finish') {
-      this.props.onFinishSet({ lat, lon });
-    }
-  }
-
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target.getLatLng();
 
@@ -49,7 +33,7 @@ class RoutePlannerResult extends React.Component {
     }
   }
 
-  midpointClicked(position) {
+  handleMidpointClick(position) {
     this.props.onRemoveMidpoint(position);
   }
 
@@ -105,7 +89,7 @@ class RoutePlannerResult extends React.Component {
             <RichMarker
               draggable
               onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
-              onClick={() => this.midpointClicked(i)}
+              onClick={() => this.handleMidpointClick(i)}
               key={i}
               zIndexOffset={9}
               label={i + 1}
@@ -159,8 +143,7 @@ class RoutePlannerResult extends React.Component {
               <span>{desc} ({km}km)</span>
             </Tooltip>
           </RichMarker>
-        ),
-        )}
+        ))}
 
         {routeSlices.map((routeSlice, i) => (
           <Polyline
@@ -171,8 +154,7 @@ class RoutePlannerResult extends React.Component {
             opacity={i % 2 === 0 ? 0.8 : 0.4}
             interactive={false}
           />
-        ))
-        }
+        ))}
 
         <ElevationChartActivePoint />
       </div>
@@ -199,12 +181,10 @@ RoutePlannerResult.propTypes = {
   onMidpointSet: PropTypes.func.isRequired,
   onAddMidpoint: PropTypes.func.isRequired,
   onRemoveMidpoint: PropTypes.func.isRequired,
-  pickMode: PropTypes.string,
 };
 
 export default connect(
   state => ({
-    pickMode: state.routePlanner.pickMode,
     start: state.routePlanner.start,
     finish: state.routePlanner.finish,
     midpoints: state.routePlanner.midpoints,

@@ -8,7 +8,6 @@ import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRem
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { area } from 'fm3/geoutils';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
@@ -27,14 +26,6 @@ class AreaMeasurementResult extends React.Component {
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
   };
-
-  componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdd);
-  }
-
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-  }
 
   handlePoiAdd = (lat, lon, position, id0) => {
     const { points } = this.props;

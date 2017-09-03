@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
 import RichMarker from 'fm3/components/RichMarker';
 import { formatGpsCoord } from 'fm3/geoutils';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -16,18 +15,6 @@ class ElevationMeasurementResult extends React.Component {
     onElevationClear: PropTypes.func.isRequired,
     point: FmPropTypes.point,
     elevation: PropTypes.number,
-  }
-
-  componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdd);
-  }
-
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-  }
-
-  handlePoiAdd = (lat, lon) => {
-    this.props.onPointSet({ lat, lon });
   }
 
   handleDragStart = () => {
