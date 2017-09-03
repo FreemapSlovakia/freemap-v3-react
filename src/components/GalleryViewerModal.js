@@ -9,7 +9,6 @@ import ReactStars from 'react-stars';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
-import Image from 'react-bootstrap/lib/Image';
 import Label from 'react-bootstrap/lib/Label';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
