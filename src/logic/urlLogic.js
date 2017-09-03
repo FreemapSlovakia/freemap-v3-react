@@ -86,10 +86,6 @@ export const urlLogic = createLogic({
       );
     }
 
-    if (tool === 'gallery') {
-      queryParts.push('gallery');
-    }
-
     if (galleryFilter.userId) {
       queryParts.push(`gallery-user-id=${galleryFilter.userId}`);
     }

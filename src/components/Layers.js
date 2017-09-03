@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TileLayer, LayersControl } from 'react-leaflet';
 import { BingLayer } from 'react-leaflet-bing';
+import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
@@ -57,9 +58,10 @@ class Layers extends React.Component {
   }
 
   handleRemove(type) {
-    if (overlayLayers.some(x => x.type === type)) {
+    const i = this.props.overlays.indexOf(type);
+    if (i !== -1) {
       const next = [...this.props.overlays];
-      next.splice(next.indexOf(type));
+      next.splice(i);
       this.props.onOverlaysChange(next);
     }
   }
@@ -76,7 +78,7 @@ class Layers extends React.Component {
   }
 
   render() {
-    const { overlays, mapType, expertMode } = this.props;
+    const { overlays, mapType, expertMode, galleryFilter, galleryDirtySeq } = this.props;
 
     return (
       <LayersControl position="topright">
@@ -90,6 +92,14 @@ class Layers extends React.Component {
             );
           })
         }
+        <LayersControl.Overlay name="Fotky" checked={overlays.indexOf('I') !== -1}>
+          <GalleryLayer
+            key={`${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
+            filter={galleryFilter}
+            onAdd={() => this.handleAdd('I')}
+            onRemove={() => this.handleRemove('I')}
+          />
+        </LayersControl.Overlay>
         {
           overlayLayers && overlayLayers.map((item) => {
             const { type, name } = item;
@@ -114,6 +124,8 @@ Layers.propTypes = {
   overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
   expertMode: PropTypes.bool,
   disableKeyboard: PropTypes.bool,
+  galleryDirtySeq: PropTypes.number.isRequired,
+  galleryFilter: FmPropTypes.galleryFilter.isRequired,
 };
 
 export default connect(
@@ -124,6 +136,8 @@ export default connect(
     overlayOpacity: state.map.overlayOpacity,
     expertMode: state.main.expertMode,
     disableKeyboard: !!(state.main.activeModal || state.gallery.activeImageId), // NOTE there can be lot more things
+    galleryFilter: state.gallery.filter,
+    galleryDirtySeq: state.gallery.dirtySeq,
   }),
   (dispatch, props) => ({
     onMapChange(mapType) {

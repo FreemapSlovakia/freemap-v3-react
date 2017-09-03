@@ -37,6 +37,7 @@ import SelectHomeLocationMenu from 'fm3/components/SelectHomeLocationMenu';
 
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
+import GalleryPicker from 'fm3/components/GalleryPicker';
 
 import Settings from 'fm3/components/Settings';
 import ExternalApps from 'fm3/components/ExternalApps';
@@ -86,6 +87,7 @@ class Main extends React.Component {
     }),
     ignoreEscape: PropTypes.bool.isRequired,
     showElevationChart: PropTypes.bool.isRequired,
+    showGalleryPicker: PropTypes.bool.isRequired,
   };
 
   componentWillMount() {
@@ -173,7 +175,7 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart } = this.props;
+    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart, showGalleryPicker } = this.props;
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
@@ -243,11 +245,13 @@ class Main extends React.Component {
             {tool === 'location' && <LocationResult />}
             {tool === 'track-viewer' && <TrackViewerResult />}
             <InfoPoint />
-            {tool === 'gallery' && <GalleryResult />}
             {tool === 'changesets' && <Changesets />}
             {tool === 'map-details' && <MapDetails />}
 
             {showElevationChart && <AsyncElevationChart />}
+
+            {(tool === null || tool === 'gallery') && showGalleryPicker && <GalleryPicker />}
+            <GalleryResult />
           </Map>
         </Row>
       </div>
@@ -270,6 +274,7 @@ export default connect(
     ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
       || state.gallery.activeImageId),
     showElevationChart: !!state.elevationChart.elevationProfilePoints,
+    showGalleryPicker: state.map.overlays.includes('I'),
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -311,8 +316,8 @@ function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);
 }
 
-function handleMapMouseMove({ latlng: { lat, lng: lon } }) {
-  mapEventEmitter.emit('mouseMove', lat, lon);
+function handleMapMouseMove({ latlng: { lat, lng: lon }, originalEvent }) {
+  mapEventEmitter.emit('mouseMove', lat, lon, originalEvent);
 }
 
 function handleMapMouseOver({ latlng: { lat, lng: lon } }) {
@@ -330,10 +335,11 @@ function selectMouseCursor(state) {
     case 'measure-area':
     case 'select-home-location':
     case 'map-details':
-    case 'gallery':
-      return 'crosshair';
     case 'route-planner':
       return state.routePlanner.pickMode ? 'crosshair' : 'auto';
+    case 'gallery':
+    case null:
+      return state.map.overlays.includes('I') ? 'crosshair' : 'auto';
     default:
       return 'auto';
   }

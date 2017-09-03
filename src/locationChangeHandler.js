@@ -156,8 +156,6 @@ function handleGallery(store, query) {
     if (store.getState().gallery.activeImageId !== imageId) {
       store.dispatch(galleryRequestImage(imageId));
     }
-  } else if ('gallery' in query && store.getState().main.tool !== 'gallery') {
-    store.dispatch(setTool('gallery'));
   }
 }
 
