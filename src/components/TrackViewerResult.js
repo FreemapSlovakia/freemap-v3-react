@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { GeoJSON, Tooltip } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import RichMarker from 'fm3/components/RichMarker';
+import RichMarker, { createMarkerIcon } from 'fm3/components/RichMarker';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
@@ -146,6 +146,8 @@ class TrackViewerResult extends React.Component {
     return turfLineDistance(s);
   }
 
+  pointToLayer = (geoJsonPoint, latlng) => L.marker(latlng, { icon: createMarkerIcon() })
+
   render() {
     const { trackGeojson, startPoints, finishPoints, displayingElevationChart } = this.props;
     const keyToAssureProperRefresh = (JSON.stringify(trackGeojson) + displayingElevationChart).length; // otherwise GeoJSON will still display the first data
@@ -156,6 +158,7 @@ class TrackViewerResult extends React.Component {
           key={keyToAssureProperRefresh}
           onEachFeature={this.onEachFeature}
           style={{ weight: 6, opacity: displayingElevationChart ? 0 : 0.85 }}
+          pointToLayer={this.pointToLayer}
         />
 
         {startPoints.map((p, i) => (
