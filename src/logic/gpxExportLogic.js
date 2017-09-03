@@ -30,13 +30,15 @@ export const gpxExportLogic = createLogic({
 
       // planned route
       const { shapePoints } = getState().routePlanner;
-      const rteEle2 = createElement(doc.documentElement, 'rte');
+      if (shapePoints) {
+        const rteEle2 = createElement(doc.documentElement, 'rte');
 
-      shapePoints.forEach(([lat, lon]) => {
-        createElement(rteEle2, 'rtept', undefined, { lat, lon });
-      });
+        shapePoints.forEach(([lat, lon]) => {
+          createElement(rteEle2, 'rtept', undefined, { lat, lon });
+        });
 
-      // TODO add start / finish / midpoints / itinerar details (?) / metadata
+        // TODO add start / finish / midpoints / itinerar details (?) / metadata
+      }
     });
     done();
   },
