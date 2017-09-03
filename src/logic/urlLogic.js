@@ -3,7 +3,7 @@ import history from 'fm3/history';
 
 export const urlLogic = createLogic({
   type: [
-    'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE',
+    'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE', 'CLEAR_MAP',
     'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID',
     'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',

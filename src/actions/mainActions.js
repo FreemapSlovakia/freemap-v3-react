@@ -37,3 +37,7 @@ export function setEmbeddedMode() {
 export function exportGpx() {
   return { type: 'EXPORT_GPX' };
 }
+
+export function clearMap() {
+  return { type: 'CLEAR_MAP' };
+}

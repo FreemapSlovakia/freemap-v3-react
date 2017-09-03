@@ -56,7 +56,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { setTool, setActiveModal, setLocation, exportGpx } from 'fm3/actions/mainActions';
+import { setTool, setActiveModal, setLocation, exportGpx, clearMap } from 'fm3/actions/mainActions';
 import { authLogin, authStartLogout, authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -89,6 +89,7 @@ class Main extends React.Component {
     showElevationChart: PropTypes.bool.isRequired,
     showGalleryPicker: PropTypes.bool.isRequired,
     onGpxExport: PropTypes.func.isRequired,
+    onMapClear: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -138,6 +139,7 @@ class Main extends React.Component {
   createToolMenu() {
     return [
       createMenuItem(10, 'share', 'Exportovať do GPX', this.props.onGpxExport),
+      createMenuItem(11, 'eraser', 'Vyčistiť mapu', this.props.onMapClear),
       <MenuItem divider key="_1" />,
       createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
       createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
@@ -311,6 +313,9 @@ export default connect(
     },
     onGpxExport() {
       dispatch(exportGpx());
+    },
+    onMapClear() {
+      dispatch(clearMap());
     },
   }),
 )(Main);

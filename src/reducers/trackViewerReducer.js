@@ -11,6 +11,7 @@ const initialState = {
 export default function trackViewer(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
+    case 'CLEAR_MAP':
       return { ...initialState, eleSmoothingFactor: state.eleSmoothingFactor };
     case 'TRACK_VIEWER_LOAD_STATE': {
       const s = { ...state };

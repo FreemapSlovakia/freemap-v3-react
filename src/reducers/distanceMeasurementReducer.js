@@ -7,6 +7,7 @@ const initialState = {
 export default function measurement(state = initialState, action) {
   switch (action.type) {
     case 'MAP_RESET':
+    case 'CLEAR_MAP':
       return initialState;
     case 'DISTANCE_MEASUREMENT_SET_POINTS':
       return { ...state, points: action.payload };
