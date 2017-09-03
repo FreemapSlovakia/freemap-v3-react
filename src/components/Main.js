@@ -254,7 +254,7 @@ class Main extends React.Component {
             <AreaMeasurementResult />
 
             {tool === 'location' && <LocationResult />}
-            {tool === 'track-viewer' && <TrackViewerResult />}
+            <TrackViewerResult />
 
             <InfoPoint />
 

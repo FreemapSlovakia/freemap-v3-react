@@ -11,7 +11,7 @@ import 'fm3/styles/navbarHeader.scss';
 
 const humanNameForToolToShowInNavbar = {
   'route-planner': 'Plánovač',
-  measure: 'Meranie',
+  'measure-dist': 'Meranie',
   'measure-ele': 'Meranie',
   'measure-area': 'Meranie',
   'track-viewer': 'Prehliadač trás',
@@ -25,7 +25,7 @@ const humanNameForToolToShowInNavbar = {
 
 const iconForTool = {
   'route-planner': 'map-signs',
-  measure: 'arrows-h',
+  'measure-dist': 'arrows-h',
   'measure-ele': 'long-arrow-up',
   'measure-area': 'square',
   'track-viewer': 'road',
