@@ -82,7 +82,7 @@ class DistanceMeasurementResult extends React.Component {
 
     return (
       <div>
-        {ps.length > 2 && <Polyline positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} />}
+        {ps.length > 2 && <Polyline interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} />}
 
         {ps.map((p, i) => {
           if (i % 2 === 0) {

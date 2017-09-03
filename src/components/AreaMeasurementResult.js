@@ -127,7 +127,7 @@ class AreaMeasurementResult extends React.Component {
           );
         })}
 
-        {ps.length > 2 && <Polygon positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} /> }
+        {ps.length > 2 && <Polygon interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} /> }
       </div>
     );
   }
