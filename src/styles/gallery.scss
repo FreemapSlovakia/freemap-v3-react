@@ -7,6 +7,11 @@
   @media screen and (max-height: 600px) {
     max-height: 300px;
   }
+
+  &.loading {
+    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: grayscale(100%);
+  }
 }
 
 .carousel-control.disabled, .carousel-control.disabled:hover {
@@ -22,3 +27,4 @@
     line-height: 24px;
   }
 }
+

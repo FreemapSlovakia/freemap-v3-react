@@ -63,12 +63,31 @@ class GalleryViewerModal extends React.Component {
     onPositionPick: PropTypes.func.isRequired,
   }
 
+  state = {
+    loading: true,
+  }
+
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeydown);
   }
 
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.activeImageId !== this.props.activeImageId) {
+      this.setState({
+        loading: true,
+      });
+    }
+  }
+
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeydown);
+  }
+
+  setImageElement = (imageElement) => {
+    this.imageElement = imageElement;
+    if (imageElement) {
+      imageElement.addEventListener('load', this.handleImageLoad);
+    }
   }
 
   handleEditModelChange = (editModel) => {
@@ -118,6 +137,10 @@ class GalleryViewerModal extends React.Component {
     this.props.onCommentChange(e.target.value);
   }
 
+  handleImageLoad = () => {
+    this.setState({ loading: false });
+  }
+
   render() {
     const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
       onStarsChange, user, onDelete, onEdit, editModel, onSave, allTags, onPositionPick } = this.props;
@@ -140,8 +163,9 @@ class GalleryViewerModal extends React.Component {
                 href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
                 target="freemap_gallery_image"
               >
-                <Image
-                  className="gallery-image"
+                <img
+                  ref={this.setImageElement}
+                  className={`gallery-image ${this.state.loading ? 'loading' : ''}`}
                   src={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image?width=${window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
                   sizes="(min-width: 992px) 868px, 568px"
                   alt={title}
