@@ -10,7 +10,6 @@ import {
   gallerySetUsers,
 } from 'fm3/actions/galleryActions';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
-import { API_URL } from 'fm3/backendDefinitions';
 
 const galleryRequestImagesLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
@@ -24,7 +23,7 @@ const galleryRequestImagesLogic = createLogic({
 
     const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = getState().gallery.filter;
 
-    fetch(`${API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`
+    fetch(`${process.env.API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`
       + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`
       + `${ratingFrom ? `&ratingFrom=${ratingFrom}` : ''}`
       + `${ratingTo ? `&ratingTo=${ratingTo}` : ''}`
@@ -64,7 +63,7 @@ const galleryRequestImageLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`${API_URL}/gallery/pictures/${id}`, {
+    fetch(`${process.env.API_URL}/gallery/pictures/${id}`, {
       headers: getState().auth.user ? {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       } : {},
@@ -107,13 +106,13 @@ const galleryShowOnTheMapLogic = createLogic({
 
 const galleryUploadModalLogic = createLogic({
   type: ['GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_SHOW_FILTER', 'GALLERY_EDIT_PICTURE'],
-  transform({ getState, action }, next) {
-    if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
-      next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
-    } else {
-      next(action);
-    }
-  },
+  // transform({ getState, action }, next) {
+  //   if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
+  //     next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
+  //   } else {
+  //     next(action);
+  //   }
+  // },
   process({ action, getState }, dispatch, done) {
     // don't load tags when canceling editing
     if (action.type === 'GALLERY_EDIT_PICTURE' && !getState().gallery.editModel) {
@@ -124,7 +123,7 @@ const galleryUploadModalLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    fetch(`${API_URL}/gallery/picture-tags`)
+    fetch(`${process.env.API_URL}/gallery/picture-tags`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -150,7 +149,7 @@ const galleryFetchUsersLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    fetch(`${API_URL}/gallery/picture-users`)
+    fetch(`${process.env.API_URL}/gallery/picture-users`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -203,7 +202,7 @@ const galleryItemUploadLogic = createLogic({
       tags: item.tags,
     }));
 
-    fetch(`${API_URL}/gallery/pictures`, {
+    fetch(`${process.env.API_URL}/gallery/pictures`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -243,7 +242,7 @@ const gallerySubmitCommentLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${API_URL}/gallery/pictures/${id}/comments`, {
+    fetch(`${process.env.API_URL}/gallery/pictures/${id}/comments`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -291,7 +290,7 @@ const gallerySubmitStarsLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${API_URL}/gallery/pictures/${id}/rating`, {
+    fetch(`${process.env.API_URL}/gallery/pictures/${id}/rating`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -335,7 +334,7 @@ const galleryDeletePictureLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${API_URL}/gallery/pictures/${id}`, {
+    fetch(`${process.env.API_URL}/gallery/pictures/${id}`, {
       method: 'DELETE',
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
@@ -391,7 +390,7 @@ const gallerySavePictureLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${API_URL}/gallery/pictures/${id}`, {
+    fetch(`${process.env.API_URL}/gallery/pictures/${id}`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,

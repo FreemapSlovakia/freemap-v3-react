@@ -4,8 +4,6 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authLogout } from 'fm3/actions/authActions';
 
-import { API_URL } from 'fm3/backendDefinitions';
-
 const authLoginLogic = createLogic({
   type: 'AUTH_LOGIN',
   process(params, dispatch, done) {
@@ -15,7 +13,7 @@ const authLoginLogic = createLogic({
     const w = window.open('about:blank', 'osm-login',
       `width=600,height=550,left=${screen.width / 2 - 600 / 2},top=${screen.height / 2 - 550 / 2}`);
 
-    fetch(`${API_URL}/auth/login`, {
+    fetch(`${process.env.API_URL}/auth/login`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -50,7 +48,7 @@ const authLogoutLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    fetch(`${API_URL}/auth/logout`, {
+    fetch(`${process.env.API_URL}/auth/logout`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

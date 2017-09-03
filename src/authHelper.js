@@ -2,8 +2,6 @@
 
 import qs from 'query-string';
 
-import { API_URL } from 'fm3/backendDefinitions';
-
 import { setHomeLocation, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
@@ -14,7 +12,7 @@ export default function initAuthHelper(store) {
   if (authToken) {
     const pid = Math.random();
     store.dispatch(startProgress(pid));
-    fetch(`${API_URL}/auth/validate`, {
+    fetch(`${process.env.API_URL}/auth/validate`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -52,7 +50,7 @@ export default function initAuthHelper(store) {
 
     const pid = Math.random();
     store.dispatch(startProgress(pid));
-    fetch(`${API_URL}/auth/login2`, {
+    fetch(`${process.env.API_URL}/auth/login2`, {
       method: 'POST',
       headers: {
         Accept: 'application/json',

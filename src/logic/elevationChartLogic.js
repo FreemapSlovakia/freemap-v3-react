@@ -4,8 +4,6 @@ import turfLineDistance from '@turf/line-distance';
 
 import { distance, containsElevations } from 'fm3/geoutils';
 
-import { MAPQUEST_API_KEY } from 'fm3/backendDefinitions';
-
 import { elevationChartSetElevationProfile } from 'fm3/actions/elevationChartActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
@@ -74,7 +72,7 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
   cancelled$.subscribe(() => {
     dispatch(stopProgress(pid));
   });
-  const url = `//open.mapquestapi.com/elevation/v1/profile?key=${MAPQUEST_API_KEY}&latLngCollection=${latlonsForMapQuest}`;
+  const url = `//open.mapquestapi.com/elevation/v1/profile?key=${process.env.MAPQUEST_API_KEY}&latLngCollection=${latlonsForMapQuest}`;
   fetch(url)
     .then((res) => {
       if (res.status !== 200) {

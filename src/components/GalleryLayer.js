@@ -1,6 +1,5 @@
 import { GridLayer } from 'react-leaflet';
 
-import { API_URL } from 'fm3/backendDefinitions';
 import { galleryFilter } from 'fm3/propTypes';
 
 const galleryLayer = L.GridLayer.extend({
@@ -28,7 +27,7 @@ const galleryLayer = L.GridLayer.extend({
     const k = 2 ** coords.z;
 
     const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = this.options.filter;
-    fetch(`${API_URL}/gallery/pictures?by=bbox&bbox=${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`
+    fetch(`${process.env.API_URL}/gallery/pictures?by=bbox&bbox=${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`
       + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`
       + `${userId ? `&userId=${userId}` : ''}`
       + `${ratingFrom ? `&ratingFrom=${ratingFrom}` : ''}`

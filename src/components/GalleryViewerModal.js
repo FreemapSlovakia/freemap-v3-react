@@ -21,8 +21,6 @@ import GalleryEditForm from 'fm3/components/GalleryEditForm';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
-import { API_URL } from 'fm3/backendDefinitions';
-
 import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars,
   galleryEditPicture, galleryDeletePicture, gallerySetEditModel, gallerySavePicture, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
 
@@ -139,12 +137,12 @@ class GalleryViewerModal extends React.Component {
           <div className="carousel">
             <div className="item active">
               <a
-                href={`${API_URL}/gallery/pictures/${activeImageId}/image`}
+                href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
                 target="freemap_gallery_image"
               >
                 <Image
                   className="gallery-image"
-                  src={`${API_URL}/gallery/pictures/${activeImageId}/image?width=${window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
+                  src={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image?width=${window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
                   sizes="(min-width: 992px) 868px, 568px"
                   alt={title}
                 />

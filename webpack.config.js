@@ -69,6 +69,9 @@ module.exports = {
       'process.env': {
         NODE_ENV: JSON.stringify(process.env.NODE_ENV), // for react
         BROWSER: JSON.stringify(true),
+        MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
+        MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
+        API_URL: JSON.stringify(process.env.NODE_ENV === 'production' ? '//www.freemap.sk:3000' : '//localhost:3000'),
       },
     }),
   ],

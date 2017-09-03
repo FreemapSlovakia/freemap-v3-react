@@ -135,6 +135,8 @@ class GalleryUploadModal extends React.Component {
             this.props.onItemChange(id, { ...item, url: canvas2.toDataURL() }); // TODO play with toBlob (not supported in safari)
           }
           cb();
+        }).catch((err) => {
+          cb(err);
         });
       };
 

@@ -5,8 +5,6 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerSetTrackUID } from 'fm3/actions/trackViewerActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
-import { API_URL, MAX_GPX_TRACK_SIZE_IN_MB } from 'fm3/backendDefinitions';
-
 export const trackViewerSetTrackDataLogic = createLogic({
   type: 'TRACK_VIEWER_SET_TRACK_DATA',
   transform({ action }, next) {
@@ -42,7 +40,7 @@ export const trackViewerDownloadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_DOWNLOAD_TRACK',
   process({ getState }, dispatch, done) {
     const trackUID = getState().trackViewer.trackUID;
-    fetch(`${API_URL}/tracklogs/${trackUID}`)
+    fetch(`${process.env.API_URL}/tracklogs/${trackUID}`)
       .then((res) => {
         if (res.status !== 200) {
           throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
@@ -71,8 +69,8 @@ export const trackViewerUploadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_UPLOAD_TRACK',
   process({ getState, cancelled$ }, dispatch, done) {
     const trackGpx = getState().trackViewer.trackGpx;
-    if (trackGpx.length > (MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
-      dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${MAX_GPX_TRACK_SIZE_IN_MB}MB. Zdieľanie podporujeme len pre menšie súbory.`));
+    if (trackGpx.length > (process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
+      dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${process.env.MAX_GPX_TRACK_SIZE_IN_MB} MB. Zdieľanie podporujeme len pre menšie súbory.`));
     } else {
       const pid = Math.random();
       dispatch(startProgress(pid));
@@ -80,7 +78,7 @@ export const trackViewerUploadTrackLogic = createLogic({
         dispatch(stopProgress(pid));
       });
 
-      fetch(`${API_URL}/tracklogs`, {
+      fetch(`${process.env.API_URL}/tracklogs`, {
         method: 'POST',
         headers: {
           Accept: 'application/json',
