@@ -1,7 +1,6 @@
 import { createLogic } from 'redux-logic';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { exportGpx, createElement } from 'fm3/gpxExporter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -94,25 +93,7 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
   },
 });
 
-export const routePlannerGpxExportLogic = createLogic({
-  type: 'ROUTE_PLANNER_EXPORT_GPX',
-  process({ getState }, dispatch, done) {
-    exportGpx('trasa', (doc) => {
-      const { shapePoints } = getState().routePlanner;
-      const rteEle = createElement(doc.documentElement, 'rte');
-
-      shapePoints.forEach(([lat, lon]) => {
-        createElement(rteEle, 'rtept', undefined, { lat, lon });
-      });
-
-      // TODO add start / finish / midpoints / itinerar details (?) / metadata
-    });
-    done();
-  },
-});
-
 export default [
   routePlannerFindRouteLogic,
   refocusMapOnSetStartOrFinishPoint,
-  routePlannerGpxExportLogic,
 ];

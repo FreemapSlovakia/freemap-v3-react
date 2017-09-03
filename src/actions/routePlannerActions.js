@@ -34,10 +34,6 @@ export function routePlannerToggleItineraryVisibility() {
   return { type: 'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY' };
 }
 
-export function routePlannerExportGpx() {
-  return { type: 'ROUTE_PLANNER_EXPORT_GPX' };
-}
-
 export function routePlannerSetParams(start, finish, midpoints, transportType) {
   return { type: 'ROUTE_PLANNER_SET_PARAMS', payload: { start, finish, midpoints, transportType } };
 }

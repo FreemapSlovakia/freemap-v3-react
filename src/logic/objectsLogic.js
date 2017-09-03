@@ -2,7 +2,6 @@ import { createLogic } from 'redux-logic';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
-import { exportGpx, createElement } from 'fm3/gpxExporter';
 
 import { objectsSetResult } from 'fm3/actions/objectsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -56,24 +55,4 @@ export const objectsFetchLogic = createLogic({
   },
 });
 
-export const objectGpxExportLogic = createLogic({
-  type: 'OBJECTS_EXPORT_GPX',
-  process({ getState }, dispatch, done) {
-    exportGpx('miesta', (doc) => {
-      getState().objects.objects.forEach(({ lat, lon, tags }) => {
-        const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
-
-        if (!isNaN(tags.ele)) {
-          createElement(wptEle, 'ele', tags.ele);
-        }
-
-        if (tags.name) {
-          createElement(wptEle, 'name', tags.name);
-        }
-      });
-    });
-    done();
-  },
-});
-
-export default [objectsFetchLogic, objectGpxExportLogic];
+export default [objectsFetchLogic];

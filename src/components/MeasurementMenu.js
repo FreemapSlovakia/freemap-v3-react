@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { setTool } from 'fm3/actions/mainActions';
-import { distanceMeasurementExportGpx, distanceMeasurementAddPoint } from 'fm3/actions/distanceMeasurementActions';
+import { distanceMeasurementAddPoint } from 'fm3/actions/distanceMeasurementActions';
 import { areaMeasurementAddPoint } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 
@@ -22,7 +22,6 @@ class MeasurementMenu extends React.Component {
     tool: FmPropTypes.tool,
     onToolSet: PropTypes.func.isRequired,
     onCancel: PropTypes.func.isRequired,
-    onGpxExport: PropTypes.func.isRequired,
     areaPoints: FmPropTypes.points.isRequired,
     distancePoints: FmPropTypes.points.isRequired,
     routeDefined: PropTypes.bool.isRequired,
@@ -87,7 +86,7 @@ class MeasurementMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, onToolSet, tool, onGpxExport, routeDefined, elevationChartTrackGeojson } = this.props;
+    const { onCancel, onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
       <Navbar.Form pullLeft>
@@ -106,12 +105,6 @@ class MeasurementMenu extends React.Component {
         {tool === 'measure-dist' && routeDefined &&
           <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
-          </Button>
-        }
-        {' '}
-        {tool === 'measure-dist' &&
-          <Button onClick={onGpxExport} disabled={!routeDefined} title="Exportuj do GPX">
-            <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
           </Button>
         }
         {' '}
@@ -135,9 +128,6 @@ export default connect(
     },
     onCancel() {
       dispatch(setTool(null));
-    },
-    onGpxExport() {
-      dispatch(distanceMeasurementExportGpx());
     },
     onElevationChartTrackGeojsonSet(trackGeojson) {
       dispatch(elevationChartSetTrackGeojson(trackGeojson));

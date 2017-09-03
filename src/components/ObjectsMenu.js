@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { objectsSetFilter, objectsExportGpx } from 'fm3/actions/objectsActions';
+import { objectsSetFilter } from 'fm3/actions/objectsActions';
 import { setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -15,9 +15,15 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 class ObjectsMenu extends React.Component {
+  static propTypes = {
+    onSearch: PropTypes.func.isRequired,
+    onLowZoom: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+    zoom: PropTypes.number.isRequired,
+  };
+
   state = {
     filter: '',
     dropdownOpened: false,
@@ -66,7 +72,7 @@ class ObjectsMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, onGpxExport, objectsFound } = this.props;
+    const { onCancel } = this.props;
 
     return (
       <Navbar.Form pullLeft>
@@ -91,36 +97,19 @@ class ObjectsMenu extends React.Component {
           </Dropdown.Menu>
         </Dropdown>
         {' '}
-        <Button onClick={onGpxExport} disabled={!objectsFound} title="Exportuj do GPX">
-          <FontAwesomeIcon icon="share" /><span className="hidden-sm"> Exportuj do GPX</span>
-        </Button>
-        {' '}
         <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
       </Navbar.Form>
     );
   }
 }
 
-ObjectsMenu.propTypes = {
-  onSearch: PropTypes.func.isRequired,
-  onLowZoom: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-  onGpxExport: PropTypes.func.isRequired,
-  zoom: PropTypes.number.isRequired,
-  objectsFound: PropTypes.bool.isRequired,
-};
-
 export default connect(
   state => ({
     zoom: state.map.zoom,
-    objectsFound: !!state.objects.objects.length,
   }),
   dispatch => ({
     onSearch(typeId) {
       dispatch(objectsSetFilter(typeId));
-    },
-    onGpxExport() {
-      dispatch(objectsExportGpx());
     },
     onCancel() {
       dispatch(setTool(null));

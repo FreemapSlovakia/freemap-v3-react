@@ -21,8 +21,6 @@ export default function main(state = initialState, action) {
     }
     case 'TRACK_VIEWER_DOWNLOAD_TRACK':
       return { ...state, tool: 'track-viewer' };
-    case 'INFO_POINT_SET':
-      return { ...state, tool: 'info-point' };
     case 'CHANGESETS_SET_DAYS':
       return { ...state, tool: 'changesets' };
     case 'GALLERY_SET_FILTER':

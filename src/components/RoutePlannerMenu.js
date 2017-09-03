@@ -9,7 +9,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
-  routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerExportGpx } from 'fm3/actions/routePlannerActions';
+  routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
 import { setTool, setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
@@ -37,7 +37,6 @@ class RoutePlannerMenu extends React.Component {
     elevationProfileIsVisible: PropTypes.bool.isRequired,
     onProgressStart: PropTypes.func.isRequired,
     onProgressStop: PropTypes.func.isRequired,
-    onGpxExport: PropTypes.func.isRequired,
     routeFound: PropTypes.bool.isRequired,
     shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
     onGetCurrentPositionError: PropTypes.func.isRequired,
@@ -107,7 +106,7 @@ class RoutePlannerMenu extends React.Component {
   render() {
     const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange, onCancel,
       onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
-      onGpxExport, routeFound, shapePoints } = this.props;
+      routeFound, shapePoints } = this.props;
 
     return (
       <Navbar.Form pullLeft>
@@ -152,10 +151,6 @@ class RoutePlannerMenu extends React.Component {
           <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
           </Button>}
-        {' '}
-        <Button onClick={onGpxExport} disabled={!routeFound} title="Exportuj do GPX">
-          <FontAwesomeIcon icon="share" /><span className="hidden-sm hidden-md"> Exportuj do GPX</span>
-        </Button>
         {' '}
         <Button onClick={onCancel} title="Zavrieť">
           <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
@@ -214,9 +209,6 @@ export default connect(
     },
     onProgressStop() {
       dispatch(stopProgress());
-    },
-    onGpxExport() {
-      dispatch(routePlannerExportGpx());
     },
     onGetCurrentPositionError() {
       dispatch(toastsAdd({

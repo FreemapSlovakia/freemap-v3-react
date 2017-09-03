@@ -33,3 +33,7 @@ export function mainLoadState(payload) {
 export function setEmbeddedMode() {
   return { type: 'SET_EMBEDDED_MODE' };
 }
+
+export function exportGpx() {
+  return { type: 'EXPORT_GPX' };
+}
