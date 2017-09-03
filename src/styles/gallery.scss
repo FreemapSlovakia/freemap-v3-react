@@ -9,8 +9,8 @@
   }
 
   &.loading {
-    -webkit-filter: grayscale(100%); /* Safari 6.0 - 9.0 */
-    filter: grayscale(100%);
+    -webkit-filter: blur(3px) grayscale(100%); /* Safari 6.0 - 9.0 */
+    filter: blur(3px) grayscale(100%);
   }
 }
 
