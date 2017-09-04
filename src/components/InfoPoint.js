@@ -45,7 +45,7 @@ export default connect(
     lat: state.infoPoint.lat,
     lon: state.infoPoint.lon,
     label: state.infoPoint.label,
-    inEditMode: state.infoPoint.inEditMode,
+    inEditMode: state.main.tool === 'info-point',
   }),
   dispatch => ({
     onInfoPointPositionChange(lat, lon) {

@@ -12,7 +12,7 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
-import { infoPointChangePosition, infoPointSetInEditMode, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
+import { infoPointChangePosition, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { setTool, setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -30,10 +30,6 @@ class InfoPointMenu extends React.Component {
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mapClick', this.handleInfoPointMove);
-  }
-
-  toggleEditMode = () => {
-    this.props.onInfoPointSetInEditMode(!this.props.inEditMode);
   }
 
   handleInfoPointMove = (lat, lon) => {
@@ -56,14 +52,10 @@ class InfoPointMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, inEditMode, onModalLaunch, activeModal, onModalClose } = this.props;
+    const { onCancel, onModalLaunch, activeModal, onModalClose } = this.props;
     return (
       <div>
         <Navbar.Form pullLeft>
-          <Button onClick={() => this.toggleEditMode()} active={inEditMode} title="Posunúť">
-            <FontAwesomeIcon icon="arrows" /><span className="hidden-sm">Posunúť</span>
-          </Button>
-          {' '}
           <Button onClick={() => onModalLaunch('info-point-change-label')}>
             <FontAwesomeIcon icon="tag" />Zmeniť popis
           </Button>
@@ -112,7 +104,6 @@ InfoPointMenu.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onInfoPointChangePosition: PropTypes.func.isRequired,
   inEditMode: PropTypes.bool.isRequired,
-  onInfoPointSetInEditMode: PropTypes.func.isRequired,
   onInfoPointChangeLabel: PropTypes.func.isRequired,
 };
 
@@ -120,7 +111,7 @@ export default connect(
   state => ({
     activeModal: state.main.activeModal,
     label: state.infoPoint.label,
-    inEditMode: state.infoPoint.inEditMode,
+    inEditMode: state.main.tool === 'info-point',
   }),
   dispatch => ({
     onCancel() {
@@ -128,9 +119,6 @@ export default connect(
     },
     onInfoPointChangePosition(lat, lon) {
       dispatch(infoPointChangePosition(lat, lon));
-    },
-    onInfoPointSetInEditMode(inEditMode) {
-      dispatch(infoPointSetInEditMode(inEditMode));
     },
     onInfoPointChangeLabel(label) {
       dispatch(infoPointChangeLabel(label));
