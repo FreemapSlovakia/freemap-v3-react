@@ -5,43 +5,70 @@ export const gpxExportLogic = createLogic({
   type: 'EXPORT_GPX',
   process({ getState }, dispatch, done) {
     exportGpx('export', (doc) => {
-      // distance measurement
-      const { points } = getState().distanceMeasurement;
-      const rteEle = createElement(doc.documentElement, 'rte');
+      const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
 
-      if (points.length) {
-        points.forEach(({ lat, lon }) => {
-          createElement(rteEle, 'rtept', undefined, { lat, lon });
-        });
-      }
+      addADMeasurement(doc, distanceMeasurement);
+      addADMeasurement(doc, areaMeasurement); // TODO add info about area
+      addElevationMeasurement(doc, elevationMeasurement);
+      addInfoPoint(doc, infoPoint);
+      addObjects(doc, objects);
+      addPlannedRoute(doc, routePlanner);
 
-      // objects
-      getState().objects.objects.forEach(({ lat, lon, tags }) => {
-        const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
-
-        if (!isNaN(tags.ele)) {
-          createElement(wptEle, 'ele', tags.ele);
-        }
-
-        if (tags.name) {
-          createElement(wptEle, 'name', tags.name);
-        }
-      });
-
-      // planned route
-      const { shapePoints } = getState().routePlanner;
-      if (shapePoints) {
-        const rteEle2 = createElement(doc.documentElement, 'rte');
-
-        shapePoints.forEach(([lat, lon]) => {
-          createElement(rteEle2, 'rtept', undefined, { lat, lon });
-        });
-
-        // TODO add start / finish / midpoints / itinerar details (?) / metadata
-      }
+      done();
     });
-    done();
   },
 });
+
+function addADMeasurement(doc, { points }) {
+  const rteEle = createElement(doc.documentElement, 'rte');
+
+  if (points.length) {
+    points.forEach(({ lat, lon }) => {
+      createElement(rteEle, 'rtept', undefined, { lat, lon });
+    });
+  }
+}
+
+function addElevationMeasurement(doc, { point, elevation }) {
+  if (point) {
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat: point.lat, lon: point.lon });
+    createElement(wptEle, 'ele', elevation);
+  }
+}
+
+function addInfoPoint(doc, { lat, lon, label }) {
+  if (lat && lon) {
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
+    if (label) {
+      createElement(wptEle, 'name', label);
+    }
+  }
+}
+
+function addObjects(doc, { objects }) {
+  objects.forEach(({ lat, lon, tags }) => {
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
+
+    if (!isNaN(tags.ele)) {
+      createElement(wptEle, 'ele', tags.ele);
+    }
+
+    if (tags.name) {
+      createElement(wptEle, 'name', tags.name);
+    }
+  });
+}
+
+function addPlannedRoute(doc, { shapePoints }) {
+  if (shapePoints) {
+    const rteEle = createElement(doc.documentElement, 'rte');
+
+    shapePoints.forEach(([lat, lon]) => {
+      createElement(rteEle, 'rtept', undefined, { lat, lon });
+    });
+
+    // TODO add start / finish / midpoints / itinerar details (?) / metadata
+  }
+}
 
 export default gpxExportLogic;
