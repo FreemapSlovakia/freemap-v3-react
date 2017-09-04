@@ -49,6 +49,8 @@ export default function map(state = initialState, action) {
       return { ...state, tileFormat: action.payload };
     case 'MAP_SET_OVERLAY_OPACITY':
       return update(state, { overlayOpacity: { [action.overlayType]: { $set: action.overlayOpacity } } });
+    case 'SET_TOOL':
+      return action.payload === 'gallery' && !state.overlays.includes('I') ? { ...state, overlays: [...state.overlays, 'I'] } : state;
     case 'MAP_REFOCUS': {
       const newState = { ...state };
       ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach((prop) => {
