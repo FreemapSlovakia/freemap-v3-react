@@ -288,7 +288,7 @@ export default connect(
     ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
       || state.gallery.activeImageId),
     showElevationChart: !!state.elevationChart.elevationProfilePoints,
-    showGalleryPicker: state.map.overlays.includes('I'),
+    showGalleryPicker: isShowGalleryPicker(state),
     locate: state.main.locate,
   }),
   dispatch => ({
@@ -361,10 +361,13 @@ function selectMouseCursor(state) {
     case 'map-details':
     case 'route-planner':
       return state.routePlanner.pickMode ? 'crosshair' : 'auto';
-    case 'gallery':
-    case null:
-      return state.map.overlays.includes('I') ? 'crosshair' : 'auto';
     default:
-      return 'auto';
+      return isShowGalleryPicker(state) ? 'crosshair' : 'auto';
   }
+}
+
+function isShowGalleryPicker(state) {
+  return (state.main.tool === null || state.main.tool === 'gallery')
+    && state.map.overlays.includes('I')
+    && state.gallery.pickingPositionForId === null;
 }
