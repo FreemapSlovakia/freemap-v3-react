@@ -18,7 +18,7 @@ export default class GalleryEditForm extends React.Component {
     model: FmPropTypes.galleryPictureModel.isRequired,
     allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
     error: PropTypes.string,
-    onPositionPick: PropTypes.func.isRequired,
+    onPositionPick: PropTypes.func,
     onModelChange: PropTypes.func.isRequired,
   }
 
