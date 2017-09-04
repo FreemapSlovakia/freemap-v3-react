@@ -92,7 +92,7 @@ class Layers extends React.Component {
             );
           })
         }
-        <LayersControl.Overlay name="Fotky" checked={overlays.indexOf('I') !== -1}>
+        <LayersControl.Overlay name="Fotografie" checked={overlays.indexOf('I') !== -1}>
           <GalleryLayer
             key={`${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
             filter={galleryFilter}

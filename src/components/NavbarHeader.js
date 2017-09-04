@@ -18,7 +18,7 @@ const humanNameForToolToShowInNavbar = {
   objects: 'Miesta',
   'info-point': 'Bod v mape',
   changesets: 'Zmeny v mape',
-  gallery: 'Galéria fotiek',
+  gallery: 'Fotografie',
   'select-home-location': 'Nastavenie domovskej polohy',
   'map-details': 'Detaily v mape',
 };

@@ -152,7 +152,7 @@ class GalleryViewerModal extends React.Component {
       <Modal show onHide={onClose} bsSize="large">
         <Modal.Header closeButton>
           <Modal.Title>
-            Fotka {imageIds ? `${index + 1} / ${imageIds.length} ` : ''}{title && `- ${title}`}
+            Fotografia {imageIds ? `${index + 1} / ${imageIds.length} ` : ''}{title && `- ${title}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

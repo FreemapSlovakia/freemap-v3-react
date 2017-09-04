@@ -180,7 +180,7 @@ const galleryItemUploadLogic = createLogic({
       if (getState().gallery.items.length === 0) {
         dispatch(toastsAdd({
           collapseKey: 'gallery.upload',
-          message: <span>Fotky boli úspešne nahrané.</span>,
+          message: <span>Fotografie boli úspešne nahrané.</span>,
           timeout: 5000,
           style: 'info',
         }));
