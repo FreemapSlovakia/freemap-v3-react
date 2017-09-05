@@ -5,7 +5,7 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 export const tileFormat = PropTypes.oneOf(['jpeg', 'png']);
 export const mapType = PropTypes.oneOf(baseLayers.map(({ type }) => type));
 export const overlays = PropTypes.arrayOf(
-  PropTypes.oneOf(['I', ...overlayLayers.map(({ type }) => type)]),
+  PropTypes.oneOf(overlayLayers.map(({ type }) => type)),
 );
 
 export const object = PropTypes.shape({

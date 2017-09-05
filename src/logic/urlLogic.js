@@ -23,7 +23,7 @@ export const urlLogic = createLogic({
       distanceMeasurement: { points: distanceMeasurementPoints },
       areaMeasurement: { points: areaMeasurementPoints },
       elevationMeasurement: { point: elevationMeasurementPoint },
-      gallery: { filter: galleryFilter },
+      gallery: { filter: galleryFilter, show },
     } = getState();
 
     const queryParts = [
@@ -108,6 +108,10 @@ export const urlLogic = createLogic({
 
     if (galleryFilter.takenAtTo) {
       queryParts.push(`gallery-taken-at-to=${galleryFilter.takenAtTo.toISOString().replace(/T.*/, '')}`);
+    }
+
+    if (show && !Object.keys(galleryFilter).some(k => galleryFilter[k] !== null)) {
+      queryParts.push('gallery');
     }
 
     const search = `?${queryParts.join('&')}`;

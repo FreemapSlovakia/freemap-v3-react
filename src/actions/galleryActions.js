@@ -109,3 +109,7 @@ export function gallerySetFilter(filter) {
 export function gallerySavePicture() {
   return { type: 'GALLERY_SAVE_PICTURE' };
 }
+
+export function galleryShow() {
+  return { type: 'GALLERY_SHOW' };
+}

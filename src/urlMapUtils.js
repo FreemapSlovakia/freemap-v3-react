@@ -4,7 +4,7 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { getTrasformedParamsIfIsOldFreemapUrl, getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/oldFreemapUtils';
 
 const baseLetters = baseLayers.map(({ type }) => type).join('');
-const overlayLetters = ['I', ...overlayLayers.map(({ type }) => type).join('')];
+const overlayLetters = overlayLayers.map(({ type }) => type).join('');
 const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
 
 export function getMapStateFromUrl(location) {

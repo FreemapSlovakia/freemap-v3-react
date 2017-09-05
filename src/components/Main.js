@@ -249,6 +249,7 @@ class Main extends React.Component {
             maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
           >
             <Layers />
+
             <ScaleControl imperial={false} position="bottomright" />
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
 
@@ -368,6 +369,6 @@ function selectMouseCursor(state) {
 
 function isShowGalleryPicker(state) {
   return (state.main.tool === null || state.main.tool === 'gallery')
-    && state.map.overlays.includes('I')
+    && state.gallery.show
     && state.gallery.pickingPositionForId === null;
 }

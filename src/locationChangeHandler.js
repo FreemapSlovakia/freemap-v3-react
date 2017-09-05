@@ -8,7 +8,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
-import { galleryRequestImage, gallerySetFilter } from 'fm3/actions/galleryActions';
+import { galleryRequestImage, gallerySetFilter, galleryShow } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
 import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
@@ -151,7 +151,11 @@ function handleGallery(store, query) {
     if (Object.keys(newFilter).length !== 0) {
       store.dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
-  } else if (query.image) {
+  } else if ('gallery' in query) {
+    store.dispatch(galleryShow());
+  }
+
+  if (query.image) {
     const imageId = parseInt(query.image, 10);
     if (store.getState().gallery.activeImageId !== imageId) {
       store.dispatch(galleryRequestImage(imageId));
