@@ -24,8 +24,6 @@ export default function main(state = initialState, action) {
       return { ...state, tool: 'track-viewer' };
     case 'CHANGESETS_SET_DAYS':
       return { ...state, tool: 'changesets' };
-    case 'GALLERY_SET_FILTER':
-      return { ...state, tool: 'gallery' };
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
     case 'MAP_RESET':
