@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { GridLayer } from 'react-leaflet';
 
 import { galleryFilter } from 'fm3/propTypes';
@@ -27,25 +28,25 @@ const galleryLayer = L.GridLayer.extend({
     const k = 2 ** coords.z;
 
     const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = this.options.filter;
-    fetch(`${process.env.API_URL}/gallery/pictures?by=bbox&bbox=${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`
-      + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}`
-      + `${userId ? `&userId=${userId}` : ''}`
-      + `${ratingFrom ? `&ratingFrom=${ratingFrom}` : ''}`
-      + `${ratingTo ? `&ratingTo=${ratingTo}` : ''}`
-      + `${takenAtFrom ? `&takenAtFrom=${takenAtFrom.toISOString().replace(/T.*/, '')}` : ''}`
-      + `${takenAtTo ? `&takenAtTo=${takenAtTo.toISOString().replace(/T.*/, '')}` : ''}`
-      ,
+    axios.get(
+      `${process.env.API_URL}/gallery/pictures`,
+      {
+        params: {
+          by: 'bbox',
+          bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
+          tag,
+          userId,
+          ratingFrom,
+          ratingTo,
+          takenFrom: takenAtFrom && takenAtFrom.toISOString().replace(/T.*/, ''),
+          takenTo: takenAtTo && takenAtTo.toISOString().replace(/T.*/, ''),
+        },
+        validateStatus: status === 200,
+      },
     )
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then((payload) => {
+      .then(({ data }) => {
         const s = new Set();
-        const mangled = payload
+        const mangled = data
           .map(({ lat, lon }) => {
             const la = Math.round(lat * k);
             const lo = Math.round(lon * k);
@@ -61,7 +62,7 @@ const galleryLayer = L.GridLayer.extend({
           })
           .map(({ la, lo }) => ({ lat: la / k, lon: lo / k }));
 
-        // console.log('xxxxxxxxxxx', payload.length, mangled.length);
+        // console.log('xxxxxxxxxxx', data.length, mangled.length);
 
         mangled.forEach(({ lat, lon }) => {
           const y = size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat) * size.y);

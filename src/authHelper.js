@@ -1,6 +1,5 @@
-/* eslint-disable no-underscore-dangle */
-
 import qs from 'query-string';
+import axios from 'axios';
 
 import { setHomeLocation, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
@@ -12,25 +11,17 @@ export default function initAuthHelper(store) {
   if (authToken) {
     const pid = Math.random();
     store.dispatch(startProgress(pid));
-    fetch(`${process.env.API_URL}/auth/validate`, {
-      method: 'POST',
+    axios({
+      url: `${process.env.API_URL}/auth/validate`,
+      method: 'post',
       headers: {
-        Accept: 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
+      validateStatus: status === 200 || status === 401,
     })
       .then((res) => {
-        if (res.status === 401) {
-          return null;
-        } else if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
-        if (data) {
-          store.dispatch(authSetUser(data));
+        if (res.status === 200) {
+          store.dispatch(authSetUser(res.data));
         }
       })
       .catch((err) => {
@@ -42,6 +33,8 @@ export default function initAuthHelper(store) {
   }
 
   window.addEventListener('message', (e) => {
+    /* eslint-disable no-underscore-dangle */
+
     if (e.origin !== location.origin || typeof e.data !== 'object' || !e.data.__freemap || !e.data.__freemap.oauthParams) {
       return;
     }
@@ -50,22 +43,14 @@ export default function initAuthHelper(store) {
 
     const pid = Math.random();
     store.dispatch(startProgress(pid));
-    fetch(`${process.env.API_URL}/auth/login2`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
+    axios.post(
+      `${process.env.API_URL}/auth/login2`,
+      { token, verifier },
+      {
+        validateStatus: status === 200,
       },
-      body: JSON.stringify({ token, verifier }),
-    })
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
+    )
+      .then(({ data }) => {
         localStorage.setItem('authToken', data.authToken);
 
         if (!store.getState().main.homeLocation) {

@@ -25,7 +25,7 @@ export default createLogic({
 
       bbox = [userSelectedLat - 0.0004, userSelectedLon - 0.0005, userSelectedLat + 0.0004, userSelectedLon + 0.0005];
       const body = `[out:json][bbox:${bbox.join(',')}];way['highway'];out 1 geom meta;`; // definitely the worst query language syntax ever
-      fetch('http://overpass-api.de/api/interpreter', { method: 'POST', body })
+      fetch('//overpass-api.de/api/interpreter', { method: 'POST', body })
         .then((res) => {
           if (res.status !== 200) {
             throw new Error(`Server vrátil neočakávaný status: ${res.status}`);

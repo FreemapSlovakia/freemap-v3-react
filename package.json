@@ -9,6 +9,7 @@
     "@turf/line-distance": "4.6.0",
     "@turf/line-slice": "4.6.0",
     "async": "2.5.0",
+    "axios": "0.16.2",
     "chart.js": "2.6.0",
     "eventemitter3": "2.0.3",
     "exifreader": "2.1.1",
