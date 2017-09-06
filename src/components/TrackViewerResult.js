@@ -40,6 +40,10 @@ class TrackViewerResult extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
+    if (!nextProps.trackGeojson) {
+      return;
+    }
+
     const userTurnedOnEleProfile = !this.props.displayingElevationChart && nextProps.displayingElevationChart;
     const userTurnedOffEleProfile = this.props.displayingElevationChart && !nextProps.displayingElevationChart;
     const userToggledColorizeTrackBy = this.props.colorizeTrackBy !== nextProps.colorizeTrackBy;
@@ -79,7 +83,7 @@ class TrackViewerResult extends React.Component {
     const minEle = Math.min(...eles);
     return latLonSmoothEles.map((latLonEle) => {
       const color = (latLonEle[2] - minEle) / (maxEle - minEle);
-      return [latLonEle[0], latLonEle[1], color];
+      return [latLonEle[0], latLonEle[1], color || 0];
     });
   }
 
@@ -98,7 +102,7 @@ class TrackViewerResult extends React.Component {
       }
       prevLatLonEle = latLonEle;
       const color = angle / 0.5 + 0.5;
-      return [lat, lon, color];
+      return [lat, lon, color || 0];
     });
   }
 
