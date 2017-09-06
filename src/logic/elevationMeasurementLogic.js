@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
@@ -16,15 +17,10 @@ export default createLogic({
         dispatch(stopProgress(pid));
       });
 
-      fetch(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`)
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-          } else {
-            return res.json();
-          }
-        })
-        .then((data) => {
+      axios.get(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`, {
+        validateStatus: status => status === 200,
+      })
+        .then(({ data }) => {
           dispatch(elevationMeasurementSetElevation(parseFloat(data.ele)));
         })
         .catch((e) => {

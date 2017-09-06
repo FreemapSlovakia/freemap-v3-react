@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 import turfAlong from '@turf/along';
 import turfLineDistance from '@turf/line-distance';
@@ -72,16 +73,14 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
   cancelled$.subscribe(() => {
     dispatch(stopProgress(pid));
   });
-  const url = `//open.mapquestapi.com/elevation/v1/profile?key=${process.env.MAPQUEST_API_KEY}&latLngCollection=${latlonsForMapQuest}`;
-  fetch(url)
-    .then((res) => {
-      if (res.status !== 200) {
-        throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-      } else {
-        return res.json();
-      }
-    })
-    .then(({ elevationProfile }) => {
+  axios.get('//open.mapquestapi.com/elevation/v1/profile', {
+    params: {
+      key: process.env.MAPQUEST_API_KEY,
+      latLngCollection: latlonsForMapQuest,
+    },
+    validateStatus: status => status === 200,
+  })
+    .then(({ data: { elevationProfile } }) => {
       elevationProfile.forEach(({ height }, i) => {
         elevationProfilePoints[i].ele = height;
       });

@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -24,18 +25,10 @@ export const objectsFetchLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch('//overpass-api.de/api/interpreter', {
-      method: 'POST',
-      body: `data=${encodeURIComponent(query)}`,
+    axios.post('//overpass-api.de/api/interpreter', `data=${encodeURIComponent(query)}`, {
+      validateStatus: status => status === 200,
     })
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
+      .then(({ data }) => {
         const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
           id,
           lat: center && center.lat || lat,

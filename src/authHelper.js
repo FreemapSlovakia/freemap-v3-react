@@ -17,7 +17,7 @@ export default function initAuthHelper(store) {
       headers: {
         Authorization: `Bearer ${authToken}`,
       },
-      validateStatus: status === 200 || status === 401,
+      validateStatus: status => status === 200 || status === 401,
     })
       .then((res) => {
         if (res.status === 200) {
@@ -47,7 +47,7 @@ export default function initAuthHelper(store) {
       `${process.env.API_URL}/auth/login2`,
       { token, verifier },
       {
-        validateStatus: status === 200,
+        validateStatus: status => status === 200,
       },
     )
       .then(({ data }) => {

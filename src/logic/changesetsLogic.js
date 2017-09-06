@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -38,25 +39,15 @@ export const changesetsLogic = createLogic({
         return Promise.resolve();
       }
 
-      let time = fromTime;
-      if (toTime0) {
-        time += `,${toTime0}`;
-      }
-
-      let url = `//api.openstreetmap.org/api/0.6/changesets?bbox=${bbox}&time=${time}`;
-      if (state.changesets.authorName) {
-        url += `&display_name=${encodeURIComponent(state.changesets.authorName)}`;
-      }
-
-      return fetch(url)
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-          } else {
-            return res.text();
-          }
-        })
-        .then((data) => {
+      return axios.get('//api.openstreetmap.org/api/0.6/changesets', {
+        params: {
+          bbox,
+          time: fromTime + (toTime0 ? `,${toTime0}` : ''),
+          display_name: state.changesets.authorName,
+        },
+        validateStatus: status => status === 200,
+      })
+        .then(({ data }) => {
           const xml = new DOMParser().parseFromString(data, 'text/xml');
           const rawChangesets = xml.getElementsByTagName('changeset');
           const arrayOfrawChangesets = Array.from(rawChangesets);

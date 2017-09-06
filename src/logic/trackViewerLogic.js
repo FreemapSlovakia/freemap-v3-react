@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 import turfLineDistance from '@turf/line-distance';
 import toGeoJSON from '@mapbox/togeojson';
@@ -40,19 +41,12 @@ export const trackViewerDownloadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_DOWNLOAD_TRACK',
   process({ getState }, dispatch, done) {
     const trackUID = getState().trackViewer.trackUID;
-    fetch(`${process.env.API_URL}/tracklogs/${trackUID}`)
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
+    axios.get(`${process.env.API_URL}/tracklogs/${trackUID}`, { validateStatus: status => status === 200 })
+      .then(({ data }) => {
+        if (data.error) {
+          dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${data.error}`));
         } else {
-          return res.json();
-        }
-      })
-      .then((payload) => {
-        if (payload.error) {
-          dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${payload.error}`));
-        } else {
-          const trackGpx = atob(payload.data);
+          const trackGpx = atob(data.data);
           dispatch(trackViewerSetData(trackGpx));
         }
       })
@@ -78,26 +72,14 @@ export const trackViewerUploadTrackLogic = createLogic({
         dispatch(stopProgress(pid));
       });
 
-      fetch(`${process.env.API_URL}/tracklogs`, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          data: btoa(unescape(encodeURIComponent(trackGpx))),
-          mediaType: 'application/gpx+xml',
-        }),
+      axios.post(`${process.env.API_URL}/tracklogs`, {
+        data: btoa(unescape(encodeURIComponent(trackGpx))),
+        mediaType: 'application/gpx+xml',
+      }, {
+        validateStatus: status => status === 201,
       })
-        .then((res) => {
-          if (res.status !== 201) {
-            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-          } else {
-            return res.json();
-          }
-        })
-        .then((res) => {
-          dispatch(trackViewerSetTrackUID(res.uid));
+        .then(({ data }) => {
+          dispatch(trackViewerSetTrackUID(data.uid));
         })
         .catch((e) => {
           dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));

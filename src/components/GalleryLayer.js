@@ -41,7 +41,7 @@ const galleryLayer = L.GridLayer.extend({
           takenFrom: takenAtFrom && takenAtFrom.toISOString().replace(/T.*/, ''),
           takenTo: takenAtTo && takenAtTo.toISOString().replace(/T.*/, ''),
         },
-        validateStatus: status === 200,
+        validateStatus: status => status === 200,
       },
     )
       .then(({ data }) => {

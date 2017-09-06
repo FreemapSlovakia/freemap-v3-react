@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -19,15 +20,13 @@ export default createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`//www.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}&max_count=10`)
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
+    axios.get(`//www.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}`, {
+      params: {
+        max_count: 10,
+      },
+      validateStatus: status => status === 200,
+    })
+      .then(({ data }) => {
         const results = data.results.map((d, id) => {
           const name = d.properties.name;
           const geometryType = d.geometry.type;

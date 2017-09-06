@@ -1,5 +1,7 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 import React from 'react';
+
 import { mapDetailsSetTrackInfoPoints } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -25,17 +27,10 @@ export default createLogic({
 
       bbox = [userSelectedLat - 0.0004, userSelectedLon - 0.0005, userSelectedLat + 0.0004, userSelectedLon + 0.0005];
       const body = `[out:json][bbox:${bbox.join(',')}];way['highway'];out 1 geom meta;`; // definitely the worst query language syntax ever
-      fetch('//overpass-api.de/api/interpreter', { method: 'POST', body })
-        .then((res) => {
-          if (res.status !== 200) {
-            throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-          } else {
-            return res.json();
-          }
-        })
-        .then((payload) => {
-          if (payload.elements && payload.elements.length === 1) {
-            way = payload.elements[0];
+      axios.post('//overpass-api.de/api/interpreter', body, { validateStatus: status => status === 200 })
+        .then(({ data }) => {
+          if (data.elements && data.elements.length === 1) {
+            way = data.elements[0];
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
               message: toToastMessage(),
@@ -63,6 +58,18 @@ export default createLogic({
         });
     } else {
       done();
+    }
+
+    function handleJosmClick() {
+      axios.get('http://localhost:8111/load_and_zoom', {
+        params: {
+          select: `way${way.id}`,
+          left: bbox[1],
+          right: bbox[3],
+          top: bbox[2],
+          bottom: bbox[0],
+        },
+      });
     }
 
     function toToastMessage() {
@@ -94,7 +101,7 @@ export default createLogic({
             </a>
             {', alebo '}
             <a
-              onClick={() => fetch(`http://localhost:8111/load_and_zoom?select=way${way.id}&left=${bbox[1]}&right=${bbox[3]}&top=${bbox[2]}&bottom=${bbox[0]}`)}
+              onClick={handleJosmClick}
               role="button"
               tabIndex={0}
             >

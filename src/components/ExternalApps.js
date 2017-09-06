@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import PropTypes from 'prop-types';
 import NavDropdown from 'react-bootstrap/lib/NavDropdown';
@@ -17,7 +18,14 @@ export default function ExternalApps({ lat, lon, zoom, mapType }) {
         break;
       case 'josm': {
         const bounds = getMapLeafletElement().getBounds();
-        fetch(`http://localhost:8111/load_and_zoom?left=${bounds.getWest()}&right=${bounds.getEast()}&top=${bounds.getNorth()}&bottom=${bounds.getSouth()}`);
+        axios.get('http://localhost:8111/load_and_zoom', {
+          params: {
+            left: bounds.getWest(),
+            right: bounds.getEast(),
+            top: bounds.getNorth(),
+            bottom: bounds.getSouth(),
+          },
+        });
         break;
       }
       case 'hiking.sk': {

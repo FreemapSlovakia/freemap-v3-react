@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -39,16 +40,13 @@ export const routePlannerFindRouteLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    const url = `//www.freemap.sk/api/0.3/route-planner/${allPoints}?transport_type=${transportType}`;
-    fetch(url)
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then(({ route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } }) => {
+    axios.get(`//www.freemap.sk/api/0.3/route-planner/${allPoints}`, {
+      params: {
+        transport_type: transportType,
+      },
+      validateStatus: status => status === 200,
+    })
+      .then(({ data: { route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } } }) => {
         const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
         if (routeLatLons.length === 0) {
           dispatch(toastsAdd({

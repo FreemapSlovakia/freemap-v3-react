@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -13,20 +14,11 @@ const authLoginLogic = createLogic({
     const w = window.open('about:blank', 'osm-login',
       `width=600,height=550,left=${screen.width / 2 - 600 / 2},top=${screen.height / 2 - 550 / 2}`);
 
-    fetch(`${process.env.API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-      },
+    axios(`${process.env.API_URL}/auth/login`, {
+      method: 'post',
+      validateStatus: status => status === 200,
     })
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          return res.json();
-        }
-      })
-      .then((data) => {
+      .then(({ data }) => {
         if (data.redirect) {
           w.location = data.redirect;
         }
@@ -48,26 +40,22 @@ const authLogoutLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    fetch(`${process.env.API_URL}/auth/logout`, {
-      method: 'POST',
+    axios(`${process.env.API_URL}/auth/logout`, {
+      method: 'post',
       headers: {
-        Accept: 'application/json',
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
+      validateStatus: status => status === 204,
     })
-      .then((res) => {
-        if (res.status !== 204) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        } else {
-          localStorage.removeItem('authToken');
-          dispatch(authLogout());
-          dispatch(toastsAdd({
-            collapseKey: 'login',
-            message: 'Boli ste úspešne odhlásený.',
-            style: 'info',
-            timeout: 5000,
-          }));
-        }
+      .then(() => {
+        localStorage.removeItem('authToken');
+        dispatch(authLogout());
+        dispatch(toastsAdd({
+          collapseKey: 'login',
+          message: 'Boli ste úspešne odhlásený.',
+          style: 'info',
+          timeout: 5000,
+        }));
       })
       .catch((err) => {
         dispatch(toastsAddError(`Nepodarilo sa odhlásiť: ${err.message}`));
