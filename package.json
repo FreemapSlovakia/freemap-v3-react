@@ -26,10 +26,10 @@
     "react-async-component": "1.0.0-beta.3",
     "react-bootstrap": "0.31.2",
     "react-bootstrap-typeahead": "1.4.1",
-    "react-chartjs-2": "2.6.1",
+    "react-chartjs-2": "2.6.2",
     "react-dom": "15.6.1",
     "react-dropzone": "4.1.1",
-    "react-leaflet": "1.6.5",
+    "react-leaflet": "1.6.6",
     "react-leaflet-bing": "2.0.0",
     "react-rangeslider": "2.1.0",
     "react-redux": "5.0.6",
@@ -81,6 +81,6 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "livereload": "webpack-dev-server --content-base=src --inline --watch"
+    "livereload": "webpack-dev-server --port 9000 --content-base=src --inline --watch"
   }
 }
