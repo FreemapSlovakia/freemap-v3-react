@@ -1,3 +1,4 @@
+import axios from 'axios';
 import React from 'react';
 import { createLogic } from 'redux-logic';
 
@@ -23,21 +24,23 @@ const galleryRequestImagesLogic = createLogic({
 
     const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = getState().gallery.filter;
 
-    fetch(`${process.env.API_URL}/gallery/pictures?by=radius&lat=${lat}&lon=${lon}&distance=${5000 / 2 ** getState().map.zoom}`
-      + `${tag ? `&tag=${encodeURIComponent(tag)}` : ''}${userId ? `&userId=${userId}` : ''}`
-      + `${ratingFrom ? `&ratingFrom=${ratingFrom}` : ''}`
-      + `${ratingTo ? `&ratingTo=${ratingTo}` : ''}`
-      + `${takenAtFrom ? `&takenAtFrom=${takenAtFrom.toISOString().replace(/T.*/, '')}` : ''}`
-      + `${takenAtTo ? `&takenAtTo=${takenAtTo.toISOString().replace(/T.*/, '')}` : ''}`,
-    )
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((payload) => {
-        const ids = payload.map(item => item.id);
+    axios.get(`${process.env.API_URL}/gallery/pictures`, {
+      params: {
+        by: 'radius',
+        lat,
+        lon,
+        distance: 5000 / 2 ** getState().map.zoom,
+        tag,
+        userId,
+        ratingFrom,
+        ratingTo,
+        takenAtFrom: takenAtFrom && takenAtFrom.toISOString().replace(/T.*/, ''),
+        takenAtTo: takenAtTo && takenAtTo.toISOString().replace(/T.*/, ''),
+      },
+      validateStatus: status => status === 200,
+    })
+      .then(({ data }) => {
+        const ids = data.map(item => item.id);
         dispatch(gallerySetImageIds(ids));
         if (ids.length) {
           dispatch(galleryRequestImage(ids[0]));
@@ -63,23 +66,18 @@ const galleryRequestImageLogic = createLogic({
       dispatch(stopProgress(pid));
     });
 
-    fetch(`${process.env.API_URL}/gallery/pictures/${id}`, {
+    axios.get(`${process.env.API_URL}/gallery/pictures/${id}`, {
       headers: getState().auth.user ? {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       } : {},
+      validateStatus: status => status === 200,
     })
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((payload) => {
+      .then(({ data }) => {
         dispatch(gallerySetImage({
-          ...payload,
-          createdAt: new Date(payload.createdAt),
-          takenAt: payload.takenAt && new Date(payload.takenAt),
-          comments: payload.comments.map(comment => ({ ...comment, createdAt: new Date(comment.createdAt) })),
+          ...data,
+          createdAt: new Date(data.createdAt),
+          takenAt: data.takenAt && new Date(data.takenAt),
+          comments: data.comments.map(comment => ({ ...comment, createdAt: new Date(comment.createdAt) })),
         }));
       })
       .catch((e) => {
@@ -123,15 +121,9 @@ const galleryUploadModalLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    fetch(`${process.env.API_URL}/gallery/picture-tags`)
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((payload) => {
-        dispatch(gallerySetTags(payload));
+    axios.get(`${process.env.API_URL}/gallery/picture-tags`, { validateStatus: status => status === 200 })
+      .then(({ data }) => {
+        dispatch(gallerySetTags(data));
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
@@ -149,15 +141,9 @@ const galleryFetchUsersLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    fetch(`${process.env.API_URL}/gallery/picture-users`)
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
-        return res.json();
-      })
-      .then((payload) => {
-        dispatch(gallerySetUsers(payload));
+    axios.get(`${process.env.API_URL}/gallery/picture-users`, { validateStatus: status => status === 200 })
+      .then(({ data }) => {
+        dispatch(gallerySetUsers(data));
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
@@ -202,17 +188,12 @@ const galleryItemUploadLogic = createLogic({
       tags: item.tags,
     }));
 
-    fetch(`${process.env.API_URL}/gallery/pictures`, {
-      method: 'POST',
+    axios.post(`${process.env.API_URL}/gallery/pictures`, formData, {
       headers: {
-        Accept: 'application/json',
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
-      body: formData,
-    }).then((res) => {
-      if (res.status !== 200) {
-        throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-      }
+      validateStatus: status => status === 200,
+    }).then(() => {
       dispatch(galleryRemoveItem(item.id));
       dispatch(galleryUpload());
     }).catch((err) => {
@@ -242,23 +223,16 @@ const gallerySubmitCommentLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${process.env.API_URL}/gallery/pictures/${id}/comments`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${getState().auth.user.authToken}`,
+    axios.post(
+      `${process.env.API_URL}/gallery/pictures/${id}/comments`,
+      { comment: getState().gallery.comment },
+      {
+        headers: {
+          Authorization: `Bearer ${getState().auth.user.authToken}`,
+        },
+        validateStatus: status => status === 200,
       },
-      body: JSON.stringify({
-        comment: getState().gallery.comment,
-      }),
-    })
-      .then((res) => {
-        if (res.status !== 200) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
-        return res.json();
-      })
+    )
       .then(() => {
         dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
@@ -290,20 +264,13 @@ const gallerySubmitStarsLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${process.env.API_URL}/gallery/pictures/${id}/rating`, {
-      method: 'POST',
+    axios.post(`${process.env.API_URL}/gallery/pictures/${id}/rating`, { stars }, {
       headers: {
-        'Content-Type': 'application/json',
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
-      body: JSON.stringify({
-        stars,
-      }),
+      validateStatus: status => status === 204,
     })
-      .then((res) => {
-        if (res.status !== 204) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
+      .then(() => {
         dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
       .catch((e) => {
@@ -334,17 +301,13 @@ const galleryDeletePictureLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${process.env.API_URL}/gallery/pictures/${id}`, {
-      method: 'DELETE',
+    axios.delete(`${process.env.API_URL}/gallery/pictures/${id}`, {
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
+      validateStatus: status => status === 204,
     })
-      .then((res) => {
-        if (res.status !== 204) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
-
+      .then(() => {
         dispatch(gallerySetLayerDirty());
 
         const { imageIds, activeImageId } = getState().gallery;
@@ -390,18 +353,13 @@ const gallerySavePictureLogic = createLogic({
 
     const { id } = image;
 
-    fetch(`${process.env.API_URL}/gallery/pictures/${id}`, {
-      method: 'PUT',
+    axios.put(`${process.env.API_URL}/gallery/pictures/${id}`, editModel, {
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
-        'Content-Type': 'application/json',
       },
-      body: JSON.stringify(editModel),
+      validateStatus: status => status === 204,
     })
-      .then((res) => {
-        if (res.status !== 204) {
-          throw new Error(`Server vrátil neočakávaný status: ${res.status}`);
-        }
+      .then(() => {
         dispatch(gallerySetLayerDirty());
         dispatch(galleryRequestImage(id));
       })
