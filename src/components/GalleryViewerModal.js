@@ -58,7 +58,7 @@ class GalleryViewerModal extends React.Component {
     editModel: FmPropTypes.galleryPictureModel,
     onEditModelChange: PropTypes.func.isRequired,
     onSave: PropTypes.func.isRequired,
-    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    allTags: PropTypes.arrayOf(PropTypes.shape({ /* TODO */ }).isRequired).isRequired,
     onPositionPick: PropTypes.func.isRequired,
   }
 

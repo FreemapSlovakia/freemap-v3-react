@@ -16,7 +16,10 @@ import * as FmPropTypes from 'fm3/propTypes';
 export default class GalleryEditForm extends React.Component {
   static propTypes = {
     model: FmPropTypes.galleryPictureModel.isRequired,
-    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    allTags: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      count: PropTypes.number.isRequired,
+    }).isRequired).isRequired,
     error: PropTypes.string,
     onPositionPick: PropTypes.func,
     onModelChange: PropTypes.func.isRequired,
@@ -87,7 +90,7 @@ export default class GalleryEditForm extends React.Component {
           <ReactTags
             placeholder="Tagy"
             tags={model.tags.map(tag => ({ id: tag, name: tag }))}
-            suggestions={allTags.map(tag => ({ id: tag, name: tag }))}
+            suggestions={allTags.map(({ name }) => ({ id: name, name }))}
             handleAddition={this.handleTagAdded}
             handleDelete={this.handleTagDeleted}
             allowNew

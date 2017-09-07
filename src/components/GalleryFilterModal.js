@@ -21,11 +21,15 @@ class GalleryViewerModal extends React.Component {
     onOk: PropTypes.func.isRequired,
     filter: galleryFilter.isRequired,
     onClose: PropTypes.func.isRequired,
-    tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    tags: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string.isRequired,
+      count: PropTypes.number.isRequired,
+    }).isRequired).isRequired,
     users: PropTypes.arrayOf(
       PropTypes.shape({
         id: PropTypes.number.isRequired,
         name: PropTypes.string.isRequired,
+        count: PropTypes.number.isRequired,
       }).isRequired,
     ).isRequired,
   }
@@ -108,7 +112,7 @@ class GalleryViewerModal extends React.Component {
                 onChange={this.handleTagChange}
               >
                 <option value={null} />
-                {tags.map(tag => <option key={tag} value={tag}>{tag}</option>)}
+                {tags.map(({ name, count }) => <option key={name} value={name}>{name} ({count})</option>)}
               </FormControl>
             </FormGroup>
             <FormGroup>
@@ -119,7 +123,7 @@ class GalleryViewerModal extends React.Component {
                 onChange={this.handleUserIdChange}
               >
                 <option value={null} />
-                {users.map(({ id, name }) => <option key={id} value={id}>{name}</option>)}
+                {users.map(({ id, name, count }) => <option key={id} value={id}>{name} ({count})</option>)}
               </FormControl>
             </FormGroup>
             <FormGroup>
