@@ -34,8 +34,8 @@ const galleryRequestImagesLogic = createLogic({
         userId,
         ratingFrom,
         ratingTo,
-        takenAtFrom: takenAtFrom && takenAtFrom.toISOString().replace(/T.*/, ''),
-        takenAtTo: takenAtTo && takenAtTo.toISOString().replace(/T.*/, ''),
+        takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
+        takenAtTo: takenAtTo && takenAtTo.toISOString(),
       },
       validateStatus: status => status === 200,
     })
