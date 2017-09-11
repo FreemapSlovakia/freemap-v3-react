@@ -17,11 +17,19 @@ export default createLogic({
         dispatch(stopProgress(pid));
       });
 
-      axios.get(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`, {
+      axios.get('//open.mapquestapi.com/elevation/v1/profile', {
+        params: {
+          key: process.env.MAPQUEST_API_KEY,
+          latLngCollection: `${point.lat},${point.lon}`,
+        },
         validateStatus: status => status === 200,
       })
+      // freemap service
+      // axios.get(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`, {
+      //   validateStatus: status => status === 200,
+      // })
         .then(({ data }) => {
-          dispatch(elevationMeasurementSetElevation(parseFloat(data.ele)));
+          dispatch(elevationMeasurementSetElevation(parseFloat(data.elevationProfile[0].height)));
         })
         .catch((e) => {
           dispatch(toastsAddError(`Nastala chyba pri získavani výšky bodu: ${e.message}`));

@@ -7,7 +7,7 @@ import RichMarker from 'fm3/components/RichMarker';
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
-const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
 class ElevationMeasurementResult extends React.Component {
   static propTypes = {
