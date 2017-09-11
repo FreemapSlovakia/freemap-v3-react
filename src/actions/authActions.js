@@ -2,8 +2,16 @@ export function authCheckLogin() {
   return { type: 'AUTH_CHECK_LOGIN' };
 }
 
-export function authLogin() {
-  return { type: 'AUTH_LOGIN' };
+export function authLoginWithOsm() {
+  return { type: 'AUTH_LOGIN_WITH_OSM' };
+}
+
+export function authLoginWithFacebook() {
+  return { type: 'AUTH_LOGIN_WITH_FACEBOOK' };
+}
+
+export function authLoginClose() {
+  return { type: 'AUTH_LOGIN_CLOSE' };
 }
 
 export function authLogout() {

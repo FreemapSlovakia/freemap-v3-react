@@ -3,10 +3,10 @@ import { createLogic } from 'redux-logic';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
-import { authLogout } from 'fm3/actions/authActions';
+import { authLogout, authSetUser } from 'fm3/actions/authActions';
 
-const authLoginLogic = createLogic({
-  type: 'AUTH_LOGIN',
+const authLoginWithOsmLogic = createLogic({
+  type: 'AUTH_LOGIN_WITH_OSM',
   process(params, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
@@ -33,6 +33,55 @@ const authLoginLogic = createLogic({
   },
 });
 
+const authLoginWithFacebookLogic = createLogic({
+  type: 'AUTH_LOGIN_WITH_FACEBOOK',
+  process(params, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
+    window.FB.getLoginStatus((response) => {
+      if (response.status === 'connected') {
+        login(response);
+      } else {
+        window.FB.login((response2) => {
+          if (response2.status === 'connected') {
+            login(response2);
+          } else {
+            dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${response2.error}`));
+            dispatch(stopProgress(pid));
+            done();
+          }
+        }, { scope: 'email' });
+      }
+    });
+
+    function login(response) {
+      axios(`${process.env.API_URL}/auth/login-fb`, {
+        method: 'post',
+        validateStatus: status => status === 200,
+        data: { accessToken: response.authResponse.accessToken },
+      })
+        .then(({ data }) => {
+          localStorage.setItem('authToken', data.authToken);
+
+          dispatch(toastsAdd({
+            collapseKey: 'login',
+            message: 'Boli ste úspešne prihlásený.',
+            style: 'info',
+            timeout: 5000,
+          }));
+          dispatch(authSetUser(data));
+        })
+        .catch((err) => {
+          dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+        })
+        .then(() => {
+          dispatch(stopProgress(pid));
+          done();
+        });
+    }
+  },
+});
 
 const authLogoutLogic = createLogic({
   type: 'AUTH_START_LOGOUT',
@@ -114,4 +163,4 @@ const authLogoutLogic = createLogic({
 // }
 
 
-export default [authLoginLogic, authLogoutLogic];
+export default [authLoginWithOsmLogic, authLoginWithFacebookLogic, authLogoutLogic];

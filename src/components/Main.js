@@ -54,6 +54,7 @@ import MapDetails from 'fm3/components/MapDetails';
 
 import ShareMapModal from 'fm3/components/ShareMapModal';
 import EmbedMapModal from 'fm3/components/EmbedMapModal';
+import LoginModal from 'fm3/components/LoginModal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -95,6 +96,7 @@ class Main extends React.Component {
     onMapClear: PropTypes.func.isRequired,
     onLocate: PropTypes.func.isRequired,
     locate: PropTypes.bool.isRequired,
+    showLoginModal: PropTypes.bool,
   };
 
   componentWillMount() {
@@ -187,7 +189,8 @@ class Main extends React.Component {
 
   render() {
     // eslint-disable-next-line
-    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart, showGalleryPicker } = this.props;
+    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart, showGalleryPicker,
+      showLoginModal } = this.props;
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
@@ -212,6 +215,7 @@ class Main extends React.Component {
                 {activeModal === 'settings' && <Settings />}
                 {activeModal === 'share' && <ShareMapModal />}
                 {activeModal === 'embed' && <EmbedMapModal />}
+                {showLoginModal && <LoginModal />}
                 {showDefaultMenu &&
                   <Nav>
                     <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
@@ -291,6 +295,7 @@ export default connect(
     showElevationChart: !!state.elevationChart.elevationProfilePoints,
     showGalleryPicker: isShowGalleryPicker(state),
     locate: state.main.locate,
+    showLoginModal: state.auth.chooseLoginMethod,
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -306,7 +311,8 @@ export default connect(
       dispatch(setLocation(lat, lon, accuracy));
     },
     onLogin() {
-      dispatch(authLogin());
+      dispatch({ type: 'AUTH_CHOOSE_LOGIN_METHOD' });
+      // dispatch(authLogin());
     },
     onLogout() {
       dispatch(authStartLogout());
