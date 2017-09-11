@@ -47,7 +47,7 @@ const authLoginWithFacebookLogic = createLogic({
           if (response2.status === 'connected') {
             login(response2);
           } else {
-            dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${response2.error}`));
+            dispatch(toastsAddError('Nepodarilo sa prihlásiť.'));
             dispatch(stopProgress(pid));
             done();
           }
