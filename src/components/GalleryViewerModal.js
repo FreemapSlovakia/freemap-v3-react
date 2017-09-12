@@ -93,12 +93,13 @@ class GalleryViewerModal extends React.Component {
     this.props.onEditModelChange(editModel);
   }
 
-  handleKeydown = ({ keyCode }) => {
-    if (this.props.imageIds && this.props.imageIds.length < 2) {
+  handleKeydown = (evt) => {
+    if (['input', 'select', 'textarea'].includes(evt.target.tagName.toLowerCase())
+      || !this.props.imageIds || this.props.imageIds.length < 2) {
       // nothing
-    } else if (keyCode === 37 /* left key */) {
+    } else if (evt.keyCode === 37 /* left key */) {
       this.handlePreviousClick();
-    } else if (keyCode === 39 /* right key */) {
+    } else if (evt.keyCode === 39 /* right key */) {
       this.handleNextClick();
     }
   }
