@@ -61,7 +61,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { setTool, setActiveModal, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
-import { authLogin, authStartLogout, authCheckLogin } from 'fm3/actions/authActions';
+import { authStartLogout, authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
