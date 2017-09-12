@@ -20,13 +20,16 @@ import 'fm3/fbLoader';
 
 import 'fm3/styles/global.scss';
 
-const middlewares = [createLogicMiddleware(logics)];
+const logicMiddleware = createLogicMiddleware(logics);
+const middlewares = [logicMiddleware];
 
 if (process.env.NODE_ENV !== 'production') {
   middlewares.push(createLogger());
 }
 
 const store = createStore(reducer, applyMiddleware(...middlewares));
+
+logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
 let appState;
 try {

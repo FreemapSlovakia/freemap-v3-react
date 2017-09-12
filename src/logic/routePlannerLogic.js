@@ -21,7 +21,7 @@ const updateRouteTypes = [
 export const routePlannerFindRouteLogic = createLogic({
   type: updateRouteTypes,
   cancelType: ['SET_TOOL', ...updateRouteTypes],
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { start, finish, midpoints, transportType } = getState().routePlanner;
     if (!start || !finish) {
       done();
@@ -36,8 +36,9 @@ export const routePlannerFindRouteLogic = createLogic({
 
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     axios.get(`//www.freemap.sk/api/0.3/route-planner/${allPoints}`, {
@@ -45,6 +46,7 @@ export const routePlannerFindRouteLogic = createLogic({
         transport_type: transportType,
       },
       validateStatus: status => status === 200,
+      cancelToken: source.token,
     })
       .then(({ data: { route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } } }) => {
         const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
@@ -63,7 +65,7 @@ export const routePlannerFindRouteLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },

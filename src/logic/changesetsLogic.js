@@ -9,7 +9,7 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 export const changesetsLogic = createLogic({
   type: ['CHANGESETS_SET_AUTHOR_NAME'],
   cancelType: ['CHANGESETS_SET_AUTHOR_NAME', 'SET_TOOL'],
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const state = getState();
 
     const t = new Date();
@@ -18,27 +18,23 @@ export const changesetsLogic = createLogic({
     const toTime = null;
     const bbox = getMapLeafletElement().getBounds().toBBoxString();
 
-    let stop = false;
-
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      stop = true;
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     loadChangesets(toTime, [])
-      .catch(() => {})
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri získavaní zmien: ${e.message}`));
+      })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
 
     function loadChangesets(toTime0, changesetsFromPreviousRequest) {
-      if (stop) {
-        return Promise.resolve();
-      }
-
       return axios.get('//api.openstreetmap.org/api/0.6/changesets', {
         params: {
           bbox,
@@ -46,6 +42,7 @@ export const changesetsLogic = createLogic({
           display_name: state.changesets.authorName,
         },
         validateStatus: status => status === 200,
+        cancelToken: source.token,
       })
         .then(({ data }) => {
           const xml = new DOMParser().parseFromString(data, 'text/xml');
@@ -95,9 +92,6 @@ export const changesetsLogic = createLogic({
             }));
           }
           return Promise.resolve();
-        })
-        .catch((e) => {
-          dispatch(toastsAddError(`Nastala chyba pri získavaní zmien: ${e.message}`));
         });
     }
   },

@@ -13,7 +13,7 @@ const dateFormat = new Intl.DateTimeFormat('sk',
 export default createLogic({
   type: 'MAP_DETAILS_SET_USER_SELECTED_POSITION',
   cancelType: 'SET_TOOL',
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     let way;
     let bbox;
     const state = getState();
@@ -21,13 +21,18 @@ export default createLogic({
     if (subtool === 'track-info') {
       const pid = Math.random();
       dispatch(startProgress(pid));
+
+      const source = axios.CancelToken.source();
       cancelled$.subscribe(() => {
-        dispatch(stopProgress(pid));
+        source.cancel();
       });
 
       bbox = [userSelectedLat - 0.0004, userSelectedLon - 0.0005, userSelectedLat + 0.0004, userSelectedLon + 0.0005];
       const body = `[out:json][bbox:${bbox.join(',')}];way['highway'];out 1 geom meta;`; // definitely the worst query language syntax ever
-      axios.post('//overpass-api.de/api/interpreter', body, { validateStatus: status => status === 200 })
+      axios.post('//overpass-api.de/api/interpreter', body, {
+        validateStatus: status => status === 200,
+        cancelToken: source.token,
+      })
         .then(({ data }) => {
           if (data.elements && data.elements.length === 1) {
             way = data.elements[0];
@@ -53,7 +58,7 @@ export default createLogic({
           dispatch(toastsAddError(`Nastala chyba pri získavaní detailov o ceste: ${e}`));
         })
         .then(() => {
-          dispatch(stopProgress(pid));
+          storeDispatch(stopProgress(pid));
           done();
         });
     } else {
@@ -85,8 +90,8 @@ export default createLogic({
             <dd style={{ whiteSpace: 'nowrap' }}>{translate('track-class', trackClass)}</dd>
             <dt>Povrch:</dt>
             <dd>{translate('surface', surface)}</dd>
-            { isBicycleMap && <dt>Vhodný typ bicykla:</dt> }
-            { isBicycleMap && <dd style={{ whiteSpace: 'nowrap' }}>{translate('bicycle-type', bicycleType)}</dd> }
+            {isBicycleMap && <dt>Vhodný typ bicykla:</dt>}
+            {isBicycleMap && <dd style={{ whiteSpace: 'nowrap' }}>{translate('bicycle-type', bicycleType)}</dd>}
             <dt>Posledná zmena:</dt>
             <dd>{lastEditAt}</dd>
           </dl>

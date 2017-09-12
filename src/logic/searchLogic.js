@@ -7,7 +7,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
   cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL', 'MAP_RESET'],
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {
       done();
@@ -16,8 +16,9 @@ export default createLogic({
 
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     axios.get(`//www.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}`, {
@@ -25,6 +26,7 @@ export default createLogic({
         max_count: 10,
       },
       validateStatus: status => status === 200,
+      cancelToken: source.token,
     })
       .then(({ data }) => {
         const results = data.results.map((d, id) => {
@@ -49,7 +51,7 @@ export default createLogic({
         dispatch(toastsAddError(`Nastala chyba pri spracovaní výsledkov vyhľadávania: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },

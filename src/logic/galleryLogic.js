@@ -15,11 +15,12 @@ import { infoPointSet } from 'fm3/actions/infoPointActions';
 const galleryRequestImagesLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_REQUEST_IMAGES',
-  process({ action: { payload: { lat, lon } }, getState, cancelled$ }, dispatch, done) {
+  process({ action: { payload: { lat, lon } }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = getState().gallery.filter;
@@ -38,6 +39,7 @@ const galleryRequestImagesLogic = createLogic({
         takenAtTo: takenAtTo && takenAtTo.toISOString(),
       },
       validateStatus: status => status === 200,
+      cancelToken: source.token,
     })
       .then(({ data }) => {
         const ids = data.map(item => item.id);
@@ -50,7 +52,7 @@ const galleryRequestImagesLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },
@@ -59,11 +61,12 @@ const galleryRequestImagesLogic = createLogic({
 const galleryRequestImageLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_REQUEST_IMAGE',
-  process({ action: { payload: id }, getState, cancelled$ }, dispatch, done) {
+  process({ action: { payload: id }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     axios.get(`${process.env.API_URL}/gallery/pictures/${id}`, {
@@ -71,6 +74,7 @@ const galleryRequestImageLogic = createLogic({
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       } : {},
       validateStatus: status => status === 200,
+      cancelToken: source.token,
     })
       .then(({ data }) => {
         dispatch(gallerySetImage({
@@ -84,7 +88,7 @@ const galleryRequestImageLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri načítavaní fotky: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },
@@ -208,29 +212,33 @@ const galleryItemUploadLogic = createLogic({
 const gallerySubmitCommentLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_SUBMIT_COMMENT',
-  process({ getState, cancelled$ }, dispatch, done) {
-    const pid = Math.random();
-    dispatch(startProgress(pid));
-    cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
-    });
-
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { image } = getState().gallery;
     if (!image) {
       done();
       return;
     }
 
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
+    cancelled$.subscribe(() => {
+      source.cancel();
+    });
+
     const { id } = image;
 
     axios.post(
       `${process.env.API_URL}/gallery/pictures/${id}/comments`,
-      { comment: getState().gallery.comment },
+      {
+        comment: getState().gallery.comment,
+      },
       {
         headers: {
           Authorization: `Bearer ${getState().auth.user.authToken}`,
         },
         validateStatus: status => status === 200,
+        cancelToken: source.token,
       },
     )
       .then(() => {
@@ -240,7 +248,7 @@ const gallerySubmitCommentLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri pridávani komentára: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },
@@ -249,11 +257,12 @@ const gallerySubmitCommentLogic = createLogic({
 const gallerySubmitStarsLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_SUBMIT_STARS',
-  process({ action: { payload: stars }, getState, cancelled$ }, dispatch, done) {
+  process({ action: { payload: stars }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     const { image } = getState().gallery;
@@ -269,6 +278,7 @@ const gallerySubmitStarsLogic = createLogic({
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
       validateStatus: status => status === 204,
+      cancelToken: source.token,
     })
       .then(() => {
         dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
@@ -277,7 +287,7 @@ const gallerySubmitStarsLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri hodnotení: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },
@@ -286,11 +296,12 @@ const gallerySubmitStarsLogic = createLogic({
 const galleryDeletePictureLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_DELETE_PICTURE',
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     const { image } = getState().gallery;
@@ -306,6 +317,7 @@ const galleryDeletePictureLogic = createLogic({
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
       validateStatus: status => status === 204,
+      cancelToken: source.token,
     })
       .then(() => {
         dispatch(gallerySetLayerDirty());
@@ -331,7 +343,7 @@ const galleryDeletePictureLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri mazaní obrázka: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },
@@ -340,11 +352,12 @@ const galleryDeletePictureLogic = createLogic({
 const gallerySavePictureLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_SAVE_PICTURE',
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
-      dispatch(stopProgress(pid));
+      source.cancel();
     });
 
     const { image, editModel } = getState().gallery;
@@ -360,6 +373,7 @@ const gallerySavePictureLogic = createLogic({
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
       validateStatus: status => status === 204,
+      cancelToken: source.token,
     })
       .then(() => {
         dispatch(gallerySetLayerDirty());
@@ -369,7 +383,7 @@ const gallerySavePictureLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri ukladaní: ${e.message}`));
       })
       .then(() => {
-        dispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },

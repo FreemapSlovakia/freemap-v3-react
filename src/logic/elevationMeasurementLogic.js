@@ -8,13 +8,14 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export default createLogic({
   type: 'ELEVATION_MEASUREMENT_SET_POINT',
   cancelType: ['ELEVATION_MEASUREMENT_SET_POINT', 'SET_TOOL', 'MAP_RESET'],
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const point = getState().elevationMeasurement.point;
     if (point) {
       const pid = Math.random();
       dispatch(startProgress(pid));
+      const source = axios.CancelToken.source();
       cancelled$.subscribe(() => {
-        dispatch(stopProgress(pid));
+        source.cancel();
       });
 
       axios.get('//open.mapquestapi.com/elevation/v1/profile', {
@@ -23,6 +24,7 @@ export default createLogic({
           latLngCollection: `${point.lat},${point.lon}`,
         },
         validateStatus: status => status === 200,
+        cancelToken: source.token,
       })
       // freemap service
       // axios.get(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`, {
@@ -35,7 +37,7 @@ export default createLogic({
           dispatch(toastsAddError(`Nastala chyba pri získavani výšky bodu: ${e.message}`));
         })
         .then(() => {
-          dispatch(stopProgress(pid));
+          storeDispatch(stopProgress(pid));
           done();
         });
     } else {

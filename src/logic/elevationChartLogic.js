@@ -12,7 +12,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export default createLogic({
   type: 'ELEVATION_CHART_SET_TRACK_GEOJSON',
   cancelType: ['ELEVATION_CHART_SET_TRACK_GEOJSON', 'SET_TOOL', 'MAP_RESET', 'ELEVATION_CHART_CLOSE'],
-  process({ getState, cancelled$ }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const trackGeojson = getState().elevationChart.trackGeojson;
     const totalDistanceInKm = turfLineDistance(trackGeojson);
     let deltaInMeters;
@@ -31,7 +31,7 @@ export default createLogic({
     if (containsElevations(trackGeojson)) {
       resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispatch, done);
     } else {
-      resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, done);
+      resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done);
     }
   },
 });
@@ -59,7 +59,7 @@ function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispa
   done();
 }
 
-function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, done) {
+function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done) {
   const deltaInKm = deltaInMeters / 1000.0;
   const elevationProfilePoints = [];
   for (let distanceFromStartInKm = 0.0; distanceFromStartInKm <= totalDistanceInKm; distanceFromStartInKm += deltaInKm) {
@@ -70,8 +70,9 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
   const latlonsForMapQuest = elevationProfilePoints.map(({ lat, lon }) => `${lat},${lon}`).join(',');
   const pid = Math.random();
   dispatch(startProgress(pid));
+  const source = axios.CancelToken.source();
   cancelled$.subscribe(() => {
-    dispatch(stopProgress(pid));
+    source.cancel();
   });
   axios.get('//open.mapquestapi.com/elevation/v1/profile', {
     params: {
@@ -79,6 +80,7 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
       latLngCollection: latlonsForMapQuest,
     },
     validateStatus: status => status === 200,
+    cancelToken: source.token,
   })
     .then(({ data: { elevationProfile } }) => {
       elevationProfile.forEach(({ height }, i) => {
@@ -89,7 +91,7 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
       dispatch(toastsAddError(`Nastala chyba pri získavani výškoveho profilu: ${e.message}`));
     })
     .then(() => {
-      dispatch(stopProgress(pid));
+      storeDispatch(stopProgress(pid));
       done();
     });
 }
