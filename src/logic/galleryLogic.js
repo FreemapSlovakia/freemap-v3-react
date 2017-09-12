@@ -323,6 +323,8 @@ const galleryDeletePictureLogic = createLogic({
               dispatch(galleryRequestImage(newActiveImageId));
             }
           }
+        } else if (activeImageId === id) {
+          dispatch(galleryClear());
         }
       })
       .catch((e) => {
