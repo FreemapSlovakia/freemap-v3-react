@@ -37,7 +37,7 @@ class GalleryUploadModal extends React.Component {
         error: PropTypes.string,
       }).isRequired,
     ).isRequired,
-    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    allTags: FmPropTypes.allTags.isRequired,
     onItemAdd: PropTypes.func.isRequired,
     onItemRemove: PropTypes.func.isRequired,
     onClose: PropTypes.func.isRequired,
@@ -70,6 +70,8 @@ class GalleryUploadModal extends React.Component {
       }
       const id = nextId;
       nextId += 1;
+
+      console.log('XXXXXXXXXXXXx', tags.GPSLatitude);
 
       const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
       this.props.onItemAdd({

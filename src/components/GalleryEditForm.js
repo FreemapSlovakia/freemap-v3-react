@@ -16,10 +16,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 export default class GalleryEditForm extends React.Component {
   static propTypes = {
     model: FmPropTypes.galleryPictureModel.isRequired,
-    allTags: PropTypes.arrayOf(PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      count: PropTypes.number.isRequired,
-    }).isRequired).isRequired,
+    allTags: FmPropTypes.allTags.isRequired,
     error: PropTypes.string,
     onPositionPick: PropTypes.func,
     onModelChange: PropTypes.func.isRequired,

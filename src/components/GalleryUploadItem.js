@@ -15,7 +15,7 @@ export default class GalleryUploadItem extends React.Component {
     filename: PropTypes.string,
     url: PropTypes.string,
     model: FmPropTypes.galleryPictureModel.isRequired,
-    allTags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
+    allTags: FmPropTypes.allTags.isRequired,
     error: PropTypes.string,
     onRemove: PropTypes.func.isRequired,
     onPositionPick: PropTypes.func.isRequired,

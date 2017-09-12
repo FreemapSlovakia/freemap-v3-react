@@ -64,3 +64,8 @@ export const galleryPictureModel = PropTypes.shape({
   takenAt: PropTypes.instanceOf(Date),
   tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 });
+
+export const allTags = PropTypes.arrayOf(PropTypes.shape({
+  name: PropTypes.string.isRequired,
+  count: PropTypes.number.isRequired,
+}).isRequired);
