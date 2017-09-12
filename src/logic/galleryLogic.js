@@ -104,13 +104,13 @@ const galleryShowOnTheMapLogic = createLogic({
 
 const galleryUploadModalLogic = createLogic({
   type: ['GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_SHOW_FILTER', 'GALLERY_EDIT_PICTURE'],
-  // transform({ getState, action }, next) {
-  //   if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
-  //     next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
-  //   } else {
-  //     next(action);
-  //   }
-  // },
+  transform({ getState, action }, next) {
+    if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
+      next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
+    } else {
+      next(action);
+    }
+  },
   process({ action, getState }, dispatch, done) {
     // don't load tags when canceling editing
     if (action.type === 'GALLERY_EDIT_PICTURE' && !getState().gallery.editModel) {
