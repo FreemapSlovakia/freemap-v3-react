@@ -71,15 +71,13 @@ class GalleryUploadModal extends React.Component {
       const id = nextId;
       nextId += 1;
 
-      console.log('XXXXXXXXXXXXx', tags.GPSLatitude);
-
       const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
       this.props.onItemAdd({
         id,
         file,
         position: tags.GPSLatitude && tags.GPSLongitude ? {
-          lat: tags.GPSLatitude.description * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
-          lon: tags.GPSLongitude.description * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
+          lat: adaptGpsCoordinate(tags.GPSLatitude) * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
+          lon: adaptGpsCoordinate(tags.GPSLongitude) * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
         } : null,
         title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
         description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
@@ -199,6 +197,12 @@ class GalleryUploadModal extends React.Component {
       </Modal>
     );
   }
+}
+
+// adds support for Olympus
+function adaptGpsCoordinate({ description }) {
+  const m = /^(\d+),(\d+(\.\d+)?)[NSWE]$/.exec(description);
+  return m ? parseInt(m[1], 10) + parseFloat(m[2]) / 60 : description;
 }
 
 export default connect(
