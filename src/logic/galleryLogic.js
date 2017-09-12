@@ -258,18 +258,18 @@ const gallerySubmitStarsLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_SUBMIT_STARS',
   process({ action: { payload: stars }, getState, cancelled$, storeDispatch }, dispatch, done) {
+    const { image } = getState().gallery;
+    if (!image) {
+      done();
+      return;
+    }
+
     const pid = Math.random();
     dispatch(startProgress(pid));
     const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
       source.cancel();
     });
-
-    const { image } = getState().gallery;
-    if (!image) {
-      done();
-      return;
-    }
 
     const { id } = image;
 
@@ -297,18 +297,18 @@ const galleryDeletePictureLogic = createLogic({
   cancelType: ['SET_TOOL', 'MAP_RESET'],
   type: 'GALLERY_DELETE_PICTURE',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
+    const { image } = getState().gallery;
+    if (!image) {
+      done();
+      return;
+    }
+
     const pid = Math.random();
     dispatch(startProgress(pid));
     const source = axios.CancelToken.source();
     cancelled$.subscribe(() => {
       source.cancel();
     });
-
-    const { image } = getState().gallery;
-    if (!image) {
-      done();
-      return;
-    }
 
     const { id } = image;
 
