@@ -98,7 +98,7 @@ const authLoginWithGoogleLogic = createLogic({
         method: 'post',
         validateStatus: status => status === 200,
         data: { idToken },
-      })
+      }))
       .then(({ data }) => {
         localStorage.setItem('authToken', data.authToken);
         dispatch(toastsAdd({
@@ -117,7 +117,7 @@ const authLoginWithGoogleLogic = createLogic({
       .then(() => {
         dispatch(stopProgress(pid));
         done();
-      }));
+      });
   },
 });
 
