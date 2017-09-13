@@ -10,6 +10,10 @@ export function authLoginWithFacebook() {
   return { type: 'AUTH_LOGIN_WITH_FACEBOOK' };
 }
 
+export function authLoginWithGoogle() {
+  return { type: 'AUTH_LOGIN_WITH_GOOGLE' };
+}
+
 export function authLoginClose() {
   return { type: 'AUTH_LOGIN_CLOSE' };
 }
