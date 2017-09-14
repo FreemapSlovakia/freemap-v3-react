@@ -47,7 +47,7 @@ class MeasurementMenu extends React.Component {
       return;
     }
 
-    const points = this.props.tool === 'area-measure-area' ? this.props.areaPoints : this.props.distancePoints;
+    const points = this.props.tool === 'measure-area' ? this.props.areaPoints : this.props.distancePoints;
     const pos = position ? Math.ceil(position / 2) : points.length;
     let id;
     if (id0) {
