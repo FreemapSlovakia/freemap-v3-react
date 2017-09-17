@@ -114,6 +114,14 @@ export const urlLogic = createLogic({
       queryParts.push(`gallery-taken-at-to=${galleryFilter.takenAtTo.toISOString().replace(/T.*/, '')}`);
     }
 
+    if (galleryFilter.createdAtFrom) {
+      queryParts.push(`gallery-created-at-from=${galleryFilter.createdAtFrom.toISOString().replace(/T.*/, '')}`);
+    }
+
+    if (galleryFilter.createdAtTo) {
+      queryParts.push(`gallery-created-at-to=${galleryFilter.createdAtTo.toISOString().replace(/T.*/, '')}`);
+    }
+
     if (show && !Object.keys(galleryFilter).some(k => galleryFilter[k] !== null)) {
       queryParts.push('gallery');
     }

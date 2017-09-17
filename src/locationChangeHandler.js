@@ -130,6 +130,8 @@ function handleGallery(store, query) {
   const qRatingTo = parseFloat(query['gallery-rating-to']);
   const qTakenAtFrom = new Date(query['gallery-taken-at-from']);
   const qTakenAtTo = new Date(query['gallery-taken-at-to']);
+  const qCreatedAtFrom = new Date(query['gallery-created-at-from']);
+  const qCreatedAtTo = new Date(query['gallery-created-at-to']);
 
   if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || !isNaN(qTakenAtFrom) || !isNaN(qTakenAtTo)) {
     const { filter } = store.getState().gallery;
@@ -151,6 +153,12 @@ function handleGallery(store, query) {
     }
     if (!isNaN(qTakenAtTo) && (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !== qTakenAtTo.getTime()) {
       newFilter.takenAtTo = qTakenAtTo;
+    }
+    if (!isNaN(qCreatedAtFrom) && (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !== qCreatedAtFrom.getTime()) {
+      newFilter.createdAtFrom = qCreatedAtFrom;
+    }
+    if (!isNaN(qCreatedAtTo) && (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !== qCreatedAtTo.getTime()) {
+      newFilter.createdAtTo = qCreatedAtTo;
     }
     if (Object.keys(newFilter).length !== 0) {
       store.dispatch(gallerySetFilter({ ...filter, ...newFilter }));

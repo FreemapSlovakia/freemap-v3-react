@@ -27,7 +27,7 @@ const galleryLayer = L.GridLayer.extend({
 
     const k = 2 ** coords.z;
 
-    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo } = this.options.filter;
+    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = this.options.filter;
     axios.get(
       `${process.env.API_URL}/gallery/pictures`,
       {
@@ -40,6 +40,8 @@ const galleryLayer = L.GridLayer.extend({
           ratingTo,
           takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
           takenAtTo: takenAtTo && takenAtTo.toISOString(),
+          createdAtFrom: createdAtFrom && createdAtFrom.toISOString(),
+          createdAtTo: createdAtTo && createdAtTo.toISOString(),
         },
         validateStatus: status => status === 200,
       },

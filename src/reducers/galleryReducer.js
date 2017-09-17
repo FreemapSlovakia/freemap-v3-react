@@ -22,6 +22,8 @@ const initialState = {
     userId: null,
     takenAtFrom: null,
     takenAtTo: null,
+    createdAtFrom: null,
+    createdAtTo: null,
     ratingFrom: null,
     ratingTo: null,
   },

@@ -53,6 +53,8 @@ export const galleryFilter = PropTypes.shape({
   userId: PropTypes.number,
   takenAtFrom: PropTypes.instanceOf(Date),
   takenAtTo: PropTypes.instanceOf(Date),
+  createdAtFrom: PropTypes.instanceOf(Date),
+  createdAtTo: PropTypes.instanceOf(Date),
   ratingFrom: PropTypes.number,
   ratingTo: PropTypes.number,
 });

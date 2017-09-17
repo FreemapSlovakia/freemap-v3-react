@@ -113,3 +113,7 @@ export function gallerySavePicture() {
 export function galleryShow() {
   return { type: 'GALLERY_SHOW' };
 }
+
+export function galleryList(orderBy) {
+  return { type: 'GALLERY_LIST', payload: orderBy };
+}

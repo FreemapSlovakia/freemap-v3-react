@@ -36,12 +36,14 @@ class GalleryViewerModal extends React.Component {
 
   constructor(props) {
     super(props);
-    const { tag, userId, takenAtFrom, takenAtTo, ratingFrom, ratingTo } = props.filter;
+    const { tag, userId, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo, ratingFrom, ratingTo } = props.filter;
     this.state = {
       tag: tag || '',
       userId: typeof userId === 'number' ? userId.toString() : '',
       takenAtFrom: takenAtFrom instanceof Date ? takenAtFrom.toISOString().replace(/T.*/, '') : '',
       takenAtTo: takenAtTo instanceof Date ? takenAtTo.toISOString().replace(/T.*/, '') : '',
+      createdAtFrom: createdAtFrom instanceof Date ? createdAtFrom.toISOString().replace(/T.*/, '') : '',
+      createdAtTo: createdAtTo instanceof Date ? createdAtTo.toISOString().replace(/T.*/, '') : '',
       ratingFrom: typeof ratingFrom === 'number' ? ratingFrom.toString() : '',
       ratingTo: typeof ratingTo === 'number' ? ratingTo.toString() : '',
     };
@@ -63,6 +65,14 @@ class GalleryViewerModal extends React.Component {
     this.setState({ takenAtTo: e.target.value });
   }
 
+  handleCreatedAtFromChange = (e) => {
+    this.setState({ createdAtFrom: e.target.value });
+  }
+
+  handleCreatedAtToChange = (e) => {
+    this.setState({ createdAtTo: e.target.value });
+  }
+
   handleRatingFromChange = (e) => {
     this.setState({ ratingFrom: e.target.value });
   }
@@ -78,6 +88,8 @@ class GalleryViewerModal extends React.Component {
       userId: nn(this.state.userId ? parseInt(this.state.userId, 10) : null),
       takenAtFrom: nn(this.state.takenAtFrom ? new Date(this.state.takenAtFrom) : null),
       takenAtTo: nn(this.state.takenAtTo ? new Date(this.state.takenAtTo) : null),
+      createdAtFrom: nn(this.state.createdAtFrom ? new Date(this.state.createdAtFrom) : null),
+      createdAtTo: nn(this.state.createdAtTo ? new Date(this.state.createdAtTo) : null),
       ratingFrom: nn(this.state.ratingFrom ? parseFloat(this.state.ratingFrom, 10) : null),
       ratingTo: nn(this.state.ratingTo ? parseFloat(this.state.ratingTo, 10) : null),
     });
@@ -125,6 +137,22 @@ class GalleryViewerModal extends React.Component {
                 <option value={null} />
                 {users.map(({ id, name, count }) => <option key={id} value={id}>{name} ({count})</option>)}
               </FormControl>
+            </FormGroup>
+            <FormGroup>
+              <ControlLabel>Dátum nahratia</ControlLabel>
+              <InputGroup>
+                <FormControl
+                  type="date"
+                  value={this.state.createdAtFrom}
+                  onChange={this.handleCreatedAtFromChange}
+                />
+                <InputGroup.Addon> - </InputGroup.Addon>
+                <FormControl
+                  type="date"
+                  value={this.state.createdAtTo}
+                  onChange={this.handleCreatedAtToChange}
+                />
+              </InputGroup>
             </FormGroup>
             <FormGroup>
               <ControlLabel>Dátum fotenia</ControlLabel>
