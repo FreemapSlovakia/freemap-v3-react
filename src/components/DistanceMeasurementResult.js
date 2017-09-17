@@ -10,6 +10,7 @@ import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint'
 
 import { distance } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
@@ -28,7 +29,19 @@ class DistanceMeasurementResult extends React.Component {
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
+    active: PropTypes.bool,
   };
+
+  state = {
+  };
+
+  componentWillMount() {
+    mapEventEmitter.on('mouseMove', this.handleMouseMove);
+  }
+
+  componentWillUnmount() {
+    mapEventEmitter.removeListener('mouseMove', this.handleMouseMove);
+  }
 
   handlePoiAdd = (lat, lon, position, id0) => {
     const { points } = this.props;
@@ -54,6 +67,14 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onPointRemove(id);
   }
 
+  handleMouseMove = (lat, lon, originalEvent) => {
+    if (this.props.active && originalEvent.target.classList.contains('leaflet-container')) {
+      this.setState({ lat, lon });
+    } else {
+      this.setState({ lat: undefined, lon: undefined });
+    }
+  }
+
   render() {
     let prev = null;
     let dist = 0;
@@ -74,6 +95,14 @@ class DistanceMeasurementResult extends React.Component {
     return (
       <div>
         {ps.length > 2 && <Polyline interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} />}
+        {ps.length && this.state.lat &&
+          <Polyline
+            interactive={false}
+            opacity={0.5}
+            dashArray="6,8"
+            positions={[[ps[ps.length - 1].lat, ps[ps.length - 1].lon], [this.state.lat, this.state.lon]]}
+          />
+        }
 
         {ps.map((p, i) => {
           if (i % 2 === 0) {
@@ -119,6 +148,7 @@ class DistanceMeasurementResult extends React.Component {
 export default connect(
   state => ({
     points: state.distanceMeasurement.points,
+    active: state.main.tool === 'measure-dist',
   }),
   dispatch => ({
     onPointAdd(point, position) {

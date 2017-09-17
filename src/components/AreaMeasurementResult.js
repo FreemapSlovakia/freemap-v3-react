@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Marker, Popup, Polygon } from 'react-leaflet';
+import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 
 import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
@@ -9,6 +9,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { area } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
+import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
@@ -25,7 +26,19 @@ class AreaMeasurementResult extends React.Component {
     onPointAdd: PropTypes.func.isRequired,
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
+    active: PropTypes.bool,
   };
+
+  state = {
+  };
+
+  componentWillMount() {
+    mapEventEmitter.on('mouseMove', this.handleMouseMove);
+  }
+
+  componentWillUnmount() {
+    mapEventEmitter.removeListener('mouseMove', this.handleMouseMove);
+  }
 
   handlePoiAdd = (lat, lon, position, id0) => {
     const { points } = this.props;
@@ -49,6 +62,14 @@ class AreaMeasurementResult extends React.Component {
 
   handleMarkerClick(id) {
     this.props.onPointRemove(id);
+  }
+
+  handleMouseMove = (lat, lon, originalEvent) => {
+    if (this.props.active && originalEvent.target.classList.contains('leaflet-container')) {
+      this.setState({ lat, lon });
+    } else {
+      this.setState({ lat: undefined, lon: undefined });
+    }
   }
 
   render() {
@@ -119,6 +140,18 @@ class AreaMeasurementResult extends React.Component {
         })}
 
         {ps.length > 2 && <Polygon interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} /> }
+        {ps.length && this.state.lat &&
+          <Polyline
+            interactive={false}
+            opacity={0.5}
+            dashArray="6,8"
+            positions={[
+              [ps[0].lat, ps[0].lon],
+              [this.state.lat, this.state.lon],
+              ...(ps.length < 3 ? [] : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
+            ]}
+          />
+        }
       </div>
     );
   }
@@ -127,6 +160,7 @@ class AreaMeasurementResult extends React.Component {
 export default connect(
   state => ({
     points: state.areaMeasurement.points,
+    active: state.main.tool === 'measure-area',
   }),
   dispatch => ({
     onPointAdd(coordinates, position) {
