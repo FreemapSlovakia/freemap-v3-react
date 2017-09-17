@@ -81,7 +81,7 @@ export default function handleLocationChange(store, location) {
       const points = pq.split(',')
         .map(point => point.split('/').map(coord => parseFloat(coord))) // TODO handle NaN
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
-      if (serializePoints(points) !== serializePoints(store.getState().distanceMeasurement.points)) {
+      if (serializePoints(points) !== serializePoints(store.getState()[`${type}Measurement`].points)) {
         store.dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)(points));
       }
     }
