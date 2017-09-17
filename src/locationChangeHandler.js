@@ -109,6 +109,11 @@ export default function handleLocationChange(store, location) {
     }
   }
 
+  const gpxUrl = query['gpx-url'];
+  if (gpxUrl && gpxUrl !== store.getState().trackViewer.gpxUrl) {
+    store.dispatch({ type: 'GPX_LOAD', payload: gpxUrl });
+  }
+
   handleGallery(store, query);
 
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), store.getState().map);

@@ -94,8 +94,29 @@ export const trackViewerUploadTrackLogic = createLogic({
   },
 });
 
+export const gpxLoadLogic = createLogic({
+  type: 'GPX_LOAD',
+  process({ getState }, dispatch, done) {
+    axios.get(getState().trackViewer.gpxUrl, { validateStatus: status => status === 200 })
+      .then(({ data }) => {
+        if (data.error) {
+          dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${data.error}`));
+        } else {
+          dispatch(trackViewerSetData(data));
+        }
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${e.message}`));
+      })
+      .then(() => {
+        done();
+      });
+  },
+});
+
 export default [
   trackViewerSetTrackDataLogic,
   trackViewerDownloadTrackLogic,
   trackViewerUploadTrackLogic,
+  gpxLoadLogic,
 ];

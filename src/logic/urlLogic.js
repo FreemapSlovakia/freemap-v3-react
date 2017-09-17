@@ -16,7 +16,7 @@ export const urlLogic = createLogic({
       map: { mapType, overlays, zoom, lat, lon },
       main: { embeddedMode },
       routePlanner: { start, finish, midpoints, transportType },
-      trackViewer: { trackUID },
+      trackViewer: { trackUID, gpxUrl },
       gallery: { activeImageId },
       infoPoint,
       changesets: { days, authorName },
@@ -40,6 +40,10 @@ export const urlLogic = createLogic({
 
     if (trackUID) {
       queryParts.push(`track-uid=${trackUID}`);
+    }
+
+    if (gpxUrl) {
+      queryParts.push(`gpx-url=${gpxUrl}`);
     }
 
     if (activeImageId) {
