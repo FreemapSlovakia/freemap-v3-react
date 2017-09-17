@@ -1,12 +1,11 @@
 const initialState = {
   changesets: [],
-  days: 3,
+  days: null,
   authorName: null,
 };
 
 export default function changesets(state = initialState, action) {
   switch (action.type) {
-    case 'SET_TOOL':
     case 'CLEAR_MAP':
       return initialState;
     case 'CHANGESETS_ADD':

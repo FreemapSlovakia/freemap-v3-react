@@ -16,6 +16,15 @@ import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changese
 import { setTool } from 'fm3/actions/mainActions';
 
 class ChangesetsMenu extends React.Component {
+  static propTypes = {
+    days: PropTypes.number,
+    zoom: PropTypes.number.isRequired,
+    authorName: PropTypes.string,
+    onChangesetsSetDays: PropTypes.func.isRequired,
+    onChangesetsSetAuthorNameAndRefresh: PropTypes.func.isRequired,
+    onCancel: PropTypes.func.isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -24,13 +33,16 @@ class ChangesetsMenu extends React.Component {
   }
 
   componentWillReceiveProps(nextProps) {
-    const settingAuthorNameFromChangesetDetailToast = nextProps.authorName !== this.state.authorName && nextProps.days === this.props.days && nextProps.zoom === this.props.zoom;
+    const settingAuthorNameFromChangesetDetailToast = nextProps.authorName !== this.state.authorName
+      && nextProps.days === this.props.days
+      && nextProps.zoom === this.props.zoom;
+
     if (settingAuthorNameFromChangesetDetailToast) {
       this.setState({ authorName: nextProps.authorName });
     }
   }
 
-  canSearchWithThisAmountOfDays =(amountOfDays) => {
+  canSearchWithThisAmountOfDays = (amountOfDays) => {
     if (this.state.authorName) {
       return true;
     }
@@ -72,7 +84,7 @@ class ChangesetsMenu extends React.Component {
         <ButtonGroup>
           <Button
             disabled={!this.canSearchWithThisAmountOfDays(days)}
-            onClick={() => onChangesetsSetAuthorNameAndRefresh(this.state.authorName)}
+            onClick={() => onChangesetsSetAuthorNameAndRefresh(days, this.state.authorName)}
             title="Stiahnuť zmeny"
           >
             <FontAwesomeIcon icon="refresh" /><span className="hidden-sm"> Stiahnuť zmeny</span>
@@ -85,18 +97,9 @@ class ChangesetsMenu extends React.Component {
   }
 }
 
-ChangesetsMenu.propTypes = {
-  days: PropTypes.number.isRequired,
-  zoom: PropTypes.number.isRequired,
-  authorName: PropTypes.string,
-  onChangesetsSetDays: PropTypes.func.isRequired,
-  onChangesetsSetAuthorNameAndRefresh: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
-};
-
 export default connect(
   state => ({
-    days: state.changesets.days,
+    days: state.changesets.days || 3,
     authorName: state.changesets.authorName,
     zoom: state.map.zoom,
   }),
@@ -104,7 +107,8 @@ export default connect(
     onChangesetsSetDays(days) {
       dispatch(changesetsSetDays(days));
     },
-    onChangesetsSetAuthorNameAndRefresh(authorName) {
+    onChangesetsSetAuthorNameAndRefresh(days, authorName) {
+      dispatch(changesetsSetDays(days));
       dispatch(changesetsSetAuthorName(authorName));
     },
     onCancel() {

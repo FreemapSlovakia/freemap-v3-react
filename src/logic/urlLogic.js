@@ -14,7 +14,7 @@ export const urlLogic = createLogic({
   process({ getState, action }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
-      main: { embeddedMode, tool },
+      main: { embeddedMode },
       routePlanner: { start, finish, midpoints, transportType },
       trackViewer: { trackUID },
       gallery: { activeImageId },
@@ -50,7 +50,7 @@ export const urlLogic = createLogic({
       queryParts.push('embed=true');
     }
 
-    if (tool === 'changesets' && days) {
+    if (days) {
       queryParts.push(`changesets-days=${days}`);
       if (authorName) {
         queryParts.push(`changesets-author=${encodeURIComponent(authorName)}`);

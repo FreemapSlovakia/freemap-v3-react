@@ -54,20 +54,19 @@ export default function handleLocationChange(store, location) {
   }
 
   if (query['changesets-days']) {
-    const reduxDays = store.getState().changesets.days;
     const urlDays = parseInt(query['changesets-days'], 10);
-
+    const reduxDays = store.getState().changesets.days;
+    const reduxAuthor = store.getState().changesets.authorName;
+    const urlAuthor = query['changesets-author'];
     if (reduxDays !== urlDays) {
       store.dispatch(changesetsSetDays(urlDays));
     }
 
-    if (query['changesets-author']) {
-      const reduxAuthor = store.getState().changesets.authorName;
-      const urlAuthor = query['changesets-author'];
-
-      if (reduxAuthor !== urlAuthor) {
+    if (urlAuthor && reduxAuthor !== urlAuthor || reduxDays !== urlDays) {
+      // we need timeout otherwise map bounds can't be read
+      setTimeout(() => {
         store.dispatch(changesetsSetAuthorName(urlAuthor));
-      }
+      }, 1000);
     }
   }
 

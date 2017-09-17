@@ -266,7 +266,7 @@ class Main extends React.Component {
             <TrackViewerResult />
             <InfoPoint />
 
-            {tool === 'changesets' && <Changesets />}
+            <Changesets />
             {tool === 'map-details' && <MapDetails />}
             {showElevationChart && <AsyncElevationChart />}
             {(tool === null || tool === 'gallery') && showGalleryPicker && <GalleryPicker />}
