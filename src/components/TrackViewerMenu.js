@@ -38,7 +38,9 @@ class TrackViewerMenu extends React.Component {
   componentWillReceiveProps(newProps) {
     if (newProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(newProps.trackGeojson)) {
       const geojsonBounds = L.geoJson(newProps.trackGeojson).getBounds();
-      getMapLeafletElement().fitBounds(geojsonBounds);
+      if (geojsonBounds.isValid()) {
+        getMapLeafletElement().fitBounds(geojsonBounds);
+      }
     }
 
     const userHasUploadedTrackAndWantsToShareIt = this.props.trackUID === null && newProps.trackUID != null;
