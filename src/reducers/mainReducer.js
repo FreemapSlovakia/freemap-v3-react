@@ -20,10 +20,6 @@ export default function main(state = initialState, action) {
       s.expertMode = !!expertMode;
       return s;
     }
-    case 'TRACK_VIEWER_DOWNLOAD_TRACK':
-      return { ...state, tool: 'track-viewer' };
-    case 'CHANGESETS_SET_DAYS':
-      return { ...state, tool: 'changesets' };
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
     case 'MAP_RESET':
