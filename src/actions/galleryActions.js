@@ -34,6 +34,10 @@ export function gallerySetItem(id, item) {
   return { type: 'GALLERY_SET_ITEM', payload: { id, value: item } };
 }
 
+export function gallerySetItemError(id, error) {
+  return { type: 'GALLERY_SET_ITEM_ERROR', payload: { id, error } };
+}
+
 export function gallerySetPickingPosition(lat, lon) {
   return { type: 'GALLERY_SET_PICKING_POSITION', payload: { lat, lon } };
 }
