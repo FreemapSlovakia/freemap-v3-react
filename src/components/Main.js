@@ -240,6 +240,7 @@ class Main extends React.Component {
         }
         <Row className={`map-holder active-map-type-${mapType}`}>
           <Map
+            minZoom={8}
             ref={(map) => { this.map = map; }}
             center={L.latLng(lat, lon)}
             zoom={zoom}
