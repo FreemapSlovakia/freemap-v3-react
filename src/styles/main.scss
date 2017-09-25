@@ -10,7 +10,7 @@
   left: 0;
   right: 0;
   bottom: 0;
-  top: 56px;
+  top: 0;
 }
 
 body.embedded .leaflet-container {
@@ -68,4 +68,19 @@ button#freemap-logo.embedded {
   button#freemap-logo.embedded {
     left: 0;
   }
+}
+
+.tool-buttons {
+  position: absolute;
+  z-index: 1010;
+  top: 15px;
+  left: 15px;
+}
+
+.tool-panel {
+  position: absolute;
+  z-index: 1010;
+  top: 15px;
+  left: 60px;
+  margin-right: 60px;
 }

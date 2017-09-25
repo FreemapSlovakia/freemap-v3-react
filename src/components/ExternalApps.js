@@ -1,11 +1,9 @@
 import axios from 'axios';
 import React from 'react';
 import PropTypes from 'prop-types';
-import NavDropdown from 'react-bootstrap/lib/NavDropdown';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
+import ListGroup from 'react-bootstrap/lib/ListGroup';
+import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 export default function ExternalApps({ lat, lon, zoom, mapType }) {
   function openIn(where) {
@@ -48,16 +46,16 @@ export default function ExternalApps({ lat, lon, zoom, mapType }) {
   }
 
   return (
-    <NavDropdown title={<span><FontAwesomeIcon icon="external-link" /> Otvor na</span>} id="open_in-menu-items">
-      <MenuItem onClick={() => openIn('osm.org')}>OpenStreetMap</MenuItem>
-      <MenuItem onClick={() => openIn('oma.sk')}>OMA</MenuItem>
-      <MenuItem onClick={() => openIn('google')}>Google Mapy</MenuItem>
-      <MenuItem onClick={() => openIn('hiking.sk')}>Hiking.sk</MenuItem>
-      <MenuItem onClick={() => openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
-      <MenuItem divider />
-      <MenuItem onClick={() => openIn('josm')}>Editor JOSM</MenuItem>
-      <MenuItem onClick={() => openIn('osm.org/id')}>Editor iD</MenuItem>
-    </NavDropdown>
+    <ListGroup>
+      <ListGroupItem onClick={() => openIn('osm.org')}>OpenStreetMap</ListGroupItem>
+      <ListGroupItem onClick={() => openIn('oma.sk')}>OMA</ListGroupItem>
+      <ListGroupItem onClick={() => openIn('google')}>Google Mapy</ListGroupItem>
+      <ListGroupItem onClick={() => openIn('hiking.sk')}>Hiking.sk</ListGroupItem>
+      <ListGroupItem onClick={() => openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</ListGroupItem>
+      <ListGroupItem divider />
+      <ListGroupItem onClick={() => openIn('josm')}>Editor JOSM</ListGroupItem>
+      <ListGroupItem onClick={() => openIn('osm.org/id')}>Editor iD</ListGroupItem>
+    </ListGroup>
   );
 }
 

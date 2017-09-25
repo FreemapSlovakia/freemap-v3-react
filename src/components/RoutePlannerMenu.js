@@ -1,16 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Navbar from 'react-bootstrap/lib/Navbar';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
+import Panel from 'react-bootstrap/lib/Panel';
 import { connect } from 'react-redux';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
-import { setTool, setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
@@ -26,7 +25,6 @@ class RoutePlannerMenu extends React.Component {
     pickPointMode: PropTypes.string,
     onTransportTypeChange: PropTypes.func.isRequired,
     onPickPointModeChange: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
     homeLocation: PropTypes.shape({
       lat: PropTypes.number,
       lon: PropTypes.number,
@@ -104,12 +102,12 @@ class RoutePlannerMenu extends React.Component {
   }
 
   render() {
-    const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange, onCancel,
+    const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
       routeFound, shapePoints } = this.props;
 
     return (
-      <Navbar.Form pullLeft>
+      <Panel className="tool-panel">
         <ButtonGroup>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
@@ -150,12 +148,9 @@ class RoutePlannerMenu extends React.Component {
         {routeFound &&
           <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
-          </Button>}
-        {' '}
-        <Button onClick={onCancel} title="Zavrieť">
-          <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
-        </Button>
-      </Navbar.Form>
+          </Button>
+        }
+      </Panel>
     );
   }
 }
@@ -200,9 +195,6 @@ export default connect(
     },
     onPickPointModeChange(pickMode) {
       dispatch(routePlannerSetPickMode(pickMode));
-    },
-    onCancel() {
-      dispatch(setTool(null));
     },
     onProgressStart() {
       dispatch(startProgress());

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 
-import Navbar from 'react-bootstrap/lib/Navbar';
+import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
@@ -12,7 +12,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setTool, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -177,7 +177,7 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
+    const { activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -185,16 +185,18 @@ class TrackViewerMenu extends React.Component {
     }
     return (
       <div>
-        <Navbar.Form pullLeft>
+        <Panel className="tool-panel">
           <Button onClick={() => onModalLaunch('upload-track')}>
             <FontAwesomeIcon icon="upload" /> Nahrať trasu
           </Button>
           {' '}
-          {this.trackGeojsonIsSuitableForElevationChart() &&
-            <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
-              <FontAwesomeIcon icon="bar-chart" /> Výškový profil
-            </Button>
-          }
+          <Button
+            active={elevationChartTrackGeojson !== null}
+            onClick={this.toggleElevationChart}
+            disabled={!this.trackGeojsonIsSuitableForElevationChart()}
+          >
+            <FontAwesomeIcon icon="bar-chart" /> Výškový profil
+          </Button>
           {' '}
           {elevationChartTrackGeojson &&
             <ButtonGroup bsSize="small">
@@ -207,20 +209,17 @@ class TrackViewerMenu extends React.Component {
             </ButtonGroup>
           }
           {' '}
-          {this.trackGeojsonIsSuitableForElevationChart() &&
-            <Button onClick={this.showTrackInfo}>
-              <FontAwesomeIcon icon="info-circle" /> Viac info
-            </Button>
-          }
+          <Button
+            onClick={this.showTrackInfo}
+            disabled={!this.trackGeojsonIsSuitableForElevationChart()}
+          >
+            <FontAwesomeIcon icon="info-circle" /> Viac info
+          </Button>
           {' '}
-          {trackGpx &&
-            <Button onClick={this.shareTrack}>
-              <FontAwesomeIcon icon="share-alt" /> Zdieľať
-            </Button>
-          }
-          {' '}
-          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-        </Navbar.Form>
+          <Button onClick={this.shareTrack} disabled={!trackGpx}>
+            <FontAwesomeIcon icon="share-alt" /> Zdieľať
+          </Button>
+        </Panel>
 
         {activeModal === 'upload-track' &&
           <Modal show onHide={onModalClose}>
@@ -260,7 +259,6 @@ class TrackViewerMenu extends React.Component {
 
 TrackViewerMenu.propTypes = {
   activeModal: PropTypes.string,
-  onCancel: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired,
   onModalLaunch: PropTypes.func.isRequired,
   onTrackViewerUploadTrack: PropTypes.func.isRequired,
@@ -299,10 +297,6 @@ export default connect(
     colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   }),
   dispatch => ({
-    onCancel() {
-      dispatch(setTool(null));
-      dispatch(elevationChartClose());
-    },
     onModalLaunch(modalName) {
       dispatch(setActiveModal(modalName));
     },

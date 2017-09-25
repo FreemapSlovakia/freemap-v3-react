@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map, ScaleControl } from 'react-leaflet';
+import { Map, ScaleControl, ZoomControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
-import Navbar from 'react-bootstrap/lib/Navbar';
 import Row from 'react-bootstrap/lib/Row';
-import Nav from 'react-bootstrap/lib/Nav';
-import NavDropdown from 'react-bootstrap/lib/NavDropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
+import Button from 'react-bootstrap/lib/Button';
+import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
+import Popover from 'react-bootstrap/lib/Popover';
 
-import NavbarHeader from 'fm3/components/NavbarHeader';
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ProgressIndicator from 'fm3/components/ProgressIndicator';
@@ -143,103 +144,128 @@ class Main extends React.Component {
     this.props.onToolSet(this.props.tool === tool ? null : tool);
   }
 
-  createToolMenu() {
-    return [
-      createMenuItem(10, 'share', 'Exportovať do GPX', this.props.onGpxExport),
-      createMenuItem(11, 'eraser', 'Vyčistiť mapu', this.props.onMapClear),
-      <MenuItem divider key="_1" />,
-      createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
-      createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
-      createMenuItem(4, 'dot-circle-o', 'Kde som?', this.props.onLocate, { active: this.props.locate }),
-      createMenuItem(8, 'picture-o', 'Fotografie', () => this.handleToolSelect('gallery')),
-      createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
-      createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
-      createMenuItem(6, 'thumb-tack', 'Bod v mape', () => this.handleToolSelect('info-point')),
-      createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
-      createMenuItem(9, 'info', 'Detaily v mape', () => this.handleToolSelect('map-details')),
-    ];
-  }
-
-  createMoreMenu() {
-    const { user, onLogout, onLogin, onModalLaunch } = this.props;
-
-    return [
-      user ?
-        createMenuItem('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
-        :
-        createMenuItem('login', 'sign-in', 'Prihlásenie', () => onLogin()),
-      createMenuItem(1, 'cog', 'Nastavenia', () => onModalLaunch('settings')),
-      <MenuItem divider key="_1" />,
-      createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
-      createMenuItem(8, 'share-alt', 'Zdieľať mapu', () => onModalLaunch('share')),
-      createMenuItem(9, 'code', 'Vložiť do webstránky', () => onModalLaunch('embed')),
-      <MenuItem divider key="_2" />,
-      createMenuItem(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
-      createMenuItem(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
-      <MenuItem divider key="_3" />,
-      createMenuItem(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
-      createMenuItem(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
-    ];
-  }
-
   openFreemapInNonEmbedMode = () => {
     const currentURL = window.location.href;
     window.open(currentURL.replace('&embed=true', ''), '_blank');
   }
 
   render() {
-    // eslint-disable-next-line
-    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart, showGalleryPicker,
+    const { user, onLogout, onLogin, onModalLaunch, lat, lon, zoom, mapType,
+      tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
       showLoginModal } = this.props;
+
     const showDefaultMenu = [null, 'location'].includes(tool);
 
+    const popoverClickRootClose = (
+      <Popover id="popover-trigger-click-root-close" title="Nástroje">
+        {
+          [
+            createMenuItem(10, 'share', 'Exportovať do GPX', this.props.onGpxExport),
+            createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
+            createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
+            createMenuItem(8, 'picture-o', 'Fotografie', () => this.handleToolSelect('gallery')),
+            createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
+            createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
+            createMenuItem(6, 'thumb-tack', 'Bod v mape', () => this.handleToolSelect('info-point')),
+            createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
+            createMenuItem(9, 'info', 'Detaily v mape', () => this.handleToolSelect('map-details')),
+          ]
+        }
+      </Popover>
+    );
+
+    const popoverClickRootClose2 = (
+      <Popover id="popover-trigger-click-root-close" title="Ďalšie">
+        {
+          [
+            user ?
+              createMenuItem('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
+              :
+              createMenuItem('login', 'sign-in', 'Prihlásenie', () => onLogin()),
+            createMenuItem(1, 'cog', 'Nastavenia', () => onModalLaunch('settings')),
+            createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
+            createMenuItem(8, 'share-alt', 'Zdieľať mapu', () => onModalLaunch('share')),
+            createMenuItem(9, 'code', 'Vložiť do webstránky', () => onModalLaunch('embed')),
+            createMenuItem(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
+            createMenuItem(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
+            createMenuItem(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
+            createMenuItem(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
+          ]
+        }
+      </Popover>
+    );
+
+    const popoverClickRootClose3 = (
+      <Popover id="popover-trigger-click-root-close" title="Nástroj">
+        <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+      </Popover>
+    );
+
+    const popoverClickRootClose4 = (
+      <Popover id="popover-trigger-click-root-close" title="Hľadať">
+        <SearchMenu />
+      </Popover>
+    );
+
     return (
-      <div className="container-fluid" onDragOver={() => this.handleToolSelect('track-viewer')}>
+      <div>
+        <div className="tool-buttons">
+          <ButtonToolbar>
+            <ButtonGroup vertical>
+              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose4}>
+                <Button bsSize="small">
+                  <FontAwesomeIcon icon="search" />
+                </Button>
+              </OverlayTrigger>
+
+              <Button bsSize="small" onClick={onMapClear} title="Vyčistiť mapu">
+                <FontAwesomeIcon icon="eraser" />
+              </Button>
+              <Button bsSize="small" onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+                <FontAwesomeIcon icon="dot-circle-o" />
+              </Button>
+              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose}>
+                <Button bsSize="small">
+                  <FontAwesomeIcon icon="briefcase" />
+                </Button>
+              </OverlayTrigger>
+              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose3}>
+                <Button bsSize="small">
+                  <FontAwesomeIcon icon="external-link" />
+                </Button>
+              </OverlayTrigger>
+              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose2}>
+                <Button bsSize="small">
+                  <FontAwesomeIcon icon="ellipsis-v" />
+                </Button>
+              </OverlayTrigger>
+            </ButtonGroup>
+          </ButtonToolbar>
+        </div>
+
         {embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} />}
         <Toasts />
-        {!embeddedMode &&
-          <Row>
-            <Navbar fluid>
-              <NavbarHeader />
-              <Navbar.Collapse>
-                {tool === 'objects' && <ObjectsMenu />}
-                {(showDefaultMenu || tool === 'search') && <SearchMenu />}
-                {tool === 'route-planner' && <RoutePlannerMenu />}
-                {(tool === 'measure-dist' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
-                {tool === 'track-viewer' && <TrackViewerMenu />}
-                {tool === 'info-point' && <InfoPointMenu />}
-                {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'gallery' && <GalleryMenu />}
-                {tool === 'select-home-location' && <SelectHomeLocationMenu />}
-                {tool === 'map-details' && <MapDetailsMenu />}
-                {activeModal === 'settings' && <Settings />}
-                {activeModal === 'share' && <ShareMapModal />}
-                {activeModal === 'embed' && <EmbedMapModal />}
-                {showLoginModal && <LoginModal />}
-                {showDefaultMenu &&
-                  <Nav>
-                    <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
-                      {this.createToolMenu()}
-                    </NavDropdown>
-                    <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-                    {showDefaultMenu &&
-                      <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                        {this.createMoreMenu()}
-                      </NavDropdown>
-                    }
-                  </Nav>
-                }
-              </Navbar.Collapse>
-            </Navbar>
-          </Row>
-        }
-        {!embeddedMode &&
+        {tool === 'objects' && <ObjectsMenu />}
+        {tool === 'route-planner' && <RoutePlannerMenu />}
+        {(tool === 'measure-dist' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
+        {tool === 'track-viewer' && <TrackViewerMenu />}
+        {tool === 'info-point' && <InfoPointMenu />}
+        {tool === 'changesets' && <ChangesetsMenu />}
+        {tool === 'gallery' && <GalleryMenu />}
+        {tool === 'select-home-location' && <SelectHomeLocationMenu />}
+        {tool === 'map-details' && <MapDetailsMenu />}
+        {activeModal === 'settings' && <Settings />}
+        {activeModal === 'share' && <ShareMapModal />}
+        {activeModal === 'embed' && <EmbedMapModal />}
+        {showLoginModal && <LoginModal />}
+        {/* TODO !embeddedMode &&
           <Row>
             <ProgressIndicator active={progress} />
           </Row>
-        }
+        */}
         <Row className={`map-holder active-map-type-${mapType}`}>
           <Map
+            zoomControl={false}
             minZoom={8}
             ref={(map) => { this.map = map; }}
             center={L.latLng(lat, lon)}
@@ -253,6 +279,7 @@ class Main extends React.Component {
             style={{ cursor: mouseCursor }}
             maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
           >
+            <ZoomControl position="topright" />
             <Layers />
 
             <ScaleControl imperial={false} position="bottomright" />

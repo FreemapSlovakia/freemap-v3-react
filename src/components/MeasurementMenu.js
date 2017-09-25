@@ -11,8 +11,7 @@ import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Navbar from 'react-bootstrap/lib/Navbar';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
+import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -21,7 +20,6 @@ class MeasurementMenu extends React.Component {
   static propTypes = {
     tool: FmPropTypes.tool,
     onToolSet: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
     areaPoints: FmPropTypes.points.isRequired,
     distancePoints: FmPropTypes.points.isRequired,
     routeDefined: PropTypes.bool.isRequired,
@@ -86,10 +84,10 @@ class MeasurementMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
+    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
-      <Navbar.Form pullLeft>
+      <Panel className="tool-panel">
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
             <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
@@ -102,14 +100,12 @@ class MeasurementMenu extends React.Component {
           </Button>
         </ButtonGroup>
         {' '}
-        {tool === 'measure-dist' && routeDefined &&
-          <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
+        {tool === 'measure-dist' &&
+          <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
           </Button>
         }
-        {' '}
-        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-      </Navbar.Form>
+      </Panel>
     );
   }
 }
@@ -125,9 +121,6 @@ export default connect(
   dispatch => ({
     onToolSet(tool) {
       dispatch(setTool(tool));
-    },
-    onCancel() {
-      dispatch(setTool(null));
     },
     onElevationChartTrackGeojsonSet(trackGeojson) {
       dispatch(elevationChartSetTrackGeojson(trackGeojson));
