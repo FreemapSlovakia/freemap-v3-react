@@ -4,12 +4,9 @@ import { Map, ScaleControl, ZoomControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
 import Row from 'react-bootstrap/lib/Row';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Popover from 'react-bootstrap/lib/Popover';
 
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -41,7 +38,11 @@ import GalleryResult from 'fm3/components/GalleryResult';
 import GalleryPicker from 'fm3/components/GalleryPicker';
 
 import Settings from 'fm3/components/Settings';
-import ExternalApps from 'fm3/components/ExternalApps';
+
+import OpenInExternalAppMenuButton from 'fm3/components/OpenInExternalAppMenuButton';
+import ToolsMenuButton from 'fm3/components/ToolsMenuButton';
+import MoreMenuButton from 'fm3/components/MoreMenuButton';
+
 import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
 
 import InfoPointMenu from 'fm3/components/InfoPointMenu';
@@ -61,8 +62,8 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { setTool, setActiveModal, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
-import { authStartLogout, authCheckLogin } from 'fm3/actions/authActions';
+import { setTool, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
+import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -79,17 +80,11 @@ class Main extends React.Component {
     onToolSet: PropTypes.func.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
     activeModal: PropTypes.string,
-    onModalLaunch: PropTypes.func.isRequired,
     progress: PropTypes.bool.isRequired,
     onLocationSet: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
     embeddedMode: PropTypes.bool.isRequired,
-    onLogin: PropTypes.func.isRequired,
-    onLogout: PropTypes.func.isRequired,
     onCheckLogin: PropTypes.func.isRequired,
-    user: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    }),
     ignoreEscape: PropTypes.bool.isRequired,
     showElevationChart: PropTypes.bool.isRequired,
     showGalleryPicker: PropTypes.bool.isRequired,
@@ -140,111 +135,42 @@ class Main extends React.Component {
     this.props.onLocationSet(e.latitude, e.longitude, e.accuracy);
   }
 
-  handleToolSelect(tool) {
-    this.props.onToolSet(this.props.tool === tool ? null : tool);
-  }
-
   openFreemapInNonEmbedMode = () => {
     const currentURL = window.location.href;
     window.open(currentURL.replace('&embed=true', ''), '_blank');
   }
 
   render() {
-    const { user, onLogout, onLogin, onModalLaunch, lat, lon, zoom, mapType,
+    const { lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
       showLoginModal } = this.props;
 
     const showDefaultMenu = [null, 'location'].includes(tool);
-
-    const popoverClickRootClose = (
-      <Popover id="popover-trigger-click-root-close" title="Nástroje">
-        {
-          [
-            createMenuItem(10, 'share', 'Exportovať do GPX', this.props.onGpxExport),
-            createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
-            createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
-            createMenuItem(8, 'picture-o', 'Fotografie', () => this.handleToolSelect('gallery')),
-            createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
-            createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
-            createMenuItem(6, 'thumb-tack', 'Bod v mape', () => this.handleToolSelect('info-point')),
-            createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
-            createMenuItem(9, 'info', 'Detaily v mape', () => this.handleToolSelect('map-details')),
-          ]
-        }
-      </Popover>
-    );
-
-    const popoverClickRootClose2 = (
-      <Popover id="popover-trigger-click-root-close" title="Ďalšie">
-        {
-          [
-            user ?
-              createMenuItem('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
-              :
-              createMenuItem('login', 'sign-in', 'Prihlásenie', () => onLogin()),
-            createMenuItem(1, 'cog', 'Nastavenia', () => onModalLaunch('settings')),
-            createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
-            createMenuItem(8, 'share-alt', 'Zdieľať mapu', () => onModalLaunch('share')),
-            createMenuItem(9, 'code', 'Vložiť do webstránky', () => onModalLaunch('embed')),
-            createMenuItem(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
-            createMenuItem(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
-            createMenuItem(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
-            createMenuItem(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
-          ]
-        }
-      </Popover>
-    );
-
-    const popoverClickRootClose3 = (
-      <Popover id="popover-trigger-click-root-close" title="Nástroj">
-        <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-      </Popover>
-    );
-
-    const popoverClickRootClose4 = (
-      <Popover id="popover-trigger-click-root-close" title="Hľadať">
-        <SearchMenu />
-      </Popover>
-    );
 
     return (
       <div>
         <div className="tool-buttons">
           <ButtonToolbar>
             <ButtonGroup vertical>
-              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose4}>
-                <Button bsSize="small">
-                  <FontAwesomeIcon icon="search" />
-                </Button>
-              </OverlayTrigger>
-
+              <ToolsMenuButton />
               <Button bsSize="small" onClick={onMapClear} title="Vyčistiť mapu">
                 <FontAwesomeIcon icon="eraser" />
               </Button>
               <Button bsSize="small" onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
                 <FontAwesomeIcon icon="dot-circle-o" />
               </Button>
-              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose}>
-                <Button bsSize="small">
-                  <FontAwesomeIcon icon="briefcase" />
-                </Button>
-              </OverlayTrigger>
-              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose3}>
-                <Button bsSize="small">
-                  <FontAwesomeIcon icon="external-link" />
-                </Button>
-              </OverlayTrigger>
-              <OverlayTrigger trigger="click" rootClose placement="right" overlay={popoverClickRootClose2}>
-                <Button bsSize="small">
-                  <FontAwesomeIcon icon="ellipsis-v" />
-                </Button>
-              </OverlayTrigger>
+              <Button bsSize="small" onClick={this.props.onGpxExport} title="Exportovať do GPX">
+                <FontAwesomeIcon icon="share" />
+              </Button>
+              <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+              <MoreMenuButton />
             </ButtonGroup>
           </ButtonToolbar>
         </div>
 
         {embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} />}
         <Toasts />
+        {tool === 'search' && <SearchMenu />}
         {tool === 'objects' && <ObjectsMenu />}
         {tool === 'route-planner' && <RoutePlannerMenu />}
         {(tool === 'measure-dist' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
@@ -332,18 +258,8 @@ export default connect(
     onMapRefocus(changes) {
       dispatch(mapRefocus(changes));
     },
-    onModalLaunch(modalName) {
-      dispatch(setActiveModal(modalName));
-    },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));
-    },
-    onLogin() {
-      dispatch({ type: 'AUTH_CHOOSE_LOGIN_METHOD' });
-      // dispatch(authLogin());
-    },
-    onLogout() {
-      dispatch(authStartLogout());
     },
     onCheckLogin() {
       dispatch(authCheckLogin());
@@ -359,17 +275,6 @@ export default connect(
     },
   }),
 )(Main);
-
-function createMenuItem(key, icon, title, onClick, props = {}) {
-  const p = { key, ...props };
-  if (typeof onClick === 'function') {
-    p.onClick = onClick;
-  } else {
-    p.href = onClick;
-    p.target = '_blank';
-  }
-  return React.createElement(MenuItem, p, <FontAwesomeIcon icon={icon} />, ` ${title}`);
-}
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);

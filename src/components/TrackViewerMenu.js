@@ -28,12 +28,13 @@ const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDig
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
 class TrackViewerMenu extends React.Component {
-  componentWillMount() {
-    const startingWithBlankTrackViewer = this.props.trackUID === null;
-    if (startingWithBlankTrackViewer) {
-      this.props.onModalLaunch('upload-track');
-    }
-  }
+  // NOTE commented out because UX feels weird
+  // componentWillMount() {
+  //   const startingWithBlankTrackViewer = this.props.trackUID === null;
+  //   if (startingWithBlankTrackViewer) {
+  //     this.props.onModalLaunch('upload-track');
+  //   }
+  // }
 
   componentWillReceiveProps(newProps) {
     if (newProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(newProps.trackGeojson)) {
