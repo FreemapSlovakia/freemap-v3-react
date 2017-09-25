@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { Map, ScaleControl, ZoomControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
-import Row from 'react-bootstrap/lib/Row';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
@@ -61,7 +60,7 @@ import LoginModal from 'fm3/components/LoginModal';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import { mapRefocus } from 'fm3/actions/mapActions';
+import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
 import { setTool, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
 import { authCheckLogin } from 'fm3/actions/authActions';
 
@@ -93,6 +92,7 @@ class Main extends React.Component {
     onLocate: PropTypes.func.isRequired,
     locate: PropTypes.bool.isRequired,
     showLoginModal: PropTypes.bool,
+    onMapReset: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -143,7 +143,7 @@ class Main extends React.Component {
   render() {
     const { lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal } = this.props;
+      showLoginModal, onMapReset } = this.props;
 
     const showDefaultMenu = [null, 'location'].includes(tool);
 
@@ -168,28 +168,31 @@ class Main extends React.Component {
           </ButtonToolbar>
         </div>
 
-        {embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} />}
+        {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
         <Toasts />
-        {tool === 'search' && <SearchMenu />}
-        {tool === 'objects' && <ObjectsMenu />}
-        {tool === 'route-planner' && <RoutePlannerMenu />}
-        {(tool === 'measure-dist' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
-        {tool === 'track-viewer' && <TrackViewerMenu />}
-        {tool === 'info-point' && <InfoPointMenu />}
-        {tool === 'changesets' && <ChangesetsMenu />}
-        {tool === 'gallery' && <GalleryMenu />}
-        {tool === 'select-home-location' && <SelectHomeLocationMenu />}
-        {tool === 'map-details' && <MapDetailsMenu />}
+
+        <div className="tool-panel">
+          {tool === 'search' && <SearchMenu />}
+          {tool === 'objects' && <ObjectsMenu />}
+          {tool === 'route-planner' && <RoutePlannerMenu />}
+          {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
+          {tool === 'track-viewer' && <TrackViewerMenu />}
+          {tool === 'info-point' && <InfoPointMenu />}
+          {tool === 'changesets' && <ChangesetsMenu />}
+          {tool === 'gallery' && <GalleryMenu />}
+          {tool === 'select-home-location' && <SelectHomeLocationMenu />}
+          {tool === 'map-details' && <MapDetailsMenu />}
+
+          <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+        </div>
+
         {activeModal === 'settings' && <Settings />}
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {showLoginModal && <LoginModal />}
-        {/* TODO !embeddedMode &&
-          <Row>
-            <ProgressIndicator active={progress} />
-          </Row>
-        */}
-        <Row className={`map-holder active-map-type-${mapType}`}>
+        {/* TODO !embeddedMode && <ProgressIndicator active={progress} /> */}
+
+        <div className={`map-holder active-map-type-${mapType}`}>
           <Map
             zoomControl={false}
             minZoom={8}
@@ -226,7 +229,7 @@ class Main extends React.Component {
             {(tool === null || tool === 'gallery') && showGalleryPicker && <GalleryPicker />}
             <GalleryResult />
           </Map>
-        </Row>
+        </div>
       </div>
     );
   }
@@ -269,6 +272,9 @@ export default connect(
     },
     onMapClear() {
       dispatch(clearMap());
+    },
+    onMapReset() {
+      dispatch(mapReset());
     },
     onLocate() {
       dispatch(toggleLocate());

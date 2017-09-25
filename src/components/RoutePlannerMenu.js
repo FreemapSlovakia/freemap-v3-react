@@ -107,7 +107,7 @@ class RoutePlannerMenu extends React.Component {
       routeFound, shapePoints } = this.props;
 
     return (
-      <Panel className="tool-panel">
+      <Panel>
         <ButtonGroup>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}

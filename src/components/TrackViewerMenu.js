@@ -186,7 +186,7 @@ class TrackViewerMenu extends React.Component {
     }
     return (
       <div>
-        <Panel className="tool-panel">
+        <Panel>
           <Button onClick={() => onModalLaunch('upload-track')}>
             <FontAwesomeIcon icon="upload" /> Nahrať trasu
           </Button>

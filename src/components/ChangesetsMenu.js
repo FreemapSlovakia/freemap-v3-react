@@ -51,7 +51,7 @@ class ChangesetsMenu extends React.Component {
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh } = this.props;
     return (
-      <Panel className="tool-panel">
+      <Panel>
         <Form inline>
           <ButtonGroup>
             <DropdownButton title={`Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`} id="days">

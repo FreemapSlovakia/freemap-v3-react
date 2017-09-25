@@ -36,7 +36,7 @@ class SearchMenu extends React.Component {
     const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
 
     return (
-      <Panel className="tool-panel">
+      <Panel>
         <AsyncTypeahead
           labelKey="label"
           useCache={false}

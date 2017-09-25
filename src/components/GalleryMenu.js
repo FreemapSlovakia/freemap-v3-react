@@ -14,7 +14,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive, onOrderChange }) {
   return (
     pickingPosition ?
-      <Panel className="tool-panel">
+      <Panel>
         <Static>Zvoľte pozíciu fotografie</Static>
         {' '}
         <Button onClick={onPositionConfirm}><FontAwesomeIcon icon="check" /> Zvoliť</Button>
@@ -22,7 +22,7 @@ function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionC
         <Button onClick={onPositionCancel}><FontAwesomeIcon icon="times" /> Zrušiť</Button>
       </Panel>
       :
-      <Panel className="tool-panel">
+      <Panel>
         <Form inline>
           <Button onClick={onFilterShow} active={filterIsActive}><FontAwesomeIcon icon="filter" /> Filter</Button>
           {' '}

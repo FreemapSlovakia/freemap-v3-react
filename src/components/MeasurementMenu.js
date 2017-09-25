@@ -87,7 +87,7 @@ class MeasurementMenu extends React.Component {
     const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
-      <Panel className="tool-panel">
+      <Panel>
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
             <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>

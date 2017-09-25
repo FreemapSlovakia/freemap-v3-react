@@ -55,7 +55,7 @@ class InfoPointMenu extends React.Component {
     const { onModalLaunch, activeModal, onModalClose } = this.props;
     return (
       <div>
-        <Panel className="tool-panel">
+        <Panel>
           <Button onClick={() => onModalLaunch('info-point-change-label')}>
             <FontAwesomeIcon icon="tag" />Zmeniť popis
           </Button>

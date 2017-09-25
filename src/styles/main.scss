@@ -84,3 +84,46 @@ button#freemap-logo.embedded {
   left: 60px;
   margin-right: 60px;
 }
+
+button#freemap-logo {
+  border: none;
+  border: none;
+  outline:none;
+  background-color: rgba(255, 255, 255, 0);
+  background-image: url(../images/freemap-logo.png);
+  background-size: 138px 38px;
+  background-repeat: no-repeat;
+  margin: 0;
+  height: 38px;
+  width: 138px;
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: .1s ease-in-out;
+  transition: .1s ease-in-out;
+  
+  &.in-progress {
+    animation: pulse 1s infinite;
+  }
+
+  &:hover {
+    cursor: pointer;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+
+  @media ($smartphone-screen) {
+    margin-left: 10px;
+  }
+}
+
+@keyframes pulse {
+  0% {
+    filter: brightness(100%);
+  }
+  50% {
+    filter: brightness(200%);
+  }
+  100% {
+    filter: brightness(100%);
+  }
+}
