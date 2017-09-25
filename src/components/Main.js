@@ -140,6 +140,10 @@ class Main extends React.Component {
     window.open(currentURL.replace('&embed=true', ''), '_blank');
   }
 
+  handleToolCloseClick = () => {
+    this.props.onToolSet(null);
+  }
+
   render() {
     const { lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
@@ -153,6 +157,9 @@ class Main extends React.Component {
           <ButtonToolbar>
             <ButtonGroup vertical>
               <ToolsMenuButton />
+              <Button bsSize="small" onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
+                <FontAwesomeIcon icon="close" />
+              </Button>
               <Button bsSize="small" onClick={onMapClear} title="Vyčistiť mapu">
                 <FontAwesomeIcon icon="eraser" />
               </Button>

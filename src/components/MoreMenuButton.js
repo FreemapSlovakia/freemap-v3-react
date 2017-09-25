@@ -75,12 +75,12 @@ class MoreMenuButton extends React.Component {
       <Button bsSize="small" ref={this.setButton} onClick={this.handleButtonClick} title="Ďalšie">
         <FontAwesomeIcon icon="ellipsis-v" />
         <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
-          <Popover id="popover-trigger-click-root-close" title="Nástroje">
+          <Popover id="popover-trigger-click-root-close" title="Ďalšie">
             <ListGroup>
               {
                 user ?
                   <ListGroupItem onClick={this.handleLogoutClick}>
-                    <FontAwesomeIcon icon="sign-out" /> Odhlás {user.name}
+                    <FontAwesomeIcon icon="sign-out" /> Odhlásiť {user.name}
                   </ListGroupItem>
                   :
                   <ListGroupItem onClick={this.handleLoginClick}>
