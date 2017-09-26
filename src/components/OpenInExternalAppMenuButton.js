@@ -1,7 +1,6 @@
 import axios from 'axios';
 import React from 'react';
 import PropTypes from 'prop-types';
-import ListGroup from 'react-bootstrap/lib/ListGroup';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
