@@ -8,7 +8,7 @@ function LocationResult({ gpsLocation }) {
   return gpsLocation ? (
     <div>
       <Circle center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />
-      <RichMarker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} />
+      <RichMarker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} interactive={false} />
     </div>
   ) : null;
 }

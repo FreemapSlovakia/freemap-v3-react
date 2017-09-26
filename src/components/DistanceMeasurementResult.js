@@ -37,10 +37,12 @@ class DistanceMeasurementResult extends React.Component {
 
   componentWillMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
+    mapEventEmitter.on('mouseOut', this.handleMouseOut);
   }
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mouseMove', this.handleMouseMove);
+    mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
   }
 
   handlePoiAdd = (lat, lon, position, id0) => {
@@ -75,6 +77,10 @@ class DistanceMeasurementResult extends React.Component {
     }
   }
 
+  handleMouseOut = () => {
+    this.setState({ lat: undefined, lon: undefined });
+  }
+
   render() {
     let prev = null;
     let dist = 0;
@@ -95,7 +101,7 @@ class DistanceMeasurementResult extends React.Component {
     return (
       <div>
         {ps.length > 2 && <Polyline interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} />}
-        {ps.length && this.state.lat &&
+        {!!(ps.length && this.state.lat) &&
           <Polyline
             interactive={false}
             opacity={0.5}

@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 import ListGroup from 'react-bootstrap/lib/ListGroup';
-import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
@@ -37,21 +37,21 @@ class ToolsMenuButton extends React.Component {
 
   render() {
     return (
-      <Button bsSize="small" ref={this.setButton} onClick={this.handleButtonClick} title="Nástroje">
+      <Button ref={this.setButton} onClick={this.handleButtonClick} title="Nástroje">
         <FontAwesomeIcon icon="briefcase" />
         <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
-          <Popover id="popover-trigger-click-root-close" title="Nástroje">
-            <ListGroup>
-              <ListGroupItem onClick={() => this.handleToolSelect('search')}><FontAwesomeIcon icon="search" /> Hľadanie na mape</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('route-planner')}><FontAwesomeIcon icon="map-signs" /> Plánovač</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('objects')}><FontAwesomeIcon icon="map-marker" /> Miesta</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('gallery')}><FontAwesomeIcon icon="picture-o" /> Fotografie</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('measure-dist')}><FontAwesomeIcon icon="arrows-h" /> Meranie</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('track-viewer')}><FontAwesomeIcon icon="road" /> Prehliadač trás</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('info-point')}><FontAwesomeIcon icon="thumb-tack" /> Bod v mape</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('changesets')}><FontAwesomeIcon icon="pencil" /> Zmeny v mape</ListGroupItem>
-              <ListGroupItem onClick={() => this.handleToolSelect('map-details')}><FontAwesomeIcon icon="info" /> Detaily v mape</ListGroupItem>
-            </ListGroup>
+          <Popover id="popover-trigger-click-root-close" className="fm-menu">
+            <ul>
+              <MenuItem onClick={() => this.handleToolSelect('search')}><FontAwesomeIcon icon="search" /> Hľadanie na mape</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('route-planner')}><FontAwesomeIcon icon="map-signs" /> Plánovač</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('objects')}><FontAwesomeIcon icon="map-marker" /> Miesta</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('gallery')}><FontAwesomeIcon icon="picture-o" /> Fotografie</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('measure-dist')}><FontAwesomeIcon icon="arrows-h" /> Meranie</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('track-viewer')}><FontAwesomeIcon icon="road" /> Prehliadač trás</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('info-point')}><FontAwesomeIcon icon="thumb-tack" /> Bod v mape</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('changesets')}><FontAwesomeIcon icon="pencil" /> Zmeny v mape</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('map-details')}><FontAwesomeIcon icon="info" /> Detaily v mape</MenuItem>
+            </ul>
           </Popover>
         </Overlay>
       </Button>

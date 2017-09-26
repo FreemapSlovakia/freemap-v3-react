@@ -51,7 +51,7 @@ class ChangesetsMenu extends React.Component {
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh } = this.props;
     return (
-      <Panel>
+      <Panel className="fm-toolbar">
         <Form inline>
           <ButtonGroup>
             <DropdownButton title={`Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`} id="days">
@@ -86,7 +86,7 @@ class ChangesetsMenu extends React.Component {
               onClick={() => onChangesetsSetAuthorNameAndRefresh(days, this.state.authorName)}
               title="Stiahnuť zmeny"
             >
-              <FontAwesomeIcon icon="refresh" /><span className="hidden-sm"> Stiahnuť zmeny</span>
+              <FontAwesomeIcon icon="refresh" /><span className="hidden-xs"> Stiahnuť zmeny</span>
             </Button>
           </ButtonGroup>
         </Form>

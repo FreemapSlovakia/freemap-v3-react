@@ -6,10 +6,10 @@ import { connect } from 'react-redux';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
+import Panel from 'react-bootstrap/lib/Panel';
 
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import ProgressIndicator from 'fm3/components/ProgressIndicator';
 import Toasts from 'fm3/components/Toasts';
 
 import SearchMenu from 'fm3/components/SearchMenu';
@@ -153,27 +153,27 @@ class Main extends React.Component {
 
     return (
       <div>
-        <div className="tool-buttons">
+        <Panel className="fm-toolbar tool-buttons">
           <ButtonToolbar>
             <ButtonGroup vertical>
               <ToolsMenuButton />
-              <Button bsSize="small" onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
+              <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
                 <FontAwesomeIcon icon="close" />
               </Button>
-              <Button bsSize="small" onClick={onMapClear} title="Vyčistiť mapu">
+              <Button onClick={onMapClear} title="Vyčistiť mapu">
                 <FontAwesomeIcon icon="eraser" />
               </Button>
-              <Button bsSize="small" onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
                 <FontAwesomeIcon icon="dot-circle-o" />
               </Button>
-              <Button bsSize="small" onClick={this.props.onGpxExport} title="Exportovať do GPX">
+              <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
                 <FontAwesomeIcon icon="share" />
               </Button>
               <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
               <MoreMenuButton />
             </ButtonGroup>
           </ButtonToolbar>
-        </div>
+        </Panel>
 
         {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
         <Toasts />
@@ -233,7 +233,7 @@ class Main extends React.Component {
             <Changesets />
             {tool === 'map-details' && <MapDetails />}
             {showElevationChart && <AsyncElevationChart />}
-            {(tool === null || tool === 'gallery') && showGalleryPicker && <GalleryPicker />}
+            {showGalleryPicker && <GalleryPicker />}
             <GalleryResult />
           </Map>
         </div>
@@ -313,6 +313,7 @@ function selectMouseCursor(state) {
     case 'select-home-location':
     case 'map-details':
     case 'route-planner':
+    case 'info-point':
       return state.routePlanner.pickMode ? 'crosshair' : 'auto';
     default:
       return isShowGalleryPicker(state) ? 'crosshair' : 'auto';
@@ -320,7 +321,7 @@ function selectMouseCursor(state) {
 }
 
 function isShowGalleryPicker(state) {
-  return (state.main.tool === null || state.main.tool === 'gallery')
-    && state.gallery.show
+  return (state.main.tool === null || ['gallery', 'track-viewer', 'search'].includes(state.main.tool))
+    && state.map.overlays.includes('I')
     && state.gallery.pickingPositionForId === null;
 }

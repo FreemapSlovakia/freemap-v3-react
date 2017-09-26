@@ -2,7 +2,7 @@ import axios from 'axios';
 import React from 'react';
 import PropTypes from 'prop-types';
 import ListGroup from 'react-bootstrap/lib/ListGroup';
-import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
@@ -78,21 +78,20 @@ export default class OpenInExternalAppMenuButton extends React.Component {
 
   render() {
     return (
-      <Button bsSize="small" ref={this.setButton} onClick={this.handleButtonClick} title="Otvoriť v externej aplikácii">
+      <Button ref={this.setButton} onClick={this.handleButtonClick} title="Otvoriť v externej aplikácii">
         <FontAwesomeIcon icon="external-link" />
         <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
-          <Popover id="popover-trigger-click-root-close" title="Otvoriť v externej aplikácii">
-            <ListGroup>
-              <ListGroupItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</ListGroupItem>
-              <ListGroupItem onClick={() => this.openIn('oma.sk')}>OMA</ListGroupItem>
-              <ListGroupItem onClick={() => this.openIn('google')}>Google Mapy</ListGroupItem>
-              <ListGroupItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</ListGroupItem>
-              <ListGroupItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</ListGroupItem>
-            </ListGroup>
-            <ListGroup>
-              <ListGroupItem onClick={() => this.openIn('josm')}>Editor JOSM</ListGroupItem>
-              <ListGroupItem onClick={() => this.openIn('osm.org/id')}>Editor iD</ListGroupItem>
-            </ListGroup>
+          <Popover id="popover-trigger-click-root-close" className="fm-menu">
+            <ul>
+              <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
+              <MenuItem onClick={() => this.openIn('oma.sk')}>OMA</MenuItem>
+              <MenuItem onClick={() => this.openIn('google')}>Google Mapy</MenuItem>
+              <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
+              <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
+              <MenuItem divider />
+              <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
+              <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
+            </ul>
           </Popover>
         </Overlay>
       </Button>

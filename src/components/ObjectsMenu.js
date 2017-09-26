@@ -69,7 +69,7 @@ class ObjectsMenu extends React.Component {
 
   render() {
     return (
-      <Panel>
+      <Panel className="fm-toolbar">
         <Dropdown
           className="dropdown-long"
           id="objectsMenuDropdown"

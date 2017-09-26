@@ -186,9 +186,10 @@ class TrackViewerMenu extends React.Component {
     }
     return (
       <div>
-        <Panel>
+        <Panel className="fm-toolbar">
           <Button onClick={() => onModalLaunch('upload-track')}>
-            <FontAwesomeIcon icon="upload" /> Nahrať trasu
+            <FontAwesomeIcon icon="upload" />
+            <span className="hidden-xs"> Nahrať trasu</span>
           </Button>
           {' '}
           <Button
@@ -196,7 +197,8 @@ class TrackViewerMenu extends React.Component {
             onClick={this.toggleElevationChart}
             disabled={!this.trackGeojsonIsSuitableForElevationChart()}
           >
-            <FontAwesomeIcon icon="bar-chart" /> Výškový profil
+            <FontAwesomeIcon icon="bar-chart" />
+            <span className="hidden-xs"> Výškový profil</span>
           </Button>
           {' '}
           {elevationChartTrackGeojson &&
@@ -214,11 +216,13 @@ class TrackViewerMenu extends React.Component {
             onClick={this.showTrackInfo}
             disabled={!this.trackGeojsonIsSuitableForElevationChart()}
           >
-            <FontAwesomeIcon icon="info-circle" /> Viac info
+            <FontAwesomeIcon icon="info-circle" />
+            <span className="hidden-xs"> Viac info</span>
           </Button>
           {' '}
           <Button onClick={this.shareTrack} disabled={!trackGpx}>
-            <FontAwesomeIcon icon="share-alt" /> Zdieľať
+            <FontAwesomeIcon icon="share-alt" />
+            <span className="hidden-xs"> Zdieľať</span>
           </Button>
         </Panel>
 

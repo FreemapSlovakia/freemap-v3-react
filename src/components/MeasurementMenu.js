@@ -87,22 +87,22 @@ class MeasurementMenu extends React.Component {
     const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
-      <Panel>
+      <Panel className="fm-toolbar">
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
-            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
+            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-xs"> Vzdialenosť</span>
           </Button>
           <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
-            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-sm"> Výška a poloha</span>
+            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-xs"> Výška a poloha</span>
           </Button>
           <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
-            <FontAwesomeIcon icon="square" /><span className="hidden-sm"> Plocha</span>
+            <FontAwesomeIcon icon="square" /><span className="hidden-xs"> Plocha</span>
           </Button>
         </ButtonGroup>
         {' '}
         {tool === 'measure-dist' &&
           <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs"> Výškový profil</span>
           </Button>
         }
       </Panel>

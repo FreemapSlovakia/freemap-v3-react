@@ -10,7 +10,6 @@ import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
 import GalleryFilterModal from 'fm3/components/GalleryFilterModal';
 import AsyncGalleryUploadModal from 'fm3/components/AsyncGalleryUploadModal';
 import RichMarker from 'fm3/components/RichMarker';
-import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
@@ -25,9 +24,6 @@ class GalleryResult extends React.Component {
     pickingPosition: FmPropTypes.point,
     showFilter: PropTypes.bool,
     showUploadModal: PropTypes.bool,
-    show: PropTypes.bool,
-    galleryDirtySeq: PropTypes.number.isRequired,
-    galleryFilter: FmPropTypes.galleryFilter.isRequired,
   }
 
   state = {};
@@ -52,7 +48,7 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal, show, galleryDirtySeq, galleryFilter } = this.props;
+    const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal } = this.props;
 
     return (
       <div>
@@ -69,14 +65,6 @@ class GalleryResult extends React.Component {
         {showFilter && <GalleryFilterModal />}
 
         {showUploadModal && <AsyncGalleryUploadModal />}
-
-        {show &&
-          <GalleryLayer
-            key={`${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
-            filter={galleryFilter}
-          />
-        }
-
       </div>
     );
   }
@@ -90,9 +78,6 @@ export default connect(
     pickingPosition: state.gallery.pickingPosition,
     showFilter: state.gallery.showFilter,
     showUploadModal: state.gallery.showUploadModal,
-    show: state.gallery.show,
-    galleryFilter: state.gallery.filter,
-    galleryDirtySeq: state.gallery.dirtySeq,
   }),
   dispatch => ({
     onPositionPick(lat, lon) {

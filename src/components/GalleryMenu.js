@@ -14,17 +14,26 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive, onOrderChange }) {
   return (
     pickingPosition ?
-      <Panel>
+      <Panel className="fm-toolbar">
         <Static>Zvoľte pozíciu fotografie</Static>
         {' '}
-        <Button onClick={onPositionConfirm}><FontAwesomeIcon icon="check" /> Zvoliť</Button>
+        <Button onClick={onPositionConfirm}>
+          <FontAwesomeIcon icon="check" />
+          <span className="hidden-xs"> Zvoliť</span>
+        </Button>
         {' '}
-        <Button onClick={onPositionCancel}><FontAwesomeIcon icon="times" /> Zrušiť</Button>
+        <Button onClick={onPositionCancel}>
+          <FontAwesomeIcon icon="times" />
+          <span className="hidden-xs"> Zrušiť</span>
+        </Button>
       </Panel>
       :
-      <Panel>
+      <Panel className="fm-toolbar">
         <Form inline>
-          <Button onClick={onFilterShow} active={filterIsActive}><FontAwesomeIcon icon="filter" /> Filter</Button>
+          <Button onClick={onFilterShow} active={filterIsActive}>
+            <FontAwesomeIcon icon="filter" />
+            <span className="hidden-xs"> Filter</span>
+          </Button>
           {' '}
           <FormControl componentClass="select" value="" onChange={onOrderChange}>
             <option value="" disabled>Fotky podľa…</option>
@@ -36,7 +45,10 @@ function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionC
             <option value="-rating">▼ hodnotenia</option>
           </FormControl>
           {' '}
-          <Button onClick={onUpload}><FontAwesomeIcon icon="upload" /> Nahrať</Button>
+          <Button onClick={onUpload}>
+            <FontAwesomeIcon icon="upload" />
+            <span className="hidden-xs"> Nahrať</span>
+          </Button>
         </Form>
       </Panel>
   );

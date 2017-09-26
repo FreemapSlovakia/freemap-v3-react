@@ -1,6 +1,4 @@
 const initialState = {
-  show: false,
-
   imageIds: null,
   activeImageId: null,
   image: null,
@@ -36,10 +34,6 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'MAP_RESET':
     case 'CLEAR_MAP':
       return { ...initialState, dirtySeq: state.dirtySeq };
-    case 'SET_TOOL':
-      return { ...state, show: action.payload === 'gallery' ? true : state.show };
-    case 'GALLERY_SHOW':
-      return { ...state, show: true };
     case 'GALLERY_SET_IMAGE_IDS':
       return {
         ...state,
@@ -133,7 +127,7 @@ export default function elevationMeasurement(state = initialState, action) {
     case 'GALLERY_SHOW_FILTER':
       return { ...state, showFilter: true };
     case 'GALLERY_SET_FILTER':
-      return { ...state, filter: action.payload, showFilter: false, show: true };
+      return { ...state, filter: action.payload, showFilter: false };
     case 'GALLERY_HIDE_FILTER':
       return { ...state, showFilter: false };
     case 'GALLERY_SHOW_UPLOAD_MODAL':

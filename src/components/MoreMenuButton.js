@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 import ListGroup from 'react-bootstrap/lib/ListGroup';
-import ListGroupItem from 'react-bootstrap/lib/ListGroupItem';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
@@ -72,46 +72,49 @@ class MoreMenuButton extends React.Component {
     const { user } = this.props;
 
     return (
-      <Button bsSize="small" ref={this.setButton} onClick={this.handleButtonClick} title="Ďalšie">
+      <Button ref={this.setButton} onClick={this.handleButtonClick} title="Ďalšie">
         <FontAwesomeIcon icon="ellipsis-v" />
         <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
-          <Popover id="popover-trigger-click-root-close" title="Ďalšie">
-            <ListGroup>
+          <Popover id="popover-trigger-click-root-close" className="fm-menu">
+            <ul>
               {
                 user ?
-                  <ListGroupItem onClick={this.handleLogoutClick}>
+                  <MenuItem onClick={this.handleLogoutClick}>
                     <FontAwesomeIcon icon="sign-out" /> Odhlásiť {user.name}
-                  </ListGroupItem>
+                  </MenuItem>
                   :
-                  <ListGroupItem onClick={this.handleLoginClick}>
+                  <MenuItem onClick={this.handleLoginClick}>
                     <FontAwesomeIcon icon="sign-in" /> Prihlásenie
-                  </ListGroupItem>
+                  </MenuItem>
               }
-              <ListGroupItem onClick={this.handleSettingsShowClick}>
+              <MenuItem onClick={this.handleSettingsShowClick}>
                 <FontAwesomeIcon icon="cog" /> Nastavenia
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/FileDownload" target="_blank">
+              </MenuItem>
+              <MenuItem divider />
+              <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/FileDownload" target="_blank">
                 <FontAwesomeIcon icon="mobile" /> Exporty mapy
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleShareClick}>
+              </MenuItem>
+              <MenuItem onClick={this.handleShareClick}>
                 <FontAwesomeIcon icon="share-alt" /> Zdieľať mapu
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleEmbedClick}>
+              </MenuItem>
+              <MenuItem onClick={this.handleEmbedClick}>
                 <FontAwesomeIcon icon="code" /> Vložiť do webstránky
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/StarterGuide" target="_blank">
+              </MenuItem>
+              <MenuItem divider />
+              <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/StarterGuide" target="_blank">
                 <FontAwesomeIcon icon="book" /> Pre začiatočníkov
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react" target="_blank">
+              </MenuItem>
+              <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react" target="_blank">
                 <FontAwesomeIcon icon="github" /> Projekt na GitHub-e
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
+              </MenuItem>
+              <MenuItem divider />
+              <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
                 <FontAwesomeIcon icon="exclamation-triangle" /> Nahlás chybu zobrazenia v mape
-              </ListGroupItem>
-              <ListGroupItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react/issues" target="_blank">
+              </MenuItem>
+              <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react/issues" target="_blank">
                 <FontAwesomeIcon icon="exclamation-triangle" /> Nahlás chybu v portáli
-              </ListGroupItem>
-            </ListGroup>
+              </MenuItem>
+            </ul>
           </Popover>
         </Overlay>
       </Button>

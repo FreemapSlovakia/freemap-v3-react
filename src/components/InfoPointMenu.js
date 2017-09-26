@@ -55,7 +55,7 @@ class InfoPointMenu extends React.Component {
     const { onModalLaunch, activeModal, onModalClose } = this.props;
     return (
       <div>
-        <Panel>
+        <Panel className="fm-toolbar">
           <Button onClick={() => onModalLaunch('info-point-change-label')}>
             <FontAwesomeIcon icon="tag" />Zmeniť popis
           </Button>
@@ -63,12 +63,11 @@ class InfoPointMenu extends React.Component {
 
         {activeModal === 'info-point-change-label' &&
           <Modal show onHide={onModalClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Zmeniť popis infobodu</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-
-              <form>
+            <form>
+              <Modal.Header closeButton>
+                <Modal.Title>Zmeniť popis infobodu</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
                 <FormGroup>
                   <ControlLabel>Popis infobodu:</ControlLabel>
                   <FormControl
@@ -78,15 +77,15 @@ class InfoPointMenu extends React.Component {
                     onChange={e => this.handleLocalLabelChange(e.target.value)}
                   />
                 </FormGroup>
-              </form>
-              <Alert>
-                Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
-              </Alert>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
-            </Modal.Footer>
+                <Alert>
+                  Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
+                </Alert>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
+                <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+              </Modal.Footer>
+            </form>
           </Modal>
         }
       </div>

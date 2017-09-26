@@ -36,7 +36,7 @@ class SearchMenu extends React.Component {
     const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
 
     return (
-      <Panel>
+      <Panel className="fm-toolbar">
         <AsyncTypeahead
           labelKey="label"
           useCache={false}
@@ -65,10 +65,12 @@ class SearchMenu extends React.Component {
         {' '}
         <ButtonGroup>
           <Button onClick={() => onRoutePlannerWithStartInit(selectedResult)} disabled={!selectedResult}>
-            <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} /> Navigovať odtiaľto
+            <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
+            <span className="hidden-xs"> Navigovať odtiaľto</span>
           </Button>
           <Button onClick={() => onRoutePlannerWithFinishInit(selectedResult)} disabled={!selectedResult}>
-            <Glyphicon glyph="record" style={{ color: '#FF6347' }} /> Navigovať sem
+            <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
+            <span className="hidden-xs"> Navigovať sem</span>
           </Button>
         </ButtonGroup>
       </Panel>

@@ -34,10 +34,12 @@ class AreaMeasurementResult extends React.Component {
 
   componentWillMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
+    mapEventEmitter.on('mouseOut', this.handleMouseOut);
   }
 
   componentWillUnmount() {
     mapEventEmitter.removeListener('mouseMove', this.handleMouseMove);
+    mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
   }
 
   handlePoiAdd = (lat, lon, position, id0) => {
@@ -70,6 +72,10 @@ class AreaMeasurementResult extends React.Component {
     } else {
       this.setState({ lat: undefined, lon: undefined });
     }
+  }
+
+  handleMouseOut = () => {
+    this.setState({ lat: undefined, lon: undefined });
   }
 
   render() {
@@ -140,7 +146,7 @@ class AreaMeasurementResult extends React.Component {
         })}
 
         {ps.length > 2 && <Polygon interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} /> }
-        {ps.length && this.state.lat &&
+        {!!(ps.length && this.state.lat) &&
           <Polyline
             interactive={false}
             opacity={0.5}
