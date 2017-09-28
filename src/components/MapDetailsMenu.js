@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 
 import { mapDetailsSetSubtool, mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
@@ -27,11 +26,9 @@ class MapDetailsMenu extends React.Component {
   render() {
     const { subtool, onSetSubtool } = this.props;
     return (
-      <Panel className="fm-toolbar">
-        <Button onClick={() => onSetSubtool('track-info')} active={subtool === 'track-info'} title="Info o ceste">
-          <FontAwesomeIcon icon="road" />Info o ceste
-        </Button>
-      </Panel>
+      <Button onClick={() => onSetSubtool('track-info')} active={subtool === 'track-info'} title="Info o ceste">
+        <FontAwesomeIcon icon="road" />Info o ceste
+      </Button>
     );
   }
 }

@@ -21,7 +21,6 @@ export default function elevationChart(state = initialState, action) {
       return { ...state, activePoint: initialState.activePoint };
     case 'ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS':
       return { ...state, elevationProfilePoints: action.payload.elevationProfilePoints };
-    case 'MAP_RESET':
     case 'SET_TOOL':
     case 'ROUTE_PLANNER_SET_RESULT':
     case 'DISTANCE_MEASUREMENT_ADD_POINT':

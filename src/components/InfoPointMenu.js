@@ -54,12 +54,10 @@ class InfoPointMenu extends React.Component {
   render() {
     const { onModalLaunch, activeModal, onModalClose } = this.props;
     return (
-      <div>
-        <Panel className="fm-toolbar">
-          <Button onClick={() => onModalLaunch('info-point-change-label')}>
-            <FontAwesomeIcon icon="tag" />Zmeniť popis
-          </Button>
-        </Panel>
+      <span>
+        <Button onClick={() => onModalLaunch('info-point-change-label')}>
+          <FontAwesomeIcon icon="tag" /><span className="hidden-xs"> Zmeniť popis</span>
+        </Button>
 
         {activeModal === 'info-point-change-label' &&
           <Modal show onHide={onModalClose}>
@@ -88,7 +86,7 @@ class InfoPointMenu extends React.Component {
             </form>
           </Modal>
         }
-      </div>
+      </span>
     );
   }
 }

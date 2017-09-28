@@ -10,7 +10,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export const objectsFetchLogic = createLogic({
   type: 'OBJECTS_SET_FILTER',
-  cancelType: ['OBJECTS_SET_FILTER', 'SET_TOOL', 'MAP_RESET'],
+  cancelType: ['OBJECTS_SET_FILTER', 'SET_TOOL', 'CLEAR_MAP'],
   process({ action: { payload }, cancelled$, storeDispatch }, dispatch, done) {
     const b = getMapLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;

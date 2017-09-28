@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 
-import Panel from 'react-bootstrap/lib/Panel';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
@@ -185,46 +184,44 @@ class TrackViewerMenu extends React.Component {
       shareURL = `${window.location.origin}/?track-uid=${trackUID}`;
     }
     return (
-      <div>
-        <Panel className="fm-toolbar">
-          <Button onClick={() => onModalLaunch('upload-track')}>
-            <FontAwesomeIcon icon="upload" />
-            <span className="hidden-xs"> Nahrať trasu</span>
-          </Button>
-          {' '}
-          <Button
-            active={elevationChartTrackGeojson !== null}
-            onClick={this.toggleElevationChart}
-            disabled={!this.trackGeojsonIsSuitableForElevationChart()}
-          >
-            <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> Výškový profil</span>
-          </Button>
-          {' '}
-          {elevationChartTrackGeojson &&
-            <ButtonGroup bsSize="small">
-              <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
-                Nadm. výška
-              </Button>
-              <Button active={colorizeTrackBy === 'steepness'} onClick={() => onColorizeTrackBy('steepness')}>
-                Sklon
-              </Button>
-            </ButtonGroup>
-          }
-          {' '}
-          <Button
-            onClick={this.showTrackInfo}
-            disabled={!this.trackGeojsonIsSuitableForElevationChart()}
-          >
-            <FontAwesomeIcon icon="info-circle" />
-            <span className="hidden-xs"> Viac info</span>
-          </Button>
-          {' '}
-          <Button onClick={this.shareTrack} disabled={!trackGpx}>
-            <FontAwesomeIcon icon="share-alt" />
-            <span className="hidden-xs"> Zdieľať</span>
-          </Button>
-        </Panel>
+      <span>
+        <Button onClick={() => onModalLaunch('upload-track')}>
+          <FontAwesomeIcon icon="upload" />
+          <span className="hidden-xs"> Nahrať trasu</span>
+        </Button>
+        {' '}
+        <Button
+          active={elevationChartTrackGeojson !== null}
+          onClick={this.toggleElevationChart}
+          disabled={!this.trackGeojsonIsSuitableForElevationChart()}
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="hidden-xs"> Výškový profil</span>
+        </Button>
+        {' '}
+        {elevationChartTrackGeojson &&
+          <ButtonGroup bsSize="small">
+            <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
+              Nadm. výška
+            </Button>
+            <Button active={colorizeTrackBy === 'steepness'} onClick={() => onColorizeTrackBy('steepness')}>
+              Sklon
+            </Button>
+          </ButtonGroup>
+        }
+        {' '}
+        <Button
+          onClick={this.showTrackInfo}
+          disabled={!this.trackGeojsonIsSuitableForElevationChart()}
+        >
+          <FontAwesomeIcon icon="info-circle" />
+          <span className="hidden-xs"> Viac info</span>
+        </Button>
+        {' '}
+        <Button onClick={this.shareTrack} disabled={!trackGpx}>
+          <FontAwesomeIcon icon="share-alt" />
+          <span className="hidden-xs"> Zdieľať</span>
+        </Button>
 
         {activeModal === 'upload-track' &&
           <Modal show onHide={onModalClose}>
@@ -257,7 +254,7 @@ class TrackViewerMenu extends React.Component {
             </Modal.Footer>
           </Modal>
         }
-      </div>
+      </span>
     );
   }
 }

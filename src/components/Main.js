@@ -157,9 +157,6 @@ class Main extends React.Component {
           <ButtonToolbar>
             <ButtonGroup vertical>
               <ToolsMenuButton />
-              <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
-                <FontAwesomeIcon icon="close" />
-              </Button>
               <Button onClick={onMapClear} title="Vyčistiť mapu">
                 <FontAwesomeIcon icon="eraser" />
               </Button>
@@ -178,19 +175,30 @@ class Main extends React.Component {
         {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
         <Toasts />
 
-        <div className="tool-panel">
-          {tool === 'search' && <SearchMenu />}
-          {tool === 'objects' && <ObjectsMenu />}
-          {tool === 'route-planner' && <RoutePlannerMenu />}
-          {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
-          {tool === 'track-viewer' && <TrackViewerMenu />}
-          {tool === 'info-point' && <InfoPointMenu />}
-          {tool === 'changesets' && <ChangesetsMenu />}
-          {tool === 'gallery' && <GalleryMenu />}
-          {tool === 'select-home-location' && <SelectHomeLocationMenu />}
-          {tool === 'map-details' && <MapDetailsMenu />}
+        <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
 
-          <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+        <div className="tool-panel">
+          {tool &&
+            <Panel className="fm-toolbar">
+              {tool === 'search' && <SearchMenu />}
+              {tool === 'objects' && <ObjectsMenu />}
+              {tool === 'route-planner' && <RoutePlannerMenu />}
+              {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
+              {tool === 'track-viewer' && <TrackViewerMenu />}
+              {tool === 'info-point' && <InfoPointMenu />}
+              {tool === 'changesets' && <ChangesetsMenu />}
+              {tool === 'gallery' && <GalleryMenu />}
+              {/* tool === 'select-home-location' && <SelectHomeLocationMenu /> */}
+              {tool === 'map-details' && <MapDetailsMenu />}
+
+              <span>
+                {' '}
+                <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
+                  <FontAwesomeIcon icon="close" /><span className="hidden-xs"> Zavrieť</span>
+                </Button>
+              </span>
+            </Panel>
+          }
         </div>
 
         {activeModal === 'settings' && <Settings />}
@@ -215,10 +223,10 @@ class Main extends React.Component {
             style={{ cursor: mouseCursor }}
             maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
           >
-            <ZoomControl position="topright" />
+            <ScaleControl imperial={false} position="bottomleft" />
+            <ZoomControl position="bottomright" />
             <Layers />
 
-            <ScaleControl imperial={false} position="bottomright" />
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
 
             <ObjectsResult />

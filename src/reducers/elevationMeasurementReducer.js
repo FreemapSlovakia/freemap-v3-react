@@ -5,7 +5,6 @@ const initialState = {
 
 export default function elevationMeasurement(state = initialState, action) {
   switch (action.type) {
-    case 'MAP_RESET':
     case 'CLEAR_MAP':
       return initialState;
     case 'ELEVATION_MEASUREMENT_SET_ELEVATION':

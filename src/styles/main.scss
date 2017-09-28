@@ -86,11 +86,15 @@ button#freemap-logo.embedded {
   z-index: 1010;
   top: 15px;
   left: 73px;
-  margin-right: 60px;
+  margin-right: 15px;
 }
 
 button#freemap-logo {
-  border: none;
+  position: absolute;
+  z-index: 1000;
+  top: 15px;
+  right: 15px;
+  display: block;
   border: none;
   outline: none;
   background-color: rgba(255, 255, 255, 0);
@@ -177,5 +181,9 @@ button#freemap-logo {
 
   .panel-body {
     padding: 4px;
+
+    form {
+      display: inline;
+    }
   }
 }

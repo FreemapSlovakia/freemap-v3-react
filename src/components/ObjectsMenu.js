@@ -11,7 +11,6 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Dropdown from 'react-bootstrap/lib/Dropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Panel from 'react-bootstrap/lib/Panel';
 
 class ObjectsMenu extends React.Component {
   static propTypes = {
@@ -69,7 +68,7 @@ class ObjectsMenu extends React.Component {
 
   render() {
     return (
-      <Panel className="fm-toolbar">
+      <span>
         <Dropdown
           className="dropdown-long"
           id="objectsMenuDropdown"
@@ -90,7 +89,7 @@ class ObjectsMenu extends React.Component {
             {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
           </Dropdown.Menu>
         </Dropdown>
-      </Panel>
+      </span>
     );
   }
 }

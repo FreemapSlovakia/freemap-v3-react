@@ -22,8 +22,6 @@ export default function main(state = initialState, action) {
     }
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
-    case 'MAP_RESET':
-      return { ...state, tool: null };
     case 'SET_TOOL':
       return { ...state, tool: action.payload };
     case 'SET_HOME_LOCATION':

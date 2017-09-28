@@ -94,7 +94,7 @@ class Layers extends React.Component {
     const { overlays, mapType, expertMode, galleryFilter, galleryDirtySeq } = this.props;
 
     return (
-      <LayersControl position="topright">
+      <LayersControl position="bottomleft">
         {
           baseLayers.filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode).map((item) => {
             const { type, name } = item;

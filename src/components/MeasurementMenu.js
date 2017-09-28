@@ -11,7 +11,6 @@ import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -87,7 +86,7 @@ class MeasurementMenu extends React.Component {
     const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
-      <Panel className="fm-toolbar">
+      <span>
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
             <FontAwesomeIcon icon="arrows-h" /><span className="hidden-xs"> Vzdialenosť</span>
@@ -105,7 +104,7 @@ class MeasurementMenu extends React.Component {
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs"> Výškový profil</span>
           </Button>
         }
-      </Panel>
+      </span>
     );
   }
 }

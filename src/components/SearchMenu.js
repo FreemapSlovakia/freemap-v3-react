@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -36,7 +35,7 @@ class SearchMenu extends React.Component {
     const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
 
     return (
-      <Panel className="fm-toolbar">
+      <span>
         <AsyncTypeahead
           labelKey="label"
           useCache={false}
@@ -73,7 +72,7 @@ class SearchMenu extends React.Component {
             <span className="hidden-xs"> Navigovať sem</span>
           </Button>
         </ButtonGroup>
-      </Panel>
+      </span>
     );
   }
 }

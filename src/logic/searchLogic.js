@@ -6,7 +6,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
-  cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL', 'CLEAR_MAP'],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {

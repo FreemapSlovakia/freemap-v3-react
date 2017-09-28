@@ -4,7 +4,6 @@ import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Panel from 'react-bootstrap/lib/Panel';
 import { connect } from 'react-redux';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
@@ -107,7 +106,7 @@ class RoutePlannerMenu extends React.Component {
       routeFound, shapePoints } = this.props;
 
     return (
-      <Panel className="fm-toolbar">
+      <span>
         <ButtonGroup>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-xs"> Štart</span></span>}
@@ -150,7 +149,7 @@ class RoutePlannerMenu extends React.Component {
             <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs hidden-md"> Výškový profil</span>
           </Button>
         }
-      </Panel>
+      </span>
     );
   }
 }
