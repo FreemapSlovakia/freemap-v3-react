@@ -118,10 +118,6 @@ class Main extends React.Component {
     setMapLeafletElement(null);
   }
 
-  setRootElement = (e) => {
-    this.rootElement = e;
-  }
-
   handleFullscreenChange = () => {
     this.forceUpdate();
   }
@@ -158,7 +154,7 @@ class Main extends React.Component {
     if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
-      this.rootElement.requestFullscreen();
+      document.body.requestFullscreen();
     }
   }
 
@@ -170,7 +166,7 @@ class Main extends React.Component {
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
-      <div ref={this.setRootElement}>
+      <div>
         <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
 
         {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
