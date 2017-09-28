@@ -7,6 +7,7 @@ import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Panel from 'react-bootstrap/lib/Panel';
+import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -29,8 +30,6 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
-
-import SelectHomeLocationMenu from 'fm3/components/SelectHomeLocationMenu';
 
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
@@ -110,10 +109,21 @@ class Main extends React.Component {
     if (this.props.embeddedMode) {
       document.body.classList.add('embedded');
     }
+
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
   componentWillUnmount() {
+    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
     setMapLeafletElement(null);
+  }
+
+  setRootElement = (e) => {
+    this.rootElement = e;
+  }
+
+  handleFullscreenChange = () => {
+    this.forceUpdate();
   }
 
   handleMapMoveEnd = () => {
@@ -144,6 +154,14 @@ class Main extends React.Component {
     this.props.onToolSet(null);
   }
 
+  handleFullscreenClick = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      this.rootElement.requestFullscreen();
+    }
+  }
+
   render() {
     const { lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
@@ -152,7 +170,12 @@ class Main extends React.Component {
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
-      <div>
+      <div ref={this.setRootElement}>
+        <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+
+        {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
+        <Toasts />
+
         <Panel className="fm-toolbar tool-buttons">
           <ButtonToolbar>
             <ButtonGroup vertical>
@@ -163,6 +186,9 @@ class Main extends React.Component {
               <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
                 <FontAwesomeIcon icon="dot-circle-o" />
               </Button>
+              <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
+                <Glyphicon glyph={document.fullscreenElement ? 'resize-small' : 'resize-full'} />
+              </Button>
               <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
                 <FontAwesomeIcon icon="share" />
               </Button>
@@ -171,11 +197,6 @@ class Main extends React.Component {
             </ButtonGroup>
           </ButtonToolbar>
         </Panel>
-
-        {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
-        <Toasts />
-
-        <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
 
         <div className="tool-panel">
           {tool &&
@@ -188,7 +209,6 @@ class Main extends React.Component {
               {tool === 'info-point' && <InfoPointMenu />}
               {tool === 'changesets' && <ChangesetsMenu />}
               {tool === 'gallery' && <GalleryMenu />}
-              {/* tool === 'select-home-location' && <SelectHomeLocationMenu /> */}
               {tool === 'map-details' && <MapDetailsMenu />}
 
               <span>

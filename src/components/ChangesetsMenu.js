@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Form from 'react-bootstrap/lib/Form';
-import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
@@ -51,7 +50,7 @@ class ChangesetsMenu extends React.Component {
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh } = this.props;
     return (
-      <Panel className="fm-toolbar">
+      <span>
         <Form inline>
           <ButtonGroup>
             <DropdownButton title={`Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`} id="days">
@@ -90,7 +89,7 @@ class ChangesetsMenu extends React.Component {
             </Button>
           </ButtonGroup>
         </Form>
-      </Panel>
+      </span>
     );
   }
 }
