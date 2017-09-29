@@ -5,12 +5,14 @@ import { connect } from 'react-redux';
 import { gallerySetItemForPositionPicking, galleryConfirmPickedPosition, galleryShowFilter, galleryShowUploadModal, galleryList } from 'fm3/actions/galleryActions';
 
 import Button from 'react-bootstrap/lib/Button';
+import DropdownButton from 'react-bootstrap/lib/DropdownButton';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Form from 'react-bootstrap/lib/Form';
-import FormControl, { Static } from 'react-bootstrap/lib/FormControl';
+import { Static } from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive, onOrderChange }) {
+function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive, onOrderSelect }) {
   return (
     pickingPosition ?
       <span>
@@ -33,15 +35,14 @@ function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionC
           <span className="hidden-xs"> Filter</span>
         </Button>
         {' '}
-        <FormControl componentClass="select" value="" onChange={onOrderChange}>
-          <option value="" disabled>Fotky podľa…</option>
-          <option value="+createdAt">▲ dátumu nahratia</option>
-          <option value="-createdAt">▼ dátumu nahratia</option>
-          <option value="+takenAt">▲ dátumu odfotenia</option>
-          <option value="-takenAt">▼ dátumu odfotenia</option>
-          <option value="+rating">▲ hodnotenia</option>
-          <option value="-rating">▼ hodnotenia</option>
-        </FormControl>
+        <DropdownButton id="all-pics" title="Všetky fotky" onSelect={onOrderSelect}>
+          <MenuItem eventKey="+createdAt">od prvej nahranej</MenuItem>
+          <MenuItem eventKey="-createdAt">od posledne nahranej</MenuItem>
+          <MenuItem eventKey="+takenAt">od najstaršie odfotenej</MenuItem>
+          <MenuItem eventKey="-takenAt">od najnovšie odfotenej</MenuItem>
+          <MenuItem eventKey="+rating">od najmenšieho hodnotenia</MenuItem>
+          <MenuItem eventKey="-rating">od najväčšieho hodnotenia</MenuItem>
+        </DropdownButton>
         {' '}
         <Button onClick={onUpload}>
           <FontAwesomeIcon icon="upload" />
@@ -57,7 +58,7 @@ GalleryMenu.propTypes = {
   onPositionCancel: PropTypes.func.isRequired,
   onUpload: PropTypes.func.isRequired,
   onFilterShow: PropTypes.func.isRequired,
-  onOrderChange: PropTypes.func.isRequired,
+  onOrderSelect: PropTypes.func.isRequired,
   filterIsActive: PropTypes.bool,
 };
 
@@ -79,8 +80,8 @@ export default connect(
     onFilterShow() {
       dispatch(galleryShowFilter());
     },
-    onOrderChange(e) {
-      dispatch(galleryList(e.target.value));
+    onOrderSelect(order) {
+      dispatch(galleryList(order));
     },
   }),
 )(GalleryMenu);
