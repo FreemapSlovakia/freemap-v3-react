@@ -239,11 +239,11 @@ class GalleryViewerModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           {image && user && (user.isAdmin || user.id === image.user.id) && [
-            <Button key="b" onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /> Upraviť</Button>,
-            <Button key="a" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="remove" /> Zmazať</Button>,
+            <Button key="b" onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /><span className="hidden-xs"> Upraviť</span></Button>,
+            <Button key="a" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>,
           ]}
-          <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /> Ukázať na mape</Button>
-          <Button onClick={onClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+          <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /><span className="hidden-xs"> Ukázať na mape</span></Button>
+          <Button onClick={onClose}><Glyphicon glyph="remove" /><span className="hidden-xs"> Zavrieť</span></Button>
         </Modal.Footer>
       </Modal>
     );
