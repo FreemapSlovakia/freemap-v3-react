@@ -175,3 +175,11 @@ button#freemap-logo {
   border-top-left-radius: 4px;
   border-bottom-left-radius: 4px;
 }
+
+.fm-type-zoom-control {
+  position: absolute;
+  z-index: 1010;
+  bottom: 10px;
+  // left: 50%;
+  transform: translate(calc(50vw - 50%), 0);
+}

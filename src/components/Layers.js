@@ -37,6 +37,7 @@ class Layers extends React.Component {
     if (type === 'S') {
       return (
         <BingLayer
+          key="S"
           bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
           onAdd={() => this.handleAdd(type)}
           onRemove={() => this.handleRemove(type)}
@@ -46,8 +47,21 @@ class Layers extends React.Component {
       );
     }
 
+    if (type === 'I') {
+      const { galleryFilter, galleryDirtySeq } = this.props;
+      return (
+        <GalleryLayer
+          key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
+          filter={galleryFilter}
+          onAdd={() => this.handleAdd('I')}
+          onRemove={() => this.handleRemove('I')}
+        />
+      );
+    }
+
     return (
       <TileLayer
+        key={type}
         attribution={attribution}
         url={url.replace('{tileFormat}', this.props.tileFormat)}
         onAdd={() => this.handleAdd(type)}
@@ -91,39 +105,22 @@ class Layers extends React.Component {
   }
 
   render() {
-    const { overlays, mapType, expertMode, galleryFilter, galleryDirtySeq } = this.props;
+    const { expertMode } = this.props;
 
     return (
-      <LayersControl position="bottomright">
+      <span>
         {
-          baseLayers.filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode).map((item) => {
-            const { type, name } = item;
-            return (
-              <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
-                {this.getTileLayer(item)}
-              </LayersControl.BaseLayer>
-            );
-          })
+          baseLayers
+            .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
+            .filter(({ type }) => type === this.props.mapType)
+            .map(item => this.getTileLayer(item))
         }
-        <LayersControl.Overlay name="Fotografie" checked={overlays.indexOf('I') !== -1}>
-          <GalleryLayer
-            key={`${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
-            filter={galleryFilter}
-            onAdd={() => this.handleAdd('I')}
-            onRemove={() => this.handleRemove('I')}
-          />
-        </LayersControl.Overlay>
         {
-          overlayLayers && overlayLayers.map((item) => {
-            const { type, name } = item;
-            return (!item.showOnlyInExpertMode || expertMode) && (
-              <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
-                {this.getTileLayer(item)}
-              </LayersControl.Overlay>
-            );
-          })
+          overlayLayers
+            .filter(({ type }) => this.props.overlays.includes(type))
+            .map(item => ((!item.showOnlyInExpertMode || expertMode) ? this.getTileLayer(item) : null))
         }
-      </LayersControl>
+      </span>
     );
   }
 }

@@ -1,10 +1,11 @@
-const baseSpecs = [['A', 'Automapa'], ['T', 'Turistická'], ['C', 'Cyklomapa'], ['K', 'Lyžiarska']];
+const baseSpecs = [['A', 'Automapa', 'car'], ['T', 'Turistická', 'male'], ['C', 'Cyklomapa', 'bicycle'], ['K', 'Lyžiarska', 'snowflake-o']];
 
 export const baseLayers = [
   ...baseSpecs.map(
-    ([type, name]) => ({
+    ([type, name, icon]) => ({
       name,
       type,
+      icon,
       url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
       attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
       minZoom: 8,
@@ -14,10 +15,13 @@ export const baseLayers = [
   {
     name: 'Satelitná',
     type: 'S',
+    icon: 'plane',
+    minZoom: 0,
   },
   {
     name: 'OpenStreetMap',
     type: 'O',
+    icon: 'globe',
     url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 19,
@@ -36,6 +40,12 @@ export const baseLayers = [
 ];
 
 export const overlayLayers = [
+  {
+    name: 'Fotografie',
+    type: 'I',
+    icon: 'picture-o',
+    minZoom: 0,
+  },
   {
     name: 'Lesné cesty NLC',
     type: 'N',

@@ -1,13 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map, ScaleControl, ZoomControl } from 'react-leaflet';
+import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Panel from 'react-bootstrap/lib/Panel';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -39,6 +38,7 @@ import Settings from 'fm3/components/Settings';
 
 import OpenInExternalAppMenuButton from 'fm3/components/OpenInExternalAppMenuButton';
 import ToolsMenuButton from 'fm3/components/ToolsMenuButton';
+import MapSwitchButton from 'fm3/components/MapSwitchButton';
 import MoreMenuButton from 'fm3/components/MoreMenuButton';
 
 import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
@@ -158,6 +158,16 @@ class Main extends React.Component {
     }
   }
 
+  handleZoomInClick = () => {
+    const zoom = this.map.leafletElement.getZoom() + 1;
+    this.props.onMapRefocus({ zoom });
+  }
+
+  handleZoomOutClick = () => {
+    const zoom = this.map.leafletElement.getZoom() - 1;
+    this.props.onMapRefocus({ zoom });
+  }
+
   render() {
     const { lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
@@ -183,7 +193,7 @@ class Main extends React.Component {
                   <FontAwesomeIcon icon="dot-circle-o" />
                 </Button>
                 <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
-                  <Glyphicon glyph={document.fullscreenElement ? 'resize-small' : 'resize-full'} />
+                  <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
                 </Button>
                 <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
                   <FontAwesomeIcon icon="share" />
@@ -215,6 +225,29 @@ class Main extends React.Component {
           }
         </div>
 
+        <div className="fm-type-zoom-control">
+          <Panel className="fm-toolbar">
+            <ButtonToolbar>
+              <MapSwitchButton />
+              <ButtonGroup>
+                <Button
+                  onClick={this.handleZoomInClick}
+                  title="Priblížiť mapu"
+                  disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
+                >
+                  <FontAwesomeIcon icon="plus" />
+                </Button>
+                <Button
+                  onClick={this.handleZoomOutClick}
+                  title="Oddialiť mapu"
+                  disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
+                >
+                  <FontAwesomeIcon icon="minus" />
+                </Button>
+              </ButtonGroup>
+            </ButtonToolbar>
+          </Panel>
+        </div>
 
         {activeModal === 'settings' && <Settings />}
         {activeModal === 'share' && <ShareMapModal />}
@@ -239,7 +272,6 @@ class Main extends React.Component {
             maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
           >
             <ScaleControl imperial={false} position="bottomleft" />
-            <ZoomControl position="bottomright" />
             <Layers />
 
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
