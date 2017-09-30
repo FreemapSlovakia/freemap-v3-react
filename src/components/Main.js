@@ -259,6 +259,7 @@ class Main extends React.Component {
           <Map
             zoomControl={false}
             minZoom={8}
+            maxZoom={20}
             ref={(map) => { this.map = map; }}
             center={L.latLng(lat, lon)}
             zoom={zoom}

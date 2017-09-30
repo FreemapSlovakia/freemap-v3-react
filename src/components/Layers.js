@@ -40,10 +40,8 @@ class Layers extends React.Component {
         <BingLayer
           key="S"
           bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-          onAdd={() => this.handleAdd(type)}
-          onRemove={() => this.handleRemove(type)}
+          maxNativeZoom={maxNativeZoom}
           maxZoom={20}
-          maxNativeZoom={18}
         />
       );
     }
@@ -54,8 +52,6 @@ class Layers extends React.Component {
         <GalleryLayer
           key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
           filter={galleryFilter}
-          onAdd={() => this.handleAdd('I')}
-          onRemove={() => this.handleRemove('I')}
         />
       );
     }
@@ -65,33 +61,12 @@ class Layers extends React.Component {
         key={type}
         attribution={attribution}
         url={url.replace('{tileFormat}', this.props.tileFormat)}
-        onAdd={() => this.handleAdd(type)}
-        onRemove={() => this.handleRemove(type)}
-        maxZoom={20}
         minZoom={minZoom}
+        maxZoom={20}
         maxNativeZoom={maxNativeZoom}
         opacity={this.props.overlayOpacity[type] || 1.0}
       />
     );
-  }
-
-  handleAdd(type) {
-    if (baseLayers.some(x => x.type === type)) {
-      this.props.onMapTypeChange(type);
-    } else {
-      const next = new Set(this.props.overlays);
-      next.add(type);
-      this.props.onOverlaysChange([...next]);
-    }
-  }
-
-  handleRemove(type) {
-    const i = this.props.overlays.indexOf(type);
-    if (i !== -1) {
-      const next = [...this.props.overlays];
-      next.splice(i);
-      this.props.onOverlaysChange(next);
-    }
   }
 
   handleKeydown = (event) => {

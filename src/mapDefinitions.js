@@ -17,6 +17,7 @@ export const baseLayers = [
     type: 'S',
     icon: 'plane',
     minZoom: 0,
+    maxNativeZoom: 18,
   },
   {
     name: 'OpenStreetMap',
