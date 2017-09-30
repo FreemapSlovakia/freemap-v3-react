@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { TileLayer, LayersControl } from 'react-leaflet';
+import { TileLayer } from 'react-leaflet';
 import { BingLayer } from 'react-leaflet-bing';
 import GalleryLayer from 'fm3/components/GalleryLayer';
 
