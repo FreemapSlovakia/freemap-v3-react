@@ -180,6 +180,10 @@ button#freemap-logo {
   position: absolute;
   z-index: 1010;
   bottom: 10px;
-  // left: 50%;
-  transform: translate(calc(50vw - 50%), 0);
+  left: 0;
+  right: 0;
+  &>div {
+    display: table;
+    margin: 0 auto;
+  }
 }
