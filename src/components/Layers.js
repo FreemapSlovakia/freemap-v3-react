@@ -10,10 +10,11 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const keyToLayer = { t: 'T', a: 'A', s: 'S', c: 'C', o: 'O', l: 'K' };
+const keyToOverlay = { n: 'N', f: 'I' };
 
 class Layers extends React.Component {
   static propTypes = {
-    onMapChange: PropTypes.func.isRequired,
+    onMapTypeChange: PropTypes.func.isRequired,
     onOverlaysChange: PropTypes.func.isRequired,
     tileFormat: FmPropTypes.tileFormat.isRequired,
     overlays: FmPropTypes.overlays,
@@ -76,7 +77,7 @@ class Layers extends React.Component {
 
   handleAdd(type) {
     if (baseLayers.some(x => x.type === type)) {
-      this.props.onMapChange(type);
+      this.props.onMapTypeChange(type);
     } else {
       const next = new Set(this.props.overlays);
       next.add(type);
@@ -100,7 +101,18 @@ class Layers extends React.Component {
 
     const layer = keyToLayer[event.key];
     if (layer) {
-      this.props.onMapChange(layer);
+      this.props.onMapTypeChange(layer);
+    }
+
+    const overlay = keyToOverlay[event.key];
+    if (overlay) {
+      const next = new Set(this.props.overlays);
+      if (next.has(overlay)) {
+        next.delete(overlay);
+      } else {
+        next.add(overlay);
+      }
+      this.props.onOverlaysChange([...next]);
     }
   }
 
@@ -137,7 +149,7 @@ export default connect(
     galleryDirtySeq: state.gallery.dirtySeq,
   }),
   (dispatch, props) => ({
-    onMapChange(mapType) {
+    onMapTypeChange(mapType) {
       if (props.mapType !== mapType) {
         dispatch(mapRefocus({ mapType }));
       }
