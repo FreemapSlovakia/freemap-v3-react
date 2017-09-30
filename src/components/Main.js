@@ -167,34 +167,32 @@ class Main extends React.Component {
 
     return (
       <div>
-        <button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
-
         {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
         <Toasts />
 
-        <Panel className="fm-toolbar tool-buttons">
-          <ButtonToolbar>
-            <ButtonGroup vertical>
-              <ToolsMenuButton />
-              <Button onClick={onMapClear} title="Vyčistiť mapu">
-                <FontAwesomeIcon icon="eraser" />
-              </Button>
-              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
-                <FontAwesomeIcon icon="dot-circle-o" />
-              </Button>
-              <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
-                <Glyphicon glyph={document.fullscreenElement ? 'resize-small' : 'resize-full'} />
-              </Button>
-              <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
-                <FontAwesomeIcon icon="share" />
-              </Button>
-              <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-              <MoreMenuButton />
-            </ButtonGroup>
-          </ButtonToolbar>
-        </Panel>
-
-        <div className="tool-panel">
+        <div className="tool-buttons">
+          <Panel className="fm-toolbar">
+            <ButtonToolbar>
+              <ButtonGroup>
+                <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+                <ToolsMenuButton />
+                <Button onClick={onMapClear} title="Vyčistiť mapu">
+                  <FontAwesomeIcon icon="eraser" />
+                </Button>
+                <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+                  <FontAwesomeIcon icon="dot-circle-o" />
+                </Button>
+                <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
+                  <Glyphicon glyph={document.fullscreenElement ? 'resize-small' : 'resize-full'} />
+                </Button>
+                <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
+                  <FontAwesomeIcon icon="share" />
+                </Button>
+                <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                <MoreMenuButton />
+              </ButtonGroup>
+            </ButtonToolbar>
+          </Panel>
           {tool &&
             <Panel className="fm-toolbar">
               {tool === 'search' && <SearchMenu />}
@@ -216,6 +214,7 @@ class Main extends React.Component {
             </Panel>
           }
         </div>
+
 
         {activeModal === 'settings' && <Settings />}
         {activeModal === 'share' && <ShareMapModal />}

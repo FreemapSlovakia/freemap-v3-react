@@ -36,9 +36,9 @@ class ToolsMenuButton extends React.Component {
 
   render() {
     return (
-      <Button ref={this.setButton} onClick={this.handleButtonClick} title="Nástroje">
+      <Button ref={this.setButton} onClick={this.handleButtonClick} title="Nástroje" id="tools-button">
         <FontAwesomeIcon icon="briefcase" />
-        <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+        <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
               <MenuItem onClick={() => this.handleToolSelect('search')}><FontAwesomeIcon icon="search" /> Hľadanie na mape</MenuItem>

@@ -73,7 +73,7 @@ class MoreMenuButton extends React.Component {
     return (
       <Button ref={this.setButton} onClick={this.handleButtonClick} title="Ďalšie">
         <FontAwesomeIcon icon="ellipsis-v" />
-        <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+        <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
               {

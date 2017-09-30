@@ -51,6 +51,8 @@ class ChangesetsMenu extends React.Component {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh } = this.props;
     return (
       <span>
+        <span className="fm-label"><FontAwesomeIcon icon="pencil" /><span className="hidden-xs"> Zmeny v mape</span></span>
+        {' '}
         <Form inline>
           <ButtonGroup>
             <DropdownButton title={`Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`} id="days">
@@ -79,15 +81,13 @@ class ChangesetsMenu extends React.Component {
             </InputGroup>
           </FormGroup>
           {' '}
-          <ButtonGroup>
-            <Button
-              disabled={!this.canSearchWithThisAmountOfDays(days)}
-              onClick={() => onChangesetsSetAuthorNameAndRefresh(days, this.state.authorName)}
-              title="Stiahnuť zmeny"
-            >
-              <FontAwesomeIcon icon="refresh" /><span className="hidden-xs"> Stiahnuť zmeny</span>
-            </Button>
-          </ButtonGroup>
+          <Button
+            disabled={!this.canSearchWithThisAmountOfDays(days)}
+            onClick={() => onChangesetsSetAuthorNameAndRefresh(days, this.state.authorName)}
+            title="Stiahnuť zmeny"
+          >
+            <FontAwesomeIcon icon="refresh" /><span className="hidden-xs"> Stiahnuť zmeny</span>
+          </Button>
         </Form>
       </span>
     );

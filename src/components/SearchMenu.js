@@ -10,6 +10,7 @@ import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import * as FmPropTypes from 'fm3/propTypes';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import 'fm3/styles/search.scss';
 
@@ -36,6 +37,8 @@ class SearchMenu extends React.Component {
 
     return (
       <span>
+        <span className="fm-label"><FontAwesomeIcon icon="search" /><span className="hidden-xs"> Hľadanie na mape</span></span>
+        {' '}
         <AsyncTypeahead
           labelKey="label"
           useCache={false}

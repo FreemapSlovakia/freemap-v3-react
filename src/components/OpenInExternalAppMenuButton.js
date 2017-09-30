@@ -79,7 +79,7 @@ export default class OpenInExternalAppMenuButton extends React.Component {
     return (
       <Button ref={this.setButton} onClick={this.handleButtonClick} title="Otvoriť v externej aplikácii">
         <FontAwesomeIcon icon="external-link" />
-        <Overlay rootClose placement="right" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+        <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
               <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>

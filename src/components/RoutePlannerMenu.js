@@ -107,6 +107,8 @@ class RoutePlannerMenu extends React.Component {
 
     return (
       <span>
+        <span className="fm-label"><FontAwesomeIcon icon="map-signs" /><span className="hidden-xs"> Plánovač</span></span>
+        {' '}
         <ButtonGroup>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-xs"> Štart</span></span>}

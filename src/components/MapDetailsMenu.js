@@ -26,9 +26,13 @@ class MapDetailsMenu extends React.Component {
   render() {
     const { subtool, onSetSubtool } = this.props;
     return (
-      <Button onClick={() => onSetSubtool('track-info')} active={subtool === 'track-info'} title="Info o ceste">
-        <FontAwesomeIcon icon="road" />Info o ceste
-      </Button>
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="info" /><span className="hidden-xs"> Detaily v mape</span></span>
+        {' '}
+        <Button onClick={() => onSetSubtool('track-info')} active={subtool === 'track-info'} title="Info o ceste">
+          <FontAwesomeIcon icon="road" />Info o ceste
+        </Button>
+      </span>
     );
   }
 }

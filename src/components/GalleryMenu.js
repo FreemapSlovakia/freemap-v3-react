@@ -30,6 +30,8 @@ function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionC
       </span>
       :
       <Form inline>
+        <span className="fm-label"><FontAwesomeIcon icon="picture-o" /><span className="hidden-xs"> Fotografie</span></span>
+        {' '}
         <Button onClick={onFilterShow} active={filterIsActive}>
           <FontAwesomeIcon icon="filter" />
           <span className="hidden-xs"> Filter</span>

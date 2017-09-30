@@ -185,6 +185,8 @@ class TrackViewerMenu extends React.Component {
     }
     return (
       <span>
+        <span className="fm-label"><FontAwesomeIcon icon="road" /><span className="hidden-xs"> Prehliadač trás</span></span>
+        {' '}
         <Button onClick={() => onModalLaunch('upload-track')}>
           <FontAwesomeIcon icon="upload" />
           <span className="hidden-xs"> Nahrať trasu</span>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import Panel from 'react-bootstrap/lib/Panel';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
@@ -55,6 +54,8 @@ class InfoPointMenu extends React.Component {
     const { onModalLaunch, activeModal, onModalClose } = this.props;
     return (
       <span>
+        <span className="fm-label"><FontAwesomeIcon icon="thumb-tack" /><span className="hidden-xs"> Bod v mape</span></span>
+        {' '}
         <Button onClick={() => onModalLaunch('info-point-change-label')}>
           <FontAwesomeIcon icon="tag" /><span className="hidden-xs"> Zmeniť popis</span>
         </Button>
