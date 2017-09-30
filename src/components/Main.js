@@ -189,9 +189,6 @@ class Main extends React.Component {
                 <Button onClick={onMapClear} title="Vyčistiť mapu">
                   <FontAwesomeIcon icon="eraser" />
                 </Button>
-                <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
-                  <FontAwesomeIcon icon="dot-circle-o" />
-                </Button>
                 <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
                   <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
                 </Button>
@@ -245,6 +242,9 @@ class Main extends React.Component {
                   <FontAwesomeIcon icon="minus" />
                 </Button>
               </ButtonGroup>
+              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+                <FontAwesomeIcon icon="dot-circle-o" />
+              </Button>
             </ButtonToolbar>
           </Panel>
         </div>
