@@ -16,6 +16,7 @@ class MapSwitchButton extends React.Component {
     overlays: FmPropTypes.overlays.isRequired,
     mapType: FmPropTypes.mapType.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
+    expertMode: PropTypes.bool,
   };
 
   state = {
@@ -59,37 +60,41 @@ class MapSwitchButton extends React.Component {
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
               {
-                baseLayers.map(({ name, type, icon, minZoom }) => (
-                  <MenuItem
-                    key={type}
-                    onClick={() => this.handleMapSelect(type)}
-                  >
-                    <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
-                    {' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />
-                    {' '}
-                    <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                      {name}
-                    </span>
-                  </MenuItem>
-                ))
+                baseLayers
+                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .map(({ name, type, icon, minZoom }) => (
+                    <MenuItem
+                      key={type}
+                      onClick={() => this.handleMapSelect(type)}
+                    >
+                      <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
+                      {' '}
+                      <FontAwesomeIcon icon={icon || 'map-o'} />
+                      {' '}
+                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+                        {name}
+                      </span>
+                    </MenuItem>
+                  ))
               }
               <MenuItem divider />
               {
-                overlayLayers.map(({ name, type, icon, minZoom }) => (
-                  <MenuItem
-                    key={type}
-                    onClick={() => this.handleOverlaySelect(type)}
-                  >
-                    <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
-                    {' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />
-                    {' '}
-                    <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                      {name}
-                    </span>
-                  </MenuItem>
-                ))
+                overlayLayers
+                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .map(({ name, type, icon, minZoom }) => (
+                    <MenuItem
+                      key={type}
+                      onClick={() => this.handleOverlaySelect(type)}
+                    >
+                      <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
+                      {' '}
+                      <FontAwesomeIcon icon={icon || 'map-o'} />
+                      {' '}
+                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+                        {name}
+                      </span>
+                    </MenuItem>
+                  ))
               }
             </ul>
           </Popover>
@@ -104,6 +109,7 @@ export default connect(
     zoom: state.map.zoom,
     mapType: state.map.mapType,
     overlays: state.map.overlays,
+    expertMode: state.main.expertMode,
   }),
   dispatch => ({
     onMapRefocus(changes) {
