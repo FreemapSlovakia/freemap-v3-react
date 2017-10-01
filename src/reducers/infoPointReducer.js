@@ -6,7 +6,6 @@ const initialState = {
 
 export default function infoPoint(state = initialState, action) {
   switch (action.type) {
-    case 'MAP_RESET':
     case 'CLEAR_MAP':
       return initialState;
     case 'INFO_POINT_SET':

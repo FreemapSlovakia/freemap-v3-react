@@ -2,44 +2,55 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
-import { setTool } from 'fm3/actions/mainActions';
 import { gallerySetItemForPositionPicking, galleryConfirmPickedPosition, galleryShowFilter, galleryShowUploadModal, galleryList } from 'fm3/actions/galleryActions';
 
-import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import FormControl, { Static } from 'react-bootstrap/lib/FormControl';
+import DropdownButton from 'react-bootstrap/lib/DropdownButton';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
+import Form from 'react-bootstrap/lib/Form';
+import { Static } from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function GalleryMenu({ onUpload, onCancel, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive, onOrderChange }) {
+function GalleryMenu({ onUpload, pickingPosition, onPositionConfirm, onPositionCancel, onFilterShow, filterIsActive, onOrderSelect }) {
   return (
     pickingPosition ?
-      <Navbar.Form>
+      <span>
         <Static>Zvoľte pozíciu fotografie</Static>
         {' '}
-        <Button onClick={onPositionConfirm}><FontAwesomeIcon icon="check" /> Zvoliť</Button>
+        <Button onClick={onPositionConfirm}>
+          <FontAwesomeIcon icon="check" />
+          <span className="hidden-xs"> Zvoliť</span>
+        </Button>
         {' '}
-        <Button onClick={onPositionCancel}><FontAwesomeIcon icon="times" /> Zrušiť</Button>
-      </Navbar.Form>
+        <Button onClick={onPositionCancel}>
+          <FontAwesomeIcon icon="times" />
+          <span className="hidden-xs"> Zrušiť</span>
+        </Button>
+      </span>
       :
-      <Navbar.Form>
-        <Button onClick={onFilterShow} active={filterIsActive}><FontAwesomeIcon icon="filter" /> Filter</Button>
+      <Form inline>
+        <span className="fm-label"><FontAwesomeIcon icon="picture-o" /><span className="hidden-xs"> Fotografie</span></span>
         {' '}
-        <FormControl componentClass="select" value="" onChange={onOrderChange}>
-          <option value="" disabled>Fotky podľa…</option>
-          <option value="+createdAt">▲ dátumu nahratia</option>
-          <option value="-createdAt">▼ dátumu nahratia</option>
-          <option value="+takenAt">▲ dátumu odfotenia</option>
-          <option value="-takenAt">▼ dátumu odfotenia</option>
-          <option value="+rating">▲ hodnotenia</option>
-          <option value="-rating">▼ hodnotenia</option>
-        </FormControl>
+        <Button onClick={onFilterShow} active={filterIsActive}>
+          <FontAwesomeIcon icon="filter" />
+          <span className="hidden-xs"> Filter</span>
+        </Button>
         {' '}
-        <Button onClick={onUpload}><FontAwesomeIcon icon="upload" /> Nahrať</Button>
+        <DropdownButton id="all-pics" title="Všetky fotky" onSelect={onOrderSelect}>
+          <MenuItem eventKey="+createdAt">od prvej nahranej</MenuItem>
+          <MenuItem eventKey="-createdAt">od posledne nahranej</MenuItem>
+          <MenuItem eventKey="+takenAt">od najstaršie odfotenej</MenuItem>
+          <MenuItem eventKey="-takenAt">od najnovšie odfotenej</MenuItem>
+          <MenuItem eventKey="+rating">od najmenšieho hodnotenia</MenuItem>
+          <MenuItem eventKey="-rating">od najväčšieho hodnotenia</MenuItem>
+        </DropdownButton>
         {' '}
-        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-      </Navbar.Form>
+        <Button onClick={onUpload}>
+          <FontAwesomeIcon icon="upload" />
+          <span className="hidden-xs"> Nahrať</span>
+        </Button>
+      </Form>
   );
 }
 
@@ -47,10 +58,9 @@ GalleryMenu.propTypes = {
   pickingPosition: PropTypes.bool,
   onPositionConfirm: PropTypes.func.isRequired,
   onPositionCancel: PropTypes.func.isRequired,
-  onCancel: PropTypes.func.isRequired,
   onUpload: PropTypes.func.isRequired,
   onFilterShow: PropTypes.func.isRequired,
-  onOrderChange: PropTypes.func.isRequired,
+  onOrderSelect: PropTypes.func.isRequired,
   filterIsActive: PropTypes.bool,
 };
 
@@ -63,9 +73,6 @@ export default connect(
     onUpload() {
       dispatch(galleryShowUploadModal());
     },
-    onCancel() {
-      dispatch(setTool(null));
-    },
     onPositionConfirm() {
       dispatch(galleryConfirmPickedPosition());
     },
@@ -75,8 +82,8 @@ export default connect(
     onFilterShow() {
       dispatch(galleryShowFilter());
     },
-    onOrderChange(e) {
-      dispatch(galleryList(e.target.value));
+    onOrderSelect(order) {
+      dispatch(galleryList(order));
     },
   }),
 )(GalleryMenu);

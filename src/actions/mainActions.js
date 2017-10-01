@@ -30,10 +30,6 @@ export function mainLoadState(payload) {
   return { type: 'MAIN_LOAD_STATE', payload };
 }
 
-export function setEmbeddedMode() {
-  return { type: 'SET_EMBEDDED_MODE' };
-}
-
 export function exportGpx() {
   return { type: 'EXPORT_GPX' };
 }

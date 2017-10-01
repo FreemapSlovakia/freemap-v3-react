@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dropzone from 'react-dropzone';
 
-import Navbar from 'react-bootstrap/lib/Navbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
@@ -12,7 +11,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setTool, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -28,12 +27,13 @@ const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDig
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
 class TrackViewerMenu extends React.Component {
-  componentWillMount() {
-    const startingWithBlankTrackViewer = this.props.trackUID === null;
-    if (startingWithBlankTrackViewer) {
-      this.props.onModalLaunch('upload-track');
-    }
-  }
+  // NOTE commented out because UX feels weird
+  // componentWillMount() {
+  //   const startingWithBlankTrackViewer = this.props.trackUID === null;
+  //   if (startingWithBlankTrackViewer) {
+  //     this.props.onModalLaunch('upload-track');
+  //   }
+  // }
 
   componentWillReceiveProps(newProps) {
     if (newProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(newProps.trackGeojson)) {
@@ -177,50 +177,53 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activeModal, onCancel, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
+    const { activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
 
     let shareURL = '';
     if (trackUID) {
       shareURL = `${window.location.origin}/?track-uid=${trackUID}`;
     }
     return (
-      <div>
-        <Navbar.Form pullLeft>
-          <Button onClick={() => onModalLaunch('upload-track')}>
-            <FontAwesomeIcon icon="upload" /> Nahrať trasu
-          </Button>
-          {' '}
-          {this.trackGeojsonIsSuitableForElevationChart() &&
-            <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
-              <FontAwesomeIcon icon="bar-chart" /> Výškový profil
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="road" /><span className="hidden-xs"> Prehliadač trás</span></span>
+        {' '}
+        <Button onClick={() => onModalLaunch('upload-track')}>
+          <FontAwesomeIcon icon="upload" />
+          <span className="hidden-xs"> Nahrať trasu</span>
+        </Button>
+        {' '}
+        <Button
+          active={elevationChartTrackGeojson !== null}
+          onClick={this.toggleElevationChart}
+          disabled={!this.trackGeojsonIsSuitableForElevationChart()}
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="hidden-xs"> Výškový profil</span>
+        </Button>
+        {' '}
+        {elevationChartTrackGeojson &&
+          <ButtonGroup bsSize="small">
+            <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
+              Nadm. výška
             </Button>
-          }
-          {' '}
-          {elevationChartTrackGeojson &&
-            <ButtonGroup bsSize="small">
-              <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
-                Nadm. výška
-              </Button>
-              <Button active={colorizeTrackBy === 'steepness'} onClick={() => onColorizeTrackBy('steepness')}>
-                Sklon
-              </Button>
-            </ButtonGroup>
-          }
-          {' '}
-          {this.trackGeojsonIsSuitableForElevationChart() &&
-            <Button onClick={this.showTrackInfo}>
-              <FontAwesomeIcon icon="info-circle" /> Viac info
+            <Button active={colorizeTrackBy === 'steepness'} onClick={() => onColorizeTrackBy('steepness')}>
+              Sklon
             </Button>
-          }
-          {' '}
-          {trackGpx &&
-            <Button onClick={this.shareTrack}>
-              <FontAwesomeIcon icon="share-alt" /> Zdieľať
-            </Button>
-          }
-          {' '}
-          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-        </Navbar.Form>
+          </ButtonGroup>
+        }
+        {' '}
+        <Button
+          onClick={this.showTrackInfo}
+          disabled={!this.trackGeojsonIsSuitableForElevationChart()}
+        >
+          <FontAwesomeIcon icon="info-circle" />
+          <span className="hidden-xs"> Viac info</span>
+        </Button>
+        {' '}
+        <Button onClick={this.shareTrack} disabled={!trackGpx}>
+          <FontAwesomeIcon icon="share-alt" />
+          <span className="hidden-xs"> Zdieľať</span>
+        </Button>
 
         {activeModal === 'upload-track' &&
           <Modal show onHide={onModalClose}>
@@ -253,14 +256,13 @@ class TrackViewerMenu extends React.Component {
             </Modal.Footer>
           </Modal>
         }
-      </div>
+      </span>
     );
   }
 }
 
 TrackViewerMenu.propTypes = {
   activeModal: PropTypes.string,
-  onCancel: PropTypes.func.isRequired,
   onModalClose: PropTypes.func.isRequired,
   onModalLaunch: PropTypes.func.isRequired,
   onTrackViewerUploadTrack: PropTypes.func.isRequired,
@@ -299,10 +301,6 @@ export default connect(
     colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   }),
   dispatch => ({
-    onCancel() {
-      dispatch(setTool(null));
-      dispatch(elevationChartClose());
-    },
     onModalLaunch(modalName) {
       dispatch(setActiveModal(modalName));
     },

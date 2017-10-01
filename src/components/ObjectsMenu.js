@@ -4,23 +4,19 @@ import { connect } from 'react-redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
-import { setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Dropdown from 'react-bootstrap/lib/Dropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Navbar from 'react-bootstrap/lib/Navbar';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
 
 class ObjectsMenu extends React.Component {
   static propTypes = {
     onSearch: PropTypes.func.isRequired,
     onLowZoom: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
     zoom: PropTypes.number.isRequired,
   };
 
@@ -72,10 +68,10 @@ class ObjectsMenu extends React.Component {
   }
 
   render() {
-    const { onCancel } = this.props;
-
     return (
-      <Navbar.Form pullLeft>
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="map-marker" /><span className="hidden-xs"> Miesta</span></span>
+        {' '}
         <Dropdown
           className="dropdown-long"
           id="objectsMenuDropdown"
@@ -96,9 +92,7 @@ class ObjectsMenu extends React.Component {
             {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
           </Dropdown.Menu>
         </Dropdown>
-        {' '}
-        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-      </Navbar.Form>
+      </span>
     );
   }
 }
@@ -110,9 +104,6 @@ export default connect(
   dispatch => ({
     onSearch(typeId) {
       dispatch(objectsSetFilter(typeId));
-    },
-    onCancel() {
-      dispatch(setTool(null));
     },
     onLowZoom(/* typeId */) {
       dispatch(toastsAdd({

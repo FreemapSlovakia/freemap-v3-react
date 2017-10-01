@@ -1,16 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Navbar from 'react-bootstrap/lib/Navbar';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
-import { setTool, setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
@@ -26,7 +24,6 @@ class RoutePlannerMenu extends React.Component {
     pickPointMode: PropTypes.string,
     onTransportTypeChange: PropTypes.func.isRequired,
     onPickPointModeChange: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
     homeLocation: PropTypes.shape({
       lat: PropTypes.number,
       lon: PropTypes.number,
@@ -104,15 +101,17 @@ class RoutePlannerMenu extends React.Component {
   }
 
   render() {
-    const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange, onCancel,
+    const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
       routeFound, shapePoints } = this.props;
 
     return (
-      <Navbar.Form pullLeft>
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="map-signs" /><span className="hidden-xs"> Plánovač</span></span>
+        {' '}
         <ButtonGroup>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-sm"> Štart</span></span>}
+            title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-xs"> Štart</span></span>}
             id="add-start-dropdown"
             onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
@@ -122,7 +121,7 @@ class RoutePlannerMenu extends React.Component {
             <MenuItem onClick={this.handleStartHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-sm"> Cieľ</span></span>}
+            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-xs"> Cieľ</span></span>}
             id="add-finish-dropdown"
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
@@ -144,18 +143,15 @@ class RoutePlannerMenu extends React.Component {
         </ButtonGroup>
         {' '}
         <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
-          <FontAwesomeIcon icon="list-ol" /><span className="hidden-sm"> Itinerár</span>
+          <FontAwesomeIcon icon="list-ol" /><span className="hidden-xs"> Itinerár</span>
         </Button>
         {' '}
         {routeFound &&
           <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm hidden-md"> Výškový profil</span>
-          </Button>}
-        {' '}
-        <Button onClick={onCancel} title="Zavrieť">
-          <Glyphicon glyph="remove" /><span className="hidden-sm"> Zavrieť</span>
-        </Button>
-      </Navbar.Form>
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs hidden-md"> Výškový profil</span>
+          </Button>
+        }
+      </span>
     );
   }
 }
@@ -200,9 +196,6 @@ export default connect(
     },
     onPickPointModeChange(pickMode) {
       dispatch(routePlannerSetPickMode(pickMode));
-    },
-    onCancel() {
-      dispatch(setTool(null));
     },
     onProgressStart() {
       dispatch(startProgress());

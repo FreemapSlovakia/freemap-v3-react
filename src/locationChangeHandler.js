@@ -3,12 +3,11 @@ import queryString from 'query-string';
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl, getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2 } from 'fm3/oldFreemapUtils';
 
-import { setEmbeddedMode } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
-import { galleryRequestImage, gallerySetFilter, galleryShow } from 'fm3/actions/galleryActions';
+import { galleryRequestImage, gallerySetFilter } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
 import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
@@ -70,10 +69,6 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  if (query.embed === 'true' && !store.getState().main.embeddedMode) {
-    store.dispatch(setEmbeddedMode());
-  }
-
   ['distance', 'area'].forEach((type) => {
     const pq = query[`${type}-measurement-points`];
     if (pq) {
@@ -96,13 +91,11 @@ export default function handleLocationChange(store, location) {
 
   if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
     const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
-    store.dispatch(setEmbeddedMode());
     store.dispatch(infoPointSet(lat, lon));
   }
 
   if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
     const { lat, lon, label } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
-    store.dispatch(setEmbeddedMode());
     store.dispatch(infoPointSet(lat, lon));
     if (label) {
       store.dispatch(infoPointChangeLabel(label));
@@ -163,8 +156,6 @@ function handleGallery(store, query) {
     if (Object.keys(newFilter).length !== 0) {
       store.dispatch(gallerySetFilter({ ...filter, ...newFilter }));
     }
-  } else if ('gallery' in query) {
-    store.dispatch(galleryShow());
   }
 
   if (query.image) {

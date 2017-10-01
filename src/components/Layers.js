@@ -1,18 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { TileLayer, LayersControl } from 'react-leaflet';
+import { TileLayer } from 'react-leaflet';
 import { BingLayer } from 'react-leaflet-bing';
+import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 
-const keyToLayer = { t: 'T', a: 'A', s: 'S', c: 'C', o: 'O', l: 'K' };
-
 class Layers extends React.Component {
   static propTypes = {
-    onMapChange: PropTypes.func.isRequired,
+    onMapTypeChange: PropTypes.func.isRequired,
     onOverlaysChange: PropTypes.func.isRequired,
     tileFormat: FmPropTypes.tileFormat.isRequired,
     overlays: FmPropTypes.overlays,
@@ -20,6 +19,8 @@ class Layers extends React.Component {
     overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
     expertMode: PropTypes.bool,
     disableKeyboard: PropTypes.bool,
+    galleryDirtySeq: PropTypes.number.isRequired,
+    galleryFilter: FmPropTypes.galleryFilter.isRequired,
   };
 
   componentDidMount() {
@@ -34,46 +35,35 @@ class Layers extends React.Component {
     if (type === 'S') {
       return (
         <BingLayer
+          key="S"
           bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-          onAdd={() => this.handleAdd(type)}
-          onRemove={() => this.handleRemove(type)}
+          maxNativeZoom={maxNativeZoom}
           maxZoom={20}
-          maxNativeZoom={18}
+        />
+      );
+    }
+
+    if (type === 'I') {
+      const { galleryFilter, galleryDirtySeq } = this.props;
+      return (
+        <GalleryLayer
+          key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
+          filter={galleryFilter}
         />
       );
     }
 
     return (
       <TileLayer
+        key={type}
         attribution={attribution}
         url={url.replace('{tileFormat}', this.props.tileFormat)}
-        onAdd={() => this.handleAdd(type)}
-        onRemove={() => this.handleRemove(type)}
-        maxZoom={20}
         minZoom={minZoom}
+        maxZoom={20}
         maxNativeZoom={maxNativeZoom}
         opacity={this.props.overlayOpacity[type] || 1.0}
       />
     );
-  }
-
-  handleAdd(type) {
-    if (baseLayers.some(x => x.type === type)) {
-      this.props.onMapChange(type);
-    } else {
-      const next = new Set(this.props.overlays);
-      next.add(type);
-      this.props.onOverlaysChange([...next]);
-    }
-  }
-
-  handleRemove(type) {
-    const i = this.props.overlays.indexOf(type);
-    if (i !== -1) {
-      const next = [...this.props.overlays];
-      next.splice(i);
-      this.props.onOverlaysChange(next);
-    }
   }
 
   handleKeydown = (event) => {
@@ -81,38 +71,41 @@ class Layers extends React.Component {
       return;
     }
 
-    const layer = keyToLayer[event.key];
-    if (layer) {
-      this.props.onMapChange(layer);
+    const baseLayer = baseLayers.find(l => l.key === event.key);
+    if (baseLayer) {
+      this.props.onMapTypeChange(baseLayer.type);
+    }
+
+    const overlayLayer = overlayLayers.find(l => l.key === event.key);
+    if (overlayLayer) {
+      const { type } = overlayLayer;
+      const next = new Set(this.props.overlays);
+      if (next.has(type)) {
+        next.delete(type);
+      } else {
+        next.add(type);
+      }
+      this.props.onOverlaysChange([...next]);
     }
   }
 
   render() {
-    const { overlays, mapType, expertMode } = this.props;
+    const { expertMode } = this.props;
 
     return (
-      <LayersControl position="topright">
+      <span>
         {
-          baseLayers.filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode).map((item) => {
-            const { type, name } = item;
-            return (
-              <LayersControl.BaseLayer key={type} name={name} checked={mapType === type}>
-                {this.getTileLayer(item)}
-              </LayersControl.BaseLayer>
-            );
-          })
+          baseLayers
+            .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
+            .filter(({ type }) => type === this.props.mapType)
+            .map(item => this.getTileLayer(item))
         }
         {
-          overlayLayers && overlayLayers.map((item) => {
-            const { type, name } = item;
-            return (!item.showOnlyInExpertMode || expertMode) && (
-              <LayersControl.Overlay key={type} name={name} checked={overlays.indexOf(type) !== -1}>
-                {this.getTileLayer(item)}
-              </LayersControl.Overlay>
-            );
-          })
+          overlayLayers
+            .filter(({ type }) => this.props.overlays.includes(type))
+            .map(item => ((!item.showOnlyInExpertMode || expertMode) ? this.getTileLayer(item) : null))
         }
-      </LayersControl>
+      </span>
     );
   }
 }
@@ -125,9 +118,11 @@ export default connect(
     overlayOpacity: state.map.overlayOpacity,
     expertMode: state.main.expertMode,
     disableKeyboard: !!(state.main.activeModal || state.gallery.activeImageId), // NOTE there can be lot more things
+    galleryFilter: state.gallery.filter,
+    galleryDirtySeq: state.gallery.dirtySeq,
   }),
   (dispatch, props) => ({
-    onMapChange(mapType) {
+    onMapTypeChange(mapType) {
       if (props.mapType !== mapType) {
         dispatch(mapRefocus({ mapType }));
       }

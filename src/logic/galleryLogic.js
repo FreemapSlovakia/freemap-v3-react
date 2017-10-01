@@ -13,7 +13,7 @@ import {
 import { infoPointSet } from 'fm3/actions/infoPointActions';
 
 const galleryRequestImagesByRadiusLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_REQUEST_IMAGES',
   process({ action: { payload: { lat, lon } }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
@@ -61,7 +61,7 @@ const galleryRequestImagesByRadiusLogic = createLogic({
 });
 
 const galleryRequestImagesByOrderLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_LIST',
   process({ action: { payload }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
@@ -108,7 +108,7 @@ const galleryRequestImagesByOrderLogic = createLogic({
 });
 
 const galleryRequestImageLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_REQUEST_IMAGE',
   process({ action: { payload: id }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
@@ -259,7 +259,7 @@ const galleryItemUploadLogic = createLogic({
 });
 
 const gallerySubmitCommentLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_SUBMIT_COMMENT',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { image } = getState().gallery;
@@ -304,7 +304,7 @@ const gallerySubmitCommentLogic = createLogic({
 });
 
 const gallerySubmitStarsLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_SUBMIT_STARS',
   process({ action: { payload: stars }, getState, cancelled$, storeDispatch }, dispatch, done) {
     const { image } = getState().gallery;
@@ -343,7 +343,7 @@ const gallerySubmitStarsLogic = createLogic({
 });
 
 const galleryDeletePictureLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_DELETE_PICTURE',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { image } = getState().gallery;
@@ -399,7 +399,7 @@ const galleryDeletePictureLogic = createLogic({
 });
 
 const gallerySavePictureLogic = createLogic({
-  cancelType: ['SET_TOOL', 'MAP_RESET'],
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_SAVE_PICTURE',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();

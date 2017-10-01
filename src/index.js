@@ -6,6 +6,7 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import { createLogicMiddleware } from 'redux-logic';
 import { createLogger } from 'redux-logger';
+import 'fullscreen-api-polyfill';
 
 import Main from 'fm3/components/Main';
 import reducer from 'fm3/reducers';
@@ -55,6 +56,10 @@ history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, history.location);
 
 initAuthHelper(store);
+
+if (window.self !== window.top) {
+  document.body.classList.add('embedded');
+}
 
 render((
   <Provider store={store}>

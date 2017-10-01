@@ -20,6 +20,10 @@ class InfoPoint extends React.Component {
     this.props.onInfoPointPositionChange(coords.lat, coords.lng);
   }
 
+  handlePointClick = () => {
+    // just to prevent click propagation to map
+  }
+
   render() {
     const { lat, lon, label, inEditMode } = this.props;
     return (
@@ -29,12 +33,15 @@ class InfoPoint extends React.Component {
         draggable={inEditMode}
         onDragend={this.handleDragEnd}
         position={L.latLng(lat, lon)}
+        onClick={this.handlePointClick}
       >
-        { label && <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-          <span>
-            {label}
-          </span>
-        </Tooltip> }
+        {label &&
+          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+            <span>
+              {label}
+            </span>
+          </Tooltip>
+        }
       </RichMarker>
     );
   }

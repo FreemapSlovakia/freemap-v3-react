@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import Navbar from 'react-bootstrap/lib/Navbar';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
@@ -13,7 +12,7 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import { infoPointChangePosition, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
-import { setTool, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 class InfoPointMenu extends React.Component {
@@ -52,25 +51,22 @@ class InfoPointMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, onModalLaunch, activeModal, onModalClose } = this.props;
+    const { onModalLaunch, activeModal, onModalClose } = this.props;
     return (
-      <div>
-        <Navbar.Form pullLeft>
-          <Button onClick={() => onModalLaunch('info-point-change-label')}>
-            <FontAwesomeIcon icon="tag" />Zmeniť popis
-          </Button>
-          {' '}
-          <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-        </Navbar.Form>
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="thumb-tack" /><span className="hidden-xs"> Bod v mape</span></span>
+        {' '}
+        <Button onClick={() => onModalLaunch('info-point-change-label')}>
+          <FontAwesomeIcon icon="tag" /><span className="hidden-xs"> Zmeniť popis</span>
+        </Button>
 
         {activeModal === 'info-point-change-label' &&
           <Modal show onHide={onModalClose}>
-            <Modal.Header closeButton>
-              <Modal.Title>Zmeniť popis infobodu</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-
-              <form>
+            <form>
+              <Modal.Header closeButton>
+                <Modal.Title>Zmeniť popis infobodu</Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
                 <FormGroup>
                   <ControlLabel>Popis infobodu:</ControlLabel>
                   <FormControl
@@ -80,18 +76,18 @@ class InfoPointMenu extends React.Component {
                     onChange={e => this.handleLocalLabelChange(e.target.value)}
                   />
                 </FormGroup>
-              </form>
-              <Alert>
-                Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
-              </Alert>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
-            </Modal.Footer>
+                <Alert>
+                  Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
+                </Alert>
+              </Modal.Body>
+              <Modal.Footer>
+                <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
+                <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+              </Modal.Footer>
+            </form>
           </Modal>
         }
-      </div>
+      </span>
     );
   }
 }
@@ -101,7 +97,6 @@ InfoPointMenu.propTypes = {
   onModalClose: PropTypes.func.isRequired,
   onModalLaunch: PropTypes.func.isRequired,
   label: PropTypes.string,
-  onCancel: PropTypes.func.isRequired,
   onInfoPointChangePosition: PropTypes.func.isRequired,
   inEditMode: PropTypes.bool.isRequired,
   onInfoPointChangeLabel: PropTypes.func.isRequired,
@@ -114,9 +109,6 @@ export default connect(
     inEditMode: state.main.tool === 'info-point',
   }),
   dispatch => ({
-    onCancel() {
-      dispatch(setTool(null));
-    },
     onInfoPointChangePosition(lat, lon) {
       dispatch(infoPointChangePosition(lat, lon));
     },

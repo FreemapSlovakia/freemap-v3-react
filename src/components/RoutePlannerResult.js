@@ -60,6 +60,10 @@ class RoutePlannerResult extends React.Component {
     return { futureMidpoints, midpointDistancesFromStart, routeSlices };
   }
 
+  handleEndPointClick = () => {
+    // just to prevent click propagation to map
+  }
+
   render() {
     const { start, midpoints, finish, time, distance, itinerary, itineraryIsVisible } = this.props;
     const Icon = L.divIcon;
@@ -81,6 +85,7 @@ class RoutePlannerResult extends React.Component {
             draggable
             onDragend={e => this.handleRouteMarkerDragend('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
+            onClick={this.handleEndPointClick}
           />
         }
 
@@ -110,6 +115,7 @@ class RoutePlannerResult extends React.Component {
             draggable
             onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
+            onClick={this.handleEndPointClick}
           >
             {distance !== null && time !== null &&
               <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>

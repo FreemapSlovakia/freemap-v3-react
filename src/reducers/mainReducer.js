@@ -5,7 +5,6 @@ const initialState = {
   progress: [],
   location: null,
   expertMode: false,
-  embeddedMode: false,
   locate: false,
 };
 
@@ -22,8 +21,6 @@ export default function main(state = initialState, action) {
     }
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
-    case 'MAP_RESET':
-      return { ...state, tool: null };
     case 'SET_TOOL':
       return { ...state, tool: action.payload };
     case 'SET_HOME_LOCATION':
@@ -36,8 +33,6 @@ export default function main(state = initialState, action) {
       return { ...state, location: { lat: action.payload.lat, lon: action.payload.lon, accuracy: action.payload.accuracy } };
     case 'SET_EXPERT_MODE':
       return { ...state, expertMode: action.payload };
-    case 'SET_EMBEDDED_MODE':
-      return { ...state, embeddedMode: true };
     case 'LOCATE':
       return { ...state, locate: !state.locate };
     default:

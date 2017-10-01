@@ -1,28 +1,36 @@
-const baseSpecs = [['A', 'Automapa'], ['T', 'Turistická'], ['C', 'Cyklomapa'], ['K', 'Lyžiarska']];
+const baseSpecs = [['A', 'Automapa', 'car'], ['T', 'Turistická', 'male'], ['C', 'Cyklomapa', 'bicycle'], ['K', 'Lyžiarska', 'snowflake-o']];
 
 export const baseLayers = [
   ...baseSpecs.map(
-    ([type, name]) => ({
+    ([type, name, icon]) => ({
       name,
       type,
+      icon,
       url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
       attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
       minZoom: 8,
       maxNativeZoom: 16,
+      key: type.toLowerCase(),
     }),
   ),
   {
     name: 'Satelitná',
     type: 'S',
+    icon: 'plane',
+    minZoom: 0,
+    maxNativeZoom: 18,
+    key: 's',
   },
   {
     name: 'OpenStreetMap',
     type: 'O',
+    icon: 'globe',
     url: 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 19,
     // showOnlyInExpertMode: true,
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+    key: 'o',
   },
   {
     name: 'mtbmap.cz',
@@ -32,10 +40,18 @@ export const baseLayers = [
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
     attribution: 'Martin Tesař, osmmtb (at) gmail.com, prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+    key: 'm',
   },
 ];
 
 export const overlayLayers = [
+  {
+    name: 'Fotografie',
+    type: 'I',
+    icon: 'picture-o',
+    minZoom: 0,
+    key: 'f',
+  },
   {
     name: 'Lesné cesty NLC',
     type: 'N',
@@ -43,6 +59,7 @@ export const overlayLayers = [
     attribution: '© <a href="http://www.nlcsk.org/">NLC Zvolen</a>',
     minZoom: 14,
     maxNativeZoom: 16,
+    key: 'n',
   },
   {
     name: 'Turistické trasy',

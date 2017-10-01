@@ -3,7 +3,7 @@ import history from 'fm3/history';
 
 export const urlLogic = createLogic({
   type: [
-    'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'SET_EMBEDDED_MODE', 'CLEAR_MAP',
+    'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP',
     'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID',
     'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
@@ -14,7 +14,6 @@ export const urlLogic = createLogic({
   process({ getState, action }, dispatch, done) {
     const {
       map: { mapType, overlays, zoom, lat, lon },
-      main: { embeddedMode },
       routePlanner: { start, finish, midpoints, transportType },
       trackViewer: { trackUID, gpxUrl },
       gallery: { activeImageId },
@@ -23,7 +22,7 @@ export const urlLogic = createLogic({
       distanceMeasurement: { points: distanceMeasurementPoints },
       areaMeasurement: { points: areaMeasurementPoints },
       elevationMeasurement: { point: elevationMeasurementPoint },
-      gallery: { filter: galleryFilter, show },
+      gallery: { filter: galleryFilter },
     } = getState();
 
     const queryParts = [
@@ -48,10 +47,6 @@ export const urlLogic = createLogic({
 
     if (activeImageId) {
       queryParts.push(`image=${activeImageId}`);
-    }
-
-    if (embeddedMode) {
-      queryParts.push('embed=true');
     }
 
     if (days) {
@@ -120,10 +115,6 @@ export const urlLogic = createLogic({
 
     if (galleryFilter.createdAtTo) {
       queryParts.push(`gallery-created-at-to=${galleryFilter.createdAtTo.toISOString().replace(/T.*/, '')}`);
-    }
-
-    if (show && !Object.keys(galleryFilter).some(k => galleryFilter[k] !== null)) {
-      queryParts.push('gallery');
     }
 
     const search = `?${queryParts.join('&')}`;

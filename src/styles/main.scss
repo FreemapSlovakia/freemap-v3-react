@@ -10,10 +10,6 @@
   left: 0;
   right: 0;
   bottom: 0;
-  top: 56px;
-}
-
-body.embedded .leaflet-container {
   top: 0;
 }
 
@@ -52,20 +48,138 @@ a.leaflet-control-layers-toggle {
   background-image: url(../images/icon-satellite.png);
 }
 
-button#freemap-logo.embedded {
-  position: absolute;
-  bottom: 2px;
-  left: 9px;
-  z-index: 1;
-}
-
 @media ($smartphone-screen) { // issue #71
   .navbar-form {
     border-top: 0;
     margin-top: 0;
   }
+}
 
-  button#freemap-logo.embedded {
-    left: 0;
+.tool-buttons {
+  position: absolute;
+  z-index: 1010;
+  top: 10px;
+  left: 10px;
+  margin-right: 10px;
+}
+
+.tool-panel {
+  position: absolute;
+  z-index: 1010;
+  top: 10px;
+  left: 68px;
+  margin-right: 10px;
+}
+
+button#freemap-logo {
+  border: none;
+  outline: none;
+  background-color: rgba(255, 255, 255, 0);
+  background-image: url(../images/freemap-logo.png);
+  background-size: 130px 34px;
+  background-repeat: no-repeat;
+  margin: 0 4px;
+  height: 34px;
+  width: 130px;
+	-webkit-transform: scale(1);
+	transform: scale(1);
+	-webkit-transition: .1s ease-in-out;
+  transition: .1s ease-in-out;
+  
+  &.in-progress {
+    animation: pulse 1s infinite;
+  }
+
+  &:hover {
+    cursor: pointer;
+    -webkit-transform: scale(1.05);
+    transform: scale(1.05);
+  }
+}
+
+@keyframes pulse {
+  0% {
+    filter: brightness(100%);
+  }
+  50% {
+    filter: brightness(200%);
+  }
+  100% {
+    filter: brightness(100%);
+  }
+}
+
+.fm-menu {
+  .popover-content {
+    padding: 0;
+
+    &>ul {
+      min-width: 160px;
+      padding: 5px 0;
+      margin: 2px 0 0;
+      list-style: none;
+      font-size: 14px;
+      text-align: left;
+      background-color: #fff;
+      
+      &>li>a {
+        display: block;
+        padding: 3px 20px;
+        clear: both;
+        font-weight: 400;
+        line-height: 1.42857143;
+        color: #333;
+        white-space: nowrap;
+
+        &:hover {
+          text-decoration: none;
+          color: #262626;
+          background-color: #f5f5f5;          
+        }
+      }
+
+      .divider {
+        height: 1px;
+        margin: 9px 0;
+        overflow: hidden;
+        background-color: #e5e5e5;        
+      }
+    }
+  }
+}
+
+.fm-toolbar {
+  margin: 0 3px 8px;
+  background-color: rgba(255, 255, 255, 0.80);
+  display: inline-block;
+  vertical-align: top;
+
+  .panel-body {
+    padding: 4px;
+
+    form {
+      display: inline;
+    }
+  }
+}
+
+.fm-label {
+  margin: 4px;
+}
+
+#tools-button {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+.fm-type-zoom-control {
+  position: absolute;
+  z-index: 1010;
+  bottom: 10px;
+  left: 0;
+  right: 0;
+  &>div {
+    display: table;
+    margin: 0 auto;
   }
 }

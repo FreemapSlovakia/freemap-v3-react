@@ -3,16 +3,13 @@ import PropTypes from 'prop-types';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
-import Navbar from 'react-bootstrap/lib/Navbar';
-import Row from 'react-bootstrap/lib/Row';
-import Nav from 'react-bootstrap/lib/Nav';
-import NavDropdown from 'react-bootstrap/lib/NavDropdown';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
+import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
+import Button from 'react-bootstrap/lib/Button';
+import Panel from 'react-bootstrap/lib/Panel';
 
-import NavbarHeader from 'fm3/components/NavbarHeader';
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import ProgressIndicator from 'fm3/components/ProgressIndicator';
 import Toasts from 'fm3/components/Toasts';
 
 import SearchMenu from 'fm3/components/SearchMenu';
@@ -33,14 +30,17 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
 
-import SelectHomeLocationMenu from 'fm3/components/SelectHomeLocationMenu';
-
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
 import GalleryPicker from 'fm3/components/GalleryPicker';
 
 import Settings from 'fm3/components/Settings';
-import ExternalApps from 'fm3/components/ExternalApps';
+
+import OpenInExternalAppMenuButton from 'fm3/components/OpenInExternalAppMenuButton';
+import ToolsMenuButton from 'fm3/components/ToolsMenuButton';
+import MapSwitchButton from 'fm3/components/MapSwitchButton';
+import MoreMenuButton from 'fm3/components/MoreMenuButton';
+
 import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
 
 import InfoPointMenu from 'fm3/components/InfoPointMenu';
@@ -59,9 +59,9 @@ import LoginModal from 'fm3/components/LoginModal';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { setTool, setActiveModal, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
-import { authStartLogout, authCheckLogin } from 'fm3/actions/authActions';
+import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { setTool, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
+import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -78,17 +78,10 @@ class Main extends React.Component {
     onToolSet: PropTypes.func.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
     activeModal: PropTypes.string,
-    onModalLaunch: PropTypes.func.isRequired,
     progress: PropTypes.bool.isRequired,
     onLocationSet: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
-    embeddedMode: PropTypes.bool.isRequired,
-    onLogin: PropTypes.func.isRequired,
-    onLogout: PropTypes.func.isRequired,
     onCheckLogin: PropTypes.func.isRequired,
-    user: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    }),
     ignoreEscape: PropTypes.bool.isRequired,
     showElevationChart: PropTypes.bool.isRequired,
     showGalleryPicker: PropTypes.bool.isRequired,
@@ -97,6 +90,7 @@ class Main extends React.Component {
     onLocate: PropTypes.func.isRequired,
     locate: PropTypes.bool.isRequired,
     showLoginModal: PropTypes.bool,
+    onMapReset: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -111,13 +105,16 @@ class Main extends React.Component {
       }
     });
 
-    if (this.props.embeddedMode) {
-      document.body.classList.add('embedded');
-    }
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
   componentWillUnmount() {
+    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
     setMapLeafletElement(null);
+  }
+
+  handleFullscreenChange = () => {
+    this.forceUpdate();
   }
 
   handleMapMoveEnd = () => {
@@ -139,108 +136,126 @@ class Main extends React.Component {
     this.props.onLocationSet(e.latitude, e.longitude, e.accuracy);
   }
 
-  handleToolSelect(tool) {
-    this.props.onToolSet(this.props.tool === tool ? null : tool);
+  handleEmbedLogoClick = () => {
+    window.open(window.location.href, '_blank');
   }
 
-  createToolMenu() {
-    return [
-      createMenuItem(10, 'share', 'Exportovať do GPX', this.props.onGpxExport),
-      createMenuItem(11, 'eraser', 'Vyčistiť mapu', this.props.onMapClear),
-      <MenuItem divider key="_1" />,
-      createMenuItem(2, 'map-signs', 'Plánovač', () => this.handleToolSelect('route-planner')),
-      createMenuItem(1, 'map-marker', 'Miesta', () => this.handleToolSelect('objects')),
-      createMenuItem(4, 'dot-circle-o', 'Kde som?', this.props.onLocate, { active: this.props.locate }),
-      createMenuItem(8, 'picture-o', 'Fotografie', () => this.handleToolSelect('gallery')),
-      createMenuItem(3, 'arrows-h', 'Meranie', () => this.handleToolSelect('measure-dist')),
-      createMenuItem(5, 'road', 'Prehliadač trás', () => this.handleToolSelect('track-viewer')),
-      createMenuItem(6, 'thumb-tack', 'Bod v mape', () => this.handleToolSelect('info-point')),
-      createMenuItem(7, 'pencil', 'Zmeny v mape', () => this.handleToolSelect('changesets')),
-      createMenuItem(9, 'info', 'Detaily v mape', () => this.handleToolSelect('map-details')),
-    ];
+  handleToolCloseClick = () => {
+    this.props.onToolSet(null);
   }
 
-  createMoreMenu() {
-    const { user, onLogout, onLogin, onModalLaunch } = this.props;
-
-    return [
-      user ?
-        createMenuItem('login', 'sign-out', `Odhlás ${user.name}`, () => onLogout())
-        :
-        createMenuItem('login', 'sign-in', 'Prihlásenie', () => onLogin()),
-      createMenuItem(1, 'cog', 'Nastavenia', () => onModalLaunch('settings')),
-      <MenuItem divider key="_1" />,
-      createMenuItem(6, 'mobile', 'Exporty mapy', 'http://wiki.freemap.sk/FileDownload'),
-      createMenuItem(8, 'share-alt', 'Zdieľať mapu', () => onModalLaunch('share')),
-      createMenuItem(9, 'code', 'Vložiť do webstránky', () => onModalLaunch('embed')),
-      <MenuItem divider key="_2" />,
-      createMenuItem(7, 'book', 'Pre začiatočníkov', 'http://wiki.freemap.sk/StarterGuide'),
-      createMenuItem(4, 'github', 'Projekt na GitHub-e', 'https://github.com/FreemapSlovakia/freemap-v3-react'),
-      <MenuItem divider key="_3" />,
-      createMenuItem(2, 'exclamation-triangle', 'Nahlás chybu zobrazenia v mape', 'http://wiki.freemap.sk/NahlasenieChyby'),
-      createMenuItem(3, 'exclamation-triangle', 'Nahlás chybu v portáli', 'https://github.com/FreemapSlovakia/freemap-v3-react/issues'),
-    ];
+  handleFullscreenClick = () => {
+    if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.body.requestFullscreen();
+    }
   }
 
-  openFreemapInNonEmbedMode = () => {
-    const currentURL = window.location.href;
-    window.open(currentURL.replace('&embed=true', ''), '_blank');
+  handleZoomInClick = () => {
+    const zoom = this.map.leafletElement.getZoom() + 1;
+    this.props.onMapRefocus({ zoom });
+  }
+
+  handleZoomOutClick = () => {
+    const zoom = this.map.leafletElement.getZoom() - 1;
+    this.props.onMapRefocus({ zoom });
   }
 
   render() {
-    // eslint-disable-next-line
-    const { tool, activeModal, progress, mouseCursor, embeddedMode, lat, lon, zoom, mapType, showElevationChart, showGalleryPicker,
-      showLoginModal } = this.props;
+    const { lat, lon, zoom, mapType,
+      tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
+      showLoginModal, onMapReset } = this.props;
+
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
-      <div className="container-fluid" onDragOver={() => this.handleToolSelect('track-viewer')}>
-        {embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} />}
+      <div>
         <Toasts />
-        {!embeddedMode &&
-          <Row>
-            <Navbar fluid>
-              <NavbarHeader />
-              <Navbar.Collapse>
-                {tool === 'objects' && <ObjectsMenu />}
-                {(showDefaultMenu || tool === 'search') && <SearchMenu />}
-                {tool === 'route-planner' && <RoutePlannerMenu />}
-                {(tool === 'measure-dist' || tool === 'measure-ele' || tool === 'measure-area') && <MeasurementMenu />}
-                {tool === 'track-viewer' && <TrackViewerMenu />}
-                {tool === 'info-point' && <InfoPointMenu />}
-                {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'gallery' && <GalleryMenu />}
-                {tool === 'select-home-location' && <SelectHomeLocationMenu />}
-                {tool === 'map-details' && <MapDetailsMenu />}
-                {activeModal === 'settings' && <Settings />}
-                {activeModal === 'share' && <ShareMapModal />}
-                {activeModal === 'embed' && <EmbedMapModal />}
-                {showLoginModal && <LoginModal />}
-                {showDefaultMenu &&
-                  <Nav>
-                    <NavDropdown title={<span><FontAwesomeIcon icon="briefcase" /> Nástroje</span>} id="tools">
-                      {this.createToolMenu()}
-                    </NavDropdown>
-                    <ExternalApps lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-                    {showDefaultMenu &&
-                      <NavDropdown title={<span><FontAwesomeIcon icon="ellipsis-v" /> Viac</span>} id="additional-menu-items">
-                        {this.createMoreMenu()}
-                      </NavDropdown>
-                    }
-                  </Nav>
-                }
-              </Navbar.Collapse>
-            </Navbar>
-          </Row>
-        }
-        {!embeddedMode &&
-          <Row>
-            <ProgressIndicator active={progress} />
-          </Row>
-        }
-        <Row className={`map-holder active-map-type-${mapType}`}>
+
+        <div className="tool-buttons">
+          {window.self === window.top ?
+            <Panel className="fm-toolbar">
+              <ButtonToolbar>
+                <ButtonGroup>
+                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+                  <ToolsMenuButton />
+                  <Button onClick={onMapClear} title="Vyčistiť mapu">
+                    <FontAwesomeIcon icon="eraser" />
+                  </Button>
+                  <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
+                    <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                  </Button>
+                  <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
+                    <FontAwesomeIcon icon="share" />
+                  </Button>
+                  <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                  <MoreMenuButton />
+                </ButtonGroup>
+              </ButtonToolbar>
+            </Panel>
+            :
+            <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+          }
+          {tool &&
+            <Panel className="fm-toolbar">
+              {tool === 'search' && <SearchMenu />}
+              {tool === 'objects' && <ObjectsMenu />}
+              {tool === 'route-planner' && <RoutePlannerMenu />}
+              {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
+              {tool === 'track-viewer' && <TrackViewerMenu />}
+              {tool === 'info-point' && <InfoPointMenu />}
+              {tool === 'changesets' && <ChangesetsMenu />}
+              {tool === 'gallery' && <GalleryMenu />}
+              {tool === 'map-details' && <MapDetailsMenu />}
+
+              <span>
+                {' '}
+                <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
+                  <FontAwesomeIcon icon="close" /><span className="hidden-xs"> Zavrieť</span>
+                </Button>
+              </span>
+            </Panel>
+          }
+        </div>
+
+        <div className="fm-type-zoom-control">
+          <Panel className="fm-toolbar">
+            <ButtonToolbar>
+              <MapSwitchButton />
+              <ButtonGroup>
+                <Button
+                  onClick={this.handleZoomInClick}
+                  title="Priblížiť mapu"
+                  disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
+                >
+                  <FontAwesomeIcon icon="plus" />
+                </Button>
+                <Button
+                  onClick={this.handleZoomOutClick}
+                  title="Oddialiť mapu"
+                  disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
+                >
+                  <FontAwesomeIcon icon="minus" />
+                </Button>
+              </ButtonGroup>
+              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+                <FontAwesomeIcon icon="dot-circle-o" />
+              </Button>
+            </ButtonToolbar>
+          </Panel>
+        </div>
+
+        {activeModal === 'settings' && <Settings />}
+        {activeModal === 'share' && <ShareMapModal />}
+        {activeModal === 'embed' && <EmbedMapModal />}
+        {showLoginModal && <LoginModal />}
+
+        <div className={`map-holder active-map-type-${mapType}`}>
           <Map
+            zoomControl={false}
             minZoom={8}
+            maxZoom={20}
             ref={(map) => { this.map = map; }}
             center={L.latLng(lat, lon)}
             zoom={zoom}
@@ -253,9 +268,9 @@ class Main extends React.Component {
             style={{ cursor: mouseCursor }}
             maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
           >
+            <ScaleControl imperial={false} position="bottomleft" />
             <Layers />
 
-            <ScaleControl imperial={false} position="bottomright" />
             {(showDefaultMenu || tool === 'search') && <SearchResults />}
 
             <ObjectsResult />
@@ -270,10 +285,10 @@ class Main extends React.Component {
             <Changesets />
             {tool === 'map-details' && <MapDetails />}
             {showElevationChart && <AsyncElevationChart />}
-            {(tool === null || tool === 'gallery') && showGalleryPicker && <GalleryPicker />}
+            {showGalleryPicker && <GalleryPicker />}
             <GalleryResult />
           </Map>
-        </Row>
+        </div>
       </div>
     );
   }
@@ -289,7 +304,6 @@ export default connect(
     activeModal: state.main.activeModal,
     progress: !!state.main.progress.length,
     mouseCursor: selectMouseCursor(state),
-    embeddedMode: state.main.embeddedMode,
     user: state.auth.user,
     ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
       || state.gallery.activeImageId),
@@ -305,18 +319,8 @@ export default connect(
     onMapRefocus(changes) {
       dispatch(mapRefocus(changes));
     },
-    onModalLaunch(modalName) {
-      dispatch(setActiveModal(modalName));
-    },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));
-    },
-    onLogin() {
-      dispatch({ type: 'AUTH_CHOOSE_LOGIN_METHOD' });
-      // dispatch(authLogin());
-    },
-    onLogout() {
-      dispatch(authStartLogout());
     },
     onCheckLogin() {
       dispatch(authCheckLogin());
@@ -327,22 +331,14 @@ export default connect(
     onMapClear() {
       dispatch(clearMap());
     },
+    onMapReset() {
+      dispatch(mapReset());
+    },
     onLocate() {
       dispatch(toggleLocate());
     },
   }),
 )(Main);
-
-function createMenuItem(key, icon, title, onClick, props = {}) {
-  const p = { key, ...props };
-  if (typeof onClick === 'function') {
-    p.onClick = onClick;
-  } else {
-    p.href = onClick;
-    p.target = '_blank';
-  }
-  return React.createElement(MenuItem, p, <FontAwesomeIcon icon={icon} />, ` ${title}`);
-}
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   mapEventEmitter.emit('mapClick', lat, lon);
@@ -368,6 +364,7 @@ function selectMouseCursor(state) {
     case 'select-home-location':
     case 'map-details':
     case 'route-planner':
+    case 'info-point':
       return state.routePlanner.pickMode ? 'crosshair' : 'auto';
     default:
       return isShowGalleryPicker(state) ? 'crosshair' : 'auto';
@@ -375,7 +372,7 @@ function selectMouseCursor(state) {
 }
 
 function isShowGalleryPicker(state) {
-  return (state.main.tool === null || state.main.tool === 'gallery')
-    && state.gallery.show
+  return (state.main.tool === null || ['gallery', 'track-viewer', 'search'].includes(state.main.tool))
+    && state.map.overlays.includes('I')
     && state.gallery.pickingPositionForId === null;
 }

@@ -11,8 +11,6 @@ import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Navbar from 'react-bootstrap/lib/Navbar';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -21,7 +19,6 @@ class MeasurementMenu extends React.Component {
   static propTypes = {
     tool: FmPropTypes.tool,
     onToolSet: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
     areaPoints: FmPropTypes.points.isRequired,
     distancePoints: FmPropTypes.points.isRequired,
     routeDefined: PropTypes.bool.isRequired,
@@ -86,30 +83,30 @@ class MeasurementMenu extends React.Component {
   }
 
   render() {
-    const { onCancel, onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
+    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
-      <Navbar.Form pullLeft>
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="arrows-h" /><span className="hidden-xs"> Meranie</span></span>
+        {' '}
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
-            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-sm"> Vzdialenosť</span>
+            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-xs"> Vzdialenosť</span>
           </Button>
           <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
-            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-sm"> Výška a poloha</span>
+            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-xs"> Výška a poloha</span>
           </Button>
           <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
-            <FontAwesomeIcon icon="square" /><span className="hidden-sm"> Plocha</span>
+            <FontAwesomeIcon icon="square" /><span className="hidden-xs"> Plocha</span>
           </Button>
         </ButtonGroup>
         {' '}
-        {tool === 'measure-dist' && routeDefined &&
-          <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart}>
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-sm"> Výškový profil</span>
+        {tool === 'measure-dist' &&
+          <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs"> Výškový profil</span>
           </Button>
         }
-        {' '}
-        <Button onClick={onCancel}><Glyphicon glyph="remove" /> Zavrieť</Button>
-      </Navbar.Form>
+      </span>
     );
   }
 }
@@ -125,9 +122,6 @@ export default connect(
   dispatch => ({
     onToolSet(tool) {
       dispatch(setTool(tool));
-    },
-    onCancel() {
-      dispatch(setTool(null));
     },
     onElevationChartTrackGeojsonSet(trackGeojson) {
       dispatch(elevationChartSetTrackGeojson(trackGeojson));

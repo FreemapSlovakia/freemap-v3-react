@@ -152,6 +152,10 @@ class TrackViewerResult extends React.Component {
 
   pointToLayer = (geoJsonPoint, latlng) => L.marker(latlng, { icon: createMarkerIcon() })
 
+  handlePointClick = () => {
+    // just to prevent click propagation to map
+  }
+
   render() {
     const { trackGeojson, startPoints, finishPoints, displayingElevationChart } = this.props;
     const keyToAssureProperRefresh = (JSON.stringify(trackGeojson) + displayingElevationChart).length; // otherwise GeoJSON will still display the first data
@@ -173,6 +177,7 @@ class TrackViewerResult extends React.Component {
             color="#409a40"
             interactive={false}
             position={L.latLng(p.lat, p.lon)}
+            onClick={this.handlePointClick}
           >
             { p.startTime &&
               <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
@@ -188,6 +193,7 @@ class TrackViewerResult extends React.Component {
             color="#d9534f"
             interactive={false}
             position={L.latLng(p.lat, p.lon)}
+            onClick={this.handlePointClick}
           >
             <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
               <span>
@@ -205,6 +211,7 @@ class TrackViewerResult extends React.Component {
           color="grey"
           interactive={false}
           position={L.latLng(this.state.infoLat, this.state.infoLon)}
+          onClick={this.handlePointClick}
         >
           <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
             <span>

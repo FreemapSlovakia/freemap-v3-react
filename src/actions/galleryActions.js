@@ -114,10 +114,6 @@ export function gallerySavePicture() {
   return { type: 'GALLERY_SAVE_PICTURE' };
 }
 
-export function galleryShow() {
-  return { type: 'GALLERY_SHOW' };
-}
-
 export function galleryList(orderBy) {
   return { type: 'GALLERY_LIST', payload: orderBy };
 }

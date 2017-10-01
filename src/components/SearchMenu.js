@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
-import Navbar from 'react-bootstrap/lib/Navbar';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -11,17 +10,16 @@ import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import * as FmPropTypes from 'fm3/propTypes';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import 'fm3/styles/search.scss';
 
-function SearchMenu({ tool, onResultHiglight, onResultSelect, onRoutePlannerWithStartInit,
-  onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results,
-}) {
-  function onSelectionChange(resultsSelectedByUser) {
-    onResultSelect(resultsSelectedByUser[0], tool);
+class SearchMenu extends React.Component {
+  onSelectionChange = (resultsSelectedByUser) => {
+    this.props.onResultSelect(resultsSelectedByUser[0], this.props.tool);
   }
 
-  function onSuggestionHighlightChange(result) {
+  onSuggestionHighlightChange(result) {
     if (result) {
       const geojson = result.geojson;
       const options = {};
@@ -31,14 +29,16 @@ function SearchMenu({ tool, onResultHiglight, onResultSelect, onRoutePlannerWith
       const geojsonBounds = L.geoJson(geojson).getBounds();
       getMapLeafletElement().fitBounds(geojsonBounds, options);
     }
-    onResultHiglight(result);
+    this.props.onResultHiglight(result);
   }
 
-  const b = (fn, ...args) => fn.bind(null, ...args);
+  render() {
+    const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
 
-  return (
-    <div>
-      <Navbar.Form pullLeft>
+    return (
+      <span>
+        <span className="fm-label"><FontAwesomeIcon icon="search" /><span className="hidden-xs"> Hľadanie na mape</span></span>
+        {' '}
         <AsyncTypeahead
           labelKey="label"
           useCache={false}
@@ -50,35 +50,34 @@ function SearchMenu({ tool, onResultHiglight, onResultSelect, onRoutePlannerWith
           searchText="Hľadám…"
           placeholder="Brusno"
           clearButton
-          onChange={onSelectionChange}
+          onChange={this.onSelectionChange}
           emptyLabel="Nenašli sa žiadne výsledky"
           promptText="Zadajte lokalitu"
           renderMenuItemChildren={result => (
             <div
               key={result.label + result.id}
-              onMouseEnter={b(onSuggestionHighlightChange, result)}
-              onMouseLeave={b(onSuggestionHighlightChange, null)}
+              onMouseEnter={() => this.onSuggestionHighlightChange(result)}
+              onMouseLeave={() => this.onSuggestionHighlightChange(null)}
             >
               <span>{result.tags.name} </span><br />
               <span>({result.geojson.type})</span>
             </div>
           )}
         />
-      </Navbar.Form>
-      {tool === 'search' &&
-        <Navbar.Form pullLeft>
-          <ButtonGroup>
-            <Button onClick={b(onRoutePlannerWithStartInit, selectedResult)}>
-              <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} /> Navigovať odtiaľto
-            </Button>
-            <Button onClick={b(onRoutePlannerWithFinishInit, selectedResult)}>
-              <Glyphicon glyph="record" style={{ color: '#FF6347' }} /> Navigovať sem
-            </Button>
-          </ButtonGroup>
-        </Navbar.Form>
-      }
-    </div>
-  );
+        {' '}
+        <ButtonGroup>
+          <Button onClick={() => onRoutePlannerWithStartInit(selectedResult)} disabled={!selectedResult}>
+            <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
+            <span className="hidden-xs"> Navigovať odtiaľto</span>
+          </Button>
+          <Button onClick={() => onRoutePlannerWithFinishInit(selectedResult)} disabled={!selectedResult}>
+            <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
+            <span className="hidden-xs"> Navigovať sem</span>
+          </Button>
+        </ButtonGroup>
+      </span>
+    );
+  }
 }
 
 SearchMenu.propTypes = {

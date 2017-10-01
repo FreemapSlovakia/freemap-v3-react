@@ -6,7 +6,6 @@ const initialState = {
 
 export default function measurement(state = initialState, action) {
   switch (action.type) {
-    case 'MAP_RESET':
     case 'CLEAR_MAP':
       return initialState;
     case 'AREA_MEASUREMENT_ADD_POINT':
