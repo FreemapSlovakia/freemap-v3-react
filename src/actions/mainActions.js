@@ -41,3 +41,7 @@ export function clearMap() {
 export function toggleLocate() {
   return { type: 'LOCATE' };
 }
+
+export function setSelectingHomeLocation(value) {
+  return { type: 'SET_SELECTING_HOME_LOCATION', payload: value };
+}

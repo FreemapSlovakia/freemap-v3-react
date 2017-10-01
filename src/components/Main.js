@@ -33,8 +33,10 @@ import TrackViewerResult from 'fm3/components/TrackViewerResult';
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
 import GalleryPicker from 'fm3/components/GalleryPicker';
+import GalleryPositionPickingMenu from 'fm3/components/GalleryPositionPickingMenu';
 
 import Settings from 'fm3/components/Settings';
+import HomeLocationPickingMenu from 'fm3/components/HomeLocationPickingMenu';
 
 import OpenInExternalAppMenuButton from 'fm3/components/OpenInExternalAppMenuButton';
 import ToolsMenuButton from 'fm3/components/ToolsMenuButton';
@@ -91,6 +93,7 @@ class Main extends React.Component {
     locate: PropTypes.bool.isRequired,
     showLoginModal: PropTypes.bool,
     onMapReset: PropTypes.func.isRequired,
+    showMenu: PropTypes.bool,
   };
 
   componentWillMount() {
@@ -165,9 +168,7 @@ class Main extends React.Component {
   render() {
     const { lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset } = this.props;
-
-    const showDefaultMenu = [null, 'location'].includes(tool);
+      showLoginModal, onMapReset, showMenu } = this.props;
 
     return (
       <div>
@@ -177,27 +178,31 @@ class Main extends React.Component {
           {window.self === window.top ?
             <Panel className="fm-toolbar">
               <ButtonToolbar>
-                <ButtonGroup>
+                {showMenu ?
+                  <ButtonGroup>
+                    <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+                    <ToolsMenuButton />
+                    <Button onClick={onMapClear} title="Vyčistiť mapu">
+                      <FontAwesomeIcon icon="eraser" />
+                    </Button>
+                    <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
+                      <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                    </Button>
+                    <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
+                      <FontAwesomeIcon icon="share" />
+                    </Button>
+                    <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                    <MoreMenuButton />
+                  </ButtonGroup>
+                  :
                   <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
-                  <ToolsMenuButton />
-                  <Button onClick={onMapClear} title="Vyčistiť mapu">
-                    <FontAwesomeIcon icon="eraser" />
-                  </Button>
-                  <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
-                    <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                  </Button>
-                  <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
-                    <FontAwesomeIcon icon="share" />
-                  </Button>
-                  <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-                  <MoreMenuButton />
-                </ButtonGroup>
+                }
               </ButtonToolbar>
             </Panel>
             :
             <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
           }
-          {tool &&
+          {showMenu && tool &&
             <Panel className="fm-toolbar">
               {tool === 'search' && <SearchMenu />}
               {tool === 'objects' && <ObjectsMenu />}
@@ -217,6 +222,8 @@ class Main extends React.Component {
               </span>
             </Panel>
           }
+          <GalleryPositionPickingMenu />
+          <HomeLocationPickingMenu />
         </div>
 
         <div className="fm-type-zoom-control">
@@ -271,22 +278,24 @@ class Main extends React.Component {
             <ScaleControl imperial={false} position="bottomleft" />
             <Layers />
 
-            {(showDefaultMenu || tool === 'search') && <SearchResults />}
-
-            <ObjectsResult />
-            <RoutePlannerResult />
-            <DistanceMeasurementResult />
-            <ElevationMeasurementResult />
-            <AreaMeasurementResult />
-            <LocationResult />
-            <TrackViewerResult />
-            <InfoPoint />
-
-            <Changesets />
-            {tool === 'map-details' && <MapDetails />}
-            {showElevationChart && <AsyncElevationChart />}
-            {showGalleryPicker && <GalleryPicker />}
-            <GalleryResult />
+            {showMenu &&
+              <span>
+                <SearchResults />
+                <ObjectsResult />
+                <RoutePlannerResult />
+                <DistanceMeasurementResult />
+                <ElevationMeasurementResult />
+                <AreaMeasurementResult />
+                <LocationResult />
+                <TrackViewerResult />
+                <InfoPoint />
+                <Changesets />
+                {tool === 'map-details' && <MapDetails />}
+                {showElevationChart && <AsyncElevationChart />}
+                {showGalleryPicker && <GalleryPicker />}
+              </span>
+            }
+            <GalleryResult />{/* TODO should not be extra just because for position picking */}
           </Map>
         </div>
       </div>
@@ -311,6 +320,7 @@ export default connect(
     showGalleryPicker: isShowGalleryPicker(state),
     locate: state.main.locate,
     showLoginModal: state.auth.chooseLoginMethod,
+    showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId,
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -357,11 +367,13 @@ function handleMapMouseOut({ latlng: { lat, lng: lon } }) {
 }
 
 function selectMouseCursor(state) {
+  if (state.main.selectingHomeLocation) {
+    return 'crosshair';
+  }
   switch (state.main.tool) {
     case 'measure-dist':
     case 'measure-ele':
     case 'measure-area':
-    case 'select-home-location':
     case 'map-details':
     case 'route-planner':
     case 'info-point':
@@ -372,7 +384,8 @@ function selectMouseCursor(state) {
 }
 
 function isShowGalleryPicker(state) {
-  return (state.main.tool === null || ['gallery', 'track-viewer', 'search'].includes(state.main.tool))
+  return (state.main.tool === null || ['gallery', 'track-viewer', 'search', 'objects', 'changesets'].includes(state.main.tool))
     && state.map.overlays.includes('I')
-    && state.gallery.pickingPositionForId === null;
+    && state.gallery.pickingPositionForId === null
+    && !state.main.selectingHomeLocation;
 }

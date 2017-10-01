@@ -6,6 +6,7 @@ const initialState = {
   location: null,
   expertMode: false,
   locate: false,
+  selectingHomeLocation: false,
 };
 
 export default function main(state = initialState, action) {
@@ -35,6 +36,8 @@ export default function main(state = initialState, action) {
       return { ...state, expertMode: action.payload };
     case 'LOCATE':
       return { ...state, locate: !state.locate };
+    case 'SET_SELECTING_HOME_LOCATION':
+      return { ...state, selectingHomeLocation: action.payload };
     default:
       return state;
   }

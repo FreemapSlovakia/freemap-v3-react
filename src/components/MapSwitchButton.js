@@ -5,6 +5,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
+import Label from 'react-bootstrap/lib/Label';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -17,6 +18,7 @@ class MapSwitchButton extends React.Component {
     mapType: FmPropTypes.mapType.isRequired,
     onMapRefocus: PropTypes.func.isRequired,
     expertMode: PropTypes.bool,
+    pictureFilterIsActive: PropTypes.bool,
   };
 
   state = {
@@ -97,6 +99,12 @@ class MapSwitchButton extends React.Component {
                       </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
+                      {type === 'I' && this.props.pictureFilterIsActive && [
+                        ' ',
+                        <Label key="filt-warn" bsStyle="warning" title="Filter fotografií je aktívny">
+                          <FontAwesomeIcon icon="filter" />
+                        </Label>,
+                      ]}
                     </MenuItem>
                   ))
               }
@@ -114,6 +122,7 @@ export default connect(
     mapType: state.map.mapType,
     overlays: state.map.overlays,
     expertMode: state.main.expertMode,
+    pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
   }),
   dispatch => ({
     onMapRefocus(changes) {

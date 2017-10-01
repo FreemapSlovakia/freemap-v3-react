@@ -11,7 +11,7 @@ import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
-import { setTool, setHomeLocation, setActiveModal, setExpertMode } from 'fm3/actions/mainActions';
+import { setHomeLocation, setActiveModal, setExpertMode, setSelectingHomeLocation } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 
@@ -31,13 +31,13 @@ class Settings extends React.Component {
     onClose: PropTypes.func.isRequired,
     onHomeLocationSelect: PropTypes.func.isRequired,
     onHomeLocationSelectionFinish: PropTypes.func.isRequired,
-    tool: FmPropTypes.tool,
     nlcOpacity: PropTypes.number.isRequired,
     touristOverlayOpacity: PropTypes.number.isRequired,
     cycloOverlayOpacity: PropTypes.number.isRequired,
     zoom: PropTypes.number,
     expertMode: PropTypes.bool.isRequired,
     trackViewerEleSmoothingFactor: PropTypes.number.isRequired,
+    selectingHomeLocation: PropTypes.bool,
   };
 
   constructor(props) {
@@ -79,7 +79,7 @@ class Settings extends React.Component {
   }
 
   render() {
-    const { onClose, onHomeLocationSelect, tool, zoom } = this.props;
+    const { onClose, onHomeLocationSelect, selectingHomeLocation, zoom } = this.props;
     const { homeLocation, homeLocationCssClasses } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
 
@@ -91,7 +91,7 @@ class Settings extends React.Component {
       : 'neurčená';
 
     return (
-      <Modal show={tool !== 'select-home-location'} onHide={onClose}>
+      <Modal show={!selectingHomeLocation} onHide={onClose}>
         <Modal.Header closeButton>
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
@@ -227,13 +227,13 @@ export default connect(
   state => ({
     tileFormat: state.map.tileFormat,
     homeLocation: state.main.homeLocation,
-    tool: state.main.tool,
     zoom: state.map.zoom,
     nlcOpacity: state.map.overlayOpacity.N,
     touristOverlayOpacity: state.map.overlayOpacity.t,
     cycloOverlayOpacity: state.map.overlayOpacity.c,
     expertMode: state.main.expertMode,
     trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+    selectingHomeLocation: state.main.selectingHomeLocation,
   }),
   dispatch => ({
     onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor) {
@@ -256,10 +256,10 @@ export default connect(
       dispatch(setActiveModal(null));
     },
     onHomeLocationSelect() {
-      dispatch(setTool('select-home-location'));
+      dispatch(setSelectingHomeLocation(true));
     },
     onHomeLocationSelectionFinish() {
-      dispatch(setTool(null));
+      dispatch(setSelectingHomeLocation(false));
     },
   }),
 )(Settings);
