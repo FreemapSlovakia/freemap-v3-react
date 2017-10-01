@@ -14,7 +14,7 @@ export default function main(state = initialState, action) {
     case 'MAIN_LOAD_STATE': {
       const s = { ...state };
       const { homeLocation, expertMode } = action.payload;
-      if (homeLocation && typeof homeLocation.lat === 'number' && homeLocation.lon === 'number') {
+      if (homeLocation && typeof homeLocation.lat === 'number' && typeof homeLocation.lon === 'number') {
         s.homeLocation = { lat: homeLocation.lat, lon: homeLocation.lon };
       }
       s.expertMode = !!expertMode;

@@ -10,7 +10,6 @@ export default createLogic({
     const appState = {
       main: {
         homeLocation: state.main.homeLocation,
-        tool: null,
         expertMode: state.main.expertMode,
       },
       routePlanner: {
