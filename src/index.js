@@ -57,6 +57,10 @@ handleLocationChange(store, history.location);
 
 initAuthHelper(store);
 
+if (window.self !== window.top) {
+  document.body.classList.add('embedded');
+}
+
 render((
   <Provider store={store}>
     <Main />

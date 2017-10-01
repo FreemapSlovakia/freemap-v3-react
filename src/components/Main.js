@@ -81,7 +81,6 @@ class Main extends React.Component {
     progress: PropTypes.bool.isRequired,
     onLocationSet: PropTypes.func.isRequired,
     mouseCursor: PropTypes.string.isRequired,
-    embeddedMode: PropTypes.bool.isRequired,
     onCheckLogin: PropTypes.func.isRequired,
     ignoreEscape: PropTypes.bool.isRequired,
     showElevationChart: PropTypes.bool.isRequired,
@@ -105,10 +104,6 @@ class Main extends React.Component {
         this.props.onToolSet(null);
       }
     });
-
-    if (this.props.embeddedMode) {
-      document.body.classList.add('embedded');
-    }
 
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
@@ -141,9 +136,8 @@ class Main extends React.Component {
     this.props.onLocationSet(e.latitude, e.longitude, e.accuracy);
   }
 
-  openFreemapInNonEmbedMode = () => {
-    const currentURL = window.location.href;
-    window.open(currentURL.replace('&embed=true', ''), '_blank');
+  handleEmbedLogoClick = () => {
+    window.open(window.location.href, '_blank');
   }
 
   handleToolCloseClick = () => {
@@ -170,36 +164,39 @@ class Main extends React.Component {
 
   render() {
     const { lat, lon, zoom, mapType,
-      tool, activeModal, progress, mouseCursor, embeddedMode, showElevationChart, showGalleryPicker, onMapClear,
+      tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
       showLoginModal, onMapReset } = this.props;
 
     const showDefaultMenu = [null, 'location'].includes(tool);
 
     return (
       <div>
-        {/* embeddedMode && <button id="freemap-logo" className="embedded" onClick={this.openFreemapInNonEmbedMode} /> */}
         <Toasts />
 
         <div className="tool-buttons">
-          <Panel className="fm-toolbar">
-            <ButtonToolbar>
-              <ButtonGroup>
-                <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
-                <ToolsMenuButton />
-                <Button onClick={onMapClear} title="Vyčistiť mapu">
-                  <FontAwesomeIcon icon="eraser" />
-                </Button>
-                <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
-                  <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                </Button>
-                <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
-                  <FontAwesomeIcon icon="share" />
-                </Button>
-                <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-                <MoreMenuButton />
-              </ButtonGroup>
-            </ButtonToolbar>
-          </Panel>
+          {window.self === window.top ?
+            <Panel className="fm-toolbar">
+              <ButtonToolbar>
+                <ButtonGroup>
+                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+                  <ToolsMenuButton />
+                  <Button onClick={onMapClear} title="Vyčistiť mapu">
+                    <FontAwesomeIcon icon="eraser" />
+                  </Button>
+                  <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
+                    <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                  </Button>
+                  <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
+                    <FontAwesomeIcon icon="share" />
+                  </Button>
+                  <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                  <MoreMenuButton />
+                </ButtonGroup>
+              </ButtonToolbar>
+            </Panel>
+            :
+            <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+          }
           {tool &&
             <Panel className="fm-toolbar">
               {tool === 'search' && <SearchMenu />}
@@ -253,7 +250,6 @@ class Main extends React.Component {
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {showLoginModal && <LoginModal />}
-        {/* TODO !embeddedMode && <ProgressIndicator active={progress} /> */}
 
         <div className={`map-holder active-map-type-${mapType}`}>
           <Map
@@ -308,7 +304,6 @@ export default connect(
     activeModal: state.main.activeModal,
     progress: !!state.main.progress.length,
     mouseCursor: selectMouseCursor(state),
-    embeddedMode: state.main.embeddedMode,
     user: state.auth.user,
     ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
       || state.gallery.activeImageId),
