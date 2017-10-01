@@ -10,6 +10,7 @@ export const baseLayers = [
       attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
       minZoom: 8,
       maxNativeZoom: 16,
+      key: type.toLowerCase(),
     }),
   ),
   {
@@ -18,6 +19,7 @@ export const baseLayers = [
     icon: 'plane',
     minZoom: 0,
     maxNativeZoom: 18,
+    key: 's',
   },
   {
     name: 'OpenStreetMap',
@@ -28,6 +30,7 @@ export const baseLayers = [
     maxNativeZoom: 19,
     // showOnlyInExpertMode: true,
     attribution: 'Map data © <a href="http://openstreetmap.org">OpenStreetMap</a> contributors',
+    key: 'o',
   },
   {
     name: 'mtbmap.cz',
@@ -37,6 +40,7 @@ export const baseLayers = [
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
     attribution: 'Martin Tesař, osmmtb (at) gmail.com, prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+    key: 'm',
   },
 ];
 
@@ -46,6 +50,7 @@ export const overlayLayers = [
     type: 'I',
     icon: 'picture-o',
     minZoom: 0,
+    key: 'f',
   },
   {
     name: 'Lesné cesty NLC',
@@ -54,6 +59,7 @@ export const overlayLayers = [
     attribution: '© <a href="http://www.nlcsk.org/">NLC Zvolen</a>',
     minZoom: 14,
     maxNativeZoom: 16,
+    key: 'n',
   },
   {
     name: 'Turistické trasy',

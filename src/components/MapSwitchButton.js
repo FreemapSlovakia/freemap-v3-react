@@ -62,7 +62,7 @@ class MapSwitchButton extends React.Component {
               {
                 baseLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
-                  .map(({ name, type, icon, minZoom }) => (
+                  .map(({ name, type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleMapSelect(type)}
@@ -74,6 +74,8 @@ class MapSwitchButton extends React.Component {
                       <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
                         {name}
                       </span>
+                      {key && ' '}
+                      {key && <kbd>{key}</kbd>}
                     </MenuItem>
                   ))
               }
@@ -81,7 +83,7 @@ class MapSwitchButton extends React.Component {
               {
                 overlayLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
-                  .map(({ name, type, icon, minZoom }) => (
+                  .map(({ name, type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleOverlaySelect(type)}
@@ -93,6 +95,8 @@ class MapSwitchButton extends React.Component {
                       <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
                         {name}
                       </span>
+                      {key && ' '}
+                      {key && <kbd>{key}</kbd>}
                     </MenuItem>
                   ))
               }

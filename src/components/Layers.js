@@ -9,9 +9,6 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 
-const keyToLayer = { t: 'T', a: 'A', s: 'S', c: 'C', o: 'O', l: 'K' };
-const keyToOverlay = { n: 'N', f: 'I' };
-
 class Layers extends React.Component {
   static propTypes = {
     onMapTypeChange: PropTypes.func.isRequired,
@@ -74,18 +71,19 @@ class Layers extends React.Component {
       return;
     }
 
-    const layer = keyToLayer[event.key];
-    if (layer) {
-      this.props.onMapTypeChange(layer);
+    const baseLayer = baseLayers.find(l => l.key === event.key);
+    if (baseLayer) {
+      this.props.onMapTypeChange(baseLayer.type);
     }
 
-    const overlay = keyToOverlay[event.key];
-    if (overlay) {
+    const overlayLayer = overlayLayers.find(l => l.key === event.key);
+    if (overlayLayer) {
+      const { type } = overlayLayer;
       const next = new Set(this.props.overlays);
-      if (next.has(overlay)) {
-        next.delete(overlay);
+      if (next.has(type)) {
+        next.delete(type);
       } else {
-        next.add(overlay);
+        next.add(type);
       }
       this.props.onOverlaysChange([...next]);
     }
