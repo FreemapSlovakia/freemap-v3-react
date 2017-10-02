@@ -31,7 +31,7 @@ class Layers extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  getTileLayer({ type, url, attribution, minZoom, maxNativeZoom }) {
+  getTileLayer({ type, url, attribution, minZoom, maxNativeZoom, zIndex = 1 }) {
     if (type === 'S') {
       return (
         <BingLayer
@@ -39,6 +39,7 @@ class Layers extends React.Component {
           bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
           maxNativeZoom={maxNativeZoom}
           maxZoom={20}
+          zIndex={zIndex}
         />
       );
     }
@@ -49,6 +50,7 @@ class Layers extends React.Component {
         <GalleryLayer
           key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
           filter={galleryFilter}
+          zIndex={zIndex}
         />
       );
     }
@@ -62,6 +64,7 @@ class Layers extends React.Component {
         maxZoom={20}
         maxNativeZoom={maxNativeZoom}
         opacity={this.props.overlayOpacity[type] || 1.0}
+        zIndex={zIndex}
       />
     );
   }

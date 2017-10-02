@@ -51,6 +51,7 @@ export const overlayLayers = [
     icon: 'picture-o',
     minZoom: 0,
     key: 'f',
+    zIndex: 3,
   },
   {
     name: 'Lesné cesty NLC',
@@ -60,6 +61,7 @@ export const overlayLayers = [
     minZoom: 14,
     maxNativeZoom: 16,
     key: 'n',
+    zIndex: 2,
   },
   {
     name: 'Turistické trasy',
@@ -68,6 +70,7 @@ export const overlayLayers = [
     minZoom: 8,
     maxNativeZoom: 16,
     showOnlyInExpertMode: true,
+    zIndex: 2,
   },
   {
     name: 'Cyklotrasy',
@@ -76,6 +79,7 @@ export const overlayLayers = [
     minZoom: 8,
     maxNativeZoom: 16,
     showOnlyInExpertMode: true,
+    zIndex: 2,
   },
   {
     name: 'Render. klienti',
@@ -84,6 +88,7 @@ export const overlayLayers = [
     minZoom: 8,
     maxNativeZoom: 12,
     showOnlyInExpertMode: true,
+    zIndex: 4,
   },
 ];
 

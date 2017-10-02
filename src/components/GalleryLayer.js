@@ -93,7 +93,7 @@ export default class FooLayer extends GridLayer {
 
   // eslint-disable-next-line
   createLeafletElement(props) {
-    return new galleryLayer({ zIndex: 1000, ...props });
+    return new galleryLayer({ ...props });
   }
 
   // updateLeafletElement(fromProps, toProps) {
