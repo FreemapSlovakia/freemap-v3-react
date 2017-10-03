@@ -3,16 +3,30 @@ import { exportGpx, createElement } from 'fm3/gpxExporter';
 
 export const gpxExportLogic = createLogic({
   type: 'EXPORT_GPX',
-  process({ getState }, dispatch, done) {
+  process({ getState, action }, dispatch, done) {
     exportGpx('export', (doc) => {
       const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
 
-      addADMeasurement(doc, distanceMeasurement);
-      addADMeasurement(doc, areaMeasurement); // TODO add info about area
-      addElevationMeasurement(doc, elevationMeasurement);
-      addInfoPoint(doc, infoPoint);
-      addObjects(doc, objects);
-      addPlannedRoute(doc, routePlanner);
+      const set = new Set(action.payload);
+
+      if (set.has('distanceMeasurement')) {
+        addADMeasurement(doc, distanceMeasurement);
+      }
+      if (set.has('areaMeasurement')) {
+        addADMeasurement(doc, areaMeasurement); // TODO add info about area
+      }
+      if (set.has('elevationMeasurement')) {
+        addElevationMeasurement(doc, elevationMeasurement);
+      }
+      if (set.has('infoPoint')) {
+        addInfoPoint(doc, infoPoint);
+      }
+      if (set.has('objects')) {
+        addObjects(doc, objects);
+      }
+      if (set.has('plannedRoute')) {
+        addPlannedRoute(doc, routePlanner);
+      }
 
       done();
     });

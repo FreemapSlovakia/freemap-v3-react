@@ -30,8 +30,8 @@ export function mainLoadState(payload) {
   return { type: 'MAIN_LOAD_STATE', payload };
 }
 
-export function exportGpx() {
-  return { type: 'EXPORT_GPX' };
+export function exportGpx(exportables) {
+  return { type: 'EXPORT_GPX', payload: exportables };
 }
 
 export function clearMap() {

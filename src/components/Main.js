@@ -56,13 +56,14 @@ import MapDetails from 'fm3/components/MapDetails';
 
 import ShareMapModal from 'fm3/components/ShareMapModal';
 import EmbedMapModal from 'fm3/components/EmbedMapModal';
+import ExportGpxModal from 'fm3/components/ExportGpxModal';
 import LoginModal from 'fm3/components/LoginModal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
-import { setTool, setLocation, exportGpx, clearMap, toggleLocate } from 'fm3/actions/mainActions';
+import { setTool, setLocation, clearMap, toggleLocate, setActiveModal } from 'fm3/actions/mainActions';
 import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -256,6 +257,7 @@ class Main extends React.Component {
         {activeModal === 'settings' && <Settings />}
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
+        {activeModal === 'export-gpx' && <ExportGpxModal />}
         {showLoginModal && <LoginModal />}
 
         <div className={`map-holder active-map-type-${mapType}`}>
@@ -336,7 +338,7 @@ export default connect(
       dispatch(authCheckLogin());
     },
     onGpxExport() {
-      dispatch(exportGpx());
+      dispatch(setActiveModal('export-gpx'));
     },
     onMapClear() {
       dispatch(clearMap());
