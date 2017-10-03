@@ -1,37 +1,120 @@
+import axios from 'axios';
 import { createLogic } from 'redux-logic';
-import { exportGpx, createElement } from 'fm3/gpxExporter';
+import FileSaver from 'file-saver';
+import qs from 'query-string';
+
+import { createElement, addAttribute, GPX_NS } from 'fm3/gpxExporter';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { toastsAddError } from 'fm3/actions/toastsActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export const gpxExportLogic = createLogic({
   type: 'EXPORT_GPX',
-  process({ getState, action }, dispatch, done) {
-    exportGpx('export', (doc) => {
-      const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
+  process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
+    const doc = document.implementation.createDocument(GPX_NS, 'gpx');
 
-      const set = new Set(action.payload);
+    addAttribute(doc.documentElement, 'version', '1.1');
+    addAttribute(doc.documentElement, 'creator', 'FreemapV3');
 
-      if (set.has('distanceMeasurement')) {
-        addADMeasurement(doc, distanceMeasurement);
-      }
-      if (set.has('areaMeasurement')) {
-        addADMeasurement(doc, areaMeasurement); // TODO add info about area
-      }
-      if (set.has('elevationMeasurement')) {
-        addElevationMeasurement(doc, elevationMeasurement);
-      }
-      if (set.has('infoPoint')) {
-        addInfoPoint(doc, infoPoint);
-      }
-      if (set.has('objects')) {
-        addObjects(doc, objects);
-      }
-      if (set.has('plannedRoute')) {
-        addPlannedRoute(doc, routePlanner);
-      }
+    createElement(doc.documentElement, 'metadata');
 
-      done();
-    });
+    const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
+
+    const set = new Set(action.payload);
+
+    const promises = [];
+
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
+    if (set.has('pictures')) {
+      const source = axios.CancelToken.source();
+      cancelled$.subscribe(() => {
+        source.cancel();
+      });
+
+      const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = getState().gallery.filter;
+
+      const b = getMapLeafletElement().getBounds();
+
+      const p = axios.get(`${process.env.API_URL}/gallery/pictures`, {
+        params: {
+          by: 'bbox',
+          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+          tag,
+          userId,
+          ratingFrom,
+          ratingTo,
+          takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
+          takenAtTo: takenAtTo && takenAtTo.toISOString(),
+          createdAtFrom: createdAtFrom && createdAtFrom.toISOString(),
+          createdAtTo: createdAtTo && createdAtTo.toISOString(),
+          fields: ['id', 'title', 'description', 'takenAt'],
+        },
+        paramsSerializer: qs.stringify,
+        validateStatus: status => status === 200,
+        cancelToken: source.token,
+      })
+        .then(({ data }) => {
+          addPictures(doc, data);
+        })
+        .catch((e) => {
+          dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
+        });
+
+      promises.push(p);
+    }
+    if (set.has('distanceMeasurement')) {
+      addADMeasurement(doc, distanceMeasurement);
+    }
+    if (set.has('areaMeasurement')) {
+      addADMeasurement(doc, areaMeasurement); // TODO add info about area
+    }
+    if (set.has('elevationMeasurement')) {
+      addElevationMeasurement(doc, elevationMeasurement);
+    }
+    if (set.has('infoPoint')) {
+      addInfoPoint(doc, infoPoint);
+    }
+    if (set.has('objects')) {
+      addObjects(doc, objects);
+    }
+    if (set.has('plannedRoute')) {
+      addPlannedRoute(doc, routePlanner);
+    }
+
+    Promise.all(promises)
+      .then(() => {
+        storeDispatch(stopProgress(pid));
+        const serializer = new XMLSerializer();
+
+        // eslint-disable-next-line
+        //console.log(serializer.serializeToString(doc));
+
+        FileSaver.saveAs(new Blob([serializer.serializeToString(doc)], { type: 'application/json' }), 'export.gpx');
+        done();
+      });
   },
 });
+
+function addPictures(doc, pictures) {
+  pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
+    if (takenAt) {
+      createElement(wptEle, 'time', takenAt);
+    }
+    if (title) {
+      createElement(wptEle, 'name', title);
+    }
+    if (description) {
+      createElement(wptEle, 'description', description);
+    }
+    const link = createElement(wptEle, 'link', undefined, { href: `${process.env.API_URL}/gallery/pictures/${id}/image` });
+    createElement(link, 'type', 'image/jpeg');
+
+    // TODO add tags and author to cmt
+  });
+}
 
 function addADMeasurement(doc, { points }) {
   const rteEle = createElement(doc.documentElement, 'rte');

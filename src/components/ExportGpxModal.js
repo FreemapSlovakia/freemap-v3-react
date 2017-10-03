@@ -14,7 +14,7 @@ const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
   { type: 'plannedRoute', icon: 'map-signs', name: 'naplánovanú trasu' },
   { type: 'objects', icon: 'map-marker', name: 'miesta' },
-  // { type: 'pictures', icon: 'picture-o', name: 'fotografie (vo viditeľnej časti mapy)' },
+  { type: 'pictures', icon: 'picture-o', name: 'fotografie (vo viditeľnej časti mapy)' },
   { type: 'distanceMeasurement', icon: 'arrows-h', name: 'meranie vzdialenosti' },
   { type: 'areaMeasurement', icon: 'square', name: 'meranie plochy' },
   { type: 'elevationMeasurement', icon: 'long-arrow-up', name: 'meranie výšky a polohy' },
@@ -108,7 +108,7 @@ export default connect(
       exportables.push('objects');
     }
     if (state.map.overlays.includes('I')) {
-      // exportables.push('pictures');
+      exportables.push('pictures');
     }
     if (state.areaMeasurement.points.length) {
       exportables.push('areaMeasurement');
