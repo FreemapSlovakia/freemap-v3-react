@@ -14,9 +14,20 @@ export const gpxExportLogic = createLogic({
     const doc = document.implementation.createDocument(GPX_NS, 'gpx');
 
     addAttribute(doc.documentElement, 'version', '1.1');
-    addAttribute(doc.documentElement, 'creator', 'FreemapV3');
+    addAttribute(doc.documentElement, 'creator', 'http://next.freemap.sk/');
 
-    createElement(doc.documentElement, 'metadata');
+    const meta = createElement(doc.documentElement, 'metadata');
+    const copyright = createElement(meta, 'copyright', undefined, { author: 'OpenStreetMap contributors' });
+    createElement(copyright, 'license', 'http://www.openstreetmap.org/copyright');
+    createElement(meta, 'desc', 'Export from http://next.freemap.sk/');
+    const author = createElement(meta, 'author');
+    createElement(author, 'name', 'Freemap Slovakia');
+    createElement(author, 'email', 'freemap@freemap.sk');
+    const link = createElement(author, 'link', undefined, { href: 'https://www.freemap.sk/' });
+    createElement(link, 'text', 'Freemap Slovakia');
+    createElement(link, 'type', 'text/html');
+    createElement(meta, 'time', new Date().toISOString());
+    createElement(meta, 'keywords', action.payload.join(' '));
 
     const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
 
