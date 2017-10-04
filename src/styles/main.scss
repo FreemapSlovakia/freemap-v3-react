@@ -76,16 +76,22 @@ button#freemap-logo {
   outline: none;
   background-color: rgba(255, 255, 255, 0);
   background-image: url(../images/freemap-logo.png);
-  background-size: 130px 34px;
+  background-size: 122px 34px;
   background-repeat: no-repeat;
   margin: 0 4px;
   height: 34px;
-  width: 130px;
+  width: 122px;
 	-webkit-transform: scale(1);
 	transform: scale(1);
 	-webkit-transition: .1s ease-in-out;
   transition: .1s ease-in-out;
-  
+
+  @media ($smartphone-screen) {
+    background-image: url(../images/freemap-logo-small.png);
+    background-size: 45px 34px;
+    width: 45px;
+  }
+
   &.in-progress {
     animation: pulse 1s infinite;
   }
@@ -121,7 +127,7 @@ button#freemap-logo {
       font-size: 14px;
       text-align: left;
       background-color: #fff;
-      
+
       &>li>a {
         display: block;
         padding: 3px 20px;
@@ -134,7 +140,7 @@ button#freemap-logo {
         &:hover {
           text-decoration: none;
           color: #262626;
-          background-color: #f5f5f5;          
+          background-color: #f5f5f5;
         }
       }
 
@@ -142,7 +148,7 @@ button#freemap-logo {
         height: 1px;
         margin: 9px 0;
         overflow: hidden;
-        background-color: #e5e5e5;        
+        background-color: #e5e5e5;
       }
     }
   }
