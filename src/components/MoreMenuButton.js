@@ -13,6 +13,7 @@ import { authStartLogout } from 'fm3/actions/authActions';
 class MoreMenuButton extends React.Component {
   static propTypes = {
     onSettingsShow: PropTypes.func.isRequired,
+    onGpxExport: PropTypes.func.isRequired,
     onShare: PropTypes.func.isRequired,
     onEmbed: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
@@ -62,6 +63,11 @@ class MoreMenuButton extends React.Component {
     this.props.onSettingsShow();
   }
 
+  handleGpxExportClick = () => {
+    this.setState({ show: false });
+    this.props.onGpxExport();
+  }
+
   handleEmbedClick = () => {
     this.setState({ show: false });
     this.props.onEmbed();
@@ -90,6 +96,9 @@ class MoreMenuButton extends React.Component {
                 <FontAwesomeIcon icon="cog" /> Nastavenia
               </MenuItem>
               <MenuItem divider />
+              <MenuItem onClick={this.handleGpxExportClick}>
+                <FontAwesomeIcon icon="share" /> Exportovať do GPX
+              </MenuItem>
               <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/FileDownload" target="_blank">
                 <FontAwesomeIcon icon="mobile" /> Exporty mapy
               </MenuItem>
@@ -128,6 +137,9 @@ export default connect(
   dispatch => ({
     onSettingsShow() {
       dispatch(setActiveModal('settings'));
+    },
+    onGpxExport() {
+      dispatch(setActiveModal('export-gpx'));
     },
     onShare() {
       dispatch(setActiveModal('share'));

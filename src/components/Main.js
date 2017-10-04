@@ -63,7 +63,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
-import { setTool, setLocation, clearMap, toggleLocate, setActiveModal } from 'fm3/actions/mainActions';
+import { setTool, setLocation, clearMap, toggleLocate } from 'fm3/actions/mainActions';
 import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -88,7 +88,6 @@ class Main extends React.Component {
     ignoreEscape: PropTypes.bool.isRequired,
     showElevationChart: PropTypes.bool.isRequired,
     showGalleryPicker: PropTypes.bool.isRequired,
-    onGpxExport: PropTypes.func.isRequired,
     onMapClear: PropTypes.func.isRequired,
     onLocate: PropTypes.func.isRequired,
     locate: PropTypes.bool.isRequired,
@@ -188,9 +187,6 @@ class Main extends React.Component {
                     </Button>
                     <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
                       <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                    </Button>
-                    <Button onClick={this.props.onGpxExport} title="Exportovať do GPX">
-                      <FontAwesomeIcon icon="share" />
                     </Button>
                     <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
                     <MoreMenuButton />
@@ -336,9 +332,6 @@ export default connect(
     },
     onCheckLogin() {
       dispatch(authCheckLogin());
-    },
-    onGpxExport() {
-      dispatch(setActiveModal('export-gpx'));
     },
     onMapClear() {
       dispatch(clearMap());
