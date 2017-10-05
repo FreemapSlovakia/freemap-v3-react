@@ -1,36 +1,43 @@
 # Freemap v3
 
-Latest version of web portal maintained by [Slovak OpenStreetMap community](https://groups.google.com/forum/#!forum/osm_sk). Provides access to maps rendered specifically for Slovakia, e.g., map of touristic trails, map of cycle routes and (cross-country) skiing map.
+Next version of web portal maintained by [Slovak OpenStreetMap community](https://groups.google.com/forum/#!forum/osm_sk).
+
+Features:
+
+* maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country skiing map)
+* picture gallery
+* various tools (searching, measurement, route planning, changesets, ...)
+
+Note that the protal is (so far) only in Slovak language.
+
+## Requirements
+
+* Node 8
+* [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
 
 ## Compiling and running in development mode
 
-Install the necessary libs:
+1. Add `local.freemap.sk` to `127.0.0.1` in your system hosts file (for Linux and MacOS it is `/etc/hosts`).
 
-```
-npm i
-```
+1. Install the necessary libs:
 
-and run webserver which also compiles the source files on change:
+    ```bash
+    npm i
+    ```
 
-```
-npm run-script livereload
-```
+1. Run webserver which also compiles the source files on change:
 
-Then open the application by visiting `http://localhost:8080/` (address printed by `npm run-script livereload` command).
+    ```bash
+    npm run livereload
+    ```
 
-### Connecting to osm.org auth in dev env
-
-In order to successfully login via openstreetmap.org auth from the web app:
-
-1. add `127.0.0.1      local.freemap.sk` to `/etc/hosts`
-2. in browser, go to url `http://local.freemap.sk:8080/`
-3. click on "Prihlasenie" in menu 
-
-This procedure is meant to proceed successfully with default CORS policy (no bypass-cors plugin in required).
+1. Open the application by visiting `http://local.freemap.sk:9000/`.
 
 ## Compiling for the production
 
-```
+```bash
 npm i
 NODE_ENV=production ./node_modules/.bin/webpack
 ```
+
+You'll then find all static web resources in `dist` directory.
