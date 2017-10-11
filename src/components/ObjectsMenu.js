@@ -30,7 +30,9 @@ class ObjectsMenu extends React.Component {
     const items = poiTypes
       .filter(({ group }) => group === gid)
       .filter(({ title }) => title.toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
-      .map(({ group, title, id, icon }) => (
+      .map(({
+        group, title, id, icon,
+      }) => (
         <MenuItem key={id} eventKey={id} onSelect={this.select}>
           <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {title}
         </MenuItem>

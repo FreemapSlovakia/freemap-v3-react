@@ -80,9 +80,7 @@ function displayAsMultiLineString(result) {
   return result && (result.geojson.type === 'MultiLineString');
 }
 
-export default connect(
-  state => ({
-    highlightedResult: state.search.highlightedResult,
-    selectedResult: state.search.selectedResult,
-  }),
-)(SearchResults);
+export default connect(state => ({
+  highlightedResult: state.search.highlightedResult,
+  selectedResult: state.search.selectedResult,
+}))(SearchResults);

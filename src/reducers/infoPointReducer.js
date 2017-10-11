@@ -9,7 +9,9 @@ export default function infoPoint(state = initialState, action) {
     case 'CLEAR_MAP':
       return initialState;
     case 'INFO_POINT_SET':
-      return { ...state, lat: action.payload.lat, lon: action.payload.lon, label: action.payload.label };
+      return {
+        ...state, lat: action.payload.lat, lon: action.payload.lon, label: action.payload.label,
+      };
     case 'INFO_POINT_CHANGE_POSITION':
       return { ...state, lat: action.payload.lat, lon: action.payload.lon };
     case 'INFO_POINT_CHANGE_LABEL':

@@ -7,20 +7,24 @@ import Toast from 'fm3/components/Toast';
 
 import 'fm3/styles/toasts.scss';
 
-function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart }) {
+function Toasts({
+  toasts, onAction, onTimeoutStop, onTimeoutRestart,
+}) {
   return (
     <div className="toasts">
-      {toasts.map(({ message, id, actions, style }) => (
-        <Toast
-          key={id}
-          id={id}
-          message={message}
-          style={style}
-          onAction={onAction}
-          actions={actions}
-          onTimeoutStop={onTimeoutStop}
-          onTimeoutRestart={onTimeoutRestart}
-        />
+      {toasts.map(({
+ message, id, actions, style,
+}) => (
+  <Toast
+    key={id}
+    id={id}
+    message={message}
+    style={style}
+    onAction={onAction}
+    actions={actions}
+    onTimeoutStop={onTimeoutStop}
+    onTimeoutRestart={onTimeoutRestart}
+  />
       ))}
     </div>
   );
@@ -30,20 +34,16 @@ Toasts.propTypes = {
   onAction: PropTypes.func.isRequired,
   onTimeoutStop: PropTypes.func.isRequired,
   onTimeoutRestart: PropTypes.func.isRequired,
-  toasts: PropTypes.arrayOf(
-    PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      message: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]),
+  toasts: PropTypes.arrayOf(PropTypes.shape({
+    id: PropTypes.number.isRequired,
+    message: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]),
+    style: PropTypes.string,
+    actions: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string,
+      action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
       style: PropTypes.string,
-      actions: PropTypes.arrayOf(
-        PropTypes.shape({
-          name: PropTypes.string,
-          action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
-          style: PropTypes.string,
-        }),
-      ).isRequired,
-    }),
-  ).isRequired,
+    })).isRequired,
+  })).isRequired,
 };
 
 export default connect(

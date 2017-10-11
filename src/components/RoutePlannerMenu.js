@@ -101,9 +101,11 @@ class RoutePlannerMenu extends React.Component {
   }
 
   render() {
-    const { pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
+    const {
+      pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
-      routeFound, shapePoints } = this.props;
+      routeFound, shapePoints,
+    } = this.props;
 
     return (
       <span>

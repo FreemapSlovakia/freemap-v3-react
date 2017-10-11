@@ -13,8 +13,12 @@ export const urlLogic = createLogic({
   ],
   process({ getState, action }, dispatch, done) {
     const {
-      map: { mapType, overlays, zoom, lat, lon },
-      routePlanner: { start, finish, midpoints, transportType },
+      map: {
+        mapType, overlays, zoom, lat, lon,
+      },
+      routePlanner: {
+        start, finish, midpoints, transportType,
+      },
       trackViewer: { trackUID, gpxUrl },
       gallery: { activeImageId },
       infoPoint,
@@ -57,32 +61,24 @@ export const urlLogic = createLogic({
     }
 
     if (infoPoint.lat && infoPoint.lon) {
-      queryParts.push(
-        `info-point=${serializePoint(infoPoint)}`,
-      );
+      queryParts.push(`info-point=${serializePoint(infoPoint)}`);
       if (infoPoint.label) {
         queryParts.push(`info-point-label=${encodeURIComponent(infoPoint.label)}`);
       }
     }
 
     if (distanceMeasurementPoints && distanceMeasurementPoints.length) {
-      queryParts.push(
-        `distance-measurement-points=${distanceMeasurementPoints
-          .map(point => serializePoint(point)).join(',')}`,
-      );
+      queryParts.push(`distance-measurement-points=${distanceMeasurementPoints
+        .map(point => serializePoint(point)).join(',')}`);
     }
 
     if (areaMeasurementPoints && areaMeasurementPoints.length) {
-      queryParts.push(
-        `area-measurement-points=${areaMeasurementPoints
-          .map(point => serializePoint(point)).join(',')}`,
-      );
+      queryParts.push(`area-measurement-points=${areaMeasurementPoints
+        .map(point => serializePoint(point)).join(',')}`);
     }
 
     if (elevationMeasurementPoint) {
-      queryParts.push(
-        `elevation-measurement-point=${serializePoint(elevationMeasurementPoint)}`,
-      );
+      queryParts.push(`elevation-measurement-point=${serializePoint(elevationMeasurementPoint)}`);
     }
 
     if (galleryFilter.userId) {
@@ -119,7 +115,7 @@ export const urlLogic = createLogic({
 
     const search = `?${queryParts.join('&')}`;
 
-    if (location.search !== search) {
+    if (window.location.search !== search) {
       history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ search });
     }
 

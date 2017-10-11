@@ -91,7 +91,7 @@ class TrackViewerMenu extends React.Component {
   }
 
   trackGeojsonIsSuitableForElevationChart = () => {
-    const trackGeojson = this.props.trackGeojson;
+    const { trackGeojson } = this.props;
     if (trackGeojson && trackGeojson.features) {
       const firstGeojsonFeature = trackGeojson.features[0];
       const isLineString = firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString';
@@ -103,11 +103,11 @@ class TrackViewerMenu extends React.Component {
 
   showTrackInfo = () => {
     const tableData = [];
-    const startTime = this.props.startPoints[0].startTime;
+    const { startTime } = this.props.startPoints[0];
     if (startTime) {
       tableData.push(['Čas štartu', timeFormat.format(new Date(startTime))]);
     }
-    const finishTime = this.props.finishPoints[0].finishTime;
+    const { finishTime } = this.props.finishPoints[0];
     if (finishTime) {
       tableData.push(['Čas v cieli', timeFormat.format(new Date(finishTime))]);
     }
@@ -120,7 +120,7 @@ class TrackViewerMenu extends React.Component {
       tableData.push(['Trvanie', `${hours} hodín ${minutes} minút`]);
     }
 
-    const lengthInKm = this.props.finishPoints[0].lengthInKm;
+    const { lengthInKm } = this.props.finishPoints[0];
     tableData.push(['Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
 
     if (duration) {
@@ -177,7 +177,9 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const { activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
+    const {
+      activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy,
+    } = this.props;
 
     let shareURL = '';
     if (trackUID) {

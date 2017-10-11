@@ -1,18 +1,16 @@
 const baseSpecs = [['A', 'Automapa', 'car'], ['T', 'Turistická', 'male'], ['C', 'Cyklomapa', 'bicycle'], ['K', 'Lyžiarska', 'snowflake-o']];
 
 export const baseLayers = [
-  ...baseSpecs.map(
-    ([type, name, icon]) => ({
-      name,
-      type,
-      icon,
-      url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
-      attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
-      minZoom: 8,
-      maxNativeZoom: 16,
-      key: type.toLowerCase(),
-    }),
-  ),
+  ...baseSpecs.map(([type, name, icon]) => ({
+    name,
+    type,
+    icon,
+    url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
+    attribution: 'prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+    minZoom: 8,
+    maxNativeZoom: 16,
+    key: type.toLowerCase(),
+  })),
   {
     name: 'Satelitná',
     type: 'S',

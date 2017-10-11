@@ -11,7 +11,9 @@ import Form from 'react-bootstrap/lib/Form';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-function GalleryMenu({ onUpload, onFilterShow, filterIsActive, onOrderSelect }) {
+function GalleryMenu({
+  onUpload, onFilterShow, filterIsActive, onOrderSelect,
+}) {
   return (
     <Form inline>
       <span className="fm-label"><FontAwesomeIcon icon="picture-o" /><span className="hidden-xs"> Fotografie</span></span>

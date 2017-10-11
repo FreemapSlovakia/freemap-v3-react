@@ -35,7 +35,7 @@ export default function initAuthHelper(store) {
   window.addEventListener('message', (e) => {
     /* eslint-disable no-underscore-dangle */
 
-    if (e.origin !== location.origin || typeof e.data !== 'object' || !e.data.__freemap || !e.data.__freemap.oauthParams) {
+    if (e.origin !== window.location.origin || typeof e.data !== 'object' || !e.data.__freemap || !e.data.__freemap.oauthParams) {
       return;
     }
 

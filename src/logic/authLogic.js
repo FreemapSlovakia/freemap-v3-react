@@ -12,8 +12,10 @@ const authLoginWithOsmLogic = createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    const w = window.open('about:blank', 'osm-login',
-      `width=600,height=550,left=${screen.width / 2 - 600 / 2},top=${screen.height / 2 - 550 / 2}`);
+    const w = window.open(
+      'about:blank', 'osm-login',
+      `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${window.screen.height / 2 - 550 / 2}`,
+    );
 
     axios(`${process.env.API_URL}/auth/login`, {
       method: 'post',

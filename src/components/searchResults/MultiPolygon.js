@@ -3,9 +3,7 @@ import { Polygon as LeafletPolygon } from 'react-leaflet';
 import * as FmPropTypes from 'fm3/propTypes';
 
 export default function MultiPolygon({ searchResult }) {
-  const polygonsLatLons = searchResult.geojson.coordinates.map(
-    polygonCoords => polygonCoords[0].map(lonlat => L.latLng(lonlat[1], lonlat[0])),
-  );
+  const polygonsLatLons = searchResult.geojson.coordinates.map(polygonCoords => polygonCoords[0].map(lonlat => L.latLng(lonlat[1], lonlat[0])));
 
   return (
     <div>

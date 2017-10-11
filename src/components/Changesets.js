@@ -9,8 +9,12 @@ import { changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 
 import 'fm3/styles/changesets.scss';
 
-const timeFormat = new Intl.DateTimeFormat('sk',
-  { day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit' });
+const timeFormat = new Intl.DateTimeFormat(
+  'sk',
+  {
+    day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit',
+  },
+);
 
 const ONE_DAY = (1000 * 60 * 60 * 24);
 
@@ -89,7 +93,14 @@ export default connect(
           <dl className="dl-horizontal">
             <dt>Autor:</dt>
             <dd>
-              <a role="link" tabIndex={0} style={{ cursor: 'pointer' }} onClick={() => { dispatch(changesetsSetAuthorName(changeset.userName)); }}>{changeset.userName}</a>
+              <a
+                role="link"
+                tabIndex={0}
+                style={{ cursor: 'pointer' }}
+                onClick={() => { dispatch(changesetsSetAuthorName(changeset.userName)); }}
+              >
+                {changeset.userName}
+              </a>
             </dd>
             <dt>Popis:</dt>
             <dd>{changeset.description || <i>bez popisu</i>}</dd>

@@ -14,8 +14,6 @@ MapDetails.propTypes = {
   trackInfoPoints: FmPropTypes.points,
 };
 
-export default connect(
-  state => ({
-    trackInfoPoints: state.mapDetails.trackInfoPoints,
-  }),
-)(MapDetails);
+export default connect(state => ({
+  trackInfoPoints: state.mapDetails.trackInfoPoints,
+}))(MapDetails);

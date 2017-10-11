@@ -14,13 +14,11 @@ export default class Toast extends React.Component {
     onAction: PropTypes.func.isRequired,
     onTimeoutStop: PropTypes.func.isRequired,
     onTimeoutRestart: PropTypes.func.isRequired,
-    actions: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string,
-        action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
-        style: PropTypes.string,
-      }),
-    ).isRequired,
+    actions: PropTypes.arrayOf(PropTypes.shape({
+      name: PropTypes.string,
+      action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
+      style: PropTypes.string,
+    })).isRequired,
   }
 
   handleMouseEnter = () => {
@@ -36,7 +34,9 @@ export default class Toast extends React.Component {
   }
 
   render() {
-    const { message, actions, onAction, id, style } = this.props;
+    const {
+      message, actions, onAction, id, style,
+    } = this.props;
     const defaultAction = actions.find(({ name }) => !name);
     const clickHandler = defaultAction ? () => onAction(id, defaultAction.action) : undefined;
     const buttonActions = actions.filter(({ name }) => name);

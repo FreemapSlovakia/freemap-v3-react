@@ -25,9 +25,11 @@ class InfoPoint extends React.Component {
   }
 
   render() {
-    const { lat, lon, label, inEditMode } = this.props;
-    return (
-      lat && <RichMarker
+    const {
+      lat, lon, label, inEditMode,
+    } = this.props;
+    return lat && (
+      <RichMarker
         faIcon="info"
         faIconLeftPadding="2px"
         draggable={inEditMode}

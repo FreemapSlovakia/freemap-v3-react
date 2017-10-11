@@ -68,7 +68,8 @@ class Settings extends React.Component {
   }
 
   handleSave = () => {
-    this.props.onSave(this.state.tileFormat,
+    this.props.onSave(
+      this.state.tileFormat,
       this.state.homeLocation,
       this.state.nlcOpacity,
       this.state.touristOverlayOpacity,
@@ -79,7 +80,9 @@ class Settings extends React.Component {
   }
 
   render() {
-    const { onClose, onHomeLocationSelect, selectingHomeLocation, zoom } = this.props;
+    const {
+      onClose, onHomeLocationSelect, selectingHomeLocation, zoom,
+    } = this.props;
     const { homeLocation, homeLocationCssClasses } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
 

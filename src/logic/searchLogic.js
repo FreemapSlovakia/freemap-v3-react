@@ -30,20 +30,21 @@ export default createLogic({
     })
       .then(({ data }) => {
         const results = data.results.map((d, id) => {
-          const name = d.properties.name;
+          const { name } = d.properties;
           const geometryType = d.geometry.type;
           const tags = { name, type: geometryType };
           let centerLonlat;
           if (geometryType === 'Point') {
             centerLonlat = d.geometry.coordinates;
           } else if (geometryType === 'MultiLineString') {
-            centerLonlat = d.geometry.coordinates[0][0];
+            [[centerLonlat]] = d.geometry.coordinates;
           } else {
-            centerLonlat = d.geometry.coordinates[0];
+            [centerLonlat] = d.geometry.coordinates;
           }
-          const centerLat = centerLonlat[1];
-          const centerLon = centerLonlat[0];
-          return { id, label: name, geojson: d.geometry, lat: centerLat, lon: centerLon, tags };
+          const [centerLon, centerLat] = centerLonlat;
+          return {
+            id, label: name, geojson: d.geometry, lat: centerLat, lon: centerLon, tags,
+          };
         });
         dispatch(searchSetResults(results));
       })

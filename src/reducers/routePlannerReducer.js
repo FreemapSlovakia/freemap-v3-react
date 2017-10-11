@@ -43,7 +43,8 @@ export default function routePlanner(state = initialState, action) {
     case 'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY':
       return { ...state, itineraryIsVisible: !state.itineraryIsVisible };
     case 'ROUTE_PLANNER_SET_RESULT':
-      return { ...state,
+      return {
+        ...state,
         shapePoints: action.payload.shapePoints,
         itinerary: action.payload.itinerary,
         distance: action.payload.distance,

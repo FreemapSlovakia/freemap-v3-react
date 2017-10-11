@@ -13,7 +13,7 @@ export default createLogic({
   type: 'ELEVATION_CHART_SET_TRACK_GEOJSON',
   cancelType: ['ELEVATION_CHART_SET_TRACK_GEOJSON', 'SET_TOOL', 'MAP_RESET', 'ELEVATION_CHART_CLOSE'],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
-    const trackGeojson = getState().elevationChart.trackGeojson;
+    const { trackGeojson } = getState().elevationChart;
     const totalDistanceInKm = turfLineDistance(trackGeojson);
     let deltaInMeters;
     if (totalDistanceInKm < 1.0) {
@@ -48,7 +48,9 @@ function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispa
       const distanceToPreviousPointInMeters = distance(lat, lon, prevLat, prevLon);
       distanceFromStartInMeters += distanceToPreviousPointInMeters;
       if (currentXAxisPointCounter * deltaInMeters <= distanceFromStartInMeters) {
-        elevationProfilePoints.push({ lat, lon, ele, distanceFromStartInMeters });
+        elevationProfilePoints.push({
+          lat, lon, ele, distanceFromStartInMeters,
+        });
         currentXAxisPointCounter += 1;
       }
     }

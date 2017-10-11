@@ -30,14 +30,16 @@ export function getMapStateFromUrl(location) {
 
   const layersOK = layersRegExp.test(layers);
 
-  if (!layersOK || isNaN(lat) || isNaN(lon) || isNaN(zoom)) {
+  if (!layersOK || Number.isNaN(lat) || Number.isNaN(lon) || Number.isNaN(zoom)) {
     return null;
   }
 
   const mapType = layers.charAt(0);
   const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
 
-  return { lat, lon, zoom, mapType, overlays };
+  return {
+    lat, lon, zoom, mapType, overlays,
+  };
 }
 
 export function getMapStateDiffFromUrl(state1, state2) {
@@ -45,7 +47,9 @@ export function getMapStateDiffFromUrl(state1, state2) {
     return null;
   }
 
-  const { lat, lon, zoom, mapType, overlays } = state1;
+  const {
+    lat, lon, zoom, mapType, overlays,
+  } = state1;
   const changes = {};
 
   if (mapType !== state2.mapType) {

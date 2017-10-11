@@ -99,7 +99,7 @@ class AreaMeasurementResult extends React.Component {
 
     return (
       <div>
-        {!isNaN(areaSize) &&
+        {!Number.isNaN(areaSize) &&
           <RichMarker
             autoOpenPopup
             interactive={false}

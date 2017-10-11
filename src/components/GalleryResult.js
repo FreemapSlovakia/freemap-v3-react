@@ -48,7 +48,9 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal } = this.props;
+    const {
+      activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal,
+    } = this.props;
 
     return (
       <div>

@@ -25,18 +25,18 @@ class GalleryViewerModal extends React.Component {
       name: PropTypes.string.isRequired,
       count: PropTypes.number.isRequired,
     }).isRequired).isRequired,
-    users: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        count: PropTypes.number.isRequired,
-      }).isRequired,
-    ).isRequired,
+    users: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      name: PropTypes.string.isRequired,
+      count: PropTypes.number.isRequired,
+    }).isRequired).isRequired,
   }
 
   constructor(props) {
     super(props);
-    const { tag, userId, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo, ratingFrom, ratingTo } = props.filter;
+    const {
+      tag, userId, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo, ratingFrom, ratingTo,
+    } = props.filter;
     this.state = {
       tag: tag || '',
       userId: typeof userId === 'number' ? userId.toString() : '',
@@ -86,10 +86,10 @@ class GalleryViewerModal extends React.Component {
     this.props.onOk({
       tag: this.state.tag ? this.state.tag : null,
       userId: nn(this.state.userId ? parseInt(this.state.userId, 10) : null),
-      takenAtFrom: nn(this.state.takenAtFrom ? new Date(this.state.takenAtFrom) : null),
-      takenAtTo: nn(this.state.takenAtTo ? new Date(this.state.takenAtTo) : null),
-      createdAtFrom: nn(this.state.createdAtFrom ? new Date(this.state.createdAtFrom) : null),
-      createdAtTo: nn(this.state.createdAtTo ? new Date(this.state.createdAtTo) : null),
+      takenAtFrom: nt(this.state.takenAtFrom ? new Date(this.state.takenAtFrom) : null),
+      takenAtTo: nt(this.state.takenAtTo ? new Date(this.state.takenAtTo) : null),
+      createdAtFrom: nt(this.state.createdAtFrom ? new Date(this.state.createdAtFrom) : null),
+      createdAtTo: nt(this.state.createdAtTo ? new Date(this.state.createdAtTo) : null),
       ratingFrom: nn(this.state.ratingFrom ? parseFloat(this.state.ratingFrom, 10) : null),
       ratingTo: nn(this.state.ratingTo ? parseFloat(this.state.ratingTo, 10) : null),
     });
@@ -205,7 +205,11 @@ class GalleryViewerModal extends React.Component {
 }
 
 function nn(value) {
-  return isNaN(value) ? null : value;
+  return Number.isNaN(value) ? null : value;
+}
+
+function nt(value) {
+  return value instanceof Date && !Number.isNaN(value) ? value : null;
 }
 
 export default connect(

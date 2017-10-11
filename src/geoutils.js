@@ -130,7 +130,7 @@ export function smoothElevations(geojson, eleSmoothingFactor) {
     });
 
     let flotingWindowEle = eleSum / floatingWindowWithoutExtremes.length;
-    if (isNaN(flotingWindowEle)) {
+    if (Number.isNaN(flotingWindowEle)) {
       flotingWindowEle = prevFloatingWindowEle;
     }
     prevFloatingWindowEle = flotingWindowEle;

@@ -43,7 +43,7 @@ class ChangesetsMenu extends React.Component {
     if (this.state.authorName) {
       return true;
     }
-    const zoom = this.props.zoom;
+    const { zoom } = this.props;
     return (amountOfDays === 3 && zoom >= 9) || (amountOfDays === 7 && zoom >= 10) || (amountOfDays === 14 && zoom >= 11);
   }
 

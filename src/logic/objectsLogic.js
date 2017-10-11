@@ -31,7 +31,9 @@ export const objectsFetchLogic = createLogic({
       cancelToken: source.token,
     })
       .then(({ data }) => {
-        const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
+        const result = data.elements.map(({
+          id, center, tags, lat, lon,
+        }) => ({
           id,
           lat: center && center.lat || lat,
           lon: center && center.lon || lon,

@@ -24,23 +24,30 @@ export const trackViewerSetTrackDataLogic = createLogic({
         let finishTime;
         const times = feature.properties.coordTimes;
         if (times) {
-          startTime = times[0];
+          [startTime] = times;
           finishTime = times[times.length - 1];
         }
         startPoints.push({ lat: startLonlat[1], lon: startLonlat[0], startTime });
 
         const finishLonLat = coords[coords.length - 1];
-        finishPoints.push({ lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm, finishTime });
+        finishPoints.push({
+          lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm, finishTime,
+        });
       }
     });
-    next({ ...action, payload: { ...action.payload, trackGeojson, startPoints, finishPoints } });
+    next({
+      ...action,
+      payload: {
+        ...action.payload, trackGeojson, startPoints, finishPoints,
+      },
+    });
   },
 });
 
 export const trackViewerDownloadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_DOWNLOAD_TRACK',
   process({ getState }, dispatch, done) {
-    const trackUID = getState().trackViewer.trackUID;
+    const { trackUID } = getState().trackViewer;
     axios.get(`${process.env.API_URL}/tracklogs/${trackUID}`, { validateStatus: status => status === 200 })
       .then(({ data }) => {
         if (data.error) {
@@ -62,7 +69,7 @@ export const trackViewerDownloadTrackLogic = createLogic({
 export const trackViewerUploadTrackLogic = createLogic({
   type: 'TRACK_VIEWER_UPLOAD_TRACK',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
-    const trackGpx = getState().trackViewer.trackGpx;
+    const { trackGpx } = getState().trackViewer;
     if (trackGpx.length > (process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
       dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${process.env.MAX_GPX_TRACK_SIZE_IN_MB} MB. Zdieľanie podporujeme len pre menšie súbory.`));
     } else {

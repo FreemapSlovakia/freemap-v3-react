@@ -22,7 +22,9 @@ export const routePlannerFindRouteLogic = createLogic({
   type: updateRouteTypes,
   cancelType: ['SET_TOOL', ...updateRouteTypes],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
-    const { start, finish, midpoints, transportType } = getState().routePlanner;
+    const {
+      start, finish, midpoints, transportType,
+    } = getState().routePlanner;
     if (!start || !finish) {
       done();
       return;
@@ -57,7 +59,9 @@ export const routePlannerFindRouteLogic = createLogic({
             timeout: 5000,
           }));
         } else {
-          const betterItinerary = itinerary.map(step => ({ lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km }));
+          const betterItinerary = itinerary.map(step => ({
+            lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km,
+          }));
           dispatch(routePlannerSetResult(routeLatLons, betterItinerary, distance_in_km, time_in_minutes));
         }
       })

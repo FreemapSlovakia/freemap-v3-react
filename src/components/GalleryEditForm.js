@@ -51,7 +51,9 @@ export default class GalleryEditForm extends React.Component {
   }
 
   render() {
-    const { model, allTags, error, onPositionPick } = this.props;
+    const {
+      model, allTags, error, onPositionPick,
+    } = this.props;
     return (
       <div>
         {error && <Alert bsStyle="danger">{error}</Alert>}

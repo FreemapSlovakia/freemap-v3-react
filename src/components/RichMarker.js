@@ -40,7 +40,9 @@ export default class RichMarker extends React.Component {
   }
 }
 
-export function createMarkerIcon({ image, faIcon, faIconLeftPadding, color = '#007bff', label } = {}) {
+export function createMarkerIcon({
+  image, faIcon, faIconLeftPadding, color = '#007bff', label,
+} = {}) {
   const oneLetterLabel = label && label.toString().charAt(0);
 
   const gradinentDef = `

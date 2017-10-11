@@ -166,9 +166,11 @@ class Main extends React.Component {
   }
 
   render() {
-    const { lat, lon, zoom, mapType,
+    const {
+      lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu } = this.props;
+      showLoginModal, onMapReset, showMenu,
+    } = this.props;
 
     return (
       <div>

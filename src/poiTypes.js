@@ -8,7 +8,9 @@ export const poiTypeGroups = categories.map(c => ({
 const poiTypeGroupsMap = new Map();
 poiTypeGroups.forEach(group => poiTypeGroupsMap.set(group.id, group));
 
-export const poiTypes = subcategories.map(({ id, filename, categoryId, name, filter }) => ({
+export const poiTypes = subcategories.map(({
+  id, filename, categoryId, name, filter,
+}) => ({
   id,
   icon: `${poiTypeGroupsMap.get(categoryId).icon}-${filename}`,
   group: categoryId,
@@ -27,7 +29,9 @@ export function getPoiType(id) {
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
 function toOverpassFilter(element, filter) {
-  return `${element}${filter.map(({ keyOperation, key, operation = '=', value }) =>
+  return `${element}${filter.map(({
+    keyOperation, key, operation = '=', value,
+  }) =>
     `[${keyOperation || ''}"${key}"${value === undefined ? '' : `${operation || '='}"${value}"`}]`).join('')}({{bbox}});`;
 }
 

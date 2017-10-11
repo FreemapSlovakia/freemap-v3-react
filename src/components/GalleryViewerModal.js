@@ -25,7 +25,9 @@ import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComme
 
 import 'fm3/styles/gallery.scss';
 
-const dateFormat = new Intl.DateTimeFormat('sk', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+const dateFormat = new Intl.DateTimeFormat('sk', {
+  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+});
 
 class GalleryViewerModal extends React.Component {
   static propTypes = {
@@ -142,10 +144,14 @@ class GalleryViewerModal extends React.Component {
   }
 
   render() {
-    const { imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
-      onStarsChange, user, onDelete, onEdit, editModel, onSave, allTags, onPositionPick } = this.props;
+    const {
+      imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
+      onStarsChange, user, onDelete, onEdit, editModel, onSave, allTags, onPositionPick,
+    } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
-    const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
+    const {
+      title = '...', description, createdAt, takenAt, tags, comments, rating, myStars,
+    } = image || {};
 
     // TODO const loadingMeta = !image || image.id !== activeImageId;
 
@@ -222,19 +228,21 @@ class GalleryViewerModal extends React.Component {
                 {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
               </p>
             )),
-            user && <form key="form" onSubmit={this.handleCommentFormSubmit}>
-              <FormGroup>
-                <InputGroup>
-                  <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
-                  <InputGroup.Button>
-                    <Button type="submit" disabled={comment.length < 1}>Pridaj</Button>
-                  </InputGroup.Button>
-                </InputGroup>
-              </FormGroup>
-            </form>,
-            user && <div key="yourRating">
-              Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
-            </div>,
+            user &&
+              <form key="form" onSubmit={this.handleCommentFormSubmit}>
+                <FormGroup>
+                  <InputGroup>
+                    <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
+                    <InputGroup.Button>
+                      <Button type="submit" disabled={comment.length < 1}>Pridaj</Button>
+                    </InputGroup.Button>
+                  </InputGroup>
+                </FormGroup>
+              </form>,
+            user &&
+              <div key="yourRating">
+                Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
+              </div>,
           ]}
         </Modal.Body>
         <Modal.Footer>

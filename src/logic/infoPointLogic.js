@@ -5,8 +5,8 @@ export const infoPointLogic = createLogic({
   type: 'SET_TOOL',
   process({ getState }, dispatch, done) {
     const state = getState();
-    const tool = state.main.tool;
-    const lat = state.infoPoint.lat;
+    const { tool } = state.main;
+    const { lat } = state.infoPoint;
     const userOpenedToolButThereIsNoInfoPointYet = tool === 'info-point' && lat === null;
     if (userOpenedToolButThereIsNoInfoPointYet) {
       const mapCenterLat = state.map.lat;

@@ -38,7 +38,9 @@ class RoutePlannerResult extends React.Component {
   }
 
   futureMidpointsAndDistances() {
-    const { start, finish, midpoints, shapePoints } = this.props;
+    const {
+      start, finish, midpoints, shapePoints,
+    } = this.props;
     const futureMidpoints = [];
     const midpointDistancesFromStart = [];
     let routeSlices = [];
@@ -65,7 +67,9 @@ class RoutePlannerResult extends React.Component {
   }
 
   render() {
-    const { start, midpoints, finish, time, distance, itinerary, itineraryIsVisible } = this.props;
+    const {
+      start, midpoints, finish, time, distance, itinerary, itineraryIsVisible,
+    } = this.props;
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
@@ -138,17 +142,19 @@ class RoutePlannerResult extends React.Component {
           />
         ))}
 
-        {itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
-          <RichMarker
-            faIcon="info"
-            color="grey"
-            key={i}
-            position={L.latLng(lat, lon)}
-          >
-            <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-              <span>{desc} ({km}km)</span>
-            </Tooltip>
-          </RichMarker>
+        {itineraryIsVisible && itinerary.map(({
+ desc, lat, lon, km,
+}, i) => (
+  <RichMarker
+    faIcon="info"
+    color="grey"
+    key={i}
+    position={L.latLng(lat, lon)}
+  >
+    <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+      <span>{desc} ({km}km)</span>
+    </Tooltip>
+  </RichMarker>
         ))}
 
         {routeSlices.map((routeSlice, i) => (

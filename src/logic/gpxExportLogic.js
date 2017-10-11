@@ -10,7 +10,9 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export const gpxExportLogic = createLogic({
   type: 'EXPORT_GPX',
-  process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
+  process({
+    getState, action, cancelled$, storeDispatch,
+  }, dispatch, done) {
     const doc = document.implementation.createDocument(GPX_NS, 'gpx');
 
     addAttribute(doc.documentElement, 'version', '1.1');
@@ -29,7 +31,9 @@ export const gpxExportLogic = createLogic({
     createElement(meta, 'time', new Date().toISOString());
     createElement(meta, 'keywords', action.payload.join(' '));
 
-    const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
+    const {
+      distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner,
+    } = getState();
 
     const set = new Set(action.payload);
 
@@ -44,7 +48,9 @@ export const gpxExportLogic = createLogic({
         source.cancel();
       });
 
-      const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = getState().gallery.filter;
+      const {
+        tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo,
+      } = getState().gallery.filter;
 
       const b = getMapLeafletElement().getBounds();
 
@@ -109,7 +115,9 @@ export const gpxExportLogic = createLogic({
 });
 
 function addPictures(doc, pictures) {
-  pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
+  pictures.forEach(({
+    lat, lon, id, takenAt, title, description,
+  }) => {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
     if (takenAt) {
       createElement(wptEle, 'time', takenAt);
@@ -157,7 +165,7 @@ function addObjects(doc, { objects }) {
   objects.forEach(({ lat, lon, tags }) => {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
 
-    if (!isNaN(tags.ele)) {
+    if (!Number.isNaN(tags.ele)) {
       createElement(wptEle, 'ele', tags.ele);
     }
 

@@ -21,7 +21,7 @@ class SearchMenu extends React.Component {
 
   onSuggestionHighlightChange(result) {
     if (result) {
-      const geojson = result.geojson;
+      const { geojson } = result;
       const options = {};
       if (geojson.type === 'Point') {
         options.maxZoom = 14;
@@ -33,7 +33,9 @@ class SearchMenu extends React.Component {
   }
 
   render() {
-    const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
+    const {
+      onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results,
+    } = this.props;
 
     return (
       <span>

@@ -27,7 +27,12 @@ export function routePlannerSetPickMode(pickMode) {
 }
 
 export function routePlannerSetResult(shapePoints, itinerary, distance, time) {
-  return { type: 'ROUTE_PLANNER_SET_RESULT', payload: { shapePoints, itinerary, distance, time } };
+  return {
+    type: 'ROUTE_PLANNER_SET_RESULT',
+    payload: {
+      shapePoints, itinerary, distance, time,
+    },
+  };
 }
 
 export function routePlannerToggleItineraryVisibility() {
@@ -35,5 +40,10 @@ export function routePlannerToggleItineraryVisibility() {
 }
 
 export function routePlannerSetParams(start, finish, midpoints, transportType) {
-  return { type: 'ROUTE_PLANNER_SET_PARAMS', payload: { start, finish, midpoints, transportType } };
+  return {
+    type: 'ROUTE_PLANNER_SET_PARAMS',
+    payload: {
+      start, finish, midpoints, transportType,
+    },
+  };
 }

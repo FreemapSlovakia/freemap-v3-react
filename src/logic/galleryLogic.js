@@ -15,7 +15,9 @@ import { infoPointSet } from 'fm3/actions/infoPointActions';
 const galleryRequestImagesByRadiusLogic = createLogic({
   cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_REQUEST_IMAGES',
-  process({ action: { payload: { lat, lon } }, getState, cancelled$, storeDispatch }, dispatch, done) {
+  process({
+    action: { payload: { lat, lon } }, getState, cancelled$, storeDispatch,
+  }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     const source = axios.CancelToken.source();
@@ -23,7 +25,9 @@ const galleryRequestImagesByRadiusLogic = createLogic({
       source.cancel();
     });
 
-    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = getState().gallery.filter;
+    const {
+      tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo,
+    } = getState().gallery.filter;
 
     axios.get(`${process.env.API_URL}/gallery/pictures`, {
       params: {
@@ -63,7 +67,9 @@ const galleryRequestImagesByRadiusLogic = createLogic({
 const galleryRequestImagesByOrderLogic = createLogic({
   cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_LIST',
-  process({ action: { payload }, getState, cancelled$, storeDispatch }, dispatch, done) {
+  process({
+    action: { payload }, getState, cancelled$, storeDispatch,
+  }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     const source = axios.CancelToken.source();
@@ -71,7 +77,9 @@ const galleryRequestImagesByOrderLogic = createLogic({
       source.cancel();
     });
 
-    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = getState().gallery.filter;
+    const {
+      tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo,
+    } = getState().gallery.filter;
 
     axios.get(`${process.env.API_URL}/gallery/pictures`, {
       params: {
@@ -110,7 +118,9 @@ const galleryRequestImagesByOrderLogic = createLogic({
 const galleryRequestImageLogic = createLogic({
   cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_REQUEST_IMAGE',
-  process({ action: { payload: id }, getState, cancelled$, storeDispatch }, dispatch, done) {
+  process({
+    action: { payload: id }, getState, cancelled$, storeDispatch,
+  }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     const source = axios.CancelToken.source();
@@ -306,7 +316,9 @@ const gallerySubmitCommentLogic = createLogic({
 const gallerySubmitStarsLogic = createLogic({
   cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_SUBMIT_STARS',
-  process({ action: { payload: stars }, getState, cancelled$, storeDispatch }, dispatch, done) {
+  process({
+    action: { payload: stars }, getState, cancelled$, storeDispatch,
+  }, dispatch, done) {
     const { image } = getState().gallery;
     if (!image) {
       done();

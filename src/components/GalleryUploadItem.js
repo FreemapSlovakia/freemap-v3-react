@@ -36,7 +36,9 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const { id, filename, url, disabled, model, allTags, error } = this.props;
+    const {
+      id, filename, url, disabled, model, allTags, error,
+    } = this.props;
     return (
       <Thumbnail key={id} src={url || require('fm3/images/spinnerbar.gif')} alt={filename}>
         <fieldset disabled={disabled}>

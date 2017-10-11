@@ -14,7 +14,8 @@ export default function elevationChart(state = initialState, action) {
     case 'ELEVATION_CHART_SET_TRACK_GEOJSON':
       return { ...state, trackGeojson: action.payload.trackGeojson };
     case 'ELEVATION_CHART_SET_ACTIVE_POINT':
-      return { ...state,
+      return {
+        ...state,
         activePoint: action.payload.activePoint,
       };
     case 'ELEVATION_CHART_REMOVE_ACTIVE_POINT':

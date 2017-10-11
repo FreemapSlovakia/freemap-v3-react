@@ -18,6 +18,7 @@ import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
 import initAuthHelper from 'fm3/authHelper';
 import 'fm3/fbLoader';
+import 'fm3/modalShim';
 
 import 'fm3/styles/global.scss';
 
@@ -61,8 +62,10 @@ if (window.self !== window.top) {
   document.body.classList.add('embedded');
 }
 
-render((
+render(
   <Provider store={store}>
     <Main />
   </Provider>
-), document.getElementById('app'));
+  ,
+  document.getElementById('app'),
+);

@@ -20,7 +20,9 @@ export default function handleLocationChange(store, location) {
       && /^-?\d+(\.\d+)?\/-?\d+(\.\d+)?(,-?\d+(\.\d+)?\/-?\d+(\.\d+)?)+$/.test(query.points)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 
-    const { start, finish, midpoints, transportType } = store.getState().routePlanner;
+    const {
+      start, finish, midpoints, transportType,
+    } = store.getState().routePlanner;
 
     if (points.length > 1 && points.every(point => point.length === 2)) {
       const latLons = points.map(([lat, lon]) => ({ lat, lon }));
@@ -126,7 +128,7 @@ function handleGallery(store, query) {
   const qCreatedAtFrom = new Date(query['gallery-created-at-from']);
   const qCreatedAtTo = new Date(query['gallery-created-at-to']);
 
-  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || !isNaN(qTakenAtFrom) || !isNaN(qTakenAtTo)) {
+  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || !Number.isNaN(qTakenAtFrom.getTime()) || !Number.isNaN(qTakenAtTo.getTime())) {
     const { filter } = store.getState().gallery;
     const newFilter = {};
     if (qUserId && filter.userId !== qUserId) {
@@ -141,16 +143,16 @@ function handleGallery(store, query) {
     if (qRatingTo && filter.ratingTo !== qRatingTo) {
       newFilter.ratingTo = qRatingTo;
     }
-    if (!isNaN(qTakenAtFrom) && (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !== qTakenAtFrom.getTime()) {
+    if (!Number.isNaN(qTakenAtFrom.getTime()) && (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !== qTakenAtFrom.getTime()) {
       newFilter.takenAtFrom = qTakenAtFrom;
     }
-    if (!isNaN(qTakenAtTo) && (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !== qTakenAtTo.getTime()) {
+    if (!Number.isNaN(qTakenAtTo.getTime()) && (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !== qTakenAtTo.getTime()) {
       newFilter.takenAtTo = qTakenAtTo;
     }
-    if (!isNaN(qCreatedAtFrom) && (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !== qCreatedAtFrom.getTime()) {
+    if (!Number.isNaN(qCreatedAtFrom.getTime()) && (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !== qCreatedAtFrom.getTime()) {
       newFilter.createdAtFrom = qCreatedAtFrom;
     }
-    if (!isNaN(qCreatedAtTo) && (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !== qCreatedAtTo.getTime()) {
+    if (!Number.isNaN(qCreatedAtTo.getTime()) && (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !== qCreatedAtTo.getTime()) {
       newFilter.createdAtTo = qCreatedAtTo;
     }
     if (Object.keys(newFilter).length !== 0) {

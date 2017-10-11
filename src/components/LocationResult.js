@@ -21,8 +21,6 @@ LocationResult.propTypes = {
   }),
 };
 
-export default connect(
-  state => ({
-    gpsLocation: state.main.location,
-  }),
-)(LocationResult);
+export default connect(state => ({
+  gpsLocation: state.main.location,
+}))(LocationResult);

@@ -7,8 +7,10 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack, translate } from 'fm3/osmOntologyTools';
 
-const dateFormat = new Intl.DateTimeFormat('sk',
-  { day: '2-digit', month: '2-digit', year: 'numeric' });
+const dateFormat = new Intl.DateTimeFormat(
+  'sk',
+  { day: '2-digit', month: '2-digit', year: 'numeric' },
+);
 
 export default createLogic({
   type: 'MAP_DETAILS_SET_USER_SELECTED_POSITION',
@@ -35,7 +37,7 @@ export default createLogic({
       })
         .then(({ data }) => {
           if (data.elements && data.elements.length === 1) {
-            way = data.elements[0];
+            [way] = data.elements;
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
               message: toToastMessage(),

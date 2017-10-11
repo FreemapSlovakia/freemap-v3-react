@@ -157,7 +157,9 @@ class TrackViewerResult extends React.Component {
   }
 
   render() {
-    const { trackGeojson, startPoints, finishPoints, displayingElevationChart } = this.props;
+    const {
+      trackGeojson, startPoints, finishPoints, displayingElevationChart,
+    } = this.props;
     const keyToAssureProperRefresh = (JSON.stringify(trackGeojson) + displayingElevationChart).length; // otherwise GeoJSON will still display the first data
     return trackGeojson && (
       <div>
@@ -199,7 +201,8 @@ class TrackViewerResult extends React.Component {
               <span>
                 {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
                 {p.finishTime ? ', ' : ''}
-                {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km</span>
+                {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km
+              </span>
             </Tooltip>
           </RichMarker>
         ))}
@@ -226,13 +229,11 @@ class TrackViewerResult extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    trackGeojson: state.trackViewer.trackGeojson,
-    startPoints: state.trackViewer.startPoints,
-    finishPoints: state.trackViewer.finishPoints,
-    displayingElevationChart: state.elevationChart.trackGeojson !== null,
-    colorizeTrackBy: state.trackViewer.colorizeTrackBy,
-    eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
-  }),
-)(TrackViewerResult);
+export default connect(state => ({
+  trackGeojson: state.trackViewer.trackGeojson,
+  startPoints: state.trackViewer.startPoints,
+  finishPoints: state.trackViewer.finishPoints,
+  displayingElevationChart: state.elevationChart.trackGeojson !== null,
+  colorizeTrackBy: state.trackViewer.colorizeTrackBy,
+  eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+}))(TrackViewerResult);

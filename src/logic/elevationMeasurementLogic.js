@@ -9,7 +9,7 @@ export default createLogic({
   type: 'ELEVATION_MEASUREMENT_SET_POINT',
   cancelType: ['ELEVATION_MEASUREMENT_SET_POINT', 'SET_TOOL', 'MAP_RESET'],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
-    const point = getState().elevationMeasurement.point;
+    const { point } = getState().elevationMeasurement;
     if (point) {
       const pid = Math.random();
       dispatch(startProgress(pid));

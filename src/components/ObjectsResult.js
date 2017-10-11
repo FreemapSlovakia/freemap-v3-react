@@ -10,7 +10,9 @@ import * as FmPropTypes from 'fm3/propTypes';
 function ObjectsResult({ objects }) {
   return (
     <div>
-      {objects.map(({ id, lat, lon, tags, typeId }) => {
+      {objects.map(({
+ id, lat, lon, tags, typeId,
+}) => {
         const html = toHtml(typeId, tags);
 
         const pt = getPoiType(typeId);
@@ -37,8 +39,6 @@ ObjectsResult.propTypes = {
   objects: PropTypes.arrayOf(FmPropTypes.object).isRequired,
 };
 
-export default connect(
-  state => ({
-    objects: state.objects.objects,
-  }),
-)(ObjectsResult);
+export default connect(state => ({
+  objects: state.objects.objects,
+}))(ObjectsResult);

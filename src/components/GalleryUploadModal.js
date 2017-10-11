@@ -24,19 +24,17 @@ let nextId = 1;
 
 class GalleryUploadModal extends React.Component {
   static propTypes = {
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        file: PropTypes.object.isRequired,
-        url: PropTypes.string,
-        position: FmPropTypes.point,
-        title: PropTypes.string,
-        description: PropTypes.string,
-        tags: PropTypes.arrayOf(PropTypes.string),
-        takenAt: PropTypes.date,
-        error: PropTypes.string,
-      }).isRequired,
-    ).isRequired,
+    items: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.number.isRequired,
+      file: PropTypes.object.isRequired,
+      url: PropTypes.string,
+      position: FmPropTypes.point,
+      title: PropTypes.string,
+      description: PropTypes.string,
+      tags: PropTypes.arrayOf(PropTypes.string),
+      takenAt: PropTypes.date,
+      error: PropTypes.string,
+    }).isRequired).isRequired,
     allTags: FmPropTypes.allTags.isRequired,
     onItemAdd: PropTypes.func.isRequired,
     onItemRemove: PropTypes.func.isRequired,
@@ -158,7 +156,9 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onClose, onPositionPick, visible, onUpload, uploading, allTags } = this.props;
+    const {
+      items, onClose, onPositionPick, visible, onUpload, uploading, allTags,
+    } = this.props;
     return (
       <Modal show={visible} onHide={onClose}>
         <Modal.Header closeButton>
@@ -166,20 +166,24 @@ class GalleryUploadModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           {
-            items.map(({ id, file, url, position, title, description, takenAt, tags, error }) => (
-              <GalleryUploadItem
-                key={id}
-                id={id}
-                filename={file.name}
-                url={url}
-                model={{ position, title, description, takenAt, tags }}
-                allTags={allTags}
-                error={error}
-                onRemove={this.handleRemove}
-                onPositionPick={onPositionPick}
-                onModelChange={this.handleModelChange}
-                disabled={uploading}
-              />
+            items.map(({
+ id, file, url, position, title, description, takenAt, tags, error,
+}) => (
+  <GalleryUploadItem
+    key={id}
+    id={id}
+    filename={file.name}
+    url={url}
+    model={{
+ position, title, description, takenAt, tags,
+}}
+    allTags={allTags}
+    error={error}
+    onRemove={this.handleRemove}
+    onPositionPick={onPositionPick}
+    onModelChange={this.handleModelChange}
+    disabled={uploading}
+  />
             ))
           }
           {!uploading &&

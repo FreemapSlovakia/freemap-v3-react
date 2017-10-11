@@ -83,7 +83,9 @@ class MeasurementMenu extends React.Component {
   }
 
   render() {
-    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
+    const {
+      onToolSet, tool, routeDefined, elevationChartTrackGeojson,
+    } = this.props;
 
     return (
       <span>

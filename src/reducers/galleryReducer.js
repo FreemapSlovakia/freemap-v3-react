@@ -161,7 +161,7 @@ function getError(item) {
   if (!item.position) {
     errors.push('Chýba pozícia.');
   }
-  if (item.takenAt && isNaN(item.takenAt)) {
+  if (item.takenAt && Number.isNaN(item.takenAt.getTime())) {
     errors.push('Nevalidný dátum a čas fotenia.');
   }
   return errors.length ? errors.join('\n') : null;

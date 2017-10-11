@@ -1,6 +1,13 @@
-export function toastsAdd({ message, actions = [], timeout, style, collapseKey, cancelType }) {
+export function toastsAdd({
+  message, actions = [], timeout, style, collapseKey, cancelType,
+}) {
   const id = Math.random();
-  return { type: 'TOASTS_ADD', payload: { id, message, actions, timeout, style, collapseKey, cancelType } };
+  return {
+    type: 'TOASTS_ADD',
+    payload: {
+      id, message, actions, timeout, style, collapseKey, cancelType,
+    },
+  };
 }
 
 export function toastsRemove(id) {

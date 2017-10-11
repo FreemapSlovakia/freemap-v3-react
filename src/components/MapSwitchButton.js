@@ -64,48 +64,52 @@ class MapSwitchButton extends React.Component {
               {
                 baseLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
-                  .map(({ name, type, icon, minZoom, key }) => (
-                    <MenuItem
-                      key={type}
-                      onClick={() => this.handleMapSelect(type)}
-                    >
-                      <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
-                      {' '}
-                      <FontAwesomeIcon icon={icon || 'map-o'} />
-                      {' '}
-                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                        {name}
-                      </span>
-                      {key && ' '}
-                      {key && <kbd>{key}</kbd>}
-                    </MenuItem>
+                  .map(({
+ name, type, icon, minZoom, key,
+}) => (
+  <MenuItem
+    key={type}
+    onClick={() => this.handleMapSelect(type)}
+  >
+    <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
+    {' '}
+    <FontAwesomeIcon icon={icon || 'map-o'} />
+    {' '}
+    <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+      {name}
+    </span>
+    {key && ' '}
+    {key && <kbd>{key}</kbd>}
+  </MenuItem>
                   ))
               }
               <MenuItem divider />
               {
                 overlayLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
-                  .map(({ name, type, icon, minZoom, key }) => (
-                    <MenuItem
-                      key={type}
-                      onClick={() => this.handleOverlaySelect(type)}
-                    >
-                      <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
-                      {' '}
-                      <FontAwesomeIcon icon={icon || 'map-o'} />
-                      {' '}
-                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                        {name}
-                      </span>
-                      {key && ' '}
-                      {key && <kbd>{key}</kbd>}
-                      {type === 'I' && this.props.pictureFilterIsActive && [
+                  .map(({
+ name, type, icon, minZoom, key,
+}) => (
+  <MenuItem
+    key={type}
+    onClick={() => this.handleOverlaySelect(type)}
+  >
+    <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
+    {' '}
+    <FontAwesomeIcon icon={icon || 'map-o'} />
+    {' '}
+    <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+      {name}
+    </span>
+    {key && ' '}
+    {key && <kbd>{key}</kbd>}
+    {type === 'I' && this.props.pictureFilterIsActive && [
                         ' ',
-                        <Label key="filt-warn" bsStyle="warning" title="Filter fotografií je aktívny">
-                          <FontAwesomeIcon icon="filter" />
-                        </Label>,
+      <Label key="filt-warn" bsStyle="warning" title="Filter fotografií je aktívny">
+        <FontAwesomeIcon icon="filter" />
+      </Label>,
                       ]}
-                    </MenuItem>
+  </MenuItem>
                   ))
               }
             </ul>
