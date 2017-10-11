@@ -97,69 +97,77 @@ class AreaMeasurementResult extends React.Component {
       }
     });
 
-    return (
-      <div>
-        {!Number.isNaN(areaSize) &&
-          <RichMarker
-            autoOpenPopup
-            interactive={false}
-            opacity={0}
-            position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
+    return [
+      !Number.isNaN(areaSize) && (
+        <RichMarker
+          key="resultMarker"
+          autoOpenPopup
+          interactive={false}
+          opacity={0}
+          position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
+        >
+          <Popup closeButton={false} autoClose={false} autoPan={false}>
+            <span>
+              <div>{nf.format(areaSize)} m<sup>2</sup></div>
+              <div>{nf.format(areaSize / 100)} a</div>
+              <div>{nf.format(areaSize / 10000)} ha</div>
+              <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
+            </span>
+          </Popup>
+        </RichMarker>
+      ),
+
+      ...ps.map((p, i) => {
+        const props = i % 2 ? {
+          icon: circularIcon,
+          opacity: 0.5,
+          onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
+        } : {
+          // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+          icon: circularIcon,
+          opacity: 1,
+          onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
+          onClick: () => this.handleMarkerClick(p.id),
+        };
+
+        return (
+          <Marker
+            key={p.id}
+            draggable
+            position={L.latLng(p.lat, p.lon)}
+            {...props}
           >
-            <Popup closeButton={false} autoClose={false} autoPan={false}>
-              <span>
-                <div>{nf.format(areaSize)} m<sup>2</sup></div>
-                <div>{nf.format(areaSize / 100)} a</div>
-                <div>{nf.format(areaSize / 10000)} ha</div>
-                <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
-              </span>
-            </Popup>
-          </RichMarker>
-        }
-        {ps.map((p, i) => {
-          const props = i % 2 ? {
-            icon: circularIcon,
-            opacity: 0.5,
-            onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
-          } : {
-            // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-            icon: circularIcon,
-            opacity: 1,
-            onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-            onClick: () => this.handleMarkerClick(p.id),
-          };
+            {/* i % 2 === 0 &&
+              <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
+                <span>{nf.format(dist / 1000)} km</span>
+              </Tooltip>
+            */}
+          </Marker>
+        );
+      }),
 
-          return (
-            <Marker
-              key={p.id}
-              draggable
-              position={L.latLng(p.lat, p.lon)}
-              {...props}
-            >
-              {/* i % 2 === 0 &&
-                <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
-                  <span>{nf.format(dist / 1000)} km</span>
-                </Tooltip>
-              */}
-            </Marker>
-          );
-        })}
+      ps.length > 2 && (
+        <Polygon
+          key="areaPoly0"
+          interactive={false}
+          positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
+        />
+      ),
 
-        {ps.length > 2 && <Polygon interactive={false} positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])} /> }
-        {!!(ps.length && this.state.lat) &&
-          <Polyline
-            interactive={false}
-            opacity={0.5}
-            dashArray="6,8"
-            positions={[
-              [ps[0].lat, ps[0].lon],
-              [this.state.lat, this.state.lon],
-              ...(ps.length < 3 ? [] : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
-            ]}
-          />
-        }
-      </div>
-    );
+      !!(ps.length && this.state.lat) && (
+        <Polyline
+          key="areaPoly1"
+          interactive={false}
+          opacity={0.5}
+          dashArray="6,8"
+          positions={[
+            [ps[0].lat, ps[0].lon],
+            [this.state.lat, this.state.lon],
+            ...(ps.length < 3 ? [] : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
+          ]}
+        />
+      ),
+    ];
   }
 }
 

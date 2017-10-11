@@ -32,38 +32,32 @@ class Changesets extends React.Component {
   render() {
     const { changesets, onShowChangesetDetail } = this.props;
     const now = new Date();
-    return (
-      <div>
-        {
-          changesets.map((changeset) => {
-            const opacity = this.opacityOf(changeset, now);
-            return (
-              <RichMarker
-                faIcon="pencil"
-                opacity={opacity}
-                key={changeset.id}
-                faIconLeftPadding="2px"
-                position={L.latLng(changeset.centerLat, changeset.centerLon)}
-                onClick={() => onShowChangesetDetail(changeset)}
-              >
-                <Tooltip
-                  opacity={opacity}
-                  className="compact"
-                  offset={new L.Point(9, -25)}
-                  direction="right"
-                  permanent
-                >
-                  <div className="shortened">
-                    <b>{changeset.userName}: </b>
-                    {changeset.description}
-                  </div>
-                </Tooltip>
-              </RichMarker>
-            );
-          })
-        }
-      </div>
-    );
+    return changesets.map((changeset) => {
+      const opacity = this.opacityOf(changeset, now);
+      return (
+        <RichMarker
+          faIcon="pencil"
+          opacity={opacity}
+          key={changeset.id}
+          faIconLeftPadding="2px"
+          position={L.latLng(changeset.centerLat, changeset.centerLon)}
+          onClick={() => onShowChangesetDetail(changeset)}
+        >
+          <Tooltip
+            opacity={opacity}
+            className="compact"
+            offset={new L.Point(9, -25)}
+            direction="right"
+            permanent
+          >
+            <div className="shortened">
+              <b>{changeset.userName}: </b>
+              {changeset.description}
+            </div>
+          </Tooltip>
+        </RichMarker>
+      );
+    });
   }
 }
 
