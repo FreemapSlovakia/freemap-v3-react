@@ -49,7 +49,7 @@ import InfoPointMenu from 'fm3/components/InfoPointMenu';
 import InfoPoint from 'fm3/components/InfoPoint';
 
 import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
-import Changesets from 'fm3/components/Changesets';
+import ChangesetsResult from 'fm3/components/ChangesetsResult';
 
 import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
 import MapDetails from 'fm3/components/MapDetails';
@@ -289,7 +289,7 @@ class Main extends React.Component {
                 <LocationResult />
                 <TrackViewerResult />
                 <InfoPoint />
-                <Changesets />
+                <ChangesetsResult />
                 {tool === 'map-details' && <MapDetails />}
                 {showElevationChart && <AsyncElevationChart />}
                 {showGalleryPicker && <GalleryPicker />}

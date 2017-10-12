@@ -196,7 +196,7 @@ class GalleryViewerModal extends React.Component {
             }
           </div>
           {image && [
-            <div key="meta">
+            <div key="2HcEmCGRpH">
               Nahral <b>{image.user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
               {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
               {' '}
@@ -205,8 +205,8 @@ class GalleryViewerModal extends React.Component {
               {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
             </div>,
 
-            editModel &&
-              <div key="editForm">
+            editModel && (
+              <div key="C1QixU3csh">
                 <hr />
                 <h5>Úprava</h5>
 
@@ -219,17 +219,18 @@ class GalleryViewerModal extends React.Component {
                 />
                 {/* TODO put inside a form and save in onSubmit */}
                 <Button bsStyle="primary" onClick={onSave}><Glyphicon glyph="save" /> Uložiť</Button>
-              </div>,
+              </div>
+            ),
 
-            <hr key="hr" />,
-            <h5 key="comments-header">Komentáre</h5>,
+            <hr key="QNnbIaEx28" />,
+            <h5 key="h4AU4xskDv">Komentáre</h5>,
             ...comments.map(c => (
               <p key={c.id}>
                 {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
               </p>
             )),
-            user &&
-              <form key="form" onSubmit={this.handleCommentFormSubmit}>
+            user && (
+              <form key="U7Ur2II0Zf" onSubmit={this.handleCommentFormSubmit}>
                 <FormGroup>
                   <InputGroup>
                     <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
@@ -238,17 +239,19 @@ class GalleryViewerModal extends React.Component {
                     </InputGroup.Button>
                   </InputGroup>
                 </FormGroup>
-              </form>,
-            user &&
-              <div key="yourRating">
+              </form>
+            ),
+            user && (
+              <div key="Hz24KokgQm">
                 Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
-              </div>,
+              </div>
+            ),
           ]}
         </Modal.Body>
         <Modal.Footer>
           {image && user && (user.isAdmin || user.id === image.user.id) && [
-            <Button key="b" onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /><span className="hidden-xs"> Upraviť</span></Button>,
-            <Button key="a" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>,
+            <Button key="5zKw4dOTCW" onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /><span className="hidden-xs"> Upraviť</span></Button>,
+            <Button key="aVtUvbbC44" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>,
           ]}
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /><span className="hidden-xs"> Ukázať na mape</span></Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /><span className="hidden-xs"> Zavrieť</span></Button>

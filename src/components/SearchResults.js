@@ -9,46 +9,46 @@ import MultiPolygon from 'fm3/components/searchResults/MultiPolygon';
 import * as FmPropTypes from 'fm3/propTypes';
 
 function SearchResults({ highlightedResult, selectedResult }) {
-  return (
-    <div>
-      {displayAsPoint(highlightedResult) &&
-        <Point searchResult={highlightedResult} />
-      }
-      {displayAsMultiPoint(highlightedResult) &&
-        <MultiPoint searchResult={highlightedResult} />
-      }
-      {displayAsPolyline(highlightedResult) &&
-        <Polyline searchResult={highlightedResult} />
-      }
-      {displayAsMultiLineString(highlightedResult) &&
-        <MultiLineString searchResult={highlightedResult} />
-      }
-      {displayAsPolygon(highlightedResult) &&
-        <Polygon searchResult={highlightedResult} />
-      }
-      {displayAsMultiPolygon(highlightedResult) &&
-        <MultiPolygon searchResult={highlightedResult} />
-      }
-      {displayAsPoint(selectedResult) &&
-        <Point searchResult={selectedResult} />
-      }
-      {displayAsMultiPoint(selectedResult) &&
-        <MultiPoint searchResult={selectedResult} />
-      }
-      {displayAsPolyline(selectedResult) &&
-        <Polyline searchResult={selectedResult} />
-      }
-      {displayAsMultiLineString(selectedResult) &&
-        <MultiLineString searchResult={selectedResult} />
-      }
-      {displayAsPolygon(selectedResult) &&
-        <Polygon searchResult={selectedResult} />
-      }
-      {displayAsMultiPolygon(selectedResult) &&
-        <MultiPolygon searchResult={selectedResult} />
-      }
-    </div>
-  );
+  const elems = [];
+
+  if (displayAsPoint(highlightedResult)) {
+    elems.push(<Point key="xNJtDkdaWp" searchResult={highlightedResult} />);
+  }
+  if (displayAsMultiPoint(highlightedResult)) {
+    elems.push(<MultiPoint key="57mLU1tOpb" searchResult={highlightedResult} />);
+  }
+  if (displayAsPolyline(highlightedResult)) {
+    elems.push(<Polyline key="ZPTRG8wcbM" searchResult={highlightedResult} />);
+  }
+  if (displayAsMultiLineString(highlightedResult)) {
+    elems.push(<MultiLineString key="MCN4K3cBKZ" searchResult={highlightedResult} />);
+  }
+  if (displayAsPolygon(highlightedResult)) {
+    elems.push(<Polygon key="s0Q2ayZAPC" searchResult={highlightedResult} />);
+  }
+  if (displayAsMultiPolygon(highlightedResult)) {
+    elems.push(<MultiPolygon key="ooTQAEhWlE" searchResult={highlightedResult} />);
+  }
+  if (displayAsPoint(selectedResult)) {
+    elems.push(<Point key="ytw1EK0JKa" searchResult={selectedResult} />);
+  }
+  if (displayAsMultiPoint(selectedResult)) {
+    elems.push(<MultiPoint key="5ZD877zq3D" searchResult={selectedResult} />);
+  }
+  if (displayAsPolyline(selectedResult)) {
+    elems.push(<Polyline key="Gwl4IIRNIk" searchResult={selectedResult} />);
+  }
+  if (displayAsMultiLineString(selectedResult)) {
+    elems.push(<MultiLineString key="mrfuSaPDr1" searchResult={selectedResult} />);
+  }
+  if (displayAsPolygon(selectedResult)) {
+    elems.push(<Polygon key="5FaEitXbBU" searchResult={selectedResult} />);
+  }
+  if (displayAsMultiPolygon(selectedResult)) {
+    elems.push(<MultiPolygon key="CFpwLWFFuN" searchResult={selectedResult} />);
+  }
+
+  return elems;
 }
 
 SearchResults.propTypes = {

@@ -3,14 +3,9 @@ import { Polyline } from 'react-leaflet';
 import * as FmPropTypes from 'fm3/propTypes';
 
 export default function MultiLineString({ searchResult }) {
-  const polylinesLatLons = searchResult.geojson.coordinates
-    .map(polylineCoords => polylineCoords.map(lonlat => L.latLng(lonlat[1], lonlat[0])));
-
-  return (
-    <div>
-      {polylinesLatLons.map((p, i) => <Polyline key={i} positions={p} interactive={false} />)}
-    </div>
-  );
+  return searchResult.geojson.coordinates
+    .map(polylineCoords => polylineCoords.map(lonlat => L.latLng(lonlat[1], lonlat[0])))
+    .map((p, i) => <Polyline key={`xzlyQ3rC1m-${i}`} positions={p} interactive={false} />);
 }
 
 MultiLineString.propTypes = {

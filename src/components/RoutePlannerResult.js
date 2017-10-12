@@ -78,99 +78,104 @@ class RoutePlannerResult extends React.Component {
     });
     const { futureMidpoints, midpointDistancesFromStart, routeSlices } = this.futureMidpointsAndDistances();
 
-    return (
-      <div>
-        {start &&
-          <RichMarker
-            faIcon="play"
-            zIndexOffset={10}
-            faIconLeftPadding="2px"
-            color="#409a40"
-            draggable
-            onDragend={e => this.handleRouteMarkerDragend('start', null, e)}
-            position={L.latLng(start.lat, start.lon)}
-            onClick={this.handleEndPointClick}
-          />
-        }
+    const elems = [];
 
-        {midpoints.map(({ lat, lon }, i) => (
-          midpointDistancesFromStart[i] &&
-            <RichMarker
-              draggable
-              onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
-              onClick={() => this.handleMidpointClick(i)}
-              key={i}
-              zIndexOffset={9}
-              label={i + 1}
-              position={L.latLng(lat, lon)}
-            >
-              {!itineraryIsVisible &&
-                <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-                  <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
-                </Tooltip>}
-            </RichMarker>
-        ))}
+    if (start) {
+      elems.push(
+        <RichMarker
+          key="JrTBNuCUdu"
+          faIcon="play"
+          zIndexOffset={10}
+          faIconLeftPadding="2px"
+          color="#409a40"
+          draggable
+          onDragend={e => this.handleRouteMarkerDragend('start', null, e)}
+          position={L.latLng(start.lat, start.lon)}
+          onClick={this.handleEndPointClick}
+        />,
+      );
+    }
 
-        {finish &&
-          <RichMarker
-            faIcon="stop"
-            color="#d9534f"
-            zIndexOffset={10}
-            draggable
-            onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
-            position={L.latLng(finish.lat, finish.lon)}
-            onClick={this.handleEndPointClick}
-          >
-            {distance !== null && time !== null &&
-              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-                <span>{distance}km, {Math.floor(time / 60)}h {time % 60}m</span>
-              </Tooltip>
-            }
-          </RichMarker>
-        }
+    elems.push(...midpoints.filter((_, i) => midpointDistancesFromStart[i]).map(({ lat, lon }, i) => (
+      <RichMarker
+        draggable
+        onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
+        onClick={() => this.handleMidpointClick(i)}
+        key={`c4ReUQrKT7-${i}`}
+        zIndexOffset={9}
+        label={i + 1}
+        position={L.latLng(lat, lon)}
+      >
+        {!itineraryIsVisible &&
+          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+            <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
+          </Tooltip>}
+      </RichMarker>
+    )));
 
-        {futureMidpoints.map((p, i) => (
-          <Marker
-            key={i}
-            draggable
-            icon={circularIcon}
-            onDragend={e => this.props.onAddMidpoint(i, {
-              lat: e.target.getLatLng().lat,
-              lon: e.target.getLatLng().lng,
-            })}
-            position={L.latLng(p.lat, p.lon)}
-          />
-        ))}
+    if (finish) {
+      elems.push(
+        <RichMarker
+          key="4D8L9AjpT2"
+          faIcon="stop"
+          color="#d9534f"
+          zIndexOffset={10}
+          draggable
+          onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
+          position={L.latLng(finish.lat, finish.lon)}
+          onClick={this.handleEndPointClick}
+        >
+          {distance !== null && time !== null &&
+            <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+              <span>{distance}km, {Math.floor(time / 60)}h {time % 60}m</span>
+            </Tooltip>
+          }
+        </RichMarker>,
+      );
+    }
 
-        {itineraryIsVisible && itinerary.map(({
- desc, lat, lon, km,
-}, i) => (
-  <RichMarker
-    faIcon="info"
-    color="grey"
-    key={i}
-    position={L.latLng(lat, lon)}
-  >
-    <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-      <span>{desc} ({km}km)</span>
-    </Tooltip>
-  </RichMarker>
-        ))}
+    elems.push(...futureMidpoints.map((p, i) => (
+      <Marker
+        key={`7Ss4bmDZr3-${i}`}
+        draggable
+        icon={circularIcon}
+        onDragend={e => this.props.onAddMidpoint(i, {
+          lat: e.target.getLatLng().lat,
+          lon: e.target.getLatLng().lng,
+        })}
+        position={L.latLng(p.lat, p.lon)}
+      />
+    )));
 
-        {routeSlices.map((routeSlice, i) => (
-          <Polyline
-            positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
-            weight="8"
-            key={i}
-            color={i % 2 === 0 ? '#38f' : 'black'}
-            opacity={i % 2 === 0 ? 0.8 : 0.4}
-            interactive={false}
-          />
-        ))}
+    if (itineraryIsVisible) {
+      elems.push(...itinerary.map(({ desc, lat, lon, km }, i) => (
+        <RichMarker
+          faIcon="info"
+          color="grey"
+          key={`Qc22mQrHUt-${i}`}
+          position={L.latLng(lat, lon)}
+        >
+          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+            <span>{desc} ({km}km)</span>
+          </Tooltip>
+        </RichMarker>
+      )));
+    }
 
-        <ElevationChartActivePoint />
-      </div>
-    );
+    elems.push(...routeSlices.map((routeSlice, i) => (
+      <Polyline
+        positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
+        weight="8"
+        key={`TC7dnZUMAG-${i}`}
+        color={i % 2 === 0 ? '#38f' : 'black'}
+        opacity={i % 2 === 0 ? 0.8 : 0.4}
+        interactive={false}
+      />
+    )));
+
+    elems.push(<ElevationChartActivePoint key="2mB8r2rS72" />);
+
+    return elems;
   }
 }
 

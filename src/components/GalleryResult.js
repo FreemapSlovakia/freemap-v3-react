@@ -52,23 +52,32 @@ class GalleryResult extends React.Component {
       activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal,
     } = this.props;
 
-    return (
-      <div>
-        {pickingPosition &&
-          <RichMarker
-            draggable
-            position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
-            onDragend={this.handlePositionMarkerDragEnd}
-          />
-        }
+    const elems = [];
 
-        {!isPickingPosition && activeImageId && <GalleryViewerModal />}
+    if (pickingPosition) {
+      elems.push(
+        <RichMarker
+          key="DGukc5859i"
+          draggable
+          position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
+          onDragend={this.handlePositionMarkerDragEnd}
+        />,
+      );
+    }
 
-        {showFilter && <GalleryFilterModal />}
+    if (!isPickingPosition && activeImageId) {
+      elems.push(<GalleryViewerModal key="4hDH4B4mwr" />);
+    }
 
-        {showUploadModal && <AsyncGalleryUploadModal />}
-      </div>
-    );
+    if (showFilter) {
+      elems.push(<GalleryFilterModal key="pICrAO8qUI" />);
+    }
+
+    if (showUploadModal) {
+      elems.push(<AsyncGalleryUploadModal key="ybN1tzcF9K" />);
+    }
+
+    return elems;
   }
 }
 

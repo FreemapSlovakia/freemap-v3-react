@@ -98,63 +98,69 @@ class DistanceMeasurementResult extends React.Component {
       }
     }
 
-    return [
-      ps.length > 2 && (
+    const elems = [];
+
+    if (ps.length > 2) {
+      elems.push(
         <Polyline
-          key="distPoly0"
+          key="O3WSZLge9H"
           interactive={false}
           positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
-        />
-      ),
+        />,
+      );
+    }
 
-      !!(ps.length && this.state.lat) && (
+    if (ps.length && this.state.lat) {
+      elems.push(
         <Polyline
-          key="distPoly1"
+          key="zdC1jz2cUL"
           interactive={false}
           opacity={0.5}
           dashArray="6,8"
           positions={[[ps[ps.length - 1].lat, ps[ps.length - 1].lon], [this.state.lat, this.state.lon]]}
-        />
-      ),
+        />,
+      );
+    }
 
-      ...ps.map((p, i) => {
-        if (i % 2 === 0) {
-          if (prev) {
-            dist += distance(p.lat, p.lon, prev.lat, prev.lon);
-          }
-          prev = p;
+    elems.push(...ps.map((p, i) => {
+      if (i % 2 === 0) {
+        if (prev) {
+          dist += distance(p.lat, p.lon, prev.lat, prev.lon);
         }
+        prev = p;
+      }
 
-        const props = i % 2 ? {
-          icon: circularIcon,
-          opacity: 0.5,
-          onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
-        } : {
-          // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-          icon: circularIcon,
-          opacity: 1,
-          onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-          onClick: () => this.handleMarkerClick(p.id),
-        };
+      const props = i % 2 ? {
+        icon: circularIcon,
+        opacity: 0.5,
+        onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
+      } : {
+        // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+        icon: circularIcon,
+        opacity: 1,
+        onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
+        onClick: () => this.handleMarkerClick(p.id),
+      };
 
-        return (
-          <Marker
-            key={p.id}
-            draggable
-            position={L.latLng(p.lat, p.lon)}
-            {...props}
-          >
-            {i % 2 === 0 &&
-              <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
-                <span>{nf.format(dist / 1000)} km</span>
-              </Tooltip>
-            }
-          </Marker>
-        );
-      }),
+      return (
+        <Marker
+          key={`95Lp1ukO7F-${p.id}`}
+          draggable
+          position={L.latLng(p.lat, p.lon)}
+          {...props}
+        >
+          {i % 2 === 0 &&
+            <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
+              <span>{nf.format(dist / 1000)} km</span>
+            </Tooltip>
+          }
+        </Marker>
+      );
+    }));
 
-      <ElevationChartActivePoint key="chartPoint" />,
-    ];
+    elems.push(<ElevationChartActivePoint key="Pm05rrVR1m" />);
+
+    return elems;
   }
 }
 

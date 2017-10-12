@@ -8,31 +8,25 @@ import { toHtml, getPoiType } from 'fm3/poiTypes';
 import * as FmPropTypes from 'fm3/propTypes';
 
 function ObjectsResult({ objects }) {
-  return (
-    <div>
-      {objects.map(({
- id, lat, lon, tags, typeId,
-}) => {
-        const html = toHtml(typeId, tags);
+  return objects.map(({ id, lat, lon, tags, typeId }) => {
+    const html = toHtml(typeId, tags);
 
-        const pt = getPoiType(typeId);
-        const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
+    const pt = getPoiType(typeId);
+    const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
-        return (
-          <RichMarker key={id} position={L.latLng(lat, lon)} image={img}>
-            {html &&
-              <Popup autoPan={false}>
-                <span
-                  // eslint-disable-next-line
-                  dangerouslySetInnerHTML={{ __html: html }}
-                />
-              </Popup>
-            }
-          </RichMarker>
-        );
-      })}
-    </div>
-  );
+    return (
+      <RichMarker key={`awXopuJs4k-${id}`} position={L.latLng(lat, lon)} image={img}>
+        {html &&
+          <Popup autoPan={false}>
+            <span
+              // eslint-disable-next-line
+              dangerouslySetInnerHTML={{ __html: html }}
+            />
+          </Popup>
+        }
+      </RichMarker>
+    );
+  });
 }
 
 ObjectsResult.propTypes = {
