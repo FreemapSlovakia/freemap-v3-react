@@ -1,14 +1,4 @@
-.bootstrap-typeahead {
-  display: inline-block;
-  padding-right: 15px !important;
-
-  button.close.bootstrap-typeahead-clear-button {
-    position: absolute;
-    top: 5px;
-    right: -4px;
-  }
-
-  .bootstrap-typeahead-menu {
-    opacity: 0.9;
-  }
+.rbt {
+  display: inline-flex !important;
+  width: 200px;
 }

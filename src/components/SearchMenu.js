@@ -13,8 +13,13 @@ import * as FmPropTypes from 'fm3/propTypes';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import 'fm3/styles/search.scss';
+import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 class SearchMenu extends React.Component {
+  componentDidMount() {
+    this.input.getInstance().focus();
+  }
+
   onSelectionChange = (resultsSelectedByUser) => {
     this.props.onResultSelect(resultsSelectedByUser[0], this.props.tool);
   }
@@ -32,6 +37,10 @@ class SearchMenu extends React.Component {
     this.props.onResultHiglight(result);
   }
 
+  setInput = (input) => {
+    this.input = input;
+  }
+
   render() {
     const {
       onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results,
@@ -42,6 +51,7 @@ class SearchMenu extends React.Component {
         <span className="fm-label"><FontAwesomeIcon icon="search" /><span className="hidden-xs"> Hľadanie na mape</span></span>
         {' '}
         <AsyncTypeahead
+          ref={this.setInput}
           labelKey="label"
           useCache={false}
           minLength={3}
