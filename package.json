@@ -20,7 +20,7 @@
     "intl": "1.2.5",
     "leaflet": "1.2.0",
     "leaflet-hotline": "0.4.0",
-    "pica": "4.0.0",
+    "pica": "4.0.1",
     "prop-types": "15.6.0",
     "query-string": "5.0.0",
     "react": "16.0.0",
