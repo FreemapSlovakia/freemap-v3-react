@@ -179,12 +179,14 @@ button#freemap-logo {
 }
 
 .fm-type-zoom-control {
+  pointer-events: none;
   position: absolute;
   z-index: 1010;
   bottom: 10px;
   left: 0;
   right: 0;
   &>div {
+    pointer-events: all;
     display: table;
     margin: 0 auto;
   }
