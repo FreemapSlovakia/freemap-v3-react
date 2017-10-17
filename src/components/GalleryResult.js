@@ -24,6 +24,11 @@ class GalleryResult extends React.Component {
     pickingPosition: FmPropTypes.point,
     showFilter: PropTypes.bool,
     showUploadModal: PropTypes.bool,
+    showPosition: PropTypes.bool,
+    image: PropTypes.shape({
+      lat: PropTypes.number.isRequired,
+      lon: PropTypes.number.isRequired,
+    }),
   }
 
   state = {};
@@ -48,9 +53,7 @@ class GalleryResult extends React.Component {
   }
 
   render() {
-    const {
-      activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal,
-    } = this.props;
+    const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal, showPosition, image } = this.props;
 
     const elems = [];
 
@@ -65,7 +68,16 @@ class GalleryResult extends React.Component {
       );
     }
 
-    if (!isPickingPosition && activeImageId) {
+    if (showPosition && image) {
+      elems.push(
+        <RichMarker
+          key="C9mB4Euhk7"
+          position={L.latLng(image.lat, image.lon)}
+        />,
+      );
+    }
+
+    if (!isPickingPosition && activeImageId && !showPosition) {
       elems.push(<GalleryViewerModal key="4hDH4B4mwr" />);
     }
 
@@ -83,12 +95,13 @@ class GalleryResult extends React.Component {
 
 export default connect(
   state => ({
-    images: state.gallery.images,
+    image: state.gallery.image,
     activeImageId: state.gallery.activeImageId,
     isPickingPosition: state.gallery.pickingPositionForId !== null,
     pickingPosition: state.gallery.pickingPosition,
     showFilter: state.gallery.showFilter,
     showUploadModal: state.gallery.showUploadModal,
+    showPosition: state.gallery.showPosition,
   }),
   dispatch => ({
     onPositionPick(lat, lon) {

@@ -34,6 +34,7 @@ import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
 import GalleryPicker from 'fm3/components/GalleryPicker';
 import GalleryPositionPickingMenu from 'fm3/components/GalleryPositionPickingMenu';
+import GalleryShowPositionMenu from 'fm3/components/GalleryShowPositionMenu';
 
 import Settings from 'fm3/components/Settings';
 import HomeLocationPickingMenu from 'fm3/components/HomeLocationPickingMenu';
@@ -222,6 +223,7 @@ class Main extends React.Component {
             </Panel>
           }
           <GalleryPositionPickingMenu />
+          <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
         </div>
 
@@ -315,12 +317,12 @@ export default connect(
     mouseCursor: selectMouseCursor(state),
     user: state.auth.user,
     ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
-      || state.gallery.activeImageId),
+      || state.gallery.activeImageId || state.gallery.showPosition),
     showElevationChart: !!state.elevationChart.elevationProfilePoints,
     showGalleryPicker: isShowGalleryPicker(state),
     locate: state.main.locate,
     showLoginModal: state.auth.chooseLoginMethod,
-    showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId,
+    showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
   }),
   dispatch => ({
     onToolSet(tool) {
@@ -384,5 +386,6 @@ function isShowGalleryPicker(state) {
   return (state.main.tool === null || ['gallery', 'track-viewer', 'search', 'objects', 'changesets'].includes(state.main.tool))
     && state.map.overlays.includes('I')
     && state.gallery.pickingPositionForId === null
+    && !state.gallery.showPosition
     && !state.main.selectingHomeLocation;
 }

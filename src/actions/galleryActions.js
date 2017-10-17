@@ -18,8 +18,8 @@ export function galleryClear() {
   return { type: 'GALLERY_CLEAR' };
 }
 
-export function galleryShowOnTheMap() {
-  return { type: 'GALLERY_SHOW_ON_THE_MAP' };
+export function galleryShowOnTheMap(show) {
+  return { type: show ? 'GALLERY_SHOW_ON_THE_MAP' : 'GALLERY_CANCEL_SHOW_ON_THE_MAP' };
 }
 
 export function galleryAddItem(item) {

@@ -27,6 +27,7 @@ const initialState = {
   },
 
   editModel: null,
+  showPosition: false,
 };
 
 export default function elevationMeasurement(state = initialState, action) {
@@ -151,6 +152,10 @@ export default function elevationMeasurement(state = initialState, action) {
       };
     case 'GALLERY_SET_EDIT_MODEL':
       return { ...state, editModel: action.payload };
+    case 'GALLERY_SHOW_ON_THE_MAP':
+      return { ...state, showPosition: true };
+    case 'GALLERY_CANCEL_SHOW_ON_THE_MAP':
+      return { ...state, showPosition: false };
     default:
       return state;
   }

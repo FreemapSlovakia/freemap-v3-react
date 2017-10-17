@@ -278,8 +278,7 @@ export default connect(
       dispatch(galleryClear(null));
     },
     onShowOnTheMap() {
-      dispatch(galleryShowOnTheMap());
-      dispatch(galleryClear(null));
+      dispatch(galleryShowOnTheMap(true));
     },
     onImageSelect(id) {
       dispatch(galleryRequestImage(id));

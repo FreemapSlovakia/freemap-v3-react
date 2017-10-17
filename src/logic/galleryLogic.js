@@ -10,7 +10,6 @@ import {
   galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear, galleryHideUploadModal,
   gallerySetUsers,
 } from 'fm3/actions/galleryActions';
-import { infoPointSet } from 'fm3/actions/infoPointActions';
 
 const galleryRequestImagesByRadiusLogic = createLogic({
   cancelType: ['SET_TOOL', 'CLEAR_MAP'],
@@ -150,18 +149,6 @@ const galleryRequestImageLogic = createLogic({
         storeDispatch(stopProgress(pid));
         done();
       });
-  },
-});
-
-const galleryShowOnTheMapLogic = createLogic({
-  type: 'GALLERY_SHOW_ON_THE_MAP',
-  process({ getState }, dispatch, done) {
-    const { image } = getState().gallery;
-    if (image) {
-      dispatch(infoPointSet(image.lat, image.lon, image.title));
-      dispatch(mapRefocus({ lat: image.lat, lon: image.lon }));
-    }
-    done();
   },
 });
 
@@ -450,11 +437,22 @@ const gallerySavePictureLogic = createLogic({
   },
 });
 
+const galleryShowOnTheMapLogic = createLogic({
+  type: 'GALLERY_SHOW_ON_THE_MAP',
+  process({ getState }, dispatch, done) {
+    const { image } = getState().gallery;
+    if (image) {
+      dispatch(mapRefocus({ lat: image.lat, lon: image.lon }));
+    }
+    done();
+  },
+});
+
 export default [
+  galleryShowOnTheMapLogic,
   galleryRequestImagesByRadiusLogic,
   galleryRequestImagesByOrderLogic,
   galleryRequestImageLogic,
-  galleryShowOnTheMapLogic,
   galleryUploadModalLogic,
   galleryItemUploadLogic,
   gallerySubmitCommentLogic,
