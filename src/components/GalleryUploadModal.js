@@ -10,9 +10,10 @@ import Modal from 'react-bootstrap/lib/Modal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
-import {
-  galleryAddItem, galleryRemoveItem, gallerySetItem,
-  gallerySetItemForPositionPicking, galleryUpload, galleryHideUploadModal } from 'fm3/actions/galleryActions';
+import { galleryAddItem, galleryRemoveItem, gallerySetItem, gallerySetItemForPositionPicking,
+  galleryUpload, galleryHideUploadModal } from 'fm3/actions/galleryActions';
+
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -155,35 +156,34 @@ class GalleryUploadModal extends React.Component {
     }
   }
 
+  handleClose = () => {
+    this.props.onClose(!!this.props.items.length);
+  }
+
   render() {
-    const {
-      items, onClose, onPositionPick, visible, onUpload, uploading, allTags,
-    } = this.props;
+    const { items, onPositionPick, visible, onUpload, uploading, allTags } = this.props;
+
     return (
-      <Modal show={visible} onHide={onClose}>
+      <Modal show={visible} onHide={this.handleClose}>
         <Modal.Header closeButton>
           <Modal.Title>Nahrať fotky</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {
-            items.map(({
- id, file, url, position, title, description, takenAt, tags, error,
-}) => (
-  <GalleryUploadItem
-    key={id}
-    id={id}
-    filename={file.name}
-    url={url}
-    model={{
- position, title, description, takenAt, tags,
-}}
-    allTags={allTags}
-    error={error}
-    onRemove={this.handleRemove}
-    onPositionPick={onPositionPick}
-    onModelChange={this.handleModelChange}
-    disabled={uploading}
-  />
+            items.map(({ id, file, url, position, title, description, takenAt, tags, error }) => (
+              <GalleryUploadItem
+                key={id}
+                id={id}
+                filename={file.name}
+                url={url}
+                model={{ position, title, description, takenAt, tags }}
+                allTags={allTags}
+                error={error}
+                onRemove={this.handleRemove}
+                onPositionPick={onPositionPick}
+                onModelChange={this.handleModelChange}
+                disabled={uploading}
+              />
             ))
           }
           {!uploading &&
@@ -205,7 +205,7 @@ class GalleryUploadModal extends React.Component {
           <Button onClick={onUpload} disabled={uploading}><FontAwesomeIcon icon="upload" />
             {uploading ? `Nahrávam (${items.length})` : 'Nahrať' }
           </Button>
-          <Button onClick={onClose} bsStyle="danger"><Glyphicon glyph="remove" /> Zrušiť</Button>
+          <Button onClick={this.handleClose} bsStyle="danger"><Glyphicon glyph="remove" /> Zrušiť</Button>
         </Modal.Footer>
       </Modal>
     );
@@ -235,8 +235,21 @@ export default connect(
     onUpload() {
       dispatch(galleryUpload());
     },
-    onClose() {
-      dispatch(galleryHideUploadModal());
+    onClose(ask) {
+      if (ask) {
+        dispatch(toastsAdd({
+          collapseKey: 'galleryUploadModal.close',
+          message: 'Zavrieť dialógové okno bez uloženia zmien?',
+          style: 'warning',
+          cancelType: 'SET_TOOL',
+          actions: [
+            { name: 'Áno', action: galleryHideUploadModal(), style: 'danger' },
+            { name: 'Nie' },
+          ],
+        }));
+      } else {
+        dispatch(galleryHideUploadModal());
+      }
     },
     onPositionPick(id) {
       dispatch(gallerySetItemForPositionPicking(id));
