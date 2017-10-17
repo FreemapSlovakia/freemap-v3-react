@@ -99,11 +99,20 @@ class MapSwitchButton extends React.Component {
                       </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
+                      {this.props.zoom < minZoom &&
+                        [
+                          ' ',
+                          <FontAwesomeIcon
+                            key="WVMJTryOeI"
+                            icon="exclamation-triangle"
+                            title={`Dostupné až od priblíženia ${minZoom}`}
+                            className="text-warning"
+                          />,
+                        ]
+                      }
                       {type === 'I' && this.props.pictureFilterIsActive && [
                         ' ',
-                        <Label key="RVvzojMP13" bsStyle="warning" title="Filter fotografií je aktívny">
-                          <FontAwesomeIcon icon="filter" />
-                        </Label>,
+                        <FontAwesomeIcon key="RVvzojMP13" icon="filter" title="Filter fotografií je aktívny" className="text-warning" />,
                       ]}
                     </MenuItem>
                   ))

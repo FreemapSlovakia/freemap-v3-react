@@ -113,7 +113,7 @@ class RoutePlannerMenu extends React.Component {
         {' '}
         <ButtonGroup>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" color="#409a40" /><span className="hidden-xs"> Štart</span></span>}
+            title={<span><FontAwesomeIcon icon="play" style={{ color: '#409a40' }} /><span className="hidden-xs"> Štart</span></span>}
             id="add-start-dropdown"
             onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
@@ -123,7 +123,7 @@ class RoutePlannerMenu extends React.Component {
             <MenuItem onClick={this.handleStartHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" color="#d9534f" /><span className="hidden-xs"> Cieľ</span></span>}
+            title={<span><FontAwesomeIcon icon="stop" color={{ color: '#d9534f' }} /><span className="hidden-xs"> Cieľ</span></span>}
             id="add-finish-dropdown"
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
