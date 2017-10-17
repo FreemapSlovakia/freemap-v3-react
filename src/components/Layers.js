@@ -122,7 +122,8 @@ export default connect(
     mapType: state.map.mapType,
     overlayOpacity: state.map.overlayOpacity,
     expertMode: state.main.expertMode,
-    disableKeyboard: !!(state.main.activeModal || state.gallery.activeImageId), // NOTE there can be lot more things
+    disableKeyboard: !!(state.main.activeModal
+      || state.gallery.activeImageId && !state.gallery.showPosition && !state.gallery.pickingPositionForId), // NOTE there can be lot more things
     galleryFilter: state.gallery.filter,
     galleryDirtySeq: state.gallery.dirtySeq,
   }),
