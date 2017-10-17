@@ -117,3 +117,7 @@ export function gallerySavePicture() {
 export function galleryList(orderBy) {
   return { type: 'GALLERY_LIST', payload: orderBy };
 }
+
+export function galleryLayerHint() {
+  return { type: 'GALLERY_PREVENT_LAYER_HINT' };
+}

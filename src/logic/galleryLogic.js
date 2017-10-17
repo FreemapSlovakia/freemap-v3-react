@@ -8,8 +8,10 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import {
   gallerySetImageIds, galleryRequestImage, gallerySetImage, galleryRemoveItem,
   galleryUpload, gallerySetLayerDirty, gallerySetItemError, gallerySetTags, galleryClear, galleryHideUploadModal,
-  gallerySetUsers,
+  gallerySetUsers, galleryLayerHint,
 } from 'fm3/actions/galleryActions';
+
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 const galleryRequestImagesByRadiusLogic = createLogic({
   cancelType: ['SET_TOOL', 'CLEAR_MAP'],
@@ -448,6 +450,37 @@ const galleryShowOnTheMapLogic = createLogic({
   },
 });
 
+const galleryShowLayerHintLogic = createLogic({
+  type: 'SET_TOOL',
+  process({ getState }, dispatch, done) {
+    if (getState().main.tool === 'gallery' && !getState().map.overlays.includes('I') && !localStorage.getItem('galleryPreventLayerHint')) {
+      dispatch(dispatch(toastsAdd({
+        collapseKey: 'gallery.showLayerHint',
+        message: (
+          <span>
+            Pre zapnutie vrstvy s fotografiami zvoľte <FontAwesomeIcon icon="picture-o" /> <i>Fotografie</i>
+            {' z '}<FontAwesomeIcon icon="map-o" /> ponuky vrstiev (klávesa <kbd>f</kbd>).
+          </span>
+        ),
+        style: 'info',
+        actions: [
+          { name: 'OK' },
+          { name: 'Už viac nezobrazovať', action: galleryLayerHint() },
+        ],
+      })));
+    }
+    done();
+  },
+});
+
+const galleryPreventLayerHintLogic = createLogic({
+  type: 'GALLERY_PREVENT_LAYER_HINT',
+  process(_, dispatch, done) {
+    localStorage.setItem('galleryPreventLayerHint', '1');
+    done();
+  },
+});
+
 export default [
   galleryShowOnTheMapLogic,
   galleryRequestImagesByRadiusLogic,
@@ -460,4 +493,6 @@ export default [
   galleryDeletePictureLogic,
   galleryFetchUsersLogic,
   gallerySavePictureLogic,
+  galleryShowLayerHintLogic,
+  galleryPreventLayerHintLogic,
 ];
