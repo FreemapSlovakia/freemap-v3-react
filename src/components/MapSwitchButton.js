@@ -5,7 +5,6 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
-import Label from 'react-bootstrap/lib/Label';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
