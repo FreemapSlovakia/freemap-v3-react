@@ -65,8 +65,6 @@ const authLoginWithFacebookLogic = createLogic({
         data: { accessToken: response.authResponse.accessToken },
       })
         .then(({ data }) => {
-          localStorage.setItem('authToken', data.authToken);
-
           dispatch(toastsAdd({
             collapseKey: 'login',
             message: 'Boli ste úspešne prihlásený.',
@@ -102,7 +100,6 @@ const authLoginWithGoogleLogic = createLogic({
         data: { idToken },
       }))
       .then(({ data }) => {
-        localStorage.setItem('authToken', data.authToken);
         dispatch(toastsAdd({
           collapseKey: 'login',
           message: 'Boli ste úspešne prihlásený.',
@@ -137,7 +134,6 @@ const authLogoutLogic = createLogic({
       validateStatus: status => status === 204,
     })
       .then(() => {
-        localStorage.removeItem('authToken');
         dispatch(authLogout());
         dispatch(toastsAdd({
           collapseKey: 'login',
@@ -153,6 +149,24 @@ const authLogoutLogic = createLogic({
         dispatch(stopProgress(pid));
         done();
       });
+  },
+});
+
+let prevUser = null;
+
+const saveUserLogic = createLogic({
+  type: '*',
+  process({ getState }, dispatch, done) {
+    const { user } = getState().auth;
+    if (user !== prevUser) {
+      prevUser = user;
+      if (user) {
+        localStorage.setItem('user', JSON.stringify(user));
+      } else {
+        localStorage.removeItem('user');
+      }
+    }
+    done();
   },
 });
 
@@ -203,4 +217,4 @@ const authLogoutLogic = createLogic({
 // }
 
 
-export default [authLoginWithOsmLogic, authLoginWithFacebookLogic, authLoginWithGoogleLogic, authLogoutLogic];
+export default [authLoginWithOsmLogic, authLoginWithFacebookLogic, authLoginWithGoogleLogic, authLogoutLogic, saveUserLogic];

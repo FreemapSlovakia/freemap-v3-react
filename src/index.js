@@ -33,6 +33,8 @@ const store = createStore(reducer, applyMiddleware(...middlewares));
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
+initAuthHelper(store);
+
 let appState;
 try {
   appState = JSON.parse(localStorage.getItem('appState'));
@@ -55,8 +57,6 @@ if (appState) {
 history.listen(handleLocationChange.bind(undefined, store));
 
 handleLocationChange(store, history.location);
-
-initAuthHelper(store);
 
 if (window.self !== window.top) {
   document.body.classList.add('embedded');

@@ -6,16 +6,26 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 
 export default function initAuthHelper(store) {
-  const authToken = localStorage.getItem('authToken');
+  try {
+    store.dispatch(authSetUser(JSON.parse(localStorage.getItem('user'))));
+  } catch (e) {
+    const authToken = localStorage.getItem('authToken'); // for compatibility
+    if (authToken) {
+      store.dispatch(authSetUser({ authToken, name: '...' }));
+    }
+  } finally {
+    localStorage.removeItem('authToken'); // for compatibility
+  }
 
-  if (authToken) {
+  const { user } = store.getState().auth;
+  if (user) {
     const pid = Math.random();
     store.dispatch(startProgress(pid));
     axios({
       url: `${process.env.API_URL}/auth/validate`,
       method: 'post',
       headers: {
-        Authorization: `Bearer ${authToken}`,
+        Authorization: `Bearer ${user.authToken}`,
       },
       validateStatus: status => status === 200 || status === 401,
     })
@@ -26,6 +36,7 @@ export default function initAuthHelper(store) {
       })
       .catch((err) => {
         store.dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+        store.dispatch(authSetUser(null));
       })
       .then(() => {
         store.dispatch(stopProgress(pid));
@@ -51,8 +62,6 @@ export default function initAuthHelper(store) {
       },
     )
       .then(({ data }) => {
-        localStorage.setItem('authToken', data.authToken);
-
         if (!store.getState().main.homeLocation) {
           store.dispatch(setHomeLocation({ lat: data.lat, lon: data.lon }));
         }
@@ -63,6 +72,7 @@ export default function initAuthHelper(store) {
           style: 'info',
           timeout: 5000,
         }));
+
         store.dispatch(authSetUser(data));
       })
       .catch((err) => {
