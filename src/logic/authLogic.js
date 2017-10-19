@@ -131,7 +131,7 @@ const authLogoutLogic = createLogic({
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
       },
-      validateStatus: status => status === 204,
+      validateStatus: status => status === 204 || status === 401,
     })
       .then(() => {
         dispatch(authLogout());

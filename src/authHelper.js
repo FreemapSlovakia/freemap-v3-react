@@ -32,11 +32,12 @@ export default function initAuthHelper(store) {
       .then((res) => {
         if (res.status === 200) {
           store.dispatch(authSetUser(res.data));
+        } else {
+          store.dispatch(authSetUser(null));
         }
       })
       .catch((err) => {
-        store.dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
-        store.dispatch(authSetUser(null));
+        store.dispatch(toastsAddError(`Nepodarilo sa overiť prihlásenie: ${err.message}`));
       })
       .then(() => {
         store.dispatch(stopProgress(pid));
