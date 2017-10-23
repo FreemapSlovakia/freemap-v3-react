@@ -33,26 +33,9 @@ const store = createStore(reducer, applyMiddleware(...middlewares));
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
+loadAppState(store);
+
 initAuthHelper(store);
-
-let appState;
-try {
-  appState = JSON.parse(localStorage.getItem('appState'));
-} catch (e) {
-  // ignore
-}
-
-if (appState) {
-  if (appState.main) {
-    store.dispatch(mainLoadState(appState.main));
-  }
-  if (appState.map) {
-    store.dispatch(mapLoadState(appState.map));
-  }
-  if (appState.trackViewer) {
-    store.dispatch(trackViewerLoadState(appState.trackViewer));
-  }
-}
 
 history.listen(handleLocationChange.bind(undefined, store));
 
@@ -69,3 +52,24 @@ render(
   ,
   document.getElementById('app'),
 );
+
+function loadAppState() {
+  let appState;
+  try {
+    appState = JSON.parse(localStorage.getItem('appState'));
+  } catch (e) {
+    // ignore
+  }
+
+  if (appState) {
+    if (appState.main) {
+      store.dispatch(mainLoadState(appState.main));
+    }
+    if (appState.map) {
+      store.dispatch(mapLoadState(appState.map));
+    }
+    if (appState.trackViewer) {
+      store.dispatch(trackViewerLoadState(appState.trackViewer));
+    }
+  }
+}
