@@ -6,6 +6,12 @@ import Modal from 'react-bootstrap/lib/Modal';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
+import Tabs from 'react-bootstrap/lib/Tabs';
+import Tab from 'react-bootstrap/lib/Tab';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import FormControl from 'react-bootstrap/lib/FormControl';
+
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
@@ -38,6 +44,10 @@ class Settings extends React.Component {
     expertMode: PropTypes.bool.isRequired,
     trackViewerEleSmoothingFactor: PropTypes.number.isRequired,
     selectingHomeLocation: PropTypes.bool,
+    user: PropTypes.shape({
+      name: PropTypes.string,
+      email: PropTypes.string,
+    }),
   };
 
   constructor(props) {
@@ -51,6 +61,8 @@ class Settings extends React.Component {
       cycloOverlayOpacity: props.cycloOverlayOpacity,
       expertMode: props.expertMode,
       trackViewerEleSmoothingFactor: props.trackViewerEleSmoothingFactor,
+      name: props.user && props.user.name || '',
+      email: props.user && props.user.email || '',
     };
   }
 
@@ -76,18 +88,29 @@ class Settings extends React.Component {
       this.state.cycloOverlayOpacity,
       this.state.expertMode,
       this.state.trackViewerEleSmoothingFactor,
+      this.props.user ? { name: this.state.name, email: this.state.email } : null,
     );
   }
 
+  handleNameChange = (e) => {
+    this.setState({ name: e.target.value });
+  }
+
+  handleEmailChange = (e) => {
+    this.setState({ email: e.target.value });
+  }
+
   render() {
-    const {
-      onClose, onHomeLocationSelect, selectingHomeLocation, zoom,
-    } = this.props;
-    const { homeLocation, homeLocationCssClasses } = this.state;
+    const { onClose, onHomeLocationSelect, selectingHomeLocation, zoom } = this.props;
+    const { homeLocation, homeLocationCssClasses, tileFormat, nlcOpacity, expertMode,
+      touristOverlayOpacity, cycloOverlayOpacity, trackViewerEleSmoothingFactor, name, email } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
 
     const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity', 'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor']
-      .some(prop => this.state[prop] !== this.props[prop]);
+      .some(prop => this.state[prop] !== this.props[prop])
+      || this.props.user && (name !== (this.props.user.name || '') || email !== (this.props.user.email || ''));
+
+    // TODO name, email
 
     const homeLocationInfo = homeLocation
       ? `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`
@@ -99,123 +122,139 @@ class Settings extends React.Component {
           <Modal.Title>Nastavenia</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div style={{ marginBottom: '10px' }}>
-            <p>Formát dlaždíc:</p>
-            <ButtonGroup>
-              <Button
-                active={this.state.tileFormat === 'png'}
-                onClick={() => this.setState({ tileFormat: 'png' })}
-              >
-                PNG
-              </Button>
-              <Button
-                active={this.state.tileFormat === 'jpeg'}
-                onClick={() => this.setState({ tileFormat: 'jpeg' })}
-              >
-                JPG
-              </Button>
-            </ButtonGroup>
-          </div>
-          <Alert>
-            Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
-            Pri pomalom internete preto odporúčame zvoliť JPG.
-          </Alert>
-          <hr />
-          <p>
-            {'Domovská poloha: '}
-            <span className={homeLocationCssClasses}>{homeLocationInfo}</span>
-          </p>
-          <Button onClick={() => onHomeLocationSelect()}>
-            <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
-          </Button>
-          <hr />
-          <p>Viditeľnosť vrstvy Lesné cesty NLC: {this.state.nlcOpacity.toFixed(1) * 100}%</p>
-          <Slider
-            value={this.state.nlcOpacity}
-            min={0.1}
-            max={1.0}
-            step={0.1}
-            tooltip={false}
-            onChange={newOpacity => this.setState({ nlcOpacity: newOpacity })}
-          />
-          {nlcOverlayIsNotVisible &&
-            <Alert>
-              NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
-            </Alert>
-          }
-          <hr />
-          <div style={{ marginBottom: '10px' }}>
-            <p>Expertný mód:</p>
-            <ButtonGroup>
-              <Button
-                active={!this.state.expertMode}
-                onClick={() => this.setState({ expertMode: false })}
-              >
-                Vypnutý
-              </Button>
-              <Button
-                active={this.state.expertMode}
-                onClick={() => this.setState({ expertMode: true })}
-              >
-                Zapnutý
-              </Button>
-            </ButtonGroup>
-          </div>
-          {!this.state.expertMode &&
-            <Alert>
-              V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
-            </Alert>
-          }
-          {this.state.expertMode &&
-            <div>
+          <Tabs id="setting-tabs">
+            <Tab title="Mapa" eventKey={2}>
+              <div style={{ marginBottom: '10px' }}>
+                <p>Formát dlaždíc:</p>
+                <ButtonGroup>
+                  <Button
+                    active={tileFormat === 'png'}
+                    onClick={() => this.setState({ tileFormat: 'png' })}
+                  >
+                    PNG
+                  </Button>
+                  <Button
+                    active={tileFormat === 'jpeg'}
+                    onClick={() => this.setState({ tileFormat: 'jpeg' })}
+                  >
+                    JPG
+                  </Button>
+                </ButtonGroup>
+              </div>
+              <Alert>
+                Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
+                Pri pomalom internete preto odporúčame zvoliť JPG.
+              </Alert>
+              <hr />
               <p>
-                {'Viditeľnosť vrstvy Turistické trasy: '}
-                {this.state.touristOverlayOpacity.toFixed(1) * 100}%
+                {'Domovská poloha: '}
+                <span className={homeLocationCssClasses}>{homeLocationInfo}</span>
               </p>
+              <Button onClick={() => onHomeLocationSelect()}>
+                <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
+              </Button>
+              <hr />
+              <p>Viditeľnosť vrstvy Lesné cesty NLC: {nlcOpacity.toFixed(1) * 100}%</p>
               <Slider
-                value={this.state.touristOverlayOpacity}
+                value={nlcOpacity}
                 min={0.1}
                 max={1.0}
                 step={0.1}
                 tooltip={false}
-                onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
+                onChange={newOpacity => this.setState({ nlcOpacity: newOpacity })}
               />
-            </div>
-          }
-          {this.state.expertMode &&
-            <div>
-              <p>
-                {'Viditeľnosť vrstvy Cyklotrasy: '}
-                {this.state.cycloOverlayOpacity.toFixed(1) * 100}%
-              </p>
-              <Slider
-                value={this.state.cycloOverlayOpacity}
-                min={0.1}
-                max={1.0}
-                step={0.1}
-                tooltip={false}
-                onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
-              />
-            </div>
-          }
-          {this.state.expertMode &&
-            <div>
-              <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {(this.state.trackViewerEleSmoothingFactor)}</p>
-              <Slider
-                value={this.state.trackViewerEleSmoothingFactor}
-                min={1}
-                max={10}
-                step={1}
-                tooltip={false}
-                onChange={newValue => this.setState({ trackViewerEleSmoothingFactor: newValue })}
-              />
-            </div>
-          }
-          {this.state.expertMode &&
-            <Alert>
-              Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
-            </Alert>
-          }
+              {nlcOverlayIsNotVisible &&
+                <Alert>
+                  NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
+                </Alert>
+              }
+            </Tab>
+            <Tab title="Účet" eventKey={1}>
+              {this.props.user ? [
+                <FormGroup key="PIj9rh3OVZ">
+                  <ControlLabel>Meno</ControlLabel>
+                  <FormControl value={name} onChange={this.handleNameChange} />
+                </FormGroup>,
+                <FormGroup key="4uO0MtU74k">
+                  <ControlLabel>E-Mail</ControlLabel>
+                  <FormControl type="email" value={email} onChange={this.handleEmailChange} />
+                </FormGroup>,
+              ] : (
+                <Alert>
+                    Dostupné iba pre prihásených používateľov.
+                </Alert>
+              )}
+            </Tab>
+            <Tab title="Expert" eventKey={3}>
+              <div style={{ marginBottom: '10px' }}>
+                <p>Expertný mód:</p>
+                <ButtonGroup>
+                  <Button
+                    active={!expertMode}
+                    onClick={() => this.setState({ expertMode: false })}
+                  >
+                    Vypnutý
+                  </Button>
+                  <Button
+                    active={expertMode}
+                    onClick={() => this.setState({ expertMode: true })}
+                  >
+                    Zapnutý
+                  </Button>
+                </ButtonGroup>
+              </div>
+              {!expertMode &&
+                <Alert>
+                  V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
+                </Alert>
+              }
+              {expertMode && [
+                <hr key="FbxiwF4ArQ" />,
+                <div key="UPdYSt6in3">
+                  <p>
+                    {'Viditeľnosť vrstvy Turistické trasy: '}
+                    {touristOverlayOpacity.toFixed(1) * 100}%
+                  </p>
+                  <Slider
+                    value={touristOverlayOpacity}
+                    min={0.1}
+                    max={1.0}
+                    step={0.1}
+                    tooltip={false}
+                    onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
+                  />
+                </div>,
+                <div key="UNBlQpq84u">
+                  <p>
+                    {'Viditeľnosť vrstvy Cyklotrasy: '}
+                    {cycloOverlayOpacity.toFixed(1) * 100}%
+                  </p>
+                  <Slider
+                    value={cycloOverlayOpacity}
+                    min={0.1}
+                    max={1.0}
+                    step={0.1}
+                    tooltip={false}
+                    onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
+                  />
+                </div>,
+                <div key="h8NQDtHhE7">
+                  <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}</p>
+                  <Slider
+                    value={trackViewerEleSmoothingFactor}
+                    min={1}
+                    max={10}
+                    step={1}
+                    tooltip={false}
+                    onChange={newValue => this.setState({ trackViewerEleSmoothingFactor: newValue })}
+                  />
+                </div>,
+                <Alert key="QgbhwWNfG6">
+                  Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
+                </Alert>,
+              ]}
+            </Tab>
+          </Tabs>
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" onClick={this.handleSave} disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
@@ -237,9 +276,19 @@ export default connect(
     expertMode: state.main.expertMode,
     trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
     selectingHomeLocation: state.main.selectingHomeLocation,
+    user: state.auth.user,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor) {
+    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user) {
+      // TODO use this
+      dispatch({
+        type: 'SAVE_SETTINGS',
+        payload: {
+          tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user,
+        },
+      });
+
+      // TODO get rid of all this
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
       dispatch(mapSetOverlayOpacity('N', nlcOpacity));
