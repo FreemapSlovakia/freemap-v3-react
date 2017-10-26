@@ -14,6 +14,7 @@ import infoPointLogic from 'fm3/logic/infoPointLogic';
 import changesetsLogic from 'fm3/logic/changesetsLogic';
 import authLogic from 'fm3/logic/authLogic';
 import mapDetailsLogic from 'fm3/logic/mapDetailsLogic';
+import saveSettingsLogic from 'fm3/logic/saveSettingsLogic';
 
 export default [
   ...routePlannerLogic,
@@ -32,4 +33,5 @@ export default [
   changesetsLogic,
   ...authLogic,
   mapDetailsLogic,
+  saveSettingsLogic,
 ];

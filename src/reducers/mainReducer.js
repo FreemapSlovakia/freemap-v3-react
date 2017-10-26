@@ -20,12 +20,19 @@ export default function main(state = initialState, action) {
       s.expertMode = !!expertMode;
       return s;
     }
+    case 'AUTH_SET_USER':
+      return {
+        ...state,
+        homeLocation: action.payload && action.payload.lat && action.payload.lon ? { lat: action.payload.lat, lon: action.payload.lon } : null,
+      };
+    case 'AUTH_LOGOUT':
+      return { ...state, homeLocation: null };
     case 'SET_ACTIVE_MODAL':
       return { ...state, activeModal: action.payload };
     case 'SET_TOOL':
       return { ...state, tool: action.payload };
     case 'SET_HOME_LOCATION':
-      return { ...state, homeLocation: { ...action.payload } };
+      return { ...state, homeLocation: action.payload ? { ...action.payload } : null };
     case 'START_PROGRESS':
       return { ...state, progress: [...state.progress, action.payload] };
     case 'STOP_PROGRESS':
