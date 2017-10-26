@@ -18,7 +18,6 @@ import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
 import initAuthHelper from 'fm3/authHelper';
 import 'fm3/fbLoader';
-import 'fm3/modalShim';
 
 import 'fm3/styles/global.scss';
 

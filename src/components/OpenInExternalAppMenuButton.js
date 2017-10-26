@@ -78,24 +78,24 @@ export default class OpenInExternalAppMenuButton extends React.Component {
   }
 
   render() {
-    return (
-      <Button ref={this.setButton} onClick={this.handleButtonClick} title="Otvoriť v externej aplikácii">
+    return [
+      <Button key="pX2mZRv7aO" ref={this.setButton} onClick={this.handleButtonClick} title="Otvoriť v externej aplikácii">
         <FontAwesomeIcon icon="external-link" />
-        <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
-          <Popover id="popover-trigger-click-root-close" className="fm-menu">
-            <ul>
-              <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
-              <MenuItem onClick={() => this.openIn('oma.sk')}>OMA</MenuItem>
-              <MenuItem onClick={() => this.openIn('google')}>Google Mapy</MenuItem>
-              <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
-              <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
-              <MenuItem divider />
-              <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
-              <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
-            </ul>
-          </Popover>
-        </Overlay>
-      </Button>
-    );
+      </Button>,
+      <Overlay key="xr66bONNRS" rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+        <Popover id="popover-trigger-click-root-close" className="fm-menu">
+          <ul>
+            <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
+            <MenuItem onClick={() => this.openIn('oma.sk')}>OMA</MenuItem>
+            <MenuItem onClick={() => this.openIn('google')}>Google Mapy</MenuItem>
+            <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
+            <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
+            <MenuItem divider />
+            <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
+            <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
+          </ul>
+        </Popover>
+      </Overlay>,
+    ];
   }
 }
