@@ -23,7 +23,9 @@ export default function main(state = initialState, action) {
     case 'AUTH_SET_USER':
       return {
         ...state,
-        homeLocation: action.payload && action.payload.lat && action.payload.lon ? { lat: action.payload.lat, lon: action.payload.lon } : null,
+        homeLocation: !action.payload ? state.homeLocation
+          : action.payload.lat && action.payload.lon ? { lat: action.payload.lat, lon: action.payload.lon }
+            : null,
       };
     case 'AUTH_LOGOUT':
       return { ...state, homeLocation: null };
