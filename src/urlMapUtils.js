@@ -22,24 +22,24 @@ export function getMapStateFromUrl(location) {
 
   const [zoomFrag, latFrag, lonFrag] = (query.map || '').split('/');
 
-  const lat = parseFloat(latFrag);
-  const lon = parseFloat(lonFrag);
-  const zoom = parseInt(zoomFrag, 10);
+  const lat = undefineNaN(parseFloat(latFrag));
+  const lon = undefineNaN(parseFloat(lonFrag));
+  const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
   const layers = query.layers || '';
 
   const layersOK = layersRegExp.test(layers);
 
-  if (!layersOK || Number.isNaN(lat) || Number.isNaN(lon) || Number.isNaN(zoom)) {
-    return null;
-  }
-
-  const mapType = layers.charAt(0);
-  const overlays = layers.length > 1 ? layers.substring(1).split('') : [];
+  const mapType = layersOK ? layers.charAt(0) : undefined;
+  const overlays = layersOK && layers.length > 1 ? layers.substring(1).split('') : [];
 
   return {
     lat, lon, zoom, mapType, overlays,
   };
+}
+
+function undefineNaN(val) {
+  return Number.isNaN(val) ? undefined : val;
 }
 
 export function getMapStateDiffFromUrl(state1, state2) {
@@ -48,11 +48,11 @@ export function getMapStateDiffFromUrl(state1, state2) {
   }
 
   const {
-    lat, lon, zoom, mapType, overlays,
+    lat, lon, zoom, mapType, overlays = [],
   } = state1;
   const changes = {};
 
-  if (mapType !== state2.mapType) {
+  if (mapType && mapType !== state2.mapType) {
     changes.mapType = mapType;
   }
 
@@ -60,15 +60,15 @@ export function getMapStateDiffFromUrl(state1, state2) {
     changes.overlays = overlays;
   }
 
-  if (Math.abs(lat - state2.lat) > 0.00001) {
+  if (lat && Math.abs(lat - state2.lat) > 0.00001) {
     changes.lat = lat;
   }
 
-  if (Math.abs(lon - state2.lon) > 0.00001) {
+  if (lon && Math.abs(lon - state2.lon) > 0.00001) {
     changes.lon = lon;
   }
 
-  if (zoom !== state2.zoom) {
+  if (zoom && zoom !== state2.zoom) {
     changes.zoom = zoom;
   }
 
