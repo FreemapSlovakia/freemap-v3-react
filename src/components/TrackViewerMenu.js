@@ -187,11 +187,11 @@ class TrackViewerMenu extends React.Component {
     }
     return (
       <span>
-        <span className="fm-label"><FontAwesomeIcon icon="road" /><span className="hidden-xs"> Prehliadač trás</span></span>
+        <span className="fm-label"><FontAwesomeIcon icon="road" /><span className="hidden-xs"> Prehliadač trás (GPX)</span></span>
         {' '}
         <Button onClick={() => onModalLaunch('upload-track')}>
           <FontAwesomeIcon icon="upload" />
-          <span className="hidden-xs"> Nahrať trasu</span>
+          <span className="hidden-xs"> Nahrať</span>
         </Button>
         {' '}
         <Button
@@ -200,7 +200,7 @@ class TrackViewerMenu extends React.Component {
           disabled={!this.trackGeojsonIsSuitableForElevationChart()}
         >
           <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> Výškový profil</span>
+          <span className="hidden-xs"> Výškovy profil</span>
         </Button>
         {' '}
         {elevationChartTrackGeojson &&
@@ -230,7 +230,7 @@ class TrackViewerMenu extends React.Component {
         {activeModal === 'upload-track' &&
           <Modal show onHide={onModalClose}>
             <Modal.Header closeButton>
-              <Modal.Title>Nahrať záznam trasy</Modal.Title>
+              <Modal.Title>Nahrať trasu</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone" disablePreview>
@@ -245,7 +245,7 @@ class TrackViewerMenu extends React.Component {
         {activeModal === 'track-viewer-share' &&
           <Modal show onHide={onModalClose}>
             <Modal.Header closeButton>
-              <Modal.Title>Zdieľať záznam trasy</Modal.Title>
+              <Modal.Title>Zdieľať trasu</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <p>Trasa je dostupná na následovnej adrese:</p>

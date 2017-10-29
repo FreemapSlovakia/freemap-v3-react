@@ -47,7 +47,7 @@ class ToolsMenuButton extends React.Component {
             <MenuItem onClick={() => this.handleToolSelect('objects')}><FontAwesomeIcon icon="map-marker" /> Miesta</MenuItem>
             <MenuItem onClick={() => this.handleToolSelect('gallery')}><FontAwesomeIcon icon="picture-o" /> Fotografie</MenuItem>
             <MenuItem onClick={() => this.handleToolSelect('measure-dist')}><FontAwesomeIcon icon="arrows-h" /> Meranie</MenuItem>
-            <MenuItem onClick={() => this.handleToolSelect('track-viewer')}><FontAwesomeIcon icon="road" /> Prehliadač trás</MenuItem>
+            <MenuItem onClick={() => this.handleToolSelect('track-viewer')}><FontAwesomeIcon icon="road" /> Prehliadač trás (GPX)</MenuItem>
             <MenuItem onClick={() => this.handleToolSelect('info-point')}><FontAwesomeIcon icon="thumb-tack" /> Bod v mape</MenuItem>
             <MenuItem onClick={() => this.handleToolSelect('changesets')}><FontAwesomeIcon icon="pencil" /> Zmeny v mape</MenuItem>
             <MenuItem onClick={() => this.handleToolSelect('map-details')}><FontAwesomeIcon icon="info" /> Detaily v mape</MenuItem>
