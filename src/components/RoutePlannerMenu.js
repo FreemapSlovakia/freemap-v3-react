@@ -123,7 +123,7 @@ class RoutePlannerMenu extends React.Component {
             <MenuItem onClick={this.handleStartHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
           </DropdownButton>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" color={{ color: '#d9534f' }} /><span className="hidden-xs"> Cieľ</span></span>}
+            title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} /><span className="hidden-xs"> Cieľ</span></span>}
             id="add-finish-dropdown"
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
@@ -144,13 +144,21 @@ class RoutePlannerMenu extends React.Component {
           }
         </ButtonGroup>
         {' '}
-        <Button onClick={() => onItineraryVisibilityToggle()} active={itineraryIsVisible} title="Itinerár">
+        <Button
+          onClick={() => onItineraryVisibilityToggle()}
+          active={itineraryIsVisible}
+          title="Itinerár"
+        >
           <FontAwesomeIcon icon="list-ol" /><span className="hidden-xs"> Itinerár</span>
         </Button>
         {' '}
         {routeFound &&
-          <Button onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)} active={elevationProfileIsVisible} title="Výškový profil">
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs hidden-md"> Výškový profil</span>
+          <Button
+            onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)}
+            active={elevationProfileIsVisible}
+            title="Výškovy profil"
+          >
+            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs"> Výškovy profil</span>
           </Button>
         }
       </span>

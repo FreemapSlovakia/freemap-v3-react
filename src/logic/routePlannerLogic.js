@@ -5,7 +5,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetResult, routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 
 const updateRouteTypes = [
@@ -97,7 +97,21 @@ export const refocusMapOnSetStartOrFinishPoint = createLogic({
   },
 });
 
+export const setupTransportTypeLogic = createLogic({
+  type: 'SET_TOOL',
+  process({ getState }, dispatch, done) {
+    const { main: { tool }, routePlanner: { transportType, start, finish } } = getState();
+    if (tool === 'route-planner' && (!transportType) || !start && !finish) {
+      const { mapType } = getState().map;
+      dispatch(routePlannerSetTransportType(mapType === 'T' ? 'foot' : ['C', 'K', 'M'].includes(mapType) ? 'bike' : 'car'));
+    }
+
+    done();
+  },
+});
+
 export default [
   routePlannerFindRouteLogic,
   refocusMapOnSetStartOrFinishPoint,
+  setupTransportTypeLogic,
 ];

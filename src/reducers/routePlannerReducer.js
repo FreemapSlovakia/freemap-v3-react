@@ -4,7 +4,7 @@ const initialState = {
   start: null,
   midpoints: [],
   finish: null,
-  transportType: 'car',
+  transportType: null,
   pickMode: 'start',
   shapePoints: null,
   distance: null,
