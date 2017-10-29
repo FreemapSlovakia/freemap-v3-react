@@ -14,6 +14,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
+const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
 class RoutePlannerResult extends React.Component {
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target.getLatLng();
@@ -108,7 +110,7 @@ class RoutePlannerResult extends React.Component {
       >
         {!itineraryIsVisible &&
           <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>{midpointDistancesFromStart[i].toFixed(1)}km</span>
+            <span>{nf.format(midpointDistancesFromStart[i])} km</span>
           </Tooltip>}
       </RichMarker>
     )));
@@ -127,7 +129,10 @@ class RoutePlannerResult extends React.Component {
         >
           {distance !== null && time !== null &&
             <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-              <span>{distance}km, {Math.floor(time / 60)}h {time % 60}m</span>
+              <div>
+                <div>Vzdialenosť: {nf.format(distance)} km</div>
+                <div>Čas: {Math.floor(time / 60)} h {Math.round(time % 60)} m</div>
+              </div>
             </Tooltip>
           }
         </RichMarker>,
@@ -156,7 +161,7 @@ class RoutePlannerResult extends React.Component {
           position={L.latLng(lat, lon)}
         >
           <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>{desc} ({km}km)</span>
+            <span>{desc} ({nf.format(km)} km)</span>
           </Tooltip>
         </RichMarker>
       )));
@@ -167,8 +172,8 @@ class RoutePlannerResult extends React.Component {
         positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
         weight="8"
         key={`TC7dnZUMAG-${i}`}
-        color={i % 2 === 0 ? '#38f' : 'black'}
-        opacity={i % 2 === 0 ? 0.8 : 0.4}
+        color={i % 2 === 0 ? '#000' : '#000'}
+        opacity={i % 2 === 0 ? 0.5 : 0.5}
         interactive={false}
       />
     )));

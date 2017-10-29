@@ -18,6 +18,38 @@ const updateRouteTypes = [
   'ROUTE_PLANNER_SET_PARAMS',
 ];
 
+const types = {
+  turn: 'odbočte',
+  'new name': 'choďte',
+  depart: 'začnite',
+  arrive: 'ukončte',
+  merge: 'pokračujte',
+  // 'ramp':
+  'on ramp': 'choďte na príjazdovú cestu',
+  'off ramp': 'opusťte príjazdovú cestu',
+  fork: 'zvoľte cestu',
+  'end of road': 'pokračujte',
+  // 'use lane':
+  continue: 'pokračujte',
+  roundabout: 'vojdite na kruhový objazd',
+  rotary: 'vojdite na okružnú cestu',
+  'roundabout turn': 'na kruhovom objazde odbočte',
+  // 'notification':
+  'exit rotary': 'opusťte okružnú cestu', // undocumented
+  'exit roundabout': 'opusťte kruhový objazd', // undocumented
+};
+
+const modifiers = {
+  uturn: 'otočte sa',
+  'sharp right': 'prudko doprava',
+  'slight right': 'mierne doprava',
+  right: 'doprava',
+  'sharp left': 'prudko doľava',
+  'slight left': 'mierne doľava',
+  left: 'doľava',
+  straight: 'priamo',
+};
+
 export const routePlannerFindRouteLogic = createLogic({
   type: updateRouteTypes,
   cancelType: ['SET_TOOL', ...updateRouteTypes],
@@ -31,10 +63,10 @@ export const routePlannerFindRouteLogic = createLogic({
     }
 
     const allPoints = [
-      [start.lat, start.lon].join(','),
-      ...midpoints.map(mp => [mp.lat, mp.lon].join(',')),
-      [finish.lat, finish.lon].join(','),
-    ].join(',');
+      [start.lon, start.lat].join(','),
+      ...midpoints.map(mp => [mp.lon, mp.lat].join(',')),
+      [finish.lon, finish.lat].join(','),
+    ].join(';');
 
     const pid = Math.random();
     dispatch(startProgress(pid));
@@ -43,26 +75,34 @@ export const routePlannerFindRouteLogic = createLogic({
       source.cancel();
     });
 
-    axios.get(`//www.freemap.sk/api/0.3/route-planner/${allPoints}`, {
+    axios.get(`https://routing.epsilon.sk/route/v1/${transportType}/${allPoints}`, {
       params: {
-        transport_type: transportType,
+        overview: 'full',
+        alternatives: false,
+        steps: true,
+        geometries: 'geojson',
       },
       validateStatus: status => status === 200,
       cancelToken: source.token,
     })
-      .then(({ data: { route: { properties: { distance_in_km, time_in_minutes, itinerary }, geometry: { coordinates } } } }) => {
-        const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
-        if (routeLatLons.length === 0) {
+      .then(({ data: { code, routes } }) => {
+        if (code === 'Ok') {
+          const [{ legs, distance: totalDistance, duration: totalDuration, geometry: { coordinates } }] = routes;
+          const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
+          const iti = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, maneuver: { type, modifier, location: [lon, lat] } }) => ({
+            lat,
+            lon,
+            km: distance / 1000,
+            duration,
+            desc: `${types[type] || type} ${modifier ? `${modifiers[modifier] || modifier} na ` : ''}${name}`,
+          }))));
+          dispatch(routePlannerSetResult(routeLatLons, iti, totalDistance / 1000, totalDuration / 60));
+        } else {
           dispatch(toastsAdd({
             message: 'Cez zvolené body sa nepodarilo naplánovať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
             style: 'warning',
             timeout: 5000,
           }));
-        } else {
-          const betterItinerary = itinerary.map(step => ({
-            lat: step.point[1], lon: step.point[0], desc: step.desc, km: step.distance_from_start_in_km,
-          }));
-          dispatch(routePlannerSetResult(routeLatLons, betterItinerary, distance_in_km, time_in_minutes));
         }
       })
       .catch((e) => {

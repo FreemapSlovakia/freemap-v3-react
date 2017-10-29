@@ -16,7 +16,7 @@ import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementAc
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
 
-  if (/car|walk|bicycle/.test(query.transport)
+  if (/car|foot|bike/.test(query.transport)
       && /^-?\d+(\.\d+)?\/-?\d+(\.\d+)?(,-?\d+(\.\d+)?\/-?\d+(\.\d+)?)+$/.test(query.points)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 
