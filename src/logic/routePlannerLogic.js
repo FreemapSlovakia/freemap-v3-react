@@ -94,7 +94,7 @@ export const routePlannerFindRouteLogic = createLogic({
             lon,
             km: distance / 1000,
             duration,
-            desc: `${types[type] || type} ${modifier ? `${modifiers[modifier] || modifier} na ` : ''}${name}`,
+            desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
           }))));
           dispatch(routePlannerSetResult(routeLatLons, iti, totalDistance / 1000, totalDuration / 60));
         } else {
