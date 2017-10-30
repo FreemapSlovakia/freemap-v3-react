@@ -35,11 +35,15 @@ Note that the protal is (so far) only in Slovak language.
 
 ## Compiling for the production
 
-Set `DEPLOYMENT` to `next` (default) for `next.freemap.sk` or `www` for `www.freemap.sk`.
+Set `DEPLOYMENT` to:
+
+* `dev` (default) for `local.freemap.sk`
+* `next` for `next.freemap.sk`
+* `www` for `www.freemap.sk`
 
 ```bash
 npm i
-NODE_ENV=production DEPLOYMENT=next ./node_modules/.bin/webpack
+DEPLOYMENT=next ./node_modules/.bin/webpack
 ```
 
 You'll then find all static web resources in `dist` directory.

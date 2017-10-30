@@ -67,12 +67,19 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(process.env.NODE_ENV), // for react
+        NODE_ENV: JSON.stringify(process.env.DEPLOYMENT === 'dev' ? undefined : 'production'), // for react
         BROWSER: JSON.stringify(true),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
-        API_URL: JSON.stringify(process.env.NODE_ENV === 'production'
-          ? (process.env.DEPLOYMENT === 'www' ? 'https://backend.freemap.sk' : 'http://backend.freemap.sk:3001') : 'http://localhost:3000'),
+        SEARCH_URL: JSON.stringify(
+          process.env.DEPLOYMENT === 'www' ? 'https://www.freemap.sk/api/0.3'
+            : 'http://old.freemap.sk/api/0.3',
+        ),
+        API_URL: JSON.stringify(
+          process.env.DEPLOYMENT === 'www' ? 'https://backend.freemap.sk'
+            : process.env.DEPLOYMENT === 'next' ? 'http://backend.freemap.sk:3001'
+              : 'http://localhost:3000',
+        ),
       },
     }),
   ],
