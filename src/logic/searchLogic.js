@@ -21,7 +21,7 @@ export default createLogic({
       source.cancel();
     });
 
-    axios.get(`${process.env.SEARCH_URL}/searchhint/${encodeURIComponent(query)}`, {
+    axios.get(`//old.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}`, {
       params: {
         max_count: 10,
       },

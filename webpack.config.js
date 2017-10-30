@@ -74,10 +74,6 @@ module.exports = {
         BROWSER: JSON.stringify(true),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
-        SEARCH_URL: JSON.stringify(
-          process.env.DEPLOYMENT === 'www' ? 'https://www.freemap.sk/api/0.3'
-            : 'http://old.freemap.sk/api/0.3',
-        ),
         API_URL: JSON.stringify(
           process.env.DEPLOYMENT === 'www' ? 'https://backend.freemap.sk'
             : process.env.DEPLOYMENT === 'next' ? 'http://backend.freemap.sk:3001'
