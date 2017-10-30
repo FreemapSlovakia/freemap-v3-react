@@ -16,6 +16,9 @@
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
     <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
 
+    <% for (const css of htmlWebpackPlugin.files.chunks.main.css) { %>
+      <link rel="stylesheet" href="<%= css %>" />
+    <% } %>
     <script>
       window.handleGoogleAuthApiLoad = function () {
         if (window.handleGoogleAuthApiLoad2) {
@@ -40,7 +43,8 @@
     </script>
 
     <div id="app"></div>
-    <script src="index.js"></script>
+    <script src="<%= htmlWebpackPlugin.files.chunks.runtime.entry %>"></script>
+    <script src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
   </body>
 
 </html>

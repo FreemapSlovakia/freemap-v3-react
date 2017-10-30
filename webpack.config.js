@@ -3,20 +3,21 @@ const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
 const extractSass = new ExtractTextPlugin({
-  filename: 'dist/[name].[contenthash].css',
-  disable: true, // FIXME map will not show in production: !prod
+  filename: '[name].[contenthash].css',
+  disable: !prod,
 });
 
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   entry: './boot.js',
   output: {
-    filename: 'index.js',
-    chunkFilename: '[name].bundle.js',
+    filename: '[name].[chunkhash].js',
+    chunkFilename: '[id].[chunkhash].js',
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
@@ -84,22 +85,23 @@ module.exports = {
     new WebpackCleanupPlugin({
       exclude: ['.git/**'],
     }),
-  ],
+    new HtmlWebpackPlugin({
+      template: '!!ejs-loader!src/index.html',
+      inject: false,
+    }),
+    new CopyWebpackPlugin([
+      { from: 'authCallback.html' },
+      { from: 'favicon.ico' },
+      process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
+    ].filter(x => x)),
+    extractSass,
+    new webpack.optimize.CommonsChunkPlugin({
+      name: 'runtime',
+    }),
+    new webpack.HashedModuleIdsPlugin(),
+    prod && new webpack.optimize.UglifyJsPlugin(),
+  ].filter(x => x),
   devServer: {
     disableHostCheck: true,
   },
 };
-
-if (prod) {
-  module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin());
-}
-
-module.exports.plugins.push(
-  new CopyWebpackPlugin([
-    { from: 'index.html' },
-    { from: 'authCallback.html' },
-    { from: 'favicon.ico' },
-    process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
-  ].filter(x => x)),
-  extractSass,
-);
