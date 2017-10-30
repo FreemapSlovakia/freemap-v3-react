@@ -2,10 +2,13 @@ const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
+
+const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
 const extractSass = new ExtractTextPlugin({
   filename: 'dist/[name].[contenthash].css',
-  disable: true, // FIXME map will not show in production: process.env.NODE_ENV !== 'production'
+  disable: true, // FIXME map will not show in production: !prod
 });
 
 module.exports = {
@@ -23,7 +26,7 @@ module.exports = {
   },
   // more info:https://webpack.github.io/docs/build-performance.html#sourcemaps and https://webpack.github.io/docs/configuration.html#devtool
   // #cheap-module-eval-source-map doesn't work - see https://github.com/webpack/webpack/issues/2145
-  devtool: process.env.NODE_ENV === 'production' ? 'source-map' : 'cheap-module-source-map',
+  devtool: prod ? 'source-map' : 'cheap-module-source-map',
   module: {
     rules: [
       {
@@ -67,7 +70,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(process.env.DEPLOYMENT === 'dev' ? undefined : 'production'), // for react
+        NODE_ENV: JSON.stringify(prod ? 'production' : 'undefined'), // for react
         BROWSER: JSON.stringify(true),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
@@ -82,13 +85,16 @@ module.exports = {
         ),
       },
     }),
+    new WebpackCleanupPlugin({
+      exclude: ['.git/**'],
+    }),
   ],
   devServer: {
     disableHostCheck: true,
   },
 };
 
-if (process.env.NODE_ENV === 'production') {
+if (prod) {
   module.exports.plugins.push(new webpack.optimize.UglifyJsPlugin());
 }
 
@@ -97,6 +103,7 @@ module.exports.plugins.push(
     { from: 'index.html' },
     { from: 'authCallback.html' },
     { from: 'favicon.ico' },
-  ]),
+    process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
+  ].filter(x => x)),
   extractSass,
 );
