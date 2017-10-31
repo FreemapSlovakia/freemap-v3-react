@@ -58,8 +58,8 @@ html, .map-holder, #app, #app > div, .container-fluid {
 
 // preventing some defaults on L.divIcon
 .leaflet-div-icon {
-  background-color: transparent;
-  border: 0;
+  background-color: transparent !important;
+  border: 0 !important;
 }
 
 @media (min-width: 768px) {
