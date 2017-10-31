@@ -21,13 +21,13 @@ class TrackViewerResult extends React.Component {
       lat: PropTypes.number.isRequired,
       lon: PropTypes.number.isRequired,
       startTime: PropTypes.string,
-    })),
+    })).isRequired,
     finishPoints: PropTypes.arrayOf(PropTypes.shape({
       lat: PropTypes.number.isRequired,
       lon: PropTypes.number.isRequired,
       lengthInKm: PropTypes.number.isRequired,
       finishTime: PropTypes.string,
-    })),
+    })).isRequired,
     displayingElevationChart: PropTypes.bool,
     colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
     eleSmoothingFactor: PropTypes.number.isRequired,
@@ -42,6 +42,13 @@ class TrackViewerResult extends React.Component {
   componentWillReceiveProps(nextProps) {
     if (!nextProps.trackGeojson) {
       return;
+    }
+
+    if (nextProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(nextProps.trackGeojson)) {
+      const geojsonBounds = L.geoJson(nextProps.trackGeojson).getBounds();
+      if (geojsonBounds.isValid()) {
+        getMapLeafletElement().fitBounds(geojsonBounds);
+      }
     }
 
     const userTurnedOnEleProfile = !this.props.displayingElevationChart && nextProps.displayingElevationChart;
@@ -60,9 +67,10 @@ class TrackViewerResult extends React.Component {
   componentWillUnmount() {
     this.removeColorizedEleTrackFromMap();
   }
+
   // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
   onEachFeature = (feature, layer) => {
-    if (feature.geometry.type === 'Point' && feature.properties.name) {
+    if (feature.geometry.type === 'Point' && feature.properties && feature.properties.name) {
       layer.bindTooltip(feature.properties.name, { direction: 'right', className: 'compact' });
     }
 
@@ -157,9 +165,7 @@ class TrackViewerResult extends React.Component {
   }
 
   render() {
-    const {
-      trackGeojson, startPoints, finishPoints, displayingElevationChart,
-    } = this.props;
+    const { trackGeojson, startPoints, finishPoints, displayingElevationChart } = this.props;
 
     // TODO rather compute some hash or better - detect real change
     const keyToAssureProperRefresh = `OOXlDWrtVn-${(JSON.stringify(trackGeojson) + displayingElevationChart).length}`; // otherwise GeoJSON will still display the first data

@@ -9,6 +9,11 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export const trackViewerSetTrackDataLogic = createLogic({
   type: 'TRACK_VIEWER_SET_TRACK_DATA',
   transform({ action }, next) {
+    if (!action.payload.trackGpx) {
+      next(action);
+      return;
+    }
+
     // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
     const gpxAsXml = new DOMParser().parseFromString(action.payload.trackGpx, 'text/xml');
     const trackGeojson = toGeoJSON.gpx(gpxAsXml);
@@ -54,7 +59,7 @@ export const trackViewerDownloadTrackLogic = createLogic({
           dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${data.error}`));
         } else {
           const trackGpx = atob(data.data);
-          dispatch(trackViewerSetData(trackGpx));
+          dispatch(trackViewerSetData({ trackGpx }));
         }
       })
       .catch((e) => {
@@ -106,14 +111,177 @@ export const gpxLoadLogic = createLogic({
   process({ getState }, dispatch, done) {
     axios.get(getState().trackViewer.gpxUrl, { validateStatus: status => status === 200 })
       .then(({ data }) => {
-        if (data.error) {
-          dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${data.error}`));
-        } else {
-          dispatch(trackViewerSetData(data));
-        }
+        dispatch(trackViewerSetData({ trackGpx: data }));
       })
       .catch((e) => {
         dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${e.message}`));
+      })
+      .then(() => {
+        done();
+      });
+  },
+});
+
+
+function toNodes(data) {
+  const nodes = {};
+  const nodeRes = data.evaluate('/osm/node', data, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
+  for (let x = nodeRes.iterateNext(); x; x = nodeRes.iterateNext()) {
+    nodes[x.getAttribute('id')] = [parseFloat(x.getAttribute('lon')), parseFloat(x.getAttribute('lat'))];
+  }
+  return nodes;
+}
+
+function toWays(data, nodes) {
+  const ways = {};
+  const wayRes = data.evaluate('/osm/way', data, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+  for (let x = wayRes.iterateNext(); x; x = wayRes.iterateNext()) {
+    const coordinates = [];
+
+    const ndRefRes = data.evaluate('nd/@ref', x, null, XPathResult.ORDERED_NODE_ITERATOR_TYPE);
+    for (let y = ndRefRes.iterateNext(); y; y = ndRefRes.iterateNext()) {
+      coordinates.push(nodes[y.value]);
+    }
+
+    ways[x.getAttribute('id')] = coordinates;
+  }
+  return ways;
+}
+
+export const osmLoadNodeLogic = createLogic({
+  type: 'OSM_LOAD_NODE',
+  process({ getState }, dispatch, done) {
+    axios.get(
+      `//api.openstreetmap.org/api/0.6/node/${getState().trackViewer.osmNodeId}`,
+      {
+        responseType: 'document',
+        validateStatus: status => status === 200,
+      },
+    )
+      .then(({ data }) => {
+        const nodes = toNodes(data);
+
+        dispatch(trackViewerSetData({
+          trackGeojson: {
+            type: 'FeatureCollection',
+            features: Object.keys(nodes).map(id => ({
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: nodes[id],
+              },
+            })),
+          },
+          startPoints: [],
+          finishPoints: [],
+        }));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
+      })
+      .then(() => {
+        done();
+      });
+  },
+});
+
+export const osmLoadWayLogic = createLogic({
+  type: 'OSM_LOAD_WAY',
+  process({ getState }, dispatch, done) {
+    axios.get(
+      `//api.openstreetmap.org/api/0.6/way/${getState().trackViewer.osmWayId}/full`,
+      {
+        responseType: 'document',
+        validateStatus: status => status === 200,
+      },
+    )
+      .then(({ data }) => {
+        const ways = toWays(data, toNodes(data));
+
+        dispatch(trackViewerSetData({
+          trackGeojson: {
+            type: 'FeatureCollection',
+            features: Object.keys(ways).map(id => ({
+              type: 'Feature',
+              geometry: {
+                type: 'LineString',
+                coordinates: ways[id],
+              },
+            })),
+          },
+          startPoints: [],
+          finishPoints: [],
+        }));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
+      })
+      .then(() => {
+        done();
+      });
+  },
+});
+
+export const osmLoadRelationLogic = createLogic({
+  type: 'OSM_LOAD_RELATION',
+  process({ getState }, dispatch, done) {
+    axios.get(
+      `//api.openstreetmap.org/api/0.6/relation/${getState().trackViewer.osmRelationId}/full`,
+      {
+        responseType: 'document',
+        validateStatus: status => status === 200,
+      },
+    )
+      .then(({ data }) => {
+        const nodes = toNodes(data);
+
+        const ways = toWays(data, nodes);
+
+        const features = [];
+
+        const relationRes = data.evaluate('/osm/relation/member', data, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE);
+        for (let x = relationRes.iterateNext(); x; x = relationRes.iterateNext()) {
+          const type = x.getAttribute('type');
+          const ref = x.getAttribute('ref');
+          switch (type) {
+            case 'node':
+              features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: nodes[ref],
+                },
+              });
+              break;
+            case 'way':
+              features.push({
+                type: 'Feature',
+                geometry: {
+                  type: 'LineString',
+                  coordinates: ways[ref],
+                },
+              });
+              break;
+            case 'relation':
+            default:
+              break;
+          }
+          nodes[x.getAttribute('type')] = [parseFloat(x.getAttribute('lon')), parseFloat(x.getAttribute('lat'))];
+        }
+
+        const trackGeojson = {
+          type: 'FeatureCollection',
+          features,
+        };
+
+        dispatch(trackViewerSetData({
+          trackGeojson,
+          startPoints: [],
+          finishPoints: [],
+        }));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
       })
       .then(() => {
         done();
@@ -126,4 +294,7 @@ export default [
   trackViewerDownloadTrackLogic,
   trackViewerUploadTrackLogic,
   gpxLoadLogic,
+  osmLoadNodeLogic,
+  osmLoadWayLogic,
+  osmLoadRelationLogic,
 ];

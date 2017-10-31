@@ -106,7 +106,22 @@ export default function handleLocationChange(store, location) {
 
   const gpxUrl = query['gpx-url'];
   if (gpxUrl && gpxUrl !== store.getState().trackViewer.gpxUrl) {
-    store.dispatch({ type: 'GPX_LOAD', payload: gpxUrl });
+    store.dispatch({ type: 'GPX_LOAD', payload: gpxUrl }); // TODO to actions
+  }
+
+  const osmNodeId = parseInt(query['osm-node'], 10);
+  if (osmNodeId && osmNodeId !== store.getState().trackViewer.osmNodeId) {
+    store.dispatch({ type: 'OSM_LOAD_NODE', payload: osmNodeId }); // TODO to actions
+  }
+
+  const osmWayId = parseInt(query['osm-way'], 10);
+  if (osmWayId && osmWayId !== store.getState().trackViewer.osmWayId) {
+    store.dispatch({ type: 'OSM_LOAD_WAY', payload: osmWayId }); // TODO to actions
+  }
+
+  const osmRelationId = parseInt(query['osm-relation'], 10);
+  if (osmRelationId && osmRelationId !== store.getState().trackViewer.osmRelationId) {
+    store.dispatch({ type: 'OSM_LOAD_RELATION', payload: osmRelationId }); // TODO to actions
   }
 
   handleGallery(store, query);

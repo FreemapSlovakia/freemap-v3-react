@@ -19,7 +19,7 @@ export const urlLogic = createLogic({
       routePlanner: {
         start, finish, midpoints, transportType,
       },
-      trackViewer: { trackUID, gpxUrl },
+      trackViewer: { trackUID, gpxUrl, osmNodeId, osmWayId, osmRelationId },
       gallery: { activeImageId },
       infoPoint,
       changesets: { days, authorName },
@@ -47,6 +47,18 @@ export const urlLogic = createLogic({
 
     if (gpxUrl) {
       queryParts.push(`gpx-url=${gpxUrl}`);
+    }
+
+    if (osmNodeId) {
+      queryParts.push(`osm-node=${osmNodeId}`);
+    }
+
+    if (osmWayId) {
+      queryParts.push(`osm-way=${osmWayId}`);
+    }
+
+    if (osmRelationId) {
+      queryParts.push(`osm-relation=${osmRelationId}`);
     }
 
     if (activeImageId) {

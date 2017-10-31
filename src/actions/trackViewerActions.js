@@ -1,5 +1,5 @@
-export function trackViewerSetData(trackGpx) {
-  return { type: 'TRACK_VIEWER_SET_TRACK_DATA', payload: { trackGpx } };
+export function trackViewerSetData(payload) {
+  return { type: 'TRACK_VIEWER_SET_TRACK_DATA', payload };
 }
 
 export function trackViewerSetTrackUID(trackUID) {

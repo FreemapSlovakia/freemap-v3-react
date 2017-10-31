@@ -16,8 +16,6 @@ import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, tra
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-
 import { smoothElevations, distance } from 'fm3/geoutils';
 
 import 'fm3/styles/trackViewer.scss';
@@ -36,13 +34,6 @@ class TrackViewerMenu extends React.Component {
   // }
 
   componentWillReceiveProps(newProps) {
-    if (newProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(newProps.trackGeojson)) {
-      const geojsonBounds = L.geoJson(newProps.trackGeojson).getBounds();
-      if (geojsonBounds.isValid()) {
-        getMapLeafletElement().fitBounds(geojsonBounds);
-      }
-    }
-
     const userHasUploadedTrackAndWantsToShareIt = this.props.trackUID === null && newProps.trackUID != null;
     if (userHasUploadedTrackAndWantsToShareIt) {
       this.props.onModalLaunch('track-viewer-share');
@@ -102,14 +93,24 @@ class TrackViewerMenu extends React.Component {
   }
 
   showTrackInfo = () => {
+    const { startPoints, finishPoints, trackGeojson, eleSmoothingFactor, onTrackInfoShow } = this.props;
+
     const tableData = [];
-    const { startTime } = this.props.startPoints[0];
-    if (startTime) {
-      tableData.push(['Čas štartu', timeFormat.format(new Date(startTime))]);
+
+    let startTime;
+    let finishTime;
+
+    if (startPoints.length) {
+      [{ startTime }] = startPoints;
+      if (startTime) {
+        tableData.push(['Čas štartu', timeFormat.format(new Date(startTime))]);
+      }
     }
-    const { finishTime } = this.props.finishPoints[0];
-    if (finishTime) {
-      tableData.push(['Čas v cieli', timeFormat.format(new Date(finishTime))]);
+    if (finishPoints.length) {
+      [{ finishTime }] = finishPoints;
+      if (finishTime) {
+        tableData.push(['Čas v cieli', timeFormat.format(new Date(finishTime))]);
+      }
     }
 
     let duration = 0;
@@ -120,24 +121,27 @@ class TrackViewerMenu extends React.Component {
       tableData.push(['Trvanie', `${hours} hodín ${minutes} minút`]);
     }
 
-    const { lengthInKm } = this.props.finishPoints[0];
-    tableData.push(['Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
+    if (finishPoints.length) {
+      const [{ lengthInKm }] = finishPoints;
+      tableData.push(['Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
 
-    if (duration) {
-      const avgSpeed = lengthInKm / duration * 3600;
-      tableData.push(['Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
+      if (duration) {
+        const avgSpeed = lengthInKm / duration * 3600;
+        tableData.push(['Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
+      }
     }
 
-    const firstRealFeature = this.props.trackGeojson.features[0];
+    const firstRealFeature = trackGeojson.features[0];
     let minEle = Infinity;
     let maxEle = -Infinity;
     let uphillEleSum = 0;
     let downhillEleSum = 0;
-    const smoothedLatLonEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
-    let previousLatLonEle = smoothedLatLonEles[0];
+    const smoothedLatLonEles = smoothElevations(firstRealFeature, eleSmoothingFactor);
+    let [previousLatLonEle] = smoothedLatLonEles;
+
     smoothedLatLonEles.forEach((latLonEle) => {
       const distanceFromPrevPointInMeters = distance(latLonEle[0], latLonEle[1], previousLatLonEle[0], previousLatLonEle[1]);
-      if (10 * this.props.eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
+      if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
         const ele = latLonEle[2];
         if (ele < minEle) {
           minEle = ele;
@@ -156,24 +160,24 @@ class TrackViewerMenu extends React.Component {
       }
     });
     if (minEle !== Infinity) {
-      tableData.push(['Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
+      tableData.push(['min', 'Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
     }
     if (maxEle !== -Infinity) {
-      tableData.push(['Najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
+      tableData.push(['max', 'Najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
     }
-    tableData.push(['Celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
-    tableData.push(['Celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
+    tableData.push(['uphill', 'Celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
+    tableData.push(['downhill', 'Celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
     const infoMessage = (
       <dl className="trackInfo dl-horizontal">
         {
-          tableData.map(labelAndValue => ([
-            <dt>{labelAndValue[0]}:</dt>,
-            <dd className="infoValue">{labelAndValue[1]}</dd>,
+          tableData.map(([key, label, value]) => ([
+            <dt key={`${key}-dt`}>{label}:</dt>,
+            <dd key={`${key}-dd`} className="infoValue">{value}</dd>,
           ]))
         }
       </dl>
     );
-    this.props.onTrackInfoShow(infoMessage);
+    onTrackInfoShow(infoMessage);
   }
 
   render() {
@@ -309,8 +313,8 @@ export default connect(
     onModalClose() {
       dispatch(setActiveModal(null));
     },
-    onTrackViewerDataSet(gpx) {
-      dispatch(trackViewerSetData(gpx));
+    onTrackViewerDataSet(trackGpx) {
+      dispatch(trackViewerSetData({ trackGpx }));
     },
     onTrackUIDReset() {
       dispatch(trackViewerSetTrackUID(null));

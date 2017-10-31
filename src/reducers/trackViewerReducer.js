@@ -6,7 +6,10 @@ const initialState = {
   finishPoints: [],
   eleSmoothingFactor: 5,
   colorizeTrackBy: 'elevation',
-  gpxUrl: null, // TODO to separate reducer
+  gpxUrl: null, // TODO to separate reducer (?)
+  osmNodeId: null,
+  osmWayId: null,
+  osmRelationId: null,
 };
 
 export default function trackViewer(state = initialState, action) {
@@ -38,6 +41,12 @@ export default function trackViewer(state = initialState, action) {
       return { ...state, colorizeTrackBy: action.payload };
     case 'GPX_LOAD':
       return { ...state, gpxUrl: action.payload };
+    case 'OSM_LOAD_NODE':
+      return { ...state, osmNodeId: action.payload };
+    case 'OSM_LOAD_WAY':
+      return { ...state, osmWayId: action.payload };
+    case 'OSM_LOAD_RELATION':
+      return { ...state, osmRelationId: action.payload };
     default:
       return state;
   }
