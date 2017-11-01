@@ -131,7 +131,7 @@ function toNodes(data) {
   const nodes = {};
   const nodeRes = data.evaluate('/osm/node', data, null, XPathResult.UNORDERED_NODE_ITERATOR_TYPE, null);
   for (let x = nodeRes.iterateNext(); x; x = nodeRes.iterateNext()) {
-    nodes[x.getAttribute('id')] = [parseFloat(x.getAttribute('lon')), parseFloat(x.getAttribute('lat'))];
+    nodes[x.getAttribute('id')] = ['lon', 'lat'].map(c => parseFloat(x.getAttribute(c)));
   }
   return nodes;
 }
@@ -281,7 +281,7 @@ export const osmLoadRelationLogic = createLogic({
             default:
               break;
           }
-          nodes[x.getAttribute('type')] = [parseFloat(x.getAttribute('lon')), parseFloat(x.getAttribute('lat'))];
+          nodes[x.getAttribute('type')] = ['lon', 'lat'].map(c => parseFloat(x.getAttribute(c)));
         }
 
         const trackGeojson = {
