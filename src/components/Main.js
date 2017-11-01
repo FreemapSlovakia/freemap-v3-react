@@ -59,6 +59,7 @@ import ShareMapModal from 'fm3/components/ShareMapModal';
 import EmbedMapModal from 'fm3/components/EmbedMapModal';
 import ExportGpxModal from 'fm3/components/ExportGpxModal';
 import LoginModal from 'fm3/components/LoginModal';
+import TipsModal from 'fm3/components/TipsModal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -258,6 +259,7 @@ class Main extends React.Component {
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {activeModal === 'export-gpx' && <ExportGpxModal />}
+        {activeModal === 'tips' && <TipsModal />}
         {showLoginModal && <LoginModal />}
 
         <div className={`map-holder active-map-type-${mapType}`}>

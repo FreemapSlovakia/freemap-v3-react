@@ -11,6 +11,7 @@ import Tab from 'react-bootstrap/lib/Tab';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
+import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
@@ -45,10 +46,12 @@ class Settings extends React.Component {
       name: PropTypes.string,
       email: PropTypes.string,
     }),
+    preventTips: PropTypes.bool,
   };
 
   constructor(props) {
     super(props);
+
     this.state = {
       homeLocationCssClasses: '',
       tileFormat: props.tileFormat,
@@ -60,6 +63,7 @@ class Settings extends React.Component {
       trackViewerEleSmoothingFactor: props.trackViewerEleSmoothingFactor,
       name: props.user && props.user.name || '',
       email: props.user && props.user.email || '',
+      preventTips: props.preventTips,
     };
   }
 
@@ -88,6 +92,7 @@ class Settings extends React.Component {
       this.state.expertMode,
       this.state.trackViewerEleSmoothingFactor,
       this.props.user ? { name: this.state.name.trim() || null, email: this.state.email.trim() || null } : null,
+      this.state.preventTips,
     );
   }
 
@@ -99,13 +104,20 @@ class Settings extends React.Component {
     this.setState({ email: e.target.value });
   }
 
+  handleShowTipsChange = (e) => {
+    this.setState({
+      preventTips: !e.target.checked,
+    });
+  }
+
   render() {
     const { onClose, onHomeLocationSelect, selectingHomeLocation, zoom, user } = this.props;
     const { homeLocation, homeLocationCssClasses, tileFormat, nlcOpacity, expertMode,
-      touristOverlayOpacity, cycloOverlayOpacity, trackViewerEleSmoothingFactor, name, email } = this.state;
+      touristOverlayOpacity, cycloOverlayOpacity, trackViewerEleSmoothingFactor, name, email, preventTips } = this.state;
     const nlcOverlayIsNotVisible = zoom < 14;
 
-    const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity', 'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor']
+    const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity',
+      'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips']
       .some(prop => this.state[prop] !== this.props[prop])
       || user && (name !== (user.name || '') || email !== (user.email || ''));
 
@@ -123,24 +135,24 @@ class Settings extends React.Component {
           </Modal.Header>
           <Modal.Body>
             <Tabs id="setting-tabs">
-              <Tab title="Mapa" eventKey={2}>
-                <div style={{ marginBottom: '10px' }}>
-                  <p>Formát dlaždíc:</p>
-                  <ButtonGroup>
-                    <Button
-                      active={tileFormat === 'png'}
-                      onClick={() => this.setState({ tileFormat: 'png' })}
-                    >
-                      PNG
-                    </Button>
-                    <Button
-                      active={tileFormat === 'jpeg'}
-                      onClick={() => this.setState({ tileFormat: 'jpeg' })}
-                    >
-                      JPG
-                    </Button>
-                  </ButtonGroup>
-                </div>
+              <Tab title="Mapa" eventKey={1}>
+                <p>Formát dlaždíc:</p>
+                <ButtonGroup>
+                  <Button
+                    active={tileFormat === 'png'}
+                    onClick={() => this.setState({ tileFormat: 'png' })}
+                  >
+                    PNG
+                  </Button>
+                  <Button
+                    active={tileFormat === 'jpeg'}
+                    onClick={() => this.setState({ tileFormat: 'jpeg' })}
+                  >
+                    JPG
+                  </Button>
+                </ButtonGroup>
+                <br />
+                <br />
                 <Alert>
                   Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
                   Pri pomalom internete preto odporúčame zvoliť JPG.
@@ -169,7 +181,7 @@ class Settings extends React.Component {
                   </Alert>
                 }
               </Tab>
-              <Tab title="Účet" eventKey={1}>
+              <Tab title="Účet" eventKey={2}>
                 {user ? [
                   <FormGroup key="PIj9rh3OVZ">
                     <ControlLabel>Meno</ControlLabel>
@@ -185,28 +197,35 @@ class Settings extends React.Component {
                   </Alert>
                 )}
               </Tab>
-              <Tab title="Expert" eventKey={3}>
-                <div style={{ marginBottom: '10px' }}>
-                  <p>Expertný mód:</p>
-                  <ButtonGroup>
-                    <Button
-                      active={!expertMode}
-                      onClick={() => this.setState({ expertMode: false })}
-                    >
-                      Vypnutý
-                    </Button>
-                    <Button
-                      active={expertMode}
-                      onClick={() => this.setState({ expertMode: true })}
-                    >
-                      Zapnutý
-                    </Button>
-                  </ButtonGroup>
-                </div>
+              <Tab title="Všeobecné" eventKey={3}>
+                <Checkbox onChange={this.handleShowTipsChange} checked={!preventTips}>
+                  Zobrazovať tipy po otvorení stránky
+                </Checkbox>
+              </Tab>
+              <Tab title="Expert" eventKey={4}>
+                <p>Expertný mód:</p>
+                <ButtonGroup>
+                  <Button
+                    active={!expertMode}
+                    onClick={() => this.setState({ expertMode: false })}
+                  >
+                    Vypnutý
+                  </Button>
+                  <Button
+                    active={expertMode}
+                    onClick={() => this.setState({ expertMode: true })}
+                  >
+                    Zapnutý
+                  </Button>
+                </ButtonGroup>
                 {!expertMode &&
-                  <Alert>
-                    V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
-                  </Alert>
+                  <span>
+                    <br />
+                    <br />
+                    <Alert>
+                      V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
+                    </Alert>
+                  </span>
                 }
                 {expertMode && [
                   <hr key="FbxiwF4ArQ" />,
@@ -257,8 +276,12 @@ class Settings extends React.Component {
             </Tabs>
           </Modal.Body>
           <Modal.Footer>
-            <Button bsStyle="info" type="submit" disabled={!userMadeChanges}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-            <Button type="button" onClick={onClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+            <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
+              <Glyphicon glyph="floppy-disk" /> Uložiť
+            </Button>
+            <Button type="button" onClick={onClose}>
+              <Glyphicon glyph="remove" /> Zrušiť
+            </Button>
           </Modal.Footer>
         </form>
       </Modal>
@@ -278,14 +301,15 @@ export default connect(
     trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
     selectingHomeLocation: state.main.selectingHomeLocation,
     user: state.auth.user,
+    preventTips: state.tips.preventNextTime,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user) {
+    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
       // TODO use this
       dispatch({
         type: 'SAVE_SETTINGS',
         payload: {
-          tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user,
+          tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips,
         },
       });
     },

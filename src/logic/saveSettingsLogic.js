@@ -6,13 +6,14 @@ import { startProgress, stopProgress, setHomeLocation, setActiveModal, setExpert
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 import { authSetUser } from 'fm3/actions/authActions';
+import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 
 export const saveSettingsLogic = createLogic({
   type: 'SAVE_SETTINGS',
   cancelType: ['SET_ACTIVE_MODAL', 'SAVE_SETTINGS'],
   process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
     const { tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity,
-      expertMode, trackViewerEleSmoothingFactor, user } = action.payload;
+      expertMode, trackViewerEleSmoothingFactor, user, preventTips } = action.payload;
 
     const dispatchRest = () => {
       dispatch(mapSetTileFormat(tileFormat));
@@ -22,6 +23,7 @@ export const saveSettingsLogic = createLogic({
       dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
       dispatch(setExpertMode(expertMode));
       dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
+      dispatch(tipsPreventNextTime(preventTips));
       dispatch(toastsAdd({
         collapseKey: 'settings.saved',
         message: 'Zmeny boli uložené.',

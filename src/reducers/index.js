@@ -16,6 +16,7 @@ import gallery from 'fm3/reducers/galleryReducer';
 import changesets from 'fm3/reducers/changesetsReducer';
 import auth from 'fm3/reducers/authReducer';
 import mapDetails from 'fm3/reducers/mapDetailsReducer';
+import tips from 'fm3/reducers/tipsReducer';
 
 export default combineReducers({
   main,
@@ -34,4 +35,5 @@ export default combineReducers({
   changesets,
   auth,
   mapDetails,
+  tips,
 });

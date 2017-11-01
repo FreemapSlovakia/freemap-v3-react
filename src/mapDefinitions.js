@@ -37,7 +37,7 @@ export const baseLayers = [
     minZoom: 3,
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
-    attribution: 'Martin Tesař, osmmtb (at) gmail.com, prispievatelia © <a href="https://osm.org/copyright">OpenStreetMap</a>',
+    attribution: 'Martin Tesař, osmmtb@gmail.com, dáta © prispievatelia <a href="https://osm.org/copyright">OpenStreetMap</a>',
     key: 'm',
   },
 ];
