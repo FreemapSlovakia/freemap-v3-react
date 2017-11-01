@@ -69,7 +69,7 @@ class TrackViewerResult extends React.Component {
   }
 
   // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
-  onEachFeature = (feature, layer) => {
+  handleEachFeature = (feature, layer) => {
     if (feature.geometry.type === 'Point' && feature.properties && feature.properties.name) {
       layer.bindTooltip(feature.properties.name, { direction: 'right', className: 'compact' });
     }
@@ -173,7 +173,7 @@ class TrackViewerResult extends React.Component {
       <GeoJSON
         data={trackGeojson}
         key={keyToAssureProperRefresh}
-        onEachFeature={this.onEachFeature}
+        onEachFeature={this.handleEachFeature}
         style={{ weight: 6, opacity: displayingElevationChart ? 0 : 0.85 }}
         pointToLayer={this.pointToLayer}
       />,
