@@ -109,6 +109,9 @@ export const trackViewerUploadTrackLogic = createLogic({
 export const gpxLoadLogic = createLogic({
   type: 'GPX_LOAD',
   process({ getState }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
     axios.get(getState().trackViewer.gpxUrl, { validateStatus: status => status === 200 })
       .then(({ data }) => {
         dispatch(trackViewerSetData({ trackGpx: data }));
@@ -117,6 +120,7 @@ export const gpxLoadLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${e.message}`));
       })
       .then(() => {
+        dispatch(stopProgress(pid));
         done();
       });
   },
@@ -151,6 +155,9 @@ function toWays(data, nodes) {
 export const osmLoadNodeLogic = createLogic({
   type: 'OSM_LOAD_NODE',
   process({ getState }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
     axios.get(
       `//api.openstreetmap.org/api/0.6/node/${getState().trackViewer.osmNodeId}`,
       {
@@ -180,6 +187,7 @@ export const osmLoadNodeLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
       })
       .then(() => {
+        dispatch(stopProgress(pid));
         done();
       });
   },
@@ -188,6 +196,9 @@ export const osmLoadNodeLogic = createLogic({
 export const osmLoadWayLogic = createLogic({
   type: 'OSM_LOAD_WAY',
   process({ getState }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
     axios.get(
       `//api.openstreetmap.org/api/0.6/way/${getState().trackViewer.osmWayId}/full`,
       {
@@ -217,6 +228,7 @@ export const osmLoadWayLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
       })
       .then(() => {
+        dispatch(stopProgress(pid));
         done();
       });
   },
@@ -225,6 +237,9 @@ export const osmLoadWayLogic = createLogic({
 export const osmLoadRelationLogic = createLogic({
   type: 'OSM_LOAD_RELATION',
   process({ getState }, dispatch, done) {
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+
     axios.get(
       `//api.openstreetmap.org/api/0.6/relation/${getState().trackViewer.osmRelationId}/full`,
       {
@@ -284,6 +299,7 @@ export const osmLoadRelationLogic = createLogic({
         dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
       })
       .then(() => {
+        dispatch(stopProgress(pid));
         done();
       });
   },
