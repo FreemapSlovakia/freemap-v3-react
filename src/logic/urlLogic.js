@@ -136,7 +136,7 @@ export const urlLogic = createLogic({
 });
 
 function serializePoint(point) {
-  return point ? `${point.lat.toFixed(5)}/${point.lon.toFixed(5)}` : '';
+  return point ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}` : '';
 }
 
 export default urlLogic;

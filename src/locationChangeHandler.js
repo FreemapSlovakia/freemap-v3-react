@@ -20,20 +20,19 @@ export default function handleLocationChange(store, location) {
       && /^-?\d+(\.\d+)?\/-?\d+(\.\d+)?(,-?\d+(\.\d+)?\/-?\d+(\.\d+)?)+$/.test(query.points)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 
-    const {
-      start, finish, midpoints, transportType,
-    } = store.getState().routePlanner;
+    const { start, finish, midpoints, transportType } = store.getState().routePlanner;
 
     if (points.length > 1 && points.every(point => point.length === 2)) {
       const latLons = points.map(([lat, lon]) => ({ lat, lon }));
       const nextStart = latLons[0];
       const nextMidpoints = latLons.slice(1, latLons.length - 1);
       const nextFinish = latLons[latLons.length - 1];
+
       if (query.transport !== transportType
-          || !latLonEquals(start, nextStart)
-          || !latLonEquals(finish, nextFinish)
+          || serializePoint(start) !== serializePoint(nextStart)
+          || serializePoint(finish) !== serializePoint(nextFinish)
           || midpoints.length !== nextMidpoints.length
-          || midpoints.some((midpoint, i) => !latLonEquals(midpoint, nextMidpoints[i]))) {
+          || midpoints.some((midpoint, i) => serializePoint(midpoint) !== serializePoint(nextMidpoints[i]))) {
         store.dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport));
       }
     }
@@ -189,9 +188,5 @@ function serializePoints(points) {
 
 function serializePoint(point) {
   return point && typeof point.lat === 'number' && typeof point.lon === 'number'
-    ? `${point.lat.toFixed(5)}/${point.lon.toFixed(5)}` : '';
-}
-
-function latLonEquals(ll1, ll2) {
-  return !ll1 && !ll2 || ll1 && ll2 && ll1.lat === ll2.lat && ll1.lon === ll2.lon;
+    ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}` : '';
 }
