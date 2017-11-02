@@ -136,9 +136,9 @@ class RoutePlannerMenu extends React.Component {
         {' '}
         <ButtonGroup>
           {
-            [['car', 'car'], ['foot', 'male'], ['bike', 'bicycle']].map(([type, icon]) => (
+            [['car', 'car'], ['car-free', 'car'], ['foot', 'male'], ['bike', 'bicycle']].map(([type, icon]) => (
               <Button key={type} active={transportType === type} onClick={() => onTransportTypeChange(type)}>
-                <FontAwesomeIcon icon={icon} />
+                {type === 'car' ? '€' : ''}<FontAwesomeIcon icon={icon} />
               </Button>
             ))
           }

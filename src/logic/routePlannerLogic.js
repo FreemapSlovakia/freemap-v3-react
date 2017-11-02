@@ -76,13 +76,19 @@ export const routePlannerFindRouteLogic = createLogic({
       source.cancel();
     });
 
-    axios.get(`https://routing.epsilon.sk/route/v1/${transportType}/${allPoints}`, {
-      params: {
-        overview: 'full',
-        alternatives: false,
-        steps: true,
-        geometries: 'geojson',
-      },
+    const params = {
+      overview: 'full',
+      alternatives: false,
+      steps: true,
+      geometries: 'geojson',
+    };
+
+    if (transportType === 'car-free') {
+      params.exclude = 'motorway';
+    }
+
+    axios.get(`https://routing.epsilon.sk/route/v1/${transportType.replace('-free', '')}/${allPoints}`, {
+      params,
       validateStatus: status => status === 200,
       cancelToken: source.token,
     })
