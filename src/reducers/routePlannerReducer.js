@@ -17,7 +17,10 @@ const initialState = {
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
     case 'CLEAR_MAP':
-      return initialState;
+      return {
+        ...initialState,
+        transportType: state.transportType,
+      };
     case 'ROUTE_PLANNER_SET_PARAMS':
       return {
         ...state,
