@@ -47,3 +47,7 @@ export function routePlannerSetParams(start, finish, midpoints, transportType) {
     },
   };
 }
+
+export function routePlannerPreventHint() {
+  return { type: 'ROUTE_PLANNER_PREVENT_HINT' };
+}

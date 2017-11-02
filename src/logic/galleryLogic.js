@@ -454,7 +454,7 @@ const galleryShowLayerHintLogic = createLogic({
   type: 'SET_TOOL',
   process({ getState }, dispatch, done) {
     if (getState().main.tool === 'gallery' && !getState().map.overlays.includes('I') && !localStorage.getItem('galleryPreventLayerHint')) {
-      dispatch(dispatch(toastsAdd({
+      dispatch(toastsAdd({
         collapseKey: 'gallery.showLayerHint',
         message: (
           <span>
@@ -467,7 +467,7 @@ const galleryShowLayerHintLogic = createLogic({
           { name: 'OK' },
           { name: 'Už viac nezobrazovať', action: galleryLayerHint() },
         ],
-      })));
+      }));
     }
     done();
   },

@@ -1,3 +1,4 @@
+import React from 'react';
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
@@ -5,7 +6,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { routePlannerSetResult, routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetResult, routePlannerSetTransportType, routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 
 const updateRouteTypes = [
@@ -53,7 +54,7 @@ const modifiers = {
 export const routePlannerFindRouteLogic = createLogic({
   type: updateRouteTypes,
   cancelType: ['SET_TOOL', ...updateRouteTypes],
-  process({ getState, cancelled$, storeDispatch }, dispatch, done) {
+  process({ getState, cancelled$, storeDispatch, action }, dispatch, done) {
     const {
       start, finish, midpoints, transportType,
     } = getState().routePlanner;
@@ -96,6 +97,25 @@ export const routePlannerFindRouteLogic = createLogic({
             duration,
             desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
           }))));
+
+          const showHint = true
+            && !getState().routePlanner.shapePoints
+            && !localStorage.getItem('routePlannerPreventHint')
+            && !midpoints.lenght
+            && ['ROUTE_PLANNER_SET_START', 'ROUTE_PLANNER_SET_FINISH'].includes(action.type);
+
+          if (showHint) {
+            dispatch(toastsAdd({
+              collapseKey: 'routePlanner.showHint',
+              message: <span>Pre pridanie medzizastávky potiahnite modrú guličku zo stredu naplánovanej trasy na zvolené miesto.</span>,
+              style: 'info',
+              actions: [
+                { name: 'OK' },
+                { name: 'Už viac nezobrazovať', action: routePlannerPreventHint() },
+              ],
+            }));
+          }
+
           dispatch(routePlannerSetResult(routeLatLons, iti, totalDistance / 1000, totalDuration / 60));
         } else {
           dispatch(toastsAdd({
@@ -150,8 +170,17 @@ export const setupTransportTypeLogic = createLogic({
   },
 });
 
+export const routePlannerPreventHintLogic = createLogic({
+  type: 'ROUTE_PLANNER_PREVENT_HINT',
+  process(_, dispatch, done) {
+    localStorage.setItem('routePlannerPreventHint', '1');
+    done();
+  },
+});
+
 export default [
   routePlannerFindRouteLogic,
   refocusMapOnSetStartOrFinishPoint,
   setupTransportTypeLogic,
+  routePlannerPreventHintLogic,
 ];
