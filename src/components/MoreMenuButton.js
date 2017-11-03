@@ -116,6 +116,9 @@ class MoreMenuButton extends React.Component {
             <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react" target="_blank">
               <FontAwesomeIcon icon="github" /> Projekt na GitHub-e
             </MenuItem>
+            <MenuItem onClick={this.handleItemClick} href="https://www.facebook.com/FreemapSlovakia" target="_blank">
+              <FontAwesomeIcon icon="facebook-official" /> Projekt Facebooku
+            </MenuItem>
             <MenuItem divider />
             <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
               <FontAwesomeIcon icon="exclamation-triangle" /> Nahlásiť chybu zobrazenia v mape
