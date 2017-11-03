@@ -1,12 +1,19 @@
 @import "variables";
 
-.map-holder {
-  position: fixed;
+#app-holder {
+  position: relative;
+  flex-grow: 1;
+}
+
+#info-bar {
+  background-color: #ffa;
+  text-align: center;
+
 }
 
 .leaflet-container {
   z-index: 1;
-  position: fixed;
+  position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
@@ -26,26 +33,6 @@ a.leaflet-control-layers-toggle {
   a.leaflet-control-layers-toggle {
     background-size: 36px 36px;
   }
-}
-
-.active-map-type-T a.leaflet-control-layers-toggle {
-  background-image: url(../images/icon-walk.png);
-}
-
-.active-map-type-A a.leaflet-control-layers-toggle {
-  background-image: url(../images/icon-car.png);
-}
-
-.active-map-type-C a.leaflet-control-layers-toggle {
-  background-image: url(../images/icon-bicycle.png);
-}
-
-.active-map-type-K a.leaflet-control-layers-toggle {
-  background-image: url(../images/icon-skiing.png);
-}
-
-.active-map-type-S a.leaflet-control-layers-toggle {
-  background-image: url(../images/icon-satellite.png);
 }
 
 @media ($smartphone-screen) { // issue #71

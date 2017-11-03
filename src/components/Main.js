@@ -174,8 +174,13 @@ class Main extends React.Component {
       showLoginModal, onMapReset, showMenu,
     } = this.props;
 
-    return (
-      <div>
+    return [
+      process.env.DEPLOYMENT === 'next' && (
+        <div key="test" id="info-bar">
+          Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+        </div>
+      ),
+      <div key="appHolder" id="app-holder">
         <Toasts />
 
         <div className="tool-buttons">
@@ -262,48 +267,46 @@ class Main extends React.Component {
         {activeModal === 'tips' && <TipsModal />}
         {showLoginModal && <LoginModal />}
 
-        <div className={`map-holder active-map-type-${mapType}`}>
-          <Map
-            zoomControl={false}
-            minZoom={8}
-            maxZoom={20}
-            ref={(map) => { this.map = map; }}
-            center={L.latLng(lat, lon)}
-            zoom={zoom}
-            onMoveend={this.handleMapMoveEnd}
-            onMousemove={handleMapMouseMove}
-            onMouseover={handleMapMouseOver}
-            onMouseout={handleMapMouseOut}
-            onClick={handleMapClick}
-            onLocationfound={this.handleLocationFound}
-            style={{ cursor: mouseCursor }}
-            maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
-          >
-            <ScaleControl imperial={false} position="bottomleft" />
-            <Layers />
+        <Map
+          zoomControl={false}
+          minZoom={8}
+          maxZoom={20}
+          ref={(map) => { this.map = map; }}
+          center={L.latLng(lat, lon)}
+          zoom={zoom}
+          onMoveend={this.handleMapMoveEnd}
+          onMousemove={handleMapMouseMove}
+          onMouseover={handleMapMouseOver}
+          onMouseout={handleMapMouseOut}
+          onClick={handleMapClick}
+          onLocationfound={this.handleLocationFound}
+          style={{ cursor: mouseCursor }}
+          maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
+        >
+          <ScaleControl imperial={false} position="bottomleft" />
+          <Layers />
 
-            {showMenu &&
-              <span>
-                <SearchResults />
-                <ObjectsResult />
-                <RoutePlannerResult />
-                <DistanceMeasurementResult />
-                <ElevationMeasurementResult />
-                <AreaMeasurementResult />
-                <LocationResult />
-                <TrackViewerResult />
-                <InfoPoint />
-                <ChangesetsResult />
-                {tool === 'map-details' && <MapDetails />}
-                {showElevationChart && <AsyncElevationChart />}
-                {showGalleryPicker && <GalleryPicker />}
-              </span>
-            }
-            <GalleryResult />{/* TODO should not be extra just because for position picking */}
-          </Map>
-        </div>
-      </div>
-    );
+          {showMenu &&
+            <span>
+              <SearchResults />
+              <ObjectsResult />
+              <RoutePlannerResult />
+              <DistanceMeasurementResult />
+              <ElevationMeasurementResult />
+              <AreaMeasurementResult />
+              <LocationResult />
+              <TrackViewerResult />
+              <InfoPoint />
+              <ChangesetsResult />
+              {tool === 'map-details' && <MapDetails />}
+              {showElevationChart && <AsyncElevationChart />}
+              {showGalleryPicker && <GalleryPicker />}
+            </span>
+          }
+          <GalleryResult />{/* TODO should not be extra just because for position picking */}
+        </Map>
+      </div>,
+    ];
   }
 }
 
