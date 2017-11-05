@@ -84,7 +84,7 @@ export const routePlannerFindRouteLogic = createLogic({
     };
 
     if (transportType === 'car-free') {
-      params.exclude = 'motorway';
+      params.exclude = 'toll';
     }
 
     axios.get(`https://routing.epsilon.sk/route/v1/${transportType.replace('-free', '')}/${allPoints}`, {
