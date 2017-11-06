@@ -45,15 +45,16 @@ handleLocationChange(store, history.location);
 
 const embedded = window.self !== window.top;
 
-// show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
-if (!embedded && history.location.search.substring(1).split('&').every(x => /^(map|layers)=|^$/.test(x))) {
-  const preventTips = localStorage.getItem('preventTips') === 'true';
-  store.dispatch(tipsPreventNextTime(preventTips));
-  if (!preventTips) {
-    store.dispatch(tipsNext(localStorage.getItem('tip') || null));
-    store.dispatch(setActiveModal('tips'));
-  }
-}
+// TODO suspended until we have better tips
+// // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
+// if (!embedded && history.location.search.substring(1).split('&').every(x => /^(map|layers)=|^$/.test(x))) {
+//   const preventTips = localStorage.getItem('preventTips') === 'true';
+//   store.dispatch(tipsPreventNextTime(preventTips));
+//   if (!preventTips) {
+//     store.dispatch(tipsNext(localStorage.getItem('tip') || null));
+//     store.dispatch(setActiveModal('tips'));
+//   }
+// }
 
 if (embedded) {
   document.body.classList.add('embedded');
