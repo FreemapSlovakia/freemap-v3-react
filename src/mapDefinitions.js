@@ -82,7 +82,7 @@ export const overlayLayers = [
   {
     name: 'Render. klienti',
     type: 'r',
-    url: '//www.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
+    url: '//old.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
     minZoom: 8,
     maxNativeZoom: 12,
     showOnlyInExpertMode: true,
