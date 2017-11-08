@@ -138,7 +138,7 @@ class RoutePlannerMenu extends React.Component {
           {
             [
               ['car', 'car', 'auto, vrátane spoplatnených ciest'],
-              ['car-free', 'car', 'auto, mimo spoplatnené cesty'],
+              ['car-free', 'car', 'auto, mimo spoplatnených ciest'],
               ['foot', 'male', 'pešo'],
               ['bike', 'bicycle', 'bicykel'],
             ].map(([type, icon, title]) => (
