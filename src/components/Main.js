@@ -180,10 +180,16 @@ class Main extends React.Component {
           Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
         </div>
       ),
-      <div key="appHolder" id="app-holder">
-        <Toasts />
 
-        <div className="tool-buttons">
+      <Toasts key="toasts" />,
+
+      <div key="toolButtons" className="header">
+        {process.env.DEPLOYMENT === 'next' &&
+          <div className="info-bar">
+            Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+          </div>
+        }
+        <div className="menus">
           {window.self === window.top ?
             <Panel className="fm-toolbar">
               <ButtonToolbar>
@@ -232,80 +238,81 @@ class Main extends React.Component {
           <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
         </div>
-
-        <div className="fm-type-zoom-control">
-          <Panel className="fm-toolbar">
-            <ButtonToolbar>
-              <MapSwitchButton />
-              <ButtonGroup>
-                <Button
-                  onClick={this.handleZoomInClick}
-                  title="Priblížiť mapu"
-                  disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
-                >
-                  <FontAwesomeIcon icon="plus" />
-                </Button>
-                <Button
-                  onClick={this.handleZoomOutClick}
-                  title="Oddialiť mapu"
-                  disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
-                >
-                  <FontAwesomeIcon icon="minus" />
-                </Button>
-              </ButtonGroup>
-              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
-                <FontAwesomeIcon icon="dot-circle-o" />
-              </Button>
-            </ButtonToolbar>
-          </Panel>
-        </div>
-
-        {activeModal === 'settings' && <Settings />}
-        {activeModal === 'share' && <ShareMapModal />}
-        {activeModal === 'embed' && <EmbedMapModal />}
-        {activeModal === 'export-gpx' && <ExportGpxModal />}
-        {activeModal === 'tips' && <TipsModal />}
-        {showLoginModal && <LoginModal />}
-
-        <Map
-          zoomControl={false}
-          minZoom={8}
-          maxZoom={20}
-          ref={(map) => { this.map = map; }}
-          center={L.latLng(lat, lon)}
-          zoom={zoom}
-          onMoveend={this.handleMapMoveEnd}
-          onMousemove={handleMapMouseMove}
-          onMouseover={handleMapMouseOver}
-          onMouseout={handleMapMouseOut}
-          onClick={handleMapClick}
-          onLocationfound={this.handleLocationFound}
-          style={{ cursor: mouseCursor }}
-          maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
-        >
-          <ScaleControl imperial={false} position="bottomleft" />
-          <Layers />
-
-          {showMenu &&
-            <span>
-              <SearchResults />
-              <ObjectsResult />
-              <RoutePlannerResult />
-              <DistanceMeasurementResult />
-              <ElevationMeasurementResult />
-              <AreaMeasurementResult />
-              <LocationResult />
-              <TrackViewerResult />
-              <InfoPoint />
-              <ChangesetsResult />
-              {tool === 'map-details' && <MapDetails />}
-              {showElevationChart && <AsyncElevationChart />}
-              {showGalleryPicker && <GalleryPicker />}
-            </span>
-          }
-          <GalleryResult />{/* TODO should not be extra just because for position picking */}
-        </Map>
       </div>,
+
+      <div key="zoom" className="fm-type-zoom-control">
+        <Panel className="fm-toolbar">
+          <ButtonToolbar>
+            <MapSwitchButton />
+            <ButtonGroup>
+              <Button
+                onClick={this.handleZoomInClick}
+                title="Priblížiť mapu"
+                disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
+              >
+                <FontAwesomeIcon icon="plus" />
+              </Button>
+              <Button
+                onClick={this.handleZoomOutClick}
+                title="Oddialiť mapu"
+                disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
+              >
+                <FontAwesomeIcon icon="minus" />
+              </Button>
+            </ButtonGroup>
+            <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+              <FontAwesomeIcon icon="dot-circle-o" />
+            </Button>
+          </ButtonToolbar>
+        </Panel>
+      </div>,
+
+      activeModal === 'settings' && <Settings key="settings" />,
+      activeModal === 'share' && <ShareMapModal key="shareMap" />,
+      activeModal === 'embed' && <EmbedMapModal key="embedMap" />,
+      activeModal === 'export-gpx' && <ExportGpxModal key="exportGpx" />,
+      activeModal === 'tips' && <TipsModal key="tips" />,
+      showLoginModal && <LoginModal key="login" />,
+
+      <Map
+        key="map"
+        zoomControl={false}
+        minZoom={8}
+        maxZoom={20}
+        ref={(map) => { this.map = map; }}
+        center={L.latLng(lat, lon)}
+        zoom={zoom}
+        onMoveend={this.handleMapMoveEnd}
+        onMousemove={handleMapMouseMove}
+        onMouseover={handleMapMouseOver}
+        onMouseout={handleMapMouseOut}
+        onClick={handleMapClick}
+        onLocationfound={this.handleLocationFound}
+        style={{ cursor: mouseCursor }}
+        maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
+      >
+        <ScaleControl imperial={false} position="bottomleft" />
+        <Layers />
+
+        {showMenu &&
+          <span>
+            <SearchResults />
+            <ObjectsResult />
+            <RoutePlannerResult />
+            <DistanceMeasurementResult />
+            <ElevationMeasurementResult />
+            <AreaMeasurementResult />
+            <LocationResult />
+            <TrackViewerResult />
+            <InfoPoint />
+            <ChangesetsResult />
+            {tool === 'map-details' && <MapDetails />}
+            {showElevationChart && <AsyncElevationChart />}
+            {showGalleryPicker && <GalleryPicker />}
+          </span>
+        }
+        <GalleryResult />{/* TODO should not be extra just because for position picking */}
+      </Map>,
     ];
   }
 }

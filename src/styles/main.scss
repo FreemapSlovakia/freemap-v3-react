@@ -1,16 +1,5 @@
 @import "variables";
 
-#app-holder {
-  position: relative;
-  flex-grow: 1;
-}
-
-#info-bar {
-  background-color: #ffa;
-  text-align: center;
-
-}
-
 .leaflet-container {
   z-index: 1;
   position: absolute;
@@ -42,12 +31,30 @@ a.leaflet-control-layers-toggle {
   }
 }
 
-.tool-buttons {
+.header {
   position: absolute;
   z-index: 1010;
-  top: 10px;
-  left: 10px;
-  margin-right: 10px;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  pointer-events: none;
+
+  & > * {
+    pointer-events: all;
+  }
+}
+
+.info-bar {
+  background-color: #ffa;
+  text-align: center;
+}
+
+.menus {
+  pointer-events: none;
+  margin: 8px 4px;
+  & > * {
+    pointer-events: all;
+  }
 }
 
 .tool-panel {
