@@ -80,16 +80,18 @@ class SearchMenu extends React.Component {
           )}
         />
         {' '}
-        <ButtonGroup>
-          <Button onClick={() => onRoutePlannerWithStartInit(selectedResult)} disabled={!selectedResult}>
-            <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
-            <span className="hidden-xs"> Navigovať odtiaľto</span>
-          </Button>
-          <Button onClick={() => onRoutePlannerWithFinishInit(selectedResult)} disabled={!selectedResult}>
-            <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
-            <span className="hidden-xs"> Navigovať sem</span>
-          </Button>
-        </ButtonGroup>
+        {selectedResult &&
+          <ButtonGroup>
+            <Button onClick={() => onRoutePlannerWithStartInit(selectedResult)}>
+              <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
+              <span className="hidden-xs"> Navigovať odtiaľto</span>
+            </Button>
+            <Button onClick={() => onRoutePlannerWithFinishInit(selectedResult)}>
+              <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
+              <span className="hidden-xs"> Navigovať sem</span>
+            </Button>
+          </ButtonGroup>
+        }
       </span>
     );
   }
