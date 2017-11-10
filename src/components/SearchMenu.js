@@ -20,10 +20,6 @@ class SearchMenu extends React.Component {
     this.input.getInstance().focus();
   }
 
-  onSelectionChange = (resultsSelectedByUser) => {
-    this.props.onResultSelect(resultsSelectedByUser[0], this.props.tool);
-  }
-
   onSuggestionHighlightChange(result) {
     if (result) {
       const { geojson } = result;
@@ -41,6 +37,10 @@ class SearchMenu extends React.Component {
     this.input = input;
   }
 
+  handleSelectionChange = (resultsSelectedByUser) => {
+    this.props.onResultSelect(resultsSelectedByUser[0], this.props.tool);
+  }
+
   render() {
     const {
       onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results,
@@ -48,7 +48,10 @@ class SearchMenu extends React.Component {
 
     return (
       <span>
-        <span className="fm-label"><FontAwesomeIcon icon="search" /><span className="hidden-xs"> Hľadanie na mape</span></span>
+        <span className="fm-label">
+          <FontAwesomeIcon icon="search" />
+          <span className="hidden-xs"> Hľadanie na mape</span>
+        </span>
         {' '}
         <AsyncTypeahead
           ref={this.setInput}
@@ -62,7 +65,7 @@ class SearchMenu extends React.Component {
           searchText="Hľadám…"
           placeholder="Brusno"
           clearButton
-          onChange={this.onSelectionChange}
+          onChange={this.handleSelectionChange}
           emptyLabel="Nenašli sa žiadne výsledky"
           promptText="Zadajte lokalitu"
           renderMenuItemChildren={result => (
@@ -118,7 +121,6 @@ export default connect(
       dispatch(searchHighlightResult(result));
     },
     onResultSelect(result) {
-      dispatch(setTool(result ? 'search' : null));
       dispatch(searchSelectResult(result));
     },
     onRoutePlannerWithStartInit(result) {
