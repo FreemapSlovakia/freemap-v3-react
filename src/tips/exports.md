@@ -1,4 +1,6 @@
+#### Exporty máp
+
 Freemap ponúka export máp pre rôzne zariadenia:
 
-* Locus
-* Garmin
+* [Locus](http://wiki.freemap.sk/FileDownload)
+* [Garmin](http://wiki.freemap.sk/FileDownload)

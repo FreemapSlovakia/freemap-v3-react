@@ -1,1 +1,3 @@
-Všetky mapy na stránke sú vytvorené z údajov mapovej databázy <a href="www.openstreetmap.org" target="_blank"> OpenStreetMap</a>, do ktorej neúnavne prispievajú dobovoľníci z celého sveta.
+#### O OpenStreetMap
+
+Všetky mapy na stránke sú vytvorené z dát mapovej databázy [OpenStreetMap](www.openstreetmap.org), do ktorej neúnavne prispievajú dobovoľníci z celého sveta. Týmto dobrovoľníkom sa môžete stať aj vy. Môže vám v tom pomôcť [manuál pre začiatočníkov](http://wiki.freemap.sk/StarterGuide).
