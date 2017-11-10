@@ -119,19 +119,6 @@ class MoreMenuButton extends React.Component {
               <FontAwesomeIcon icon="code" /> Vložiť do webstránky
             </MenuItem>
             <MenuItem divider />
-            <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/StarterGuide" target="_blank">
-              <FontAwesomeIcon icon="book" /> Pre začiatočníkov
-            </MenuItem>
-            <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react" target="_blank">
-              <FontAwesomeIcon icon="github" /> Projekt na GitHub-e
-            </MenuItem>
-            <MenuItem onClick={this.handleItemClick} href="https://www.facebook.com/FreemapSlovakia" target="_blank">
-              <FontAwesomeIcon icon="facebook-official" /> Freemap na Facebooku
-            </MenuItem>
-            <MenuItem onClick={this.handleItemClick} href="https://twitter.com/FreemapSlovakia" target="_blank">
-              <FontAwesomeIcon icon="twitter" /> Freemap na Twitteri
-            </MenuItem>
-            <MenuItem divider />
             <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
               <FontAwesomeIcon icon="exclamation-triangle" /> Nahlásiť chybu zobrazenia v mape
             </MenuItem>
@@ -151,6 +138,40 @@ class MoreMenuButton extends React.Component {
               </form>
             </MenuItem>
           </ul>
+          <div style={{ margin: '4px 18px', fontSize: '18px' }}>
+            <a
+              onClick={this.handleItemClick}
+              href="https://www.facebook.com/FreemapSlovakia"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#3b5998' }}
+              title="Freemap na Facebooku"
+            >
+              <FontAwesomeIcon icon="facebook-official" />
+            </a>
+            {' '}
+            <a
+              onClick={this.handleItemClick}
+              href="https://twitter.com/FreemapSlovakia"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#0084b4' }}
+              title="Freemap na Twitteri"
+            >
+              <FontAwesomeIcon icon="twitter" />
+            </a>
+            {' '}
+            <a
+              onClick={this.handleItemClick}
+              href="https://github.com/FreemapSlovakia"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#333' }}
+              title="Freemap na GitHub-e"
+            >
+              <FontAwesomeIcon icon="github" />
+            </a>
+          </div>
         </Popover>
       </Overlay>,
     ];
