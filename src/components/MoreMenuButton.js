@@ -117,7 +117,10 @@ class MoreMenuButton extends React.Component {
               <FontAwesomeIcon icon="github" /> Projekt na GitHub-e
             </MenuItem>
             <MenuItem onClick={this.handleItemClick} href="https://www.facebook.com/FreemapSlovakia" target="_blank">
-              <FontAwesomeIcon icon="facebook-official" /> Projekt Facebooku
+              <FontAwesomeIcon icon="facebook-official" /> Freemap na Facebooku
+            </MenuItem>
+            <MenuItem onClick={this.handleItemClick} href="https://twitter.com/FreemapSlovakia" target="_blank">
+              <FontAwesomeIcon icon="twitter" /> Freemap na Twitteri
             </MenuItem>
             <MenuItem divider />
             <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
