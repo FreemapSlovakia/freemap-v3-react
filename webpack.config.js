@@ -4,8 +4,13 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const marked = require('marked');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
+
+const renderer = new marked.Renderer();
+
+renderer.link = (href, title, text) => `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
 
 const extractSass = new ExtractTextPlugin({
   filename: '[name].[contenthash].css',
@@ -75,6 +80,7 @@ module.exports = {
           {
             loader: 'markdown-loader',
             options: {
+              renderer,
             },
           },
         ],
