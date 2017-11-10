@@ -16,10 +16,6 @@ import 'fm3/styles/search.scss';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 class SearchMenu extends React.Component {
-  componentDidMount() {
-    this.input.getInstance().focus();
-  }
-
   onSuggestionHighlightChange(result) {
     if (result) {
       const { geojson } = result;
@@ -31,10 +27,6 @@ class SearchMenu extends React.Component {
       getMapLeafletElement().fitBounds(geojsonBounds, options);
     }
     this.props.onResultHiglight(result);
-  }
-
-  setInput = (input) => {
-    this.input = input;
   }
 
   handleSelectionChange = (resultsSelectedByUser) => {
@@ -53,7 +45,6 @@ class SearchMenu extends React.Component {
         </span>
         {' '}
         <AsyncTypeahead
-          ref={this.setInput}
           labelKey="label"
           useCache={false}
           minLength={3}
