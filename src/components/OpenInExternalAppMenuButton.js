@@ -40,7 +40,7 @@ export default class OpenInExternalAppMenuButton extends React.Component {
         break;
       case 'josm': {
         const bounds = getMapLeafletElement().getBounds();
-        axios.get('http://localhost:8111/load_and_zoom', {
+        axios.get(`${window.location.protocol}//localhost:${window.location.protocol === 'http:' ? 8111 : 8112}/load_and_zoom`, {
           params: {
             left: bounds.getWest(),
             right: bounds.getEast(),

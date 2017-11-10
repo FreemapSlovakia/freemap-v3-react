@@ -68,7 +68,7 @@ export default createLogic({
     }
 
     function handleJosmClick() {
-      axios.get('http://localhost:8111/load_and_zoom', {
+      axios.get(`${window.location.protocol}//localhost:${window.location.protocol === 'http:' ? 8111 : 8112}/load_and_zoom`, {
         params: {
           select: `way${way.id}`,
           left: bbox[1],
