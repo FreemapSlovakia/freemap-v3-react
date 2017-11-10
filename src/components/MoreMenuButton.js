@@ -31,6 +31,10 @@ class MoreMenuButton extends React.Component {
     this.button = button;
   };
 
+  setDonateForm = (form) => {
+    this.form = form;
+  }
+
   handleButtonClick = () => {
     this.setState({ show: true });
   }
@@ -71,6 +75,11 @@ class MoreMenuButton extends React.Component {
   handleEmbedClick = () => {
     this.setState({ show: false });
     this.props.onEmbed();
+  }
+
+  handleDonateClick = () => {
+    this.setState({ show: false });
+    this.form.submit();
   }
 
   render() {
@@ -128,6 +137,18 @@ class MoreMenuButton extends React.Component {
             </MenuItem>
             <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react/issues" target="_blank">
               <FontAwesomeIcon icon="exclamation-triangle" /> Nahlásiť chybu v portáli
+            </MenuItem>
+            <MenuItem divider />
+            <MenuItem onClick={this.handleDonateClick}>
+              <img
+                src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"
+                alt="PayPal - The safer, easier way to pay online!"
+              /> Podporiť Freemap
+              <img alt="" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" border="0" width="1" height="1" />
+              <form key="donateForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" ref={this.setDonateForm} target="_blank">
+                <input name="cmd" value="_s-xclick" type="hidden" />
+                <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
+              </form>
             </MenuItem>
           </ul>
         </Popover>
