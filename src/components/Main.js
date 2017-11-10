@@ -191,32 +191,41 @@ class Main extends React.Component {
         }
         <div className="menus">
           {window.self === window.top ?
-            <Panel className="fm-toolbar">
-              <ButtonToolbar>
-                {showMenu ?
-                  <ButtonGroup>
-                    <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
-                    <ToolsMenuButton />
-                    <Button onClick={onMapClear} title="Vyčistiť mapu">
-                      <FontAwesomeIcon icon="eraser" />
-                    </Button>
-                    <Button onClick={this.handleFullscreenClick} title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}>
-                      <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                    </Button>
-                    <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
-                    <MoreMenuButton />
-                  </ButtonGroup>
-                  :
-                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={onMapReset} />
+            [
+              <Panel key="n7ihNg2hVN" className="fm-toolbar">
+                <Button
+                  id="freemap-logo"
+                  className={progress ? 'in-progress' : 'idle'}
+                  onClick={onMapReset}
+                />
+                {showMenu && <SearchMenu />}
+              </Panel>,
+              <Panel key="w29UqFK5H9" className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
+                {showMenu &&
+                  <ButtonToolbar>
+                    <ButtonGroup>
+                      <ToolsMenuButton />
+                      <Button onClick={onMapClear} title="Vyčistiť mapu">
+                        <FontAwesomeIcon icon="eraser" />
+                      </Button>
+                      <Button
+                        onClick={this.handleFullscreenClick}
+                        title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}
+                      >
+                        <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                      </Button>
+                      <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                      <MoreMenuButton />
+                    </ButtonGroup>
+                  </ButtonToolbar>
                 }
-              </ButtonToolbar>
-            </Panel>
+              </Panel>,
+            ]
             :
             <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
           }
           {showMenu && tool &&
             <Panel className="fm-toolbar">
-              {tool === 'search' && <SearchMenu />}
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
@@ -395,7 +404,7 @@ function selectMouseCursor(state) {
 }
 
 function isShowGalleryPicker(state) {
-  return (state.main.tool === null || ['gallery', 'track-viewer', 'search', 'objects', 'changesets'].includes(state.main.tool))
+  return (state.main.tool === null || ['gallery', 'track-viewer', 'objects', 'changesets'].includes(state.main.tool))
     && state.map.overlays.includes('I')
     && state.gallery.pickingPositionForId === null
     && !state.gallery.showPosition

@@ -41,7 +41,7 @@ export const elevationChartProfilePoint = PropTypes.shape({
 
 export const points = PropTypes.arrayOf(point);
 
-export const tool = PropTypes.oneOf(['search', 'objects', 'route-planner',
+export const tool = PropTypes.oneOf(['objects', 'route-planner',
   'measure-dist', 'measure-ele', 'measure-area',
   'route-planner', 'track-viewer', 'info-point', 'changesets',
   'gallery', 'map-details']);

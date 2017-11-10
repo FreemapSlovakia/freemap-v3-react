@@ -50,7 +50,6 @@ class SearchMenu extends React.Component {
       <span>
         <span className="fm-label">
           <FontAwesomeIcon icon="search" />
-          <span className="hidden-xs"> Hľadanie na mape</span>
         </span>
         {' '}
         <AsyncTypeahead
@@ -82,13 +81,17 @@ class SearchMenu extends React.Component {
         {' '}
         {selectedResult &&
           <ButtonGroup>
-            <Button onClick={() => onRoutePlannerWithStartInit(selectedResult)}>
+            <Button
+              title="Navigovať odtiaľto"
+              onClick={() => onRoutePlannerWithStartInit(selectedResult)}
+            >
               <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
-              <span className="hidden-xs"> Navigovať odtiaľto</span>
             </Button>
-            <Button onClick={() => onRoutePlannerWithFinishInit(selectedResult)}>
+            <Button
+              title="Navigovať sem"
+              onClick={() => onRoutePlannerWithFinishInit(selectedResult)}
+            >
               <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
-              <span className="hidden-xs"> Navigovať sem</span>
             </Button>
           </ButtonGroup>
         }
