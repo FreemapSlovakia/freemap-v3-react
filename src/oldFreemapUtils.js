@@ -12,7 +12,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl(location) {
     ? rawUrlParamsToHash(location.hash, ',') // #m=T,p=48.21836|17.4166|16|T -> {'m': 'T', 'p' : '48.21836|17.4166|16|T'}
     : rawUrlParamsToHash(location.search, '&'); // ?m=A&p=48.1855|17.4029|14
 
-  const [latFrag, lonFrag, zoomFrag, anotherMapTypeParam] = oldFreemapUrlParams.p.split('|');
+  const [latFrag, lonFrag, zoomFrag, anotherMapTypeParam] = oldFreemapUrlParams.p.split(/\||%7C/);
   const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'T';
   return {
     lat: parseFloat(latFrag),
