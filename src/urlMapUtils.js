@@ -8,14 +8,18 @@ const overlayLetters = ['I', ...overlayLayers.map(({ type }) => type).join('')];
 const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
 
 export function getMapStateFromUrl(location) {
-  if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
+  {
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
-    return transformedParams;
+    if (transformedParams) {
+      return transformedParams;
+    }
   }
 
-  if (getTrasformedParamsIfIsOldFreemapUrl(location)) {
+  {
     const transformedParams = getTrasformedParamsIfIsOldFreemapUrl(location);
-    return transformedParams;
+    if (transformedParams) {
+      return transformedParams;
+    }
   }
 
   const query = queryString.parse(location.search);
