@@ -1,4 +1,5 @@
 import 'babel-polyfill';
+import 'fullscreen-api-polyfill';
 
 import React from 'react';
 import { render } from 'react-dom';
@@ -6,7 +7,6 @@ import { Provider } from 'react-redux';
 import { createStore, applyMiddleware } from 'redux';
 import { createLogicMiddleware } from 'redux-logic';
 import { createLogger } from 'redux-logger';
-import 'fullscreen-api-polyfill';
 
 import Main from 'fm3/components/Main';
 import reducer from 'fm3/reducers';
@@ -20,6 +20,7 @@ import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
 import initAuthHelper from 'fm3/authHelper';
+import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
 
 import 'fm3/styles/global.scss';
