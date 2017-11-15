@@ -62,6 +62,17 @@ export const overlayLayers = [
     zIndex: 2,
   },
   {
+    name: 'Strava heatmap',
+    type: 's',
+    url: 'https://heatmap-external-{s}.strava.com/tiles/ride/bluered/{z}/{x}/{y}.png?px=256',
+    attribution: '© Strava',
+    minZoom: 0,
+    maxNativeZoom: 16,
+    key: 'h',
+    showOnlyInExpertMode: true,
+    zIndex: 2,
+  },
+  {
     name: 'Turistické trasy',
     type: 't',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
