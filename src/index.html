@@ -1,23 +1,37 @@
 <!DOCTYPE html>
 <html lang="sk">
 
+  <%
+    const baseUrl = process.env.DEPLOYMENT === 'www' ? 'https://www.freemap.sk/'
+      : process.env.DEPLOYMENT === 'next' ? 'http://next.freemap.sk/'
+      : 'http://local.freemap.sk:9000/';
+  %>
+
   <head>
-    <title>Freemap</title>
+    <title>Freemap Slovakia - digitálna mapa Slovenska</title>
 
     <meta charset="UTF-8">
-    <meta name="description" content="Freemap Slovakia Map Portal">
-    <meta name="keywords" content="map, freemap">
+
+    <meta name="copyright" content="OZ Freemap Slovakia, http://www.freemap.sk/">
+    <meta name="description" content="Freemap je voľne dostupná online mapa Slovenska s možnosťou zadarmo používať offline verziu.">
     <meta name="author" content="Freemap Slovakia">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="google-site-verification" content="sbT_FygRVxqv1MyTmcynJH3dSq2sVlUBNqaxCvlECU4">
+    <meta name="application-name" content="Freemap Slovakia">
+    <meta name="apple-mobile-web-app-title" content="Freemap Slovakia">
+
+    <meta name="og:title" content="Freemap Slovakia - digitálna mapa Slovenska">
+    <meta name="og:image" content="<%= baseUrl + require('./images/freemap-logo.png') %>">
     <meta http-equiv="Accept-CH" content="Width">
 
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
+    <link rel="apple-touch-icon" href="<%= baseUrl + require('./images/freemap-logo-small.png') %>">
 
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"/>
-    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css"/>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
 
     <% for (const css of htmlWebpackPlugin.files.chunks.main.css) { %>
-      <link rel="stylesheet" href="<%= css %>" />
+      <link rel="stylesheet" href="<%= css %>">
     <% } %>
     <script>
       window.handleGoogleAuthApiLoad = function () {
