@@ -13,6 +13,7 @@ import { tipsNext, tipsPrevious, tipsPreventNextTime } from 'fm3/actions/tipsAct
 
 export class TipsModal extends React.Component {
   static propTypes = {
+    // eslint-disable-next-line
     tip: PropTypes.string.isRequired,
     onPrevious: PropTypes.func.isRequired,
     onNext: PropTypes.func.isRequired,
@@ -20,22 +21,59 @@ export class TipsModal extends React.Component {
     onNextTimePrevent: PropTypes.func.isRequired,
   };
 
+  state = {
+    loading: true,
+    tip: null,
+  }
+
+  componentWillMount() {
+    this.loadTip(this.props);
+  }
+
+  componentWillReceiveProps(nextProps) {
+    this.loadTip(nextProps);
+  }
+
+  loadTip(props) {
+    this.setState({ loading: true });
+    import(`fm3/tips/${props.tip}.md`)
+      .then((tip) => {
+        this.setState({
+          tip,
+          loading: false,
+        });
+      })
+      .catch(() => {
+        this.setState({
+          tip: 'Tip sa nepodarilo načítať.',
+          loading: false,
+        });
+      });
+  }
+
   handleNextTimePrevent = (e) => {
     this.props.onNextTimePrevent(e.target.checked);
   }
 
   render() {
-    const { onPrevious, onNext, onModalClose, tip } = this.props;
+    const { onPrevious, onNext, onModalClose } = this.props;
+    const { tip, loading } = this.state;
+
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>Tipy</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div
-            // eslint-disable-next-line react/no-danger
-            dangerouslySetInnerHTML={{ __html: require(`fm3/tips/${tip}.md`) }}
-          />
+          {
+            tip ?
+              <div
+                style={loading ? { opacity: 0.5, cursor: 'progress' } : {}}
+                // eslint-disable-next-line react/no-danger
+                dangerouslySetInnerHTML={{ __html: tip }}
+              />
+              : 'Načítavam…'
+          }
         </Modal.Body>
         <Modal.Footer>
           <FormGroup>
