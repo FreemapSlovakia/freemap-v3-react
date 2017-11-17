@@ -6,6 +6,8 @@ const tips = [
   'osm',
   'sharing',
   'shortcuts',
+  'gpxViewer',
+  'planner',
 ];
 
 const initialState = {
