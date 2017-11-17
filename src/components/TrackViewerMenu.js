@@ -103,13 +103,13 @@ class TrackViewerMenu extends React.Component {
     if (startPoints.length) {
       [{ startTime }] = startPoints;
       if (startTime) {
-        tableData.push(['Čas štartu', timeFormat.format(new Date(startTime))]);
+        tableData.push(['startTime', 'Čas štartu', timeFormat.format(new Date(startTime))]);
       }
     }
     if (finishPoints.length) {
       [{ finishTime }] = finishPoints;
       if (finishTime) {
-        tableData.push(['Čas v cieli', timeFormat.format(new Date(finishTime))]);
+        tableData.push(['finishTime', 'Čas v cieli', timeFormat.format(new Date(finishTime))]);
       }
     }
 
@@ -118,16 +118,16 @@ class TrackViewerMenu extends React.Component {
       duration = (new Date(finishTime) - new Date(startTime)) / 1000;
       const hours = Math.floor(duration / 3600);
       const minutes = Math.floor((duration - hours * 3600) / 60);
-      tableData.push(['Trvanie', `${hours} hodín ${minutes} minút`]);
+      tableData.push(['duration', 'Trvanie', `${hours} hodín ${minutes} minút`]);
     }
 
     if (finishPoints.length) {
       const [{ lengthInKm }] = finishPoints;
-      tableData.push(['Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
+      tableData.push(['distance', 'Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
 
       if (duration) {
         const avgSpeed = lengthInKm / duration * 3600;
-        tableData.push(['Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
+        tableData.push(['avgSpeed', 'Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
       }
     }
 
@@ -160,10 +160,10 @@ class TrackViewerMenu extends React.Component {
       }
     });
     if (minEle !== Infinity) {
-      tableData.push(['min', 'Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
+      tableData.push(['minEle', 'Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
     }
     if (maxEle !== -Infinity) {
-      tableData.push(['max', 'Najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
+      tableData.push(['maxEle', 'Najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
     }
     tableData.push(['uphill', 'Celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
     tableData.push(['downhill', 'Celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
