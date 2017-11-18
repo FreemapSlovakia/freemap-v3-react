@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import turfLineDistance from '@turf/line-distance';
-import turfAlong from '@turf/along';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
@@ -17,6 +16,17 @@ import * as FmPropTypes from 'fm3/propTypes';
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 class RoutePlannerResult extends React.Component {
+  state = {
+    lat: null,
+    lon: null,
+  }
+
+  componentWillUnmount() {
+    if (this.t) {
+      clearTimeout(this.t);
+    }
+  }
+
   handleRouteMarkerDragend(movedPointType, position, event) {
     const { lat, lng: lon } = event.target.getLatLng();
 
@@ -43,7 +53,6 @@ class RoutePlannerResult extends React.Component {
     const {
       start, finish, midpoints, shapePoints,
     } = this.props;
-    const futureMidpoints = [];
     const midpointDistancesFromStart = [];
     let routeSlices = [];
     if ((start && finish && shapePoints)) {
@@ -54,18 +63,86 @@ class RoutePlannerResult extends React.Component {
       routeSlices.forEach((routeSlice) => {
         const length = turfLineDistance(routeSlice);
         distanceFromStart += length;
-        const pointInMiddleOfSlice = turfAlong(routeSlice, length / 2);
-        const lonlat = pointInMiddleOfSlice.geometry.coordinates;
-        futureMidpoints.push({ lat: lonlat[1], lon: lonlat[0] });
         midpointDistancesFromStart.push(distanceFromStart);
       });
     }
 
-    return { futureMidpoints, midpointDistancesFromStart, routeSlices };
+    return { midpointDistancesFromStart, routeSlices };
   }
 
   handleEndPointClick = () => {
     // just to prevent click propagation to map
+  }
+
+  handlePolyMouseMove = (e, segment) => {
+    if (this.dragging) {
+      return;
+    }
+    if (this.t) {
+      clearTimeout(this.t);
+      this.t = null;
+    }
+    this.setState({
+      lat: e.latlng.lat,
+      lon: e.latlng.lng,
+      segment,
+    });
+  }
+
+  handlePolyMouseOut = () => {
+    if (this.dragging) {
+      return;
+    }
+    this.resetOnTimeout();
+  }
+
+  handleFutureMouseOver = () => {
+    if (this.dragging) {
+      return;
+    }
+    if (this.t) {
+      clearTimeout(this.t);
+      this.t = null;
+    }
+  }
+
+  handleFutureMouseOut = () => {
+    if (this.dragging) {
+      return;
+    }
+    this.resetOnTimeout();
+  }
+
+  resetOnTimeout() {
+    if (this.t) {
+      clearTimeout(this.t);
+    }
+    this.t = setTimeout(() => {
+      this.setState({
+        lat: null,
+        lon: null,
+      });
+    }, 200);
+  }
+
+  handleFutureDragStart = () => {
+    if (this.t) {
+      clearTimeout(this.t);
+    }
+    this.dragging = true;
+  }
+
+  handleFutureDragEnd = (e) => {
+    this.dragging = false;
+    this.setState({
+      lat: null,
+      lon: null,
+    });
+
+    this.props.onAddMidpoint(this.state.segment, {
+      lat: e.target.getLatLng().lat,
+      lon: e.target.getLatLng().lng,
+    });
   }
 
   render() {
@@ -78,7 +155,7 @@ class RoutePlannerResult extends React.Component {
       iconAnchor: [7, 7],
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
-    const { futureMidpoints, midpointDistancesFromStart, routeSlices } = this.futureMidpointsAndDistances();
+    const { midpointDistancesFromStart, routeSlices } = this.futureMidpointsAndDistances();
 
     const elems = [];
 
@@ -94,6 +171,21 @@ class RoutePlannerResult extends React.Component {
           onDragend={e => this.handleRouteMarkerDragend('start', null, e)}
           position={L.latLng(start.lat, start.lon)}
           onClick={this.handleEndPointClick}
+        />,
+      );
+    }
+
+    if (this.state.lat !== null && this.state.lon !== null) {
+      elems.push(
+        <Marker
+          key="7Ss4bmDZr3"
+          draggable
+          icon={circularIcon}
+          onDragStart={this.handleFutureDragStart}
+          onDragEnd={this.handleFutureDragEnd}
+          onMouseOver={this.handleFutureMouseOver}
+          onMouseOut={this.handleFutureMouseOut}
+          position={L.latLng(this.state.lat, this.state.lon)}
         />,
       );
     }
@@ -139,19 +231,6 @@ class RoutePlannerResult extends React.Component {
       );
     }
 
-    elems.push(...futureMidpoints.map((p, i) => (
-      <Marker
-        key={`7Ss4bmDZr3-${i}`}
-        draggable
-        icon={circularIcon}
-        onDragend={e => this.props.onAddMidpoint(i, {
-          lat: e.target.getLatLng().lat,
-          lon: e.target.getLatLng().lng,
-        })}
-        position={L.latLng(p.lat, p.lon)}
-      />
-    )));
-
     if (itineraryIsVisible) {
       elems.push(...itinerary.map(({ desc, lat, lon, km }, i) => (
         <RichMarker
@@ -174,7 +253,8 @@ class RoutePlannerResult extends React.Component {
         key={`TC7dnZUMAG-${i}`}
         color={i % 2 === 0 ? '#000' : '#000'}
         opacity={i % 2 === 0 ? 0.5 : 0.5}
-        interactive={false}
+        onMouseMove={e => this.handlePolyMouseMove(e, i)}
+        onMouseOut={this.handlePolyMouseOut}
       />
     )));
 

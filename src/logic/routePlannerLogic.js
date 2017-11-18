@@ -113,7 +113,7 @@ export const routePlannerFindRouteLogic = createLogic({
           if (showHint) {
             dispatch(toastsAdd({
               collapseKey: 'routePlanner.showHint',
-              message: <span>Pre pridanie medzizastávky potiahnite modrú guličku zo stredu naplánovanej trasy na zvolené miesto.</span>,
+              message: <span>Pre pridanie medzizastávky potiahnite úsek cesty na zvolené miesto.</span>,
               style: 'info',
               actions: [
                 { name: 'OK' },
