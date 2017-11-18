@@ -27,7 +27,9 @@ class RoutePlannerResult extends React.Component {
     }
   }
 
-  handleRouteMarkerDragend(movedPointType, position, event) {
+  handleRouteMarkerDragEnd(movedPointType, position, event) {
+    this.dragging = false;
+
     const { lat, lng: lon } = event.target.getLatLng();
 
     switch (movedPointType) {
@@ -125,7 +127,7 @@ class RoutePlannerResult extends React.Component {
     }, 200);
   }
 
-  handleFutureDragStart = () => {
+  handleDragStart = () => {
     if (this.t) {
       clearTimeout(this.t);
     }
@@ -168,7 +170,8 @@ class RoutePlannerResult extends React.Component {
           faIconLeftPadding="2px"
           color="#409a40"
           draggable
-          onDragend={e => this.handleRouteMarkerDragend('start', null, e)}
+          onDragStart={this.handleDragStart}
+          onDragEnd={e => this.handleRouteMarkerDragEnd('start', null, e)}
           position={L.latLng(start.lat, start.lon)}
           onClick={this.handleEndPointClick}
         />,
@@ -181,7 +184,7 @@ class RoutePlannerResult extends React.Component {
           key="7Ss4bmDZr3"
           draggable
           icon={circularIcon}
-          onDragStart={this.handleFutureDragStart}
+          onDragStart={this.handleDragStart}
           onDragEnd={this.handleFutureDragEnd}
           onMouseOver={this.handleFutureMouseOver}
           onMouseOut={this.handleFutureMouseOut}
@@ -193,7 +196,8 @@ class RoutePlannerResult extends React.Component {
     elems.push(...midpoints.filter((_, i) => midpointDistancesFromStart[i]).map(({ lat, lon }, i) => (
       <RichMarker
         draggable
-        onDragend={e => this.handleRouteMarkerDragend('midpoint', i, e)}
+        onDragStart={this.handleDragStart}
+        onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
         onClick={() => this.handleMidpointClick(i)}
         key={`c4ReUQrKT7-${i}`}
         zIndexOffset={9}
@@ -215,7 +219,8 @@ class RoutePlannerResult extends React.Component {
           color="#d9534f"
           zIndexOffset={10}
           draggable
-          onDragend={e => this.handleRouteMarkerDragend('finish', null, e)}
+          onDragStart={this.handleDragStart}
+          onDragEnd={e => this.handleRouteMarkerDragEnd('finish', null, e)}
           position={L.latLng(finish.lat, finish.lon)}
           onClick={this.handleEndPointClick}
         >
