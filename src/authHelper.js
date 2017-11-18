@@ -1,9 +1,11 @@
 import qs from 'query-string';
 import axios from 'axios';
+import history from 'fm3/history';
 
-import { setHomeLocation, startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { setHomeLocation, startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
+import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 
 export default function initAuthHelper(store) {
   try {
@@ -19,31 +21,15 @@ export default function initAuthHelper(store) {
 
   const { user } = store.getState().auth;
   if (user) {
-    const pid = Math.random();
-    store.dispatch(startProgress(pid));
-    axios({
-      url: `${process.env.API_URL}/auth/validate`,
-      method: 'post',
-      headers: {
-        Authorization: `Bearer ${user.authToken}`,
-      },
-      validateStatus: status => status === 200 || status === 401,
-    })
-      .then((res) => {
-        if (res.status === 200) {
-          store.dispatch(authSetUser(res.data));
-        } else {
-          store.dispatch(authSetUser(null));
-        }
-      })
-      .catch((err) => {
-        store.dispatch(toastsAddError(`Nepodarilo sa overiť prihlásenie: ${err.message}`));
-      })
-      .then(() => {
-        store.dispatch(stopProgress(pid));
-      });
+    verifyUser(store, user);
+  } else {
+    handleTips(store);
   }
 
+  setupOsmLoginStep2Listener(store);
+}
+
+function setupOsmLoginStep2Listener(store) {
   window.addEventListener('message', (e) => {
     /* eslint-disable no-underscore-dangle */
 
@@ -83,4 +69,43 @@ export default function initAuthHelper(store) {
         store.dispatch(stopProgress(pid));
       });
   });
+}
+
+function verifyUser(store, user) {
+  const pid = Math.random();
+  store.dispatch(startProgress(pid));
+  axios({
+    url: `${process.env.API_URL}/auth/validate`,
+    method: 'post',
+    headers: {
+      Authorization: `Bearer ${user.authToken}`,
+    },
+    validateStatus: status => status === 200 || status === 401,
+  })
+    .then((res) => {
+      store.dispatch(authSetUser(res.status === 200 ? res.data : null));
+    })
+    .catch((err) => {
+      store.dispatch(toastsAddError(`Nepodarilo sa overiť prihlásenie: ${err.message}`));
+    })
+    .then(() => {
+      store.dispatch(stopProgress(pid));
+
+      handleTips(store);
+    });
+}
+
+function handleTips(store) {
+  const embedded = window.self !== window.top;
+
+  // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
+  if (!embedded && history.location.search.substring(1).split('&').every(x => /^(map|layers)=|^$/.test(x))) {
+    if (!store.getState().auth.user) {
+      store.dispatch(tipsPreventNextTime(localStorage.getItem('preventTips') === 'true'));
+    }
+    if (!store.getState().tips.preventTips) {
+      store.dispatch(tipsNext(localStorage.getItem('tip') || null));
+      store.dispatch(setActiveModal('tips'));
+    }
+  }
 }

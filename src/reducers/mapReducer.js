@@ -62,6 +62,14 @@ export default function map(state = initialState, action) {
 
       return newState;
     }
+    case 'AUTH_SET_USER': {
+      const settings = action.payload && action.payload.settings;
+      return settings ? {
+        ...state,
+        tileFormat: settings.tileFormat || state.tileFormat,
+        overlayOpacity: settings.overlayOpacity === undefined ? state.overlayOpacity : settings.overlayOpacity,
+      } : state;
+    }
     default:
       return state;
   }

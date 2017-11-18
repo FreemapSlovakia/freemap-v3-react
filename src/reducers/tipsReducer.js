@@ -12,7 +12,7 @@ const tips = [
 
 const initialState = {
   tip: 'attribution',
-  preventNextTime: false,
+  preventTips: false,
 };
 
 export default function infoPoint(state = initialState, action) {
@@ -22,7 +22,14 @@ export default function infoPoint(state = initialState, action) {
     case 'TIPS_PREVIOUS':
       return { ...state, tip: tips[(tips.indexOf(state.tip) + tips.length - 1) % tips.length] };
     case 'TIPS_PREVENT_NEXT_TIME':
-      return { ...state, preventNextTime: action.payload };
+      return { ...state, preventTips: action.payload };
+    case 'AUTH_SET_USER': {
+      const user = action.payload;
+      return user ? {
+        ...state,
+        preventTips: user.preventTips === undefined ? state.preventTips : user.preventTips,
+      } : state;
+    }
     default:
       return state;
   }

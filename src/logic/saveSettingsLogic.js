@@ -47,7 +47,21 @@ export const saveSettingsLogic = createLogic({
       axios.patch(
         `${process.env.API_URL}/auth/settings`,
         Object.assign(
-          { name: user.name, email: user.email },
+          {
+            name: user.name,
+            email: user.email,
+            settings: {
+              tileFormat,
+              overlayOpacity: {
+                N: nlcOpacity,
+                t: touristOverlayOpacity,
+                c: cycloOverlayOpacity,
+              },
+              expertMode,
+              trackViewerEleSmoothingFactor,
+            },
+            preventTips,
+          },
           homeLocation ? { lat: homeLocation.lat, lon: homeLocation.lon } : {},
         ),
         {

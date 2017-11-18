@@ -301,7 +301,7 @@ export default connect(
     trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
     selectingHomeLocation: state.main.selectingHomeLocation,
     user: state.auth.user,
-    preventTips: state.tips.preventNextTime,
+    preventTips: state.tips.preventTips,
   }),
   dispatch => ({
     onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {

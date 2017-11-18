@@ -12,10 +12,9 @@ import Main from 'fm3/components/Main';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
-import { mainLoadState, setActiveModal } from 'fm3/actions/mainActions';
+import { mainLoadState } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
-import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
@@ -41,22 +40,9 @@ loadAppState(store);
 initAuthHelper(store);
 
 history.listen(handleLocationChange.bind(undefined, store));
-
 handleLocationChange(store, history.location);
 
-const embedded = window.self !== window.top;
-
-// show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
-if (!embedded && history.location.search.substring(1).split('&').every(x => /^(map|layers)=|^$/.test(x))) {
-  const preventTips = localStorage.getItem('preventTips') === 'true';
-  store.dispatch(tipsPreventNextTime(preventTips));
-  if (!preventTips) {
-    store.dispatch(tipsNext(localStorage.getItem('tip') || null));
-    store.dispatch(setActiveModal('tips'));
-  }
-}
-
-if (embedded) {
+if (window.self !== window.top) {
   document.body.classList.add('embedded');
 }
 

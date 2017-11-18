@@ -47,6 +47,13 @@ export default function trackViewer(state = initialState, action) {
       return { ...state, osmWayId: action.payload };
     case 'OSM_LOAD_RELATION':
       return { ...state, osmRelationId: action.payload };
+    case 'AUTH_SET_USER': {
+      const settings = action.payload && action.payload.settings;
+      return settings ? {
+        ...state,
+        eleSmoothingFactor: settings.preventTips === undefined ? state.eleSmoothingFactor : settings.trackViewerEleSmoothingFactor,
+      } : state;
+    }
     default:
       return state;
   }

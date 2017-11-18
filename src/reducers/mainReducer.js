@@ -20,13 +20,17 @@ export default function main(state = initialState, action) {
       s.expertMode = !!expertMode;
       return s;
     }
-    case 'AUTH_SET_USER':
+    case 'AUTH_SET_USER': {
+      const p = action.payload;
       return {
         ...state,
-        homeLocation: !action.payload ? state.homeLocation
-          : action.payload.lat && action.payload.lon ? { lat: action.payload.lat, lon: action.payload.lon }
+        homeLocation: !p ? state.homeLocation
+          : p.lat && p.lon ? { lat: p.lat, lon: p.lon }
             : null,
+        expertMode: p && p.settings && p.settings.expertMode !== undefined
+          ? p.settings.expertMode : state.expertMode,
       };
+    }
     case 'AUTH_LOGOUT':
       return { ...state, homeLocation: null };
     case 'SET_ACTIVE_MODAL':
