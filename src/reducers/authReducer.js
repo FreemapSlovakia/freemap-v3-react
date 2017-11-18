@@ -13,6 +13,7 @@ export default function infoPoint(state = initialState, action) {
           email: action.payload.email,
           id: action.payload.id,
           authToken: action.payload.authToken,
+          isAdmin: action.payload.isAdmin,
         },
       };
     case 'AUTH_LOGOUT':
