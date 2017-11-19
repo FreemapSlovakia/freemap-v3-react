@@ -3,4 +3,5 @@ window.ga = window.ga || function initGa(...args) {
 };
 
 window.ga('create', 'UA-89861822-3', 'auto');
+window.ga('set', 'page', '/');
 window.ga('send', 'pageview');
