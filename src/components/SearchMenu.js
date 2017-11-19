@@ -34,9 +34,7 @@ class SearchMenu extends React.Component {
   }
 
   render() {
-    const {
-      onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results,
-    } = this.props;
+    const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
 
     return (
       <span>

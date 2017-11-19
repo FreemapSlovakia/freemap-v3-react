@@ -3,6 +3,8 @@ import { createLogic } from 'redux-logic';
 import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
+import parseCoordinates from 'fm3/coordinatesParser';
+import { formatGpsCoord } from 'fm3/geoutils';
 
 export default createLogic({
   type: 'SEARCH_SET_QUERY',
@@ -10,6 +12,37 @@ export default createLogic({
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {
+      done();
+      return;
+    }
+
+
+    let coords;
+    try {
+      coords = parseCoordinates(query);
+    } catch (e) {
+      // bad format
+    }
+
+    if (coords) {
+      const format = 'DM';
+      const name = `${formatGpsCoord(coords.lat, 'SN', format)} ${formatGpsCoord(coords.lon, 'WE', format)}`;
+      dispatch(searchSetResults([
+        {
+          id: -1,
+          label: query.toUpperCase(),
+          geojson: {
+            type: 'Point',
+            coordinates: [coords.lon, coords.lat],
+          },
+          lat: coords.lat,
+          lon: coords.lon,
+          tags: {
+            name,
+            type: 'Point',
+          },
+        },
+      ]));
       done();
       return;
     }
@@ -29,7 +62,7 @@ export default createLogic({
       cancelToken: source.token,
     })
       .then(({ data }) => {
-        const results = data.results.map((d, id) => {
+        const results = (data.results || []).map((d, id) => {
           const { name } = d.properties;
           const geometryType = d.geometry.type;
           const tags = { name, type: geometryType };
@@ -43,7 +76,12 @@ export default createLogic({
           }
           const [centerLon, centerLat] = centerLonlat;
           return {
-            id, label: name, geojson: d.geometry, lat: centerLat, lon: centerLon, tags,
+            id,
+            label: name,
+            geojson: d.geometry,
+            lat: centerLat,
+            lon: centerLon,
+            tags,
           };
         });
         dispatch(searchSetResults(results));
