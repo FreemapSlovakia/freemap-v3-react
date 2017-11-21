@@ -48,7 +48,7 @@ export default function main(state = initialState, action) {
     case 'SET_EXPERT_MODE':
       return { ...state, expertMode: action.payload };
     case 'LOCATE':
-      return { ...state, locate: !state.locate };
+      return { ...state, locate: !state.locate, location: null };
     case 'SET_SELECTING_HOME_LOCATION':
       return { ...state, selectingHomeLocation: action.payload };
     default:
