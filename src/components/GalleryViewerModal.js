@@ -66,10 +66,13 @@ class GalleryViewerModal extends React.Component {
 
   state = {
     loading: true,
+    isFullscreen: false,
+    imgKey: 0,
   }
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeydown);
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -82,6 +85,7 @@ class GalleryViewerModal extends React.Component {
 
   componentWillUnmount() {
     document.removeEventListener('keydown', this.handleKeydown);
+    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
   setImageElement = (imageElement) => {
@@ -89,6 +93,19 @@ class GalleryViewerModal extends React.Component {
     if (imageElement) {
       imageElement.addEventListener('load', this.handleImageLoad);
     }
+  }
+
+  setFullscreenElement = (element) => {
+    this.fullscreenElement = element;
+  }
+
+  handleFullscreenChange = () => {
+    this.setState({
+      isFullscreen: document.fullscreenElement === this.fullscreenElement,
+      imgKey: this.state.imgKey + 1,
+    });
+
+    this.forceUpdate();
   }
 
   handleEditModelChange = (editModel) => {
@@ -143,15 +160,22 @@ class GalleryViewerModal extends React.Component {
     this.setState({ loading: false });
   }
 
+  handleFullscreen = () => {
+    if (document.fullscreenElement === this.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      this.fullscreenElement.requestFullscreen();
+    }
+  }
+
   render() {
     const {
       imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
       onStarsChange, user, onDelete, onEdit, editModel, onSave, allTags, onPositionPick,
     } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
-    const {
-      title = '...', description, createdAt, takenAt, tags, comments, rating, myStars,
-    } = image || {};
+    const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
+    const { isFullscreen, loading, imgKey } = this.state;
 
     // TODO const loadingMeta = !image || image.id !== activeImageId;
 
@@ -163,90 +187,93 @@ class GalleryViewerModal extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="carousel">
-            <div className="item active">
-              <a
-                href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
-                target="freemap_gallery_image"
-              >
+          <div ref={this.setFullscreenElement} className={isFullscreen ? 'fullscreen' : ''}>
+            <div className="carousel">
+              <div className="item active">
                 <img
+                  key={imgKey}
                   ref={this.setImageElement}
-                  className={`gallery-image ${this.state.loading ? 'loading' : ''}`}
-                  src={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image?width=${window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
-                  sizes="(min-width: 992px) 868px, 568px"
+                  className={`gallery-image ${loading ? 'loading' : ''}`}
+                  src={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
+                  sizes={isFullscreen ? undefined : '(min-width: 992px) 868px, 568px'}
                   alt={title}
                 />
-              </a>
+              </div>
+              {imageIds &&
+                <a
+                  className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
+                  onClick={this.handlePreviousClick}
+                >
+                  <Glyphicon glyph="chevron-left" />
+                </a>
+              }
+              {imageIds &&
+                <a
+                  className={`right carousel-control ${index >= imageIds.length - 1 ? 'disabled' : ''}`}
+                  onClick={this.handleNextClick}
+                >
+                  <Glyphicon glyph="chevron-right" />
+                </a>
+              }
             </div>
-            {imageIds &&
-              <a
-                className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
-                onClick={this.handlePreviousClick}
-              >
-                <Glyphicon glyph="chevron-left" />
-              </a>
-            }
-            {imageIds &&
-              <a
-                className={`right carousel-control ${index >= imageIds.length - 1 ? 'disabled' : ''}`}
-                onClick={this.handleNextClick}
-              >
-                <Glyphicon glyph="chevron-right" />
-              </a>
+            <br />
+            {image &&
+              <div className="footer">
+                {isFullscreen && imageIds && <span>{`${index + 1} / ${imageIds.length}`} ｜ </span>}
+                {isFullscreen && title && <span>{title} ｜ </span>}
+                Nahral <b>{image.user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
+                {takenAt && <span> ｜ Odfotené dňa <b>{dateFormat.format(takenAt)}</b></span>}
+                {' ｜ '}
+                <ReactStars className="stars" size={22} value={rating} edit={false} />
+                {description && ` ｜ ${description}`}
+                {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
+                {!isFullscreen && editModel &&
+                  <div>
+                    <hr />
+                    <h5>Úprava</h5>
+
+                    <GalleryEditForm
+                      model={editModel}
+                      allTags={allTags}
+                      error={null}
+                      onPositionPick={onPositionPick}
+                      onModelChange={this.handleEditModelChange}
+                    />
+                    {/* TODO put inside a form and save in onSubmit */}
+                    <Button bsStyle="primary" onClick={onSave}><Glyphicon glyph="save" /> Uložiť</Button>
+                  </div>
+                }
+                {!isFullscreen &&
+                  <div>
+                    <hr />
+                    <h5>Komentáre</h5>
+                    {comments.map(c => (
+                      <p key={c.id}>
+                        {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
+                      </p>
+                    ))}
+                    {user &&
+                      <form onSubmit={this.handleCommentFormSubmit}>
+                        <FormGroup>
+                          <InputGroup>
+                            <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
+                            <InputGroup.Button>
+                              <Button type="submit" disabled={comment.length < 1}>Pridaj</Button>
+                            </InputGroup.Button>
+                          </InputGroup>
+                        </FormGroup>
+                      </form>
+                    }
+                    {user &&
+                      <div>
+                        Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
+                      </div>
+                    }
+                  </div>
+                }
+              </div>
             }
           </div>
-          {image && [
-            <div key="2HcEmCGRpH">
-              Nahral <b>{image.user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
-              {takenAt && <span>. Odfotené dňa <b>{dateFormat.format(takenAt)}</b>.</span>}
-              {' '}
-              <ReactStars className="stars" size={22} value={rating} edit={false} />
-              {description && ` ${description}`}
-              {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
-            </div>,
-
-            editModel && (
-              <div key="C1QixU3csh">
-                <hr />
-                <h5>Úprava</h5>
-
-                <GalleryEditForm
-                  model={editModel}
-                  allTags={allTags}
-                  error={null}
-                  onPositionPick={onPositionPick}
-                  onModelChange={this.handleEditModelChange}
-                />
-                {/* TODO put inside a form and save in onSubmit */}
-                <Button bsStyle="primary" onClick={onSave}><Glyphicon glyph="save" /> Uložiť</Button>
-              </div>
-            ),
-
-            <hr key="QNnbIaEx28" />,
-            <h5 key="h4AU4xskDv">Komentáre</h5>,
-            ...comments.map(c => (
-              <p key={c.id}>
-                {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
-              </p>
-            )),
-            user && (
-              <form key="U7Ur2II0Zf" onSubmit={this.handleCommentFormSubmit}>
-                <FormGroup>
-                  <InputGroup>
-                    <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
-                    <InputGroup.Button>
-                      <Button type="submit" disabled={comment.length < 1}>Pridaj</Button>
-                    </InputGroup.Button>
-                  </InputGroup>
-                </FormGroup>
-              </form>
-            ),
-            user && (
-              <div key="Hz24KokgQm">
-                Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
-              </div>
-            ),
-          ]}
         </Modal.Body>
         <Modal.Footer>
           {image && user && (user.isAdmin || user.id === image.user.id) && [
@@ -254,6 +281,7 @@ class GalleryViewerModal extends React.Component {
             <Button key="aVtUvbbC44" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>,
           ]}
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /><span className="hidden-xs"> Ukázať na mape</span></Button>
+          <Button onClick={this.handleFullscreen}><Glyphicon glyph="fullscreen" /><span className="hidden-xs hidden-sm"> Na celú obrazovku</span></Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /><span className="hidden-xs"> Zavrieť</span></Button>
         </Modal.Footer>
       </Modal>
