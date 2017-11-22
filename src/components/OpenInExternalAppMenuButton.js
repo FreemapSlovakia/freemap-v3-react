@@ -14,6 +14,7 @@ export default class OpenInExternalAppMenuButton extends React.Component {
     lon: PropTypes.number.isRequired,
     zoom: PropTypes.number.isRequired,
     mapType: PropTypes.string,
+    expertMode: PropTypes.bool,
   };
 
   state = {
@@ -64,6 +65,9 @@ export default class OpenInExternalAppMenuButton extends React.Component {
       case 'oma.sk':
         window.open(`http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`);
         break;
+      case 'routing-debug':
+        window.open(`https://routing.epsilon.sk/debug.php?lat=${lat}&lon=${lon}&zoom=${zoom}&profil=${{ C: 'bike', K: 'ski', A: 'car' }[mapType] || 'foot'}`);
+        break;
       default:
         break;
     }
@@ -91,8 +95,10 @@ export default class OpenInExternalAppMenuButton extends React.Component {
             <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
             <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
             <MenuItem divider />
-            <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>
+            {this.props.expertMode && <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>}
             <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
+            {this.props.expertMode && <MenuItem divider />}
+            {this.props.expertMode && <MenuItem onClick={() => this.openIn('routing-debug')}>Ladenie navigácie</MenuItem>}
           </ul>
         </Popover>
       </Overlay>,

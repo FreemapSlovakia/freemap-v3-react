@@ -96,6 +96,7 @@ class Main extends React.Component {
     showLoginModal: PropTypes.bool,
     onMapReset: PropTypes.func.isRequired,
     showMenu: PropTypes.bool,
+    expertMode: PropTypes.bool,
   };
 
   componentWillMount() {
@@ -171,7 +172,7 @@ class Main extends React.Component {
     const {
       lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu,
+      showLoginModal, onMapReset, showMenu, expertMode,
     } = this.props;
 
     return [
@@ -214,7 +215,7 @@ class Main extends React.Component {
                       >
                         <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
                       </Button>
-                      <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} />
+                      <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
                       <MoreMenuButton />
                     </ButtonGroup>
                   </ButtonToolbar>
@@ -344,6 +345,7 @@ export default connect(
     locate: state.main.locate,
     showLoginModal: state.auth.chooseLoginMethod,
     showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
+    expertMode: state.main.expertMode,
   }),
   dispatch => ({
     onToolSet(tool) {
