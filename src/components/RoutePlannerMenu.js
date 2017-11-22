@@ -39,6 +39,7 @@ class RoutePlannerMenu extends React.Component {
     onGetCurrentPositionError: PropTypes.func.isRequired,
     onMissingHomeLocation: PropTypes.func.isRequired,
     pickMode: PropTypes.string,
+    expertMode: PropTypes.bool,
   };
 
   componentWillMount() {
@@ -104,7 +105,7 @@ class RoutePlannerMenu extends React.Component {
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
-      routeFound, shapePoints,
+      routeFound, shapePoints, expertMode,
     } = this.props;
 
     return (
@@ -140,8 +141,9 @@ class RoutePlannerMenu extends React.Component {
               ['car', 'car', 'auto, vrátane spoplatnených ciest'],
               ['car-free', 'car', 'auto, mimo spoplatnených ciest'],
               ['foot', 'male', 'pešo'],
+              expertMode && ['foot-stroller', 'female', 's kočíkom'],
               ['bike', 'bicycle', 'bicykel'],
-            ].map(([type, icon, title]) => (
+            ].filter(x => x).map(([type, icon, title]) => (
               <Button
                 key={type}
                 title={title}
@@ -186,6 +188,7 @@ export default connect(
     routeFound: !!state.routePlanner.shapePoints,
     shapePoints: state.routePlanner.shapePoints,
     elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
+    expertMode: state.main.expertMode,
   }),
   dispatch => ({
     onStartSet(start) {

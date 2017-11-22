@@ -87,7 +87,11 @@ export const routePlannerFindRouteLogic = createLogic({
       params.exclude = 'toll';
     }
 
-    axios.get(`https://routing.epsilon.sk/route/v1/${transportType.replace('-free', '')}/${allPoints}`, {
+    if (transportType === 'foot-stroller') {
+      params.exclude = 'stroller';
+    }
+
+    axios.get(`https://routing.epsilon.sk/route/v1/${transportType.replace(/-.*/, '')}/${allPoints}`, {
       params,
       validateStatus: status => status === 200,
       cancelToken: source.token,
