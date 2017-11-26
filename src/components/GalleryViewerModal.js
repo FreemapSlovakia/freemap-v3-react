@@ -177,6 +177,8 @@ class GalleryViewerModal extends React.Component {
     const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
     const { isFullscreen, loading, imgKey } = this.state;
 
+    const nextImageId = imageIds && imageIds[index + 1];
+
     // TODO const loadingMeta = !image || image.id !== activeImageId;
 
     return (
@@ -198,6 +200,16 @@ class GalleryViewerModal extends React.Component {
                   sizes={isFullscreen ? undefined : '(min-width: 992px) 868px, 568px'}
                   alt={title}
                 />
+                {
+                  nextImageId !== undefined && !loading &&
+                    <img
+                      key={`next-${imgKey}`}
+                      style={{ display: 'none' }}
+                      src={`${process.env.API_URL}/gallery/pictures/${nextImageId}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
+                      sizes={isFullscreen ? undefined : '(min-width: 992px) 868px, 568px'}
+                      alt="next"
+                    />
+                }
               </div>
               {imageIds &&
                 <a
