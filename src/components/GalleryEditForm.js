@@ -13,6 +13,18 @@ import Alert from 'react-bootstrap/lib/Alert';
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
+function checkDatetimeLocalInput() {
+  const input = document.createElement('input');
+  input.setAttribute('type', 'datetime-local');
+
+  const notADateValue = 'not-a-date';
+  input.setAttribute('value', notADateValue);
+
+  return input.value !== notADateValue;
+}
+
+const supportsDatetimeLocal = checkDatetimeLocalInput();
+
 export default class GalleryEditForm extends React.Component {
   static propTypes = {
     model: FmPropTypes.galleryPictureModel.isRequired,
@@ -32,6 +44,38 @@ export default class GalleryEditForm extends React.Component {
 
   handleTakenAtChange = (e) => {
     this.changeModel('takenAt', e.target.value ? new Date(e.target.value) : null);
+  }
+
+  handleTakenAtDateChange = (e) => {
+    if (e.target.value) {
+      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(e.target.value);
+      if (m) {
+        const { takenAt } = this.props.model;
+        if (takenAt && e.target.value) {
+          const d = new Date(takenAt.getTime());
+          d.setFullYear(parseInt(m[1], 10));
+          d.setMonth(parseInt(m[2], 10), parseInt(m[3], 10));
+          this.changeModel('takenAt', d);
+        } else {
+          this.changeModel('takenAt', new Date(e.target.value));
+        }
+      }
+    } else {
+      this.changeModel('takenAt', null);
+    }
+  }
+
+  handleTakenAtTimeChange = (e) => {
+    const m = e.target.value ? /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(e.target.value) : ['00', '00', '00'];
+    const { takenAt } = this.props.model;
+    if (m && takenAt) {
+      const d = new Date(takenAt.getTime());
+      d.setHours(parseInt(m[1], 10));
+      d.setMinutes(parseInt(m[2], 10));
+      d.setSeconds(parseInt(m[3], 10) || 0);
+      d.setMilliseconds(0);
+      this.changeModel('takenAt', d);
+    }
   }
 
   handleTagAdded = ({ name }) => {
@@ -63,14 +107,35 @@ export default class GalleryEditForm extends React.Component {
         <FormGroup>
           <FormControl placeholder="Popis" componentClass="textarea" value={model.description} onChange={this.handleDescriptionChange} />
         </FormGroup>
-        <FormGroup>
-          <FormControl
-            type="datetime-local"
-            placeholder="Dátum a čas fotenia"
-            value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}T${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
-            onChange={this.handleTakenAtChange}
-          />
-        </FormGroup>
+        {
+          supportsDatetimeLocal ?
+            <FormGroup>
+              <FormControl
+                type="datetime-local"
+                placeholder="Dátum a čas fotenia"
+                value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}T${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
+                onChange={this.handleTakenAtChange}
+              />
+            </FormGroup>
+            : [
+              <FormGroup key="date">
+                <FormControl
+                  type="date"
+                  placeholder="Dátum fotenia"
+                  value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
+                  onChange={this.handleTakenAtDateChange}
+                />
+              </FormGroup>,
+              <FormGroup key="time">
+                <FormControl
+                  type="time"
+                  placeholder="Čas fotenia"
+                  value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
+                  onChange={this.handleTakenAtTimeChange}
+                />
+              </FormGroup>,
+            ]
+        }
         <FormGroup>
           <InputGroup>
             <FormControl
