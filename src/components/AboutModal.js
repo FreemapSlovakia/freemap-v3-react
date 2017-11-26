@@ -29,7 +29,7 @@ export function AboutModal({ onModalClose }) {
           Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009
         </p>
         <p>
-          IČO: <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" tatget="_blank">42173639</a><br />
+          IČO: <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" target="_blank" rel="noopener noreferrer">42173639</a><br />
           DIČ: 2022912870
         </p>
         <p>
