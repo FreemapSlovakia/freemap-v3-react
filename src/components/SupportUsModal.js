@@ -69,9 +69,7 @@ SupportUsModal.propTypes = {
 };
 
 export default connect(
-  state => ({
-    tip: state.tips.tip,
-  }),
+  null,
   dispatch => ({
     onModalClose() {
       dispatch(setActiveModal(null));
