@@ -14,7 +14,7 @@ function LoginModal({
     <Modal show onHide={onClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          Prihlásenie
+          <FontAwesomeIcon icon="sign-in" /> Prihlásenie
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

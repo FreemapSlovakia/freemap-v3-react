@@ -67,7 +67,9 @@ export class EmbedMapModal extends React.Component {
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Exportovať do GPX</Modal.Title>
+          <Modal.Title>
+            <FontAwesomeIcon icon="share" /> Exportovať do GPX
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {

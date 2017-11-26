@@ -7,6 +7,8 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 export class ShareMapModal extends React.Component {
@@ -31,7 +33,9 @@ export class ShareMapModal extends React.Component {
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Zdieľať odkaz na mapu</Modal.Title>
+          <Modal.Title>
+            <FontAwesomeIcon icon="share-alt" /> Zdieľať odkaz na mapu
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>

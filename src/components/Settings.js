@@ -131,7 +131,9 @@ class Settings extends React.Component {
       <Modal show={!selectingHomeLocation} onHide={onClose}>
         <form onSubmit={this.handleSave}>
           <Modal.Header closeButton>
-            <Modal.Title>Nastavenia</Modal.Title>
+            <Modal.Title>
+              <FontAwesomeIcon icon="cog" /> Nastavenia
+            </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Tabs id="setting-tabs">
