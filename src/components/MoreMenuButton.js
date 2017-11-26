@@ -16,6 +16,7 @@ class MoreMenuButton extends React.Component {
     onGpxExport: PropTypes.func.isRequired,
     onShare: PropTypes.func.isRequired,
     onEmbed: PropTypes.func.isRequired,
+    onSupportUs: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
     user: PropTypes.shape({
@@ -30,10 +31,6 @@ class MoreMenuButton extends React.Component {
   setButton = (button) => {
     this.button = button;
   };
-
-  setDonateForm = (form) => {
-    this.form = form;
-  }
 
   handleButtonClick = () => {
     this.setState({ show: true });
@@ -79,7 +76,7 @@ class MoreMenuButton extends React.Component {
 
   handleDonateClick = () => {
     this.setState({ show: false });
-    this.form.submit();
+    this.props.onSupportUs();
   }
 
   render() {
@@ -127,15 +124,7 @@ class MoreMenuButton extends React.Component {
             </MenuItem>
             <MenuItem divider />
             <MenuItem onClick={this.handleDonateClick}>
-              <img
-                src="https://www.paypalobjects.com/en_US/i/btn/btn_donate_SM.gif"
-                alt="PayPal - The safer, easier way to pay online!"
-              /> Podporiť Freemap
-              <img alt="" src="https://www.paypalobjects.com/en_US/i/scr/pixel.gif" border="0" width="1" height="1" />
-              <form key="donateForm" action="https://www.paypal.com/cgi-bin/webscr" method="post" ref={this.setDonateForm} target="_blank">
-                <input name="cmd" value="_s-xclick" type="hidden" />
-                <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
-              </form>
+              <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> Podporiť Freemap <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
             </MenuItem>
           </ul>
           <div style={{ margin: '4px 18px', fontSize: '18px' }}>
@@ -194,6 +183,9 @@ export default connect(
     },
     onEmbed() {
       dispatch(setActiveModal('embed'));
+    },
+    onSupportUs() {
+      dispatch(setActiveModal('supportUs'));
     },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));

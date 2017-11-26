@@ -60,6 +60,7 @@ import EmbedMapModal from 'fm3/components/EmbedMapModal';
 import ExportGpxModal from 'fm3/components/ExportGpxModal';
 import LoginModal from 'fm3/components/LoginModal';
 import TipsModal from 'fm3/components/TipsModal';
+import SupportUsModal from 'fm3/components/SupportUsModal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -282,6 +283,7 @@ class Main extends React.Component {
       activeModal === 'embed' && <EmbedMapModal key="embedMap" />,
       activeModal === 'export-gpx' && <ExportGpxModal key="exportGpx" />,
       activeModal === 'tips' && <TipsModal key="tips" />,
+      activeModal === 'supportUs' && <SupportUsModal key="supportUs" />,
       showLoginModal && <LoginModal key="login" />,
 
       <Map
