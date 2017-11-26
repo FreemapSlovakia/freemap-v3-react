@@ -18,6 +18,7 @@ class MoreMenuButton extends React.Component {
     onEmbed: PropTypes.func.isRequired,
     onSupportUs: PropTypes.func.isRequired,
     onAbout: PropTypes.func.isRequired,
+    onLegend: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
     user: PropTypes.shape({
@@ -85,6 +86,11 @@ class MoreMenuButton extends React.Component {
     this.props.onAbout();
   }
 
+  handleLegentClick = () => {
+    this.setState({ show: false });
+    this.props.onLegend();
+  }
+
   render() {
     const { user } = this.props;
 
@@ -129,8 +135,11 @@ class MoreMenuButton extends React.Component {
               <FontAwesomeIcon icon="exclamation-triangle" /> Nahlásiť chybu v portáli
             </MenuItem>
             <MenuItem divider />
+            <MenuItem onClick={this.handleLegentClick}>
+              <FontAwesomeIcon icon="question-circle" /> Legenda mapy
+            </MenuItem>
             <MenuItem onClick={this.handleAboutClick}>
-              <FontAwesomeIcon icon="question-circle" /> O Freemap
+              <FontAwesomeIcon icon="address-card-o" /> O Freemap
             </MenuItem>
             <MenuItem onClick={this.handleSupportUsClick}>
               <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> Podporiť Freemap <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
@@ -198,6 +207,9 @@ export default connect(
     },
     onAbout() {
       dispatch(setActiveModal('about'));
+    },
+    onLegend() {
+      dispatch(setActiveModal('legend'));
     },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));

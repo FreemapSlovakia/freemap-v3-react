@@ -185,3 +185,13 @@ button#freemap-logo {
     margin: 0 auto;
   }
 }
+
+.legend-item {
+  display: inline-block;
+  min-width: 20px;
+  margin-bottom: 2px;
+}
+
+.panel-title > a {
+  cursor: pointer;
+}

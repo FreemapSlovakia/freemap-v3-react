@@ -62,6 +62,7 @@ import LoginModal from 'fm3/components/LoginModal';
 import TipsModal from 'fm3/components/TipsModal';
 import AboutModal from 'fm3/components/AboutModal';
 import SupportUsModal from 'fm3/components/SupportUsModal';
+import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -286,6 +287,7 @@ class Main extends React.Component {
       activeModal === 'tips' && <TipsModal key="tips" />,
       activeModal === 'about' && <AboutModal key="about" />,
       activeModal === 'supportUs' && <SupportUsModal key="supportUs" />,
+      activeModal === 'legend' && <AsyncLegendModal key="legend" />,
       showLoginModal && <LoginModal key="login" />,
 
       <Map

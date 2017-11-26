@@ -1,0 +1,858 @@
+[
+  {
+    "n": "Komunikácie",
+    "items": [
+      {
+        "i": "files/img/legend/hwy-mwy.png",
+        "n": "Diaľnica"
+      },
+      {
+        "i": "files/img/legend/highway_trunk.jpg",
+        "n": "Cesta pre mot.vozidlá"
+      },
+      {
+        "i": "files/img/legend/hwy-pri.png",
+        "n": "Cesta 1.triedy"
+      },
+      {
+        "i": "files/img/legend/hwy-sec.png",
+        "n": "Cesta 2.triedy"
+      },
+      {
+        "i": "files/img/legend/hwy-ter.png",
+        "n": "Cesta 3.triedy"
+      },
+      {
+        "i": "files/img/legend/hwy-res.png",
+        "n": "Ulica"
+      },
+      {
+        "i": "files/img/legend/hwy-ser.png",
+        "n": "Obslužná komunikácia"
+      },
+      {
+        "i": "files/img/legend/hwy-tr2.png",
+        "n": "Spevnená lesná cesta pre traktory"
+      },
+      {
+        "i": "files/img/legend/hwy-tr4.png",
+        "n": "Nespevnená cesta pre traktory"
+      }
+    ]
+  },
+  {
+    "n": "Uzemné členenie",
+    "items": [
+      {
+        "i": "data/layers/poi/place/city/list.png",
+        "n": "Veľké mesto"
+      },
+      {
+        "i": "data/layers/poi/place/region/list.png",
+        "n": "Regionálne mesto"
+      },
+      {
+        "i": "data/layers/poi/place/county/list.png",
+        "n": "Okresné mesto"
+      },
+      {
+        "i": "data/layers/poi/place/town/list.png",
+        "n": "Mesto"
+      },
+      {
+        "i": "data/layers/poi/place/village/list.png",
+        "n": "Obec"
+      },
+      {
+        "i": "data/layers/poi/place/hamlet/list.png",
+        "n": "Osada"
+      },
+      {
+        "i": "data/layers/poi/place/suburb/list.png",
+        "n": "Mestský obvod"
+      },
+      {
+        "i": "data/layers/poi/place/locality/list.png",
+        "n": "Lokalita"
+      }
+    ]
+  },
+  {
+    "n": "Doprava",
+    "items": [
+      {
+        "i": "data/layers/poi/transport/airport/list.png",
+        "n": "Letisko"
+      },
+      {
+        "i": "data/layers/poi/transport/helipad/list.png",
+        "n": "Heliport"
+      },
+      {
+        "i": "data/layers/poi/transport/train/list.png",
+        "n": "Železničná stanica"
+      },
+      {
+        "i": "data/layers/poi/transport/halt/list.png",
+        "n": "Železničná zástavka"
+      },
+      {
+        "i": "data/layers/poi/transport/level_crossing/list.png",
+        "n": "Železničné priecestie"
+      },
+      {
+        "i": "data/layers/poi/transport/bus_station/list.png",
+        "n": "Autobusová stanica"
+      },
+      {
+        "i": "data/layers/poi/transport/bus_stop/list.png",
+        "n": "Autobusová zastávka"
+      },
+      {
+        "i": "data/layers/poi/transport/tram_stop/list.png",
+        "n": "Zástavka električky"
+      },
+      {
+        "i": "data/layers/poi/transport/traffic_signals/list.png",
+        "n": "Semafór"
+      },
+      {
+        "i": "data/layers/poi/transport/border_control/list.png",
+        "n": "Hraničný prechod"
+      }
+    ]
+  },
+  {
+    "n": "Ubytovanie a Stravovanie",
+    "items": [
+      {
+        "i": "data/layers/poi/accomodation/restaurant/list.png",
+        "n": "Reštaurácia"
+      },
+      {
+        "i": "data/layers/poi/accomodation/cafe/list.png",
+        "n": "Kaviareň"
+      },
+      {
+        "i": "data/layers/poi/accomodation/bar/list.png",
+        "n": "Bar"
+      },
+      {
+        "i": "data/layers/poi/accomodation/fast_food/list.png",
+        "n": "Rýchle občerstvenie"
+      },
+      {
+        "i": "data/layers/poi/accomodation/pub/list.png",
+        "n": "Pohostinstvo"
+      },
+      {
+        "i": "data/layers/poi/accomodation/hotel/list.png",
+        "n": "Hotel"
+      },
+      {
+        "i": "data/layers/poi/accomodation/guest_house/list.png",
+        "n": "Penzión"
+      },
+      {
+        "i": "data/layers/poi/accomodation/hostel/list.png",
+        "n": "Privát"
+      },
+      {
+        "i": "data/layers/poi/accomodation/motel/list.png",
+        "n": "Motel"
+      },
+      {
+        "i": "data/layers/poi/accomodation/camping/list.png",
+        "n": "Kemping"
+      }
+    ]
+  },
+  {
+    "n": "Vzdelávanie",
+    "items": [
+      {
+        "i": "data/layers/poi/education/school/list.png",
+        "n": "Základná škola"
+      },
+      {
+        "i": "data/layers/poi/education/driving_school/list.png",
+        "n": "Autoškola"
+      },
+      {
+        "i": "data/layers/poi/education/university/list.png",
+        "n": "Univerzita"
+      },
+      {
+        "i": "data/layers/poi/education/kindergarten/list.png",
+        "n": "Materská škola"
+      },
+      {
+        "i": "data/layers/poi/education/college/list.png",
+        "n": "Stredná škola"
+      }
+    ]
+  },
+  {
+    "n": "Obchody",
+    "items": [
+      {
+        "i": "data/layers/poi/shopping/mall/list.png",
+        "n": "Nákupné centrum"
+      },
+      {
+        "i": "data/layers/poi/shopping/department_store/list.png",
+        "n": "Obchodný dom"
+      },
+      {
+        "i": "data/layers/poi/shopping/supermarket/list.png",
+        "n": "Supermarket"
+      },
+      {
+        "i": "data/layers/poi/shopping/convenience/list.png",
+        "n": "Potraviny"
+      },
+      {
+        "i": "data/layers/poi/shopping/general/list.png",
+        "n": "Rozličný tovar"
+      },
+      {
+        "i": "data/layers/poi/shopping/greengrocer/list.png",
+        "n": "Ovocie, zelenina"
+      },
+      {
+        "i": "data/layers/poi/shopping/sports/list.png",
+        "n": "Športové potreby"
+      },
+      {
+        "i": "data/layers/poi/shopping/marketplace/list.png",
+        "n": "Trhovisko"
+      },
+      {
+        "i": "data/layers/poi/shopping/alcohol/list.png",
+        "n": "Predaj alkoholu"
+      },
+      {
+        "i": "data/layers/poi/shopping/car/list.png",
+        "n": "Predaj áut"
+      },
+      {
+        "i": "data/layers/poi/shopping/computer/list.png",
+        "n": "Počítače"
+      },
+      {
+        "i": "data/layers/poi/shopping/doityourself/list.png",
+        "n": "Domáce výrobky"
+      },
+      {
+        "i": "data/layers/poi/shopping/furniture/list.png",
+        "n": "Nábytok"
+      },
+      {
+        "i": "data/layers/poi/shopping/hairdresser/list.png",
+        "n": "Kaderníctvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/kiosk/list.png",
+        "n": "Kiosk"
+      },
+      {
+        "i": "data/layers/poi/shopping/optician/list.png",
+        "n": "Optika"
+      },
+      {
+        "i": "data/layers/poi/shopping/organic/list.png",
+        "n": "Organické potraviny"
+      },
+      {
+        "i": "data/layers/poi/shopping/stationery/list.png",
+        "n": "Papierníctvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/bakery/list.png",
+        "n": "Pekáreň"
+      },
+      {
+        "i": "data/layers/poi/shopping/car_repair/list.png",
+        "n": "Autoservis"
+      },
+      {
+        "i": "data/layers/poi/shopping/confectionery/list.png",
+        "n": "Cukrovinky"
+      },
+      {
+        "i": "data/layers/poi/shopping/electronics/list.png",
+        "n": "Elektronika"
+      },
+      {
+        "i": "data/layers/poi/shopping/garden_centre/list.png",
+        "n": "Záhradné centrum"
+      },
+      {
+        "i": "data/layers/poi/shopping/hardware/list.png",
+        "n": "Železiarstvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/laundry/list.png",
+        "n": "Práčovňa"
+      },
+      {
+        "i": "data/layers/poi/shopping/outdoor/list.png",
+        "n": "Outdoor"
+      },
+      {
+        "i": "data/layers/poi/shopping/toys/list.png",
+        "n": "Hračkárstvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/books/list.png",
+        "n": "Kníhkupectvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/chemist/list.png",
+        "n": "Drogéria"
+      },
+      {
+        "i": "data/layers/poi/shopping/erotic/list.png",
+        "n": "Erotika"
+      },
+      {
+        "i": "data/layers/poi/shopping/ice_cream/list.png",
+        "n": "Zmrzlina"
+      },
+      {
+        "i": "data/layers/poi/shopping/shoes/list.png",
+        "n": "Obuv"
+      },
+      {
+        "i": "data/layers/poi/shopping/video/list.png",
+        "n": "Video/DVD"
+      },
+      {
+        "i": "data/layers/poi/shopping/butcher/list.png",
+        "n": "Mäsiarstvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/clothes/list.png",
+        "n": "Oblečenie"
+      },
+      {
+        "i": "data/layers/poi/shopping/dry_cleaning/list.png",
+        "n": "Čistiareň"
+      },
+      {
+        "i": "data/layers/poi/shopping/florist/list.png",
+        "n": "Kvetinárstvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/jewelry/list.png",
+        "n": "Zlatníctvo"
+      },
+      {
+        "i": "data/layers/poi/shopping/newsagent/list.png",
+        "n": "Noviny"
+      }
+    ]
+  },
+  {
+    "n": "Služby",
+    "items": [
+      {
+        "i": "data/layers/poi/services/townhall/list.png",
+        "n": "Miestny úrad"
+      },
+      {
+        "i": "data/layers/poi/services/police/list.png",
+        "n": "Polícia"
+      },
+      {
+        "i": "data/layers/poi/services/firestation/list.png",
+        "n": "Hasičská stanica"
+      },
+      {
+        "i": "data/layers/poi/services/post_office/list.png",
+        "n": "Poštový úrad"
+      },
+      {
+        "i": "data/layers/poi/services/fuel/list.png",
+        "n": "Čerpacia stanica"
+      },
+      {
+        "i": "data/layers/poi/services/fuel/list.png",
+        "n": "Čerpacia stanica LPG"
+      },
+      {
+        "i": "data/layers/poi/services/car_wash/list.png",
+        "n": "Umývačka áut"
+      },
+      {
+        "i": "data/layers/poi/services/parking/list.png",
+        "n": "Parkovisko"
+      },
+      {
+        "i": "data/layers/poi/services/bank/list.png",
+        "n": "Banka"
+      },
+      {
+        "i": "data/layers/poi/services/bank/list.png",
+        "n": "Banka"
+      },
+      {
+        "i": "data/layers/poi/services/atm/list.png",
+        "n": "Bankomat"
+      },
+      {
+        "i": "data/layers/poi/services/taxi/list.png",
+        "n": "Taxi"
+      },
+      {
+        "i": "data/layers/poi/services/toilets/list.png",
+        "n": "Toalety"
+      },
+      {
+        "i": "data/layers/poi/services/telephone/list.png",
+        "n": "Telefón"
+      },
+      {
+        "i": "data/layers/poi/services/drinking_water/list.png",
+        "n": "Pitná voda"
+      },
+      {
+        "i": "data/layers/poi/services/library/list.png",
+        "n": "Knižnica"
+      }
+    ]
+  },
+  {
+    "n": "Voľný čas",
+    "items": [
+      {
+        "i": "data/layers/poi/leisure/miniature_golf/list.png",
+        "n": "Mini-golf"
+      },
+      {
+        "i": "data/layers/poi/leisure/golf_course/list.png",
+        "n": "Kurzy golfu"
+      }
+    ]
+  },
+  {
+    "n": "Šport",
+    "items": [
+      {
+        "i": "data/layers/poi/sport/tennis/list.png",
+        "n": "Bedminton/Squash"
+      },
+      {
+        "i": "data/layers/poi/sport/athletics/list.png",
+        "n": "Atletika"
+      },
+      {
+        "i": "data/layers/poi/sport/boules/list.png",
+        "n": "Boules"
+      },
+      {
+        "i": "data/layers/poi/sport/cycling/list.png",
+        "n": "Bicyklovanie"
+      },
+      {
+        "i": "data/layers/poi/sport/golf/list.png",
+        "n": "Golf"
+      },
+      {
+        "i": "data/layers/poi/sport/motor/list.png",
+        "n": "Motorky"
+      },
+      {
+        "i": "data/layers/poi/sport/skateboard/list.png",
+        "n": "Skateboard"
+      },
+      {
+        "i": "data/layers/poi/sport/table_tennis/list.png",
+        "n": "Stolný tenis"
+      },
+      {
+        "i": "data/layers/poi/sport/water_ski/list.png",
+        "n": "Vodné lyžovanie"
+      },
+      {
+        "i": "data/layers/poi/sport/gym/list.png",
+        "n": "Posilňovňa"
+      },
+      {
+        "i": "data/layers/poi/sport/ecycle_charging/list.png",
+        "n": "Nabíjacia stanica pre bicykle"
+      },
+      {
+        "i": "data/layers/poi/sport/baseball/list.png",
+        "n": "Baseball"
+      },
+      {
+        "i": "data/layers/poi/sport/bowls/list.png",
+        "n": "Bowls"
+      },
+      {
+        "i": "data/layers/poi/sport/dog_racing/list.png",
+        "n": "Preteky psov"
+      },
+      {
+        "i": "data/layers/poi/sport/gymnastics/list.png",
+        "n": "Gymnastika"
+      },
+      {
+        "i": "data/layers/poi/sport/multi/list.png",
+        "n": "Multi"
+      },
+      {
+        "i": "data/layers/poi/sport/skiing/list.png",
+        "n": "Lyžovanie"
+      },
+      {
+        "i": "data/layers/poi/sport/team_handball/list.png",
+        "n": "Hádzaná"
+      },
+      {
+        "i": "data/layers/poi/sport/paragliding/list.png",
+        "n": "Paragliding"
+      },
+      {
+        "i": "data/layers/poi/sport/10pin/list.png",
+        "n": "Bowling"
+      },
+      {
+        "i": "data/layers/poi/sport/basketball/list.png",
+        "n": "Basketball"
+      },
+      {
+        "i": "data/layers/poi/sport/canoe/list.png",
+        "n": "Kanoe"
+      },
+      {
+        "i": "data/layers/poi/sport/equestrian/list.png",
+        "n": "Jazdenie na koni"
+      },
+      {
+        "i": "data/layers/poi/sport/hockey/list.png",
+        "n": "Hokej"
+      },
+      {
+        "i": "data/layers/poi/sport/shooting/list.png",
+        "n": "Strelba"
+      },
+      {
+        "i": "data/layers/poi/sport/soccer/list.png",
+        "n": "Futbal"
+      },
+      {
+        "i": "data/layers/poi/sport/tennis/list.png",
+        "n": "Tenis"
+      },
+      {
+        "i": "data/layers/poi/sport/hanggliding/list.png",
+        "n": "Závesné lietanie"
+      },
+      {
+        "i": "data/layers/poi/sport/archery/list.png",
+        "n": "Lukostrelba"
+      },
+      {
+        "i": "data/layers/poi/sport/beachvolleyball/list.png",
+        "n": "Plážový volejbal"
+      },
+      {
+        "i": "data/layers/poi/sport/climbing/list.png",
+        "n": "Lezenie"
+      },
+      {
+        "i": "data/layers/poi/sport/football/list.png",
+        "n": "Futbal"
+      },
+      {
+        "i": "data/layers/poi/sport/horse_racing/list.png",
+        "n": "Dostihy"
+      },
+      {
+        "i": "data/layers/poi/sport/skating/list.png",
+        "n": "Korčulovanie"
+      },
+      {
+        "i": "data/layers/poi/sport/swimming/list.png",
+        "n": "Plávanie"
+      },
+      {
+        "i": "data/layers/poi/sport/volleyball/list.png",
+        "n": "Volejbal"
+      }
+    ]
+  },
+  {
+    "n": "Zdravotníctvo",
+    "items": [
+      {
+        "i": "data/layers/poi/health/hospital/list.png",
+        "n": "Nemocnica"
+      },
+      {
+        "i": "data/layers/poi/health/emergency/list.png",
+        "n": "Nemocnica s pohotovosťou"
+      },
+      {
+        "i": "data/layers/poi/health/clinic/list.png",
+        "n": "Poliklinika"
+      },
+      {
+        "i": "data/layers/poi/health/doctor/list.png",
+        "n": "Ordinácia"
+      },
+      {
+        "i": "data/layers/poi/health/dentist/list.png",
+        "n": "Zubár"
+      },
+      {
+        "i": "data/layers/poi/health/pharmacy/list.png",
+        "n": "Lekáreň"
+      },
+      {
+        "i": "data/layers/poi/health/veterinary/list.png",
+        "n": "Veterinár"
+      }
+    ]
+  },
+  {
+    "n": "Pamiatky",
+    "items": [
+      {
+        "i": "data/layers/poi/landmark/sculpture/list.png",
+        "n": "Sochy"
+      },
+      {
+        "i": "data/layers/poi/landmark/castle/list.png",
+        "n": "Hrad"
+      },
+      {
+        "i": "data/layers/poi/landmark/chateau/list.png",
+        "n": "Zámok"
+      },
+      {
+        "i": "data/layers/poi/landmark/ruins/list.png",
+        "n": "Zrúcanina"
+      },
+      {
+        "i": "data/layers/poi/landmark/museum/list.png",
+        "n": "Múzeum"
+      },
+      {
+        "i": "data/layers/poi/landmark/place_of_worship/list.png",
+        "n": "Kostol"
+      },
+      {
+        "i": "data/layers/poi/landmark/chapel/list.png",
+        "n": "Kaplnka"
+      },
+      {
+        "i": "data/layers/poi/landmark/monument/list.png",
+        "n": "Pamätihodnosť"
+      },
+      {
+        "i": "data/layers/poi/landmark/memorial/list.png",
+        "n": "Pamätník"
+      },
+      {
+        "i": "data/layers/poi/landmark/battlefield/list.png",
+        "n": "Pamätník, bojisko"
+      },
+      {
+        "i": "data/layers/poi/landmark/wayside_shrine/list.png",
+        "n": "Svätyňa"
+      },
+      {
+        "i": "data/layers/poi/landmark/wayside_cross/list.png",
+        "n": "Kríž"
+      }
+    ]
+  },
+  {
+    "n": "Príroda",
+    "items": [
+      {
+        "i": "data/layers/poi/nature/protected_tree/list.png",
+        "n": "Chránené stromy"
+      },
+      {
+        "i": "data/layers/poi/nature/cave_entrance/list.png",
+        "n": "Jaskyňa"
+      },
+      {
+        "i": "data/layers/poi/nature/peak/list.png",
+        "n": "Vrch"
+      },
+      {
+        "i": "data/layers/poi/nature/waterfall/list.png",
+        "n": "Vodopád"
+      },
+      {
+        "i": "data/layers/poi/nature/viewpoint/list.png",
+        "n": "Výhľad"
+      },
+      {
+        "i": "data/layers/poi/nature/spring/list.png",
+        "n": "Prameň"
+      },
+      {
+        "i": "data/layers/poi/nature/boundary_reserve/list.png",
+        "n": "Prírodná rezervácia"
+      },
+      {
+        "i": "data/layers/poi/nature/boundary_monument/list.png",
+        "n": "Prírodná pamiatka"
+      },
+      {
+        "i": "data/layers/poi/nature/boundary_protected_site/list.png",
+        "n": "Chránený areál"
+      }
+    ]
+  },
+  {
+    "n": "Turizmus, turistika",
+    "items": [
+      {
+        "i": "data/layers/poi/hiking/attraction/list.png",
+        "n": "Atrakcia"
+      },
+      {
+        "i": "data/layers/poi/hiking/alpine_hut/list.png",
+        "n": "Horská chata"
+      },
+      {
+        "i": "data/layers/poi/hiking/wilderness_hut/list.png",
+        "n": "Útulňa"
+      },
+      {
+        "i": "data/layers/poi/hiking/shelter/list.png",
+        "n": "Prístrešok, altánok"
+      },
+      {
+        "i": "data/layers/poi/hiking/picnic_site/list.png",
+        "n": "Miesto na piknik"
+      },
+      {
+        "i": "data/layers/poi/hiking/fireplace/list.png",
+        "n": "Ohnisko"
+      },
+      {
+        "i": "data/layers/poi/hiking/fireplace/list.png",
+        "n": "Miesto s ohniskom"
+      },
+      {
+        "i": "data/layers/poi/hiking/stand/list.png",
+        "n": "Rázcestník"
+      },
+      {
+        "i": "data/layers/poi/hiking/map/list.png",
+        "n": "Orientačná mapa"
+      },
+      {
+        "i": "data/layers/poi/hiking/tower_observation/list.png",
+        "n": "Rozhľadňa"
+      },
+      {
+        "i": "data/layers/poi/hiking/hunting_stand/list.png",
+        "n": "Polovnícky posed"
+      },
+      {
+        "i": "data/layers/poi/hiking/feeding/list.png",
+        "n": "Krmelec"
+      },
+      {
+        "i": "data/layers/poi/hiking/ranger_house/list.png",
+        "n": "Horáreň"
+      }
+    ]
+  },
+  {
+    "n": "Energetika",
+    "items": [
+      {
+        "i": "data/layers/poi/power/nuclear/list.png",
+        "n": "Jadrová elektráreň"
+      },
+      {
+        "i": "data/layers/poi/power/fossil/list.png",
+        "n": "Tepelná elektráreň (uhlie"
+      },
+      {
+        "i": "data/layers/poi/power/hydro/list.png",
+        "n": "Vodná elektráreň"
+      },
+      {
+        "i": "data/layers/poi/power/wind/list.png",
+        "n": "Veterná elektráreň"
+      }
+    ]
+  },
+  {
+    "n": "Ostatné",
+    "items": [
+      {
+        "i": "data/layers/poi/other/prison/list.png",
+        "n": "Väznica"
+      },
+      {
+        "i": "data/layers/poi/other/water_tower/list.png",
+        "n": "Vodárenská veža"
+      },
+      {
+        "i": "data/layers/poi/other/windmill/list.png",
+        "n": "Veterný mlyn"
+      },
+      {
+        "i": "data/layers/poi/other/zoo/list.png",
+        "n": "ZOO"
+      },
+      {
+        "i": "data/layers/poi/other/chimney/list.png",
+        "n": "Komín"
+      },
+      {
+        "i": "data/layers/poi/other/tower_communication/list.png",
+        "n": "Vysielač"
+      },
+      {
+        "i": "data/layers/poi/other/adit/list.png",
+        "n": "Štôlňa"
+      },
+      {
+        "i": "data/layers/poi/other/water_well/list.png",
+        "n": "Studňa"
+      },
+      {
+        "i": "data/layers/poi/other/bunker/list.png",
+        "n": "Vojenský bunker"
+      },
+      {
+        "i": "data/layers/poi/other/mineshaft/list.png",
+        "n": "Banícka šachta"
+      }
+    ]
+  },
+  {
+    "n": "Bicyklovanie",
+    "items": [
+      {
+        "i": "data/layers/poi/cycling/stand/list.png",
+        "n": "Rázcestník"
+      },
+      {
+        "i": "data/layers/poi/cycling/bicycle/list.png",
+        "n": "Predajňa bicyklov"
+      },
+      {
+        "i": "data/layers/poi/cycling/bicycle_rental/list.png",
+        "n": "Prenájom bicyklov"
+      },
+      {
+        "i": "data/layers/poi/cycling/bicycle_parking/list.png",
+        "n": "Stojan na bicykle"
+      }
+    ]
+  }
+]
