@@ -30,8 +30,24 @@ export class TipsModal extends React.Component {
     this.loadTip(this.props);
   }
 
+  componentDidMount() {
+    document.addEventListener('keydown', this.handleKeydown);
+  }
+
   componentWillReceiveProps(nextProps) {
     this.loadTip(nextProps);
+  }
+
+  componentWillUnmount() {
+    document.removeEventListener('keydown', this.handleKeydown);
+  }
+
+  handleKeydown = (evt) => {
+    if (evt.keyCode === 37 /* left key */) {
+      this.props.onPrevious();
+    } else if (evt.keyCode === 39 /* right key */) {
+      this.props.onNext();
+    }
   }
 
   loadTip(props) {
