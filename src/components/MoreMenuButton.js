@@ -17,6 +17,7 @@ class MoreMenuButton extends React.Component {
     onShare: PropTypes.func.isRequired,
     onEmbed: PropTypes.func.isRequired,
     onSupportUs: PropTypes.func.isRequired,
+    onAbout: PropTypes.func.isRequired,
     onLogin: PropTypes.func.isRequired,
     onLogout: PropTypes.func.isRequired,
     user: PropTypes.shape({
@@ -74,9 +75,14 @@ class MoreMenuButton extends React.Component {
     this.props.onEmbed();
   }
 
-  handleDonateClick = () => {
+  handleSupportUsClick = () => {
     this.setState({ show: false });
     this.props.onSupportUs();
+  }
+
+  handleAboutClick = () => {
+    this.setState({ show: false });
+    this.props.onAbout();
   }
 
   render() {
@@ -123,7 +129,10 @@ class MoreMenuButton extends React.Component {
               <FontAwesomeIcon icon="exclamation-triangle" /> Nahlásiť chybu v portáli
             </MenuItem>
             <MenuItem divider />
-            <MenuItem onClick={this.handleDonateClick}>
+            <MenuItem onClick={this.handleAboutClick}>
+              <FontAwesomeIcon icon="question-circle" /> O Freemap
+            </MenuItem>
+            <MenuItem onClick={this.handleSupportUsClick}>
               <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> Podporiť Freemap <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
             </MenuItem>
           </ul>
@@ -186,6 +195,9 @@ export default connect(
     },
     onSupportUs() {
       dispatch(setActiveModal('supportUs'));
+    },
+    onAbout() {
+      dispatch(setActiveModal('about'));
     },
     onLocationSet(lat, lon, accuracy) {
       dispatch(setLocation(lat, lon, accuracy));

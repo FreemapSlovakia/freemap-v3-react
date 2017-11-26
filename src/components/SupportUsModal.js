@@ -49,7 +49,7 @@ export function SupportUsModal({ onModalClose }) {
           <br />
           Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009<br />
           <br />
-          IČO: 42173639<br />
+          IČO: <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" tatget="_blank">42173639</a><br />
           DIČ: 2022912870<br />
           <br />
           E-mail: <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
