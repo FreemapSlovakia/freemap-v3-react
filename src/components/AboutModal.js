@@ -49,7 +49,7 @@ export function AboutModal({ onModalClose }) {
         <ul>
           <li>Predseda: Michal Bellovič (Prievidza) - <a href="mailto:michal.bellovic@freemap.sk">michal.bellovic@freemap.sk</a></li>
           <li>Podpredseda: Ing. Martin Ždila (Košice) - <a href="mailto:martin.zdila@freemap.sk">martin.zdila@freemap.sk</a></li>
-          <li>Tajomník: Michal Páleník (Bratislava) - <a href="mailto:michal.palenik@freemap.sk">michal.palenik@freemap.sk</a></li>
+          <li>Tajomník: Mgr. Ing. Michal Páleník, PhD. (Bratislava) - <a href="mailto:michal.palenik@freemap.sk">michal.palenik@freemap.sk</a></li>
         </ul>
       </Modal.Body>
       <Modal.Footer>
