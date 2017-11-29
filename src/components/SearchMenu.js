@@ -16,6 +16,18 @@ import 'fm3/styles/search.scss';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 
 class SearchMenu extends React.Component {
+  static propTypes = {
+    tool: FmPropTypes.tool,
+    selectedResult: FmPropTypes.searchResult,
+    results: PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
+    onDoSearch: PropTypes.func.isRequired,
+    onResultHiglight: PropTypes.func.isRequired,
+    onResultSelect: PropTypes.func.isRequired,
+    onRoutePlannerWithStartInit: PropTypes.func.isRequired,
+    onRoutePlannerWithFinishInit: PropTypes.func.isRequired,
+    inProgress: PropTypes.bool.isRequired,
+  }
+
   onSuggestionHighlightChange(result) {
     if (result) {
       const { geojson } = result;
@@ -34,7 +46,7 @@ class SearchMenu extends React.Component {
   }
 
   render() {
-    const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results } = this.props;
+    const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult, onDoSearch, results, inProgress } = this.props;
 
     return (
       <span>
@@ -43,6 +55,7 @@ class SearchMenu extends React.Component {
         </span>
         {' '}
         <AsyncTypeahead
+          isLoading={inProgress}
           labelKey="label"
           useCache={false}
           minLength={3}
@@ -89,23 +102,12 @@ class SearchMenu extends React.Component {
   }
 }
 
-SearchMenu.propTypes = {
-  tool: FmPropTypes.tool,
-  selectedResult: FmPropTypes.searchResult,
-  results: PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
-  onDoSearch: PropTypes.func.isRequired,
-  onResultHiglight: PropTypes.func.isRequired,
-  onResultSelect: PropTypes.func.isRequired,
-  onRoutePlannerWithStartInit: PropTypes.func.isRequired,
-  onRoutePlannerWithFinishInit: PropTypes.func.isRequired,
-};
-
-
 export default connect(
   state => ({
     tool: state.main.tool,
     results: state.search.results,
     selectedResult: state.search.selectedResult,
+    inProgress: state.search.inProgress,
   }),
   dispatch => ({
     onDoSearch(query) {
