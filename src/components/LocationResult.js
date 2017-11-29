@@ -5,10 +5,12 @@ import { Circle } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 
 function LocationResult({ gpsLocation }) {
-  return gpsLocation ? [
-    <Circle key="D1Zs6FmrYS" center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />,
-    <RichMarker key="hwfyvg1ssi" position={L.latLng(gpsLocation.lat, gpsLocation.lon)} interactive={false} />,
-  ] : null;
+  return gpsLocation ? (
+    <React.Fragment>
+      <Circle center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />,
+      <RichMarker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} interactive={false} />,
+    </React.Fragment>
+  ) : null;
 }
 
 LocationResult.propTypes = {

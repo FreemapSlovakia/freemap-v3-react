@@ -178,158 +178,159 @@ class Main extends React.Component {
       showLoginModal, onMapReset, showMenu, expertMode,
     } = this.props;
 
-    return [
-      process.env.DEPLOYMENT === 'next' && (
-        <div key="test" id="info-bar">
-          Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
-        </div>
-      ),
-
-      <Toasts key="toasts" />,
-
-      <div key="toolButtons" className="header">
+    return (
+      <React.Fragment>
         {process.env.DEPLOYMENT === 'next' &&
-          <div className="info-bar">
+          <div id="info-bar">
             Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
           </div>
         }
-        <div className="menus">
-          {window.self === window.top ?
-            [
-              <Panel key="n7ihNg2hVN" className="fm-toolbar">
-                <Button
-                  id="freemap-logo"
-                  className={progress ? 'in-progress' : 'idle'}
-                  onClick={onMapReset}
-                />
-                {showMenu && <SearchMenu />}
-              </Panel>,
-              <Panel key="w29UqFK5H9" className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
-                {showMenu &&
-                  <ButtonToolbar>
-                    <ButtonGroup>
-                      <ToolsMenuButton />
-                      <Button onClick={onMapClear} title="Vyčistiť mapu">
-                        <FontAwesomeIcon icon="eraser" />
-                      </Button>
-                      <Button
-                        onClick={this.handleFullscreenClick}
-                        title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}
-                      >
-                        <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                      </Button>
-                      <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
-                      <MoreMenuButton />
-                    </ButtonGroup>
-                  </ButtonToolbar>
-                }
-              </Panel>,
-            ]
-            :
-            <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
-          }
-          {showMenu && tool &&
-            <Panel className="fm-toolbar">
-              {tool === 'objects' && <ObjectsMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu />}
-              {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
-              {tool === 'track-viewer' && <TrackViewerMenu />}
-              {tool === 'info-point' && <InfoPointMenu />}
-              {tool === 'changesets' && <ChangesetsMenu />}
-              {tool === 'gallery' && <GalleryMenu />}
-              {tool === 'map-details' && <MapDetailsMenu />}
 
-              <span>
-                {' '}
-                <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
-                  <FontAwesomeIcon icon="close" /><span className="hidden-xs"> Zavrieť</span>
-                </Button>
-              </span>
-            </Panel>
+        <Toasts />
+
+        <div className="header">
+          {process.env.DEPLOYMENT === 'next' &&
+            <div className="info-bar">
+              Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+            </div>
           }
-          <GalleryPositionPickingMenu />
-          <GalleryShowPositionMenu />
-          <HomeLocationPickingMenu />
+          <div className="menus">
+            {window.self === window.top ?
+              (
+                <React.Fragment>
+                  <Panel className="fm-toolbar">
+                    <Button
+                      id="freemap-logo"
+                      className={progress ? 'in-progress' : 'idle'}
+                      onClick={onMapReset}
+                    />
+                    {showMenu && <SearchMenu />}
+                  </Panel>
+                  <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
+                    {showMenu &&
+                      <ButtonToolbar>
+                        <ButtonGroup>
+                          <ToolsMenuButton />
+                          <Button onClick={onMapClear} title="Vyčistiť mapu">
+                            <FontAwesomeIcon icon="eraser" />
+                          </Button>
+                          <Button
+                            onClick={this.handleFullscreenClick}
+                            title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}
+                          >
+                            <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                          </Button>
+                          <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
+                          <MoreMenuButton />
+                        </ButtonGroup>
+                      </ButtonToolbar>
+                    }
+                  </Panel>
+                </React.Fragment>
+              ) : <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+            }
+            {showMenu && tool &&
+              <Panel className="fm-toolbar">
+                {tool === 'objects' && <ObjectsMenu />}
+                {tool === 'route-planner' && <RoutePlannerMenu />}
+                {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
+                {tool === 'track-viewer' && <TrackViewerMenu />}
+                {tool === 'info-point' && <InfoPointMenu />}
+                {tool === 'changesets' && <ChangesetsMenu />}
+                {tool === 'gallery' && <GalleryMenu />}
+                {tool === 'map-details' && <MapDetailsMenu />}
+
+                <span>
+                  {' '}
+                  <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
+                    <FontAwesomeIcon icon="close" /><span className="hidden-xs"> Zavrieť</span>
+                  </Button>
+                </span>
+              </Panel>
+            }
+            <GalleryPositionPickingMenu />
+            <GalleryShowPositionMenu />
+            <HomeLocationPickingMenu />
+          </div>
         </div>
-      </div>,
 
-      <div key="zoom" className="fm-type-zoom-control">
-        <Panel className="fm-toolbar">
-          <ButtonToolbar>
-            <MapSwitchButton />
-            <ButtonGroup>
-              <Button
-                onClick={this.handleZoomInClick}
-                title="Priblížiť mapu"
-                disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
-              >
-                <FontAwesomeIcon icon="plus" />
+        <div className="fm-type-zoom-control">
+          <Panel className="fm-toolbar">
+            <ButtonToolbar>
+              <MapSwitchButton />
+              <ButtonGroup>
+                <Button
+                  onClick={this.handleZoomInClick}
+                  title="Priblížiť mapu"
+                  disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
+                >
+                  <FontAwesomeIcon icon="plus" />
+                </Button>
+                <Button
+                  onClick={this.handleZoomOutClick}
+                  title="Oddialiť mapu"
+                  disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
+                >
+                  <FontAwesomeIcon icon="minus" />
+                </Button>
+              </ButtonGroup>
+              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+                <FontAwesomeIcon icon="dot-circle-o" />
               </Button>
-              <Button
-                onClick={this.handleZoomOutClick}
-                title="Oddialiť mapu"
-                disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
-              >
-                <FontAwesomeIcon icon="minus" />
-              </Button>
-            </ButtonGroup>
-            <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
-              <FontAwesomeIcon icon="dot-circle-o" />
-            </Button>
-          </ButtonToolbar>
-        </Panel>
-      </div>,
+            </ButtonToolbar>
+          </Panel>
+        </div>
 
-      activeModal === 'settings' && <Settings key="settings" />,
-      activeModal === 'share' && <ShareMapModal key="shareMap" />,
-      activeModal === 'embed' && <EmbedMapModal key="embedMap" />,
-      activeModal === 'export-gpx' && <ExportGpxModal key="exportGpx" />,
-      activeModal === 'tips' && <TipsModal key="tips" />,
-      activeModal === 'about' && <AboutModal key="about" />,
-      activeModal === 'supportUs' && <SupportUsModal key="supportUs" />,
-      activeModal === 'legend' && <AsyncLegendModal key="legend" />,
-      showLoginModal && <LoginModal key="login" />,
+        {activeModal === 'settings' && <Settings />}
+        {activeModal === 'share' && <ShareMapModal />}
+        {activeModal === 'embed' && <EmbedMapModal />}
+        {activeModal === 'export-gpx' && <ExportGpxModal />}
+        {activeModal === 'tips' && <TipsModal />}
+        {activeModal === 'about' && <AboutModal />}
+        {activeModal === 'supportUs' && <SupportUsModal />}
+        {activeModal === 'legend' && <AsyncLegendModal />}
+        {showLoginModal && <LoginModal />}
 
-      <Map
-        key="map"
-        zoomControl={false}
-        minZoom={8}
-        maxZoom={20}
-        ref={(map) => { this.map = map; }}
-        center={L.latLng(lat, lon)}
-        zoom={zoom}
-        onMoveend={this.handleMapMoveEnd}
-        onMousemove={handleMapMouseMove}
-        onMouseover={handleMapMouseOver}
-        onMouseout={handleMapMouseOut}
-        onClick={handleMapClick}
-        onLocationfound={this.handleLocationFound}
-        style={{ cursor: mouseCursor }}
-        maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
-      >
-        <ScaleControl imperial={false} position="bottomleft" />
-        <Layers />
+        <Map
+          zoomControl={false}
+          minZoom={8}
+          maxZoom={20}
+          ref={(map) => { this.map = map; }}
+          center={L.latLng(lat, lon)}
+          zoom={zoom}
+          onMoveend={this.handleMapMoveEnd}
+          onMousemove={handleMapMouseMove}
+          onMouseover={handleMapMouseOver}
+          onMouseout={handleMapMouseOut}
+          onClick={handleMapClick}
+          onLocationfound={this.handleLocationFound}
+          style={{ cursor: mouseCursor }}
+          maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
+        >
+          <ScaleControl imperial={false} position="bottomleft" />
+          <Layers />
 
-        {showMenu &&
-          <span>
-            <SearchResults />
-            <ObjectsResult />
-            <RoutePlannerResult />
-            <DistanceMeasurementResult />
-            <ElevationMeasurementResult />
-            <AreaMeasurementResult />
-            <LocationResult />
-            <TrackViewerResult />
-            <InfoPoint />
-            <ChangesetsResult />
-            {tool === 'map-details' && <MapDetails />}
-            {showElevationChart && <AsyncElevationChart />}
-            {showGalleryPicker && <GalleryPicker />}
-          </span>
-        }
-        <GalleryResult />{/* TODO should not be extra just because for position picking */}
-      </Map>,
-    ];
+          {showMenu &&
+            <span>
+              <SearchResults />
+              <ObjectsResult />
+              <RoutePlannerResult />
+              <DistanceMeasurementResult />
+              <ElevationMeasurementResult />
+              <AreaMeasurementResult />
+              <LocationResult />
+              <TrackViewerResult />
+              <InfoPoint />
+              <ChangesetsResult />
+              {tool === 'map-details' && <MapDetails />}
+              {showElevationChart && <AsyncElevationChart />}
+              {showGalleryPicker && <GalleryPicker />}
+            </span>
+          }
+          <GalleryResult />{/* TODO should not be extra just because for position picking */}
+        </Map>
+      </React.Fragment>
+    );
   }
 }
 

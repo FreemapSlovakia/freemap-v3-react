@@ -117,24 +117,27 @@ export default class GalleryEditForm extends React.Component {
                 onChange={this.handleTakenAtChange}
               />
             </FormGroup>
-            : [
-              <FormGroup key="date">
-                <FormControl
-                  type="date"
-                  placeholder="Dátum fotenia"
-                  value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
-                  onChange={this.handleTakenAtDateChange}
-                />
-              </FormGroup>,
-              <FormGroup key="time">
-                <FormControl
-                  type="time"
-                  placeholder="Čas fotenia"
-                  value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
-                  onChange={this.handleTakenAtTimeChange}
-                />
-              </FormGroup>,
-            ]
+            :
+            (
+              <React.Fragment>
+                <FormGroup>
+                  <FormControl
+                    type="date"
+                    placeholder="Dátum fotenia"
+                    value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
+                    onChange={this.handleTakenAtDateChange}
+                  />
+                </FormGroup>
+                <FormGroup>
+                  <FormControl
+                    type="time"
+                    placeholder="Čas fotenia"
+                    value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
+                    onChange={this.handleTakenAtTimeChange}
+                  />
+                </FormGroup>
+              </React.Fragment>
+            )
         }
         <FormGroup>
           <InputGroup>

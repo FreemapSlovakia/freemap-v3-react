@@ -52,7 +52,7 @@ export default class Toast extends React.Component {
       >
         <div className="toast-message">{message}</div>
         {buttonActions.length > 0 &&
-          <div>
+          <React.Fragment>
             <br />
             <ButtonToolbar>
               {
@@ -61,7 +61,7 @@ export default class Toast extends React.Component {
                 ))
               }
             </ButtonToolbar>
-          </div>
+          </React.Fragment>
         }
       </Alert>
     );

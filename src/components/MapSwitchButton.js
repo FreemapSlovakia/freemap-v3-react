@@ -54,73 +54,80 @@ class MapSwitchButton extends React.Component {
   }
 
   render() {
-    return [
-      <Button key="KaumiJ78ZM" ref={this.setButton} onClick={this.handleButtonClick} title="Vrstvy">
-        <FontAwesomeIcon icon="map-o" />
-      </Button>,
-      <Overlay key="PxtJETVnXx" rootClose placement="top" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
-        <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
-            {
-              baseLayers
-                .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
-                .map(({ name, type, icon, minZoom, key }) => (
-                  <MenuItem
-                    key={type}
-                    onClick={() => this.handleMapSelect(type)}
-                  >
-                    <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
-                    {' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />
-                    {' '}
-                    <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                      {name}
-                    </span>
-                    {key && ' '}
-                    {key && <kbd>{key}</kbd>}
-                  </MenuItem>
-                ))
-            }
-            <MenuItem divider />
-            {
-              overlayLayers
-                .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
-                .map(({ name, type, icon, minZoom, key }) => (
-                  <MenuItem
-                    key={type}
-                    onClick={() => this.handleOverlaySelect(type)}
-                  >
-                    <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
-                    {' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />
-                    {' '}
-                    <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                      {name}
-                    </span>
-                    {key && ' '}
-                    {key && <kbd>{key}</kbd>}
-                    {this.props.zoom < minZoom &&
-                      [
-                        ' ',
-                        <FontAwesomeIcon
-                          key="WVMJTryOeI"
-                          icon="exclamation-triangle"
-                          title={`Dostupné až od priblíženia ${minZoom}`}
-                          className="text-warning"
-                        />,
-                      ]
-                    }
-                    {type === 'I' && this.props.pictureFilterIsActive && [
-                      ' ',
-                      <FontAwesomeIcon key="RVvzojMP13" icon="filter" title="Filter fotografií je aktívny" className="text-warning" />,
-                    ]}
-                  </MenuItem>
-                ))
-            }
-          </ul>
-        </Popover>
-      </Overlay>,
-    ];
+    return (
+      <React.Fragment>
+        <Button ref={this.setButton} onClick={this.handleButtonClick} title="Vrstvy">
+          <FontAwesomeIcon icon="map-o" />
+        </Button>
+        <Overlay rootClose placement="top" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+          <Popover id="popover-trigger-click-root-close" className="fm-menu">
+            <ul>
+              {
+                baseLayers
+                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .map(({ name, type, icon, minZoom, key }) => (
+                    <MenuItem
+                      key={type}
+                      onClick={() => this.handleMapSelect(type)}
+                    >
+                      <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
+                      {' '}
+                      <FontAwesomeIcon icon={icon || 'map-o'} />
+                      {' '}
+                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+                        {name}
+                      </span>
+                      {key && ' '}
+                      {key && <kbd>{key}</kbd>}
+                    </MenuItem>
+                  ))
+              }
+              <MenuItem divider />
+              {
+                overlayLayers
+                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .map(({ name, type, icon, minZoom, key }) => (
+                    <MenuItem
+                      key={type}
+                      onClick={() => this.handleOverlaySelect(type)}
+                    >
+                      <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
+                      {' '}
+                      <FontAwesomeIcon icon={icon || 'map-o'} />
+                      {' '}
+                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+                        {name}
+                      </span>
+                      {key && ' '}
+                      {key && <kbd>{key}</kbd>}
+                      {this.props.zoom < minZoom &&
+                        <React.Fragment>
+                          {' '}
+                          <FontAwesomeIcon
+                            icon="exclamation-triangle"
+                            title={`Dostupné až od priblíženia ${minZoom}`}
+                            className="text-warning"
+                          />
+                        </React.Fragment>
+                      }
+                      {type === 'I' && this.props.pictureFilterIsActive &&
+                        <React.Fragment>
+                          {' '}
+                          <FontAwesomeIcon
+                            icon="filter"
+                            title="Filter fotografií je aktívny"
+                            className="text-warning"
+                          />
+                        </React.Fragment>
+                      }
+                    </MenuItem>
+                  ))
+              }
+            </ul>
+          </Popover>
+        </Overlay>
+      </React.Fragment>
+    );
   }
 }
 

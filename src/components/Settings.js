@@ -184,18 +184,20 @@ class Settings extends React.Component {
                 }
               </Tab>
               <Tab title="Účet" eventKey={2}>
-                {user ? [
-                  <FormGroup key="PIj9rh3OVZ">
-                    <ControlLabel>Meno</ControlLabel>
-                    <FormControl value={name} onChange={this.handleNameChange} required />
-                  </FormGroup>,
-                  <FormGroup key="4uO0MtU74k">
-                    <ControlLabel>E-Mail</ControlLabel>
-                    <FormControl type="email" value={email} onChange={this.handleEmailChange} />
-                  </FormGroup>,
-                ] : (
+                {user ? (
+                  <React.Fragment>
+                    <FormGroup>
+                      <ControlLabel>Meno</ControlLabel>
+                      <FormControl value={name} onChange={this.handleNameChange} required />
+                    </FormGroup>
+                    <FormGroup>
+                      <ControlLabel>E-Mail</ControlLabel>
+                      <FormControl type="email" value={email} onChange={this.handleEmailChange} />
+                    </FormGroup>
+                  </React.Fragment>
+                ) : (
                   <Alert>
-                      Dostupné iba pre prihásených používateľov.
+                    Dostupné iba pre prihásených používateľov.
                   </Alert>
                 )}
               </Tab>
@@ -221,59 +223,61 @@ class Settings extends React.Component {
                   </Button>
                 </ButtonGroup>
                 {!expertMode &&
-                  <span>
+                  <React.Fragment>
                     <br />
                     <br />
                     <Alert>
                       V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
                     </Alert>
-                  </span>
+                  </React.Fragment>
                 }
-                {expertMode && [
-                  <hr key="FbxiwF4ArQ" />,
-                  <div key="UPdYSt6in3">
-                    <p>
-                      {'Viditeľnosť vrstvy Turistické trasy: '}
-                      {touristOverlayOpacity.toFixed(1) * 100}%
-                    </p>
-                    <Slider
-                      value={touristOverlayOpacity}
-                      min={0.1}
-                      max={1.0}
-                      step={0.1}
-                      tooltip={false}
-                      onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
-                    />
-                  </div>,
-                  <div key="UNBlQpq84u">
-                    <p>
-                      {'Viditeľnosť vrstvy Cyklotrasy: '}
-                      {cycloOverlayOpacity.toFixed(1) * 100}%
-                    </p>
-                    <Slider
-                      value={cycloOverlayOpacity}
-                      min={0.1}
-                      max={1.0}
-                      step={0.1}
-                      tooltip={false}
-                      onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
-                    />
-                  </div>,
-                  <div key="h8NQDtHhE7">
-                    <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}</p>
-                    <Slider
-                      value={trackViewerEleSmoothingFactor}
-                      min={1}
-                      max={10}
-                      step={1}
-                      tooltip={false}
-                      onChange={newValue => this.setState({ trackViewerEleSmoothingFactor: newValue })}
-                    />
-                  </div>,
-                  <Alert key="QgbhwWNfG6">
-                    Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
-                  </Alert>,
-                ]}
+                {expertMode &&
+                  <React.Fragment>
+                    <hr />
+                    <div>
+                      <p>
+                        {'Viditeľnosť vrstvy Turistické trasy: '}
+                        {touristOverlayOpacity.toFixed(1) * 100}%
+                      </p>
+                      <Slider
+                        value={touristOverlayOpacity}
+                        min={0.1}
+                        max={1.0}
+                        step={0.1}
+                        tooltip={false}
+                        onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
+                      />
+                    </div>
+                    <div>
+                      <p>
+                        {'Viditeľnosť vrstvy Cyklotrasy: '}
+                        {cycloOverlayOpacity.toFixed(1) * 100}%
+                      </p>
+                      <Slider
+                        value={cycloOverlayOpacity}
+                        min={0.1}
+                        max={1.0}
+                        step={0.1}
+                        tooltip={false}
+                        onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
+                      />
+                    </div>
+                    <div>
+                      <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}</p>
+                      <Slider
+                        value={trackViewerEleSmoothingFactor}
+                        min={1}
+                        max={10}
+                        step={1}
+                        tooltip={false}
+                        onChange={newValue => this.setState({ trackViewerEleSmoothingFactor: newValue })}
+                      />
+                    </div>
+                    <Alert>
+                      Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
+                    </Alert>
+                  </React.Fragment>
+                }
               </Tab>
             </Tabs>
           </Modal.Body>

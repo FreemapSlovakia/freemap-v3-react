@@ -159,113 +159,102 @@ class RoutePlannerResult extends React.Component {
     });
     const { midpointDistancesFromStart, routeSlices } = this.futureMidpointsAndDistances();
 
-    const elems = [];
-
-    if (start) {
-      elems.push(
-        <RichMarker
-          key="JrTBNuCUdu"
-          faIcon="play"
-          zIndexOffset={10}
-          faIconLeftPadding="2px"
-          color="#409a40"
-          draggable
-          onDragStart={this.handleDragStart}
-          onDragEnd={e => this.handleRouteMarkerDragEnd('start', null, e)}
-          position={L.latLng(start.lat, start.lon)}
-          onClick={this.handleEndPointClick}
-        />,
-      );
-    }
-
-    if (this.state.lat !== null && this.state.lon !== null) {
-      elems.push(
-        <Marker
-          key="7Ss4bmDZr3"
-          draggable
-          icon={circularIcon}
-          onDragStart={this.handleDragStart}
-          onDragEnd={this.handleFutureDragEnd}
-          onMouseOver={this.handleFutureMouseOver}
-          onMouseOut={this.handleFutureMouseOut}
-          position={L.latLng(this.state.lat, this.state.lon)}
-        />,
-      );
-    }
-
-    elems.push(...midpoints.filter((_, i) => midpointDistancesFromStart[i]).map(({ lat, lon }, i) => (
-      <RichMarker
-        draggable
-        onDragStart={this.handleDragStart}
-        onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
-        onClick={() => this.handleMidpointClick(i)}
-        key={`c4ReUQrKT7-${i}`}
-        zIndexOffset={9}
-        label={i + 1}
-        position={L.latLng(lat, lon)}
-      >
-        {!itineraryIsVisible &&
-          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>{nf.format(midpointDistancesFromStart[i])} km</span>
-          </Tooltip>}
-      </RichMarker>
-    )));
-
-    if (finish) {
-      elems.push(
-        <RichMarker
-          key="4D8L9AjpT2"
-          faIcon="stop"
-          color="#d9534f"
-          zIndexOffset={10}
-          draggable
-          onDragStart={this.handleDragStart}
-          onDragEnd={e => this.handleRouteMarkerDragEnd('finish', null, e)}
-          position={L.latLng(finish.lat, finish.lon)}
-          onClick={this.handleEndPointClick}
-        >
-          {distance !== null && time !== null &&
-            <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-              <div>
-                <div>Vzdialenosť: {nf.format(distance)} km</div>
-                <div>Čas: {Math.floor(time / 60)} h {Math.round(time % 60)} m</div>
-              </div>
-            </Tooltip>
-          }
-        </RichMarker>,
-      );
-    }
-
-    if (itineraryIsVisible) {
-      elems.push(...itinerary.map(({ desc, lat, lon, km }, i) => (
-        <RichMarker
-          faIcon="info"
-          color="grey"
-          key={`Qc22mQrHUt-${i}`}
-          position={L.latLng(lat, lon)}
-        >
-          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>{desc} ({nf.format(km)} km)</span>
-          </Tooltip>
-        </RichMarker>
-      )));
-    }
-
-    elems.push(...routeSlices.map((routeSlice, i) => (
-      <Polyline
-        positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
-        weight="8"
-        key={`TC7dnZUMAG-${i}`}
-        color={i % 2 === 0 ? '#000' : '#000'}
-        opacity={i % 2 === 0 ? 0.5 : 0.5}
-        onMouseMove={e => this.handlePolyMouseMove(e, i)}
-        onMouseOut={this.handlePolyMouseOut}
-      />
-    )));
-
-    elems.push(<ElevationChartActivePoint key="2mB8r2rS72" />);
-
-    return elems;
+    return (
+      <React.Fragment>
+        {start &&
+          <RichMarker
+            faIcon="play"
+            zIndexOffset={10}
+            faIconLeftPadding="2px"
+            color="#409a40"
+            draggable
+            onDragStart={this.handleDragStart}
+            onDragEnd={e => this.handleRouteMarkerDragEnd('start', null, e)}
+            position={L.latLng(start.lat, start.lon)}
+            onClick={this.handleEndPointClick}
+          />
+        }
+        {this.state.lat !== null && this.state.lon !== null &&
+          <Marker
+            draggable
+            icon={circularIcon}
+            onDragStart={this.handleDragStart}
+            onDragEnd={this.handleFutureDragEnd}
+            onMouseOver={this.handleFutureMouseOver}
+            onMouseOut={this.handleFutureMouseOut}
+            position={L.latLng(this.state.lat, this.state.lon)}
+          />
+        }
+        {
+          midpoints.filter((_, i) => midpointDistancesFromStart[i]).map(({ lat, lon }, i) => (
+            <RichMarker
+              draggable
+              onDragStart={this.handleDragStart}
+              onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
+              onClick={() => this.handleMidpointClick(i)}
+              key={`c4ReUQrKT7-${i}`}
+              zIndexOffset={9}
+              label={i + 1}
+              position={L.latLng(lat, lon)}
+            >
+              {!itineraryIsVisible &&
+                <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+                  <span>{nf.format(midpointDistancesFromStart[i])} km</span>
+                </Tooltip>}
+            </RichMarker>
+          ))
+        }
+        {finish &&
+          <RichMarker
+            faIcon="stop"
+            color="#d9534f"
+            zIndexOffset={10}
+            draggable
+            onDragStart={this.handleDragStart}
+            onDragEnd={e => this.handleRouteMarkerDragEnd('finish', null, e)}
+            position={L.latLng(finish.lat, finish.lon)}
+            onClick={this.handleEndPointClick}
+          >
+            {distance !== null && time !== null &&
+              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+                <div>
+                  <div>Vzdialenosť: {nf.format(distance)} km</div>
+                  <div>Čas: {Math.floor(time / 60)} h {Math.round(time % 60)} m</div>
+                </div>
+              </Tooltip>
+            }
+          </RichMarker>
+        }
+        {
+          itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
+            <RichMarker
+              faIcon="info"
+              color="grey"
+              key={`Qc22mQrHUt-${i}`}
+              position={L.latLng(lat, lon)}
+            >
+              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+                <span>{desc} ({nf.format(km)} km)</span>
+              </Tooltip>
+            </RichMarker>
+          ))
+        }
+        {
+          routeSlices.map((routeSlice, i) => (
+            <Polyline
+              positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
+              weight="8"
+              key={`TC7dnZUMAG-${i}`}
+              color={i % 2 === 0 ? '#000' : '#000'}
+              opacity={i % 2 === 0 ? 0.5 : 0.5}
+              onMouseMove={e => this.handlePolyMouseMove(e, i)}
+              onMouseOut={this.handlePolyMouseOut}
+            />
+          ))
+        }
+        <ElevationChartActivePoint />
+      </React.Fragment>
+    );
   }
 }
 

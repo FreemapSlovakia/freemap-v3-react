@@ -55,41 +55,21 @@ class GalleryResult extends React.Component {
   render() {
     const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal, showPosition, image } = this.props;
 
-    const elems = [];
-
-    if (pickingPosition) {
-      elems.push(
-        <RichMarker
-          key="DGukc5859i"
-          draggable
-          position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
-          onDragend={this.handlePositionMarkerDragEnd}
-        />,
-      );
-    }
-
-    if (showPosition && image) {
-      elems.push(
-        <RichMarker
-          key="C9mB4Euhk7"
-          position={L.latLng(image.lat, image.lon)}
-        />,
-      );
-    }
-
-    if (!isPickingPosition && activeImageId && !showPosition) {
-      elems.push(<GalleryViewerModal key="4hDH4B4mwr" />);
-    }
-
-    if (showFilter) {
-      elems.push(<GalleryFilterModal key="pICrAO8qUI" />);
-    }
-
-    if (showUploadModal) {
-      elems.push(<AsyncGalleryUploadModal key="ybN1tzcF9K" />);
-    }
-
-    return elems;
+    return (
+      <React.Fragment>
+        {pickingPosition &&
+          <RichMarker
+            draggable
+            position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
+            onDragend={this.handlePositionMarkerDragEnd}
+          />
+        }
+        {showPosition && image && <RichMarker position={L.latLng(image.lat, image.lon)} />}
+        {!isPickingPosition && activeImageId && !showPosition && <GalleryViewerModal />}
+        {showFilter && <GalleryFilterModal />}
+        {showUploadModal && <AsyncGalleryUploadModal />}
+      </React.Fragment>
+    );
   }
 }
 

@@ -240,7 +240,7 @@ class GalleryViewerModal extends React.Component {
                 {description && ` ｜ ${description}`}
                 {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
                 {!isFullscreen && editModel &&
-                  <div>
+                  <React.Fragment>
                     <hr />
                     <h5>Úprava</h5>
 
@@ -253,10 +253,10 @@ class GalleryViewerModal extends React.Component {
                     />
                     {/* TODO put inside a form and save in onSubmit */}
                     <Button bsStyle="primary" onClick={onSave}><Glyphicon glyph="save" /> Uložiť</Button>
-                  </div>
+                  </React.Fragment>
                 }
                 {!isFullscreen &&
-                  <div>
+                  <React.Fragment>
                     <hr />
                     <h5>Komentáre</h5>
                     {comments.map(c => (
@@ -281,17 +281,19 @@ class GalleryViewerModal extends React.Component {
                         Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
                       </div>
                     }
-                  </div>
+                  </React.Fragment>
                 }
               </div>
             }
           </div>
         </Modal.Body>
         <Modal.Footer>
-          {image && user && (user.isAdmin || user.id === image.user.id) && [
-            <Button key="5zKw4dOTCW" onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /><span className="hidden-xs"> Upraviť</span></Button>,
-            <Button key="aVtUvbbC44" onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>,
-          ]}
+          {image && user && (user.isAdmin || user.id === image.user.id) &&
+            <React.Fragment>
+              <Button onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /><span className="hidden-xs"> Upraviť</span></Button>
+              <Button onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>
+            </React.Fragment>
+          }
           <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /><span className="hidden-xs"> Ukázať na mape</span></Button>
           <Button onClick={this.handleFullscreen}><Glyphicon glyph="fullscreen" /><span className="hidden-xs hidden-sm"> Na celú obrazovku</span></Button>
           <Button onClick={onClose}><Glyphicon glyph="remove" /><span className="hidden-xs"> Zavrieť</span></Button>

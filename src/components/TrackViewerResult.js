@@ -169,72 +169,78 @@ class TrackViewerResult extends React.Component {
 
     // TODO rather compute some hash or better - detect real change
     const keyToAssureProperRefresh = `OOXlDWrtVn-${(JSON.stringify(trackGeojson) + displayingElevationChart).length}`; // otherwise GeoJSON will still display the first data
-    return trackGeojson && [
-      <GeoJSON
-        data={trackGeojson}
-        key={keyToAssureProperRefresh}
-        onEachFeature={this.handleEachFeature}
-        style={{ weight: 6, opacity: displayingElevationChart ? 0 : 0.85 }}
-        pointToLayer={this.pointToLayer}
-      />,
 
-      ...startPoints.map((p, i) => (
-        <RichMarker
-          faIcon="play"
-          key={`5rZwATEZfM-${i}`}
-          faIconLeftPadding="2px"
-          color="#409a40"
-          interactive={false}
-          position={L.latLng(p.lat, p.lon)}
-          onClick={this.handlePointClick}
-        >
-          { p.startTime &&
-            <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-              <span>{timeFormat.format(new Date(p.startTime))}</span>
-            </Tooltip> }
-        </RichMarker>
-      )),
+    return trackGeojson && (
+      <React.Fragment>
+        <GeoJSON
+          data={trackGeojson}
+          key={keyToAssureProperRefresh}
+          onEachFeature={this.handleEachFeature}
+          style={{ weight: 6, opacity: displayingElevationChart ? 0 : 0.85 }}
+          pointToLayer={this.pointToLayer}
+        />
 
-      ...finishPoints.map((p, i) => (
-        <RichMarker
-          faIcon="stop"
-          key={`GWT1OzhnV1-${i}`}
-          faIconLeftPadding="2px"
-          color="#d9534f"
-          interactive={false}
-          position={L.latLng(p.lat, p.lon)}
-          onClick={this.handlePointClick}
-        >
-          <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>
-              {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
-              {p.finishTime ? ', ' : ''}
-              {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km
-            </span>
-          </Tooltip>
-        </RichMarker>
-      )),
+        {
+          startPoints.map((p, i) => (
+            <RichMarker
+              faIcon="play"
+              key={`5rZwATEZfM-${i}`}
+              faIconLeftPadding="2px"
+              color="#409a40"
+              interactive={false}
+              position={L.latLng(p.lat, p.lon)}
+              onClick={this.handlePointClick}
+            >
+              { p.startTime &&
+                <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+                  <span>{timeFormat.format(new Date(p.startTime))}</span>
+                </Tooltip> }
+            </RichMarker>
+          ))
+        }
 
-      this.state.infoLat && (
-        <RichMarker
-          key="Vftms9zVOI"
-          faIcon="info"
-          faIconLeftPadding="2px"
-          color="grey"
-          interactive={false}
-          position={L.latLng(this.state.infoLat, this.state.infoLon)}
-          onClick={this.handlePointClick}
-        >
-          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-            <span>
-              {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
-            </span>
-          </Tooltip>
-        </RichMarker>
-      ),
+        {
+          finishPoints.map((p, i) => (
+            <RichMarker
+              faIcon="stop"
+              key={`GWT1OzhnV1-${i}`}
+              faIconLeftPadding="2px"
+              color="#d9534f"
+              interactive={false}
+              position={L.latLng(p.lat, p.lon)}
+              onClick={this.handlePointClick}
+            >
+              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+                <span>
+                  {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
+                  {p.finishTime ? ', ' : ''}
+                  {oneDecimalDigitNumberFormat.format(p.lengthInKm)} km
+                </span>
+              </Tooltip>
+            </RichMarker>
+          ))
+        }
 
-      <ElevationChartActivePoint key="FMrVxoQXS4" />,
-    ];
+        {this.state.infoLat &&
+          <RichMarker
+            faIcon="info"
+            faIconLeftPadding="2px"
+            color="grey"
+            interactive={false}
+            position={L.latLng(this.state.infoLat, this.state.infoLon)}
+            onClick={this.handlePointClick}
+          >
+            <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+              <span>
+                {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
+              </span>
+            </Tooltip>
+          </RichMarker>
+        }
+
+        <ElevationChartActivePoint />
+      </React.Fragment>
+    );
   }
 }
 
