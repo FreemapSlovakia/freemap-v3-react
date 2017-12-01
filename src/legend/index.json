@@ -393,10 +393,6 @@
         "n": "Banka"
       },
       {
-        "i": "data/layers/poi/services/bank/list.png",
-        "n": "Banka"
-      },
-      {
         "i": "data/layers/poi/services/atm/list.png",
         "n": "Bankomat"
       },
@@ -561,10 +557,6 @@
       {
         "i": "data/layers/poi/sport/climbing/list.png",
         "n": "Lezenie"
-      },
-      {
-        "i": "data/layers/poi/sport/football/list.png",
-        "n": "Futbal"
       },
       {
         "i": "data/layers/poi/sport/horse_racing/list.png",
