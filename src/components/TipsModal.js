@@ -8,6 +8,10 @@ import Modal from 'react-bootstrap/lib/Modal';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+
+import tips from 'fm3/tips/index.json';
+
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsNext, tipsPrevious, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 
@@ -72,13 +76,23 @@ export class TipsModal extends React.Component {
   }
 
   render() {
-    const { onPrevious, onNext, onModalClose } = this.props;
+    const { onPrevious, onNext, onModalClose, tip: tipKey } = this.props;
     const { tip, loading } = this.state;
+
+    let title;
+    let icon;
+    if (tipKey) {
+      ([, title, icon] = tips.find(([key]) => key === tipKey));
+    }
 
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Tipy</Modal.Title>
+          <Modal.Title>
+            <FontAwesomeIcon icon="lightbulb-o" />
+            {'Tipy\u00A0 | \u00A0'}
+            {tipKey ? <React.Fragment><FontAwesomeIcon icon={icon} /> {title}</React.Fragment> : 'Načítavam…'}
+          </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {

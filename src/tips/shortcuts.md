@@ -1,5 +1,3 @@
-#### Klávesové skratky
-
 Pre rýchlejšie ovládanie môžete použiť aj klávesové skratky. Napríklad:
 
 * na posun mapy môžete použiť kurzorové šípky

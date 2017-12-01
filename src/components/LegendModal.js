@@ -17,7 +17,7 @@ export function Legend({ onModalClose }) {
     <Modal show onHide={onModalClose} bsSize="small">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="question-circle" /> Legenda mapy
+          <FontAwesomeIcon icon="map-o" /> Legenda mapy
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

@@ -1,3 +1,7 @@
+export function tipsShow(which) {
+  return { type: 'TIPS_SHOW', payload: which };
+}
+
 export function tipsNext(after) {
   return { type: 'TIPS_NEXT', payload: after };
 }

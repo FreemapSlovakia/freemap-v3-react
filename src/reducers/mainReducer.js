@@ -51,6 +51,8 @@ export default function main(state = initialState, action) {
       return { ...state, locate: !state.locate, location: null };
     case 'SET_SELECTING_HOME_LOCATION':
       return { ...state, selectingHomeLocation: action.payload };
+    case 'TIPS_SHOW':
+      return { ...state, activeModal: 'tips' };
     default:
       return state;
   }

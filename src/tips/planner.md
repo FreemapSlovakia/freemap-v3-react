@@ -1,5 +1,3 @@
-#### Plánovač trás
-
 Pomocou plánovača jednoducho nájdete trasu do vášho cieľa.
 
 Dvoma kliknutiami nastavíte začiatok a cieľ vašej trasy, ktorá sa okamžite zobrazí na mape.

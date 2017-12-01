@@ -15,7 +15,7 @@ export function AboutModal({ onModalClose }) {
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" /> O freemap
+          <FontAwesomeIcon icon="address-card-o" /> Kontakty
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

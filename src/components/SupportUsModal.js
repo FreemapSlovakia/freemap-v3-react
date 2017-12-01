@@ -29,15 +29,14 @@ export function SupportUsModal({ onModalClose }) {
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
+        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+          <input name="cmd" value="_s-xclick" type="hidden" />
+          <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
+          <Button type="submit"><FontAwesomeIcon icon="paypal" /> Prispieť cez PayPal</Button>
+        </form>
+        <br />
         <p>
-          <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
-            <input name="cmd" value="_s-xclick" type="hidden" />
-            <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
-            <Button type="submit"><FontAwesomeIcon icon="paypal" /> Prispieť cez PayPal</Button>
-          </form>
-        </p>
-        <p>
-          Za kažý príspevok vám budeme veľmi vďačný.
+          Za každý príspevok vám budeme veľmi vďačný.
         </p>
         <hr />
         <address>

@@ -1,14 +1,4 @@
-const tips = [
-  'attribution',
-  'exports',
-  'freemap',
-  'galleryUpload',
-  'osm',
-  'sharing',
-  'shortcuts',
-  'gpxViewer',
-  'planner',
-];
+import tips from 'fm3/tips/index.json';
 
 const initialState = {
   tip: 'attribution',
@@ -17,10 +7,12 @@ const initialState = {
 
 export default function infoPoint(state = initialState, action) {
   switch (action.type) {
+    case 'TIPS_SHOW':
+      return { ...state, tip: action.payload };
     case 'TIPS_NEXT':
-      return { ...state, tip: tips[(tips.indexOf(action.payload === null ? 'attribution' : action.payload || state.tip) + 1) % tips.length] };
+      return { ...state, tip: tips[(ft(action.payload === null ? 'attribution' : action.payload || state.tip) + 1) % tips.length][0] };
     case 'TIPS_PREVIOUS':
-      return { ...state, tip: tips[(tips.indexOf(state.tip) + tips.length - 1) % tips.length] };
+      return { ...state, tip: tips[(ft(state.tip) + tips.length - 1) % tips.length][0] };
     case 'TIPS_PREVENT_NEXT_TIME':
       return { ...state, preventTips: action.payload };
     case 'AUTH_SET_USER': {
@@ -33,4 +25,8 @@ export default function infoPoint(state = initialState, action) {
     default:
       return state;
   }
+}
+
+function ft(tip) {
+  return tips.findIndex(([key]) => key === tip);
 }

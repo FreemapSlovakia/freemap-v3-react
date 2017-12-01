@@ -1,5 +1,3 @@
-#### Exporty máp
-
 Freemap ponúka export máp pre rôzne zariadenia:
 
 * [Locus](http://wiki.freemap.sk/FileDownload)

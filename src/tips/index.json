@@ -1,0 +1,11 @@
+[
+  ["freemap", "O zdužení Freemap", "users"],
+  ["osm", "O OpenStreetMap", "map"],
+  ["attribution", "Licencia máp", "certificate"],
+  ["shortcuts", "Klávesové skratky", "keyboard-o"],
+  ["exports", "Exporty máp", "external-link"],
+  ["sharing", "Zdieľanie a vkladanie mapy", "share-alt"],
+  ["galleryUpload", "Galéria fotografií", "picture-o"],
+  ["gpxViewer", "Prehliadač trás GPX", "road"],
+  ["planner", "Plánovač trás", "map-signs"]
+]
