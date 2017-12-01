@@ -75,7 +75,7 @@ export const overlayLayers = [
     attribution: 'fotografie © CC-BY-SA', // FIXME it is ignored
   },
   {
-    name: 'Lesné cesty NLC',
+    name: 'Lesné cesty NLC 2016',
     type: 'n',
     icon: 'tree',
     url: 'http://tiles.freemap.sk/nlc2016/{z}/{x}/{y}.png',
