@@ -44,7 +44,7 @@ export class ShareMapModal extends React.Component {
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
-            value={window.location.href}
+            value={window.location.href.replace(/&show=[^&]*/, '')}
             readOnly
             rows={6}
           />

@@ -30,7 +30,7 @@ export class EmbedMapModal extends React.Component {
 
   render() {
     const { onModalClose } = this.props;
-    const shareURL = `${window.location.href}`;
+    const shareURL = window.location.href.replace(/&show=[^&]*/, '');
 
     return (
       <Modal show onHide={onModalClose}>

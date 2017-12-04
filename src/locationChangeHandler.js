@@ -2,7 +2,10 @@ import queryString from 'query-string';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl, getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2 } from 'fm3/oldFreemapUtils';
+import refModals from 'fm3/refModals';
+import tips from 'fm3/tips/index.json';
 
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
@@ -12,6 +15,9 @@ import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changese
 import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
 import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
+
+const tipKeys = tips.map(([key]) => key);
 
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
@@ -129,6 +135,14 @@ export default function handleLocationChange(store, location) {
 
   if (diff && Object.keys(diff).length) {
     store.dispatch(mapRefocus(diff));
+  }
+
+  if (query.show && refModals.includes(query.show) && query.show !== store.getState().main.activeModal) {
+    store.dispatch(setActiveModal(query.show));
+  }
+
+  if (query.tip && tipKeys.includes(query.tip)) {
+    store.dispatch(tipsShow(query.tip));
   }
 }
 

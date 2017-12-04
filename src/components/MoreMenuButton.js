@@ -194,7 +194,7 @@ class MoreMenuButton extends React.Component {
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem header>
-                    <FontAwesomeIcon icon="book" /> Tipy
+                    <FontAwesomeIcon icon="lightbulb-o" /> Tipy
                   </MenuItem>
                   {
                     tips.map(([key, name, icon]) => (

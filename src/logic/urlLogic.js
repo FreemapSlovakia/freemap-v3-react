@@ -1,5 +1,9 @@
 import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
+import refModals from 'fm3/refModals';
+import tips from 'fm3/tips/index.json';
+
+const tipKeys = tips.map(([key]) => key);
 
 export const urlLogic = createLogic({
   type: [
@@ -9,7 +13,7 @@ export const urlLogic = createLogic({
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
     'ELEVATION_MEASUREMENT_SET_POINT',
-    'GALLERY_SET_FILTER',
+    'GALLERY_SET_FILTER', 'SET_ACTIVE_MODAL', /^TIPS_.*/,
   ],
   process({ getState, action }, dispatch, done) {
     const {
@@ -27,6 +31,8 @@ export const urlLogic = createLogic({
       areaMeasurement: { points: areaMeasurementPoints },
       elevationMeasurement: { point: elevationMeasurementPoint },
       gallery: { filter: galleryFilter },
+      main: { activeModal },
+      tips: { tip },
     } = getState();
 
     const queryParts = [
@@ -123,6 +129,14 @@ export const urlLogic = createLogic({
 
     if (galleryFilter.createdAtTo) {
       queryParts.push(`gallery-created-at-to=${galleryFilter.createdAtTo.toISOString().replace(/T.*/, '')}`);
+    }
+
+    if (activeModal && refModals.includes(activeModal)) {
+      queryParts.push(`show=${activeModal}`);
+    }
+
+    if (activeModal === 'tips' && tip && tipKeys.includes(tip)) {
+      queryParts.push(`tip=${tip}`);
     }
 
     const search = `?${queryParts.join('&')}`;
