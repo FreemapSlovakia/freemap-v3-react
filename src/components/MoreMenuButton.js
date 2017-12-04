@@ -189,6 +189,13 @@ class MoreMenuButton extends React.Component {
                   <MenuItem onClick={this.handleLegendClick}>
                     <FontAwesomeIcon icon="map-o" /> Legenda mapy
                   </MenuItem>
+                  <MenuItem onClick={this.handleAboutClick}>
+                    <FontAwesomeIcon icon="address-card-o" /> Kontakty
+                  </MenuItem>
+                  <MenuItem divider />
+                  <MenuItem header>
+                    <FontAwesomeIcon icon="book" /> Tipy
+                  </MenuItem>
                   {
                     tips.map(([key, name, icon]) => (
                       <MenuItem key={key} onSelect={this.handleTipSelect} eventKey={key}>
@@ -196,9 +203,6 @@ class MoreMenuButton extends React.Component {
                       </MenuItem>
                     ))
                   }
-                  <MenuItem onClick={this.handleAboutClick}>
-                    <FontAwesomeIcon icon="address-card-o" /> Kontakty
-                  </MenuItem>
                 </React.Fragment>
               }
             </ul>
