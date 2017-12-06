@@ -129,7 +129,7 @@ export const routePlannerFindRouteLogic = createLogic({
           dispatch(routePlannerSetResult(routeLatLons, iti, totalDistance / 1000, totalDuration / 60));
         } else {
           dispatch(toastsAdd({
-            message: 'Cez zvolené body sa nepodarilo naplánovať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
+            message: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
             style: 'warning',
             timeout: 5000,
           }));

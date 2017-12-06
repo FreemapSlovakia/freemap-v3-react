@@ -12,7 +12,7 @@ import { setActiveModal, exportGpx } from 'fm3/actions/mainActions';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
-  { type: 'plannedRoute', icon: 'map-signs', name: 'naplánovanú trasu' },
+  { type: 'plannedRoute', icon: 'map-signs', name: 'vyhľadanú trasu' },
   { type: 'objects', icon: 'map-marker', name: 'miesta' },
   { type: 'pictures', icon: 'picture-o', name: 'fotografie (vo viditeľnej časti mapy)' },
   { type: 'distanceMeasurement', icon: 'arrows-h', name: 'meranie vzdialenosti' },
