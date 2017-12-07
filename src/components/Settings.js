@@ -121,8 +121,6 @@ class Settings extends React.Component {
       .some(prop => this.state[prop] !== this.props[prop])
       || user && (name !== (user.name || '') || email !== (user.email || ''));
 
-    // TODO name, email
-
     const homeLocationInfo = homeLocation
       ? `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`
       : 'neurčená';

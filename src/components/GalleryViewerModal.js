@@ -36,9 +36,17 @@ class GalleryViewerModal extends React.Component {
       title: PropTypes.string,
       description: PropTypes.string,
       user: PropTypes.shape({
-        // TODO
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
       }),
-      // TODO , createdAt, takenAt, tags, comments
+      createdAt: PropTypes.instanceOf(Date).isRequired,
+      takenAt: PropTypes.instanceOf(Date),
+      tags: PropTypes.arrayOf(PropTypes.string).isRequired,
+      comments: PropTypes.arrayOf(PropTypes.shape({
+        createdAt: PropTypes.instanceOf(Date).isRequired,
+        user: PropTypes.shape({ name: PropTypes.string.isRequired }).isRequired,
+        comment: PropTypes.string,
+      })).isRequired,
       rating: PropTypes.number.isRequired,
       myStars: PropTypes.number,
     }),
@@ -168,6 +176,11 @@ class GalleryViewerModal extends React.Component {
     }
   }
 
+  handleSave = (e) => {
+    e.preventDefault();
+    this.props.onSave();
+  }
+
   render() {
     const {
       imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
@@ -240,7 +253,7 @@ class GalleryViewerModal extends React.Component {
                 {description && ` ｜ ${description}`}
                 {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
                 {!isFullscreen && editModel &&
-                  <React.Fragment>
+                  <form onSubmit={this.handleSave}>
                     <hr />
                     <h5>Úprava</h5>
 
@@ -252,8 +265,8 @@ class GalleryViewerModal extends React.Component {
                       onModelChange={this.handleEditModelChange}
                     />
                     {/* TODO put inside a form and save in onSubmit */}
-                    <Button bsStyle="primary" onClick={onSave}><Glyphicon glyph="save" /> Uložiť</Button>
-                  </React.Fragment>
+                    <Button bsStyle="primary" type="submit"><Glyphicon glyph="save" /> Uložiť</Button>
+                  </form>
                 }
                 {!isFullscreen &&
                   <React.Fragment>

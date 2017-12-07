@@ -29,3 +29,7 @@ export function authStartLogout() {
 export function authSetUser(user) {
   return { type: 'AUTH_SET_USER', payload: user };
 }
+
+export function authChooseLoginMethod() {
+  return { type: 'AUTH_CHOOSE_LOGIN_METHOD' };
+}

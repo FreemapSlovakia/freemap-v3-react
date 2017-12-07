@@ -78,13 +78,17 @@ export default function handleLocationChange(store, location) {
 
   ['distance', 'area'].forEach((type) => {
     const pq = query[`${type}-measurement-points`];
-    if (pq) {
-      const points = pq.split(',')
-        .map(point => point.split('/').map(coord => parseFloat(coord))) // TODO handle NaN
-        .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
-      if (serializePoints(points) !== serializePoints(store.getState()[`${type}Measurement`].points)) {
-        store.dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)(points));
-      }
+    if (!pq) {
+      return;
+    }
+
+    const points = pq.split(',')
+      .map(point => point.split('/').map(coord => parseFloat(coord)))
+      .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
+    if (serializePoints(points) !== serializePoints(store.getState()[`${type}Measurement`].points)) {
+      store.dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)(
+        points.some(({ lat, lon }) => Number.isNaN(lat) || Number.isNaN(lon)) ? [] : points,
+      ));
     }
   });
 

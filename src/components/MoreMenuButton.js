@@ -9,7 +9,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
 
 import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
-import { authStartLogout } from 'fm3/actions/authActions';
+import { authStartLogout, authChooseLoginMethod } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 
 class MoreMenuButton extends React.Component {
@@ -279,8 +279,7 @@ export default connect(
       dispatch(setLocation(lat, lon, accuracy));
     },
     onLogin() {
-      dispatch({ type: 'AUTH_CHOOSE_LOGIN_METHOD' }); // TODO to actions
-      // dispatch(authLogin());
+      dispatch(authChooseLoginMethod());
     },
     onLogout() {
       dispatch(authStartLogout());
