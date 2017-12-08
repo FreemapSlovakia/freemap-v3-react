@@ -78,7 +78,7 @@ export const routePlannerFindRouteLogic = createLogic({
 
     const params = {
       overview: 'full',
-      alternatives: false,
+      alternatives: true,
       steps: true,
       geometries: 'geojson',
     };
@@ -93,21 +93,11 @@ export const routePlannerFindRouteLogic = createLogic({
 
     axios.get(`https://routing.epsilon.sk/route/v1/${transportType.replace(/-.*/, '')}/${allPoints}`, {
       params,
-      validateStatus: status => status === 200,
+      validateStatus: status => [200, 400].includes(status),
       cancelToken: source.token,
     })
       .then(({ data: { code, routes } }) => {
         if (code === 'Ok') {
-          const [{ legs, distance: totalDistance, duration: totalDuration, geometry: { coordinates } }] = routes;
-          const routeLatLons = coordinates.map(lonlat => lonlat.reverse());
-          const iti = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, maneuver: { type, modifier, location: [lon, lat] } }) => ({
-            lat,
-            lon,
-            km: distance / 1000,
-            duration,
-            desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
-          }))));
-
           const showHint = true
             && !getState().routePlanner.shapePoints
             && !localStorage.getItem('routePlannerPreventHint')
@@ -126,8 +116,23 @@ export const routePlannerFindRouteLogic = createLogic({
             }));
           }
 
-          dispatch(routePlannerSetResult(routeLatLons, iti, totalDistance / 1000, totalDuration / 60));
+          const payload = routes.map((route) => {
+            const { legs, distance: totalDistance, duration: totalDuration, geometry: { coordinates } } = route;
+            const shapePoints = coordinates.map(lonlat => lonlat.reverse());
+            const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, maneuver: { type, modifier, location: [lon, lat] } }) => ({
+              lat,
+              lon,
+              km: distance / 1000,
+              duration,
+              desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
+            }))));
+
+            return { shapePoints, itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
+          });
+
+          dispatch(routePlannerSetResult(payload));
         } else {
+          dispatch(routePlannerSetResult([]));
           dispatch(toastsAdd({
             message: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
             style: 'warning',

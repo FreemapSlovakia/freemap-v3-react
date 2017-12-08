@@ -28,8 +28,8 @@ class RoutePlannerMenu extends React.Component {
       lat: PropTypes.number,
       lon: PropTypes.number,
     }),
-    onItineraryVisibilityToggle: PropTypes.func.isRequired,
-    itineraryIsVisible: PropTypes.bool.isRequired,
+    // onItineraryVisibilityToggle: PropTypes.func.isRequired,
+    // itineraryIsVisible: PropTypes.bool.isRequired,
     onElevationChartVisibilityToggle: PropTypes.func.isRequired,
     elevationProfileIsVisible: PropTypes.bool.isRequired,
     onProgressStart: PropTypes.func.isRequired,
@@ -104,7 +104,7 @@ class RoutePlannerMenu extends React.Component {
   render() {
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
-      onItineraryVisibilityToggle, itineraryIsVisible, onElevationChartVisibilityToggle, elevationProfileIsVisible,
+      /* onItineraryVisibilityToggle, itineraryIsVisible, */ onElevationChartVisibilityToggle, elevationProfileIsVisible,
       routeFound, shapePoints, expertMode,
     } = this.props;
 
@@ -157,7 +157,7 @@ class RoutePlannerMenu extends React.Component {
             ))
           }
         </ButtonGroup>
-        {' '}
+        {/* ' '}
         <Button
           onClick={() => onItineraryVisibilityToggle()}
           active={itineraryIsVisible}
@@ -165,6 +165,7 @@ class RoutePlannerMenu extends React.Component {
         >
           <FontAwesomeIcon icon="list-ol" /><span className="hidden-xs"> Itinerár</span>
         </Button>
+        */}
         {' '}
         {routeFound &&
           <Button

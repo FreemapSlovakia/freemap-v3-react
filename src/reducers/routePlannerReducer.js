@@ -6,11 +6,8 @@ const initialState = {
   finish: null,
   transportType: null,
   pickMode: 'start',
-  shapePoints: null,
-  distance: null,
-  time: null,
   itineraryIsVisible: false,
-  itinerary: [],
+  alternatives: [],
 };
 
 
@@ -48,10 +45,11 @@ export default function routePlanner(state = initialState, action) {
     case 'ROUTE_PLANNER_SET_RESULT':
       return {
         ...state,
-        shapePoints: action.payload.shapePoints,
-        itinerary: action.payload.itinerary,
-        distance: action.payload.distance,
-        time: action.payload.time,
+        alternatives: action.payload,
+        // shapePoints: action.payload.shapePoints,
+        // itinerary: action.payload.itinerary,
+        // distance: action.payload.distance,
+        // time: action.payload.time,
       };
     default:
       return state;

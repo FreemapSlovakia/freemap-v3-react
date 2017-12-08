@@ -16,6 +16,28 @@ import * as FmPropTypes from 'fm3/propTypes';
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 class RoutePlannerResult extends React.Component {
+  static propTypes = {
+    start: FmPropTypes.point,
+    finish: FmPropTypes.point,
+    midpoints: FmPropTypes.points,
+    alternatives: PropTypes.arrayOf(PropTypes.shape({
+      shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
+      duration: PropTypes.number,
+      distance: PropTypes.number,
+      itinerary: PropTypes.arrayOf(PropTypes.shape({
+        lat: PropTypes.number.isRequired,
+        lon: PropTypes.number.isRequired,
+        desc: PropTypes.string.isRequired,
+        km: PropTypes.number.isRequired,
+      })),
+    })),
+    onStartSet: PropTypes.func.isRequired,
+    onFinishSet: PropTypes.func.isRequired,
+    onMidpointSet: PropTypes.func.isRequired,
+    onAddMidpoint: PropTypes.func.isRequired,
+    onRemoveMidpoint: PropTypes.func.isRequired,
+  }
+
   state = {
     lat: null,
     lon: null,
@@ -52,12 +74,12 @@ class RoutePlannerResult extends React.Component {
   }
 
   futureMidpointsAndDistances() {
-    const {
-      start, finish, midpoints, shapePoints,
-    } = this.props;
-    const midpointDistancesFromStart = [];
-    let routeSlices = [];
-    if ((start && finish && shapePoints)) {
+    const { start, finish, midpoints, alternatives } = this.props;
+
+    return alternatives.map(({ shapePoints, distance, duration }) => {
+      const midpointDistancesFromStart = [];
+      let routeSlices = [];
+
       const splitPoints = [start, ...midpoints, finish];
       routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
       let distanceFromStart = 0;
@@ -67,9 +89,9 @@ class RoutePlannerResult extends React.Component {
         distanceFromStart += length;
         midpointDistancesFromStart.push(distanceFromStart);
       });
-    }
 
-    return { midpointDistancesFromStart, routeSlices };
+      return { midpointDistancesFromStart, routeSlices, distance, duration };
+    });
   }
 
   handleEndPointClick = () => {
@@ -148,16 +170,14 @@ class RoutePlannerResult extends React.Component {
   }
 
   render() {
-    const {
-      start, midpoints, finish, time, distance, itinerary, itineraryIsVisible,
-    } = this.props;
+    const { start, midpoints, finish } = this.props;
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
       iconAnchor: [7, 7],
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
-    const { midpointDistancesFromStart, routeSlices } = this.futureMidpointsAndDistances();
+    const alts = this.futureMidpointsAndDistances();
 
     return (
       <React.Fragment>
@@ -186,7 +206,7 @@ class RoutePlannerResult extends React.Component {
           />
         }
         {
-          midpoints.filter((_, i) => midpointDistancesFromStart[i]).map(({ lat, lon }, i) => (
+          midpoints.map(({ lat, lon }, i) => (
             <RichMarker
               draggable
               onDragStart={this.handleDragStart}
@@ -196,12 +216,7 @@ class RoutePlannerResult extends React.Component {
               zIndexOffset={9}
               label={i + 1}
               position={L.latLng(lat, lon)}
-            >
-              {!itineraryIsVisible &&
-                <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-                  <span>{nf.format(midpointDistancesFromStart[i])} km</span>
-                </Tooltip>}
-            </RichMarker>
+            />
           ))
         }
         {finish &&
@@ -214,42 +229,28 @@ class RoutePlannerResult extends React.Component {
             onDragEnd={e => this.handleRouteMarkerDragEnd('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
             onClick={this.handleEndPointClick}
-          >
-            {distance !== null && time !== null &&
-              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
-                <div>
-                  <div>Vzdialenosť: {nf.format(distance)} km</div>
-                  <div>Čas: {Math.floor(time / 60)} h {Math.round(time % 60)} m</div>
-                </div>
-              </Tooltip>
-            }
-          </RichMarker>
+          />
         }
         {
-          itineraryIsVisible && itinerary.map(({ desc, lat, lon, km }, i) => (
-            <RichMarker
-              faIcon="info"
-              color="grey"
-              key={`Qc22mQrHUt-${i}`}
-              position={L.latLng(lat, lon)}
-            >
-              <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-                <span>{desc} ({nf.format(km)} km)</span>
-              </Tooltip>
-            </RichMarker>
-          ))
-        }
-        {
-          routeSlices.map((routeSlice, i) => (
-            <Polyline
-              positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
-              weight="8"
-              key={`TC7dnZUMAG-${i}`}
-              color={i % 2 === 0 ? '#000' : '#000'}
-              opacity={i % 2 === 0 ? 0.5 : 0.5}
-              onMouseMove={e => this.handlePolyMouseMove(e, i)}
-              onMouseOut={this.handlePolyMouseOut}
-            />
+          alts.map(({ routeSlices, distance, duration }, j) => (
+            routeSlices.map((routeSlice, i) => (
+              <Polyline
+                positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
+                weight="8"
+                key={`TC7dnZUMAG-${j}-${i}`}
+                color={`hsl(${[240/* b */, 120/* g */, 0/* r */, 60/* y */, 180/* c */, 300/* m */][j % 6]}, 100%, 25%)`}
+                opacity={0.5}
+                onMouseMove={e => this.handlePolyMouseMove(e, i)}
+                onMouseOut={this.handlePolyMouseOut}
+              >
+                <Tooltip direction="top" permanent>
+                  <div>
+                    <div>Vzdialenosť: {nf.format(distance)} km</div>
+                    <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
+                  </div>
+                </Tooltip>
+              </Polyline>
+            ))
           ))
         }
         <ElevationChartActivePoint />
@@ -258,37 +259,12 @@ class RoutePlannerResult extends React.Component {
   }
 }
 
-RoutePlannerResult.propTypes = {
-  start: FmPropTypes.point,
-  finish: FmPropTypes.point,
-  midpoints: FmPropTypes.points,
-  shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
-  time: PropTypes.number,
-  distance: PropTypes.number,
-  itinerary: PropTypes.arrayOf(PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lon: PropTypes.number.isRequired,
-    desc: PropTypes.string.isRequired,
-    km: PropTypes.number.isRequired,
-  })),
-  itineraryIsVisible: PropTypes.bool.isRequired,
-  onStartSet: PropTypes.func.isRequired,
-  onFinishSet: PropTypes.func.isRequired,
-  onMidpointSet: PropTypes.func.isRequired,
-  onAddMidpoint: PropTypes.func.isRequired,
-  onRemoveMidpoint: PropTypes.func.isRequired,
-};
-
 export default connect(
   state => ({
     start: state.routePlanner.start,
     finish: state.routePlanner.finish,
     midpoints: state.routePlanner.midpoints,
-    shapePoints: state.routePlanner.shapePoints,
-    time: state.routePlanner.time,
-    distance: state.routePlanner.distance,
-    itinerary: state.routePlanner.itinerary,
-    itineraryIsVisible: state.routePlanner.itineraryIsVisible,
+    alternatives: state.routePlanner.alternatives,
   }),
   dispatch => ({
     onStartSet(start) {
