@@ -15,6 +15,8 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
+let k = 0;
+
 class RoutePlannerResult extends React.Component {
   static propTypes = {
     start: FmPropTypes.point,
@@ -179,6 +181,8 @@ class RoutePlannerResult extends React.Component {
     });
     const alts = this.futureMidpointsAndDistances();
 
+    k += 1; // TODO this is hack to update tooltip positions on re-routing
+
     return (
       <React.Fragment>
         {start &&
@@ -237,18 +241,20 @@ class RoutePlannerResult extends React.Component {
               <Polyline
                 positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
                 weight="8"
-                key={`TC7dnZUMAG-${j}-${i}`}
+                key={`TC7dnZUMAG-${k}-${j}-${i}`}
                 color={`hsl(${[240/* b */, 120/* g */, 0/* r */, 60/* y */, 180/* c */, 300/* m */][j % 6]}, 100%, 25%)`}
                 opacity={0.5}
                 onMouseMove={e => this.handlePolyMouseMove(e, i)}
                 onMouseOut={this.handlePolyMouseOut}
               >
-                <Tooltip direction="top" permanent>
-                  <div>
-                    <div>Vzdialenosť: {nf.format(distance)} km</div>
-                    <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
-                  </div>
-                </Tooltip>
+                {i === 0 &&
+                  <Tooltip direction="top" permanent interactive>
+                    <div>
+                      <div>Vzdialenosť: {nf.format(distance)} km</div>
+                      <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
+                    </div>
+                  </Tooltip>
+                }
               </Polyline>
             ))
           ))
