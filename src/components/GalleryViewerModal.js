@@ -184,7 +184,7 @@ class GalleryViewerModal extends React.Component {
   render() {
     const {
       imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
-      onStarsChange, user, onDelete, onEdit, editModel, onSave, allTags, onPositionPick,
+      onStarsChange, user, onDelete, onEdit, editModel, allTags, onPositionPick,
     } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
     const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
