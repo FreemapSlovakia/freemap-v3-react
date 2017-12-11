@@ -114,7 +114,6 @@ class Settings extends React.Component {
     const { onClose, onHomeLocationSelect, selectingHomeLocation, zoom, user } = this.props;
     const { homeLocation, homeLocationCssClasses, tileFormat, nlcOpacity, expertMode,
       touristOverlayOpacity, cycloOverlayOpacity, trackViewerEleSmoothingFactor, name, email, preventTips } = this.state;
-    const nlcOverlayIsNotVisible = zoom < 14;
 
     const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity',
       'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips']
@@ -166,6 +165,7 @@ class Settings extends React.Component {
                   <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
                 </Button>
                 <hr />
+                {/*
                 <p>Viditeľnosť vrstvy Lesné cesty NLC: {nlcOpacity.toFixed(1) * 100}%</p>
                 <Slider
                   value={nlcOpacity}
@@ -175,11 +175,12 @@ class Settings extends React.Component {
                   tooltip={false}
                   onChange={newOpacity => this.setState({ nlcOpacity: newOpacity })}
                 />
-                {nlcOverlayIsNotVisible &&
+                {zoom < 11 &&
                   <Alert>
-                    NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 14).
+                    NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 11).
                   </Alert>
                 }
+              */}
               </Tab>
               <Tab title="Účet" eventKey={2}>
                 {user ? (
