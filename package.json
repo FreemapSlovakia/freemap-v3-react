@@ -5,9 +5,9 @@
   "dependencies": {
     "@mapbox/geojson-area": "0.2.2",
     "@mapbox/togeojson": "0.16.0",
-    "@turf/along": "5.0.4",
+    "@turf/along": "5.1.5",
     "@turf/line-distance": "4.7.3",
-    "@turf/line-slice": "5.0.4",
+    "@turf/line-slice": "5.1.5",
     "async": "2.6.0",
     "axios": "0.17.1",
     "chart.js": "2.7.1",
@@ -53,7 +53,7 @@
     "copy-webpack-plugin": "4.2.3",
     "css-loader": "0.28.7",
     "ejs-loader": "0.3.0",
-    "eslint": "4.12.1",
+    "eslint": "4.13.0",
     "eslint-config-airbnb": "16.1.0",
     "eslint-loader": "1.9.0",
     "eslint-plugin-import": "2.8.0",
@@ -71,7 +71,7 @@
     "url-loader": "0.6.2",
     "webpack": "3.10.0",
     "webpack-cleanup-plugin": "0.5.1",
-    "webpack-dev-server": "2.9.6"
+    "webpack-dev-server": "2.9.7"
   },
   "repository": {
     "type": "git",
