@@ -53,7 +53,7 @@ module.exports = {
         },
       },
       {
-        test: /\.(png|svg|jpg|jpeg|gif)$/,
+        test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot)$/,
         loader: 'url-loader',
         options: {
           limit: 10000,
@@ -112,7 +112,6 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'authCallback.html' },
       { from: 'favicon.ico' },
-      { from: 'font' },
       process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
     ].filter(x => x)),
     extractSass,

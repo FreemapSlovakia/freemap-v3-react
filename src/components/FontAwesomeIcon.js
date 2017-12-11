@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import 'fm3/font/styles.css';
 
 export default function FontAwesomeIcon({ icon, ...props }) {
   return (
