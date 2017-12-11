@@ -1,4 +1,4 @@
-const baseSpecs = [['A', 'Automapa', 'car'], ['T', 'Turistická', 'male'], ['C', 'Cyklomapa', 'bicycle'], ['K', 'Lyžiarska', 'snowflake-o']];
+const baseSpecs = [['A', 'Automapa', 'car'], ['T', 'Turistická', '!icon-hiking'], ['C', 'Cyklomapa', 'bicycle'], ['K', 'Lyžiarska', '!icon-skier-skiing']];
 
 export const baseLayers = [
   ...baseSpecs.map(([type, name, icon]) => ({
@@ -110,7 +110,7 @@ export const overlayLayers = [
   {
     name: 'OSM GPS stopy',
     type: 'g',
-    icon: 'mobile',
+    icon: '!icon-gps-device',
     url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
     attribution: '© prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
     minZoom: 0,
@@ -122,7 +122,7 @@ export const overlayLayers = [
   {
     name: 'Turistické trasy',
     type: 't',
-    icon: 'male',
+    icon: '!icon-hiking',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
     attribution: '© prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
     minZoom: 8,

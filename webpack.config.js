@@ -112,6 +112,7 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'authCallback.html' },
       { from: 'favicon.ico' },
+      { from: 'font' },
       process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
     ].filter(x => x)),
     extractSass,

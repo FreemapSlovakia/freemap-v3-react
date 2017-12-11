@@ -89,7 +89,7 @@ class MeasurementMenu extends React.Component {
 
     return (
       <span>
-        <span className="fm-label"><FontAwesomeIcon icon="arrows-h" /><span className="hidden-xs"> Meranie</span></span>
+        <span className="fm-label"><FontAwesomeIcon icon="!icon-ruler" /><span className="hidden-xs"> Meranie</span></span>
         {' '}
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">

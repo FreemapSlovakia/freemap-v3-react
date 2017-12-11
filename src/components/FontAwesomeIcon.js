@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 export default function FontAwesomeIcon({ icon, ...props }) {
   return (
-    <i {...props} className={`fa-fw fa fa-${icon} ${props.className || ''}`} aria-hidden="true" />
+    <i {...props} className={`fa-fw fa ${icon.startsWith('!') ? icon.substring(1) : `fa-${icon}`} ${props.className || ''}`} aria-hidden="true" />
   );
 }
 
