@@ -99,7 +99,7 @@ export const baseLayers = [
   {
     name: 'Historická',
     type: 'h',
-    url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
+    url: 'http://tms.freemap.sk/historicke/{z}/{x}/{y}.png',
     minNativeZoom: 12,
     maxNativeZoom: 12,
     icon: 'institution',
