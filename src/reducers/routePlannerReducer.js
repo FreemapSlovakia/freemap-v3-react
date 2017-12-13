@@ -5,9 +5,12 @@ const initialState = {
   midpoints: [],
   finish: null,
   transportType: null,
+  effectiveTransportType: null,
   pickMode: 'start',
   itineraryIsVisible: false,
   alternatives: [],
+  activeAlternativeIndex: 0,
+  timestamp: null,
 };
 
 
@@ -45,12 +48,13 @@ export default function routePlanner(state = initialState, action) {
     case 'ROUTE_PLANNER_SET_RESULT':
       return {
         ...state,
-        alternatives: action.payload,
-        // shapePoints: action.payload.shapePoints,
-        // itinerary: action.payload.itinerary,
-        // distance: action.payload.distance,
-        // time: action.payload.time,
+        alternatives: action.payload.alternatives,
+        timestamp: action.payload.timestamp,
+        activeAlternativeIndex: 0,
+        effectiveTransportType: action.payload.transportType,
       };
+    case 'ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX':
+      return { ...state, activeAlternativeIndex: action.payload };
     default:
       return state;
   }

@@ -116,14 +116,15 @@ export const routePlannerFindRouteLogic = createLogic({
             }));
           }
 
-          const payload = routes.map((route) => {
+          const alternatives = routes.map((route) => {
             const { legs, distance: totalDistance, duration: totalDuration } = route;
             const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] } }) => ({
               lat,
               lon,
               km: distance / 1000,
               duration,
-              desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
+              desc: transportType === 'imhd' ? name :
+                `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
               mode,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
             }))));
@@ -131,7 +132,7 @@ export const routePlannerFindRouteLogic = createLogic({
             return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
           });
 
-          dispatch(routePlannerSetResult(payload));
+          dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives }));
         } else {
           dispatch(routePlannerSetResult([]));
           dispatch(toastsAdd({
@@ -142,6 +143,7 @@ export const routePlannerFindRouteLogic = createLogic({
         }
       })
       .catch((e) => {
+        dispatch(routePlannerSetResult([]));
         dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
       })
       .then(() => {
