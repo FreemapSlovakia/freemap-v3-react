@@ -103,7 +103,7 @@ export default connect(
     if (state.search.selectedResult) {
       // exportables.push('search');
     }
-    if (state.routePlanner.shapePoints) {
+    if (state.routePlanner.alternatives.length) {
       exportables.push('plannedRoute');
     }
     if (state.objects.objects.length) {

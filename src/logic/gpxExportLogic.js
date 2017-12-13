@@ -175,16 +175,28 @@ function addObjects(doc, { objects }) {
   });
 }
 
-function addPlannedRoute(doc, { shapePoints }) {
-  if (shapePoints) {
+function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
+  // TODO add itinerar details and metadata
+
+  const startWptEle = createElement(doc.documentElement, 'wpt', undefined, start);
+  createElement(startWptEle, 'name', 'Štart');
+
+  const finishWptEle = createElement(doc.documentElement, 'wpt', undefined, finish);
+  createElement(finishWptEle, 'name', 'Cieľ');
+
+  midpoints.forEach((midpoint, i) => {
+    const midpointWptEle = createElement(doc.documentElement, 'wpt', undefined, midpoint);
+    createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
+  });
+
+  alternatives.forEach(({ shapePoints }, i) => {
     const rteEle = createElement(doc.documentElement, 'rte');
+    createElement(rteEle, 'name', `Alternatíva ${i + 1}`);
 
     shapePoints.forEach(([lat, lon]) => {
       createElement(rteEle, 'rtept', undefined, { lat, lon });
     });
-
-    // TODO add start / finish / midpoints / itinerar details (?) / metadata
-  }
+  });
 }
 
 export default gpxExportLogic;
