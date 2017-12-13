@@ -176,7 +176,7 @@ function addObjects(doc, { objects }) {
 }
 
 function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
-  // TODO add start / finish / midpoints / itinerar details (?) / metadata
+  // TODO add itinerar details and metadata
 
   const startWptEle = createElement(doc.documentElement, 'wpt', undefined, start);
   createElement(startWptEle, 'name', 'Štart');
