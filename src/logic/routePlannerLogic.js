@@ -117,17 +117,18 @@ export const routePlannerFindRouteLogic = createLogic({
           }
 
           const payload = routes.map((route) => {
-            const { legs, distance: totalDistance, duration: totalDuration, geometry: { coordinates } } = route;
-            const shapePoints = coordinates.map(lonlat => lonlat.reverse());
-            const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, maneuver: { type, modifier, location: [lon, lat] } }) => ({
+            const { legs, distance: totalDistance, duration: totalDuration } = route;
+            const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] } }) => ({
               lat,
               lon,
               km: distance / 1000,
               duration,
               desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
+              mode,
+              shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
             }))));
 
-            return { shapePoints, itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
+            return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
           });
 
           dispatch(routePlannerSetResult(payload));

@@ -22,7 +22,7 @@ const tipKeys = tips.map(([key]) => key);
 export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
 
-  if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic)$/.test(query.transport)
+  if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd)$/.test(query.transport)
       && /^-?\d+(\.\d+)?\/-?\d+(\.\d+)?(,-?\d+(\.\d+)?\/-?\d+(\.\d+)?)+$/.test(query.points)) {
     const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
 

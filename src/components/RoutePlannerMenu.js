@@ -145,6 +145,7 @@ class RoutePlannerMenu extends React.Component {
               ['bike', 'bicycle', 'bicykel'],
               ['nordic', '!icon-skier-skiing', 'bežky'],
               expertMode && ['ski', '!icon-skiing', 'zjazdové lyžovanie'],
+              ['imhd', 'bus', 'MHD'],
             ].filter(x => x).map(([type, icon, title]) => (
               <Button
                 key={type}

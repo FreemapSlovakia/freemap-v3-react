@@ -10,7 +10,6 @@ import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, r
   from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -23,7 +22,6 @@ class RoutePlannerResult extends React.Component {
     finish: FmPropTypes.point,
     midpoints: FmPropTypes.points,
     alternatives: PropTypes.arrayOf(PropTypes.shape({
-      shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
       duration: PropTypes.number,
       distance: PropTypes.number,
       itinerary: PropTypes.arrayOf(PropTypes.shape({
@@ -31,8 +29,10 @@ class RoutePlannerResult extends React.Component {
         lon: PropTypes.number.isRequired,
         desc: PropTypes.string.isRequired,
         km: PropTypes.number.isRequired,
-      })),
-    })),
+        mode: PropTypes.string.isRequired,
+        shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
+      }).isRequired).isRequired,
+    }).isRequired),
     onStartSet: PropTypes.func.isRequired,
     onFinishSet: PropTypes.func.isRequired,
     onMidpointSet: PropTypes.func.isRequired,
@@ -76,23 +76,20 @@ class RoutePlannerResult extends React.Component {
   }
 
   futureMidpointsAndDistances() {
-    const { start, finish, midpoints, alternatives } = this.props;
+    const { alternatives } = this.props;
 
-    return alternatives.map(({ shapePoints, distance, duration }) => {
-      const midpointDistancesFromStart = [];
-      let routeSlices = [];
+    return alternatives.map(({ itinerary, distance, duration }) => {
+      const routeSlices = itinerary.map(({ shapePoints, desc, mode }) => ({
+        type: 'Feature',
+        geometry: {
+          type: 'LineString',
+          coordinates: shapePoints.map(latlon => [latlon[1], latlon[0]]),
+        },
+        desc,
+        mode,
+      }));
 
-      const splitPoints = [start, ...midpoints, finish];
-      routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
-      let distanceFromStart = 0;
-
-      routeSlices.forEach((routeSlice) => {
-        const length = turfLineDistance(routeSlice);
-        distanceFromStart += length;
-        midpointDistancesFromStart.push(distanceFromStart);
-      });
-
-      return { midpointDistancesFromStart, routeSlices, distance, duration };
+      return { routeSlices, distance, duration };
     });
   }
 
@@ -179,7 +176,6 @@ class RoutePlannerResult extends React.Component {
       iconAnchor: [7, 7],
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
-    const alts = this.futureMidpointsAndDistances();
 
     k += 1; // TODO this is hack to update tooltip positions on re-routing
 
@@ -236,7 +232,7 @@ class RoutePlannerResult extends React.Component {
           />
         }
         {
-          alts.map(({ routeSlices, distance, duration }, j) => (
+          this.futureMidpointsAndDistances().map(({ routeSlices, distance, duration }, j) => (
             routeSlices.map((routeSlice, i) => (
               <Polyline
                 positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
@@ -244,10 +240,14 @@ class RoutePlannerResult extends React.Component {
                 key={`TC7dnZUMAG-${k}-${j}-${i}`}
                 color={`hsl(${[240/* b */, 120/* g */, 0/* r */, 60/* y */, 180/* c */, 300/* m */][j % 6]}, 100%, 25%)`}
                 opacity={0.5}
+                dashArray={routeSlice.mode === 'foot' ? '0, 15' : undefined}
                 onMouseMove={e => this.handlePolyMouseMove(e, i)}
                 onMouseOut={this.handlePolyMouseOut}
               >
-                {i === 0 &&
+                <Tooltip direction="top" permanent interactive>
+                  <div>{routeSlice.desc}</div>
+                </Tooltip>
+                {false /* TODO */ && i === 0 &&
                   <Tooltip direction="top" permanent interactive>
                     <div>
                       <div>Vzdialenosť: {nf.format(distance)} km</div>
