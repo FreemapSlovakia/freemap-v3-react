@@ -117,7 +117,9 @@ export const routePlannerFindRouteLogic = createLogic({
 
           const alts = routes.map((route) => {
             const { legs, distance: totalDistance, duration: totalDuration } = route;
-            const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({ name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] } }) => ({
+            const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({
+              name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] },
+            }) => ({
               lat,
               lon,
               km: distance / 1000,
@@ -129,7 +131,7 @@ export const routePlannerFindRouteLogic = createLogic({
               legIndex,
             }))));
 
-            return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
+            return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60, summary0: legs[0].summary };
           });
 
           const alternatives = transportType === 'imhd' ? alts.map(alt => addMissingSegments(alt)) : alts;

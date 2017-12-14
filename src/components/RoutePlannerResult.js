@@ -171,7 +171,7 @@ class RoutePlannerResult extends React.Component {
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
 
-    const { distance, duration } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+    const { distance, duration, summary0 } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
     return (
       <React.Fragment>
@@ -225,13 +225,19 @@ class RoutePlannerResult extends React.Component {
             position={L.latLng(finish.lat, finish.lon)}
             onClick={this.handleEndPointClick}
           >
-            {!!distance &&
-              <Tooltip direction="top" offset={[0, -36]} permanent>
-                <div>
-                  <div>Vzdialenosť: {nf.format(distance)} km</div>
-                  <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
-                </div>
-              </Tooltip>
+            {
+              summary0 ?
+                <Tooltip direction="top" offset={[0, -36]} permanent>
+                  <div dangerouslySetInnerHTML={{ __html: summary0.replace(', &#9201', ',<br />&#9201') }} />
+                </Tooltip>
+              : distance ?
+                <Tooltip direction="top" offset={[0, -36]} permanent>
+                  <div>
+                    <div>Vzdialenosť: {nf.format(distance)} km</div>
+                    <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
+                  </div>
+                </Tooltip>
+              : null
             }
           </RichMarker>
         }
