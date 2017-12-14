@@ -16,6 +16,8 @@ const initialState = {
 
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
+    case 'SET_TOOL':
+      return { ...state, pickMode: !state.start ? 'start' : !state.finish ? 'finish' : null };
     case 'CLEAR_MAP':
       return {
         ...initialState,
