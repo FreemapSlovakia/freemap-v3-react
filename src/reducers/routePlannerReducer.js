@@ -13,7 +13,6 @@ const initialState = {
   timestamp: null,
 };
 
-
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
     case 'SET_TOOL':
@@ -28,7 +27,7 @@ export default function routePlanner(state = initialState, action) {
         ...state,
         start: action.payload.start,
         finish: action.payload.finish,
-        midpoints: action.payload.midpoints,
+        midpoints: action.payload.transportType === 'imhd' ? [] : action.payload.midpoints,
         transportType: action.payload.transportType,
       };
     case 'ROUTE_PLANNER_SET_START':
@@ -54,6 +53,7 @@ export default function routePlanner(state = initialState, action) {
         timestamp: action.payload.timestamp,
         activeAlternativeIndex: 0,
         effectiveTransportType: action.payload.transportType,
+        midpoints: action.payload.transportType === 'imhd' ? [] : state.midpoints,
       };
     case 'ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX':
       return { ...state, activeAlternativeIndex: action.payload };

@@ -77,7 +77,6 @@ export const routePlannerFindRouteLogic = createLogic({
     });
 
     const params = {
-      overview: 'full',
       alternatives: true,
       steps: true,
       geometries: 'geojson',
@@ -116,9 +115,9 @@ export const routePlannerFindRouteLogic = createLogic({
             }));
           }
 
-          const alternatives = routes.map((route) => {
+          const alts = routes.map((route) => {
             const { legs, distance: totalDistance, duration: totalDuration } = route;
-            const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] } }) => ({
+            const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({ name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] } }) => ({
               lat,
               lon,
               km: distance / 1000,
@@ -127,10 +126,13 @@ export const routePlannerFindRouteLogic = createLogic({
                 `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
               mode,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
+              legIndex,
             }))));
 
             return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
           });
+
+          const alternatives = transportType === 'imhd' ? alts.map(alt => addMissingSegments(alt)) : alts;
 
           dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives }));
         } else {
@@ -203,3 +205,41 @@ export default [
   setupTransportTypeLogic,
   routePlannerPreventHintLogic,
 ];
+
+function addMissingSegments(alt) {
+  const routeSlices = [];
+  for (let i = 0; i < alt.itinerary.length; i += 1) {
+    const slice = alt.itinerary[i];
+    const prevSlice = alt.itinerary[i - 1];
+    const nextSlice = alt.itinerary[i + 1];
+
+    const prevSliceLastShapePoint = prevSlice ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1] : null;
+    const firstShapePoint = slice.shapePoints[0];
+
+    const lastShapePoint = slice.shapePoints[slice.shapePoints.length - 1];
+    const nextSliceFirstShapePoint = nextSlice ? nextSlice.shapePoints[0] : null;
+
+    const shapePoints = [...slice.shapePoints];
+
+    if (slice.mode === 'foot') {
+      if (prevSliceLastShapePoint
+        && (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) > 0.0000001 || Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
+      ) {
+        shapePoints.unshift(prevSliceLastShapePoint);
+      }
+
+      if (nextSliceFirstShapePoint
+        && (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) > 0.0000001 || Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
+      ) {
+        shapePoints.push(nextSliceFirstShapePoint);
+      }
+    }
+
+    routeSlices.push({
+      ...slice,
+      shapePoints,
+    });
+  }
+
+  return { ...alt, itinerary: routeSlices };
+}

@@ -260,7 +260,7 @@ class RoutePlannerResult extends React.Component {
                     ref={ele => this.bringToFront(ele)}
                     positions={routeSlice.shapePoints}
                     weight={10}
-                    color={alt === activeAlternativeIndex ? '#ffff' : '#ffff'}
+                    color="#fff"
                     onClick={() => onAlternativeChange(alt)}
                     onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, i, alt)}
                     onMouseOut={this.handlePolyMouseOut}
@@ -274,7 +274,11 @@ class RoutePlannerResult extends React.Component {
                     ref={ele => this.bringToFront(ele)}
                     positions={routeSlice.shapePoints}
                     weight={6}
-                    color={alt === activeAlternativeIndex ? '#007bff' : '#868e96'}
+                    color={
+                      alt !== activeAlternativeIndex ? '#868e96'
+                        : transportType !== 'imhd' && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
+                        : 'hsl(211, 100%, 50%)'
+                    }
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
                     interactive={false}
