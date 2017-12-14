@@ -134,7 +134,7 @@ export const routePlannerFindRouteLogic = createLogic({
 
           dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives }));
         } else {
-          dispatch(routePlannerSetResult([]));
+          dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
           dispatch(toastsAdd({
             message: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
             style: 'warning',
@@ -143,7 +143,7 @@ export const routePlannerFindRouteLogic = createLogic({
         }
       })
       .catch((e) => {
-        dispatch(routePlannerSetResult([]));
+        dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
         dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
       })
       .then(() => {
