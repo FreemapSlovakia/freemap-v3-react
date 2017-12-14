@@ -275,7 +275,7 @@ class RoutePlannerResult extends React.Component {
                     weight={6}
                     color={alt === activeAlternativeIndex ? '#007bff' : '#868e96'}
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                    dashArray={routeSlice.mode === 'foot' ? '0, 10' : undefined}
+                    dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
                     interactive={false}
                   />
                 ))
