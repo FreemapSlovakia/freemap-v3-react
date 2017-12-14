@@ -372,7 +372,7 @@ export default connect(
     showLoginModal: state.auth.chooseLoginMethod,
     showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
     expertMode: state.main.expertMode,
-    extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'Trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
+    extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
   }),
   dispatch => ({
     onToolSet(tool) {
