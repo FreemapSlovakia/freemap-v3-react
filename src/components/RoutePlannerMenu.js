@@ -102,11 +102,24 @@ class RoutePlannerMenu extends React.Component {
   }
 
   render() {
+    const transportTypes = [
+      ['car', 'car', 'Auto, vrátane spoplatnených ciest'],
+      ['car-free', 'car', 'Auto, mimo spoplatnených ciest'],
+      ['imhd', 'bus', 'MHD (vo vývoji)'],
+      ['bike', 'bicycle', 'Bicykel'],
+      expertMode && ['foot-stroller', 'wheelchair-alt', 'S kočíkom / vozíčkom'],
+      ['nordic', '!icon-skier-skiing', 'Bežky'],
+      expertMode && ['ski', '!icon-skiing', 'Zjazdové lyžovanie'],
+      ['foot', 'male', 'Pešo'],
+    ];
+
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ onElevationChartVisibilityToggle, elevationProfileIsVisible,
       routeFound, shapePoints, expertMode,
     } = this.props;
+
+    const active = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
 
     return (
       <span>
@@ -150,29 +163,30 @@ class RoutePlannerMenu extends React.Component {
           </DropdownButton>
         </ButtonGroup>
         {' '}
-        <ButtonGroup>
+        <DropdownButton
+          title={
+            <React.Fragment>
+              <FontAwesomeIcon icon={active[1]} />
+              {active[0] === 'car' && <FontAwesomeIcon icon="money" />}
+              {' '}
+              {active[2].replace(/\s*,.*/, '')}
+            </React.Fragment>
+          }
+        >
           {
-            [
-              ['car', 'car', 'auto, vrátane spoplatnených ciest'],
-              ['car-free', 'car', 'auto, mimo spoplatnených ciest'],
-              ['foot', 'male', 'pešo'],
-              expertMode && ['foot-stroller', 'wheelchair-alt', 's kočíkom / vozíčkom'],
-              ['bike', 'bicycle', 'bicykel'],
-              ['nordic', '!icon-skier-skiing', 'bežky'],
-              expertMode && ['ski', '!icon-skiing', 'zjazdové lyžovanie'],
-              expertMode && ['imhd', 'bus', 'MHD (vo vývoji)'],
-            ].filter(x => x).map(([type, icon, title]) => (
-              <Button
+            transportTypes.filter(x => x).map(([type, icon, title]) => (
+              <MenuItem
+                eventKey={type}
                 key={type}
                 title={title}
                 active={transportType === type}
                 onClick={() => onTransportTypeChange(type)}
               >
-                {type === 'car' ? '€' : ''}<FontAwesomeIcon icon={icon} />
-              </Button>
+                <FontAwesomeIcon icon={icon} />{type === 'car' && <FontAwesomeIcon icon="money" />} {title}
+              </MenuItem>
             ))
           }
-        </ButtonGroup>
+        </DropdownButton>
         {/* ' '}
         <Button
           onClick={() => onItineraryVisibilityToggle()}
