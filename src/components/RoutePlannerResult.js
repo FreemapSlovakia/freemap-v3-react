@@ -52,13 +52,9 @@ class RoutePlannerResult extends React.Component {
     }
   }
 
-  setupZIndex = (ele, alt) => {
+  bringToFront = (ele) => {
     if (ele) {
-      if (alt === this.props.activeAlternativeIndex) {
-        ele.leafletElement.bringToFront();
-      } else {
-        ele.leafletElement.bringToBack();
-      }
+      ele.leafletElement.bringToFront();
     }
   }
 
@@ -240,11 +236,13 @@ class RoutePlannerResult extends React.Component {
           </RichMarker>
         }
         {
-          alternatives.map(({ itinerary }, alt) => (
-            itinerary.map((routeSlice, i) => (
-              <React.Fragment key={`slice-${timestamp}-${alt}-${i}`}>
-                {alt === activeAlternativeIndex && transportType === 'imhd' &&
+          alternatives.map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? 1000 : index }))
+          .sort((a, b) => a.index - b.index).map(({ itinerary, alt }) => (
+            <React.Fragment key={`alt-${timestamp}-${alt}`}>
+              {
+                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map((routeSlice, i) => (
                   <Marker
+                    key={`mark-${i}`}
                     icon={circularIcon}
                     position={routeSlice.shapePoints[0]}
                   >
@@ -252,20 +250,37 @@ class RoutePlannerResult extends React.Component {
                       <div>{routeSlice.desc}</div>
                     </Tooltip>
                   </Marker>
-                }
-                <Polyline
-                  ref={ele => this.setupZIndex(ele, alt)}
-                  positions={routeSlice.shapePoints}
-                  weight={8}
-                  color={alt === activeAlternativeIndex ? '#4444ff' : '#888'}
-                  opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                  dashArray={routeSlice.mode === 'foot' ? '0, 12' : undefined}
-                  onClick={() => onAlternativeChange(alt)}
-                  onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, i, alt)}
-                  onMouseOut={this.handlePolyMouseOut}
-                />
-              </React.Fragment>
-            ))
+                ))
+              }
+              {
+                itinerary.map((routeSlice, i) => (
+                  <Polyline
+                    key={`slice-${i}`}
+                    ref={ele => this.bringToFront(ele)}
+                    positions={routeSlice.shapePoints}
+                    weight={10}
+                    color={alt === activeAlternativeIndex ? '#ffff' : '#ffff'}
+                    onClick={() => onAlternativeChange(alt)}
+                    onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, i, alt)}
+                    onMouseOut={this.handlePolyMouseOut}
+                  />
+                ))
+              }
+              {
+                itinerary.map((routeSlice, i) => (
+                  <Polyline
+                    key={`slice-${timestamp}-${alt}-${i}`}
+                    ref={ele => this.bringToFront(ele)}
+                    positions={routeSlice.shapePoints}
+                    weight={6}
+                    color={alt === activeAlternativeIndex ? '#007bff' : '#868e96'}
+                    opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                    dashArray={routeSlice.mode === 'foot' ? '0, 10' : undefined}
+                    interactive={false}
+                  />
+                ))
+              }
+            </React.Fragment>
           ))
         }
         <ElevationChartActivePoint />
