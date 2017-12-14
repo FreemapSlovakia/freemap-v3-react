@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map, ScaleControl } from 'react-leaflet';
+import { Map, ScaleControl, AttributionControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
@@ -100,6 +100,7 @@ class Main extends React.Component {
     onMapReset: PropTypes.func.isRequired,
     showMenu: PropTypes.bool,
     expertMode: PropTypes.bool,
+    extraAttribution: PropTypes.string,
   };
 
   componentWillMount() {
@@ -117,9 +118,25 @@ class Main extends React.Component {
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
+  componentDidUpdate(prevProps) {
+    const { extraAttribution } = this.props;
+    if (this.attributionControl && prevProps.extraAttribution !== extraAttribution) {
+      if (prevProps.extraAttribution) {
+        this.attributionControl.leafletElement.removeAttribution(prevProps.extraAttribution);
+      }
+      if (extraAttribution) {
+        this.attributionControl.leafletElement.addAttribution(extraAttribution);
+      }
+    }
+  }
+
   componentWillUnmount() {
     document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
     setMapLeafletElement(null);
+  }
+
+  setAttributionControl = (ele) => {
+    this.attributionControl = ele;
   }
 
   handleFullscreenChange = () => {
@@ -293,6 +310,7 @@ class Main extends React.Component {
 
         <Map
           zoomControl={false}
+          attributionControl={false}
           minZoom={8}
           maxZoom={20}
           ref={(map) => { this.map = map; }}
@@ -308,6 +326,7 @@ class Main extends React.Component {
           maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
         >
           <ScaleControl imperial={false} position="bottomleft" />
+          <AttributionControl ref={this.setAttributionControl} />
           <Layers />
 
           {showMenu &&
@@ -353,6 +372,7 @@ export default connect(
     showLoginModal: state.auth.chooseLoginMethod,
     showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
     expertMode: state.main.expertMode,
+    extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'Trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
   }),
   dispatch => ({
     onToolSet(tool) {
