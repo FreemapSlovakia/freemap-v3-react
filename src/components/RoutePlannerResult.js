@@ -226,7 +226,7 @@ class RoutePlannerResult extends React.Component {
             onClick={this.handleEndPointClick}
           >
             {
-              summary0 ?
+              transportType === 'imhd' && summary0 ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div dangerouslySetInnerHTML={{ __html: summary0.replace(', &#9201', ',<br />&#9201') }} />
                 </Tooltip>
