@@ -71,7 +71,9 @@ class Layers extends React.Component {
   }
 
   handleKeydown = (event) => {
-    if (this.props.disableKeyboard || ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())) {
+    if (this.props.disableKeyboard || event.ctrlKey || event.altKey || event.metaKey || event.isComposing
+      || ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
+    ) {
       return;
     }
 
