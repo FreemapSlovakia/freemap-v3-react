@@ -236,7 +236,8 @@ class RoutePlannerResult extends React.Component {
           </RichMarker>
         }
         {
-          alternatives.map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? 1000 : index }))
+          (transportType !== 'imhd' ? alternatives : alternatives.map(addMissingSegments))
+          .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? 1000 : index }))
           .sort((a, b) => a.index - b.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
@@ -329,3 +330,42 @@ export default connect(
     },
   }),
 )(RoutePlannerResult);
+
+// adds missing foot segments (between bus-stop and footway)
+function addMissingSegments(alt) {
+  const routeSlices = [];
+  for (let i = 0; i < alt.itinerary.length; i += 1) {
+    const slice = alt.itinerary[i];
+    const prevSlice = alt.itinerary[i - 1];
+    const nextSlice = alt.itinerary[i + 1];
+
+    const prevSliceLastShapePoint = prevSlice ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1] : null;
+    const firstShapePoint = slice.shapePoints[0];
+
+    const lastShapePoint = slice.shapePoints[slice.shapePoints.length - 1];
+    const nextSliceFirstShapePoint = nextSlice ? nextSlice.shapePoints[0] : null;
+
+    const shapePoints = [...slice.shapePoints];
+
+    if (slice.mode === 'foot') {
+      if (prevSliceLastShapePoint
+        && (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) > 0.0000001 || Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
+      ) {
+        shapePoints.unshift(prevSliceLastShapePoint);
+      }
+
+      if (nextSliceFirstShapePoint
+        && (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) > 0.0000001 || Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
+      ) {
+        shapePoints.push(nextSliceFirstShapePoint);
+      }
+    }
+
+    routeSlices.push({
+      ...slice,
+      shapePoints,
+    });
+  }
+
+  return { ...alt, itinerary: routeSlices };
+}
