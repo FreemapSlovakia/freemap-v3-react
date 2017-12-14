@@ -1,7 +1,10 @@
-const baseSpecs = [['A', 'Automapa', 'car'], ['T', 'Turistická', '!icon-hiking'], ['C', 'Cyklomapa', 'bicycle'], ['K', 'Lyžiarska', '!icon-skier-skiing']];
-
 export const baseLayers = [
-  ...baseSpecs.map(([type, name, icon]) => ({
+  ...[
+    ['A', 'Automapa', 'car'],
+    ['T', 'Turistická', '!icon-hiking'],
+    ['C', 'Cyklomapa', 'bicycle'],
+    ['K', 'Lyžiarska', '!icon-skier-skiing'],
+  ].map(([type, name, icon]) => ({
     name,
     type,
     icon,
