@@ -17,7 +17,6 @@ class Layers extends React.Component {
     overlays: FmPropTypes.overlays,
     mapType: FmPropTypes.mapType.isRequired,
     overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
-    expertMode: PropTypes.bool,
     disableKeyboard: PropTypes.bool,
     galleryDirtySeq: PropTypes.number.isRequired,
     galleryFilter: FmPropTypes.galleryFilter.isRequired,
@@ -95,20 +94,17 @@ class Layers extends React.Component {
   }
 
   render() {
-    const { expertMode } = this.props;
-
     return (
       <span>
         {
           baseLayers
-            .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
             .filter(({ type }) => type === this.props.mapType)
             .map(item => this.getTileLayer(item))
         }
         {
           overlayLayers
             .filter(({ type }) => this.props.overlays.includes(type))
-            .map(item => ((!item.showOnlyInExpertMode || expertMode) ? this.getTileLayer(item) : null))
+            .map(item => this.getTileLayer(item))
         }
       </span>
     );
@@ -121,7 +117,6 @@ export default connect(
     overlays: state.map.overlays,
     mapType: state.map.mapType,
     overlayOpacity: state.map.overlayOpacity,
-    expertMode: state.main.expertMode,
     disableKeyboard: !!(state.main.activeModal
       || state.gallery.activeImageId && !state.gallery.showPosition && !state.gallery.pickingPositionForId), // NOTE there can be lot more things
     galleryFilter: state.gallery.filter,
