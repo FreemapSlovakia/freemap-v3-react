@@ -331,6 +331,7 @@ export default connect(
   }),
 )(RoutePlannerResult);
 
+// TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
 function addMissingSegments(alt) {
   const routeSlices = [];
