@@ -168,8 +168,7 @@ class RoutePlannerMenu extends React.Component {
             <React.Fragment>
               <FontAwesomeIcon icon={active[1]} />
               {active[0] === 'car' && <FontAwesomeIcon icon="money" />}
-              {' '}
-              {active[2].replace(/\s*,.*/, '')}
+              <span className="hidden-xs"> {active[2].replace(/\s*,.*/, '')}</span>
             </React.Fragment>
           }
         >
