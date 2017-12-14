@@ -177,6 +177,7 @@ function addObjects(doc, { objects }) {
 
 function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
   // TODO add itinerar details and metadata
+  // TODO add option to only export selected alternative
 
   const startWptEle = createElement(doc.documentElement, 'wpt', undefined, start);
   createElement(startWptEle, 'name', 'Štart');
@@ -189,12 +190,14 @@ function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
     createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
   });
 
-  alternatives.forEach(({ shapePoints }, i) => {
+  alternatives.forEach(({ itinerary }, i) => {
     const rteEle = createElement(doc.documentElement, 'rte');
     createElement(rteEle, 'name', `Alternatíva ${i + 1}`);
 
-    shapePoints.forEach(([lat, lon]) => {
-      createElement(rteEle, 'rtept', undefined, { lat, lon });
+    itinerary.forEach(({ shapePoints }) => {
+      shapePoints.forEach(([lat, lon]) => {
+        createElement(rteEle, 'rtept', undefined, { lat, lon });
+      });
     });
   });
 }
