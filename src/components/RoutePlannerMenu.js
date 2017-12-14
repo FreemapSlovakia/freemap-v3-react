@@ -110,7 +110,10 @@ class RoutePlannerMenu extends React.Component {
 
     return (
       <span>
-        <span className="fm-label"><FontAwesomeIcon icon="map-signs" /><span className="hidden-xs"> Vyhľadávač trás</span></span>
+        <span className="fm-label">
+          <FontAwesomeIcon icon="map-signs" />
+          <span className="hidden-xs"> Vyhľadávač trás</span>
+        </span>
         {' '}
         <ButtonGroup>
           <DropdownButton
@@ -119,9 +122,15 @@ class RoutePlannerMenu extends React.Component {
             onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
           >
-            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
-            <MenuItem onClick={this.handleStartCurrent}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
-            <MenuItem onClick={this.handleStartHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
+            <MenuItem>
+              <FontAwesomeIcon icon="map-marker" /> Vybrať na mape
+            </MenuItem>
+            <MenuItem onClick={this.handleStartCurrent}>
+              <FontAwesomeIcon icon="bullseye" /> Aktuálna poloha
+            </MenuItem>
+            <MenuItem onClick={this.handleStartHome}>
+              <FontAwesomeIcon icon="home" /> Domov
+            </MenuItem>
           </DropdownButton>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} /><span className="hidden-xs"> Cieľ</span></span>}
@@ -129,9 +138,15 @@ class RoutePlannerMenu extends React.Component {
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
           >
-            <MenuItem><FontAwesomeIcon icon="map-marker" /> Vybrať na mape</MenuItem>
-            <MenuItem onClick={this.handleFinishCurrent}><FontAwesomeIcon icon="bullseye" /> Aktuálna poloha</MenuItem>
-            <MenuItem onClick={this.handleFinishHome}><FontAwesomeIcon icon="home" /> Domov</MenuItem>
+            <MenuItem>
+              <FontAwesomeIcon icon="map-marker" /> Vybrať na mape
+            </MenuItem>
+            <MenuItem onClick={this.handleFinishCurrent}>
+              <FontAwesomeIcon icon="bullseye" /> Aktuálna poloha
+            </MenuItem>
+            <MenuItem onClick={this.handleFinishHome}>
+              <FontAwesomeIcon icon="home" /> Domov
+            </MenuItem>
           </DropdownButton>
         </ButtonGroup>
         {' '}
@@ -145,6 +160,7 @@ class RoutePlannerMenu extends React.Component {
               ['bike', 'bicycle', 'bicykel'],
               ['nordic', '!icon-skier-skiing', 'bežky'],
               expertMode && ['ski', '!icon-skiing', 'zjazdové lyžovanie'],
+              expertMode && ['imhd', 'bus', 'MHD (vo vývoji)'],
             ].filter(x => x).map(([type, icon, title]) => (
               <Button
                 key={type}
@@ -190,6 +206,7 @@ export default connect(
     itineraryIsVisible: state.routePlanner.itineraryIsVisible,
     routeFound: !!state.routePlanner.shapePoints,
     shapePoints: state.routePlanner.shapePoints,
+    activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
     elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
     expertMode: state.main.expertMode,
   }),

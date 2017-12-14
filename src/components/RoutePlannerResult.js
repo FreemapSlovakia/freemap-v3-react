@@ -1,21 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import turfLineDistance from '@turf/line-distance';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint }
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint, routePlannerSetActiveAlternativeIndex }
   from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import { sliceToGeojsonPoylines } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 
 const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-
-let k = 0;
 
 class RoutePlannerResult extends React.Component {
   static propTypes = {
@@ -23,7 +19,6 @@ class RoutePlannerResult extends React.Component {
     finish: FmPropTypes.point,
     midpoints: FmPropTypes.points,
     alternatives: PropTypes.arrayOf(PropTypes.shape({
-      shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
       duration: PropTypes.number,
       distance: PropTypes.number,
       itinerary: PropTypes.arrayOf(PropTypes.shape({
@@ -31,13 +26,19 @@ class RoutePlannerResult extends React.Component {
         lon: PropTypes.number.isRequired,
         desc: PropTypes.string.isRequired,
         km: PropTypes.number.isRequired,
-      })),
-    })),
+        mode: PropTypes.string.isRequired,
+        shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
+      }).isRequired).isRequired,
+    }).isRequired),
     onStartSet: PropTypes.func.isRequired,
     onFinishSet: PropTypes.func.isRequired,
     onMidpointSet: PropTypes.func.isRequired,
     onAddMidpoint: PropTypes.func.isRequired,
     onRemoveMidpoint: PropTypes.func.isRequired,
+    activeAlternativeIndex: PropTypes.number.isRequired,
+    onAlternativeChange: PropTypes.func.isRequired,
+    transportType: PropTypes.string,
+    timestamp: PropTypes.number,
   }
 
   state = {
@@ -48,6 +49,12 @@ class RoutePlannerResult extends React.Component {
   componentWillUnmount() {
     if (this.t) {
       clearTimeout(this.t);
+    }
+  }
+
+  bringToFront = (ele) => {
+    if (ele) {
+      ele.leafletElement.bringToFront();
     }
   }
 
@@ -75,32 +82,11 @@ class RoutePlannerResult extends React.Component {
     this.props.onRemoveMidpoint(position);
   }
 
-  futureMidpointsAndDistances() {
-    const { start, finish, midpoints, alternatives } = this.props;
-
-    return alternatives.map(({ shapePoints, distance, duration }) => {
-      const midpointDistancesFromStart = [];
-      let routeSlices = [];
-
-      const splitPoints = [start, ...midpoints, finish];
-      routeSlices = sliceToGeojsonPoylines(shapePoints, splitPoints);
-      let distanceFromStart = 0;
-
-      routeSlices.forEach((routeSlice) => {
-        const length = turfLineDistance(routeSlice);
-        distanceFromStart += length;
-        midpointDistancesFromStart.push(distanceFromStart);
-      });
-
-      return { midpointDistancesFromStart, routeSlices, distance, duration };
-    });
-  }
-
   handleEndPointClick = () => {
     // just to prevent click propagation to map
   }
 
-  handlePolyMouseMove = (e, segment) => {
+  handlePolyMouseMove = (e, segment, alt) => {
     if (this.dragging) {
       return;
     }
@@ -112,6 +98,7 @@ class RoutePlannerResult extends React.Component {
       lat: e.latlng.lat,
       lon: e.latlng.lng,
       segment,
+      alt,
     });
   }
 
@@ -171,17 +158,20 @@ class RoutePlannerResult extends React.Component {
     });
   }
 
+  handleFutureClick = () => {
+    this.props.onAlternativeChange(this.state.alt);
+  }
+
   render() {
-    const { start, midpoints, finish } = this.props;
+    const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange, transportType, timestamp, alternatives } = this.props;
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
       iconAnchor: [7, 7],
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
-    const alts = this.futureMidpointsAndDistances();
 
-    k += 1; // TODO this is hack to update tooltip positions on re-routing
+    const { distance, duration } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
     return (
       <React.Fragment>
@@ -207,6 +197,7 @@ class RoutePlannerResult extends React.Component {
             onMouseOver={this.handleFutureMouseOver}
             onMouseOut={this.handleFutureMouseOut}
             position={L.latLng(this.state.lat, this.state.lon)}
+            onClick={this.handleFutureClick}
           />
         }
         {
@@ -233,30 +224,63 @@ class RoutePlannerResult extends React.Component {
             onDragEnd={e => this.handleRouteMarkerDragEnd('finish', null, e)}
             position={L.latLng(finish.lat, finish.lon)}
             onClick={this.handleEndPointClick}
-          />
+          >
+            {!!distance &&
+              <Tooltip direction="top" offset={[0, -36]} permanent>
+                <div>
+                  <div>Vzdialenosť: {nf.format(distance)} km</div>
+                  <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
+                </div>
+              </Tooltip>
+            }
+          </RichMarker>
         }
         {
-          alts.map(({ routeSlices, distance, duration }, j) => (
-            routeSlices.map((routeSlice, i) => (
-              <Polyline
-                positions={routeSlice.geometry.coordinates.map(lonlat => [lonlat[1], lonlat[0]])}
-                weight="8"
-                key={`TC7dnZUMAG-${k}-${j}-${i}`}
-                color={`hsl(${[240/* b */, 120/* g */, 0/* r */, 60/* y */, 180/* c */, 300/* m */][j % 6]}, 100%, 25%)`}
-                opacity={0.5}
-                onMouseMove={e => this.handlePolyMouseMove(e, i)}
-                onMouseOut={this.handlePolyMouseOut}
-              >
-                {i === 0 &&
-                  <Tooltip direction="top" permanent interactive>
-                    <div>
-                      <div>Vzdialenosť: {nf.format(distance)} km</div>
-                      <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
-                    </div>
-                  </Tooltip>
-                }
-              </Polyline>
-            ))
+          alternatives.map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? 1000 : index }))
+          .sort((a, b) => a.index - b.index).map(({ itinerary, alt }) => (
+            <React.Fragment key={`alt-${timestamp}-${alt}`}>
+              {
+                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map((routeSlice, i) => (
+                  <Marker
+                    key={`mark-${i}`}
+                    icon={circularIcon}
+                    position={routeSlice.shapePoints[0]}
+                  >
+                    <Tooltip direction="right" permanent>
+                      <div>{routeSlice.desc}</div>
+                    </Tooltip>
+                  </Marker>
+                ))
+              }
+              {
+                itinerary.map((routeSlice, i) => (
+                  <Polyline
+                    key={`slice-${i}`}
+                    ref={ele => this.bringToFront(ele)}
+                    positions={routeSlice.shapePoints}
+                    weight={10}
+                    color={alt === activeAlternativeIndex ? '#ffff' : '#ffff'}
+                    onClick={() => onAlternativeChange(alt)}
+                    onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, i, alt)}
+                    onMouseOut={this.handlePolyMouseOut}
+                  />
+                ))
+              }
+              {
+                itinerary.map((routeSlice, i) => (
+                  <Polyline
+                    key={`slice-${timestamp}-${alt}-${i}`}
+                    ref={ele => this.bringToFront(ele)}
+                    positions={routeSlice.shapePoints}
+                    weight={6}
+                    color={alt === activeAlternativeIndex ? '#007bff' : '#868e96'}
+                    opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                    dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
+                    interactive={false}
+                  />
+                ))
+              }
+            </React.Fragment>
           ))
         }
         <ElevationChartActivePoint />
@@ -271,6 +295,9 @@ export default connect(
     finish: state.routePlanner.finish,
     midpoints: state.routePlanner.midpoints,
     alternatives: state.routePlanner.alternatives,
+    activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
+    transportType: state.routePlanner.effectiveTransportType,
+    timestamp: state.routePlanner.timestamp,
   }),
   dispatch => ({
     onStartSet(start) {
@@ -296,6 +323,9 @@ export default connect(
           { name: 'Nie' },
         ],
       }));
+    },
+    onAlternativeChange(index) {
+      dispatch(routePlannerSetActiveAlternativeIndex(index));
     },
   }),
 )(RoutePlannerResult);

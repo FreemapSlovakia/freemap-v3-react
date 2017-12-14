@@ -116,23 +116,25 @@ export const routePlannerFindRouteLogic = createLogic({
             }));
           }
 
-          const payload = routes.map((route) => {
-            const { legs, distance: totalDistance, duration: totalDuration, geometry: { coordinates } } = route;
-            const shapePoints = coordinates.map(lonlat => lonlat.reverse());
-            const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, maneuver: { type, modifier, location: [lon, lat] } }) => ({
+          const alternatives = routes.map((route) => {
+            const { legs, distance: totalDistance, duration: totalDuration } = route;
+            const itinerary = [].concat(...legs.map(leg => leg.steps.map(({ name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] } }) => ({
               lat,
               lon,
               km: distance / 1000,
               duration,
-              desc: `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
+              desc: transportType === 'imhd' ? name :
+                `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
+              mode,
+              shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
             }))));
 
-            return { shapePoints, itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
+            return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60 };
           });
 
-          dispatch(routePlannerSetResult(payload));
+          dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives }));
         } else {
-          dispatch(routePlannerSetResult([]));
+          dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
           dispatch(toastsAdd({
             message: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
             style: 'warning',
@@ -141,6 +143,7 @@ export const routePlannerFindRouteLogic = createLogic({
         }
       })
       .catch((e) => {
+        dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
         dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
       })
       .then(() => {

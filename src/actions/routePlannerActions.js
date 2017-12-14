@@ -46,3 +46,7 @@ export function routePlannerSetParams(start, finish, midpoints, transportType) {
 export function routePlannerPreventHint() {
   return { type: 'ROUTE_PLANNER_PREVENT_HINT' };
 }
+
+export function routePlannerSetActiveAlternativeIndex(index) {
+  return { type: 'ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX', payload: index };
+}

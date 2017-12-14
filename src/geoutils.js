@@ -1,5 +1,4 @@
 import geojsonArea from '@mapbox/geojson-area';
-import turfLineSlice from '@turf/line-slice';
 
 const PI2 = 2 * Math.PI;
 
@@ -80,33 +79,6 @@ export function area(points) {
     coordinates: [[...points, points[0]].map(({ lat, lon }) => [lon, lat])],
   };
   return geojsonArea.geometry(geometry);
-}
-
-export function sliceToGeojsonPoylines(polylineLatLons, splitPoints) {
-  const line = {
-    type: 'Feature',
-    geometry: {
-      type: 'LineString',
-      coordinates: polylineLatLons.map(latlon => [latlon[1], latlon[0]]),
-    },
-  };
-  const geojsonPoints = splitPoints.map((p) => {
-    const h = {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [p.lon, p.lat] },
-    };
-    return h;
-  });
-
-  const slices = [];
-  for (let i = 0; i < geojsonPoints.length - 1; i += 1) {
-    const p1 = geojsonPoints[i];
-    const p2 = geojsonPoints[i + 1];
-    const s = turfLineSlice(p1, p2, line);
-    slices.push(s);
-  }
-
-  return slices;
 }
 
 export function containsElevations(geojson) {
