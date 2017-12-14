@@ -256,7 +256,7 @@ class RoutePlannerResult extends React.Component {
                 itinerary.map((routeSlice, i) => (
                   <Polyline
                     key={`slice-${i}`}
-                    ref={this.bringToFront}
+                    ref={ele => this.bringToFront(ele)}
                     positions={routeSlice.shapePoints}
                     weight={10}
                     color={alt === activeAlternativeIndex ? '#ffff' : '#ffff'}
@@ -270,7 +270,7 @@ class RoutePlannerResult extends React.Component {
                 itinerary.map((routeSlice, i) => (
                   <Polyline
                     key={`slice-${timestamp}-${alt}-${i}`}
-                    ref={this.bringToFront}
+                    ref={ele => this.bringToFront(ele)}
                     positions={routeSlice.shapePoints}
                     weight={6}
                     color={alt === activeAlternativeIndex ? '#007bff' : '#868e96'}
