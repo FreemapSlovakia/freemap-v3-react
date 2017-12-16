@@ -124,14 +124,19 @@ export const routePlannerFindRouteLogic = createLogic({
               lon,
               km: distance / 1000,
               duration,
-              desc: transportType === 'imhd' ? name :
+              desc: transportType === 'imhd' ? name.replace(/(\d)m/g, '$1 min.').replace('šalina', 'električka') :
                 `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
               mode,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
               legIndex,
             }))));
 
-            return { itinerary, distance: totalDistance / 1000, duration: totalDuration / 60, summary0: legs[0].summary };
+            return {
+              itinerary,
+              distance: totalDistance / 1000,
+              duration: totalDuration / 60,
+              summary0: legs[0].summary.replace(/(\d)€/g, '$1 €').replace(/(\d)m/g, '$1 min.').replace(/\bmhd\b/, 'MHD').replace(/<a.*>/, ''),
+            };
           });
 
           const alternatives = transportType === 'imhd' ? alts.map(alt => addMissingSegments(alt)) : alts;
