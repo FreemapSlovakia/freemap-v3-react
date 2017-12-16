@@ -64,7 +64,7 @@ class Layers extends React.Component {
         minZoom={minZoom}
         maxZoom={20}
         maxNativeZoom={maxNativeZoom}
-        opacity={this.props.overlayOpacity[type] || 1.0}
+        opacity={this.props.overlayOpacity[type] || 1}
         zIndex={zIndex}
       />
     );

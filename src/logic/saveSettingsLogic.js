@@ -12,15 +12,13 @@ export const saveSettingsLogic = createLogic({
   type: 'SAVE_SETTINGS',
   cancelType: ['SET_ACTIVE_MODAL', 'SAVE_SETTINGS'],
   process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
-    const { tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity,
+    const { tileFormat, homeLocation, overlayOpacity,
       expertMode, trackViewerEleSmoothingFactor, user, preventTips } = action.payload;
 
     const dispatchRest = () => {
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
-      dispatch(mapSetOverlayOpacity('N', nlcOpacity));
-      dispatch(mapSetOverlayOpacity('t', touristOverlayOpacity));
-      dispatch(mapSetOverlayOpacity('c', cycloOverlayOpacity));
+      dispatch(mapSetOverlayOpacity(overlayOpacity));
       dispatch(setExpertMode(expertMode));
       dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
       dispatch(tipsPreventNextTime(preventTips));
@@ -52,11 +50,7 @@ export const saveSettingsLogic = createLogic({
             email: user.email,
             settings: {
               tileFormat,
-              overlayOpacity: {
-                N: nlcOpacity,
-                t: touristOverlayOpacity,
-                c: cycloOverlayOpacity,
-              },
+              overlayOpacity,
               expertMode,
               trackViewerEleSmoothingFactor,
             },

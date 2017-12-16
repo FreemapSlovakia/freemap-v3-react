@@ -19,8 +19,8 @@ export function mapSetTileFormat(tileFormat) {
   return { type: 'MAP_SET_TILE_FORMAT', payload: tileFormat };
 }
 
-export function mapSetOverlayOpacity(overlayType, overlayOpacity) {
-  return { type: 'MAP_SET_OVERLAY_OPACITY', overlayType, overlayOpacity };
+export function mapSetOverlayOpacity(overlayOpacity) {
+  return { type: 'MAP_SET_OVERLAY_OPACITY', payload: overlayOpacity };
 }
 
 export function mapLoadState(payload) {

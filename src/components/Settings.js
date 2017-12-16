@@ -12,6 +12,8 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
+import DropdownButton from 'react-bootstrap/lib/DropdownButton';
+import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
@@ -23,6 +25,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
+import { overlayLayers } from 'fm3/mapDefinitions';
 
 class Settings extends React.Component {
   static propTypes = {
@@ -35,10 +38,7 @@ class Settings extends React.Component {
     onClose: PropTypes.func.isRequired,
     onHomeLocationSelect: PropTypes.func.isRequired,
     onHomeLocationSelectionFinish: PropTypes.func.isRequired,
-    nlcOpacity: PropTypes.number.isRequired,
-    touristOverlayOpacity: PropTypes.number.isRequired,
-    cycloOverlayOpacity: PropTypes.number.isRequired,
-    zoom: PropTypes.number,
+    overlayOpacity: PropTypes.shape({}).isRequired,
     expertMode: PropTypes.bool.isRequired,
     trackViewerEleSmoothingFactor: PropTypes.number.isRequired,
     selectingHomeLocation: PropTypes.bool,
@@ -56,14 +56,13 @@ class Settings extends React.Component {
       homeLocationCssClasses: '',
       tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
-      nlcOpacity: props.nlcOpacity,
-      touristOverlayOpacity: props.touristOverlayOpacity,
-      cycloOverlayOpacity: props.cycloOverlayOpacity,
+      overlayOpacity: props.overlayOpacity,
       expertMode: props.expertMode,
       trackViewerEleSmoothingFactor: props.trackViewerEleSmoothingFactor,
       name: props.user && props.user.name || '',
       email: props.user && props.user.email || '',
       preventTips: props.preventTips,
+      selectedOverlay: 't',
     };
   }
 
@@ -86,9 +85,7 @@ class Settings extends React.Component {
     this.props.onSave(
       this.state.tileFormat,
       this.state.homeLocation,
-      this.state.nlcOpacity,
-      this.state.touristOverlayOpacity,
-      this.state.cycloOverlayOpacity,
+      this.state.overlayOpacity,
       this.state.expertMode,
       this.state.trackViewerEleSmoothingFactor,
       this.props.user ? { name: this.state.name.trim() || null, email: this.state.email.trim() || null } : null,
@@ -110,19 +107,28 @@ class Settings extends React.Component {
     });
   }
 
-  render() {
-    const { onClose, onHomeLocationSelect, selectingHomeLocation, zoom, user } = this.props;
-    const { homeLocation, homeLocationCssClasses, tileFormat, nlcOpacity, expertMode,
-      touristOverlayOpacity, cycloOverlayOpacity, trackViewerEleSmoothingFactor, name, email, preventTips } = this.state;
+  handleOverlaySelect = (o) => {
+    this.setState({
+      selectedOverlay: o,
+    });
+  }
 
-    const userMadeChanges = ['tileFormat', 'homeLocation', 'nlcOpacity', 'touristOverlayOpacity',
-      'cycloOverlayOpacity', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips']
+  render() {
+    const { onClose, onHomeLocationSelect, selectingHomeLocation, user } = this.props;
+    const { homeLocation, homeLocationCssClasses, tileFormat, expertMode,
+      overlayOpacity, trackViewerEleSmoothingFactor, name, email, preventTips, selectedOverlay } = this.state;
+
+      // TODO compare overlay opacity
+    const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips']
       .some(prop => this.state[prop] !== this.props[prop])
-      || user && (name !== (user.name || '') || email !== (user.email || ''));
+      || user && (name !== (user.name || '') || email !== (user.email || ''))
+      || overlayLayers.some(({ type }) => (overlayOpacity[type] || 1) !== (this.props.overlayOpacity[type] || 1));
 
     const homeLocationInfo = homeLocation
       ? `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`
       : 'neurčená';
+
+    const selectedOverlayDetails = overlayLayers.find(({ type }) => type === selectedOverlay);
 
     return (
       <Modal show={!selectingHomeLocation} onHide={onClose}>
@@ -135,7 +141,7 @@ class Settings extends React.Component {
           <Modal.Body>
             <Tabs id="setting-tabs">
               <Tab title="Mapa" eventKey={1}>
-                <p>Formát dlaždíc:</p>
+                <p>Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:</p>
                 <ButtonGroup>
                   <Button
                     active={tileFormat === 'png'}
@@ -165,22 +171,6 @@ class Settings extends React.Component {
                   <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
                 </Button>
                 <hr />
-                {/*
-                <p>Viditeľnosť vrstvy Lesné cesty NLC: {nlcOpacity.toFixed(1) * 100}%</p>
-                <Slider
-                  value={nlcOpacity}
-                  min={0.1}
-                  max={1.0}
-                  step={0.1}
-                  tooltip={false}
-                  onChange={newOpacity => this.setState({ nlcOpacity: newOpacity })}
-                />
-                {zoom < 11 &&
-                  <Alert>
-                    NLC vrstva sa zobrazuje až pri detailnejšom priblížení (od zoom úrovne 11).
-                  </Alert>
-                }
-              */}
               </Tab>
               <Tab title="Účet" eventKey={2}>
                 {user ? (
@@ -234,31 +224,31 @@ class Settings extends React.Component {
                   <React.Fragment>
                     <hr />
                     <div>
-                      <p>
-                        {'Viditeľnosť vrstvy Turistické trasy: '}
-                        {touristOverlayOpacity.toFixed(1) * 100}%
-                      </p>
+                      <p>Viditeľnosť vrstvy:</p>
+                      <DropdownButton
+                        id="overlayOpacity"
+                        onSelect={this.handleOverlaySelect}
+                        title={
+                          <React.Fragment>
+                            <FontAwesomeIcon icon={selectedOverlayDetails.icon} /> {selectedOverlayDetails.name} {(overlayOpacity[selectedOverlay] || 1).toFixed(1) * 100}%
+                          </React.Fragment>
+                        }
+                      >
+                        {
+                          overlayLayers.map(({ name: overlayName, type, icon }) => (
+                            <MenuItem key={type} eventKey={type}>
+                              <FontAwesomeIcon icon={icon} /> {overlayName} {(overlayOpacity[type] || 1).toFixed(1) * 100}%
+                            </MenuItem>
+                          ))
+                        }
+                      </DropdownButton>
                       <Slider
-                        value={touristOverlayOpacity}
+                        value={overlayOpacity[selectedOverlay] || 1}
                         min={0.1}
                         max={1.0}
                         step={0.1}
                         tooltip={false}
-                        onChange={newOpacity => this.setState({ touristOverlayOpacity: newOpacity })}
-                      />
-                    </div>
-                    <div>
-                      <p>
-                        {'Viditeľnosť vrstvy Cyklotrasy: '}
-                        {cycloOverlayOpacity.toFixed(1) * 100}%
-                      </p>
-                      <Slider
-                        value={cycloOverlayOpacity}
-                        min={0.1}
-                        max={1.0}
-                        step={0.1}
-                        tooltip={false}
-                        onChange={newOpacity => this.setState({ cycloOverlayOpacity: newOpacity })}
+                        onChange={newOpacity => this.setState({ overlayOpacity: { ...this.state.overlayOpacity, [selectedOverlay]: newOpacity } })}
                       />
                     </div>
                     <div>
@@ -298,10 +288,7 @@ export default connect(
   state => ({
     tileFormat: state.map.tileFormat,
     homeLocation: state.main.homeLocation,
-    zoom: state.map.zoom,
-    nlcOpacity: state.map.overlayOpacity.N,
-    touristOverlayOpacity: state.map.overlayOpacity.t,
-    cycloOverlayOpacity: state.map.overlayOpacity.c,
+    overlayOpacity: state.map.overlayOpacity,
     expertMode: state.main.expertMode,
     trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
     selectingHomeLocation: state.main.selectingHomeLocation,
@@ -309,12 +296,12 @@ export default connect(
     preventTips: state.tips.preventTips,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
+    onSave(tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
       // TODO use this
       dispatch({
         type: 'SAVE_SETTINGS',
         payload: {
-          tileFormat, homeLocation, nlcOpacity, touristOverlayOpacity, cycloOverlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips,
+          tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips,
         },
       });
     },

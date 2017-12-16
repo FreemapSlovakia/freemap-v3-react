@@ -1,12 +1,10 @@
-import update from 'immutability-helper';
-
 const initialState = {
   mapType: 'T',
   lat: 48.70714,
   lon: 19.4995,
   zoom: 8,
   overlays: [],
-  overlayOpacity: { N: 1.0, t: 1.0, c: 1.0 },
+  overlayOpacity: {},
   tileFormat: 'png',
 };
 
@@ -51,7 +49,7 @@ export default function map(state = initialState, action) {
     case 'MAP_SET_TILE_FORMAT':
       return { ...state, tileFormat: action.payload };
     case 'MAP_SET_OVERLAY_OPACITY':
-      return update(state, { overlayOpacity: { [action.overlayType]: { $set: action.overlayOpacity } } });
+      return { ...state, overlayOpacity: action.payload };
     case 'MAP_REFOCUS': {
       const newState = { ...state };
       ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach((prop) => {
