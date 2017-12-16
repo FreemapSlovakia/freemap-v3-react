@@ -268,7 +268,7 @@ class RoutePlannerResult extends React.Component {
                     weight={10}
                     color="#fff"
                     onClick={() => onAlternativeChange(alt)}
-                    onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, i, alt)}
+                    onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
                     onMouseOut={this.handlePolyMouseOut}
                   />
                 ))
