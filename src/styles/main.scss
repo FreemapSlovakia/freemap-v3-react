@@ -1,27 +1,8 @@
 @import "variables";
 
-.leaflet-container {
-  z-index: 1;
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-}
-
 .navbar {
   margin-bottom: 0;
   z-index: 2;
-}
-
-a.leaflet-control-layers-toggle {
-  background-size: 30px 30px;
-}
-
-.leaflet-touch {
-  a.leaflet-control-layers-toggle {
-    background-size: 36px 36px;
-  }
 }
 
 @media ($smartphone-screen) { // issue #71

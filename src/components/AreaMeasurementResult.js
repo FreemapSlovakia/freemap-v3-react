@@ -150,6 +150,7 @@ class AreaMeasurementResult extends React.Component {
 
         {ps.length > 2 &&
           <Polygon
+            weight={4}
             interactive={false}
             positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
           />
@@ -157,8 +158,8 @@ class AreaMeasurementResult extends React.Component {
 
         {ps.length && this.state.lat &&
           <Polyline
+            weight={4}
             interactive={false}
-            opacity={0.5}
             dashArray="6,8"
             positions={[
               [ps[0].lat, ps[0].lon],

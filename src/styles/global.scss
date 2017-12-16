@@ -32,35 +32,6 @@
   margin-bottom: 0;
 }
 
-.leaflet-container {
-  .leaflet-tooltip.compact {
-    padding: 0 3px;
-  }
-
-  .fa-icon-inside-leaflet-icon-holder {
-    position: absolute;
-    width: 100%;left: 50%;
-    margin-left: -50%;
-    top: 6px;
-    text-align: center;
-    font-size: 83%;
-  }
-
-  .circular-leaflet-marker-icon {
-    height: 14px;
-    width: 14px;
-    background-color: #007bff;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.75);
-  }
-}
-
-// preventing some defaults on L.divIcon
-.leaflet-div-icon {
-  background-color: transparent !important;
-  border: 0 !important;
-}
-
 @media (min-width: 768px) {
   .dropdown-long .dropdown-menu {
     overflow-x: auto;

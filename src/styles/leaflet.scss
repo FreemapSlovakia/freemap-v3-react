@@ -1,0 +1,49 @@
+.leaflet-container {
+  z-index: 1;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
+
+  .leaflet-tooltip.compact {
+    padding: 0 3px;
+  }
+
+  .fa-icon-inside-leaflet-icon-holder {
+    position: absolute;
+    width: 100%;left: 50%;
+    margin-left: -50%;
+    top: 6px;
+    text-align: center;
+    font-size: 83%;
+  }
+
+  .circular-leaflet-marker-icon {
+    height: 14px;
+    width: 14px;
+    background-color: #007bff;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+  }
+}
+
+// preventing some defaults on L.divIcon
+.leaflet-div-icon {
+  background-color: transparent !important;
+  border: 0 !important;
+}
+
+a.leaflet-control-layers-toggle {
+  background-size: 30px 30px;
+}
+
+.leaflet-touch {
+  a.leaflet-control-layers-toggle {
+    background-size: 36px 36px;
+  }
+}
+
+.leaflet-overlay-pane {
+  opacity: 0.666;
+}

@@ -176,7 +176,7 @@ class TrackViewerResult extends React.Component {
           data={trackGeojson}
           key={keyToAssureProperRefresh}
           onEachFeature={this.handleEachFeature}
-          style={{ weight: 6, opacity: displayingElevationChart ? 0 : 0.85 }}
+          style={{ weight: 4 }}
           pointToLayer={this.pointToLayer}
         />
 

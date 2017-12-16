@@ -102,14 +102,15 @@ class DistanceMeasurementResult extends React.Component {
       <React.Fragment>
         {ps.length > 2 &&
           <Polyline
+            weight={4}
             interactive={false}
             positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
           />
         }
         {ps.length && this.state.lat &&
           <Polyline
+            weight={4}
             interactive={false}
-            opacity={0.5}
             dashArray="6,8"
             positions={[[ps[ps.length - 1].lat, ps[ps.length - 1].lon], [this.state.lat, this.state.lon]]}
           />
