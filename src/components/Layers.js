@@ -51,6 +51,7 @@ class Layers extends React.Component {
         <GalleryLayer
           key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
           filter={galleryFilter}
+          opacity={this.props.overlayOpacity[type] || 1}
           zIndex={zIndex}
         />
       );

@@ -251,6 +251,7 @@ class Settings extends React.Component {
                         onChange={newOpacity => this.setState({ overlayOpacity: { ...this.state.overlayOpacity, [selectedOverlay]: newOpacity } })}
                       />
                     </div>
+                    <hr />
                     <div>
                       <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}</p>
                       <Slider
