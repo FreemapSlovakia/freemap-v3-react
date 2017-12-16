@@ -110,7 +110,7 @@ class RoutePlannerMenu extends React.Component {
       expertMode && ['foot-stroller', 'wheelchair-alt', 'S kočíkom / vozíčkom'],
       ['nordic', '!icon-skier-skiing', 'Bežky'],
       expertMode && ['ski', '!icon-skiing', 'Zjazdové lyžovanie'],
-      ['foot', 'male', 'Pešo'],
+      ['foot', '!icon-hiking', 'Pešo'],
     ];
 
     const {
