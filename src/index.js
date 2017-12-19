@@ -24,6 +24,10 @@ import 'fm3/fbLoader';
 
 import 'fm3/styles/global.scss';
 
+if (window.self !== window.top) {
+  document.body.classList.add('embedded');
+}
+
 const logicMiddleware = createLogicMiddleware(logics);
 const middlewares = [logicMiddleware];
 
@@ -35,16 +39,12 @@ const store = createStore(reducer, applyMiddleware(...middlewares));
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
-loadAppState(store);
-
-initAuthHelper(store);
-
 history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, history.location);
 
-if (window.self !== window.top) {
-  document.body.classList.add('embedded');
-}
+loadAppState(store);
+
+initAuthHelper(store);
 
 render(
   <Provider store={store}>

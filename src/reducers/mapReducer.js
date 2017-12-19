@@ -13,9 +13,7 @@ export default function map(state = initialState, action) {
     // TODO improve validation
     case 'MAP_LOAD_STATE': {
       const s = { ...state };
-      const {
-        mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat,
-      } = action.payload;
+      const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat } = action.payload;
       if (mapType) {
         s.mapType = mapType;
       }

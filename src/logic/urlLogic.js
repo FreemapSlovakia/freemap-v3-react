@@ -7,7 +7,7 @@ const tipKeys = tips.map(([key]) => key);
 
 export const urlLogic = createLogic({
   type: [
-    'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP',
+    'MAP_LOAD_STATE', 'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP',
     'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID',
     'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
