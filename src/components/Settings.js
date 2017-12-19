@@ -237,7 +237,7 @@ class Settings extends React.Component {
                         {
                           overlayLayers.map(({ name: overlayName, type, icon }) => (
                             <MenuItem key={type} eventKey={type}>
-                              <FontAwesomeIcon icon={icon} /> {overlayName} {(overlayOpacity[type] || 1).toFixed(1) * 100}%
+                              {icon && <FontAwesomeIcon icon={icon} />} {overlayName} {(overlayOpacity[type] || 1).toFixed(1) * 100}%
                             </MenuItem>
                           ))
                         }

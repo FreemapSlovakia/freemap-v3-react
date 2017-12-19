@@ -9,7 +9,6 @@ export default function FontAwesomeIcon({ icon, ...props }) {
 }
 
 FontAwesomeIcon.propTypes = {
-  icon: PropTypes.string,
-  color: PropTypes.string,
+  icon: PropTypes.string.isRequired,
   className: PropTypes.string,
 };
