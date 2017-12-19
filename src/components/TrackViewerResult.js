@@ -158,7 +158,13 @@ class TrackViewerResult extends React.Component {
     return turfLineDistance(s);
   }
 
-  pointToLayer = (geoJsonPoint, latlng) => L.marker(latlng, { icon: createMarkerIcon() })
+  pointToLayer = (geoJsonPoint, latlng) => L.marker(
+    latlng,
+    {
+      interactive: false,
+      icon: createMarkerIcon({ faIcon: 'flag' }),
+    },
+  )
 
   handlePointClick = () => {
     // just to prevent click propagation to map
@@ -175,9 +181,16 @@ class TrackViewerResult extends React.Component {
         <GeoJSON
           data={trackGeojson}
           key={keyToAssureProperRefresh}
+          style={{ weight: 10, color: '#fff' }}
+          pointToLayer={() => {}}
           onEachFeature={this.handleEachFeature}
-          style={{ weight: 4 }}
+        />
+        <GeoJSON
+          data={trackGeojson}
+          key={`${keyToAssureProperRefresh}2`}
+          style={{ weight: 6, color: '#883388' }}
           pointToLayer={this.pointToLayer}
+          interactive={false}
         />
 
         {
