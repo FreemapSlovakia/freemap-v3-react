@@ -265,7 +265,9 @@ class GalleryViewerModal extends React.Component {
                       onModelChange={this.handleEditModelChange}
                     />
                     {/* TODO put inside a form and save in onSubmit */}
-                    <Button bsStyle="primary" type="submit"><Glyphicon glyph="save" /> Uložiť</Button>
+                    <Button bsStyle="primary" type="submit">
+                      <Glyphicon glyph="save" /> Uložiť
+                    </Button>
                   </form>
                 }
                 {!isFullscreen &&
@@ -335,6 +337,10 @@ class GalleryViewerModal extends React.Component {
           <Button onClick={this.handleFullscreen}>
             <Glyphicon glyph="fullscreen" />
             <span className="hidden-xs hidden-sm"> Na celú obrazovku</span>
+          </Button>
+          <Button href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`} target="_blank">
+            <FontAwesomeIcon icon="external-link" />
+            <span className="hidden-sm hidden-xs"> Otvoriť v novom okne</span>
           </Button>
           <Button onClick={onClose}>
             <Glyphicon glyph="remove" />
