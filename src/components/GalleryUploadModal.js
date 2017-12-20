@@ -201,7 +201,12 @@ class GalleryUploadModal extends React.Component {
             ))
           }
           {!uploading &&
-            <Dropzone onDrop={this.handleFileDrop} accept=".jpg,.jpeg" className="dropzone" disablePreview>
+            <Dropzone
+              onDrop={this.handleFileDrop}
+              accept=".jpg,.jpeg"
+              className="dropzone"
+              disablePreview
+            >
               <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
               <ul>
                 <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10MB. Väčšie súbory server odmietne.</li>
@@ -216,10 +221,13 @@ class GalleryUploadModal extends React.Component {
           }
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={onUpload} disabled={uploading}><FontAwesomeIcon icon="upload" />
-            {uploading ? `Nahrávam (${items.length})` : 'Nahrať' }
+          <Button onClick={onUpload} disabled={uploading}>
+            <FontAwesomeIcon icon="upload" />
+            {uploading ? ` Nahrávam (${items.length})` : ' Nahrať' }
           </Button>
-          <Button onClick={this.handleClose} bsStyle="danger"><Glyphicon glyph="remove" /> Zrušiť</Button>
+          <Button onClick={this.handleClose} bsStyle="danger">
+            <Glyphicon glyph="remove" /> Zrušiť
+          </Button>
         </Modal.Footer>
       </Modal>
     );

@@ -149,7 +149,9 @@ export default class GalleryEditForm extends React.Component {
               readOnly
             />
             <InputGroup.Button>
-              <Button onClick={onPositionPick}><FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu</Button>
+              <Button onClick={onPositionPick}>
+                <FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu
+              </Button>
             </InputGroup.Button>
           </InputGroup>
         </FormGroup>

@@ -7,24 +7,20 @@ import Toast from 'fm3/components/Toast';
 
 import 'fm3/styles/toasts.scss';
 
-function Toasts({
-  toasts, onAction, onTimeoutStop, onTimeoutRestart,
-}) {
+function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart }) {
   return (
     <div className="toasts">
-      {toasts.map(({
- message, id, actions, style,
-}) => (
-  <Toast
-    key={id}
-    id={id}
-    message={message}
-    style={style}
-    onAction={onAction}
-    actions={actions}
-    onTimeoutStop={onTimeoutStop}
-    onTimeoutRestart={onTimeoutRestart}
-  />
+      {toasts.map(({ message, id, actions, style }) => (
+        <Toast
+          key={id}
+          id={id}
+          message={message}
+          style={style}
+          onAction={onAction}
+          actions={actions}
+          onTimeoutStop={onTimeoutStop}
+          onTimeoutRestart={onTimeoutRestart}
+        />
       ))}
     </div>
   );

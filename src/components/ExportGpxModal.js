@@ -90,7 +90,9 @@ export class EmbedMapModal extends React.Component {
             <FontAwesomeIcon icon="share" /> Exportovať
           </Button>
           {' '}
-          <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+          <Button onClick={onModalClose}>
+            <Glyphicon glyph="remove" /> Zavrieť
+          </Button>
         </Modal.Footer>
       </Modal>
     );

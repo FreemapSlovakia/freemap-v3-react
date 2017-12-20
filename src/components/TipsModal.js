@@ -107,12 +107,18 @@ export class TipsModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <FormGroup>
-            <Button onClick={onPrevious}><Glyphicon glyph="chevron-left" /> Predošlý tip</Button>
-            <Button onClick={onNext}><Glyphicon glyph="chevron-right" /> Ďalši tip</Button>
+            <Button onClick={onPrevious}>
+              <Glyphicon glyph="chevron-left" /> Predošlý tip
+            </Button>
+            <Button onClick={onNext}>
+              <Glyphicon glyph="chevron-right" /> Ďalši tip
+            </Button>
             {' '}
             <Checkbox inline onChange={this.handleNextTimePrevent}>Nabudúce nezobrazovať</Checkbox>
             {' '}
-            <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+            <Button onClick={onModalClose}>
+              <Glyphicon glyph="remove" /> Zavrieť
+            </Button>
           </FormGroup>
         </Modal.Footer>
       </Modal>

@@ -242,7 +242,9 @@ class TrackViewerMenu extends React.Component {
               </Dropzone>
             </Modal.Body>
             <Modal.Footer>
-              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+              <Button onClick={onModalClose}>
+                <Glyphicon glyph="remove" /> Zrušiť
+              </Button>
             </Modal.Footer>
           </Modal>
         }
@@ -258,7 +260,9 @@ class TrackViewerMenu extends React.Component {
               </Alert>
             </Modal.Body>
             <Modal.Footer>
-              <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+              <Button onClick={onModalClose}>
+                <Glyphicon glyph="remove" /> Zavrieť
+              </Button>
             </Modal.Footer>
           </Modal>
         }

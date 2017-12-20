@@ -281,9 +281,17 @@ class GalleryViewerModal extends React.Component {
                       <form onSubmit={this.handleCommentFormSubmit}>
                         <FormGroup>
                           <InputGroup>
-                            <FormControl type="text" placeholder="Nový komentár" value={comment} onChange={this.handleCommentChange} maxLength={4096} />
+                            <FormControl
+                              type="text"
+                              placeholder="Nový komentár"
+                              value={comment}
+                              onChange={this.handleCommentChange}
+                              maxLength={4096}
+                            />
                             <InputGroup.Button>
-                              <Button type="submit" disabled={comment.length < 1}>Pridaj</Button>
+                              <Button type="submit" disabled={comment.length < 1}>
+                                Pridaj
+                              </Button>
                             </InputGroup.Button>
                           </InputGroup>
                         </FormGroup>
@@ -291,7 +299,14 @@ class GalleryViewerModal extends React.Component {
                     }
                     {user &&
                       <div>
-                        Tvoje hodnotenie: <ReactStars className="stars" size={22} half={false} value={myStars} onChange={onStarsChange} />
+                        {'Tvoje hodnotenie: '}
+                        <ReactStars
+                          className="stars"
+                          size={22}
+                          half={false}
+                          value={myStars}
+                          onChange={onStarsChange}
+                        />
                       </div>
                     }
                   </React.Fragment>
@@ -303,13 +318,28 @@ class GalleryViewerModal extends React.Component {
         <Modal.Footer>
           {image && user && (user.isAdmin || user.id === image.user.id) &&
             <React.Fragment>
-              <Button onClick={onEdit} active={!!editModel}><Glyphicon glyph="edit" /><span className="hidden-xs"> Upraviť</span></Button>
-              <Button onClick={onDelete} bsStyle="danger"><Glyphicon glyph="trash" /><span className="hidden-xs"> Zmazať</span></Button>
+              <Button onClick={onEdit} active={!!editModel}>
+                <Glyphicon glyph="edit" />
+                <span className="hidden-xs"> Upraviť</span>
+              </Button>
+              <Button onClick={onDelete} bsStyle="danger">
+                <Glyphicon glyph="trash" />
+                <span className="hidden-xs"> Zmazať</span>
+              </Button>
             </React.Fragment>
           }
-          <Button onClick={onShowOnTheMap}><FontAwesomeIcon icon="dot-circle-o" /><span className="hidden-xs"> Ukázať na mape</span></Button>
-          <Button onClick={this.handleFullscreen}><Glyphicon glyph="fullscreen" /><span className="hidden-xs hidden-sm"> Na celú obrazovku</span></Button>
-          <Button onClick={onClose}><Glyphicon glyph="remove" /><span className="hidden-xs"> Zavrieť</span></Button>
+          <Button onClick={onShowOnTheMap}>
+            <FontAwesomeIcon icon="dot-circle-o" />
+            <span className="hidden-xs"> Ukázať na mape</span>
+          </Button>
+          <Button onClick={this.handleFullscreen}>
+            <Glyphicon glyph="fullscreen" />
+            <span className="hidden-xs hidden-sm"> Na celú obrazovku</span>
+          </Button>
+          <Button onClick={onClose}>
+            <Glyphicon glyph="remove" />
+            <span className="hidden-xs"> Zavrieť</span>
+          </Button>
         </Modal.Footer>
       </Modal>
     );

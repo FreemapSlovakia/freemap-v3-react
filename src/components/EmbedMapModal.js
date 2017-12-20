@@ -56,9 +56,13 @@ export class EmbedMapModal extends React.Component {
           />
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.handleCopyClick}><Glyphicon glyph="copy" /> Skopírovať kód</Button>
+          <Button onClick={this.handleCopyClick}>
+            <Glyphicon glyph="copy" /> Skopírovať kód
+          </Button>
           {' '}
-          <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+          <Button onClick={onModalClose}>
+            <Glyphicon glyph="remove" /> Zavrieť
+          </Button>
         </Modal.Footer>
       </Modal>
     );

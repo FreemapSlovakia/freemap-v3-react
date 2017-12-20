@@ -43,14 +43,30 @@ class ToolsMenuButton extends React.Component {
         <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
-              <MenuItem onClick={() => this.handleToolSelect('route-planner')}><FontAwesomeIcon icon="map-signs" /> Vyhľadávač trás</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('objects')}><FontAwesomeIcon icon="map-marker" /> Miesta</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('gallery')}><FontAwesomeIcon icon="picture-o" /> Fotografie</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('measure-dist')}><FontAwesomeIcon icon="!icon-ruler" /> Meranie</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('track-viewer')}><FontAwesomeIcon icon="road" /> Prehliadač trás (GPX)</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('info-point')}><FontAwesomeIcon icon="thumb-tack" /> Bod v mape</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('changesets')}><FontAwesomeIcon icon="pencil" /> Zmeny v mape</MenuItem>
-              <MenuItem onClick={() => this.handleToolSelect('map-details')}><FontAwesomeIcon icon="info" /> Detaily v mape</MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('route-planner')}>
+                <FontAwesomeIcon icon="map-signs" /> Vyhľadávač trás
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('objects')}>
+                <FontAwesomeIcon icon="map-marker" /> Miesta
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('gallery')}>
+                <FontAwesomeIcon icon="picture-o" /> Fotografie
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('measure-dist')}>
+                <FontAwesomeIcon icon="!icon-ruler" /> Meranie
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('track-viewer')}>
+                <FontAwesomeIcon icon="road" /> Prehliadač trás (GPX)
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('info-point')}>
+                <FontAwesomeIcon icon="thumb-tack" /> Bod v mape
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('changesets')}>
+                <FontAwesomeIcon icon="pencil" /> Zmeny v mape
+              </MenuItem>
+              <MenuItem onClick={() => this.handleToolSelect('map-details')}>
+                <FontAwesomeIcon icon="info" /> Detaily v mape
+              </MenuItem>
             </ul>
           </Popover>
         </Overlay>

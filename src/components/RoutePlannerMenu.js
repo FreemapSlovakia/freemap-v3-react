@@ -202,7 +202,8 @@ class RoutePlannerMenu extends React.Component {
             active={elevationProfileIsVisible}
             title="Výškovy profil"
           >
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs"> Výškovy profil</span>
+            <FontAwesomeIcon icon="bar-chart" />
+            <span className="hidden-xs"> Výškovy profil</span>
           </Button>
         }
       </span>

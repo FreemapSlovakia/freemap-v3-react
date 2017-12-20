@@ -25,9 +25,8 @@ class InfoPoint extends React.Component {
   }
 
   render() {
-    const {
-      lat, lon, label, inEditMode,
-    } = this.props;
+    const { lat, lon, label, inEditMode } = this.props;
+
     return lat && (
       <RichMarker
         faIcon="info"
@@ -38,7 +37,12 @@ class InfoPoint extends React.Component {
         onClick={this.handlePointClick}
       >
         {label &&
-          <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+          <Tooltip
+            className="compact"
+            offset={new L.Point(9, -25)}
+            direction="right"
+            permanent
+          >
             <span>
               {label}
             </span>

@@ -194,9 +194,15 @@ class GalleryViewerModal extends React.Component {
             </FormGroup>
           </Modal.Body>
           <Modal.Footer>
-            <Button type="submit"><Glyphicon glyph="ok" /> Použiť</Button>
-            <Button type="button" onClick={this.handleEraseClick}><Glyphicon glyph="erase" /> Vyčistiť</Button>
-            <Button type="button" onClick={onClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+            <Button type="submit">
+              <Glyphicon glyph="ok" /> Použiť
+            </Button>
+            <Button type="button" onClick={this.handleEraseClick}>
+              <Glyphicon glyph="erase" /> Vyčistiť
+            </Button>
+            <Button type="button" onClick={onClose}>
+              <Glyphicon glyph="remove" /> Zrušiť
+            </Button>
           </Modal.Footer>
         </form>
       </Modal>

@@ -32,7 +32,9 @@ export function SupportUsModal({ onModalClose }) {
         <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
           <input name="cmd" value="_s-xclick" type="hidden" />
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
-          <Button type="submit"><FontAwesomeIcon icon="paypal" /> Prispieť cez PayPal</Button>
+          <Button type="submit">
+            <FontAwesomeIcon icon="paypal" /> Prispieť cez PayPal
+          </Button>
         </form>
         <br />
         <p>
@@ -56,7 +58,9 @@ export function SupportUsModal({ onModalClose }) {
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+          <Button onClick={onModalClose}>
+            <Glyphicon glyph="remove" /> Zavrieť
+          </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>

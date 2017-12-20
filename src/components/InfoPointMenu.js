@@ -81,8 +81,12 @@ class InfoPointMenu extends React.Component {
                 </Alert>
               </Modal.Body>
               <Modal.Footer>
-                <Button bsStyle="info" onClick={() => this.saveLabel()}><Glyphicon glyph="floppy-disk" /> Uložiť</Button>
-                <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zrušiť</Button>
+                <Button bsStyle="info" onClick={() => this.saveLabel()}>
+                  <Glyphicon glyph="floppy-disk" /> Uložiť
+                </Button>
+                <Button onClick={onModalClose}>
+                  <Glyphicon glyph="remove" /> Zrušiť
+                </Button>
               </Modal.Footer>
             </form>
           </Modal>

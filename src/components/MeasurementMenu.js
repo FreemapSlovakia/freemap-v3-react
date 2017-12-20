@@ -71,41 +71,45 @@ class MeasurementMenu extends React.Component {
     if (isActive) {
       this.props.onElevationChartClose();
     } else {
-      const geojson = {
+      this.props.onElevationChartTrackGeojsonSet({
         type: 'Feature',
         geometry: {
           type: 'LineString',
           coordinates: this.props.distancePoints.map(p => [p.lon, p.lat]),
         },
-      };
-      this.props.onElevationChartTrackGeojsonSet(geojson);
+      });
     }
   }
 
   render() {
-    const {
-      onToolSet, tool, routeDefined, elevationChartTrackGeojson,
-    } = this.props;
+    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
 
     return (
       <span>
-        <span className="fm-label"><FontAwesomeIcon icon="!icon-ruler" /><span className="hidden-xs"> Meranie</span></span>
+        <span className="fm-label">
+          <FontAwesomeIcon icon="!icon-ruler" />
+          <span className="hidden-xs"> Meranie</span>
+        </span>
         {' '}
         <ButtonGroup>
           <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
-            <FontAwesomeIcon icon="arrows-h" /><span className="hidden-xs"> Vzdialenosť</span>
+            <FontAwesomeIcon icon="arrows-h" />
+            <span className="hidden-xs"> Vzdialenosť</span>
           </Button>
           <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
-            <FontAwesomeIcon icon="long-arrow-up" /><span className="hidden-xs"> Výška a poloha</span>
+            <FontAwesomeIcon icon="long-arrow-up" />
+            <span className="hidden-xs"> Výška a poloha</span>
           </Button>
           <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
-            <FontAwesomeIcon icon="square" /><span className="hidden-xs"> Plocha</span>
+            <FontAwesomeIcon icon="square" />
+            <span className="hidden-xs"> Plocha</span>
           </Button>
         </ButtonGroup>
         {' '}
         {tool === 'measure-dist' &&
           <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
-            <FontAwesomeIcon icon="bar-chart" /><span className="hidden-xs"> Výškovy profil</span>
+            <FontAwesomeIcon icon="bar-chart" />
+            <span className="hidden-xs"> Výškovy profil</span>
           </Button>
         }
       </span>

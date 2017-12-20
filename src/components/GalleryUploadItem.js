@@ -48,7 +48,9 @@ export default class GalleryUploadItem extends React.Component {
             onModelChange={this.handleModelChange}
           />
           {' '}
-          <Button onClick={this.handleRemove} bsStyle="danger"><FontAwesomeIcon icon="times" />Odstrániť</Button>
+          <Button onClick={this.handleRemove} bsStyle="danger">
+            <FontAwesomeIcon icon="times" /> Odstrániť
+          </Button>
         </fieldset>
       </Thumbnail>
     );

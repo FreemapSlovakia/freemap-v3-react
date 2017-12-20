@@ -253,7 +253,9 @@ class Settings extends React.Component {
                     </div>
                     <hr />
                     <div>
-                      <p>Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}</p>
+                      <p>
+                        Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}
+                      </p>
                       <Slider
                         value={trackViewerEleSmoothingFactor}
                         min={1}
@@ -264,7 +266,8 @@ class Settings extends React.Component {
                       />
                     </div>
                     <Alert>
-                      Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
+                      Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne.
+                      Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
                     </Alert>
                   </React.Fragment>
                 }

@@ -54,7 +54,9 @@ export function AboutModal({ onModalClose }) {
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onModalClose}><Glyphicon glyph="remove" /> Zavrieť</Button>
+          <Button onClick={onModalClose}>
+            <Glyphicon glyph="remove" /> Zavrieť
+          </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>
