@@ -142,18 +142,24 @@ export const overlayLayers = [
   //   key: 'N',
   //   zIndex: 2,
   // },
-  {
-    name: 'Strava heatmap',
-    type: 's',
+  ...[
+    ['both', 'Všetko'],
+    ['ride', 'Cyklojazdy'],
+    ['run', 'Beh'],
+    ['water', 'Vodné aktivity'],
+    ['winter', 'Zimné aktivity'],
+  ].map(([type, name], i) => ({
+    name: `Strava heatmapa (${name})`,
+    type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
-    url: '//heatmap-external-{s}.strava.com/tiles/ride/bluered/{z}/{x}/{y}.png?px=256',
+    url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
     attribution: '© <a href="https://www.strava.com/" target="_blank">Strava</a>',
     minZoom: 0,
     maxNativeZoom: 16,
-    key: 'H',
+    key: type === 'both' ? 'H' : undefined,
     showOnlyInExpertMode: true,
     zIndex: 2,
-  },
+  })),
   {
     name: 'OSM GPS stopy',
     type: 'g',

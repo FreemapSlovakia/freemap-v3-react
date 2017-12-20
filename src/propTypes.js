@@ -24,7 +24,7 @@ export const searchResult = PropTypes.shape({
 });
 
 export const overlayOpacity = PropTypes.shape({
-  N: PropTypes.number.isRequired,
+  // N: PropTypes.number.isRequired,
 });
 
 export const point = PropTypes.shape({

@@ -3,9 +3,8 @@ import queryString from 'query-string';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { getTrasformedParamsIfIsOldFreemapUrl, getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/oldFreemapUtils';
 
-const baseLetters = baseLayers.map(({ type }) => type).join('');
-const overlayLetters = ['I', ...overlayLayers.map(({ type }) => type).join('')];
-const layersRegExp = new RegExp(`^[${baseLetters}][${overlayLetters}]*$`);
+const baseLetters = baseLayers.map(({ type }) => type);
+const overlayLetters = ['I', ...overlayLayers.map(({ type }) => type)];
 
 export function getMapStateFromUrl(location) {
   {
@@ -32,14 +31,12 @@ export function getMapStateFromUrl(location) {
 
   const layers = query.layers || '';
 
-  const layersOK = layersRegExp.test(layers);
+  const base = layers.charAt(0);
+  const mapType = baseLetters.includes(base) ? base : undefined;
+  const ovl = layers.substring(1).replace(/s\D|s$/, 's0');
+  const overlays = overlayLetters.filter(x => ovl.includes(x));
 
-  const mapType = layersOK ? layers.charAt(0) : undefined;
-  const overlays = layersOK && layers.length > 1 ? layers.substring(1).split('') : [];
-
-  return {
-    lat, lon, zoom, mapType, overlays,
-  };
+  return { lat, lon, zoom, mapType, overlays };
 }
 
 function undefineNaN(val) {
@@ -51,9 +48,7 @@ export function getMapStateDiffFromUrl(state1, state2) {
     return null;
   }
 
-  const {
-    lat, lon, zoom, mapType, overlays = [],
-  } = state1;
+  const { lat, lon, zoom, mapType, overlays = [] } = state1;
   const changes = {};
 
   if (mapType && mapType !== state2.mapType) {
