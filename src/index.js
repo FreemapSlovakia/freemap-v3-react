@@ -22,7 +22,7 @@ import initAuthHelper from 'fm3/authHelper';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
 
-import 'fm3/styles/global.scss';
+import 'fm3/styles/bootstrap-override.scss';
 
 if (window.self !== window.top) {
   document.body.classList.add('embedded');

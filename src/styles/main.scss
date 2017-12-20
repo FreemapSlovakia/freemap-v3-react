@@ -1,15 +1,19 @@
 @import "variables";
 
-.navbar {
-  margin-bottom: 0;
-  z-index: 2;
+#app {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 0;
 }
 
-@media ($smartphone-screen) { // issue #71
-  .navbar-form {
-    border-top: 0;
-    margin-top: 0;
-  }
+.hidden {
+  display: none !important;
+}
+
+.rangeslider-horizontal .rangeslider__fill {
+  background-color: lighten($theme-primary-color, 25%);
 }
 
 .header {
@@ -173,6 +177,3 @@ button#freemap-logo {
   margin-bottom: 2px;
 }
 
-.panel-title > a {
-  cursor: pointer;
-}
