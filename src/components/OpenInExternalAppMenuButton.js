@@ -28,9 +28,7 @@ export default class OpenInExternalAppMenuButton extends React.Component {
   openIn(where) {
     this.setState({ show: false });
 
-    const {
-      lat, lon, zoom, mapType,
-    } = this.props;
+    const { lat, lon, zoom, mapType } = this.props;
 
     switch (where) {
       case 'osm.org':

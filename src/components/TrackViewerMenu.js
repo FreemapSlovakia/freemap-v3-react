@@ -181,14 +181,13 @@ class TrackViewerMenu extends React.Component {
   }
 
   render() {
-    const {
-      activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy,
-    } = this.props;
+    const { activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
 
     let shareURL = '';
     if (trackUID) {
       shareURL = `${window.location.origin}/?track-uid=${trackUID}`;
     }
+
     return (
       <span>
         <span className="fm-label"><FontAwesomeIcon icon="road" /><span className="hidden-xs"> Prehliadač trás (GPX)</span></span>

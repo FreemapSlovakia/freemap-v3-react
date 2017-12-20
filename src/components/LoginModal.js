@@ -7,9 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { authLoginWithOsm, authLoginWithFacebook, authLoginWithGoogle, authLoginClose } from 'fm3/actions/authActions';
 
-function LoginModal({
-  onClose, onLoginWithFacebook, onLoginWithGoogle, onLoginWithOsm,
-}) {
+function LoginModal({ onClose, onLoginWithFacebook, onLoginWithGoogle, onLoginWithOsm }) {
   return (
     <Modal show onHide={onClose}>
       <Modal.Header closeButton>

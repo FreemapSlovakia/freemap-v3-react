@@ -27,9 +27,8 @@ const galleryLayer = L.GridLayer.extend({
 
     const k = 2 ** coords.z;
 
-    const {
-      tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo,
-    } = this.options.filter;
+    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = this.options.filter;
+
     axios.get(
       `${process.env.API_URL}/gallery/pictures`,
       {

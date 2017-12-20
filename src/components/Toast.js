@@ -34,9 +34,7 @@ export default class Toast extends React.Component {
   }
 
   render() {
-    const {
-      message, actions, onAction, id, style,
-    } = this.props;
+    const { message, actions, onAction, id, style } = this.props;
     const defaultAction = actions.find(({ name }) => !name);
     const clickHandler = defaultAction ? () => onAction(id, defaultAction.action) : undefined;
     const buttonActions = actions.filter(({ name }) => name);
