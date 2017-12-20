@@ -39,7 +39,7 @@ export class ShareMapModal extends React.Component {
         </Modal.Header>
         <Modal.Body>
           <p>
-            Zvolený pohľad na mapu aj s infobodom je dostupný na tejto adrese:
+            Zvolený pohľad na mapu je dostupný na tejto adrese:
           </p>
           <FormControl
             inputRef={this.setFormControl}
