@@ -38,9 +38,9 @@ class ObjectsMenu extends React.Component {
 
     return items.length === 0 ? null : (
       <React.Fragment key={gid}>
-        <MenuItem divider />,
-        <MenuItem header>{groupTitle}</MenuItem>,
-        items,
+        <MenuItem divider />
+        <MenuItem header>{groupTitle}</MenuItem>
+        {items}
       </React.Fragment>
     );
   }
