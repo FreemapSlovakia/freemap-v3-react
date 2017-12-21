@@ -207,7 +207,7 @@ class TrackViewerMenu extends React.Component {
         </Button>
         {' '}
         {elevationChartTrackGeojson &&
-          <ButtonGroup bsSize="small">
+          <ButtonGroup>
             <Button active={colorizeTrackBy === 'elevation'} onClick={() => onColorizeTrackBy('elevation')}>
               Nadm. výška
             </Button>
