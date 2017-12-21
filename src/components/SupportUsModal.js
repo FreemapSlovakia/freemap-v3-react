@@ -38,7 +38,7 @@ export function SupportUsModal({ onModalClose }) {
         </form>
         <br />
         <p>
-          Za každý príspevok vám budeme veľmi vďačný.
+          Za každý príspevok vám budeme veľmi vďační.
         </p>
         <hr />
         <address>
