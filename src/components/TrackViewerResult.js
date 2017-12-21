@@ -124,7 +124,7 @@ class TrackViewerResult extends React.Component {
       colorLineData = this.colorLineDataForSteepness();
       palette = { 0.0: 'green', 0.5: 'white', 1.0: 'red' };
     }
-    const line = L.hotline(colorLineData, { weight: 4, palette });
+    const line = L.hotline(colorLineData, { weight: 6, outlineWidth: 2, outlineColor: '#fff', palette });
     line.isColorizedElePath = true;
     line.addTo(getMapLeafletElement());
   }
@@ -178,20 +178,24 @@ class TrackViewerResult extends React.Component {
 
     return trackGeojson && (
       <React.Fragment>
-        <GeoJSON
-          data={trackGeojson}
-          key={keyToAssureProperRefresh}
-          style={{ weight: 10, color: '#fff' }}
-          pointToLayer={() => {}}
-          onEachFeature={this.handleEachFeature}
-        />
-        <GeoJSON
-          data={trackGeojson}
-          key={`${keyToAssureProperRefresh}2`}
-          style={{ weight: 6, color: '#883388' }}
-          pointToLayer={this.pointToLayer}
-          interactive={false}
-        />
+        {!displayingElevationChart &&
+          <React.Fragment>
+            <GeoJSON
+              data={trackGeojson}
+              key={keyToAssureProperRefresh}
+              style={{ weight: 10, color: '#fff' }}
+              pointToLayer={() => {}}
+              onEachFeature={this.handleEachFeature}
+            />
+            <GeoJSON
+              data={trackGeojson}
+              key={`${keyToAssureProperRefresh}2`}
+              style={{ weight: 6, color: '#883388' }}
+              pointToLayer={this.pointToLayer}
+              interactive={false}
+            />
+          </React.Fragment>
+        }
 
         {
           startPoints.map((p, i) => (
