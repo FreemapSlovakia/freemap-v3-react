@@ -119,7 +119,7 @@ class TrackViewerResult extends React.Component {
     let palette;
     if (colorizeTrackBy === 'elevation') {
       colorLineData = this.colorLineDataForElevation();
-      palette = { 0.0: 'green', 0.5: 'yellow', 1.0: 'red' };
+      palette = { 0.0: 'black', 0.5: '#838', 1.0: 'white' };
     } else if (colorizeTrackBy === 'steepness') {
       colorLineData = this.colorLineDataForSteepness();
       palette = { 0.0: 'green', 0.5: 'white', 1.0: 'red' };
