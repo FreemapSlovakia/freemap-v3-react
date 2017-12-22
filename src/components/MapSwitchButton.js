@@ -18,6 +18,7 @@ class MapSwitchButton extends React.Component {
     onMapRefocus: PropTypes.func.isRequired,
     expertMode: PropTypes.bool,
     pictureFilterIsActive: PropTypes.bool,
+    isAdmin: PropTypes.bool,
   };
 
   state = {
@@ -54,6 +55,8 @@ class MapSwitchButton extends React.Component {
   }
 
   render() {
+    const { isAdmin } = this.props;
+
     return (
       <React.Fragment>
         <Button ref={this.setButton} onClick={this.handleButtonClick} title="Vrstvy">
@@ -65,6 +68,7 @@ class MapSwitchButton extends React.Component {
               {
                 baseLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .filter(({ adminOnly }) => isAdmin || !adminOnly)
                   .map(({ name, type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
@@ -86,6 +90,7 @@ class MapSwitchButton extends React.Component {
               {
                 overlayLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .filter(({ adminOnly }) => isAdmin || !adminOnly)
                   .map(({ name, type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
@@ -138,6 +143,7 @@ export default connect(
     overlays: state.map.overlays,
     expertMode: state.main.expertMode,
     pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
+    isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
   }),
   dispatch => ({
     onMapRefocus(changes) {

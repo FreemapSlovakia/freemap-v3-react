@@ -20,6 +20,7 @@ class Layers extends React.Component {
     disableKeyboard: PropTypes.bool,
     galleryDirtySeq: PropTypes.number.isRequired,
     galleryFilter: FmPropTypes.galleryFilter.isRequired,
+    isAdmin: PropTypes.bool,
   };
 
   componentDidMount() {
@@ -70,7 +71,9 @@ class Layers extends React.Component {
   }
 
   handleKeydown = (event) => {
-    if (this.props.disableKeyboard || event.ctrlKey || event.altKey || event.metaKey || event.isComposing
+    const { disableKeyboard, onMapTypeChange, isAdmin, overlays, onOverlaysChange } = this.props;
+
+    if (disableKeyboard || event.ctrlKey || event.altKey || event.metaKey || event.isComposing
       || ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
     ) {
       return;
@@ -78,33 +81,37 @@ class Layers extends React.Component {
 
     const baseLayer = baseLayers.find(l => l.key === event.key);
     if (baseLayer) {
-      this.props.onMapTypeChange(baseLayer.type);
+      onMapTypeChange(baseLayer.type);
     }
 
     const overlayLayer = overlayLayers.find(l => l.key === event.key);
-    if (overlayLayer) {
+    if (overlayLayer && (!overlayLayer.adminOnly) || isAdmin) {
       const { type } = overlayLayer;
-      const next = new Set(this.props.overlays);
+      const next = new Set(overlays);
       if (next.has(type)) {
         next.delete(type);
       } else {
         next.add(type);
       }
-      this.props.onOverlaysChange([...next]);
+      onOverlaysChange([...next]);
     }
   }
 
   render() {
+    const { mapType, overlays, isAdmin } = this.props;
+
     return (
       <span>
         {
           baseLayers
-            .filter(({ type }) => type === this.props.mapType)
+            .filter(({ type }) => type === mapType)
+            .filter(({ adminOnly }) => isAdmin || !adminOnly)
             .map(item => this.getTileLayer(item))
         }
         {
           overlayLayers
-            .filter(({ type }) => this.props.overlays.includes(type))
+            .filter(({ type }) => overlays.includes(type))
+            .filter(({ adminOnly }) => isAdmin || !adminOnly)
             .map(item => this.getTileLayer(item))
         }
       </span>
@@ -122,6 +129,7 @@ export default connect(
       || state.gallery.activeImageId && !state.gallery.showPosition && !state.gallery.pickingPositionForId), // NOTE there can be lot more things
     galleryFilter: state.gallery.filter,
     galleryDirtySeq: state.gallery.dirtySeq,
+    isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
   }),
   (dispatch, props) => ({
     onMapTypeChange(mapType) {
