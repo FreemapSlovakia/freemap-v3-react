@@ -39,10 +39,10 @@ const store = createStore(reducer, applyMiddleware(...middlewares));
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
+loadAppState(store);
+
 history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, history.location);
-
-loadAppState(store);
 
 initAuthHelper(store);
 
