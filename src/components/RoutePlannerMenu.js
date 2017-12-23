@@ -102,22 +102,22 @@ class RoutePlannerMenu extends React.Component {
   }
 
   render() {
-    const transportTypes = [
-      ['car', 'car', 'Auto, vrátane spoplatnených ciest'],
-      ['car-free', 'car', 'Auto, mimo spoplatnených ciest'],
-      ['imhd', 'bus', 'MHD (vo vývoji)'],
-      ['bike', 'bicycle', 'Bicykel'],
-      expertMode && ['foot-stroller', 'wheelchair-alt', 'S kočíkom / vozíčkom'],
-      ['nordic', '!icon-skier-skiing', 'Bežky'],
-      expertMode && ['ski', '!icon-skiing', 'Zjazdové lyžovanie'],
-      ['foot', '!icon-hiking', 'Pešo'],
-    ];
-
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ onElevationChartVisibilityToggle, elevationProfileIsVisible,
       routeFound, shapePoints, expertMode,
     } = this.props;
+
+    const transportTypes = [
+      ['car', 'car', 'Auto, vrátane spoplatnených ciest'],
+      ['car-free', 'car', 'Auto, mimo spoplatnených ciest'],
+      ['imhd', 'bus', 'MHD (vo vývoji)'],
+      ['bike', 'bicycle', 'Bicykel'],
+      (expertMode || transportType === 'foot-stroller') && ['foot-stroller', 'wheelchair-alt', 'S kočíkom / vozíčkom'],
+      ['nordic', '!icon-skier-skiing', 'Bežky'],
+      (expertMode || transportType === 'ski') && ['ski', '!icon-skiing', 'Zjazdové lyžovanie'],
+      ['foot', '!icon-hiking', 'Pešo'],
+    ];
 
     const active = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
 
