@@ -12,7 +12,7 @@ import Main from 'fm3/components/Main';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
-import { mainLoadState, enableStateSaving } from 'fm3/actions/mainActions';
+import { mainLoadState } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 
@@ -39,11 +39,10 @@ const store = createStore(reducer, applyMiddleware(...middlewares));
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
-history.listen(handleLocationChange.bind(undefined, store));
-handleLocationChange(store, history.location); // reflect URL to redux state
+loadAppState(store);
 
-store.dispatch(enableStateSaving());
-loadAppState(store); // reflect local state to redux state
+history.listen(handleLocationChange.bind(undefined, store));
+handleLocationChange(store, history.location);
 
 initAuthHelper(store);
 
