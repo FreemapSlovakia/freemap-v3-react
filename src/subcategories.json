@@ -829,7 +829,7 @@
     "filename": "bicycle",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "bicycle"
       }
     ]
@@ -865,7 +865,7 @@
     "filename": "alcohol",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "alcohol"
       }
     ]
@@ -877,7 +877,7 @@
     "filename": "art",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "art"
       }
     ]
@@ -889,7 +889,7 @@
     "filename": "bakery",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "bakery"
       }
     ]
@@ -901,7 +901,7 @@
     "filename": "beauty",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "beauty"
       }
     ]
@@ -913,7 +913,7 @@
     "filename": "bed",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "bed"
       }
     ]
@@ -925,7 +925,7 @@
     "filename": "beverages",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "beverages"
       }
     ]
@@ -937,7 +937,7 @@
     "filename": "books",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "books"
       }
     ]
@@ -949,7 +949,7 @@
     "filename": "boutique",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "boutique"
       }
     ]
@@ -961,7 +961,7 @@
     "filename": "butcher",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "butcher"
       }
     ]
@@ -973,7 +973,7 @@
     "filename": "car",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "car"
       }
     ]
@@ -985,7 +985,7 @@
     "filename": "car_repair",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "car_repair"
       }
     ]
@@ -997,7 +997,7 @@
     "filename": "charity",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "charity"
       }
     ]
@@ -1009,7 +1009,7 @@
     "filename": "chemist",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "chemist"
       }
     ]
@@ -1021,7 +1021,7 @@
     "filename": "clothes",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "clothes"
       }
     ]
@@ -1033,7 +1033,7 @@
     "filename": "computer",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "computer"
       }
     ]
@@ -1045,7 +1045,7 @@
     "filename": "confectionery",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "confectionery"
       }
     ]
@@ -1057,7 +1057,7 @@
     "filename": "copyshop",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "copyshop"
       }
     ]
@@ -1069,7 +1069,7 @@
     "filename": "curtain",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "curtain"
       }
     ]
@@ -1081,7 +1081,7 @@
     "filename": "deli",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "deli"
       }
     ]
@@ -1093,7 +1093,7 @@
     "filename": "department_store",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "department_store"
       }
     ]
@@ -1105,7 +1105,7 @@
     "filename": "dive",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "dive"
       }
     ]
@@ -1117,7 +1117,7 @@
     "filename": "dry_cleaning",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "dry_cleaning"
       }
     ]
@@ -1129,7 +1129,7 @@
     "filename": "doityourself",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "doityourself"
       }
     ]
@@ -1141,7 +1141,7 @@
     "filename": "electronics",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "electronics"
       }
     ]
@@ -1153,7 +1153,7 @@
     "filename": "erotic",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "erotic"
       }
     ]
@@ -1165,7 +1165,7 @@
     "filename": "fabric",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "fabric"
       }
     ]
@@ -1177,7 +1177,7 @@
     "filename": "farm",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "farm"
       }
     ]
@@ -1189,7 +1189,7 @@
     "filename": "florist",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "florist"
       }
     ]
@@ -1201,7 +1201,7 @@
     "filename": "frame",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "frame"
       }
     ]
@@ -1213,7 +1213,7 @@
     "filename": "furnace",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "furnace"
       }
     ]
@@ -1225,7 +1225,7 @@
     "filename": "funeral_directors",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "funeral_directors"
       }
     ]
@@ -1237,7 +1237,7 @@
     "filename": "furniture",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "furniture"
       }
     ]
@@ -1249,7 +1249,7 @@
     "filename": "garden_centre",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "garden_centre"
       }
     ]
@@ -1261,7 +1261,7 @@
     "filename": "general",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "general"
       }
     ]
@@ -1273,7 +1273,7 @@
     "filename": "gift",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "gift"
       }
     ]
@@ -1285,7 +1285,7 @@
     "filename": "glaziery",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "glaziery"
       }
     ]
@@ -1297,7 +1297,7 @@
     "filename": "greengrocer",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "greengrocer"
       }
     ]
@@ -1309,7 +1309,7 @@
     "filename": "hairdresser",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "hairdresser"
       }
     ]
@@ -1321,7 +1321,7 @@
     "filename": "hardware",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "hardware"
       }
     ]
@@ -1333,7 +1333,7 @@
     "filename": "hearing_aids",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "hearing_aids"
       }
     ]
@@ -1345,7 +1345,7 @@
     "filename": "hifi",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "hifi"
       }
     ]
@@ -1369,7 +1369,7 @@
     "filename": "interior_decoration",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "interior_decoration"
       }
     ]
@@ -1381,7 +1381,7 @@
     "filename": "jewelry",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "jewelry"
       }
     ]
@@ -1393,7 +1393,7 @@
     "filename": "kiosk",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "kiosk"
       }
     ]
@@ -1405,7 +1405,7 @@
     "filename": "kitchen",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "kitchen"
       }
     ]
@@ -1417,7 +1417,7 @@
     "filename": "laundry",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "laundry"
       }
     ]
@@ -1429,7 +1429,7 @@
     "filename": "mall",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "mall"
       }
     ]
@@ -1441,7 +1441,7 @@
     "filename": "massage",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "massage"
       }
     ]
@@ -1453,7 +1453,7 @@
     "filename": "mobile_phone",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "mobile_phone"
       }
     ]
@@ -1465,7 +1465,7 @@
     "filename": "money_lender",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "money_lender"
       }
     ]
@@ -1477,7 +1477,7 @@
     "filename": "motorcycle",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "motorcycle"
       }
     ]
@@ -1489,7 +1489,7 @@
     "filename": "musical_instrument",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "musical_instrument"
       }
     ]
@@ -1501,7 +1501,7 @@
     "filename": "newsagent",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "newsagent"
       }
     ]
@@ -1513,7 +1513,7 @@
     "filename": "optician",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "optician"
       }
     ]
@@ -1525,7 +1525,7 @@
     "filename": "organic",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "organic"
       }
     ]
@@ -1537,7 +1537,7 @@
     "filename": "outdoor",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "outdoor"
       }
     ]
@@ -1549,7 +1549,7 @@
     "filename": "paint",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "paint"
       }
     ]
@@ -1561,7 +1561,7 @@
     "filename": "pawnbroker",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "pawnbroker"
       }
     ]
@@ -1573,7 +1573,7 @@
     "filename": "pet",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "pet"
       }
     ]
@@ -1585,7 +1585,7 @@
     "filename": "seafood",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "seafood"
       }
     ]
@@ -1597,7 +1597,7 @@
     "filename": "second_hand",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "second_hand"
       }
     ]
@@ -1609,7 +1609,7 @@
     "filename": "shoes",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "shoes"
       }
     ]
@@ -1621,7 +1621,7 @@
     "filename": "sports",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "sports"
       }
     ]
@@ -1633,7 +1633,7 @@
     "filename": "stationery",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "stationery"
       }
     ]
@@ -1645,7 +1645,7 @@
     "filename": "tattoo",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "tattoo"
       }
     ]
@@ -1657,7 +1657,7 @@
     "filename": "toys",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "toys"
       }
     ]
@@ -1669,7 +1669,7 @@
     "filename": "building_supplies",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "trade"
       },
       {
@@ -1685,7 +1685,7 @@
     "filename": "vacant",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "vacant"
       }
     ]
@@ -1697,7 +1697,7 @@
     "filename": "vacuum_cleaner",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "vacuum_cleaner"
       }
     ]
@@ -1709,7 +1709,7 @@
     "filename": "variety_store",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "variety_store"
       }
     ]
@@ -1721,7 +1721,7 @@
     "filename": "video",
     "filter": [
       {
-        "key": "shop ",
+        "key": "shop",
         "value": "video"
       }
     ]
