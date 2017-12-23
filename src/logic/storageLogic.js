@@ -5,6 +5,10 @@ export default createLogic({
   process({ getState }) {
     const state = getState();
 
+    if (!state.main.stateSavingEnabled) {
+      return;
+    }
+
     const mapState = state.map;
 
     const appState = {

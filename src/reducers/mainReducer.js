@@ -7,6 +7,7 @@ const initialState = {
   expertMode: false,
   locate: false,
   selectingHomeLocation: false,
+  stateSavingEnabled: false,
 };
 
 export default function main(state = initialState, action) {
@@ -53,6 +54,8 @@ export default function main(state = initialState, action) {
       return { ...state, selectingHomeLocation: action.payload };
     case 'TIPS_SHOW':
       return { ...state, activeModal: 'tips' };
+    case 'ENABLE_STATE_SAVING':
+      return { ...state, stateSavingEnabled: true };
     default:
       return state;
   }

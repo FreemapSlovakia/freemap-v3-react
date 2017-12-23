@@ -45,3 +45,7 @@ export function toggleLocate() {
 export function setSelectingHomeLocation(value) {
   return { type: 'SET_SELECTING_HOME_LOCATION', payload: value };
 }
+
+export function enableStateSaving() {
+  return { type: 'ENABLE_STATE_SAVING' };
+}
