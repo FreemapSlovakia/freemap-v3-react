@@ -74,11 +74,10 @@ export function getCurrentPosition() {
 }
 
 export function area(points) {
-  const geometry = {
+  return geojsonArea.geometry({
     type: 'Polygon',
     coordinates: [[...points, points[0]].map(({ lat, lon }) => [lon, lat])],
-  };
-  return geojsonArea.geometry(geometry);
+  });
 }
 
 export function containsElevations(geojson) {
@@ -90,7 +89,7 @@ export function smoothElevations(geojson, eleSmoothingFactor) {
   const coords = geojson.geometry.coordinates;
   let prevFloatingWindowEle = 0;
   return coords.map((lonLatEle, i) => {
-    const floatingWindow = coords.slice(i, i + eleSmoothingFactor).filter(e => !!e).sort();
+    const floatingWindow = coords.slice(i, i + eleSmoothingFactor).filter(e => e).sort();
     let floatingWindowWithoutExtremes = floatingWindow;
     if (eleSmoothingFactor >= 5) { // ignore highest and smallest value
       floatingWindowWithoutExtremes = floatingWindow.splice(1, floatingWindow.length - 2);

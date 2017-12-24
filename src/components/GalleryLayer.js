@@ -87,7 +87,7 @@ const galleryLayer = L.GridLayer.extend({
   },
 });
 
-export default class FooLayer extends GridLayer {
+export default class GalleryLayer extends GridLayer {
   static propTypes = {
     filter: galleryFilter.isRequired,
   };
