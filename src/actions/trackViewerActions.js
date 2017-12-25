@@ -25,3 +25,7 @@ export function trackViewerLoadState(payload) {
 export function trackViewerColorizeTrackBy(colorizeTrackBy) {
   return { type: 'TRACK_VIEWER_COLORIZE_TRACK_BY', payload: colorizeTrackBy };
 }
+
+export function trackShowInfo() {
+  return { type: 'TRACK_SHOW_INFO' };
+}

@@ -16,6 +16,7 @@ import authLogic from 'fm3/logic/authLogic';
 import mapDetailsLogic from 'fm3/logic/mapDetailsLogic';
 import saveSettingsLogic from 'fm3/logic/saveSettingsLogic';
 import tipsLogic from 'fm3/logic/tipsLogic';
+import trackShowInfoLogic from 'fm3/logic/trackShowInfoLogic';
 
 export default [
   ...routePlannerLogic,
@@ -36,4 +37,5 @@ export default [
   mapDetailsLogic,
   saveSettingsLogic,
   ...tipsLogic,
+  trackShowInfoLogic,
 ];

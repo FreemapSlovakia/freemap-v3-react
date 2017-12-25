@@ -12,26 +12,31 @@ import Alert from 'react-bootstrap/lib/Alert';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy, trackShowInfo } from 'fm3/actions/trackViewerActions';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import { smoothElevations, distance } from 'fm3/geoutils';
-
 import 'fm3/styles/trackViewer.scss';
 
-const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
-
 class TrackViewerMenu extends React.Component {
-  // NOTE commented out because UX feels weird
-  // componentWillMount() {
-  //   const startingWithBlankTrackViewer = this.props.trackUID === null;
-  //   if (startingWithBlankTrackViewer) {
-  //     this.props.onModalLaunch('upload-track');
-  //   }
-  // }
+  static propTypes = {
+    activeModal: PropTypes.string,
+    onModalClose: PropTypes.func.isRequired,
+    onModalLaunch: PropTypes.func.isRequired,
+    onTrackViewerUploadTrack: PropTypes.func.isRequired,
+    onTrackViewerDataSet: PropTypes.func.isRequired,
+    onLoadError: PropTypes.func.isRequired,
+    onTrackUIDReset: PropTypes.func.isRequired,
+    trackGeojson: PropTypes.object,  // eslint-disable-line
+    trackGpx: PropTypes.string,
+    trackUID: PropTypes.string,
+    onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
+    onElevationChartClose: PropTypes.func.isRequired,
+    elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
+    colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
+    onColorizeTrackBy: PropTypes.func.isRequired,
+    onShowTrackInfo: PropTypes.func.isRequired,
+  }
 
   componentWillReceiveProps(newProps) {
     const userHasUploadedTrackAndWantsToShareIt = this.props.trackUID === null && newProps.trackUID != null;
@@ -92,96 +97,9 @@ class TrackViewerMenu extends React.Component {
     return false;
   }
 
-  showTrackInfo = () => {
-    const { startPoints, finishPoints, trackGeojson, eleSmoothingFactor, onTrackInfoShow } = this.props;
-
-    const tableData = [];
-
-    let startTime;
-    let finishTime;
-
-    if (startPoints.length) {
-      [{ startTime }] = startPoints;
-      if (startTime) {
-        tableData.push(['startTime', 'Čas štartu', timeFormat.format(new Date(startTime))]);
-      }
-    }
-    if (finishPoints.length) {
-      [{ finishTime }] = finishPoints;
-      if (finishTime) {
-        tableData.push(['finishTime', 'Čas v cieli', timeFormat.format(new Date(finishTime))]);
-      }
-    }
-
-    let duration = 0;
-    if (startTime && finishTime) {
-      duration = (new Date(finishTime) - new Date(startTime)) / 1000;
-      const hours = Math.floor(duration / 3600);
-      const minutes = Math.floor((duration - hours * 3600) / 60);
-      tableData.push(['duration', 'Trvanie', `${hours} hodín ${minutes} minút`]);
-    }
-
-    if (finishPoints.length) {
-      const [{ lengthInKm }] = finishPoints;
-      tableData.push(['distance', 'Vzdialenosť', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
-
-      if (duration) {
-        const avgSpeed = lengthInKm / duration * 3600;
-        tableData.push(['avgSpeed', 'Priemerná rýchlosť', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
-      }
-    }
-
-    const firstRealFeature = trackGeojson.features[0];
-    let minEle = Infinity;
-    let maxEle = -Infinity;
-    let uphillEleSum = 0;
-    let downhillEleSum = 0;
-    const smoothedLatLonEles = smoothElevations(firstRealFeature, eleSmoothingFactor);
-    let [previousLatLonEle] = smoothedLatLonEles;
-
-    smoothedLatLonEles.forEach((latLonEle) => {
-      const distanceFromPrevPointInMeters = distance(latLonEle[0], latLonEle[1], previousLatLonEle[0], previousLatLonEle[1]);
-      if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
-        const ele = latLonEle[2];
-        if (ele < minEle) {
-          minEle = ele;
-        }
-        if (maxEle < ele) {
-          maxEle = ele;
-        }
-
-        const eleDiff = ele - previousLatLonEle[2];
-        if (eleDiff < 0) {
-          downhillEleSum += eleDiff * -1;
-        } else if (eleDiff > 0) {
-          uphillEleSum += eleDiff;
-        }
-        previousLatLonEle = latLonEle;
-      }
-    });
-    if (minEle !== Infinity) {
-      tableData.push(['minEle', 'Najnižší bod', `${noDecimalDigitsNumberFormat.format(minEle)} m.n.m.`]);
-    }
-    if (maxEle !== -Infinity) {
-      tableData.push(['maxEle', 'Najvyšší bod', `${noDecimalDigitsNumberFormat.format(maxEle)} m.n.m.`]);
-    }
-    tableData.push(['uphill', 'Celkové stúpanie', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
-    tableData.push(['downhill', 'Celkové klesanie', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
-    const infoMessage = (
-      <dl className="trackInfo dl-horizontal">
-        {
-          tableData.map(([key, label, value]) => ([
-            <dt key={`${key}-dt`}>{label}:</dt>,
-            <dd key={`${key}-dd`} className="infoValue">{value}</dd>,
-          ]))
-        }
-      </dl>
-    );
-    onTrackInfoShow(infoMessage);
-  }
-
   render() {
-    const { activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy } = this.props;
+    const { activeModal, onModalLaunch, onModalClose, trackGpx, trackUID, elevationChartTrackGeojson, colorizeTrackBy, onColorizeTrackBy,
+      onShowTrackInfo } = this.props;
 
     let shareURL = '';
     if (trackUID) {
@@ -218,7 +136,7 @@ class TrackViewerMenu extends React.Component {
         }
         {' '}
         <Button
-          onClick={this.showTrackInfo}
+          onClick={onShowTrackInfo}
           disabled={!this.trackGeojsonIsSuitableForElevationChart()}
         >
           <FontAwesomeIcon icon="info-circle" />
@@ -270,43 +188,13 @@ class TrackViewerMenu extends React.Component {
   }
 }
 
-TrackViewerMenu.propTypes = {
-  activeModal: PropTypes.string,
-  onModalClose: PropTypes.func.isRequired,
-  onModalLaunch: PropTypes.func.isRequired,
-  onTrackViewerUploadTrack: PropTypes.func.isRequired,
-  onTrackViewerDataSet: PropTypes.func.isRequired,
-  onLoadError: PropTypes.func.isRequired,
-  onTrackUIDReset: PropTypes.func.isRequired,
-  trackGeojson: PropTypes.object,  // eslint-disable-line
-  trackGpx: PropTypes.string,
-  trackUID: PropTypes.string,
-  onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
-  onElevationChartClose: PropTypes.func.isRequired,
-  elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
-  onTrackInfoShow: PropTypes.func.isRequired,
-  startPoints: PropTypes.arrayOf(PropTypes.shape({
-    startTime: PropTypes.string,
-  })),
-  finishPoints: PropTypes.arrayOf(PropTypes.shape({
-    lengthInKm: PropTypes.number.isRequired,
-    finishTime: PropTypes.string,
-  })),
-  eleSmoothingFactor: PropTypes.number.isRequired,
-  colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
-  onColorizeTrackBy: PropTypes.func.isRequired,
-};
-
 export default connect(
   state => ({
     activeModal: state.main.activeModal,
     trackGeojson: state.trackViewer.trackGeojson,
     trackGpx: state.trackViewer.trackGpx,
-    startPoints: state.trackViewer.startPoints,
-    finishPoints: state.trackViewer.finishPoints,
     trackUID: state.trackViewer.trackUID,
     elevationChartTrackGeojson: state.elevationChart.trackGeojson,
-    eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
     colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   }),
   dispatch => ({
@@ -334,13 +222,8 @@ export default connect(
     onColorizeTrackBy(approach) {
       dispatch(trackViewerColorizeTrackBy(approach));
     },
-    onTrackInfoShow(message) {
-      dispatch(toastsAdd({
-        collapseKey: 'trackViewer.trackInfo',
-        message,
-        cancelType: ['SET_TOOL', 'TRACK_VIEWER_SET_TRACK_DATA'],
-        style: 'info',
-      }));
+    onShowTrackInfo() {
+      dispatch(trackShowInfo());
     },
     onLoadError(message) {
       dispatch(toastsAdd({
