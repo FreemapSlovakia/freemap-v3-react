@@ -29,3 +29,7 @@ export function trackViewerColorizeTrackBy(colorizeTrackBy) {
 export function trackShowInfo() {
   return { type: 'TRACK_SHOW_INFO' };
 }
+
+export function trackToggleElevationChart() {
+  return { type: 'TRACK_TOGGLE_ELEVATION_CHART' };
+}

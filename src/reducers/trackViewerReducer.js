@@ -5,7 +5,7 @@ const initialState = {
   startPoints: [],
   finishPoints: [],
   eleSmoothingFactor: 5,
-  colorizeTrackBy: 'elevation',
+  colorizeTrackBy: null,
   gpxUrl: null, // TODO to separate reducer (?)
   osmNodeId: null,
   osmWayId: null,

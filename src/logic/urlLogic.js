@@ -1,14 +1,14 @@
 import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
 import refModals from 'fm3/refModals';
-import tips from 'fm3/tips/index.json';
+import allTips from 'fm3/tips/index.json';
 
-const tipKeys = tips.map(([key]) => key);
+const tipKeys = allTips.map(([key]) => key);
 
 export const urlLogic = createLogic({
   type: [
     'MAP_LOAD_STATE', 'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP',
-    'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID',
+    'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID', 'TRACK_VIEWER_COLORIZE_TRACK_BY',
     'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
@@ -17,64 +17,64 @@ export const urlLogic = createLogic({
   ],
   process({ getState, action }, dispatch, done) {
     const {
-      map: {
-        mapType, overlays, zoom, lat, lon,
-      },
-      routePlanner: {
-        start, finish, midpoints, transportType,
-      },
-      trackViewer: { trackUID, gpxUrl, osmNodeId, osmWayId, osmRelationId },
-      gallery: { activeImageId },
+      map,
+      routePlanner,
+      trackViewer,
+      gallery,
       infoPoint,
-      changesets: { days, authorName },
-      distanceMeasurement: { points: distanceMeasurementPoints },
-      areaMeasurement: { points: areaMeasurementPoints },
-      elevationMeasurement: { point: elevationMeasurementPoint },
+      changesets,
+      distanceMeasurement,
+      areaMeasurement,
+      elevationMeasurement,
       gallery: { filter: galleryFilter },
-      main: { activeModal },
-      tips: { tip },
+      main,
+      tips,
     } = getState();
 
     const queryParts = [
-      `map=${zoom}/${serializePoint({ lat, lon })}`,
-      `layers=${mapType}${overlays.join('')}`,
+      `map=${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`,
+      `layers=${map.mapType}${map.overlays.join('')}`,
     ];
 
-    if (start && finish) {
+    if (routePlanner.start && routePlanner.finish) {
       queryParts.push(
-        `transport=${transportType}`,
-        `points=${[start, ...midpoints, finish].map(point => serializePoint(point)).join(',')}`,
+        `transport=${routePlanner.transportType}`,
+        `points=${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish].map(point => serializePoint(point)).join(',')}`,
       );
     }
 
-    if (trackUID) {
-      queryParts.push(`track-uid=${trackUID}`);
+    if (trackViewer.trackUID) {
+      queryParts.push(`track-uid=${trackViewer.trackUID}`);
     }
 
-    if (gpxUrl) {
-      queryParts.push(`gpx-url=${gpxUrl}`);
+    if (trackViewer.gpxUrl) {
+      queryParts.push(`gpx-url=${trackViewer.gpxUrl}`);
     }
 
-    if (osmNodeId) {
-      queryParts.push(`osm-node=${osmNodeId}`);
+    if (trackViewer.osmNodeId) {
+      queryParts.push(`osm-node=${trackViewer.osmNodeId}`);
     }
 
-    if (osmWayId) {
-      queryParts.push(`osm-way=${osmWayId}`);
+    if (trackViewer.osmWayId) {
+      queryParts.push(`osm-way=${trackViewer.osmWayId}`);
     }
 
-    if (osmRelationId) {
-      queryParts.push(`osm-relation=${osmRelationId}`);
+    if (trackViewer.osmRelationId) {
+      queryParts.push(`osm-relation=${trackViewer.osmRelationId}`);
     }
 
-    if (activeImageId) {
-      queryParts.push(`image=${activeImageId}`);
+    if (trackViewer.colorizeTrackBy) {
+      queryParts.push(`track-colorize-by=${trackViewer.colorizeTrackBy}`);
     }
 
-    if (days) {
-      queryParts.push(`changesets-days=${days}`);
-      if (authorName) {
-        queryParts.push(`changesets-author=${encodeURIComponent(authorName)}`);
+    if (gallery.activeImageId) {
+      queryParts.push(`image=${gallery.activeImageId}`);
+    }
+
+    if (changesets.days) {
+      queryParts.push(`changesets-days=${changesets.days}`);
+      if (changesets.authorName) {
+        queryParts.push(`changesets-author=${encodeURIComponent(changesets.authorName)}`);
       }
     }
 
@@ -85,18 +85,18 @@ export const urlLogic = createLogic({
       }
     }
 
-    if (distanceMeasurementPoints && distanceMeasurementPoints.length) {
-      queryParts.push(`distance-measurement-points=${distanceMeasurementPoints
+    if (distanceMeasurement.points && distanceMeasurement.points.length) {
+      queryParts.push(`distance-measurement-points=${distanceMeasurement.points
         .map(point => serializePoint(point)).join(',')}`);
     }
 
-    if (areaMeasurementPoints && areaMeasurementPoints.length) {
-      queryParts.push(`area-measurement-points=${areaMeasurementPoints
+    if (areaMeasurement.points && areaMeasurement.points.length) {
+      queryParts.push(`area-measurement-points=${areaMeasurement.points
         .map(point => serializePoint(point)).join(',')}`);
     }
 
-    if (elevationMeasurementPoint) {
-      queryParts.push(`elevation-measurement-point=${serializePoint(elevationMeasurementPoint)}`);
+    if (elevationMeasurement.point) {
+      queryParts.push(`elevation-measurement-point=${serializePoint(elevationMeasurement.point)}`);
     }
 
     if (galleryFilter.userId) {
@@ -131,12 +131,12 @@ export const urlLogic = createLogic({
       queryParts.push(`gallery-created-at-to=${galleryFilter.createdAtTo.toISOString().replace(/T.*/, '')}`);
     }
 
-    if (activeModal && refModals.includes(activeModal)) {
-      queryParts.push(`show=${activeModal}`);
+    if (main.activeModal && refModals.includes(main.activeModal)) {
+      queryParts.push(`show=${main.activeModal}`);
     }
 
-    if (activeModal === 'tips' && tip && tipKeys.includes(tip)) {
-      queryParts.push(`tip=${tip}`);
+    if (main.activeModal === 'tips' && tips.tip && tipKeys.includes(tips.tip)) {
+      queryParts.push(`tip=${tips.tip}`);
     }
 
     const search = `?${queryParts.join('&')}`;

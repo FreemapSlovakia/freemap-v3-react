@@ -139,7 +139,7 @@ class TrackViewerResult extends React.Component {
 
     return trackGeojson && (
       <React.Fragment>
-        {displayingElevationChart ?
+        {colorizeTrackBy ? // TODO this hides markers from GPX
           <Hotline
             key={colorizeTrackBy}
             positions={colorizeTrackBy === 'elevation' ? this.colorLineDataForElevation() : this.colorLineDataForSteepness()}

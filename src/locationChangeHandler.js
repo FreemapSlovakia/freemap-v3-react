@@ -8,7 +8,7 @@ import tips from 'fm3/tips/index.json';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
-import { trackViewerDownloadTrack } from 'fm3/actions/trackViewerActions';
+import { trackViewerDownloadTrack, trackViewerColorizeTrackBy } from 'fm3/actions/trackViewerActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { galleryRequestImage, gallerySetFilter } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
@@ -47,6 +47,11 @@ export default function handleLocationChange(store, location) {
   const trackUID = query['track-uid'];
   if (trackUID && store.getState().trackViewer.trackUID !== trackUID) {
     store.dispatch(trackViewerDownloadTrack(trackUID));
+  }
+
+  const colorizeTrackBy = query['track-colorize-by'];
+  if (colorizeTrackBy && store.getState().trackViewer.colorizeTrackBy !== colorizeTrackBy) {
+    store.dispatch(trackViewerColorizeTrackBy(colorizeTrackBy));
   }
 
   const ipMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(query['info-point'] || '');
