@@ -100,12 +100,12 @@ export default function handleLocationChange(store, location) {
   ['distance', 'area'].forEach((type) => {
     const pq = query[`${type}-measurement-points`];
     if (pq) {
-      const points = pq.split(',')
+      const measurePoints = pq.split(',')
         .map(point => point.split('/').map(coord => parseFloat(coord)))
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
-      if (serializePoints(points) !== serializePoints(getState()[`${type}Measurement`].points)) {
+      if (serializePoints(measurePoints) !== serializePoints(getState()[`${type}Measurement`].points)) {
         dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)(
-          points.some(({ lat, lon }) => Number.isNaN(lat) || Number.isNaN(lon)) ? [] : points,
+          measurePoints.some(({ lat, lon }) => Number.isNaN(lat) || Number.isNaN(lon)) ? [] : measurePoints,
         ));
       }
     } else if (getState()[`${type}Measurement`].points.length) {
@@ -173,10 +173,11 @@ export default function handleLocationChange(store, location) {
   }
 
   if (tipKeys.includes(query.tip)) {
-    if (getState().tips.tip !== query.tip) {
+    console.log('AAAAAAA');
+    if (getState().main.activeModal !== 'tips' || getState().tips.tip !== query.tip) {
       dispatch(tipsShow(query.tip));
     }
-  } else if (getState().tips.tip) {
+  } else if (getState().main.activeModal === 'tips') {
     dispatch(setActiveModal(null));
   }
 
