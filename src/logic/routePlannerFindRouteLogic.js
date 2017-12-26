@@ -2,11 +2,8 @@ import React from 'react';
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { routePlannerSetResult, routePlannerSetTransportType, routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
+import { routePlannerSetResult, routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 
 const updateRouteTypes = [
@@ -51,7 +48,7 @@ const modifiers = {
   straight: 'priamo',
 };
 
-export const routePlannerFindRouteLogic = createLogic({
+export default createLogic({
   type: updateRouteTypes,
   cancelType: ['SET_TOOL', ...updateRouteTypes],
   process({ getState, cancelled$, storeDispatch, action }, dispatch, done) {
@@ -161,57 +158,6 @@ export const routePlannerFindRouteLogic = createLogic({
       });
   },
 });
-
-export const refocusMapOnSetStartOrFinishPoint = createLogic({
-  type: [
-    'ROUTE_PLANNER_SET_START',
-    'ROUTE_PLANNER_SET_FINISH',
-  ],
-  process({ getState, action }, dispatch, done) {
-    const { routePlanner: { start, finish } } = getState();
-    let focusPoint;
-    if (action.type === 'ROUTE_PLANNER_SET_START') {
-      focusPoint = start;
-    } else if (action.type === 'ROUTE_PLANNER_SET_FINISH') {
-      focusPoint = finish;
-    }
-
-    if (!getMapLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
-      dispatch(mapRefocus({ lat: focusPoint.lat, lon: focusPoint.lon }));
-    }
-
-    done();
-  },
-});
-
-export const setupTransportTypeLogic = createLogic({
-  type: 'SET_TOOL',
-  process({ getState }, dispatch, done) {
-    const { main: { tool }, routePlanner: { transportType, start, finish } } = getState();
-    if (tool === 'route-planner' && (!transportType) || !start && !finish) {
-      const { mapType } = getState().map;
-      dispatch(routePlannerSetTransportType(
-        mapType === 'T' ? 'foot' : mapType === 'K' ? 'nordic' : ['C', 'M'].includes(mapType) ? 'bike' : 'car'));
-    }
-
-    done();
-  },
-});
-
-export const routePlannerPreventHintLogic = createLogic({
-  type: 'ROUTE_PLANNER_PREVENT_HINT',
-  process(_, dispatch, done) {
-    localStorage.setItem('routePlannerPreventHint', '1');
-    done();
-  },
-});
-
-export default [
-  routePlannerFindRouteLogic,
-  refocusMapOnSetStartOrFinishPoint,
-  setupTransportTypeLogic,
-  routePlannerPreventHintLogic,
-];
 
 function addMissingSegments(alt) {
   const routeSlices = [];

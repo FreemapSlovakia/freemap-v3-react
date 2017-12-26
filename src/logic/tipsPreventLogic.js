@@ -1,7 +1,7 @@
 import { createLogic } from 'redux-logic';
 import axios from 'axios';
 
-export const tipsPreventLogic = createLogic({
+export default createLogic({
   type: 'TIPS_PREVENT_NEXT_TIME',
   process({ getState }, dispatch, done) {
     localStorage.setItem('preventTips', getState().tips.preventTips);
@@ -33,16 +33,3 @@ export const tipsPreventLogic = createLogic({
       });
   },
 });
-
-export const tipsChangeLogic = createLogic({
-  type: ['TIPS_NEXT', 'TIPS_PREVIOUS'],
-  process({ getState }, dispatch, done) {
-    localStorage.setItem('tip', getState().tips.tip);
-    done();
-  },
-});
-
-export default [
-  tipsPreventLogic,
-  tipsChangeLogic,
-];

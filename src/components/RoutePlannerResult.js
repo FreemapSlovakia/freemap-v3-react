@@ -228,7 +228,10 @@ class RoutePlannerResult extends React.Component {
             {
               transportType === 'imhd' && summary0 ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
-                  <div dangerouslySetInnerHTML={{ __html: summary0.replace(', &#9201', ',<br />&#9201') }} />
+                  <div
+                    // eslint-disable-next-line
+                    dangerouslySetInnerHTML={{ __html: summary0.replace(', &#9201', ',<br />&#9201') }}
+                  />
                 </Tooltip>
               : distance ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>

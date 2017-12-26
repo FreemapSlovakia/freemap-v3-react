@@ -8,7 +8,7 @@ import { objectsSetResult } from 'fm3/actions/objectsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
-export const objectsFetchLogic = createLogic({
+export default createLogic({
   type: 'OBJECTS_SET_FILTER',
   cancelType: ['OBJECTS_SET_FILTER', 'SET_TOOL', 'CLEAR_MAP'],
   process({ action: { payload }, cancelled$, storeDispatch }, dispatch, done) {
@@ -51,5 +51,3 @@ export const objectsFetchLogic = createLogic({
       });
   },
 });
-
-export default [objectsFetchLogic];
