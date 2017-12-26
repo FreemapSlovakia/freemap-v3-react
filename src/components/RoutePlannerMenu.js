@@ -119,7 +119,7 @@ class RoutePlannerMenu extends React.Component {
       ['foot', '!icon-hiking', 'Pešo'],
     ];
 
-    const active = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
+    const activeTransportType = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
 
     return (
       <span>
@@ -131,7 +131,7 @@ class RoutePlannerMenu extends React.Component {
         <ButtonGroup>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="play" style={{ color: '#409a40' }} /><span className="hidden-xs"> Štart</span></span>}
-            id="add-start-dropdown"
+            id="set-start-dropdown"
             onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
           >
@@ -147,7 +147,7 @@ class RoutePlannerMenu extends React.Component {
           </DropdownButton>
           <DropdownButton
             title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} /><span className="hidden-xs"> Cieľ</span></span>}
-            id="add-finish-dropdown"
+            id="set-finish-dropdown"
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
           >
@@ -164,11 +164,12 @@ class RoutePlannerMenu extends React.Component {
         </ButtonGroup>
         {' '}
         <DropdownButton
+          id="transport-type"
           title={
             <React.Fragment>
-              <FontAwesomeIcon icon={active[1]} />
-              {active[0] === 'car' && <FontAwesomeIcon icon="money" />}
-              <span className="hidden-xs"> {active[2].replace(/\s*,.*/, '')}</span>
+              <FontAwesomeIcon icon={activeTransportType[1]} />
+              {activeTransportType[0] === 'car' && <FontAwesomeIcon icon="money" />}
+              <span className="hidden-xs"> {activeTransportType[2].replace(/\s*,.*/, '')}</span>
             </React.Fragment>
           }
         >

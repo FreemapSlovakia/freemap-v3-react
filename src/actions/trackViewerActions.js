@@ -33,3 +33,7 @@ export function trackShowInfo() {
 export function trackToggleElevationChart() {
   return { type: 'TRACK_TOGGLE_ELEVATION_CHART' };
 }
+
+export function trackViewerGpxLoad(gpxUrl) {
+  return { type: 'TRACK_VIEWER_GPX_LOAD', payload: gpxUrl };
+}

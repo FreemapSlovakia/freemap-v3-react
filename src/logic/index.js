@@ -11,9 +11,9 @@ import locateLogic from 'fm3/logic/locateLogic';
 import trackViewerSetTrackDataLogic from 'fm3/logic/trackViewerSetTrackDataLogic';
 import trackViewerDownloadTrackLogic from 'fm3/logic/trackViewerDownloadTrackLogic';
 import trackViewerUploadTrackLogic from 'fm3/logic/trackViewerUploadTrackLogic';
-import osmLoadRelationLogic from 'fm3/logic/osmLoadRelationLogic';
+import trackViewerGpxLoadLogic from 'fm3/logic/trackViewerGpxLoadLogic';
 import gpxExportLogic from 'fm3/logic/gpxExportLogic';
-import gpxLoadLogic from 'fm3/logic/gpxLoadLogic';
+import osmLoadRelationLogic from 'fm3/logic/osmLoadRelationLogic';
 import osmLoadNodeLogic from 'fm3/logic/osmLoadNodeLogic';
 import osmLoadWayLogic from 'fm3/logic/osmLoadWayLogic';
 import toastsAddLogic from 'fm3/logic/toastsAddLogic';
@@ -64,8 +64,8 @@ export default [
   trackViewerSetTrackDataLogic,
   trackViewerDownloadTrackLogic,
   trackViewerUploadTrackLogic,
+  trackViewerGpxLoadLogic,
   gpxExportLogic,
-  gpxLoadLogic,
   osmLoadNodeLogic,
   osmLoadWayLogic,
   toastsAddLogic,

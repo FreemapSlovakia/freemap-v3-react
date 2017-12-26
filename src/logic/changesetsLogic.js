@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { changesetsAdd } from 'fm3/actions/changesetsActions';
+import { changesetsSet } from 'fm3/actions/changesetsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 
@@ -41,7 +41,7 @@ export const changesetsLogic = createLogic({
           time: fromTime + (toTime0 ? `,${toTime0}` : ''),
           display_name: state.changesets.authorName,
         },
-        validateStatus: status => status === 200,
+        validateStatus: status => status === 200 || status === 404,
         cancelToken: source.token,
       })
         .then(({ data }) => {
@@ -78,7 +78,7 @@ export const changesetsLogic = createLogic({
               allChangesetsSoFar.push(ch);
             }
           });
-          dispatch(changesetsAdd(allChangesetsSoFar));
+          dispatch(changesetsSet(allChangesetsSoFar));
           if (arrayOfrawChangesets.length === 100) {
             const toTimeOfOldestChangeset = arrayOfrawChangesets[arrayOfrawChangesets.length - 1].getAttribute('closed_at');
             return loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);

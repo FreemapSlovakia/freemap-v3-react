@@ -5,7 +5,7 @@ import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
-  type: 'GPX_LOAD',
+  type: 'TRACK_VIEWER_GPX_LOAD',
   process({ getState }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));

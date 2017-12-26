@@ -9,11 +9,12 @@ export const urlLogic = createLogic({
   type: [
     'MAP_LOAD_STATE', 'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP',
     'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID', 'TRACK_VIEWER_COLORIZE_TRACK_BY',
-    'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR',
+    'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR', 'GALLERY_SHOW_FILTER', 'GALLERY_HIDE_FILTER', 'GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_HIDE_UPLOAD_MODAL',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
     'ELEVATION_MEASUREMENT_SET_POINT',
     'GALLERY_SET_FILTER', 'SET_ACTIVE_MODAL', /^TIPS_.*/,
+    'AUTH_CHOOSE_LOGIN_METHOD', 'AUTH_LOGIN_CLOSE',
   ],
   process({ getState, action }, dispatch, done) {
     const {
@@ -29,6 +30,7 @@ export const urlLogic = createLogic({
       gallery: { filter: galleryFilter },
       main,
       tips,
+      auth,
     } = getState();
 
     const queryParts = [
@@ -73,9 +75,10 @@ export const urlLogic = createLogic({
 
     if (changesets.days) {
       queryParts.push(`changesets-days=${changesets.days}`);
-      if (changesets.authorName) {
-        queryParts.push(`changesets-author=${encodeURIComponent(changesets.authorName)}`);
-      }
+    }
+
+    if (changesets.authorName) {
+      queryParts.push(`changesets-author=${encodeURIComponent(changesets.authorName)}`);
     }
 
     if (infoPoint.lat && infoPoint.lon) {
@@ -133,6 +136,18 @@ export const urlLogic = createLogic({
 
     if (main.activeModal && refModals.includes(main.activeModal)) {
       queryParts.push(`show=${main.activeModal}`);
+    }
+
+    if (gallery.showFilter) {
+      queryParts.push('show=gallery-filter');
+    }
+
+    if (gallery.showUploadModal) {
+      queryParts.push('show=gallery-upload');
+    }
+
+    if (auth.chooseLoginMethod) {
+      queryParts.push('show=login');
     }
 
     if (main.activeModal === 'tips' && tips.tip && tipKeys.includes(tips.tip)) {
