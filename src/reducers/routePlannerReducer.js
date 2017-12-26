@@ -25,6 +25,10 @@ export default function routePlanner(state = initialState, action) {
     case 'ROUTE_PLANNER_SET_PARAMS':
       return {
         ...state,
+        ...(action.payload.start === null || action.payload.finish === null ? {
+          ...initialState,
+          transportType: state.transportType,
+        } : {}),
         start: action.payload.start,
         finish: action.payload.finish,
         midpoints: action.payload.transportType === 'imhd' ? [] : action.payload.midpoints,

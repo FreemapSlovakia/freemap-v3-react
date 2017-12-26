@@ -38,11 +38,12 @@ export const urlLogic = createLogic({
       `layers=${map.mapType}${map.overlays.join('')}`,
     ];
 
-    if (routePlanner.start && routePlanner.finish) {
-      queryParts.push(
-        `transport=${routePlanner.transportType}`,
-        `points=${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish].map(point => serializePoint(point)).join(',')}`,
-      );
+    if (routePlanner.start || routePlanner.finish || routePlanner.midpoints.length) {
+      queryParts.push(`points=${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish].map(point => serializePoint(point)).join(',')}`);
+
+      if (routePlanner.transportType) {
+        queryParts.push(`transport=${routePlanner.transportType}`);
+      }
     }
 
     if (trackViewer.trackUID) {

@@ -26,26 +26,28 @@ export default function handleLocationChange(store, location) {
 
   const query = queryString.parse(location.search);
 
-  if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd)$/.test(query.transport)
-      && /^-?\d+(\.\d+)?\/-?\d+(\.\d+)?(,-?\d+(\.\d+)?\/-?\d+(\.\d+)?)+$/.test(query.points)) {
-    const points = query.points.split(',').map(point => point.split('/').map(coord => parseFloat(coord)));
+  const points = query.points ? query.points.split(',').map(point => (point ? point.split('/').map(coord => parseFloat(coord)) : null)) : [];
+  const pointsOk = points.length && points.every((point, i) =>
+    point === null && (i === 0 || i === points.length - 1)
+    || point.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
+  if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd)$/.test(query.transport) && pointsOk) {
     const { start, finish, midpoints, transportType } = getState().routePlanner;
 
-    if (points.length > 1 && points.every(point => point.length === 2)) {
-      const latLons = points.map(([lat, lon]) => ({ lat, lon }));
-      const nextStart = latLons[0];
-      const nextMidpoints = latLons.slice(1, latLons.length - 1);
-      const nextFinish = latLons[latLons.length - 1];
+    const latLons = points.map(point => (point ? { lat: point[0], lon: point[1] } : null));
+    const nextStart = latLons[0];
+    const nextMidpoints = latLons.slice(1, latLons.length - 1);
+    const nextFinish = latLons.length > 1 ? latLons[latLons.length - 1] : null;
 
-      if (query.transport !== transportType
-          || serializePoint(start) !== serializePoint(nextStart)
-          || serializePoint(finish) !== serializePoint(nextFinish)
-          || midpoints.length !== nextMidpoints.length
-          || midpoints.some((midpoint, i) => serializePoint(midpoint) !== serializePoint(nextMidpoints[i]))) {
-        dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport));
-      }
+    if (query.transport !== transportType
+        || serializePoint(start) !== serializePoint(nextStart)
+        || serializePoint(finish) !== serializePoint(nextFinish)
+        || midpoints.length !== nextMidpoints.length
+        || midpoints.some((midpoint, i) => serializePoint(midpoint) !== serializePoint(nextMidpoints[i]))) {
+      dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport));
     }
+  } else if (getState().routePlanner.start || getState().routePlanner.finish) {
+    dispatch(routePlannerSetParams(null, null, [], getState().routePlanner.transportType));
   }
 
   const trackUID = query['track-uid'];
