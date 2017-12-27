@@ -20,7 +20,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import 'fm3/styles/trackViewer.scss';
 
 const colorizingModes = {
-  '': 'Vyfarbenie neaktívne',
+  '': 'Neaktívne',
   elevation: 'Nadmorská výška',
   steepness: 'Sklon',
 };
@@ -111,7 +111,7 @@ class TrackViewerMenu extends React.Component {
         </Button>
         {' '}
         <DropdownButton
-          title={colorizingModes[colorizeTrackBy || '']}
+          title={<React.Fragment><FontAwesomeIcon icon="paint-brush" /> {colorizingModes[colorizeTrackBy || '']}</React.Fragment>}
           id="colorizing_mode"
         >
           {
