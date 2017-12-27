@@ -5,3 +5,5 @@ Pre rýchlejšie ovládanie môžete použiť aj klávesové skratky. Napríklad
 * na prepínanie mapových vrstiev pozrite skratky v ponuke vrstiev
 * na prechádzanie fotografií v dialógu môžete použiť kurzorové šípky vľavo a vpravo
 * na zatvorenie dialógov použite klávesu <kbd>Esc</kbd>
+
+Tiež môžete v prehliadači použiť akcie posunu histórie "dozadu" a "dopredu" na vrátenie vykonaných krokov späť alebo vpred.
