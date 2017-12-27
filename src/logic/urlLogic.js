@@ -38,6 +38,10 @@ export const urlLogic = createLogic({
       `layers=${map.mapType}${map.overlays.join('')}`,
     ];
 
+    if (main.tool) {
+      queryParts.push(`tool=${main.tool}`);
+    }
+
     if (routePlanner.start || routePlanner.finish || routePlanner.midpoints.length) {
       queryParts.push(`points=${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish].map(point => serializePoint(point)).join(',')}`);
 
