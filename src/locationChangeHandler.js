@@ -159,6 +159,7 @@ export default function handleLocationChange(store, location) {
 
   const osmRelationId = parseInt(query['osm-relation'], 10);
   if (osmRelationId && osmRelationId !== getState().trackViewer.osmRelationId) {
+    console.log('OOOOOOOOOOOOOOO', osmRelationId);
     dispatch(osmLoadRelation(osmRelationId));
   }
 

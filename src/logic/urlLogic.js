@@ -7,14 +7,15 @@ const tipKeys = allTips.map(([key]) => key);
 
 export const urlLogic = createLogic({
   type: [
-    'MAP_LOAD_STATE', 'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP',
-    'MAP_RESET', 'TRACK_VIEWER_SET_TRACK_UID', 'TRACK_VIEWER_COLORIZE_TRACK_BY',
+    'MAP_LOAD_STATE', 'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP', 'MAP_RESET',
+    'TRACK_VIEWER_SET_TRACK_UID', 'TRACK_VIEWER_COLORIZE_TRACK_BY', 'TRACK_VIEWER_DOWNLOAD_TRACK',
     'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR', 'GALLERY_SHOW_FILTER', 'GALLERY_HIDE_FILTER', 'GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_HIDE_UPLOAD_MODAL',
     'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
     'ELEVATION_MEASUREMENT_SET_POINT',
     'GALLERY_SET_FILTER', 'SET_ACTIVE_MODAL', /^TIPS_.*/,
     'AUTH_CHOOSE_LOGIN_METHOD', 'AUTH_LOGIN_CLOSE',
+    /^OSM_LOAD_.*/,
   ],
   process({ getState, action }, dispatch, done) {
     const {
@@ -32,6 +33,11 @@ export const urlLogic = createLogic({
       tips,
       auth,
     } = getState();
+
+    if (!main.urlUpdatingEnabled) {
+      done();
+      return;
+    }
 
     const queryParts = [
       `map=${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`,
@@ -160,6 +166,8 @@ export const urlLogic = createLogic({
     }
 
     const search = `?${queryParts.join('&')}`;
+
+    console.log('SSSSSSSSSSSSS', search);
 
     if (window.location.search !== search) {
       history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ search });

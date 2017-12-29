@@ -12,7 +12,7 @@ import Main from 'fm3/components/Main';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
-import { mainLoadState } from 'fm3/actions/mainActions';
+import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 
@@ -47,6 +47,8 @@ history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, location);
 
 initAuthHelper(store);
+
+store.dispatch(enableUpdatingUrl());
 
 render(
   <Provider store={store}>
