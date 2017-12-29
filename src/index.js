@@ -13,7 +13,7 @@ import ErrorCatcher from 'fm3/components/ErrorCatcher';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
-import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { mainLoadState, enableUpdatingUrl, reducingError } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 
@@ -36,6 +36,16 @@ if (process.env.NODE_ENV !== 'production') {
   middlewares.push(createLogger());
 }
 
+const errorHandlingMiddleware = () => next => (action) => {
+  try {
+    return next(action);
+  } catch (error) {
+    return next(reducingError(action, error));
+  }
+};
+
+middlewares.push(errorHandlingMiddleware);
+
 const store = createStore(reducer, applyMiddleware(...middlewares));
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
@@ -52,11 +62,11 @@ initAuthHelper(store);
 store.dispatch(enableUpdatingUrl());
 
 render(
-  <ErrorCatcher>
-    <Provider store={store}>
+  <Provider store={store}>
+    <ErrorCatcher>
       <Main />
-    </Provider>
-  </ErrorCatcher>
+    </ErrorCatcher>
+  </Provider>
   ,
   document.getElementById('app'),
 );

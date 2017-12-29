@@ -49,3 +49,7 @@ export function setSelectingHomeLocation(value) {
 export function enableUpdatingUrl() {
   return { type: 'ENABLE_UPDATING_URL' };
 }
+
+export function reducingError(action, error) {
+  return { type: 'REDUCING_ERROR', payload: { action, error } };
+}
