@@ -9,6 +9,7 @@ import { createLogicMiddleware } from 'redux-logic';
 import { createLogger } from 'redux-logger';
 
 import Main from 'fm3/components/Main';
+import ErrorCatcher from 'fm3/components/ErrorCatcher';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
@@ -51,9 +52,11 @@ initAuthHelper(store);
 store.dispatch(enableUpdatingUrl());
 
 render(
-  <Provider store={store}>
-    <Main />
-  </Provider>
+  <ErrorCatcher>
+    <Provider store={store}>
+      <Main />
+    </Provider>
+  </ErrorCatcher>
   ,
   document.getElementById('app'),
 );
