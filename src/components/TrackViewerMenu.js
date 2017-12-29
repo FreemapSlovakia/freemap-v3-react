@@ -184,7 +184,7 @@ class TrackViewerMenu extends React.Component {
 export default connect(
   state => ({
     activeModal: state.main.activeModal,
-    hasTrack: !!state.trackViewer.trackGpx,
+    hasTrack: !!state.trackViewer.trackGeojson,
     trackUID: state.trackViewer.trackUID,
     elevationChartActive: !!state.elevationChart.trackGeojson,
     colorizeTrackBy: state.trackViewer.colorizeTrackBy,
@@ -233,7 +233,7 @@ function x(state) {
   const { trackGeojson } = state.trackViewer;
   if (trackGeojson && trackGeojson.features) {
     const firstGeojsonFeature = trackGeojson.features[0];
-    return firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString';
+    return firstGeojsonFeature && ['LineString', 'MultiLineString'].includes(firstGeojsonFeature.geometry.type);
   }
 
   return false;

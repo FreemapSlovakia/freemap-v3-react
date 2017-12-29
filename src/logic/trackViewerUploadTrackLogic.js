@@ -10,31 +10,33 @@ export default createLogic({
     const { trackGpx } = getState().trackViewer;
     if (trackGpx.length > (process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
       dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${process.env.MAX_GPX_TRACK_SIZE_IN_MB} MB. Zdieľanie podporujeme len pre menšie súbory.`));
-    } else {
-      const pid = Math.random();
-      dispatch(startProgress(pid));
-      const source = axios.CancelToken.source();
-      cancelled$.subscribe(() => {
-        source.cancel();
-      });
-
-      axios.post(`${process.env.API_URL}/tracklogs`, {
-        data: btoa(unescape(encodeURIComponent(trackGpx))),
-        mediaType: 'application/gpx+xml',
-      }, {
-        validateStatus: status => status === 201,
-        cancelToken: source.token,
-      })
-        .then(({ data }) => {
-          dispatch(trackViewerSetTrackUID(data.uid));
-        })
-        .catch((e) => {
-          dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
-        })
-        .then(() => {
-          storeDispatch(stopProgress(pid));
-          done();
-        });
+      done();
+      return;
     }
+
+    const pid = Math.random();
+    dispatch(startProgress(pid));
+    const source = axios.CancelToken.source();
+    cancelled$.subscribe(() => {
+      source.cancel();
+    });
+
+    axios.post(`${process.env.API_URL}/tracklogs`, {
+      data: btoa(unescape(encodeURIComponent(trackGpx))),
+      mediaType: 'application/gpx+xml',
+    }, {
+      validateStatus: status => status === 201,
+      cancelToken: source.token,
+    })
+      .then(({ data }) => {
+        dispatch(trackViewerSetTrackUID(data.uid));
+      })
+      .catch((e) => {
+        dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
+      })
+      .then(() => {
+        storeDispatch(stopProgress(pid));
+        done();
+      });
   },
 });

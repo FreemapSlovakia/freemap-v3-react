@@ -6,6 +6,7 @@
     "@mapbox/geojson-area": "0.2.2",
     "@mapbox/togeojson": "0.16.0",
     "@turf/along": "5.1.5",
+    "@turf/flatten": "5.1.5",
     "@turf/line-distance": "4.7.3",
     "@turf/line-slice": "5.1.5",
     "async": "2.6.0",

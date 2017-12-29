@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { GeoJSON, Tooltip } from 'react-leaflet';
+import { Tooltip, Polyline } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import RichMarker, { createMarkerIcon } from 'fm3/components/RichMarker';
 import Hotline from 'fm3/components/Hotline';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
+import turfFlatten from '@turf/flatten';
 import 'leaflet-hotline';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
@@ -55,6 +56,37 @@ class TrackViewerResult extends React.Component {
     }
   }
 
+  getFeatures = type => turfFlatten(this.props.trackGeojson).features.filter(f => f.geometry.type === type);
+
+  getLineData = () => this.getFeatures('LineString').map(feature => feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]));
+
+  getColorLineDataForElevation = () => this.getFeatures('LineString').map((feature) => {
+    const latLonSmoothEles = smoothElevations(feature, this.props.eleSmoothingFactor);
+    const eles = latLonSmoothEles.map(lonLatEle => lonLatEle[2]);
+    const maxEle = Math.max(...eles);
+    const minEle = Math.min(...eles);
+    return latLonSmoothEles.map((latLonEle) => {
+      const color = (latLonEle[2] - minEle) / (maxEle - minEle);
+      return [latLonEle[0], latLonEle[1], color || 0];
+    });
+  });
+
+  getColorLineDataForSteepness = () => this.getFeatures('LineString').map((feature) => {
+    const latLonSmoothEles = smoothElevations(feature, this.props.eleSmoothingFactor);
+    let prevLatLonEle = latLonSmoothEles[0];
+    return latLonSmoothEles.map((latLonEle) => {
+      const [lat, lon, ele] = latLonEle;
+      const d = distance(lat, lon, prevLatLonEle[0], prevLatLonEle[1]);
+      let angle = 0;
+      if (d > 0) {
+        angle = (ele - prevLatLonEle[2]) / d;
+      }
+      prevLatLonEle = latLonEle;
+      const color = angle / 0.5 + 0.5;
+      return [lat, lon, color || 0];
+    });
+  });
+
   // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
   handleEachFeature = (feature, layer) => {
     if (feature.geometry.type === 'Point' && feature.properties && feature.properties.name) {
@@ -69,35 +101,6 @@ class TrackViewerResult extends React.Component {
       });
     }
   };
-
-  colorLineDataForElevation = () => {
-    const firstRealFeature = this.props.trackGeojson.features[0];
-    const latLonSmoothEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
-    const eles = latLonSmoothEles.map(lonLatEle => lonLatEle[2]);
-    const maxEle = Math.max(...eles);
-    const minEle = Math.min(...eles);
-    return latLonSmoothEles.map((latLonEle) => {
-      const color = (latLonEle[2] - minEle) / (maxEle - minEle);
-      return [latLonEle[0], latLonEle[1], color || 0];
-    });
-  }
-
-  colorLineDataForSteepness = () => {
-    const firstRealFeature = this.props.trackGeojson.features[0];
-    const latLonSmoothEles = smoothElevations(firstRealFeature, this.props.eleSmoothingFactor);
-    let prevLatLonEle = latLonSmoothEles[0];
-    return latLonSmoothEles.map((latLonEle) => {
-      const [lat, lon, ele] = latLonEle;
-      const d = distance(lat, lon, prevLatLonEle[0], prevLatLonEle[1]);
-      let angle = 0;
-      if (d > 0) {
-        angle = (ele - prevLatLonEle[2]) / d;
-      }
-      prevLatLonEle = latLonEle;
-      const color = angle / 0.5 + 0.5;
-      return [lat, lon, color || 0];
-    });
-  }
 
   showInfoPoint = (e, feature) => {
     const infoLat = e.latlng.lat;
@@ -138,34 +141,56 @@ class TrackViewerResult extends React.Component {
     const keyToAssureProperRefresh = `OOXlDWrtVn-${(JSON.stringify(trackGeojson) + displayingElevationChart).length}`; // otherwise GeoJSON will still display the first data
 
     return trackGeojson && (
-      <React.Fragment>
-        {colorizeTrackBy ? // TODO this hides markers from GPX
-          <Hotline
-            key={colorizeTrackBy}
-            positions={colorizeTrackBy === 'elevation' ? this.colorLineDataForElevation() : this.colorLineDataForSteepness()}
-            palette={colorizeTrackBy === 'elevation' ? { 0.0: 'black', 0.5: '#838', 1.0: 'white' } : { 0.0: 'green', 0.5: 'white', 1.0: 'red' }}
-            weight={6}
-            outlineWidth={2}
-            outlineColor="#fff"
-          />
-          :
-          <React.Fragment>
-            <GeoJSON
-              data={trackGeojson}
-              key={keyToAssureProperRefresh}
-              style={{ weight: 10, color: '#fff' }}
-              pointToLayer={() => {}}
-              onEachFeature={this.handleEachFeature}
+      <React.Fragment key={keyToAssureProperRefresh}>
+        <React.Fragment>
+          {colorizeTrackBy ?
+            <Hotline
+              key={colorizeTrackBy}
+              positions={colorizeTrackBy === 'elevation' ? this.getColorLineDataForElevation() : this.getColorLineDataForSteepness()}
+              palette={colorizeTrackBy === 'elevation' ? { 0.0: 'black', 0.5: '#838', 1.0: 'white' } : { 0.0: 'green', 0.5: 'white', 1.0: 'red' }}
+              weight={6}
+              outlineWidth={2}
+              outlineColor="#fff"
             />
-            <GeoJSON
-              data={trackGeojson}
-              key={`${keyToAssureProperRefresh}2`}
-              style={{ weight: 6, color: '#883388' }}
-              pointToLayer={this.pointToLayer}
+            :
+            <Polyline
+              weight={4}
               interactive={false}
+              positions={this.getLineData()}
             />
-          </React.Fragment>
-        }
+          }
+          {
+            this.getFeatures('Point').map(({ geometry }, i) => (
+              <RichMarker
+                faIcon="flag"
+                key={`point-${i}`}
+                faIconLeftPadding="2px"
+                color="blue"
+                interactive={false}
+                position={L.latLng(geometry.coordinates[1], geometry.coordinates[0])}
+                onClick={this.handlePointClick}
+              />
+            ))
+          }
+        </React.Fragment>
+        {/*
+        <React.Fragment>
+          <GeoJSON
+            data={trackGeojson}
+            key={keyToAssureProperRefresh}
+            style={{ weight: 10, color: '#fff' }}
+            pointToLayer={() => {}}
+            onEachFeature={this.handleEachFeature}
+          />
+          <GeoJSON
+            data={trackGeojson}
+            key={`${keyToAssureProperRefresh}2`}
+            style={{ weight: 6, color: '#883388' }}
+            pointToLayer={this.pointToLayer}
+            interactive={false}
+          />
+        </React.Fragment>
+        */}
         {
           startPoints.map((p, i) => (
             <RichMarker
@@ -177,10 +202,11 @@ class TrackViewerResult extends React.Component {
               position={L.latLng(p.lat, p.lon)}
               onClick={this.handlePointClick}
             >
-              { p.startTime &&
+              {p.startTime &&
                 <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
                   <span>{timeFormat.format(new Date(p.startTime))}</span>
-                </Tooltip> }
+                </Tooltip>
+              }
             </RichMarker>
           ))
         }
