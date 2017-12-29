@@ -2,6 +2,7 @@ import routePlannerSetupTransportTypeLogic from 'fm3/logic/routePlannerSetupTran
 import routePlannerFindRouteLogic from 'fm3/logic/routePlannerFindRouteLogic';
 import routePlannerPreventHintLogic from 'fm3/logic/routePlannerPreventHintLogic';
 import routePlannerRefocusMapLogic from 'fm3/logic/routePlannerRefocusMapLogic';
+import routePlannerToggleElevationChartLogic from 'fm3/logic/routePlannerToggleElevationChartLogic';
 import elevationChartLogic from 'fm3/logic/elevationChartLogic';
 import elevationMeasurementLogic from 'fm3/logic/elevationMeasurementLogic';
 import objectsFetchLogic from 'fm3/logic/objectsFetchLogic';
@@ -12,6 +13,8 @@ import trackViewerSetTrackDataLogic from 'fm3/logic/trackViewerSetTrackDataLogic
 import trackViewerDownloadTrackLogic from 'fm3/logic/trackViewerDownloadTrackLogic';
 import trackViewerUploadTrackLogic from 'fm3/logic/trackViewerUploadTrackLogic';
 import trackViewerGpxLoadLogic from 'fm3/logic/trackViewerGpxLoadLogic';
+import trackViewerShowInfoLogic from 'fm3/logic/trackViewerShowInfoLogic';
+import trackViewerToggleElevationChartLogic from 'fm3/logic/trackViewerToggleElevationChartLogic';
 import gpxExportLogic from 'fm3/logic/gpxExportLogic';
 import osmLoadRelationLogic from 'fm3/logic/osmLoadRelationLogic';
 import osmLoadNodeLogic from 'fm3/logic/osmLoadNodeLogic';
@@ -46,14 +49,13 @@ import mapDetailsLogic from 'fm3/logic/mapDetailsLogic';
 import saveSettingsLogic from 'fm3/logic/saveSettingsLogic';
 import tipsPreventLogic from 'fm3/logic/tipsPreventLogic';
 import tipsChangeLogic from 'fm3/logic/tipsChangeLogic';
-import trackViewerShowInfoLogic from 'fm3/logic/trackViewerShowInfoLogic';
-import trackViewerToggleElevationChartLogic from 'fm3/logic/trackViewerToggleElevationChartLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
   routePlannerFindRouteLogic,
   routePlannerPreventHintLogic,
   routePlannerRefocusMapLogic,
+  routePlannerToggleElevationChartLogic,
   elevationChartLogic,
   elevationMeasurementLogic,
   searchLogic,
@@ -65,6 +67,8 @@ export default [
   trackViewerDownloadTrackLogic,
   trackViewerUploadTrackLogic,
   trackViewerGpxLoadLogic,
+  trackViewerShowInfoLogic,
+  trackViewerToggleElevationChartLogic,
   gpxExportLogic,
   osmLoadNodeLogic,
   osmLoadWayLogic,
@@ -98,6 +102,4 @@ export default [
   saveSettingsLogic,
   tipsChangeLogic,
   tipsPreventLogic,
-  trackViewerShowInfoLogic,
-  trackViewerToggleElevationChartLogic,
 ];
