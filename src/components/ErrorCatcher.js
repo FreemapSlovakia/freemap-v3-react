@@ -21,8 +21,6 @@ class ErrorCatcher extends React.Component {
       return this.props.children;
     }
 
-    // TODO link to reload and reset&reload
-
     const debugData = [
       ['URL', window.location.href],
       ['Errored Action', this.props.erroredAction],
