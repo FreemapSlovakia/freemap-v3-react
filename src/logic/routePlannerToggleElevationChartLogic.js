@@ -14,7 +14,8 @@ export default createLogic({
         type: 'Feature',
         geometry: {
           type: 'LineString',
-          coordinates: [].concat(...alternatives[activeAlternativeIndex].itinerary.map(({ shapePoints }) => shapePoints)).map(([lat, lon]) => [lon, lat]),
+          coordinates: [].concat(...alternatives[activeAlternativeIndex].itinerary.map(({ shapePoints }) => shapePoints))
+            .map(([lat, lon]) => [lon, lat]),
         },
       }));
     }
