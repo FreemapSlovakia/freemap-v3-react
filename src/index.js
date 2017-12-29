@@ -25,6 +25,10 @@ import 'fm3/fbLoader';
 
 import 'fm3/styles/bootstrap-override.scss';
 
+if (window.location.search === '?reset-local-storage') {
+  localStorage.clear();
+}
+
 if (window.self !== window.top) {
   document.body.classList.add('embedded');
 }

@@ -37,8 +37,9 @@ class ErrorCatcher extends React.Component {
         </p>
         Akcie:
         <ul>
-          <li><a href="">Znovu načítať stránku</a></li>
-          <li><a href="/">Znovu načítať úvodnú stránku</a></li>
+          <li><a href="">znovunačítať poslednú stránku</a></li>
+          <li><a href="/">znovunačítať úvodnú stránku</a></li>
+          <li><a href="/?reset-local-storage">zmazať lokálne dáta a znovunačítať úvodnú stránku</a></li>
         </ul>
         <h2>Dáta pre ladenie</h2>
         <pre>
