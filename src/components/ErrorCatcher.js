@@ -30,7 +30,11 @@ class ErrorCatcher extends React.Component {
       ['Component Error', this.state.error && this.state.error.stack],
       ['Component Stack', this.state.info && this.state.info.componentStack],
       ['App State', JSON.stringify(this.props.state, null, 2)],
-      ['Local Storage', Object.keys(localStorage).map(key => `${key}\n${localStorage.getItem(key)}`).join('\n----------------\n')],
+      ['Local Storage', Object
+        .keys(localStorage)
+        .map(key => `${key}\n${localStorage.getItem(key)}`)
+        .join('\n----------------\n'),
+      ],
     ];
 
     return (
@@ -55,7 +59,10 @@ class ErrorCatcher extends React.Component {
         <h2>Dáta pre ladenie</h2>
         <pre>
           {
-            debugData.filter(([, x]) => x).map(([title, detail]) => `================\n${title}\n================\n${detail}`).join('\n')
+            debugData
+              .filter(([, x]) => x)
+              .map(([title, detail]) => `================\n${title}\n================\n${detail}`)
+              .join('\n')
           }
         </pre>
       </div>
