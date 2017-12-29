@@ -9,3 +9,7 @@ export function osmLoadWay(osmWayId) {
 export function osmLoadRelation(osmRelationId) {
   return { type: 'OSM_LOAD_RELATION', payload: osmRelationId };
 }
+
+export function osmClear() {
+  return { type: 'OSM_CLEAR' };
+}

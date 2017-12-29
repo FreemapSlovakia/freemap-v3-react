@@ -9,7 +9,7 @@ import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack, trackViewerColorizeTrackBy, trackViewerGpxLoad } from 'fm3/actions/trackViewerActions';
-import { osmLoadNode, osmLoadWay, osmLoadRelation } from 'fm3/actions/osmActions';
+import { osmLoadNode, osmLoadWay, osmLoadRelation, osmClear } from 'fm3/actions/osmActions';
 import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { galleryRequestImage, gallerySetFilter, galleryShowFilter, galleryShowUploadModal, galleryClear, galleryHideFilter, galleryHideUploadModal } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName, changesetsSet } from 'fm3/actions/changesetsActions';
@@ -148,24 +148,35 @@ export default function handleLocationChange(store, location) {
   }
 
   const osmNodeId = parseInt(query['osm-node'], 10);
-  if (osmNodeId && osmNodeId !== getState().trackViewer.osmNodeId) {
-    dispatch(osmLoadNode(osmNodeId));
+  if (osmNodeId) {
+    if (osmNodeId !== getState().trackViewer.osmNodeId) {
+      dispatch(osmLoadNode(osmNodeId));
+    }
+  } else {
+    dispatch(osmClear());
   }
 
   const osmWayId = parseInt(query['osm-way'], 10);
-  if (osmWayId && osmWayId !== getState().trackViewer.osmWayId) {
-    dispatch(osmLoadWay(osmWayId));
+  if (osmWayId) {
+    if (osmWayId !== getState().trackViewer.osmWayId) {
+      dispatch(osmLoadWay(osmWayId));
+    }
+  } else {
+    dispatch(osmClear());
   }
 
   const osmRelationId = parseInt(query['osm-relation'], 10);
-  if (osmRelationId && osmRelationId !== getState().trackViewer.osmRelationId) {
-    dispatch(osmLoadRelation(osmRelationId));
+  if (osmRelationId) {
+    if (osmRelationId !== getState().trackViewer.osmRelationId) {
+      dispatch(osmLoadRelation(osmRelationId));
+    }
+  } else {
+    dispatch(osmClear());
   }
 
   handleGallery(getState, dispatch, query);
 
   const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), getState().map);
-
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));
   }
