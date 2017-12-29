@@ -126,38 +126,34 @@ class TrackViewerResult extends React.Component {
   render() {
     const { trackGeojson, startPoints, finishPoints, displayingElevationChart, colorizeTrackBy } = this.props;
 
+    if (!trackGeojson) {
+      return null;
+    }
+
     // TODO rather compute some hash or better - detect real change
     const keyToAssureProperRefresh = `OOXlDWrtVn-${(JSON.stringify(trackGeojson) + displayingElevationChart).length}`; // otherwise GeoJSON will still display the first data
 
-    return trackGeojson && (
+    const xxx = this.getFeatures('LineString')
+      .map(feature => ({ name: feature.properties.name, lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]) }));
+
+    return (
       <React.Fragment key={keyToAssureProperRefresh}>
         {
-          this.getFeatures('LineString')
-            .map(feature => ({ name: feature.properties.name, lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]) }))
-            .map(({ lineData, name }, i) => (
-              <React.Fragment key={`line-${i}`}>
-                <Polyline
-                  weight={10}
-                  interactive={false}
-                  positions={lineData}
-                  color="#fff"
-                >
-                  {name &&
-                    <Tooltip className="compact" direction="top" permanent>
-                      <span>{name}</span>
-                    </Tooltip>
-                  }
-                </Polyline>
-                {colorizeTrackBy === null &&
-                  <Polyline
-                    weight={6}
-                    interactive={false}
-                    positions={lineData}
-                    color="#838"
-                  />
-                }
-              </React.Fragment>
-            ))
+          xxx.map(({ lineData, name }, i) => (
+            <Polyline
+              key={`outline-${i}`}
+              weight={10}
+              interactive={false}
+              positions={lineData}
+              color="#fff"
+            >
+              {name &&
+                <Tooltip className="compact" direction="top" permanent>
+                  <span>{name}</span>
+                </Tooltip>
+              }
+            </Polyline>
+          ))
         }
         {colorizeTrackBy &&
           (colorizeTrackBy === 'elevation' ? this.getColorLineDataForElevation() : this.getColorLineDataForSteepness()).map((positions, i) => (
@@ -169,6 +165,14 @@ class TrackViewerResult extends React.Component {
               outlineWidth={0}
             />
           ))
+        }
+        {colorizeTrackBy === null &&
+          <Polyline
+            weight={6}
+            interactive={false}
+            positions={xxx.map(({ lineData }) => lineData)}
+            color="#838"
+          />
         }
         {
           this.getFeatures('Point').map(({ geometry, properties }, i) => (
