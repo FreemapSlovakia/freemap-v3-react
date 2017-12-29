@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Tooltip, Polyline } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import RichMarker, { createMarkerIcon } from 'fm3/components/RichMarker';
+import RichMarker from 'fm3/components/RichMarker';
 import Hotline from 'fm3/components/Hotline';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
@@ -57,8 +57,6 @@ class TrackViewerResult extends React.Component {
   }
 
   getFeatures = type => turfFlatten(this.props.trackGeojson).features.filter(f => f.geometry.type === type);
-
-  getLineData = () => this.getFeatures('LineString').map(feature => feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]));
 
   getColorLineDataForElevation = () => this.getFeatures('LineString').map((feature) => {
     const latLonSmoothEles = smoothElevations(feature, this.props.eleSmoothingFactor);
@@ -118,17 +116,8 @@ class TrackViewerResult extends React.Component {
       type: 'Feature',
       geometry: { type: 'Point', coordinates: [infoLon, infoLat] },
     };
-    const s = turfLineSlice(p1, p2, geojsonLineString);
-    return turfLineDistance(s);
+    return turfLineDistance(turfLineSlice(p1, p2, geojsonLineString));
   }
-
-  pointToLayer = (geoJsonPoint, latlng) => L.marker(
-    latlng,
-    {
-      interactive: false,
-      icon: createMarkerIcon({ faIcon: 'flag' }),
-    },
-  )
 
   handlePointClick = () => {
     // just to prevent click propagation to map
@@ -142,68 +131,74 @@ class TrackViewerResult extends React.Component {
 
     return trackGeojson && (
       <React.Fragment key={keyToAssureProperRefresh}>
-        <React.Fragment>
-          {colorizeTrackBy ?
+        {
+          this.getFeatures('LineString')
+            .map(feature => ({ name: feature.properties.name, lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]) }))
+            .map(({ lineData, name }, i) => (
+              <React.Fragment key={`line-${i}`}>
+                <Polyline
+                  weight={10}
+                  interactive={false}
+                  positions={lineData}
+                  color="#fff"
+                >
+                  {name &&
+                    <Tooltip className="compact" direction="top" permanent>
+                      <span>{name}</span>
+                    </Tooltip>
+                  }
+                </Polyline>
+                {colorizeTrackBy === null &&
+                  <Polyline
+                    weight={6}
+                    interactive={false}
+                    positions={lineData}
+                    color="#838"
+                  />
+                }
+              </React.Fragment>
+            ))
+        }
+        {colorizeTrackBy &&
+          (colorizeTrackBy === 'elevation' ? this.getColorLineDataForElevation() : this.getColorLineDataForSteepness()).map((positions, i) => (
             <Hotline
-              key={colorizeTrackBy}
-              positions={colorizeTrackBy === 'elevation' ? this.getColorLineDataForElevation() : this.getColorLineDataForSteepness()}
+              key={`${colorizeTrackBy}-${i}`}
+              positions={positions}
               palette={colorizeTrackBy === 'elevation' ? { 0.0: 'black', 0.5: '#838', 1.0: 'white' } : { 0.0: 'green', 0.5: 'white', 1.0: 'red' }}
               weight={6}
-              outlineWidth={2}
-              outlineColor="#fff"
+              outlineWidth={0}
             />
-            :
-            <Polyline
-              weight={4}
+          ))
+        }
+        {
+          this.getFeatures('Point').map(({ geometry, properties }, i) => (
+            <RichMarker
+              faIcon="flag"
+              key={`point-${i}`}
               interactive={false}
-              positions={this.getLineData()}
-            />
-          }
-          {
-            this.getFeatures('Point').map(({ geometry }, i) => (
-              <RichMarker
-                faIcon="flag"
-                key={`point-${i}`}
-                faIconLeftPadding="2px"
-                color="blue"
-                interactive={false}
-                position={L.latLng(geometry.coordinates[1], geometry.coordinates[0])}
-                onClick={this.handlePointClick}
-              />
-            ))
-          }
-        </React.Fragment>
-        {/*
-        <React.Fragment>
-          <GeoJSON
-            data={trackGeojson}
-            key={keyToAssureProperRefresh}
-            style={{ weight: 10, color: '#fff' }}
-            pointToLayer={() => {}}
-            onEachFeature={this.handleEachFeature}
-          />
-          <GeoJSON
-            data={trackGeojson}
-            key={`${keyToAssureProperRefresh}2`}
-            style={{ weight: 6, color: '#883388' }}
-            pointToLayer={this.pointToLayer}
-            interactive={false}
-          />
-        </React.Fragment>
-        */}
+              position={L.latLng(geometry.coordinates[1], geometry.coordinates[0])}
+              onClick={this.handlePointClick}
+            >
+              {properties.name &&
+                <Tooltip className="compact" offset={new L.Point(10, -25)} direction="right" permanent>
+                  <span>{properties.name}</span>
+                </Tooltip>
+              }
+            </RichMarker>
+          ))
+        }
         {
           startPoints.map((p, i) => (
             <RichMarker
               faIcon="play"
               key={`5rZwATEZfM-${i}`}
-              faIconLeftPadding="2px"
               color="#409a40"
               interactive={false}
               position={L.latLng(p.lat, p.lon)}
               onClick={this.handlePointClick}
             >
               {p.startTime &&
-                <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+                <Tooltip className="compact" offset={new L.Point(10, -25)} direction="right" permanent>
                   <span>{timeFormat.format(new Date(p.startTime))}</span>
                 </Tooltip>
               }
@@ -216,13 +211,12 @@ class TrackViewerResult extends React.Component {
             <RichMarker
               faIcon="stop"
               key={`GWT1OzhnV1-${i}`}
-              faIconLeftPadding="2px"
               color="#d9534f"
               interactive={false}
               position={L.latLng(p.lat, p.lon)}
               onClick={this.handlePointClick}
             >
-              <Tooltip offset={new L.Point(9, -25)} direction="right" permanent>
+              <Tooltip className="compact" offset={new L.Point(10, -25)} direction="right" permanent>
                 <span>
                   {p.finishTime ? timeFormat.format(new Date(p.finishTime)) : ''}
                   {p.finishTime ? ', ' : ''}
@@ -236,13 +230,12 @@ class TrackViewerResult extends React.Component {
         {this.state.infoLat &&
           <RichMarker
             faIcon="info"
-            faIconLeftPadding="2px"
             color="grey"
             interactive={false}
             position={L.latLng(this.state.infoLat, this.state.infoLon)}
             onClick={this.handlePointClick}
           >
-            <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
+            <Tooltip className="compact" offset={new L.Point(10, -25)} direction="right" permanent>
               <span>
                 {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)} km
               </span>

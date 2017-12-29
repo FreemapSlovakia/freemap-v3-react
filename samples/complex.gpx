@@ -29,15 +29,27 @@
     <name>Dubina</name>
   </wpt>
   <rte>
+    <name>Route 1</name>
+    <desc>Route 1 Desc</desc>
     <rtept lat="48.743059296250586" lon="21.047744750976562"/>
-    <rtept lat="48.75822578635217" lon="21.046714782714844"/>
+    <rtept lat="48.75822578635217" lon="21.046714782714844">
+      <name>Rte Point 123</name>
+        <ele>825</ele>
+        <desc>Rte Point 123 Desc</desc>
+    </rtept>
     <rtept lat="48.76682564178747" lon="21.04911804199219"/>
     <rtept lat="48.778365238750794" lon="21.06113433837891"/>
   </rte>
   <trk>
+    <name>Track 1</name>
+    <desc>Track 1 Desc</desc>
     <trkseg>
       <trkpt lat="48.74124806611154" lon="21.066284179687504"/>
-      <trkpt lat="48.754151656656276" lon="21.070060729980472"/>
+      <trkpt lat="48.754151656656276" lon="21.070060729980472">
+        <name>Trk Point 123</name>
+        <ele>825</ele>
+        <desc>Trk Point 123 Desc</desc>
+      </trkpt>
       <trkpt lat="48.765694165991206" lon="21.08036041259766"/>
       <trkpt lat="48.77248263837077" lon="21.099586486816406"/>
     </trkseg>
