@@ -1,0 +1,55 @@
+<gpx
+  xmlns="http://www.topografix.com/GPX/1/1" version="1.1" creator="http://next.freemap.sk/">
+  <metadata>
+    <copyright author="OpenStreetMap contributors">
+      <license>http://www.openstreetmap.org/copyright</license>
+    </copyright>
+    <desc>Export from http://next.freemap.sk/</desc>
+    <author>
+      <name>Freemap Slovakia</name>
+      <email>freemap@freemap.sk</email>
+      <link href="https://www.freemap.sk/">
+        <text>Freemap Slovakia</text>
+        <type>text/html</type>
+      </link>
+    </author>
+    <time>2017-12-29T07:37:26.203Z</time>
+    <keywords>distanceMeasurement</keywords>
+  </metadata>
+  <wpt lat="48.7824441" lon="21.0955953">
+    <ele>818</ele>
+    <name>Železný vrch</name>
+  </wpt>
+  <wpt lat="48.8010404" lon="21.0267571">
+    <ele>825</ele>
+    <name>Krížny hrb</name>
+  </wpt>
+  <wpt lat="48.7782892" lon="21.152547">
+    <ele>525</ele>
+    <name>Dubina</name>
+  </wpt>
+  <rte>
+    <rtept lat="48.743059296250586" lon="21.047744750976562"/>
+    <rtept lat="48.75822578635217" lon="21.046714782714844"/>
+    <rtept lat="48.76682564178747" lon="21.04911804199219"/>
+    <rtept lat="48.778365238750794" lon="21.06113433837891"/>
+  </rte>
+  <trk>
+    <trkseg>
+      <trkpt lat="48.74124806611154" lon="21.066284179687504"/>
+      <trkpt lat="48.754151656656276" lon="21.070060729980472"/>
+      <trkpt lat="48.765694165991206" lon="21.08036041259766"/>
+      <trkpt lat="48.77248263837077" lon="21.099586486816406"/>
+    </trkseg>
+  </trk>
+  <trk>
+    <trkseg>
+      <trkpt lat="48.725623496859626" lon="21.169967651367188"/>
+      <trkpt lat="48.735134682507514" lon="21.164817810058597"/>
+    </trkseg>
+    <trkseg>
+      <trkpt lat="48.7604890489698" lon="21.16893768310547"/>
+      <trkpt lat="48.769993638392656" lon="21.187133789062504"/>
+    </trkseg>
+  </trk>
+</gpx>
