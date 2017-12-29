@@ -46,6 +46,7 @@ class ErrorCatcher extends React.Component {
           {
             [
               ['URL', window.location.href],
+              ['User Agent', navigator.userAgent],
               ['Errored Action', this.props.erroredAction],
               ['Reducing Error', this.props.reducingError && this.props.reducingError.stack],
               ['Component Error', this.state.error && this.state.error.stack],
