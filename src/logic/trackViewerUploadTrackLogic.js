@@ -1,11 +1,13 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
+
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetTrackUID } from 'fm3/actions/trackViewerActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
-  type: 'TRACK_VIEWER_UPLOAD_TRACK',
+  type: at.TRACK_VIEWER_UPLOAD_TRACK,
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGpx } = getState().trackViewer;
     if (trackGpx.length > (process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {

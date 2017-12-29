@@ -1,9 +1,10 @@
 import { createLogic } from 'redux-logic';
 import turfLineDistance from '@turf/line-distance';
 import toGeoJSON from '@mapbox/togeojson';
+import * as at from 'fm3/actionTypes';
 
 export default createLogic({
-  type: 'TRACK_VIEWER_SET_TRACK_DATA',
+  type: at.TRACK_VIEWER_SET_TRACK_DATA,
   transform({ action }, next) {
     if (!action.payload.trackGpx) {
       next(action);

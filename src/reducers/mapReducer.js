@@ -1,3 +1,5 @@
+import * as at from 'fm3/actionTypes';
+
 const initialState = {
   mapType: 'T',
   lat: 48.70714,
@@ -11,7 +13,7 @@ const initialState = {
 export default function map(state = initialState, action) {
   switch (action.type) {
     // TODO improve validation
-    case 'MAP_LOAD_STATE': {
+    case at.MAP_LOAD_STATE: {
       const s = { ...state };
       const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat } = action.payload;
       if (mapType) {
@@ -37,18 +39,18 @@ export default function map(state = initialState, action) {
       }
       return s;
     }
-    case 'MAP_RESET':
+    case at.MAP_RESET:
       return {
         ...state,
         zoom: initialState.zoom,
         lat: initialState.lat,
         lon: initialState.lon,
       };
-    case 'MAP_SET_TILE_FORMAT':
+    case at.MAP_SET_TILE_FORMAT:
       return { ...state, tileFormat: action.payload };
-    case 'MAP_SET_OVERLAY_OPACITY':
+    case at.MAP_SET_OVERLAY_OPACITY:
       return { ...state, overlayOpacity: action.payload };
-    case 'MAP_REFOCUS': {
+    case at.MAP_REFOCUS: {
       const newState = { ...state };
       ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach((prop) => {
         if (prop in action.payload) {
@@ -58,7 +60,7 @@ export default function map(state = initialState, action) {
 
       return newState;
     }
-    case 'AUTH_SET_USER': {
+    case at.AUTH_SET_USER: {
       const settings = action.payload && action.payload.settings;
       return settings ? {
         ...state,

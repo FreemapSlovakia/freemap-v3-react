@@ -1,3 +1,5 @@
+import * as at from 'fm3/actionTypes';
+
 const initialState = {
   changesets: [],
   days: null,
@@ -6,13 +8,13 @@ const initialState = {
 
 export default function changesets(state = initialState, action) {
   switch (action.type) {
-    case 'CLEAR_MAP':
+    case at.CLEAR_MAP:
       return initialState;
-    case 'CHANGESETS_SET':
+    case at.CHANGESETS_SET:
       return { ...state, changesets: action.payload };
-    case 'CHANGESETS_SET_DAYS':
+    case at.CHANGESETS_SET_DAYS:
       return { ...state, days: action.payload };
-    case 'CHANGESETS_SET_AUTHOR_NAME':
+    case at.CHANGESETS_SET_AUTHOR_NAME:
       return { ...state, authorName: action.payload };
     default:
       return state;

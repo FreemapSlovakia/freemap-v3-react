@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 import PropTypes from 'prop-types';
 
+import * as at from 'fm3/actionTypes';
 import RichMarker from 'fm3/components/RichMarker';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
@@ -126,7 +127,7 @@ export default connect(
       dispatch(toastsAdd({
         collapseKey: 'changeset.detail',
         message,
-        cancelType: ['CHANGESETS_SET_AUTHOR_NAME'],
+        cancelType: at.CHANGESETS_SET_AUTHOR_NAME,
         style: 'info',
       }));
     },

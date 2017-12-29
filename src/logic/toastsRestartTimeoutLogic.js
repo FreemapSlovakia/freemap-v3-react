@@ -1,8 +1,10 @@
 import { createLogic } from 'redux-logic';
+
+import * as at from 'fm3/actionTypes';
 import { timeoutMap, setupTimeout } from 'fm3/logic/toasts';
 
 export default createLogic({
-  type: 'TOASTS_RESTART_TIMEOUT',
+  type: at.TOASTS_RESTART_TIMEOUT,
   process({ getState, action: { payload: id } }) {
     const tm = timeoutMap.get(id);
     if (tm) {

@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
 
@@ -9,8 +10,8 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
-  type: 'OBJECTS_SET_FILTER',
-  cancelType: ['OBJECTS_SET_FILTER', 'CLEAR_MAP'],
+  type: at.OBJECTS_SET_FILTER,
+  cancelType: [at.OBJECTS_SET_FILTER, at.CLEAR_MAP],
   process({ action: { payload }, cancelled$, storeDispatch }, dispatch, done) {
     const b = getMapLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;

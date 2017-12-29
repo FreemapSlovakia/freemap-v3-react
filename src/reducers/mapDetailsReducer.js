@@ -1,3 +1,5 @@
+import * as at from 'fm3/actionTypes';
+
 const initialState = {
   userSelectedLat: null,
   userSelectedLon: null,
@@ -7,21 +9,14 @@ const initialState = {
 
 export default function mapDetails(state = initialState, action) {
   switch (action.type) {
-    case 'MAP_DETAILS_SET_SUBTOOL': {
+    case at.MAP_DETAILS_SET_SUBTOOL:
       return { ...state, subtool: action.payload.subtool };
-    }
-    case 'MAP_DETAILS_SET_USER_SELECTED_POSITION': {
+    case at.MAP_DETAILS_SET_USER_SELECTED_POSITION:
       return { ...state, userSelectedLat: action.payload.lat, userSelectedLon: action.payload.lon };
-    }
-    case 'MAP_DETAILS_SET_TRACK_INFO_POINTS': {
+    case at.MAP_DETAILS_SET_TRACK_INFO_POINTS:
       return { ...state, trackInfoPoints: action.payload.trackInfoPoints };
-    }
-    case 'SET_TOOL': {
-      if (action.payload === 'map-details') {
-        return { ...state, subtool: 'track-info' };
-      }
-      return initialState;
-    }
+    case at.SET_TOOL:
+      return action.payload === 'map-details' ? { ...state, subtool: 'track-info' } : initialState;
     default:
       return state;
   }

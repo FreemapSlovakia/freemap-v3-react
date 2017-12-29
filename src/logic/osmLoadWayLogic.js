@@ -4,9 +4,10 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { toNodes, toWays } from 'fm3/logic/osmUtils.js';
+import * as at from 'fm3/actionTypes';
 
 export default createLogic({
-  type: 'OSM_LOAD_WAY',
+  type: at.OSM_LOAD_WAY,
   process({ getState }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));

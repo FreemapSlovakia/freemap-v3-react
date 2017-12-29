@@ -1,3 +1,5 @@
+import * as at from 'fm3/actionTypes';
+
 const initialState = {
   activeModal: null,
   tool: null,
@@ -14,7 +16,7 @@ const initialState = {
 
 export default function main(state = initialState, action) {
   switch (action.type) {
-    case 'MAIN_LOAD_STATE': {
+    case at.MAIN_LOAD_STATE: {
       const s = { ...state };
       const { homeLocation, expertMode } = action.payload;
       if (homeLocation && typeof homeLocation.lat === 'number' && typeof homeLocation.lon === 'number') {
@@ -23,7 +25,7 @@ export default function main(state = initialState, action) {
       s.expertMode = !!expertMode;
       return s;
     }
-    case 'AUTH_SET_USER': {
+    case at.AUTH_SET_USER: {
       const p = action.payload;
       return {
         ...state,
@@ -34,33 +36,33 @@ export default function main(state = initialState, action) {
           ? p.settings.expertMode : state.expertMode,
       };
     }
-    case 'AUTH_LOGOUT':
+    case at.AUTH_LOGOUT:
       return { ...state, homeLocation: null };
-    case 'SET_ACTIVE_MODAL':
+    case at.SET_ACTIVE_MODAL:
       return { ...state, activeModal: action.payload };
-    case 'SET_TOOL':
+    case at.SET_TOOL:
       return { ...state, tool: action.payload };
-    case 'SET_HOME_LOCATION':
+    case at.SET_HOME_LOCATION:
       return { ...state, homeLocation: action.payload ? { ...action.payload } : null };
-    case 'START_PROGRESS':
+    case at.START_PROGRESS:
       return { ...state, progress: [...state.progress, action.payload] };
-    case 'STOP_PROGRESS':
+    case at.STOP_PROGRESS:
       return { ...state, progress: state.progress.filter(pid => pid !== action.payload) };
-    case 'SET_LOCATION':
+    case at.SET_LOCATION:
       return { ...state, location: { lat: action.payload.lat, lon: action.payload.lon, accuracy: action.payload.accuracy } };
-    case 'SET_EXPERT_MODE':
+    case at.SET_EXPERT_MODE:
       return { ...state, expertMode: action.payload };
-    case 'LOCATE':
+    case at.LOCATE:
       return { ...state, locate: !state.locate, location: null };
-    case 'SET_SELECTING_HOME_LOCATION':
+    case at.SET_SELECTING_HOME_LOCATION:
       return { ...state, selectingHomeLocation: action.payload };
-    case 'TIPS_SHOW':
+    case at.TIPS_SHOW:
       return { ...state, activeModal: 'tips' };
-    case 'ENABLE_UPDATING_URL':
+    case at.ENABLE_UPDATING_URL:
       return { ...state, urlUpdatingEnabled: true };
-    case 'REDUCING_ERROR':
+    case at.REDUCING_ERROR:
       return { ...state, reducingError: action.payload.error, erroredAction: action.payload.action };
-    case 'UNHANDLED_LOGIC_ERROR':
+    case at.UNHANDLED_LOGIC_ERROR:
       return { ...state, reducingError: action.payload, erroredAction: null };
     default:
       return state;

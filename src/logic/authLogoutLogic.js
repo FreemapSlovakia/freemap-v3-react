@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authLogout } from 'fm3/actions/authActions';
 
 export default createLogic({
-  type: 'AUTH_START_LOGOUT',
+  type: at.AUTH_START_LOGOUT,
   process({ getState }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));

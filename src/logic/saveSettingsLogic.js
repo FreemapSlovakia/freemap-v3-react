@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setHomeLocation, setActiveModal, setExpertMode } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
@@ -9,8 +10,8 @@ import { authSetUser } from 'fm3/actions/authActions';
 import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 
 export const saveSettingsLogic = createLogic({
-  type: 'SAVE_SETTINGS',
-  cancelType: ['SET_ACTIVE_MODAL', 'SAVE_SETTINGS'],
+  type: at.SAVE_SETTINGS,
+  cancelType: [at.SET_ACTIVE_MODAL, at.SAVE_SETTINGS],
   process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
     const { tileFormat, homeLocation, overlayOpacity,
       expertMode, trackViewerEleSmoothingFactor, user, preventTips } = action.payload;

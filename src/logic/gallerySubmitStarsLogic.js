@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { galleryRequestImage } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  type: 'GALLERY_SUBMIT_STARS',
+  type: at.GALLERY_SUBMIT_STARS,
   process({
     action: { payload: stars }, getState, cancelled$, storeDispatch,
   }, dispatch, done) {

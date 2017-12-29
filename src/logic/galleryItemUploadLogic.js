@@ -2,12 +2,13 @@ import axios from 'axios';
 import React from 'react';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryRemoveItem, galleryUpload, gallerySetLayerDirty, gallerySetItemError, galleryHideUploadModal } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  type: ['GALLERY_UPLOAD'],
-  cancelType: 'GALLERY_HIDE_UPLOAD_MODAL',
+  type: at.GALLERY_UPLOAD,
+  cancelType: at.GALLERY_HIDE_UPLOAD_MODAL,
   process({ getState }, dispatch, done) {
     const { items, uploadingId } = getState().gallery;
 

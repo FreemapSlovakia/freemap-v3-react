@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImage } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  cancelType: 'CLEAR_MAP',
-  type: 'GALLERY_REQUEST_IMAGE',
+  type: at.GALLERY_REQUEST_IMAGE,
+  cancelType: at.CLEAR_MAP,
   process({
     action: { payload: id }, getState, cancelled$, storeDispatch,
   }, dispatch, done) {

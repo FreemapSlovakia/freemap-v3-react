@@ -1,4 +1,5 @@
 import tips from 'fm3/tips/index.json';
+import * as at from 'fm3/actionTypes';
 
 const initialState = {
   tip: 'attribution',
@@ -7,15 +8,15 @@ const initialState = {
 
 export default function infoPoint(state = initialState, action) {
   switch (action.type) {
-    case 'TIPS_SHOW':
+    case at.TIPS_SHOW:
       return { ...state, tip: action.payload };
-    case 'TIPS_NEXT':
+    case at.TIPS_NEXT:
       return { ...state, tip: tips[(ft(action.payload === null ? 'attribution' : action.payload || state.tip) + 1) % tips.length][0] };
-    case 'TIPS_PREVIOUS':
+    case at.TIPS_PREVIOUS:
       return { ...state, tip: tips[(ft(state.tip) + tips.length - 1) % tips.length][0] };
-    case 'TIPS_PREVENT_NEXT_TIME':
+    case at.TIPS_PREVENT_NEXT_TIME:
       return { ...state, preventTips: action.payload };
-    case 'AUTH_SET_USER': {
+    case at.AUTH_SET_USER: {
       const user = action.payload;
       return user ? {
         ...state,

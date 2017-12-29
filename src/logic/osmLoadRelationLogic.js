@@ -1,12 +1,14 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
+
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { toNodes, toWays } from 'fm3/logic/osmUtils.js';
 
 export default createLogic({
-  type: 'OSM_LOAD_RELATION',
+  type: at.OSM_LOAD_RELATION,
   process({ getState }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));

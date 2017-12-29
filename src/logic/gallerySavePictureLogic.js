@@ -1,12 +1,13 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { galleryRequestImage, gallerySetLayerDirty } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  type: 'GALLERY_SAVE_PICTURE',
+  type: at.GALLERY_SAVE_PICTURE,
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));

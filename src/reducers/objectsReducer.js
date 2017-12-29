@@ -1,3 +1,5 @@
+import * as at from 'fm3/actionTypes';
+
 const initialState = {
   objects: [],
   categories: [],
@@ -6,9 +8,9 @@ const initialState = {
 
 export default function map(state = initialState, action) {
   switch (action.type) {
-    case 'CLEAR_MAP':
+    case at.CLEAR_MAP:
       return initialState;
-    case 'OBJECTS_SET_RESULT':
+    case at.OBJECTS_SET_RESULT:
       return { ...state, objects: [...state.objects, ...action.payload] };
     default:
       return state;

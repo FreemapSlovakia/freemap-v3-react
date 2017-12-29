@@ -1,5 +1,7 @@
+import * as at from 'fm3/actionTypes';
+
 export function mapReset() {
-  return { type: 'MAP_RESET' };
+  return { type: at.MAP_RESET };
 }
 
 let sn = []; // HACK safety net to prevent endless loop in case of some error
@@ -12,17 +14,17 @@ export function mapRefocus(changes) {
     throw new Error('endless loop detected');
   }
 
-  return { type: 'MAP_REFOCUS', payload: { ...changes } };
+  return { type: at.MAP_REFOCUS, payload: { ...changes } };
 }
 
 export function mapSetTileFormat(tileFormat) {
-  return { type: 'MAP_SET_TILE_FORMAT', payload: tileFormat };
+  return { type: at.MAP_SET_TILE_FORMAT, payload: tileFormat };
 }
 
 export function mapSetOverlayOpacity(overlayOpacity) {
-  return { type: 'MAP_SET_OVERLAY_OPACITY', payload: overlayOpacity };
+  return { type: at.MAP_SET_OVERLAY_OPACITY, payload: overlayOpacity };
 }
 
 export function mapLoadState(payload) {
-  return { type: 'MAP_LOAD_STATE', payload };
+  return { type: at.MAP_LOAD_STATE, payload };
 }

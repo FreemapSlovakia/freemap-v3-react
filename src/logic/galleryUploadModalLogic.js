@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetTags } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  type: ['GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_SHOW_FILTER', 'GALLERY_EDIT_PICTURE'],
+  type: [at.GALLERY_SHOW_UPLOAD_MODAL, at.GALLERY_SHOW_FILTER, at.GALLERY_EDIT_PICTURE],
   transform({ getState, action }, next) {
-    if (action.type === 'GALLERY_SHOW_UPLOAD_MODAL' && !getState().auth.user) {
+    if (action.type === at.GALLERY_SHOW_UPLOAD_MODAL && !getState().auth.user) {
       next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
     } else {
       next(action);
@@ -16,7 +17,7 @@ export default createLogic({
   },
   process({ action, getState }, dispatch, done) {
     // don't load tags when canceling editing
-    if (action.type === 'GALLERY_EDIT_PICTURE' && !getState().gallery.editModel) {
+    if (action.type === at.GALLERY_EDIT_PICTURE && !getState().gallery.editModel) {
       done();
       return;
     }

@@ -1,14 +1,15 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { changesetsSet } from 'fm3/actions/changesetsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 
 export const changesetsLogic = createLogic({
-  type: ['CHANGESETS_SET_AUTHOR_NAME'],
-  cancelType: 'CHANGESETS_SET_AUTHOR_NAME',
+  type: at.CHANGESETS_SET_AUTHOR_NAME,
+  cancelType: at.CHANGESETS_SET_AUTHOR_NAME,
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const state = getState();
 
@@ -86,7 +87,7 @@ export const changesetsLogic = createLogic({
             dispatch(toastsAdd({
               collapseKey: 'changeset.detail',
               message: 'Neboli nájdené žiadne zmeny',
-              cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME'],
+              cancelType: [at.SET_TOOL, at.CHANGESETS_SET_AUTHOR_NAME],
               timeout: 5000,
               style: 'info',
             }));

@@ -1,8 +1,9 @@
 import { createLogic } from 'redux-logic';
 import { infoPointSet } from 'fm3/actions/infoPointActions';
+import * as at from 'fm3/actionTypes';
 
 export const infoPointLogic = createLogic({
-  type: 'SET_TOOL',
+  type: at.SET_TOOL,
   process({ getState }, dispatch, done) {
     const state = getState();
     const { tool } = state.main;

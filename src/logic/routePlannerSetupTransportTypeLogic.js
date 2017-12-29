@@ -1,9 +1,10 @@
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
 
 export default createLogic({
-  type: 'SET_TOOL',
+  type: at.SET_TOOL,
   process({ getState }, dispatch, done) {
     const { main: { tool }, routePlanner: { transportType, start, finish } } = getState();
     if (tool === 'route-planner' && (!transportType) || !start && !finish) {

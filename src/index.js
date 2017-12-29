@@ -44,6 +44,8 @@ const errorHandlingMiddleware = () => next => (action) => {
   try {
     return next(action);
   } catch (error) {
+    // eslint-disable-next-line
+    console.error('Reducing error:', error);
     return next(reducingError(action, error));
   }
 };

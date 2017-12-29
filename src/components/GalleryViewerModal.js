@@ -3,8 +3,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ReactStars from 'react-stars';
+
+import * as at from 'fm3/actionTypes';
+import * as FmPropTypes from 'fm3/propTypes';
+
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import GalleryEditForm from 'fm3/components/GalleryEditForm';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -15,10 +20,6 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import GalleryEditForm from 'fm3/components/GalleryEditForm';
-
-import * as FmPropTypes from 'fm3/propTypes';
 
 import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars,
   galleryEditPicture, galleryDeletePicture, gallerySetEditModel, gallerySavePicture, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
@@ -391,7 +392,7 @@ export default connect(
         collapseKey: 'gallery.deletePicture',
         message: 'Zmazať obrázok?',
         style: 'warning',
-        cancelType: ['GALLERY_CLEAR', 'GALLERY_REQUEST_IMAGE'],
+        cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
         actions: [
           { name: 'Áno', action: galleryDeletePicture(), style: 'danger' },
           { name: 'Nie' },

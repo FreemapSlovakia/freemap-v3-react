@@ -3,13 +3,14 @@ import { createLogic } from 'redux-logic';
 import FileSaver from 'file-saver';
 import qs from 'query-string';
 
+import * as at from 'fm3/actionTypes';
 import { createElement, addAttribute, GPX_NS } from 'fm3/gpxExporter';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export const gpxExportLogic = createLogic({
-  type: 'EXPORT_GPX',
+  type: at.EXPORT_GPX,
   process({
     getState, action, cancelled$, storeDispatch,
   }, dispatch, done) {

@@ -19,7 +19,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
-import { setActiveModal, setSelectingHomeLocation } from 'fm3/actions/mainActions';
+import { setActiveModal, setSelectingHomeLocation, saveSettings } from 'fm3/actions/mainActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
@@ -301,13 +301,7 @@ export default connect(
   }),
   dispatch => ({
     onSave(tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
-      // TODO use this
-      dispatch({
-        type: 'SAVE_SETTINGS',
-        payload: {
-          tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips,
-        },
-      });
+      dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips));
     },
     onClose() {
       dispatch(setActiveModal(null));

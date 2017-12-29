@@ -1,10 +1,12 @@
+import * as at from 'fm3/actionTypes';
+
 const initialState = {
   toasts: [],
 };
 
 export default function main(state = initialState, action) {
   switch (action.type) {
-    case 'TOASTS_ADD': {
+    case at.TOASTS_ADD: {
       const { collapseKey } = action.payload;
       if (collapseKey) {
         const toast = state.toasts.find(t => t.collapseKey === collapseKey);
@@ -14,7 +16,7 @@ export default function main(state = initialState, action) {
       }
       return { ...state, toasts: [...state.toasts, action.payload] };
     }
-    case 'TOASTS_REMOVE':
+    case at.TOASTS_REMOVE:
       return { ...state, toasts: state.toasts.filter(({ id }) => id !== action.payload) };
     default:
       return state;

@@ -1,13 +1,14 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
-  type: 'ELEVATION_MEASUREMENT_SET_POINT',
-  cancelType: ['ELEVATION_MEASUREMENT_SET_POINT', 'CLEAR_MAP'],
+  type: at.ELEVATION_MEASUREMENT_SET_POINT,
+  cancelType: [at.ELEVATION_MEASUREMENT_SET_POINT, at.CLEAR_MAP],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { point } = getState().elevationMeasurement;
     if (point) {

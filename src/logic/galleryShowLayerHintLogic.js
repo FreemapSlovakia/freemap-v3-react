@@ -1,13 +1,14 @@
 import React from 'react';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryLayerHint } from 'fm3/actions/galleryActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 export default createLogic({
-  type: 'SET_TOOL',
+  type: at.SET_TOOL,
   process({ getState }, dispatch, done) {
     if (getState().main.tool === 'gallery' && !getState().map.overlays.includes('I') && !localStorage.getItem('galleryPreventLayerHint')) {
       dispatch(toastsAdd({

@@ -1,11 +1,12 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
-  type: 'AUTH_LOGIN_WITH_OSM',
+  type: at.AUTH_LOGIN_WITH_OSM,
   process(params, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));

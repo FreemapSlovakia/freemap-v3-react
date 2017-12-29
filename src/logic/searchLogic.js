@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
+
+import * as at from 'fm3/actionTypes';
 import { searchSetResults } from 'fm3/actions/searchActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
@@ -7,8 +9,8 @@ import parseCoordinates from 'fm3/coordinatesParser';
 import { formatGpsCoord } from 'fm3/geoutils';
 
 export default createLogic({
-  type: 'SEARCH_SET_QUERY',
-  cancelType: ['SEARCH_SET_QUERY', 'SET_TOOL', 'CLEAR_MAP'],
+  type: at.SEARCH_SET_QUERY,
+  cancelType: [at.SEARCH_SET_QUERY, at.CLEAR_MAP],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { query } = getState().search;
     if (!query) {

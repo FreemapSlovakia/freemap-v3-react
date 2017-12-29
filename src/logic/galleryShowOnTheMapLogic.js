@@ -1,9 +1,10 @@
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { mapRefocus } from 'fm3/actions/mapActions';
 
 export default createLogic({
-  type: 'GALLERY_SHOW_ON_THE_MAP',
+  type: at.GALLERY_SHOW_ON_THE_MAP,
   process({ getState }, dispatch, done) {
     const { image } = getState().gallery;
     if (image) {

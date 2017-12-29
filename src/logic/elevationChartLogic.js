@@ -3,6 +3,7 @@ import { createLogic } from 'redux-logic';
 import turfAlong from '@turf/along';
 import turfLineDistance from '@turf/line-distance';
 
+import * as at from 'fm3/actionTypes';
 import { distance, containsElevations } from 'fm3/geoutils';
 
 import { elevationChartSetElevationProfile } from 'fm3/actions/elevationChartActions';
@@ -10,8 +11,8 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
-  type: 'ELEVATION_CHART_SET_TRACK_GEOJSON',
-  cancelType: ['ELEVATION_CHART_SET_TRACK_GEOJSON', 'SET_TOOL', 'MAP_RESET', 'ELEVATION_CHART_CLOSE'],
+  type: at.ELEVATION_CHART_SET_TRACK_GEOJSON,
+  cancelType: [at.ELEVATION_CHART_SET_TRACK_GEOJSON, at.SET_TOOL, at.ELEVATION_CHART_CLOSE],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGeojson } = getState().elevationChart;
     const totalDistanceInKm = turfLineDistance(trackGeojson);

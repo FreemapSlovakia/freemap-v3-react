@@ -1,9 +1,10 @@
 import { createLogic } from 'redux-logic';
 
+import * as at from 'fm3/actionTypes';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
 export default createLogic({
-  type: 'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
+  type: at.TRACK_VIEWER_TOGGLE_ELEVATION_CHART,
   process({ getState }, dispatch, done) {
     if (getState().elevationChart.trackGeojson) {
       dispatch(elevationChartClose());

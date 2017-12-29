@@ -1,5 +1,7 @@
 import React from 'react';
 import { createLogic } from 'redux-logic';
+
+import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { smoothElevations, distance } from 'fm3/geoutils';
 
@@ -8,7 +10,7 @@ const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDig
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
 export default createLogic({
-  type: 'TRACK_VIEWER_SHOW_INFO',
+  type: at.TRACK_VIEWER_SHOW_INFO,
   process({ getState }, dispatch, done) {
     const { startPoints, finishPoints, trackGeojson, eleSmoothingFactor } = getState().trackViewer;
 
@@ -98,7 +100,7 @@ export default createLogic({
     dispatch(toastsAdd({
       collapseKey: 'trackViewer.trackInfo',
       message: infoMessage,
-      cancelType: ['CLEAR_MAP', 'TRACK_VIEWER_SET_TRACK_DATA'],
+      cancelType: [at.CLEAR_MAP, at.TRACK_VIEWER_SET_TRACK_DATA],
       style: 'info',
     }));
 
