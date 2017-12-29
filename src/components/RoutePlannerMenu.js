@@ -7,10 +7,9 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import { connect } from 'react-redux';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
-  routePlannerSetPickMode, routePlannerToggleItineraryVisibility } from 'fm3/actions/routePlannerActions';
+  routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
 import { setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getCurrentPosition } from 'fm3/geoutils';
@@ -30,12 +29,11 @@ class RoutePlannerMenu extends React.Component {
     }),
     // onItineraryVisibilityToggle: PropTypes.func.isRequired,
     // itineraryIsVisible: PropTypes.bool.isRequired,
-    onElevationChartVisibilityToggle: PropTypes.func.isRequired,
+    onToggleElevationChart: PropTypes.func.isRequired,
     elevationProfileIsVisible: PropTypes.bool.isRequired,
     onProgressStart: PropTypes.func.isRequired,
     onProgressStop: PropTypes.func.isRequired,
     routeFound: PropTypes.bool.isRequired,
-    shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
     onGetCurrentPositionError: PropTypes.func.isRequired,
     onMissingHomeLocation: PropTypes.func.isRequired,
     pickMode: PropTypes.string,
@@ -104,8 +102,8 @@ class RoutePlannerMenu extends React.Component {
   render() {
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
-      /* onItineraryVisibilityToggle, itineraryIsVisible, */ onElevationChartVisibilityToggle, elevationProfileIsVisible,
-      routeFound, shapePoints, expertMode,
+      /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
+      routeFound, expertMode, onToggleElevationChart,
     } = this.props;
 
     const transportTypes = [
@@ -197,16 +195,15 @@ class RoutePlannerMenu extends React.Component {
         </Button>
         */}
         {' '}
-        {routeFound &&
-          <Button
-            onClick={() => onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible)}
-            active={elevationProfileIsVisible}
-            title="Výškovy profil"
-          >
-            <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> Výškovy profil</span>
-          </Button>
-        }
+        <Button
+          onClick={onToggleElevationChart}
+          active={elevationProfileIsVisible}
+          disabled={!routeFound}
+          title="Výškovy profil"
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="hidden-xs"> Výškovy profil</span>
+        </Button>
       </span>
     );
   }
@@ -219,7 +216,7 @@ export default connect(
     transportType: state.routePlanner.transportType,
     pickPointMode: state.routePlanner.pickMode,
     itineraryIsVisible: state.routePlanner.itineraryIsVisible,
-    routeFound: !!state.routePlanner.shapePoints,
+    routeFound: !!state.routePlanner.alternatives.length,
     shapePoints: state.routePlanner.shapePoints,
     activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
     elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
@@ -234,20 +231,6 @@ export default connect(
     },
     onItineraryVisibilityToggle() {
       dispatch(routePlannerToggleItineraryVisibility());
-    },
-    onElevationChartVisibilityToggle(shapePoints, elevationProfileIsVisible) {
-      if (elevationProfileIsVisible) {
-        dispatch(elevationChartClose());
-      } else {
-        const geojson = {
-          type: 'Feature',
-          geometry: {
-            type: 'LineString',
-            coordinates: shapePoints.map(latlon => [latlon[1], latlon[0]]),
-          },
-        };
-        dispatch(elevationChartSetTrackGeojson(geojson));
-      }
     },
     onTransportTypeChange(transportType) {
       dispatch(routePlannerSetTransportType(transportType));
@@ -274,12 +257,14 @@ export default connect(
         collapseKey: 'routePlanner.noHome',
         message: 'Najprv si musíte nastaviť domovskú polohu.',
         style: 'warning',
-        cancelType: 'SET_TOOL',
         actions: [
           { name: 'Nastav', action: setActiveModal('settings') },
           { name: 'Zavri' },
         ],
       }));
+    },
+    onToggleElevationChart() {
+      dispatch(routePlannerToggleElevationChart());
     },
   }),
 )(RoutePlannerMenu);

@@ -7,7 +7,7 @@ const initialState = {
   expertMode: false,
   locate: false,
   selectingHomeLocation: false,
-  urlUpdatingEnabled: true,
+  urlUpdatingEnabled: false,
   reducingError: null,
   erroredAction: null,
 };

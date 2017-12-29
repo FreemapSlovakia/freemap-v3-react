@@ -6,7 +6,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImage } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
+  cancelType: 'CLEAR_MAP',
   type: 'GALLERY_REQUEST_IMAGE',
   process({
     action: { payload: id }, getState, cancelled$, storeDispatch,

@@ -50,3 +50,7 @@ export function routePlannerPreventHint() {
 export function routePlannerSetActiveAlternativeIndex(index) {
   return { type: 'ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX', payload: index };
 }
+
+export function routePlannerToggleElevationChart() {
+  return { type: 'ROUTE_PLANNER_TOGGLE_ELEVATION_CHART' };
+}

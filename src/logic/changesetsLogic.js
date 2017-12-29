@@ -8,7 +8,7 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 
 export const changesetsLogic = createLogic({
   type: ['CHANGESETS_SET_AUTHOR_NAME'],
-  cancelType: ['CHANGESETS_SET_AUTHOR_NAME', 'SET_TOOL'],
+  cancelType: 'CHANGESETS_SET_AUTHOR_NAME',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const state = getState();
 

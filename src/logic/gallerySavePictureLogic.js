@@ -6,7 +6,6 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 import { galleryRequestImage, gallerySetLayerDirty } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   type: 'GALLERY_SAVE_PICTURE',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const pid = Math.random();

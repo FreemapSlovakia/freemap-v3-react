@@ -26,12 +26,12 @@ export function trackViewerColorizeTrackBy(colorizeTrackBy) {
   return { type: 'TRACK_VIEWER_COLORIZE_TRACK_BY', payload: colorizeTrackBy };
 }
 
-export function trackShowInfo() {
-  return { type: 'TRACK_SHOW_INFO' };
+export function trackViewerShowInfo() {
+  return { type: 'TRACK_VIEWER_SHOW_INFO' };
 }
 
-export function trackToggleElevationChart() {
-  return { type: 'TRACK_TOGGLE_ELEVATION_CHART' };
+export function trackViewerToggleElevationChart() {
+  return { type: 'TRACK_VIEWER_TOGGLE_ELEVATION_CHART' };
 }
 
 export function trackViewerGpxLoad(gpxUrl) {

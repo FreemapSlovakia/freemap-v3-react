@@ -115,7 +115,6 @@ export default connect(
         collapseKey: 'objects.lowZoom',
         message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
         style: 'warning',
-        cancelType: 'SET_TOOL',
         actions: [
           {
             // name: 'Priblíž a hľadaj', TODO

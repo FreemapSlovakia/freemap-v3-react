@@ -13,7 +13,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy, trackShowInfo, trackToggleElevationChart } from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, trackViewerSetTrackUID, trackViewerUploadTrack, trackViewerColorizeTrackBy, trackViewerShowInfo, trackViewerToggleElevationChart } from 'fm3/actions/trackViewerActions';
 import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -213,7 +213,7 @@ export default connect(
       dispatch(trackViewerColorizeTrackBy(approach));
     },
     onShowTrackInfo() {
-      dispatch(trackShowInfo());
+      dispatch(trackViewerShowInfo());
     },
     onLoadError(message) {
       dispatch(toastsAdd({
@@ -224,7 +224,7 @@ export default connect(
       }));
     },
     onToggleElevationChart() {
-      dispatch(trackToggleElevationChart());
+      dispatch(trackViewerToggleElevationChart());
     },
   }),
 )(TrackViewerMenu);

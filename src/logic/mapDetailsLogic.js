@@ -14,7 +14,7 @@ const dateFormat = new Intl.DateTimeFormat(
 
 export default createLogic({
   type: 'MAP_DETAILS_SET_USER_SELECTED_POSITION',
-  cancelType: 'SET_TOOL',
+  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     let way;
     let bbox;
@@ -41,7 +41,7 @@ export default createLogic({
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
               message: toToastMessage(),
-              cancelType: ['SET_TOOL', 'MAP_DETAILS_SET_USER_SELECTED_POSITION'],
+              cancelType: ['MAP_DETAILS_SET_USER_SELECTED_POSITION'],
               style: 'info',
             }));
             dispatch(mapDetailsSetTrackInfoPoints(way.geometry));
@@ -49,7 +49,7 @@ export default createLogic({
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
               message: 'Nebola nájdená žiadna cesta',
-              cancelType: ['SET_TOOL', 'MAP_DETAILS_SET_USER_SELECTED_POSITION'],
+              cancelType: ['MAP_DETAILS_SET_USER_SELECTED_POSITION'],
               timeout: 5000,
               style: 'info',
             }));

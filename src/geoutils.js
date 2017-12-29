@@ -30,7 +30,7 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS') {
       return `${cardinal}${nf6.format(a)}°`;
     }
     default: {
-      throw new Error();
+      throw new Error('unknown GPS coords style');
     }
   }
 }

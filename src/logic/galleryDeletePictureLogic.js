@@ -6,7 +6,7 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImageIds, galleryRequestImage, gallerySetLayerDirty, galleryClear } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  cancelType: ['SET_TOOL', 'CLEAR_MAP'],
+  cancelType: 'CLEAR_MAP',
   type: 'GALLERY_DELETE_PICTURE',
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { image } = getState().gallery;

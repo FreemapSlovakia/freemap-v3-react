@@ -46,8 +46,8 @@ import mapDetailsLogic from 'fm3/logic/mapDetailsLogic';
 import saveSettingsLogic from 'fm3/logic/saveSettingsLogic';
 import tipsPreventLogic from 'fm3/logic/tipsPreventLogic';
 import tipsChangeLogic from 'fm3/logic/tipsChangeLogic';
-import trackShowInfoLogic from 'fm3/logic/trackShowInfoLogic';
-import trackToggleElevationChartLogic from 'fm3/logic/trackToggleElevationChartLogic';
+import trackViewerShowInfoLogic from 'fm3/logic/trackViewerShowInfoLogic';
+import trackViewerToggleElevationChartLogic from 'fm3/logic/trackViewerToggleElevationChartLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
@@ -98,6 +98,6 @@ export default [
   saveSettingsLogic,
   tipsChangeLogic,
   tipsPreventLogic,
-  trackShowInfoLogic,
-  trackToggleElevationChartLogic,
+  trackViewerShowInfoLogic,
+  trackViewerToggleElevationChartLogic,
 ];

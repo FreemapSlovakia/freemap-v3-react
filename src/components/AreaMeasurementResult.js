@@ -190,7 +190,6 @@ export default connect(
         collapseKey: 'areaMeasurement.removePoint',
         message: 'Odstrániť bod?',
         style: 'warning',
-        cancelType: 'SET_TOOL',
         actions: [
           { name: 'Áno', action: areaMeasurementRemovePoint(i), style: 'danger' },
           { name: 'Nie' },

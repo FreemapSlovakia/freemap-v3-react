@@ -67,6 +67,8 @@ class MeasurementMenu extends React.Component {
   }
 
   toggleElevationChart = () => {
+    // TODO to logic
+
     const isActive = this.props.elevationChartTrackGeojson;
     if (isActive) {
       this.props.onElevationChartClose();

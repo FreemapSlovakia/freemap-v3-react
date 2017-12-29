@@ -9,7 +9,7 @@ export function mapRefocus(changes) {
   sn = sn.filter(time => now - time < 1000);
   sn.push(now);
   if (sn.length > 10) {
-    throw new Error();
+    throw new Error('endless loop detected');
   }
 
   return { type: 'MAP_REFOCUS', payload: { ...changes } };

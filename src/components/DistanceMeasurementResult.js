@@ -176,7 +176,6 @@ export default connect(
         collapseKey: 'distanceMeasurement.removePoint',
         message: 'Odstrániť bod?',
         style: 'warning',
-        cancelType: 'SET_TOOL',
         actions: [
           { name: 'Áno', action: distanceMeasurementRemovePoint(id), style: 'danger' },
           { name: 'Nie' },

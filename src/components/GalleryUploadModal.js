@@ -263,7 +263,6 @@ export default connect(
           collapseKey: 'galleryUploadModal.close',
           message: 'Zavrieť dialógové okno bez uloženia zmien?',
           style: 'warning',
-          cancelType: 'SET_TOOL',
           actions: [
             { name: 'Áno', action: galleryHideUploadModal(), style: 'danger' },
             { name: 'Nie' },

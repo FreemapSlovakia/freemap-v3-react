@@ -126,7 +126,7 @@ export default connect(
       dispatch(toastsAdd({
         collapseKey: 'changeset.detail',
         message,
-        cancelType: ['SET_TOOL', 'CHANGESETS_SET_AUTHOR_NAME'],
+        cancelType: ['CHANGESETS_SET_AUTHOR_NAME'],
         style: 'info',
       }));
     },

@@ -50,11 +50,9 @@ const modifiers = {
 
 export default createLogic({
   type: updateRouteTypes,
-  cancelType: ['SET_TOOL', ...updateRouteTypes],
+  cancelType: [...updateRouteTypes],
   process({ getState, cancelled$, storeDispatch, action }, dispatch, done) {
-    const {
-      start, finish, midpoints, transportType,
-    } = getState().routePlanner;
+    const { start, finish, midpoints, transportType } = getState().routePlanner;
     if (!start || !finish) {
       done();
       return;

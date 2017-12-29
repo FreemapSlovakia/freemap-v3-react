@@ -8,7 +8,7 @@ const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDig
 const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
 
 export default createLogic({
-  type: 'TRACK_SHOW_INFO',
+  type: 'TRACK_VIEWER_SHOW_INFO',
   process({ getState }, dispatch, done) {
     const { startPoints, finishPoints, trackGeojson, eleSmoothingFactor } = getState().trackViewer;
 
@@ -98,7 +98,7 @@ export default createLogic({
     dispatch(toastsAdd({
       collapseKey: 'trackViewer.trackInfo',
       message: infoMessage,
-      cancelType: ['SET_TOOL', 'TRACK_VIEWER_SET_TRACK_DATA'],
+      cancelType: ['CLEAR_MAP', 'TRACK_VIEWER_SET_TRACK_DATA'],
       style: 'info',
     }));
 
