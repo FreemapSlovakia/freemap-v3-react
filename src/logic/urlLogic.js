@@ -167,8 +167,6 @@ export const urlLogic = createLogic({
 
     const search = `?${queryParts.join('&')}`;
 
-    console.log('SSSSSSSSSSSSS', search);
-
     if (window.location.search !== search) {
       history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ search });
     }
