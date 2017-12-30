@@ -8,7 +8,7 @@ const initialState = {
   inProgress: false,
 };
 
-export default function Search(state = initialState, action) {
+export default function search(state = initialState, action) {
   switch (action.type) {
     case at.CLEAR_MAP:
       return initialState;

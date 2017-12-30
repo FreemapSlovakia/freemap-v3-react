@@ -6,7 +6,7 @@ const initialState = {
   subcategories: [],
 };
 
-export default function map(state = initialState, action) {
+export default function objects(state = initialState, action) {
   switch (action.type) {
     case at.CLEAR_MAP:
       return initialState;

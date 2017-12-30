@@ -4,7 +4,7 @@ const initialState = {
   toasts: [],
 };
 
-export default function main(state = initialState, action) {
+export default function toasts(state = initialState, action) {
   switch (action.type) {
     case at.TOASTS_ADD: {
       const { collapseKey } = action.payload;

@@ -5,7 +5,7 @@ const initialState = {
   user: null,
 };
 
-export default function infoPoint(state = initialState, action) {
+export default function auth(state = initialState, action) {
   switch (action.type) {
     case at.AUTH_SET_USER:
       return {

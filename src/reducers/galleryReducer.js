@@ -32,7 +32,7 @@ const initialState = {
   showPosition: false,
 };
 
-export default function elevationMeasurement(state = initialState, action) {
+export default function gallery(state = initialState, action) {
   switch (action.type) {
     case at.CLEAR_MAP:
       return { ...initialState, dirtySeq: state.dirtySeq };

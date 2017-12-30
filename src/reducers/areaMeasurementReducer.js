@@ -5,7 +5,7 @@ const initialState = {
   points: [],
 };
 
-export default function measurement(state = initialState, action) {
+export default function areaMeasurement(state = initialState, action) {
   switch (action.type) {
     case at.CLEAR_MAP:
       return initialState;
