@@ -1,10 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { compose } from 'redux';
+import { connect } from 'react-redux';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import { connect } from 'react-redux';
+
+import injectL10n from 'fm3/l10nInjector';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
@@ -38,6 +41,7 @@ class RoutePlannerMenu extends React.Component {
     onMissingHomeLocation: PropTypes.func.isRequired,
     pickMode: PropTypes.string,
     expertMode: PropTypes.bool,
+    t: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -103,18 +107,18 @@ class RoutePlannerMenu extends React.Component {
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
-      routeFound, expertMode, onToggleElevationChart,
+      routeFound, expertMode, onToggleElevationChart, t,
     } = this.props;
 
     const transportTypes = [
-      ['car', 'car', 'Auto, vrátane spoplatnených ciest'],
-      ['car-free', 'car', 'Auto, mimo spoplatnených ciest'],
-      ['imhd', 'bus', 'MHD (vo vývoji)'],
-      ['bike', 'bicycle', 'Bicykel'],
-      (expertMode || transportType === 'foot-stroller') && ['foot-stroller', 'wheelchair-alt', 'S kočíkom / vozíčkom'],
-      ['nordic', '!icon-skier-skiing', 'Bežky'],
-      (expertMode || transportType === 'ski') && ['ski', '!icon-skiing', 'Zjazdové lyžovanie'],
-      ['foot', '!icon-hiking', 'Pešo'],
+      ['car', 'car'],
+      ['car-free', 'car'],
+      ['imhd', 'bus'],
+      ['bike', 'bicycle'],
+      (expertMode || transportType === 'foot-stroller') && ['foot-stroller', 'wheelchair-alt'],
+      ['nordic', '!icon-skier-skiing'],
+      (expertMode || transportType === 'ski') && ['ski', '!icon-skiing'],
+      ['foot', '!icon-hiking'],
     ];
 
     const activeTransportType = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
@@ -123,12 +127,17 @@ class RoutePlannerMenu extends React.Component {
       <span>
         <span className="fm-label">
           <FontAwesomeIcon icon="map-signs" />
-          <span className="hidden-xs"> Vyhľadávač trás</span>
+          <span className="hidden-xs"> {t('routePlanner.routePlanner')}</span>
         </span>
         {' '}
         <ButtonGroup>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="play" style={{ color: '#409a40' }} /><span className="hidden-xs"> Štart</span></span>}
+            title={
+              <span>
+                <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
+                <span className="hidden-xs"> {t('routePlanner.start')}</span>
+              </span>
+            }
             id="set-start-dropdown"
             onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
@@ -144,7 +153,12 @@ class RoutePlannerMenu extends React.Component {
             </MenuItem>
           </DropdownButton>
           <DropdownButton
-            title={<span><FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} /><span className="hidden-xs"> Cieľ</span></span>}
+            title={
+              <span>
+                <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
+                <span className="hidden-xs"> {t('routePlanner.finish')}</span>
+              </span>
+            }
             id="set-finish-dropdown"
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
@@ -167,20 +181,20 @@ class RoutePlannerMenu extends React.Component {
             <React.Fragment>
               <FontAwesomeIcon icon={activeTransportType[1]} />
               {activeTransportType[0] === 'car' && <FontAwesomeIcon icon="money" />}
-              <span className="hidden-xs"> {activeTransportType[2].replace(/\s*,.*/, '')}</span>
+              <span className="hidden-xs"> {t(`routePlanner.transportType.${activeTransportType[0]}`).replace(/\s*,.*/, '')}</span>
             </React.Fragment>
           }
         >
           {
-            transportTypes.filter(x => x).map(([type, icon, title]) => (
+            transportTypes.filter(x => x).map(([type, icon]) => (
               <MenuItem
                 eventKey={type}
                 key={type}
-                title={title}
+                title={t(`routePlanner.transportType.${type}`)}
                 active={transportType === type}
                 onClick={() => onTransportTypeChange(type)}
               >
-                <FontAwesomeIcon icon={icon} />{type === 'car' && <FontAwesomeIcon icon="money" />} {title}
+                <FontAwesomeIcon icon={icon} />{type === 'car' && <FontAwesomeIcon icon="money" />} {t(`routePlanner.transportType.${type}`)}
               </MenuItem>
             ))
           }
@@ -199,72 +213,75 @@ class RoutePlannerMenu extends React.Component {
           onClick={onToggleElevationChart}
           active={elevationProfileIsVisible}
           disabled={!routeFound}
-          title="Výškovy profil"
+          title={t('general.elevationProfile')}
         >
           <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> Výškovy profil</span>
+          <span className="hidden-xs"> {t('general.elevationProfile')}</span>
         </Button>
       </span>
     );
   }
 }
 
-export default connect(
-  state => ({
-    pickMode: state.routePlanner.pickMode,
-    homeLocation: state.main.homeLocation,
-    transportType: state.routePlanner.transportType,
-    pickPointMode: state.routePlanner.pickMode,
-    itineraryIsVisible: state.routePlanner.itineraryIsVisible,
-    routeFound: !!state.routePlanner.alternatives.length,
-    shapePoints: state.routePlanner.shapePoints,
-    activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-    elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
-    expertMode: state.main.expertMode,
-  }),
-  dispatch => ({
-    onStartSet(start) {
-      dispatch(routePlannerSetStart(start));
-    },
-    onFinishSet(finish) {
-      dispatch(routePlannerSetFinish(finish));
-    },
-    onItineraryVisibilityToggle() {
-      dispatch(routePlannerToggleItineraryVisibility());
-    },
-    onTransportTypeChange(transportType) {
-      dispatch(routePlannerSetTransportType(transportType));
-    },
-    onPickPointModeChange(pickMode) {
-      dispatch(routePlannerSetPickMode(pickMode));
-    },
-    onProgressStart() {
-      dispatch(startProgress());
-    },
-    onProgressStop() {
-      dispatch(stopProgress());
-    },
-    onGetCurrentPositionError() {
-      dispatch(toastsAdd({
-        collapseKey: 'routePlanner.gpsError',
-        message: 'Nepodarilo sa získať aktuálnu polohu.',
-        style: 'danger',
-        timeout: 5000,
-      }));
-    },
-    onMissingHomeLocation() {
-      dispatch(toastsAdd({
-        collapseKey: 'routePlanner.noHome',
-        message: 'Najprv si musíte nastaviť domovskú polohu.',
-        style: 'warning',
-        actions: [
-          { name: 'Nastav', action: setActiveModal('settings') },
-          { name: 'Zavri' },
-        ],
-      }));
-    },
-    onToggleElevationChart() {
-      dispatch(routePlannerToggleElevationChart());
-    },
-  }),
+export default compose(
+  connect(
+    state => ({
+      pickMode: state.routePlanner.pickMode,
+      homeLocation: state.main.homeLocation,
+      transportType: state.routePlanner.transportType,
+      pickPointMode: state.routePlanner.pickMode,
+      itineraryIsVisible: state.routePlanner.itineraryIsVisible,
+      routeFound: !!state.routePlanner.alternatives.length,
+      shapePoints: state.routePlanner.shapePoints,
+      activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
+      elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
+      expertMode: state.main.expertMode,
+    }),
+    dispatch => ({
+      onStartSet(start) {
+        dispatch(routePlannerSetStart(start));
+      },
+      onFinishSet(finish) {
+        dispatch(routePlannerSetFinish(finish));
+      },
+      onItineraryVisibilityToggle() {
+        dispatch(routePlannerToggleItineraryVisibility());
+      },
+      onTransportTypeChange(transportType) {
+        dispatch(routePlannerSetTransportType(transportType));
+      },
+      onPickPointModeChange(pickMode) {
+        dispatch(routePlannerSetPickMode(pickMode));
+      },
+      onProgressStart() {
+        dispatch(startProgress());
+      },
+      onProgressStop() {
+        dispatch(stopProgress());
+      },
+      onGetCurrentPositionError() {
+        dispatch(toastsAdd({
+          collapseKey: 'routePlanner.gpsError',
+          message: 'Nepodarilo sa získať aktuálnu polohu.',
+          style: 'danger',
+          timeout: 5000,
+        }));
+      },
+      onMissingHomeLocation() {
+        dispatch(toastsAdd({
+          collapseKey: 'routePlanner.noHome',
+          message: 'Najprv si musíte nastaviť domovskú polohu.',
+          style: 'warning',
+          actions: [
+            { name: 'Nastav', action: setActiveModal('settings') },
+            { name: 'Zavri' },
+          ],
+        }));
+      },
+      onToggleElevationChart() {
+        dispatch(routePlannerToggleElevationChart());
+      },
+    }),
+  ),
+  injectL10n(),
 )(RoutePlannerMenu);

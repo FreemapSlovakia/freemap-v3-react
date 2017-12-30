@@ -16,6 +16,7 @@ import logics from 'fm3/logic';
 import { mainLoadState, enableUpdatingUrl, reducingError } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
@@ -59,6 +60,7 @@ logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://githu
 const { location } = history;
 
 loadAppState(store);
+store.dispatch(l10nSetLanguage('sk'));
 
 history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, location);

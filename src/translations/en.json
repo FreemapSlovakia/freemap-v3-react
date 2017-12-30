@@ -1,0 +1,33 @@
+{
+  "general": {
+    "elevationProfile": "Elevation profile"
+  },
+
+  "tools": {
+    "tools": "Tools",
+    "routePlanner": "Route finder",
+    "objects": "Objects (POI)",
+    "gallery": "Photos",
+    "measurement": "Measurement",
+    "trackViewer": "Track viewer (GPX)",
+    "infoPoint": "Pin",
+    "changesets": "Map changes",
+    "mapDetails": "Map details"
+  },
+
+  "routePlanner": {
+    "routePlanner": "Route finder",
+    "start": "Start",
+    "finish": "Finish",
+    "transportType": {
+      "car": "Car",
+      "car-free": "Car (toll free)",
+      "imhd": "Public transport (in devel.)",
+      "bike": "Bicycle",
+      "foot-stroller": "Stroller / Wheelchair",
+      "nordic": "Nordic skiing",
+      "ski": "Downhill skiing",
+      "foot": "Foot"
+    }
+  }
+}

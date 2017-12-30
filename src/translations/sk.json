@@ -1,0 +1,33 @@
+{
+  "general": {
+    "elevationProfile": "Výškovy profil"
+  },
+
+  "tools": {
+    "tools": "Nástroje",
+    "routePlanner": "Vyhľadávač trás",
+    "objects": "Miesta",
+    "gallery": "Fotografie",
+    "measurement": "Meranie",
+    "trackViewer": "Prehliadač trás (GPX)",
+    "infoPoint": "Bod v mape",
+    "changesets": "Zmeny v mape",
+    "mapDetails": "Detaily v mape"
+  },
+
+  "routePlanner": {
+    "routePlanner": "Vyhľadávač trás",
+    "start": "Štart",
+    "finish": "Cieľ",
+    "transportType": {
+      "car": "Auto, vrátane spoplatnených ciest",
+      "car-free": "Auto, mimo spoplatnených ciest",
+      "imhd": "MHD (vo vývoji)",
+      "bike": "Bicykel",
+      "foot-stroller": "S kočíkom / vozíčkom",
+      "nordic": "Bežky",
+      "ski": "Zjazdové lyžovanie",
+      "foot": "Pešo"
+    }
+  }
+}

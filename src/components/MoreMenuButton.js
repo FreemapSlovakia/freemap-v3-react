@@ -11,6 +11,7 @@ import tips from 'fm3/tips/index.json';
 import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
 import { authStartLogout, authChooseLoginMethod } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
 class MoreMenuButton extends React.Component {
   static propTypes = {
@@ -27,6 +28,7 @@ class MoreMenuButton extends React.Component {
       name: PropTypes.string.isRequired,
     }),
     onTip: PropTypes.func.isRequired,
+    onLanguageChange: PropTypes.func.isRequired,
   };
 
   state = {
@@ -95,6 +97,16 @@ class MoreMenuButton extends React.Component {
     this.props.onLegend();
   }
 
+  handleEnglishClick = () => {
+    this.close();
+    this.props.onLanguageChange('en');
+  }
+
+  handleSlovakClick = () => {
+    this.close();
+    this.props.onLanguageChange('sk');
+  }
+
   handleHelpClick = () => {
     this.setState({ submenu: 'help' });
   }
@@ -136,6 +148,12 @@ class MoreMenuButton extends React.Component {
             <ul>
               {submenu === null ?
                 <React.Fragment>
+                  <MenuItem onClick={this.handleEnglishClick}>
+                    <FontAwesomeIcon icon="language" /> English
+                  </MenuItem>
+                  <MenuItem onClick={this.handleSlovakClick}>
+                    <FontAwesomeIcon icon="language" /> Slovensky
+                  </MenuItem>
                   {
                     user ?
                       <MenuItem onClick={this.handleLogoutClick}>
@@ -286,6 +304,9 @@ export default connect(
     },
     onTip(which) {
       dispatch(tipsShow(which));
+    },
+    onLanguageChange(lang) {
+      dispatch(l10nSetLanguage(lang));
     },
   }),
 )(MoreMenuButton);

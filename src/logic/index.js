@@ -49,6 +49,7 @@ import mapDetailsLogic from 'fm3/logic/mapDetailsLogic';
 import saveSettingsLogic from 'fm3/logic/saveSettingsLogic';
 import tipsPreventLogic from 'fm3/logic/tipsPreventLogic';
 import tipsChangeLogic from 'fm3/logic/tipsChangeLogic';
+import l10nSetLanguageLogic from 'fm3/logic/l10nSetLanguageLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
@@ -102,4 +103,5 @@ export default [
   saveSettingsLogic,
   tipsChangeLogic,
   tipsPreventLogic,
+  l10nSetLanguageLogic,
 ];
