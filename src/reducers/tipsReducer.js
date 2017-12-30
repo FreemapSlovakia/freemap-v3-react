@@ -6,7 +6,7 @@ const initialState = {
   preventTips: false,
 };
 
-export default function tips(state = initialState, action) {
+export default function reduceTips(state = initialState, action) {
   switch (action.type) {
     case at.TIPS_SHOW:
       return { ...state, tip: action.payload };
