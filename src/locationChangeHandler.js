@@ -152,7 +152,7 @@ export default function handleLocationChange(store, location) {
     if (osmNodeId !== getState().trackViewer.osmNodeId) {
       dispatch(osmLoadNode(osmNodeId));
     }
-  } else {
+  } else if (getState().trackViewer.osmNodeId) {
     dispatch(osmClear());
   }
 
@@ -161,7 +161,7 @@ export default function handleLocationChange(store, location) {
     if (osmWayId !== getState().trackViewer.osmWayId) {
       dispatch(osmLoadWay(osmWayId));
     }
-  } else {
+  } else if (getState().trackViewer.osmWayId) {
     dispatch(osmClear());
   }
 
@@ -170,7 +170,7 @@ export default function handleLocationChange(store, location) {
     if (osmRelationId !== getState().trackViewer.osmRelationId) {
       dispatch(osmLoadRelation(osmRelationId));
     }
-  } else {
+  } else if (getState().trackViewer.osmRelationId) {
     dispatch(osmClear());
   }
 
