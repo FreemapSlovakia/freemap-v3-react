@@ -207,7 +207,7 @@ class RoutePlannerResult extends React.Component {
               onDragStart={this.handleDragStart}
               onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
               onClick={() => this.handleMidpointClick(i)}
-              key={`c4ReUQrKT7-${i}`}
+              key={`midpoint-${i}`}
               zIndexOffset={9}
               label={i + 1}
               position={L.latLng(lat, lon)}
