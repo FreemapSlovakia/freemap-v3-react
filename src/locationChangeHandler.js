@@ -52,7 +52,7 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  if (getState().main.tool !== query.tool) {
+  if (getState().main.tool !== (query.tool || null)) {
     dispatch(setTool(query.tool || null));
   }
 
