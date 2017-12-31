@@ -2,11 +2,8 @@ import geojsonArea from '@mapbox/geojson-area';
 
 const PI2 = 2 * Math.PI;
 
-const nf3 = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-const nf4 = Intl.NumberFormat('sk', { minimumFractionDigits: 4, maximumFractionDigits: 4 });
-const nf6 = Intl.NumberFormat('sk', { minimumFractionDigits: 6, maximumFractionDigits: 6 });
 
-export function formatGpsCoord(angle, cardinals, style = 'DMS') {
+export function formatGpsCoord(angle, cardinals, style = 'DMS', language = 'en') {
   let cardinal = '';
   let a = angle;
   if (cardinals) {
@@ -18,16 +15,18 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS') {
     case 'DMS': {
       const degrees = Math.floor(a);
       const minutes = Math.floor((a - degrees) * 60);
-      const seconds = nf3.format((a - degrees - minutes / 60) * 3600);
+      const seconds = Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 })
+        .format((a - degrees - minutes / 60) * 3600);
       return `${cardinal}${degrees}° ${minutes}' ${seconds}"`;
     }
     case 'DM': {
       const degrees = Math.floor(a);
-      const minutes = nf4.format((a - degrees) * 60);
+      const minutes = Intl.NumberFormat(language, { minimumFractionDigits: 4, maximumFractionDigits: 4 })
+        .format((a - degrees) * 60);
       return `${cardinal}${degrees}° ${minutes}'`;
     }
     case 'D': {
-      return `${cardinal}${nf6.format(a)}°`;
+      return `${cardinal}${Intl.NumberFormat(language, { minimumFractionDigits: 6, maximumFractionDigits: 6 }).format(a)}°`;
     }
     default: {
       throw new Error('unknown GPS coords style');

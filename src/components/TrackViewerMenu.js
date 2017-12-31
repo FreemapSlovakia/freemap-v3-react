@@ -107,7 +107,7 @@ class TrackViewerMenu extends React.Component {
           disabled={!trackGeojsonIsSuitableForElevationChart}
         >
           <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> {t('trackViewer.elevationProfile')}</span>
+          <span className="hidden-xs"> {t('general.elevationProfile')}</span>
         </Button>
         {' '}
         <DropdownButton

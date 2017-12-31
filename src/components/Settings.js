@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -26,6 +27,7 @@ import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import * as FmPropTypes from 'fm3/propTypes';
 import { overlayLayers } from 'fm3/mapDefinitions';
+import injectL10n from 'fm3/l10nInjector';
 
 class Settings extends React.Component {
   static propTypes = {
@@ -48,13 +50,14 @@ class Settings extends React.Component {
       email: PropTypes.string,
     }),
     preventTips: PropTypes.bool,
+    language: PropTypes.string,
+    t: PropTypes.func.isRequired,
   };
 
   constructor(props) {
     super(props);
 
     this.state = {
-      homeLocationCssClasses: '',
       tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
       overlayOpacity: props.overlayOpacity,
@@ -77,7 +80,7 @@ class Settings extends React.Component {
   }
 
   onHomeLocationSelected = (lat, lon) => {
-    this.setState({ homeLocation: { lat, lon }, homeLocationCssClasses: 'animated flash' }); // via animate.css
+    this.setState({ homeLocation: { lat, lon } });
     this.props.onHomeLocationSelectionFinish();
   }
 
@@ -117,19 +120,17 @@ class Settings extends React.Component {
   }
 
   render() {
-    const { onClose, onHomeLocationSelect, selectingHomeLocation, user } = this.props;
-    const { homeLocation, homeLocationCssClasses, tileFormat, expertMode,
-      overlayOpacity, overlayPaneOpacity, trackViewerEleSmoothingFactor, name, email, preventTips, selectedOverlay } = this.state;
+    const { onClose, onHomeLocationSelect, selectingHomeLocation, user, language, t } = this.props;
+    const { homeLocation, tileFormat, expertMode,
+      overlayOpacity, overlayPaneOpacity, trackViewerEleSmoothingFactor,
+      name, email, preventTips, selectedOverlay } = this.state;
 
       // TODO compare overlay opacity
-    const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
+    const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode',
+      'trackViewerEleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
       .some(prop => this.state[prop] !== this.props[prop])
       || user && (name !== (user.name || '') || email !== (user.email || ''))
       || overlayLayers.some(({ type }) => (overlayOpacity[type] || 1) !== (this.props.overlayOpacity[type] || 1));
-
-    const homeLocationInfo = homeLocation
-      ? `${formatGpsCoord(homeLocation.lat, 'SN')} ${formatGpsCoord(homeLocation.lon, 'WE')}`
-      : 'neurčená';
 
     const selectedOverlayDetails = overlayLayers.find(({ type }) => type === selectedOverlay);
 
@@ -138,13 +139,13 @@ class Settings extends React.Component {
         <form onSubmit={this.handleSave}>
           <Modal.Header closeButton>
             <Modal.Title>
-              <FontAwesomeIcon icon="cog" /> Nastavenia
+              <FontAwesomeIcon icon="cog" /> {t('more.settings')}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <Tabs id="setting-tabs">
-              <Tab title="Mapa" eventKey={1}>
-                <p>Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:</p>
+              <Tab title={t('settings.tab.map')} eventKey={1}>
+                <p>{t('settings.map.imgFormat.label')}</p>
                 <ButtonGroup>
                   <Button
                     active={tileFormat === 'png'}
@@ -156,20 +157,15 @@ class Settings extends React.Component {
                     active={tileFormat === 'jpeg'}
                     onClick={() => this.setState({ tileFormat: 'jpeg' })}
                   >
-                    JPG
+                    JPEG
                   </Button>
                 </ButtonGroup>
                 <br />
                 <br />
-                <Alert>
-                  Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
-                  Pri pomalom internete preto odporúčame zvoliť JPG.
-                </Alert>
+                <Alert>{t('settings.map.imgFormat.hint')}</Alert>
                 <hr />
                 <div>
-                  <p>
-                    Viditeľnosť čiar na mape: {(overlayPaneOpacity * 100).toFixed(0)}%
-                  </p>
+                  <p>{t('settings.map.overlayPaneOpacity').replace('{value}', (overlayPaneOpacity * 100).toFixed(0))}</p>
                   <Slider
                     value={overlayPaneOpacity}
                     min={0}
@@ -181,51 +177,50 @@ class Settings extends React.Component {
                 </div>
                 <hr />
                 <p>
-                  {'Domovská poloha: '}
-                  <span className={homeLocationCssClasses}>{homeLocationInfo}</span>
+                  {t('settings.map.homeLocation.label')
+                    .replace('{value}', homeLocation
+                      ? `${formatGpsCoord(homeLocation.lat, 'SN', 'DMS', language)} ${formatGpsCoord(homeLocation.lon, 'WE', 'DMS', language)}`
+                      : t('settings.map.homeLocation.undefined'))}
                 </p>
                 <Button onClick={() => onHomeLocationSelect()}>
-                  <FontAwesomeIcon icon="crosshairs" /> Vybrať na mape
+                  <FontAwesomeIcon icon="crosshairs" /> {t('settings.map.homeLocation.select')}
                 </Button>
-                <hr />
               </Tab>
-              <Tab title="Účet" eventKey={2}>
+              <Tab title={t('settings.tab.account')} eventKey={2}>
                 {user ? (
                   <React.Fragment>
                     <FormGroup>
-                      <ControlLabel>Meno</ControlLabel>
+                      <ControlLabel>{t('settings.account.name')}</ControlLabel>
                       <FormControl value={name} onChange={this.handleNameChange} required />
                     </FormGroup>
                     <FormGroup>
-                      <ControlLabel>E-Mail</ControlLabel>
+                      <ControlLabel>{t('settings.account.email')}</ControlLabel>
                       <FormControl type="email" value={email} onChange={this.handleEmailChange} />
                     </FormGroup>
                   </React.Fragment>
                 ) : (
-                  <Alert>
-                    Dostupné iba pre prihásených používateľov.
-                  </Alert>
+                  <Alert>{t('settings.account.noAuthInfo')}</Alert>
                 )}
               </Tab>
-              <Tab title="Všeobecné" eventKey={3}>
+              <Tab title={t('settings.tab.general')} eventKey={3}>
                 <Checkbox onChange={this.handleShowTipsChange} checked={!preventTips}>
-                  Zobrazovať tipy po otvorení stránky
+                  {t('settings.general.tips')}
                 </Checkbox>
               </Tab>
-              <Tab title="Expert" eventKey={4}>
-                <p>Expertný mód:</p>
+              <Tab title={t('settings.tab.expert')} eventKey={4}>
+                <p>{t('settings.expert.switch')}</p>
                 <ButtonGroup>
                   <Button
                     active={!expertMode}
                     onClick={() => this.setState({ expertMode: false })}
                   >
-                    Vypnutý
+                    {t('settings.expert.off')}
                   </Button>
                   <Button
                     active={expertMode}
                     onClick={() => this.setState({ expertMode: true })}
                   >
-                    Zapnutý
+                    {t('settings.expert.on')}
                   </Button>
                 </ButtonGroup>
                 {!expertMode &&
@@ -233,7 +228,7 @@ class Settings extends React.Component {
                     <br />
                     <br />
                     <Alert>
-                      V expertnom móde sú dostupné nástroje pre pokročilých používateľov.
+                      {t('settings.expert.offInfo')}
                     </Alert>
                   </React.Fragment>
                 }
@@ -241,20 +236,28 @@ class Settings extends React.Component {
                   <React.Fragment>
                     <hr />
                     <div>
-                      <p>Viditeľnosť vrstvy:</p>
+                      <p>{t('settings.expert.overlayOpacity')}</p>
                       <DropdownButton
                         id="overlayOpacity"
                         onSelect={this.handleOverlaySelect}
                         title={
                           <React.Fragment>
-                            <FontAwesomeIcon icon={selectedOverlayDetails.icon} /> {selectedOverlayDetails.name} {(overlayOpacity[selectedOverlay] || 1).toFixed(1) * 100}%
+                            <FontAwesomeIcon icon={selectedOverlayDetails.icon} />
+                            {' '}
+                            {selectedOverlayDetails.name}
+                            {' '}
+                            {(overlayOpacity[selectedOverlay] || 1).toFixed(1) * 100 /* TODO NumberFormat */}%
                           </React.Fragment>
                         }
                       >
                         {
                           overlayLayers.map(({ name: overlayName, type, icon }) => (
                             <MenuItem key={type} eventKey={type}>
-                              {icon && <FontAwesomeIcon icon={icon} />} {overlayName} {(overlayOpacity[type] || 1).toFixed(1) * 100}%
+                              {icon && <FontAwesomeIcon icon={icon} />}
+                              {' '}
+                              {overlayName}
+                              {' '}
+                              {(overlayOpacity[type] || 1).toFixed(1) * 100 /* TODO NumberFormat */}%
                             </MenuItem>
                           ))
                         }
@@ -271,7 +274,8 @@ class Settings extends React.Component {
                     <hr />
                     <div>
                       <p>
-                        Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {trackViewerEleSmoothingFactor}
+                        {t('settings.expert.trackViewerEleSmoothing.label')
+                          .replace('{value}', trackViewerEleSmoothingFactor /* TODO NumberFormat */)}
                       </p>
                       <Slider
                         value={trackViewerEleSmoothingFactor}
@@ -283,8 +287,7 @@ class Settings extends React.Component {
                       />
                     </div>
                     <Alert>
-                      Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne.
-                      Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.
+                      {t('settings.expert.trackViewerEleSmoothing.info')}
                     </Alert>
                   </React.Fragment>
                 }
@@ -293,10 +296,10 @@ class Settings extends React.Component {
           </Modal.Body>
           <Modal.Footer>
             <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
-              <Glyphicon glyph="floppy-disk" /> Uložiť
+              <Glyphicon glyph="floppy-disk" /> {t('general.save')}
             </Button>
             <Button type="button" onClick={onClose}>
-              <Glyphicon glyph="remove" /> Zrušiť
+              <Glyphicon glyph="remove" /> {t('general.cancel')}
             </Button>
           </Modal.Footer>
         </form>
@@ -305,30 +308,36 @@ class Settings extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    tileFormat: state.map.tileFormat,
-    homeLocation: state.main.homeLocation,
-    overlayOpacity: state.map.overlayOpacity,
-    overlayPaneOpacity: state.map.overlayPaneOpacity,
-    expertMode: state.main.expertMode,
-    trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
-    selectingHomeLocation: state.main.selectingHomeLocation,
-    user: state.auth.user,
-    preventTips: state.tips.preventTips,
-  }),
-  dispatch => ({
-    onSave(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
-      dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips));
-    },
-    onClose() {
-      dispatch(setActiveModal(null));
-    },
-    onHomeLocationSelect() {
-      dispatch(setSelectingHomeLocation(true));
-    },
-    onHomeLocationSelectionFinish() {
-      dispatch(setSelectingHomeLocation(false));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      tileFormat: state.map.tileFormat,
+      homeLocation: state.main.homeLocation,
+      overlayOpacity: state.map.overlayOpacity,
+      overlayPaneOpacity: state.map.overlayPaneOpacity,
+      expertMode: state.main.expertMode,
+      trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+      selectingHomeLocation: state.main.selectingHomeLocation,
+      user: state.auth.user,
+      preventTips: state.tips.preventTips,
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onSave(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode,
+        trackViewerEleSmoothingFactor, user, preventTips) {
+        dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode,
+          trackViewerEleSmoothingFactor, user, preventTips));
+      },
+      onClose() {
+        dispatch(setActiveModal(null));
+      },
+      onHomeLocationSelect() {
+        dispatch(setSelectingHomeLocation(true));
+      },
+      onHomeLocationSelectionFinish() {
+        dispatch(setSelectingHomeLocation(false));
+      },
+    }),
+  ),
 )(Settings);

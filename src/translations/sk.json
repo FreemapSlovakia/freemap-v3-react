@@ -1,6 +1,13 @@
 {
   "general": {
-    "elevationProfile": "Výškovy profil"
+    "elevationProfile": "Výškovy profil",
+    "save": "Uložiť",
+    "cancel": "Zrušiť",
+    "modify": "Upraviť",
+    "delete": "Zmazať",
+    "close": "Zavrieť",
+    "exitFullscreen": "Zrušiť zobrazenie na celú obrazovku",
+    "fullscreen": "Na celú obrazovku"
   },
 
   "tools": {
@@ -59,8 +66,6 @@
   },
 
   "main": {
-    "exitFullscreen": "Zrušiť zobrazenie na celú obrazovku",
-    "fullscreen": "Na celú obrazovku",
     "clearMap": "Vyčistiť mapu",
     "close": "Zavrieť",
     "closeTool": "Zavrieť nástroj"
@@ -77,6 +82,15 @@
       "lastCaptured": "od najnovšie odfotenej",
       "leastRated": "od najmenšieho hodnotenia",
       "mostRated": "od najväčšieho hodnotenia"
+    },
+    "viewer": {
+      "title": "Fotografia",
+      "comments": "Komentáre",
+      "newComment": "Nový komentár",
+      "addComment": "Pridaj",
+      "yourRating": "Tvoje hodnotenie:",
+      "showOnTheMap": "Ukázať na mape",
+      "openInNewWindow": "Otvoriť v novom okne"
     }
   },
 
@@ -84,18 +98,67 @@
     "distance": "Vzdialenosť",
     "elevation": "Výška a poloha",
     "area": "Plocha",
-    "elevationProfile": "Výškovy profil"
+    "elevationLine": "Nadmorská výška: {ele} m.n.m."
   },
 
   "trackViewer": {
     "upload": "Nahrať",
-    "elevationProfile": "Výškovy profil",
     "moreInfo": "Viac info",
     "share": "Zdieľať",
     "colorizingMode": {
       "none": "Neaktívne",
       "elevation": "Nadmorská výška",
       "steepness": "Sklon"
+    }
+  },
+
+  "infoPoint": {
+    "modify": "Zmeniť popis",
+    "edit": {
+      "title": "Zmeniť popis infobodu",
+      "label": "Popis infobodu:",
+      "example": "Tu sa stretneme",
+      "hint": "Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne."
+    }
+  },
+
+  "settings": {
+    "tab": {
+      "map": "Mapa",
+      "account": "Účet",
+      "general": "Všeobecné",
+      "expert": "Expert"
+    },
+    "map": {
+      "imgFormat": {
+        "label": "Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:",
+        "hint": "Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. Pri pomalom internete preto odporúčame zvoliť JPEG."
+      },
+      "overlayPaneOpacity": "Viditeľnosť čiar na mape: {value}%",
+      "homeLocation": {
+        "label": "Domovská poloha: {value}",
+        "select": "Vybrať na mape",
+        "undefined": "neurčená"
+      }
+    },
+    "account": {
+      "name": "Meno",
+      "email": "E-Mail",
+      "noAuthInfo": "Dostupné iba pre prihásených používateľov."
+    },
+    "general": {
+      "tips": "Zobrazovať tipy po otvorení stránky"
+    },
+    "expert": {
+      "switch": "Expertný mód:",
+      "off": "Vypnutý",
+      "on": "Zapnutý",
+      "offInfo": "V expertnom móde sú dostupné nástroje pre pokročilých používateľov.",
+      "overlayOpacity": "Viditeľnosť vrstvy:",
+      "trackViewerEleSmoothing": {
+        "label": "Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}",
+        "info": "Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky."
+      }
     }
   }
 }

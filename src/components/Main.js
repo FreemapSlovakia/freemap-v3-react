@@ -237,7 +237,7 @@ class Main extends React.Component {
                           </Button>
                           <Button
                             onClick={this.handleFullscreenClick}
-                            title={document.fullscreenElement ? t('main.exitFullscreen') : t('main.fullscreen')}
+                            title={document.fullscreenElement ? t('general.exitFullscreen') : t('general.fullscreen')}
                           >
                             <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
                           </Button>

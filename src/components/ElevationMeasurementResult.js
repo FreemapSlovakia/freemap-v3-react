@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { elevationMeasurementSetPoint, elevationMeasurementSetElevation } from 'fm3/actions/elevationMeasurementActions';
 import RichMarker from 'fm3/components/RichMarker';
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
-
-const nf1 = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+import injectL10n from 'fm3/l10nInjector';
 
 class ElevationMeasurementResult extends React.Component {
   static propTypes = {
@@ -15,6 +15,8 @@ class ElevationMeasurementResult extends React.Component {
     onElevationClear: PropTypes.func.isRequired,
     point: FmPropTypes.point,
     elevation: PropTypes.number,
+    language: PropTypes.string,
+    t: PropTypes.func.isRequired,
   }
 
   handleDragStart = () => {
@@ -27,7 +29,9 @@ class ElevationMeasurementResult extends React.Component {
   }
 
   render() {
-    const { point, elevation } = this.props;
+    const { point, elevation, language = 'en', t } = this.props;
+
+    const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
     return point && (
       <RichMarker
@@ -40,8 +44,8 @@ class ElevationMeasurementResult extends React.Component {
       >
         <Popup closeButton={false} autoClose={false} autoPan={false}>
           <React.Fragment>
-            {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(point.lat, 'SN', format)} {formatGpsCoord(point.lon, 'WE', format)}</div>)}
-            {typeof elevation === 'number' && <div>Nadmorská výška: {nf1.format(elevation)} m. n. m.</div>}
+            {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(point.lat, 'SN', format, language)} {formatGpsCoord(point.lon, 'WE', format, language)}</div>)}
+            {typeof elevation === 'number' && <div>{t('measurement.elevationLine').replace('{ele}', nf1.format(elevation))}</div>}
           </React.Fragment>
         </Popup>
       </RichMarker>
@@ -49,17 +53,21 @@ class ElevationMeasurementResult extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    elevation: state.elevationMeasurement.elevation,
-    point: state.elevationMeasurement.point,
-  }),
-  dispatch => ({
-    onPointSet(point) {
-      dispatch(elevationMeasurementSetPoint(point));
-    },
-    onElevationClear() {
-      dispatch(elevationMeasurementSetElevation(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      elevation: state.elevationMeasurement.elevation,
+      point: state.elevationMeasurement.point,
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onPointSet(point) {
+        dispatch(elevationMeasurementSetPoint(point));
+      },
+      onElevationClear() {
+        dispatch(elevationMeasurementSetElevation(null));
+      },
+    }),
+  ),
 )(ElevationMeasurementResult);

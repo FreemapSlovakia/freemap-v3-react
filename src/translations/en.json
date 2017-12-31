@@ -1,6 +1,13 @@
 {
   "general": {
-    "elevationProfile": "Elevation profile"
+    "elevationProfile": "Elevation profile",
+    "save": "Save",
+    "cancel": "Cancel",
+    "modify": "Modify",
+    "delete": "Delete",
+    "close": "Close",
+    "exitFullscreen": "Cancel fullscreen mode",
+    "fullscreen": "Fullscreen"
   },
 
   "tools": {
@@ -60,8 +67,6 @@
   },
 
   "main": {
-    "exitFullscreen": "Cancel fullscreen mode",
-    "fullscreen": "Fullscreen",
     "clearMap": "Clear map elements",
     "close": "Close",
     "closeTool": "Close tool"
@@ -78,6 +83,15 @@
       "lastCaptured": "from newest",
       "leastRated": "from least rated",
       "mostRated": "from most rated"
+    },
+    "viewer": {
+      "title": "Photo",
+      "comments": "Comments",
+      "newComment": "New comment",
+      "addComment": "Add",
+      "yourRating": "Your rating:",
+      "showOnTheMap": "Show in the map",
+      "openInNewWindow": "Open in new window"
     }
   },
 
@@ -85,18 +99,67 @@
     "distance": "Distance",
     "elevation": "Elevation and position",
     "area": "Area",
-    "elevationProfile": "Elevation profile"
+    "elevationLine": "Elevation: {ele} m.a.s.l."
   },
 
   "trackViewer": {
     "upload": "Upload",
-    "elevationProfile": "Elevation profile",
     "moreInfo": "More info",
     "share": "Share",
     "colorizingMode": {
       "none": "Inactive",
       "elevation": "Elevation",
       "steepness": "Steepness"
+    }
+  },
+
+  "infoPoint": {
+    "modify": "Change label",
+    "edit": {
+      "title": "Change pin label",
+      "label": "Pin description:",
+      "example": "We will meet here.",
+      "hint": "For pin without a label leave its description empty."
+    }
+  },
+
+  "settings": {
+    "tab": {
+      "map": "Map",
+      "account": "Account",
+      "general": "General",
+      "expert": "Expert"
+    },
+    "map": {
+      "imgFormat": {
+        "label": "Tile format for car, hiking and bicycle map:",
+        "hint": "Map looks better if PNG format is used but it requires to download cca 4x more data than for JPEG. On slow internet connection we recommend to select JPEG."
+      },
+      "overlayPaneOpacity": "Map line features opacity: {value}%",
+      "homeLocation": {
+        "label": "Home location: {value}",
+        "select": "Select on the map",
+        "undefined": "undefined"
+      }
+    },
+    "account": {
+      "name": "Name",
+      "email": "E-Mail",
+      "noAuthInfo": "Only for logged-in users."
+    },
+    "general": {
+      "tips": "Show tips on page opening"
+    },
+    "expert": {
+      "switch": "Expert mode:",
+      "off": "Off",
+      "on": "On",
+      "offInfo": "Expert mode offers features for advanced users.",
+      "overlayOpacity": "Layer opacity:",
+      "trackViewerEleSmoothing": {
+        "label": "Smoothing level for computing total climb/descend in Track viewer: {value}",
+        "info": "For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations."
+      }
     }
   }
 }

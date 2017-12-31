@@ -3,6 +3,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import ReactStars from 'react-stars';
 
 import * as at from 'fm3/actionTypes';
@@ -24,11 +25,9 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars,
   galleryEditPicture, galleryDeletePicture, gallerySetEditModel, gallerySavePicture, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
 
-import 'fm3/styles/gallery.scss';
+import injectL10n from 'fm3/l10nInjector';
 
-const dateFormat = new Intl.DateTimeFormat('sk', {
-  year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-});
+import 'fm3/styles/gallery.scss';
 
 class GalleryViewerModal extends React.Component {
   static propTypes = {
@@ -71,6 +70,8 @@ class GalleryViewerModal extends React.Component {
     onSave: PropTypes.func.isRequired,
     allTags: FmPropTypes.allTags.isRequired,
     onPositionPick: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
+    language: PropTypes.string,
   }
 
   state = {
@@ -185,7 +186,7 @@ class GalleryViewerModal extends React.Component {
   render() {
     const {
       imageIds, activeImageId, onClose, onShowOnTheMap, image, comment,
-      onStarsChange, user, onDelete, onEdit, editModel, allTags, onPositionPick,
+      onStarsChange, user, onDelete, onEdit, editModel, allTags, onPositionPick, language, t,
     } = this.props;
     const index = imageIds && imageIds.findIndex(id => id === activeImageId);
     const { title = '...', description, createdAt, takenAt, tags, comments, rating, myStars } = image || {};
@@ -195,11 +196,17 @@ class GalleryViewerModal extends React.Component {
 
     // TODO const loadingMeta = !image || image.id !== activeImageId;
 
+    const dateFormat = new Intl.DateTimeFormat(language || 'en', {
+      year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    });
+
     return (
       <Modal show onHide={onClose} bsSize="large">
         <Modal.Header closeButton>
           <Modal.Title>
-            Fotografia {imageIds ? `${index + 1} / ${imageIds.length} ` : ''}{title && `- ${title}`}
+            {t('gallery.viewer.title')}
+            {' '}
+            {imageIds ? `${index + 1} / ${imageIds.length} ` : ''}{title && `- ${title}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -267,14 +274,14 @@ class GalleryViewerModal extends React.Component {
                     />
                     {/* TODO put inside a form and save in onSubmit */}
                     <Button bsStyle="primary" type="submit">
-                      <Glyphicon glyph="save" /> Uložiť
+                      <Glyphicon glyph="save" /> {t('general.save')}
                     </Button>
                   </form>
                 }
                 {!isFullscreen &&
                   <React.Fragment>
                     <hr />
-                    <h5>Komentáre</h5>
+                    <h5>{t('gallery.viewer.comments')}</h5>
                     {comments.map(c => (
                       <p key={c.id}>
                         {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
@@ -286,14 +293,14 @@ class GalleryViewerModal extends React.Component {
                           <InputGroup>
                             <FormControl
                               type="text"
-                              placeholder="Nový komentár"
+                              placeholder={t('gallery.viewer.newComment')}
                               value={comment}
                               onChange={this.handleCommentChange}
                               maxLength={4096}
                             />
                             <InputGroup.Button>
                               <Button type="submit" disabled={comment.length < 1}>
-                                Pridaj
+                                {t('gallery.viewer.addComment')}
                               </Button>
                             </InputGroup.Button>
                           </InputGroup>
@@ -302,7 +309,8 @@ class GalleryViewerModal extends React.Component {
                     }
                     {user &&
                       <div>
-                        {'Tvoje hodnotenie: '}
+                        {t('gallery.viewer.yourRating')}
+                        {' '}
                         <ReactStars
                           className="stars"
                           size={22}
@@ -323,29 +331,29 @@ class GalleryViewerModal extends React.Component {
             <React.Fragment>
               <Button onClick={onEdit} active={!!editModel}>
                 <Glyphicon glyph="edit" />
-                <span className="hidden-xs"> Upraviť</span>
+                <span className="hidden-xs"> {t('general.modify')}</span>
               </Button>
               <Button onClick={onDelete} bsStyle="danger">
                 <Glyphicon glyph="trash" />
-                <span className="hidden-xs"> Zmazať</span>
+                <span className="hidden-xs"> {t('general.delete')}</span>
               </Button>
             </React.Fragment>
           }
           <Button onClick={onShowOnTheMap}>
             <FontAwesomeIcon icon="dot-circle-o" />
-            <span className="hidden-xs"> Ukázať na mape</span>
+            <span className="hidden-xs"> {t('gallery.viewer.showOnTheMap')}</span>
           </Button>
           <Button onClick={this.handleFullscreen}>
             <Glyphicon glyph="fullscreen" />
-            <span className="hidden-xs hidden-sm"> Na celú obrazovku</span>
+            <span className="hidden-xs hidden-sm"> {t('general.fullscreen')}</span>
           </Button>
           <Button href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`} target="_blank">
             <FontAwesomeIcon icon="external-link" />
-            <span className="hidden-sm hidden-xs"> Otvoriť v novom okne</span>
+            <span className="hidden-sm hidden-xs"> {t('gallery.viewer.openInNewWindow')}</span>
           </Button>
           <Button onClick={onClose}>
             <Glyphicon glyph="remove" />
-            <span className="hidden-xs"> Zavrieť</span>
+            <span className="hidden-xs"> {t('general.close')}</span>
           </Button>
         </Modal.Footer>
       </Modal>
@@ -353,60 +361,64 @@ class GalleryViewerModal extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    imageIds: state.gallery.imageIds,
-    image: state.gallery.image,
-    activeImageId: state.gallery.activeImageId,
-    zoom: state.map.zoom,
-    pickingPosition: state.gallery.pickingPositionForId !== null,
-    comment: state.gallery.comment,
-    editModel: state.gallery.editModel,
-    user: state.auth.user,
-    allTags: state.gallery.tags,
-  }),
-  dispatch => ({
-    onClose() {
-      dispatch(galleryClear(null));
-    },
-    onShowOnTheMap() {
-      dispatch(galleryShowOnTheMap(true));
-    },
-    onImageSelect(id) {
-      dispatch(galleryRequestImage(id));
-    },
-    onCommentChange(comment) {
-      dispatch(gallerySetComment(comment));
-    },
-    onCommentSubmit() {
-      dispatch(gallerySubmitComment());
-    },
-    onStarsChange(stars) {
-      dispatch(gallerySubmitStars(stars));
-    },
-    onEdit() {
-      dispatch(galleryEditPicture());
-    },
-    onDelete() {
-      dispatch(toastsAdd({
-        collapseKey: 'gallery.deletePicture',
-        message: 'Zmazať obrázok?',
-        style: 'warning',
-        cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
-        actions: [
-          { name: 'Áno', action: galleryDeletePicture(), style: 'danger' },
-          { name: 'Nie' },
-        ],
-      }));
-    },
-    onEditModelChange(editModel) {
-      dispatch(gallerySetEditModel(editModel));
-    },
-    onSave() {
-      dispatch(gallerySavePicture());
-    },
-    onPositionPick() {
-      dispatch(gallerySetItemForPositionPicking(-1));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      imageIds: state.gallery.imageIds,
+      image: state.gallery.image,
+      activeImageId: state.gallery.activeImageId,
+      zoom: state.map.zoom,
+      pickingPosition: state.gallery.pickingPositionForId !== null,
+      comment: state.gallery.comment,
+      editModel: state.gallery.editModel,
+      user: state.auth.user,
+      allTags: state.gallery.tags,
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onClose() {
+        dispatch(galleryClear(null));
+      },
+      onShowOnTheMap() {
+        dispatch(galleryShowOnTheMap(true));
+      },
+      onImageSelect(id) {
+        dispatch(galleryRequestImage(id));
+      },
+      onCommentChange(comment) {
+        dispatch(gallerySetComment(comment));
+      },
+      onCommentSubmit() {
+        dispatch(gallerySubmitComment());
+      },
+      onStarsChange(stars) {
+        dispatch(gallerySubmitStars(stars));
+      },
+      onEdit() {
+        dispatch(galleryEditPicture());
+      },
+      onDelete() {
+        dispatch(toastsAdd({
+          collapseKey: 'gallery.deletePicture',
+          message: 'Zmazať obrázok?',
+          style: 'warning',
+          cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
+          actions: [
+            { name: 'Áno', action: galleryDeletePicture(), style: 'danger' },
+            { name: 'Nie' },
+          ],
+        }));
+      },
+      onEditModelChange(editModel) {
+        dispatch(gallerySetEditModel(editModel));
+      },
+      onSave() {
+        dispatch(gallerySavePicture());
+      },
+      onPositionPick() {
+        dispatch(gallerySetItemForPositionPicking(-1));
+      },
+    }),
+  ),
 )(GalleryViewerModal);

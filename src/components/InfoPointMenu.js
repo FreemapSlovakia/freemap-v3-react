@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -14,8 +15,20 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import { infoPointChangePosition, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import injectL10n from 'fm3/l10nInjector';
 
 class InfoPointMenu extends React.Component {
+  static propTypes = {
+    activeModal: PropTypes.string,
+    onModalClose: PropTypes.func.isRequired,
+    onModalLaunch: PropTypes.func.isRequired,
+    label: PropTypes.string,
+    onInfoPointChangePosition: PropTypes.func.isRequired,
+    inEditMode: PropTypes.bool.isRequired,
+    onInfoPointChangeLabel: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
+  };
+
   constructor(props) {
     super(props);
     this.state = {
@@ -51,41 +64,43 @@ class InfoPointMenu extends React.Component {
   }
 
   render() {
-    const { onModalLaunch, activeModal, onModalClose } = this.props;
+    const { onModalLaunch, activeModal, onModalClose, t } = this.props;
     return (
       <span>
-        <span className="fm-label"><FontAwesomeIcon icon="thumb-tack" /><span className="hidden-xs"> Bod v mape</span></span>
+        <span className="fm-label">
+          <FontAwesomeIcon icon="thumb-tack" />
+          <span className="hidden-xs"> {t('tools.infoPoint')}</span>
+        </span>
         {' '}
         <Button onClick={() => onModalLaunch('info-point-change-label')}>
-          <FontAwesomeIcon icon="tag" /><span className="hidden-xs"> Zmeniť popis</span>
+          <FontAwesomeIcon icon="tag" />
+          <span className="hidden-xs"> {t('infoPoint.modify')}</span>
         </Button>
 
         {activeModal === 'info-point-change-label' &&
           <Modal show onHide={onModalClose}>
             <form>
               <Modal.Header closeButton>
-                <Modal.Title>Zmeniť popis infobodu</Modal.Title>
+                <Modal.Title>{t('infoPoint.edit.title')}</Modal.Title>
               </Modal.Header>
               <Modal.Body>
                 <FormGroup>
-                  <ControlLabel>Popis infobodu:</ControlLabel>
+                  <ControlLabel>{t('infoPoint.edit.label')}</ControlLabel>
                   <FormControl
                     type="text"
-                    placeholder="Tu sa stretneme"
+                    placeholder={t('infoPoint.edit.example')}
                     value={this.state.editedLabel || ''}
                     onChange={e => this.handleLocalLabelChange(e.target.value)}
                   />
                 </FormGroup>
-                <Alert>
-                  Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.
-                </Alert>
+                <Alert>{t('infoPoint.edit.hint')}</Alert>
               </Modal.Body>
               <Modal.Footer>
                 <Button bsStyle="info" onClick={() => this.saveLabel()}>
-                  <Glyphicon glyph="floppy-disk" /> Uložiť
+                  <Glyphicon glyph="floppy-disk" /> {t('general.save')}
                 </Button>
                 <Button onClick={onModalClose}>
-                  <Glyphicon glyph="remove" /> Zrušiť
+                  <Glyphicon glyph="remove" /> {t('general.cancel')}
                 </Button>
               </Modal.Footer>
             </form>
@@ -96,34 +111,27 @@ class InfoPointMenu extends React.Component {
   }
 }
 
-InfoPointMenu.propTypes = {
-  activeModal: PropTypes.string,
-  onModalClose: PropTypes.func.isRequired,
-  onModalLaunch: PropTypes.func.isRequired,
-  label: PropTypes.string,
-  onInfoPointChangePosition: PropTypes.func.isRequired,
-  inEditMode: PropTypes.bool.isRequired,
-  onInfoPointChangeLabel: PropTypes.func.isRequired,
-};
-
-export default connect(
-  state => ({
-    activeModal: state.main.activeModal,
-    label: state.infoPoint.label,
-    inEditMode: state.main.tool === 'info-point',
-  }),
-  dispatch => ({
-    onInfoPointChangePosition(lat, lon) {
-      dispatch(infoPointChangePosition(lat, lon));
-    },
-    onInfoPointChangeLabel(label) {
-      dispatch(infoPointChangeLabel(label));
-    },
-    onModalLaunch(modalName) {
-      dispatch(setActiveModal(modalName));
-    },
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      activeModal: state.main.activeModal,
+      label: state.infoPoint.label,
+      inEditMode: state.main.tool === 'info-point',
+    }),
+    dispatch => ({
+      onInfoPointChangePosition(lat, lon) {
+        dispatch(infoPointChangePosition(lat, lon));
+      },
+      onInfoPointChangeLabel(label) {
+        dispatch(infoPointChangeLabel(label));
+      },
+      onModalLaunch(modalName) {
+        dispatch(setActiveModal(modalName));
+      },
+      onModalClose() {
+        dispatch(setActiveModal(null));
+      },
+    }),
+  ),
 )(InfoPointMenu);
