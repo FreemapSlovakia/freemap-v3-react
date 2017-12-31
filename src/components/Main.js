@@ -327,7 +327,6 @@ class Main extends React.Component {
           onClick={handleMapClick}
           onLocationfound={this.handleLocationFound}
           style={{ cursor: mouseCursor }}
-          maxBounds={[[47.040256, 15.4688], [49.837969, 23.906238]]}
         >
           <ScaleControl imperial={false} position="bottomleft" />
           <AttributionControl ref={this.setAttributionControl} />
