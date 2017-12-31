@@ -85,7 +85,7 @@ class Layers extends React.Component {
     }
 
     const overlayLayer = overlayLayers.find(l => l.key === event.key);
-    if (overlayLayer && (!overlayLayer.adminOnly) || isAdmin) {
+    if (overlayLayer && (!overlayLayer.adminOnly || isAdmin)) {
       const { type } = overlayLayer;
       const next = new Set(overlays);
       if (next.has(type)) {
