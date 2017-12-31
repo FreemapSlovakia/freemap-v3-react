@@ -18,24 +18,13 @@ class RoutePlannerResult extends React.Component {
     start: FmPropTypes.point,
     finish: FmPropTypes.point,
     midpoints: FmPropTypes.points,
-    alternatives: PropTypes.arrayOf(PropTypes.shape({
-      duration: PropTypes.number,
-      distance: PropTypes.number,
-      itinerary: PropTypes.arrayOf(PropTypes.shape({
-        lat: PropTypes.number.isRequired,
-        lon: PropTypes.number.isRequired,
-        desc: PropTypes.string.isRequired,
-        km: PropTypes.number.isRequired,
-        mode: PropTypes.string.isRequired,
-        shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
-      }).isRequired).isRequired,
-    }).isRequired),
+    activeAlternativeIndex: PropTypes.number.isRequired,
+    alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
     onStartSet: PropTypes.func.isRequired,
     onFinishSet: PropTypes.func.isRequired,
     onMidpointSet: PropTypes.func.isRequired,
     onAddMidpoint: PropTypes.func.isRequired,
     onRemoveMidpoint: PropTypes.func.isRequired,
-    activeAlternativeIndex: PropTypes.number.isRequired,
     onAlternativeChange: PropTypes.func.isRequired,
     transportType: PropTypes.string,
     timestamp: PropTypes.number,
@@ -230,7 +219,7 @@ class RoutePlannerResult extends React.Component {
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div
                     // eslint-disable-next-line
-                    dangerouslySetInnerHTML={{ __html: summary0.replace(', &#9201', ',<br />&#9201') }}
+                    dangerouslySetInnerHTML={{ __html: summary0.replace(/( \(.*)/, ',<br />$1') }}
                   />
                 </Tooltip>
               : distance ?
@@ -246,8 +235,8 @@ class RoutePlannerResult extends React.Component {
         }
         {
           (transportType !== 'imhd' ? alternatives : alternatives.map(addMissingSegments))
-          .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? 1000 : index }))
-          .sort((a, b) => a.index - b.index).map(({ itinerary, alt }) => (
+          .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
+          .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
                 alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map((routeSlice, i) => (

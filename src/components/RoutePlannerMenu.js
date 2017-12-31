@@ -10,13 +10,17 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import injectL10n from 'fm3/l10nInjector';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
-  routePlannerSetPickMode, routePlannerToggleItineraryVisibility, routePlannerToggleElevationChart } from 'fm3/actions/routePlannerActions';
+  routePlannerSetPickMode, routePlannerToggleItineraryVisibility,
+  routePlannerToggleElevationChart, routePlannerSetActiveAlternativeIndex } from 'fm3/actions/routePlannerActions';
 import { setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import * as FmPropTypes from 'fm3/propTypes';
 import { getCurrentPosition } from 'fm3/geoutils';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+
+const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 class RoutePlannerMenu extends React.Component {
   static propTypes = {
@@ -26,10 +30,7 @@ class RoutePlannerMenu extends React.Component {
     pickPointMode: PropTypes.string,
     onTransportTypeChange: PropTypes.func.isRequired,
     onPickPointModeChange: PropTypes.func.isRequired,
-    homeLocation: PropTypes.shape({
-      lat: PropTypes.number,
-      lon: PropTypes.number,
-    }),
+    homeLocation: FmPropTypes.point,
     // onItineraryVisibilityToggle: PropTypes.func.isRequired,
     // itineraryIsVisible: PropTypes.bool.isRequired,
     onToggleElevationChart: PropTypes.func.isRequired,
@@ -42,6 +43,9 @@ class RoutePlannerMenu extends React.Component {
     pickMode: PropTypes.string,
     expertMode: PropTypes.bool,
     t: PropTypes.func.isRequired,
+    activeAlternativeIndex: PropTypes.number.isRequired,
+    alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
+    onAlternativeChange: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -107,7 +111,7 @@ class RoutePlannerMenu extends React.Component {
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
-      routeFound, expertMode, onToggleElevationChart, t,
+      routeFound, expertMode, onToggleElevationChart, t, activeAlternativeIndex, alternatives, onAlternativeChange,
     } = this.props;
 
     const transportTypes = [
@@ -122,6 +126,8 @@ class RoutePlannerMenu extends React.Component {
     ];
 
     const activeTransportType = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
+
+    const activeAlternative = alternatives[activeAlternativeIndex];
 
     return (
       <span>
@@ -199,6 +205,35 @@ class RoutePlannerMenu extends React.Component {
             ))
           }
         </DropdownButton>
+        {alternatives.length > 0 &&
+          <React.Fragment>
+            {' '}
+            <DropdownButton
+              id="transport-type"
+              title={
+                transportType === 'imhd' && activeAlternative.summary0
+                  ? activeAlternative.summary0.replace(/ \(.*/, '')
+                  : `${nf.format(activeAlternative.distance)} km / ${Math.floor(activeAlternative.duration / 60)} h ${Math.round(activeAlternative.duration % 60)} m`
+              }
+            >
+              {
+                alternatives.map(({ duration, distance, summary0 }, i) => (
+                  <MenuItem
+                    eventKey={i}
+                    key={i}
+                    active={i === activeAlternativeIndex}
+                    onClick={() => onAlternativeChange(i)}
+                  >
+                    {transportType === 'imhd' && summary0
+                      ? summary0
+                      : `${nf.format(distance)} km / ${Math.floor(duration / 60)} h ${Math.round(duration % 60)} m`
+                    }
+                  </MenuItem>
+                ))
+              }
+            </DropdownButton>
+          </React.Fragment>
+        }
         {/* ' '}
         <Button
           onClick={() => onItineraryVisibilityToggle()}
@@ -235,6 +270,7 @@ export default compose(
       routeFound: !!state.routePlanner.alternatives.length,
       shapePoints: state.routePlanner.shapePoints,
       activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
+      alternatives: state.routePlanner.alternatives,
       elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
       expertMode: state.main.expertMode,
     }),
@@ -281,6 +317,9 @@ export default compose(
       },
       onToggleElevationChart() {
         dispatch(routePlannerToggleElevationChart());
+      },
+      onAlternativeChange(index) {
+        dispatch(routePlannerSetActiveAlternativeIndex(index));
       },
     }),
   ),

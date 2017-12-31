@@ -119,7 +119,7 @@ export default createLogic({
               lon,
               km: distance / 1000,
               duration,
-              desc: transportType === 'imhd' ? name.replace(/(\d)m/g, '$1 min.').replace('šalina', 'električka') :
+              desc: transportType === 'imhd' ? name :
                 `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
               mode,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
@@ -130,7 +130,7 @@ export default createLogic({
               itinerary,
               distance: totalDistance / 1000,
               duration: totalDuration / 60,
-              summary0: legs[0].summary.replace(/(\d)€/g, '$1 €').replace(/(\d)m/g, '$1 min.').replace(/\bmhd\b/, 'MHD').replace(/<a.*>/, ''),
+              summary0: legs[0].summary,
             };
           });
 

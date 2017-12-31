@@ -69,3 +69,16 @@ export const allTags = PropTypes.arrayOf(PropTypes.shape({
   name: PropTypes.string.isRequired,
   count: PropTypes.number.isRequired,
 }).isRequired);
+
+export const routeAlternative = PropTypes.shape({
+  duration: PropTypes.number,
+  distance: PropTypes.number,
+  itinerary: PropTypes.arrayOf(PropTypes.shape({
+    lat: PropTypes.number.isRequired,
+    lon: PropTypes.number.isRequired,
+    desc: PropTypes.string.isRequired,
+    km: PropTypes.number.isRequired,
+    mode: PropTypes.string.isRequired,
+    shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
+  }).isRequired).isRequired,
+});
