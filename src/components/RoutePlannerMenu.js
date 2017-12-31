@@ -205,7 +205,7 @@ class RoutePlannerMenu extends React.Component {
             ))
           }
         </DropdownButton>
-        {alternatives.length > 0 &&
+        {alternatives.length > 1 &&
           <React.Fragment>
             {' '}
             <DropdownButton
