@@ -16,6 +16,7 @@ import logics from 'fm3/logic';
 import { mainLoadState, enableUpdatingUrl, reducingError } from 'fm3/actions/mainActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
@@ -96,4 +97,14 @@ function loadAppState() {
       store.dispatch(trackViewerLoadState(appState.trackViewer));
     }
   }
+
+  const languages = ['en', 'sk'];
+
+  let language;
+  if (appState && languages.includes(appState.language)) {
+    ({ language } = appState);
+  } else {
+    language = navigator.languages.map(lang => lang.split('-')[0]).find(lang => languages.includes(lang)) || 'en';
+  }
+  store.dispatch(l10nSetLanguage(language));
 }

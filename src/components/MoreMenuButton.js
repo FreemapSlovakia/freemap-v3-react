@@ -1,3 +1,4 @@
+import { compose } from 'redux';
 import { connect } from 'react-redux';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -7,10 +8,12 @@ import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
+import injectL10n from 'fm3/l10nInjector';
 
 import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
 import { authStartLogout, authChooseLoginMethod } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
 class MoreMenuButton extends React.Component {
   static propTypes = {
@@ -27,6 +30,8 @@ class MoreMenuButton extends React.Component {
       name: PropTypes.string.isRequired,
     }),
     onTip: PropTypes.func.isRequired,
+    onLanguageChange: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   state = {
@@ -95,6 +100,20 @@ class MoreMenuButton extends React.Component {
     this.props.onLegend();
   }
 
+  handleEnglishClick = () => {
+    this.close();
+    this.props.onLanguageChange('en');
+  }
+
+  handleSlovakClick = () => {
+    this.close();
+    this.props.onLanguageChange('sk');
+  }
+
+  handleLanguageClick = () => {
+    this.setState({ submenu: 'language' });
+  }
+
   handleHelpClick = () => {
     this.setState({ submenu: 'help' });
   }
@@ -116,12 +135,12 @@ class MoreMenuButton extends React.Component {
   }
 
   render() {
-    const { user } = this.props;
+    const { user, t } = this.props;
     const { submenu } = this.state;
 
     return (
       <React.Fragment>
-        <Button ref={this.setButton} onClick={this.handleButtonClick} title="Ďalšie">
+        <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('more.more')}>
           <FontAwesomeIcon icon="ellipsis-v" />
         </Button>
         <Overlay
@@ -136,74 +155,94 @@ class MoreMenuButton extends React.Component {
             <ul>
               {submenu === null ?
                 <React.Fragment>
+                  <MenuItem onClick={this.handleLanguageClick}>
+                    <FontAwesomeIcon icon="language" /> Language / Jazyk <FontAwesomeIcon icon="chevron-right" />
+                  </MenuItem>
                   {
                     user ?
                       <MenuItem onClick={this.handleLogoutClick}>
-                        <FontAwesomeIcon icon="sign-out" /> Odhlásiť {user.name}
+                        <FontAwesomeIcon icon="sign-out" /> {t('more.log-out').replace('{name}', user.name)}
                       </MenuItem>
                       :
                       <MenuItem onClick={this.handleLoginClick}>
-                        <FontAwesomeIcon icon="sign-in" /> Prihlásenie
+                        <FontAwesomeIcon icon="sign-in" /> {t('more.log-in')}
                       </MenuItem>
                   }
                   <MenuItem onClick={this.handleSettingsShowClick}>
-                    <FontAwesomeIcon icon="cog" /> Nastavenia
+                    <FontAwesomeIcon icon="cog" /> {t('more.settings')}
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem onClick={this.handleGpxExportClick}>
-                    <FontAwesomeIcon icon="share" /> Exportovať do GPX
+                    <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
                   </MenuItem>
                   <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/FileDownload" target="_blank">
-                    <FontAwesomeIcon icon="!icon-gps-device" /> Exporty mapy
+                    <FontAwesomeIcon icon="!icon-gps-device" /> {t('more.mapExports')}
                   </MenuItem>
                   <MenuItem onClick={this.handleShareClick}>
-                    <FontAwesomeIcon icon="share-alt" /> Zdieľať mapu
+                    <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
                   </MenuItem>
                   <MenuItem onClick={this.handleEmbedClick}>
-                    <FontAwesomeIcon icon="code" /> Vložiť do webstránky
+                    <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
-                    <FontAwesomeIcon icon="exclamation-triangle" /> Nahlásiť chybu zobrazenia v mape
+                    <FontAwesomeIcon icon="exclamation-triangle" /> {t('more.reportMapError')}
                   </MenuItem>
                   <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank">
-                    <FontAwesomeIcon icon="!icon-bug" /> Nahlásiť chybu v portáli
+                    <FontAwesomeIcon icon="!icon-bug" /> {t('more.reportAppError')}
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem onClick={this.handleHelpClick}>
-                    <FontAwesomeIcon icon="book" /> Pomoc <FontAwesomeIcon icon="chevron-right" />
+                    <FontAwesomeIcon icon="book" /> {t('more.help')} <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
                   <MenuItem onClick={this.handleSupportUsClick}>
-                    <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> Podporiť Freemap <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
+                    <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> {t('more.supportUs')} <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
                   </MenuItem>
                 </React.Fragment>
-                :
-                <React.Fragment>
-                  <MenuItem header>
-                    <FontAwesomeIcon icon="book" /> Pomoc
-                  </MenuItem>
-                  <MenuItem onClick={this.handleBackClick}>
-                    <FontAwesomeIcon icon="chevron-left" /> Naspäť
-                  </MenuItem>
-                  <MenuItem divider />
-                  <MenuItem onClick={this.handleLegendClick}>
-                    <FontAwesomeIcon icon="map-o" /> Legenda mapy
-                  </MenuItem>
-                  <MenuItem onClick={this.handleAboutClick}>
-                    <FontAwesomeIcon icon="address-card-o" /> Kontakty
-                  </MenuItem>
-                  <MenuItem divider />
-                  <MenuItem header>
-                    <FontAwesomeIcon icon="lightbulb-o" /> Tipy
-                  </MenuItem>
-                  {
-                    tips.map(([key, name, icon]) => (
-                      <MenuItem key={key} onSelect={this.handleTipSelect} eventKey={key}>
-                        <FontAwesomeIcon icon={icon} /> {name}
-                      </MenuItem>
-                    ))
-                  }
-                </React.Fragment>
+                : submenu === 'help' ?
+                  <React.Fragment>
+                    <MenuItem header>
+                      <FontAwesomeIcon icon="book" /> {t('more.help')}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleBackClick}>
+                      <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                    </MenuItem>
+                    <MenuItem divider />
+                    <MenuItem onClick={this.handleLegendClick}>
+                      <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleAboutClick}>
+                      <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
+                    </MenuItem>
+                    <MenuItem divider />
+                    <MenuItem header>
+                      <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
+                    </MenuItem>
+                    {
+                      tips.map(([key, name, icon]) => (
+                        <MenuItem key={key} onSelect={this.handleTipSelect} eventKey={key}>
+                          <FontAwesomeIcon icon={icon} /> {name}
+                        </MenuItem>
+                      ))
+                    }
+                  </React.Fragment>
+                : submenu === 'language' ?
+                  <React.Fragment>
+                    <MenuItem header>
+                      <FontAwesomeIcon icon="language" /> Language / Jazyk
+                    </MenuItem>
+                    <MenuItem onClick={this.handleBackClick}>
+                      <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                    </MenuItem>
+                    <MenuItem divider />
+                    <MenuItem onClick={this.handleEnglishClick}>
+                      English
+                    </MenuItem>
+                    <MenuItem onClick={this.handleSlovakClick}>
+                      Slovensky
+                    </MenuItem>
+                  </React.Fragment>
+                : null
               }
             </ul>
             {submenu === null &&
@@ -214,7 +253,7 @@ class MoreMenuButton extends React.Component {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#3b5998' }}
-                  title="Freemap na Facebooku"
+                  title={t('more.facebook')}
                 >
                   <FontAwesomeIcon icon="facebook-official" />
                 </a>
@@ -225,7 +264,7 @@ class MoreMenuButton extends React.Component {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#0084b4' }}
-                  title="Freemap na Twitteri"
+                  title={t('more.twitter')}
                 >
                   <FontAwesomeIcon icon="twitter" />
                 </a>
@@ -236,7 +275,7 @@ class MoreMenuButton extends React.Component {
                   target="_blank"
                   rel="noopener noreferrer"
                   style={{ color: '#333' }}
-                  title="Freemap na GitHub-e"
+                  title={t('more.github')}
                 >
                   <FontAwesomeIcon icon="github" />
                 </a>
@@ -249,43 +288,49 @@ class MoreMenuButton extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    user: state.auth.user,
-  }),
-  dispatch => ({
-    onSettingsShow() {
-      dispatch(setActiveModal('settings'));
-    },
-    onGpxExport() {
-      dispatch(setActiveModal('export-gpx'));
-    },
-    onShare() {
-      dispatch(setActiveModal('share'));
-    },
-    onEmbed() {
-      dispatch(setActiveModal('embed'));
-    },
-    onSupportUs() {
-      dispatch(setActiveModal('supportUs'));
-    },
-    onAbout() {
-      dispatch(setActiveModal('about'));
-    },
-    onLegend() {
-      dispatch(setActiveModal('legend'));
-    },
-    onLocationSet(lat, lon, accuracy) {
-      dispatch(setLocation(lat, lon, accuracy));
-    },
-    onLogin() {
-      dispatch(authChooseLoginMethod());
-    },
-    onLogout() {
-      dispatch(authStartLogout());
-    },
-    onTip(which) {
-      dispatch(tipsShow(which));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      user: state.auth.user,
+    }),
+    dispatch => ({
+      onSettingsShow() {
+        dispatch(setActiveModal('settings'));
+      },
+      onGpxExport() {
+        dispatch(setActiveModal('export-gpx'));
+      },
+      onShare() {
+        dispatch(setActiveModal('share'));
+      },
+      onEmbed() {
+        dispatch(setActiveModal('embed'));
+      },
+      onSupportUs() {
+        dispatch(setActiveModal('supportUs'));
+      },
+      onAbout() {
+        dispatch(setActiveModal('about'));
+      },
+      onLegend() {
+        dispatch(setActiveModal('legend'));
+      },
+      onLocationSet(lat, lon, accuracy) {
+        dispatch(setLocation(lat, lon, accuracy));
+      },
+      onLogin() {
+        dispatch(authChooseLoginMethod());
+      },
+      onLogout() {
+        dispatch(authStartLogout());
+      },
+      onTip(which) {
+        dispatch(tipsShow(which));
+      },
+      onLanguageChange(lang) {
+        dispatch(l10nSetLanguage(lang));
+      },
+    }),
+  ),
 )(MoreMenuButton);

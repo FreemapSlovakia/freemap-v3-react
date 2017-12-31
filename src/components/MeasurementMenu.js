@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
+
+import injectL10n from 'fm3/l10nInjector';
 
 import { setTool } from 'fm3/actions/mainActions';
 import { distanceMeasurementAddPoint } from 'fm3/actions/distanceMeasurementActions';
@@ -28,6 +31,7 @@ class MeasurementMenu extends React.Component {
     onAreaPointAdd: PropTypes.func.isRequired,
     onDistPointAdd: PropTypes.func.isRequired,
     onElePointSet: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -84,34 +88,34 @@ class MeasurementMenu extends React.Component {
   }
 
   render() {
-    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson } = this.props;
+    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson, t } = this.props;
 
     return (
       <span>
         <span className="fm-label">
           <FontAwesomeIcon icon="!icon-ruler" />
-          <span className="hidden-xs"> Meranie</span>
+          <span className="hidden-xs"> {t('tools.measurement')}</span>
         </span>
         {' '}
         <ButtonGroup>
-          <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title="Vzdialenosť">
+          <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title={t('measurement.distance')}>
             <FontAwesomeIcon icon="arrows-h" />
-            <span className="hidden-xs"> Vzdialenosť</span>
+            <span className="hidden-xs"> {t('measurement.distance')}</span>
           </Button>
-          <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title="Výška a poloha">
+          <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title={t('measurement.elevation')}>
             <FontAwesomeIcon icon="long-arrow-up" />
-            <span className="hidden-xs"> Výška a poloha</span>
+            <span className="hidden-xs"> {t('measurement.elevation')}</span>
           </Button>
-          <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title="Plocha">
+          <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title={t('measurement.area')}>
             <FontAwesomeIcon icon="square" />
-            <span className="hidden-xs"> Plocha</span>
+            <span className="hidden-xs"> {t('measurement.area')}</span>
           </Button>
         </ButtonGroup>
         {' '}
         {tool === 'measure-dist' &&
           <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
             <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> Výškovy profil</span>
+            <span className="hidden-xs"> {t('measurement.elevationProfile')}</span>
           </Button>
         }
       </span>
@@ -119,32 +123,35 @@ class MeasurementMenu extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    tool: state.main.tool,
-    distancePoints: state.distanceMeasurement.points,
-    areaPoints: state.areaMeasurement.points,
-    routeDefined: state.distanceMeasurement.points.length > 1,
-    elevationChartTrackGeojson: state.elevationChart.trackGeojson,
-  }),
-  dispatch => ({
-    onToolSet(tool) {
-      dispatch(setTool(tool));
-    },
-    onElevationChartTrackGeojsonSet(trackGeojson) {
-      dispatch(elevationChartSetTrackGeojson(trackGeojson));
-    },
-    onElevationChartClose() {
-      dispatch(elevationChartClose());
-    },
-    onAreaPointAdd(coordinates, position) {
-      dispatch(areaMeasurementAddPoint(coordinates, position));
-    },
-    onDistPointAdd(coordinates, position) {
-      dispatch(distanceMeasurementAddPoint(coordinates, position));
-    },
-    onElePointSet(point) {
-      dispatch(elevationMeasurementSetPoint(point));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      tool: state.main.tool,
+      distancePoints: state.distanceMeasurement.points,
+      areaPoints: state.areaMeasurement.points,
+      routeDefined: state.distanceMeasurement.points.length > 1,
+      elevationChartTrackGeojson: state.elevationChart.trackGeojson,
+    }),
+    dispatch => ({
+      onToolSet(tool) {
+        dispatch(setTool(tool));
+      },
+      onElevationChartTrackGeojsonSet(trackGeojson) {
+        dispatch(elevationChartSetTrackGeojson(trackGeojson));
+      },
+      onElevationChartClose() {
+        dispatch(elevationChartClose());
+      },
+      onAreaPointAdd(coordinates, position) {
+        dispatch(areaMeasurementAddPoint(coordinates, position));
+      },
+      onDistPointAdd(coordinates, position) {
+        dispatch(distanceMeasurementAddPoint(coordinates, position));
+      },
+      onElePointSet(point) {
+        dispatch(elevationMeasurementSetPoint(point));
+      },
+    }),
+  ),
 )(MeasurementMenu);

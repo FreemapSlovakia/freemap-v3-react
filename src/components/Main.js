@@ -2,11 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Map, ScaleControl, AttributionControl } from 'react-leaflet';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Panel from 'react-bootstrap/lib/Panel';
+
+import injectL10n from 'fm3/l10nInjector';
 
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -102,6 +105,7 @@ class Main extends React.Component {
     showMenu: PropTypes.bool,
     expertMode: PropTypes.bool,
     extraAttribution: PropTypes.string,
+    t: PropTypes.func.isRequired,
   };
 
   componentWillMount() {
@@ -193,17 +197,11 @@ class Main extends React.Component {
     const {
       lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu, expertMode,
+      showLoginModal, onMapReset, showMenu, expertMode, t,
     } = this.props;
 
     return (
       <React.Fragment>
-        {process.env.DEPLOYMENT === 'next' &&
-          <div id="info-bar">
-            Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
-          </div>
-        }
-
         <Toasts />
 
         <div className="header">
@@ -229,12 +227,12 @@ class Main extends React.Component {
                       <ButtonToolbar>
                         <ButtonGroup>
                           <ToolsMenuButton />
-                          <Button onClick={onMapClear} title="Vyčistiť mapu">
+                          <Button onClick={onMapClear} title={t('main.clearMap')}>
                             <FontAwesomeIcon icon="eraser" />
                           </Button>
                           <Button
                             onClick={this.handleFullscreenClick}
-                            title={document.fullscreenElement ? 'Zrušiť zobrazenie na celú obrazovku' : 'Na celú obrazovku'}
+                            title={document.fullscreenElement ? t('main.exitFullscreen') : t('main.fullscreen')}
                           >
                             <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
                           </Button>
@@ -260,8 +258,8 @@ class Main extends React.Component {
 
                 <span>
                   {' '}
-                  <Button onClick={this.handleToolCloseClick} title="Zavrieť nástroj" disabled={!tool}>
-                    <FontAwesomeIcon icon="close" /><span className="hidden-xs"> Zavrieť</span>
+                  <Button onClick={this.handleToolCloseClick} title={t('main.closeTool')}>
+                    <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
                   </Button>
                 </span>
               </Panel>
@@ -354,50 +352,53 @@ class Main extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    lat: state.map.lat,
-    lon: state.map.lon,
-    zoom: state.map.zoom,
-    tool: state.main.tool,
-    mapType: state.map.mapType,
-    activeModal: state.main.activeModal,
-    progress: !!state.main.progress.length,
-    mouseCursor: selectMouseCursor(state),
-    user: state.auth.user,
-    ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
-      || state.gallery.activeImageId || state.gallery.showPosition),
-    showElevationChart: !!state.elevationChart.elevationProfilePoints,
-    showGalleryPicker: isShowGalleryPicker(state),
-    locate: state.main.locate,
-    showLoginModal: state.auth.chooseLoginMethod,
-    showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
-    expertMode: state.main.expertMode,
-    extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
-  }),
-  dispatch => ({
-    onToolSet(tool) {
-      dispatch(setTool(tool));
-    },
-    onMapRefocus(changes) {
-      dispatch(mapRefocus(changes));
-    },
-    onLocationSet(lat, lon, accuracy) {
-      dispatch(setLocation(lat, lon, accuracy));
-    },
-    onCheckLogin() {
-      dispatch(authCheckLogin());
-    },
-    onMapClear() {
-      dispatch(clearMap());
-    },
-    onMapReset() {
-      dispatch(mapReset());
-    },
-    onLocate() {
-      dispatch(toggleLocate());
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      lat: state.map.lat,
+      lon: state.map.lon,
+      zoom: state.map.zoom,
+      tool: state.main.tool,
+      mapType: state.map.mapType,
+      activeModal: state.main.activeModal,
+      progress: !!state.main.progress.length,
+      mouseCursor: selectMouseCursor(state),
+      user: state.auth.user,
+      ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
+        || state.gallery.activeImageId || state.gallery.showPosition),
+      showElevationChart: !!state.elevationChart.elevationProfilePoints,
+      showGalleryPicker: isShowGalleryPicker(state),
+      locate: state.main.locate,
+      showLoginModal: state.auth.chooseLoginMethod,
+      showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
+      expertMode: state.main.expertMode,
+      extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
+    }),
+    dispatch => ({
+      onToolSet(tool) {
+        dispatch(setTool(tool));
+      },
+      onMapRefocus(changes) {
+        dispatch(mapRefocus(changes));
+      },
+      onLocationSet(lat, lon, accuracy) {
+        dispatch(setLocation(lat, lon, accuracy));
+      },
+      onCheckLogin() {
+        dispatch(authCheckLogin());
+      },
+      onMapClear() {
+        dispatch(clearMap());
+      },
+      onMapReset() {
+        dispatch(mapReset());
+      },
+      onLocate() {
+        dispatch(toggleLocate());
+      },
+    }),
+  ),
 )(Main);
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {

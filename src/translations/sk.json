@@ -1,0 +1,100 @@
+{
+  "general": {
+    "elevationProfile": "Výškovy profil"
+  },
+
+  "tools": {
+    "tools": "Nástroje",
+    "routePlanner": "Vyhľadávač trás",
+    "objects": "Miesta",
+    "gallery": "Fotografie",
+    "measurement": "Meranie",
+    "trackViewer": "Prehliadač trás (GPX)",
+    "infoPoint": "Bod v mape",
+    "changesets": "Zmeny v mape",
+    "mapDetails": "Detaily v mape"
+  },
+
+  "routePlanner": {
+    "start": "Štart",
+    "finish": "Cieľ",
+    "point": {
+      "pick": "Vybrať na mape",
+      "current": "Tvoja poloha",
+      "home": "Domov"
+    },
+    "transportType": {
+      "car": "Auto, vrátane spoplatnených ciest",
+      "car-free": "Auto, mimo spoplatnených ciest",
+      "imhd": "MHD (vo vývoji)",
+      "bike": "Bicykel",
+      "foot-stroller": "S kočíkom / vozíčkom",
+      "nordic": "Bežky",
+      "ski": "Zjazdové lyžovanie",
+      "foot": "Pešo"
+    }
+  },
+
+  "more": {
+    "more": "Ďalšie",
+    "log-out": "Odhlásiť {name}",
+    "log-in": "Prihlásenie",
+    "settings": "Nastavenia",
+    "gpxExport": "Exportovať do GPX",
+    "mapExports": "Exporty mapy",
+    "shareMap": "Zdieľať mapu",
+    "embedMap": "Vložiť do webstránky",
+    "reportMapError": "Nahlásiť chybu zobrazenia v mape",
+    "reportAppError": "Nahlásiť chybu v portáli",
+    "supportUs": "Podporiť Freemap",
+    "help": "Pomoc",
+    "back": "Naspäť",
+    "mapLegend": "Legenda mapy",
+    "contacts": "Kontakty",
+    "tips": "Tipy",
+    "facebook": "Freemap na Facebooku",
+    "twitter": "Freemap na Twitteri",
+    "github": "Freemap na GitHub-e"
+  },
+
+  "main": {
+    "exitFullscreen": "Zrušiť zobrazenie na celú obrazovku",
+    "fullscreen": "Na celú obrazovku",
+    "clearMap": "Vyčistiť mapu",
+    "close": "Zavrieť",
+    "closeTool": "Zavrieť nástroj"
+  },
+
+  "gallery": {
+    "filter": "Filter",
+    "allPhotos": "Všetky fotky",
+    "upload": "Nahrať",
+    "f": {
+      "firstUploaded": "od prvej nahranej",
+      "lastUploaded": "od posledne nahranej",
+      "firstCaptured": "od najstaršie odfotenej",
+      "lastCaptured": "od najnovšie odfotenej",
+      "leastRated": "od najmenšieho hodnotenia",
+      "mostRated": "od najväčšieho hodnotenia"
+    }
+  },
+
+  "measurement": {
+    "distance": "Vzdialenosť",
+    "elevation": "Výška a poloha",
+    "area": "Plocha",
+    "elevationProfile": "Výškovy profil"
+  },
+
+  "trackViewer": {
+    "upload": "Nahrať",
+    "elevationProfile": "Výškovy profil",
+    "moreInfo": "Viac info",
+    "share": "Zdieľať",
+    "colorizingMode": {
+      "none": "Neaktívne",
+      "elevation": "Nadmorská výška",
+      "steepness": "Sklon"
+    }
+  }
+}

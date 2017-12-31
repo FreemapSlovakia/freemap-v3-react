@@ -1,0 +1,101 @@
+{
+  "general": {
+    "elevationProfile": "Elevation profile"
+  },
+
+  "tools": {
+    "tools": "Tools",
+    "routePlanner": "Route finder",
+    "objects": "Objects (POI)",
+    "gallery": "Photos",
+    "measurement": "Measurement",
+    "trackViewer": "Track viewer (GPX)",
+    "infoPoint": "Pin",
+    "changesets": "Map changes",
+    "mapDetails": "Map details"
+  },
+
+  "routePlanner": {
+    "start": "Start",
+    "finish": "Finish",
+    "point": {
+      "pick": "Select on the map",
+      "current": "Your position",
+      "home": "Home position"
+    },
+    "transportType": {
+      "car": "Car",
+      "car-free": "Car (toll free)",
+      "imhd": "Public transport (in devel.)",
+      "bike": "Bicycle",
+      "foot-stroller": "Stroller / Wheelchair",
+      "nordic": "Nordic skiing",
+      "ski": "Downhill skiing",
+      "foot": "Foot"
+    }
+  },
+
+  "more": {
+    "more": "More",
+    "log-out": "Log out {name}",
+    "log-in": "Log in",
+    "settings": "Settings",
+    "gpxExport": "Export to GPX",
+    "mapExports": "Map exports",
+    "shareMap": "Share map",
+    "embedMap": "Embed map",
+    "reportMapError": "Report map problem",
+    "reportAppError": "Report application problem",
+    "supportUs": "Support Freemap",
+    "help": "Help",
+    "back": "Back",
+    "mapLegend": "Map legend",
+    "contacts": "Contacts",
+    "tips": "Tips",
+
+    "facebook": "Freemap on Facebook",
+    "twitter": "Freemap on Twitter",
+    "github": "Freemap on GitHub"
+  },
+
+  "main": {
+    "exitFullscreen": "Cancel fullscreen mode",
+    "fullscreen": "Fullscreen",
+    "clearMap": "Clear map elements",
+    "close": "Close",
+    "closeTool": "Close tool"
+  },
+
+  "gallery": {
+    "filter": "Filter",
+    "allPhotos": "All photos",
+    "upload": "Upload",
+    "f": {
+      "firstUploaded": "from first uploaded",
+      "lastUploaded": "from last uploaded",
+      "firstCaptured": "from oldest",
+      "lastCaptured": "from newest",
+      "leastRated": "from least rated",
+      "mostRated": "from most rated"
+    }
+  },
+
+  "measurement": {
+    "distance": "Distance",
+    "elevation": "Elevation and position",
+    "area": "Area",
+    "elevationProfile": "Elevation profile"
+  },
+
+  "trackViewer": {
+    "upload": "Upload",
+    "elevationProfile": "Elevation profile",
+    "moreInfo": "More info",
+    "share": "Share",
+    "colorizingMode": {
+      "none": "Inactive",
+      "elevation": "Elevation",
+      "steepness": "Steepness"
+    }
+  }
+}

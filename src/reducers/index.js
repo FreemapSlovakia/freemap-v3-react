@@ -17,6 +17,7 @@ import changesets from 'fm3/reducers/changesetsReducer';
 import auth from 'fm3/reducers/authReducer';
 import mapDetails from 'fm3/reducers/mapDetailsReducer';
 import tips from 'fm3/reducers/tipsReducer';
+import l10n from 'fm3/reducers/l10nReducer';
 
 export default combineReducers({
   main,
@@ -36,4 +37,5 @@ export default combineReducers({
   auth,
   mapDetails,
   tips,
+  l10n,
 });
