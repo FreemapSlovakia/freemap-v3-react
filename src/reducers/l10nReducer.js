@@ -2,7 +2,7 @@ import * as at from 'fm3/actionTypes';
 
 const initialState = {
   translations: {},
-  lang: 'en',
+  lang: null,
 };
 
 export default function l10n(state = initialState, action) {

@@ -127,7 +127,7 @@ class RoutePlannerMenu extends React.Component {
       <span>
         <span className="fm-label">
           <FontAwesomeIcon icon="map-signs" />
-          <span className="hidden-xs"> {t('routePlanner.routePlanner')}</span>
+          <span className="hidden-xs"> {t('tools.routePlanner')}</span>
         </span>
         {' '}
         <ButtonGroup>
@@ -143,13 +143,13 @@ class RoutePlannerMenu extends React.Component {
             active={pickPointMode === 'start'}
           >
             <MenuItem>
-              <FontAwesomeIcon icon="map-marker" /> Vybrať na mape
+              <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
             </MenuItem>
             <MenuItem onClick={this.handleStartCurrent}>
-              <FontAwesomeIcon icon="bullseye" /> Aktuálna poloha
+              <FontAwesomeIcon icon="bullseye" /> {t('routePlanner.point.current')}
             </MenuItem>
             <MenuItem onClick={this.handleStartHome}>
-              <FontAwesomeIcon icon="home" /> Domov
+              <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
             </MenuItem>
           </DropdownButton>
           <DropdownButton
@@ -164,13 +164,13 @@ class RoutePlannerMenu extends React.Component {
             active={pickPointMode === 'finish'}
           >
             <MenuItem>
-              <FontAwesomeIcon icon="map-marker" /> Vybrať na mape
+              <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
             </MenuItem>
             <MenuItem onClick={this.handleFinishCurrent}>
-              <FontAwesomeIcon icon="bullseye" /> Aktuálna poloha
+              <FontAwesomeIcon icon="bullseye" /> {t('routePlanner.point.current')}
             </MenuItem>
             <MenuItem onClick={this.handleFinishHome}>
-              <FontAwesomeIcon icon="home" /> Domov
+              <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
             </MenuItem>
           </DropdownButton>
         </ButtonGroup>
@@ -224,6 +224,7 @@ class RoutePlannerMenu extends React.Component {
 }
 
 export default compose(
+  injectL10n(),
   connect(
     state => ({
       pickMode: state.routePlanner.pickMode,
@@ -283,5 +284,4 @@ export default compose(
       },
     }),
   ),
-  injectL10n(),
 )(RoutePlannerMenu);

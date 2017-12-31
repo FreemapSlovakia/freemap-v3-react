@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import Dropzone from 'react-dropzone';
 
 import Button from 'react-bootstrap/lib/Button';
@@ -10,6 +11,8 @@ import Alert from 'react-bootstrap/lib/Alert';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
+import injectL10n from 'fm3/l10nInjector';
+
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -18,12 +21,6 @@ import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import 'fm3/styles/trackViewer.scss';
-
-const colorizingModes = {
-  '': 'Neaktívne',
-  elevation: 'Nadmorská výška',
-  steepness: 'Sklon',
-};
 
 class TrackViewerMenu extends React.Component {
   static propTypes = {
@@ -43,6 +40,7 @@ class TrackViewerMenu extends React.Component {
     onShowTrackInfo: PropTypes.func.isRequired,
     onToggleElevationChart: PropTypes.func.isRequired,
     trackGeojsonIsSuitableForElevationChart: PropTypes.bool.isRequired,
+    t: PropTypes.func.isRequired,
   }
 
   componentWillReceiveProps(newProps) {
@@ -85,20 +83,22 @@ class TrackViewerMenu extends React.Component {
 
   render() {
     const { activeModal, onModalLaunch, onModalClose, hasTrack, trackUID, elevationChartActive, colorizeTrackBy, onColorizeTrackBy,
-      onShowTrackInfo, trackGeojsonIsSuitableForElevationChart, onToggleElevationChart } = this.props;
+      onShowTrackInfo, trackGeojsonIsSuitableForElevationChart, onToggleElevationChart, t } = this.props;
 
     const shareURL = trackUID ? `${window.location.origin}/?track-uid=${trackUID}` : '';
+
+    const colorizingModes = [null, 'elevation', 'steepness'];
 
     return (
       <span>
         <span className="fm-label">
           <FontAwesomeIcon icon="road" />
-          <span className="hidden-xs"> Prehliadač trás (GPX)</span>
+          <span className="hidden-xs"> {t('tools.trackViewer')}</span>
         </span>
         {' '}
         <Button onClick={() => onModalLaunch('upload-track')}>
           <FontAwesomeIcon icon="upload" />
-          <span className="hidden-xs"> Nahrať</span>
+          <span className="hidden-xs"> {t('trackViewer.upload')}</span>
         </Button>
         {' '}
         <Button
@@ -107,22 +107,26 @@ class TrackViewerMenu extends React.Component {
           disabled={!trackGeojsonIsSuitableForElevationChart}
         >
           <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> Výškovy profil</span>
+          <span className="hidden-xs"> {t('trackViewer.elevationProfile')}</span>
         </Button>
         {' '}
         <DropdownButton
-          title={<React.Fragment><FontAwesomeIcon icon="paint-brush" /> {colorizingModes[colorizeTrackBy || '']}</React.Fragment>}
+          title={
+            <React.Fragment>
+              <FontAwesomeIcon icon="paint-brush" /> {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
+            </React.Fragment>
+          }
           id="colorizing_mode"
         >
           {
-            Object.keys(colorizingModes).map(mode => (
+            colorizingModes.map(mode => (
               <MenuItem
                 eventKey={mode}
-                key={mode}
-                active={mode === (colorizeTrackBy || '')}
-                onClick={() => onColorizeTrackBy(mode || null)}
+                key={mode || 'none'}
+                active={mode === colorizeTrackBy}
+                onClick={() => onColorizeTrackBy(mode)}
               >
-                {colorizingModes[mode]}
+                {t(`trackViewer.colorizingMode.${mode || 'none'}`)}
               </MenuItem>
             ))
           }
@@ -133,12 +137,12 @@ class TrackViewerMenu extends React.Component {
           disabled={!trackGeojsonIsSuitableForElevationChart}
         >
           <FontAwesomeIcon icon="info-circle" />
-          <span className="hidden-xs"> Viac info</span>
+          <span className="hidden-xs"> {t('trackViewer.moreInfo')}</span>
         </Button>
         {' '}
         <Button onClick={this.shareTrack} disabled={!hasTrack}>
           <FontAwesomeIcon icon="share-alt" />
-          <span className="hidden-xs"> Zdieľať</span>
+          <span className="hidden-xs"> {t('trackViewer.share')}</span>
         </Button>
 
         {activeModal === 'upload-track' && // TODO move to separate component
@@ -181,52 +185,55 @@ class TrackViewerMenu extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    activeModal: state.main.activeModal,
-    hasTrack: !!state.trackViewer.trackGeojson,
-    trackUID: state.trackViewer.trackUID,
-    elevationChartActive: !!state.elevationChart.trackGeojson,
-    colorizeTrackBy: state.trackViewer.colorizeTrackBy,
-    trackGeojsonIsSuitableForElevationChart: x(state),
-  }),
-  dispatch => ({
-    onModalLaunch(modalName) {
-      dispatch(setActiveModal(modalName));
-    },
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-    onTrackViewerDataSet(trackGpx) {
-      dispatch(trackViewerSetData({ trackGpx }));
-    },
-    onTrackUIDReset() {
-      dispatch(trackViewerSetTrackUID(null));
-    },
-    onTrackViewerUploadTrack() {
-      dispatch(trackViewerUploadTrack());
-    },
-    onElevationChartClose() {
-      dispatch(elevationChartClose());
-    },
-    onColorizeTrackBy(approach) {
-      dispatch(trackViewerColorizeTrackBy(approach));
-    },
-    onShowTrackInfo() {
-      dispatch(trackViewerShowInfo());
-    },
-    onLoadError(message) {
-      dispatch(toastsAdd({
-        collapseKey: 'trackViewer.loadError',
-        message,
-        style: 'danger',
-        timeout: 5000,
-      }));
-    },
-    onToggleElevationChart() {
-      dispatch(trackViewerToggleElevationChart());
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      activeModal: state.main.activeModal,
+      hasTrack: !!state.trackViewer.trackGeojson,
+      trackUID: state.trackViewer.trackUID,
+      elevationChartActive: !!state.elevationChart.trackGeojson,
+      colorizeTrackBy: state.trackViewer.colorizeTrackBy,
+      trackGeojsonIsSuitableForElevationChart: x(state),
+    }),
+    dispatch => ({
+      onModalLaunch(modalName) {
+        dispatch(setActiveModal(modalName));
+      },
+      onModalClose() {
+        dispatch(setActiveModal(null));
+      },
+      onTrackViewerDataSet(trackGpx) {
+        dispatch(trackViewerSetData({ trackGpx }));
+      },
+      onTrackUIDReset() {
+        dispatch(trackViewerSetTrackUID(null));
+      },
+      onTrackViewerUploadTrack() {
+        dispatch(trackViewerUploadTrack());
+      },
+      onElevationChartClose() {
+        dispatch(elevationChartClose());
+      },
+      onColorizeTrackBy(approach) {
+        dispatch(trackViewerColorizeTrackBy(approach));
+      },
+      onShowTrackInfo() {
+        dispatch(trackViewerShowInfo());
+      },
+      onLoadError(message) {
+        dispatch(toastsAdd({
+          collapseKey: 'trackViewer.loadError',
+          message,
+          style: 'danger',
+          timeout: 5000,
+        }));
+      },
+      onToggleElevationChart() {
+        dispatch(trackViewerToggleElevationChart());
+      },
+    }),
+  ),
 )(TrackViewerMenu);
 
 function x(state) {

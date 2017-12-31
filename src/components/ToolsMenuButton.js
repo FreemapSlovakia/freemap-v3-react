@@ -14,6 +14,7 @@ class ToolsMenuButton extends React.Component {
   static propTypes = {
     t: PropTypes.func.isRequired,
     onToolSet: PropTypes.func.isRequired,
+    tool: PropTypes.string,
   };
 
   state = {
@@ -38,14 +39,20 @@ class ToolsMenuButton extends React.Component {
   }
 
   render() {
-    const { t } = this.props;
+    const { t, tool } = this.props;
 
     return (
       <React.Fragment>
         <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('tools.tools')} id="tools-button">
           <FontAwesomeIcon icon="briefcase" />
         </Button>
-        <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+        <Overlay
+          rootClose
+          placement="bottom"
+          show={this.state.show}
+          onHide={this.handleHide}
+          target={() => this.button}
+        >
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
               {
@@ -58,8 +65,12 @@ class ToolsMenuButton extends React.Component {
                   ['info-point', 'thumb-tack', 'infoPoint'],
                   ['changesets', 'pencil', 'changesets'],
                   ['map-details', 'info', 'mapDetails'],
-                ].map(([tool, icon, name]) => (
-                  <MenuItem key={tool} onClick={() => this.handleToolSelect(tool)}>
+                ].map(([newTool, icon, name]) => (
+                  <MenuItem
+                    key={newTool}
+                    onClick={() => this.handleToolSelect(newTool)}
+                    active={tool === newTool}
+                  >
                     <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
                   </MenuItem>
                 ))
@@ -73,8 +84,10 @@ class ToolsMenuButton extends React.Component {
 }
 
 export default compose(
+  injectL10n(),
   connect(
-    () => ({
+    state => ({
+      tool: state.main.tool,
     }),
     dispatch => ({
       onToolSet(tool) {
@@ -82,5 +95,4 @@ export default compose(
       },
     }),
   ),
-  injectL10n(),
 )(ToolsMenuButton);

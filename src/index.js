@@ -60,7 +60,6 @@ logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://githu
 const { location } = history;
 
 loadAppState(store);
-store.dispatch(l10nSetLanguage('sk'));
 
 history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, location);
@@ -98,4 +97,14 @@ function loadAppState() {
       store.dispatch(trackViewerLoadState(appState.trackViewer));
     }
   }
+
+  const languages = ['en', 'sk'];
+
+  let language;
+  if (appState && languages.includes(appState.language)) {
+    ({ language } = appState);
+  } else {
+    language = navigator.languages.map(lang => lang.split('-')[0]).find(lang => languages.includes(lang)) || 'en';
+  }
+  store.dispatch(l10nSetLanguage(language));
 }
