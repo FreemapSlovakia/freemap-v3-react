@@ -22,6 +22,7 @@ export default createLogic({
         zoom: mapState.zoom,
         overlays: mapState.overlays,
         overlayOpacity: mapState.overlayOpacity,
+        overlayPaneOpacity: mapState.overlayPaneOpacity,
         tileFormat: mapState.tileFormat,
       },
       trackViewer: {

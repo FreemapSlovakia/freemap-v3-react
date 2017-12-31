@@ -56,6 +56,6 @@ export function reducingError(action, error) {
   return { type: at.REDUCING_ERROR, payload: { action, error } };
 }
 
-export function saveSettings(tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
-  return { type: at.SAVE_SETTINGS, payload: { tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips } };
+export function saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
+  return { type: at.SAVE_SETTINGS, payload: { tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips } };
 }

@@ -7,6 +7,7 @@ const initialState = {
   zoom: 8,
   overlays: [],
   overlayOpacity: {},
+  overlayPaneOpacity: 0.65,
   tileFormat: 'png',
 };
 
@@ -15,7 +16,7 @@ export default function map(state = initialState, action) {
     // TODO improve validation
     case at.MAP_LOAD_STATE: {
       const s = { ...state };
-      const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat } = action.payload;
+      const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat, overlayPaneOpacity } = action.payload;
       if (mapType) {
         s.mapType = mapType;
       }
@@ -34,6 +35,9 @@ export default function map(state = initialState, action) {
       if (overlayOpacity) {
         s.overlayOpacity = { ...initialState.overlayOpacity, ...overlayOpacity };
       }
+      if (overlayPaneOpacity) {
+        s.overlayPaneOpacity = overlayPaneOpacity;
+      }
       if (tileFormat) {
         s.tileFormat = tileFormat;
       }
@@ -50,6 +54,8 @@ export default function map(state = initialState, action) {
       return { ...state, tileFormat: action.payload };
     case at.MAP_SET_OVERLAY_OPACITY:
       return { ...state, overlayOpacity: action.payload };
+    case at.MAP_SET_OVERLAY_PANE_OPACITY:
+      return { ...state, overlayPaneOpacity: action.payload };
     case at.MAP_REFOCUS: {
       const newState = { ...state };
       ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach((prop) => {
@@ -66,6 +72,7 @@ export default function map(state = initialState, action) {
         ...state,
         tileFormat: settings.tileFormat || state.tileFormat,
         overlayOpacity: settings.overlayOpacity === undefined ? state.overlayOpacity : settings.overlayOpacity,
+        overlayPaneOpacity: typeof settings.overlayPaneOpacity === 'number' ? settings.overlayPaneOpacity : state.overlayPaneOpacity,
       } : state;
     }
     default:

@@ -44,10 +44,6 @@ a.leaflet-control-layers-toggle {
   }
 }
 
-.leaflet-overlay-pane {
-  opacity: 0.666;
-}
-
 // default canvas z-index is 100 which makes svg outline overlap canvas hotline
 .leaflet-map-pane {
   canvas, svg {

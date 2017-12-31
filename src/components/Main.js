@@ -106,6 +106,7 @@ class Main extends React.Component {
     expertMode: PropTypes.bool,
     extraAttribution: PropTypes.string,
     t: PropTypes.func.isRequired,
+    overlayPaneOpacity: PropTypes.number.isRequired,
   };
 
   componentWillMount() {
@@ -197,11 +198,15 @@ class Main extends React.Component {
     const {
       lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu, expertMode, t,
+      showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity,
     } = this.props;
 
     return (
       <React.Fragment>
+        <style>
+          {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
+        </style>
+
         <Toasts />
 
         <div className="header">
@@ -374,6 +379,7 @@ export default compose(
       showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
       expertMode: state.main.expertMode,
       extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
+      overlayPaneOpacity: state.map.overlayPaneOpacity,
     }),
     dispatch => ({
       onToolSet(tool) {

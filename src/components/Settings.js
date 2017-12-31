@@ -39,6 +39,7 @@ class Settings extends React.Component {
     onHomeLocationSelect: PropTypes.func.isRequired,
     onHomeLocationSelectionFinish: PropTypes.func.isRequired,
     overlayOpacity: PropTypes.shape({}).isRequired,
+    overlayPaneOpacity: PropTypes.number.isRequired,
     expertMode: PropTypes.bool.isRequired,
     trackViewerEleSmoothingFactor: PropTypes.number.isRequired,
     selectingHomeLocation: PropTypes.bool,
@@ -57,6 +58,7 @@ class Settings extends React.Component {
       tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
       overlayOpacity: props.overlayOpacity,
+      overlayPaneOpacity: props.overlayPaneOpacity,
       expertMode: props.expertMode,
       trackViewerEleSmoothingFactor: props.trackViewerEleSmoothingFactor,
       name: props.user && props.user.name || '',
@@ -86,6 +88,7 @@ class Settings extends React.Component {
       this.state.tileFormat,
       this.state.homeLocation,
       this.state.overlayOpacity,
+      this.state.overlayPaneOpacity,
       this.state.expertMode,
       this.state.trackViewerEleSmoothingFactor,
       this.props.user ? { name: this.state.name.trim() || null, email: this.state.email.trim() || null } : null,
@@ -116,10 +119,10 @@ class Settings extends React.Component {
   render() {
     const { onClose, onHomeLocationSelect, selectingHomeLocation, user } = this.props;
     const { homeLocation, homeLocationCssClasses, tileFormat, expertMode,
-      overlayOpacity, trackViewerEleSmoothingFactor, name, email, preventTips, selectedOverlay } = this.state;
+      overlayOpacity, overlayPaneOpacity, trackViewerEleSmoothingFactor, name, email, preventTips, selectedOverlay } = this.state;
 
       // TODO compare overlay opacity
-    const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips']
+    const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode', 'trackViewerEleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
       .some(prop => this.state[prop] !== this.props[prop])
       || user && (name !== (user.name || '') || email !== (user.email || ''))
       || overlayLayers.some(({ type }) => (overlayOpacity[type] || 1) !== (this.props.overlayOpacity[type] || 1));
@@ -162,6 +165,20 @@ class Settings extends React.Component {
                   Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPG dlaždice.
                   Pri pomalom internete preto odporúčame zvoliť JPG.
                 </Alert>
+                <hr />
+                <div>
+                  <p>
+                    Viditeľnosť čiar na mape: {(overlayPaneOpacity * 100).toFixed(0)}%
+                  </p>
+                  <Slider
+                    value={overlayPaneOpacity}
+                    min={0}
+                    max={1}
+                    step={0.05}
+                    tooltip={false}
+                    onChange={newValue => this.setState({ overlayPaneOpacity: newValue })}
+                  />
+                </div>
                 <hr />
                 <p>
                   {'Domovská poloha: '}
@@ -293,6 +310,7 @@ export default connect(
     tileFormat: state.map.tileFormat,
     homeLocation: state.main.homeLocation,
     overlayOpacity: state.map.overlayOpacity,
+    overlayPaneOpacity: state.map.overlayPaneOpacity,
     expertMode: state.main.expertMode,
     trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
     selectingHomeLocation: state.main.selectingHomeLocation,
@@ -300,8 +318,8 @@ export default connect(
     preventTips: state.tips.preventTips,
   }),
   dispatch => ({
-    onSave(tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
-      dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips));
+    onSave(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
+      dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips));
     },
     onClose() {
       dispatch(setActiveModal(null));

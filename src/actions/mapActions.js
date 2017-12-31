@@ -25,6 +25,10 @@ export function mapSetOverlayOpacity(overlayOpacity) {
   return { type: at.MAP_SET_OVERLAY_OPACITY, payload: overlayOpacity };
 }
 
+export function mapSetOverlayPaneOpacity(overlayPaneOpacity) {
+  return { type: at.MAP_SET_OVERLAY_PANE_OPACITY, payload: overlayPaneOpacity };
+}
+
 export function mapLoadState(payload) {
   return { type: at.MAP_LOAD_STATE, payload };
 }

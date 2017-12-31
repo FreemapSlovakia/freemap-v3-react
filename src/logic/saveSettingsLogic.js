@@ -2,7 +2,7 @@ import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import * as at from 'fm3/actionTypes';
-import { mapSetTileFormat, mapSetOverlayOpacity } from 'fm3/actions/mapActions';
+import { mapSetTileFormat, mapSetOverlayOpacity, mapSetOverlayPaneOpacity } from 'fm3/actions/mapActions';
 import { startProgress, stopProgress, setHomeLocation, setActiveModal, setExpertMode } from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
@@ -13,13 +13,14 @@ export const saveSettingsLogic = createLogic({
   type: at.SAVE_SETTINGS,
   cancelType: [at.SET_ACTIVE_MODAL, at.SAVE_SETTINGS],
   process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
-    const { tileFormat, homeLocation, overlayOpacity,
+    const { tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity,
       expertMode, trackViewerEleSmoothingFactor, user, preventTips } = action.payload;
 
     const dispatchRest = () => {
       dispatch(mapSetTileFormat(tileFormat));
       dispatch(setHomeLocation(homeLocation));
       dispatch(mapSetOverlayOpacity(overlayOpacity));
+      dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));
       dispatch(setExpertMode(expertMode));
       dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
       dispatch(tipsPreventNextTime(preventTips));
@@ -52,6 +53,7 @@ export const saveSettingsLogic = createLogic({
             settings: {
               tileFormat,
               overlayOpacity,
+              overlayPaneOpacity,
               expertMode,
               trackViewerEleSmoothingFactor,
             },
