@@ -53,7 +53,7 @@ export default function handleLocationChange(store, location) {
   }
 
   if (getState().main.tool !== query.tool) {
-    dispatch(setTool(query.tool));
+    dispatch(setTool(query.tool || null));
   }
 
   const trackUID = query['track-uid'];
