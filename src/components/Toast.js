@@ -4,21 +4,16 @@ import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 
+import * as FmPropTypes from 'fm3/propTypes';
+
 import 'fm3/styles/toasts.scss';
 
 export default class Toast extends React.Component {
   static propTypes = {
-    id: PropTypes.number.isRequired,
-    message: PropTypes.oneOfType([PropTypes.string.isRequired, PropTypes.element.isRequired]),
-    style: PropTypes.string,
+    ...FmPropTypes.toastDef,
     onAction: PropTypes.func.isRequired,
     onTimeoutStop: PropTypes.func.isRequired,
     onTimeoutRestart: PropTypes.func.isRequired,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      name: PropTypes.string,
-      action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
-      style: PropTypes.string,
-    })).isRequired,
   }
 
   handleMouseEnter = () => {

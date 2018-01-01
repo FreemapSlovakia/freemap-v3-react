@@ -91,7 +91,7 @@ class MeasurementMenu extends React.Component {
     const { onToolSet, tool, routeDefined, elevationChartTrackGeojson, t } = this.props;
 
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="!icon-ruler" />
           <span className="hidden-xs"> {t('tools.measurement')}</span>
@@ -118,7 +118,7 @@ class MeasurementMenu extends React.Component {
             <span className="hidden-xs"> {t('general.elevationProfile')}</span>
           </Button>
         }
-      </span>
+      </React.Fragment>
     );
   }
 }

@@ -12,8 +12,6 @@ import { distance } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-
 // const defaultIcon = new L.Icon.Default();
 
 const circularIcon = new L.divIcon({ // CircleMarker is not draggable
@@ -30,6 +28,7 @@ class DistanceMeasurementResult extends React.Component {
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
     active: PropTypes.bool,
+    language: PropTypes.string,
   };
 
   state = {
@@ -85,7 +84,8 @@ class DistanceMeasurementResult extends React.Component {
     let prev = null;
     let dist = 0;
 
-    const { points } = this.props;
+    const { points, language } = this.props;
+
     const ps = [];
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
@@ -97,6 +97,8 @@ class DistanceMeasurementResult extends React.Component {
         ps.push({ lat, lon, id: (p1.id + p2.id) / 2 });
       }
     }
+
+    const nf = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
     return (
       <React.Fragment>
@@ -163,6 +165,7 @@ export default connect(
   state => ({
     points: state.distanceMeasurement.points,
     active: state.main.tool === 'measure-dist',
+    language: state.l10n.language,
   }),
   dispatch => ({
     onPointAdd(point, position) {
@@ -174,11 +177,17 @@ export default connect(
     onPointRemove(id) {
       dispatch(toastsAdd({
         collapseKey: 'distanceMeasurement.removePoint',
-        message: 'Odstrániť bod?',
+        messageKey: 'measurement.removePoint',
         style: 'warning',
         actions: [
-          { name: 'Áno', action: distanceMeasurementRemovePoint(id), style: 'danger' },
-          { name: 'Nie' },
+          {
+            nameKey: 'general.yes',
+            action: distanceMeasurementRemovePoint(id),
+            style: 'danger',
+          },
+          {
+            nameKey: 'general.no',
+          },
         ],
       }));
     },

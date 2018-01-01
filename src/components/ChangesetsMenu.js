@@ -53,7 +53,7 @@ class ChangesetsMenu extends React.Component {
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh, t } = this.props;
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="pencil" />
           <span className="hidden-xs"> {t('tools.changesets')}</span>
@@ -109,7 +109,7 @@ class ChangesetsMenu extends React.Component {
             <span className="hidden-xs"> {t('changesets.download')}</span>
           </Button>
         </Form>
-      </span>
+      </React.Fragment>
     );
   }
 }

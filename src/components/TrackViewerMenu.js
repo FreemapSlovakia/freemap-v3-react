@@ -90,7 +90,7 @@ class TrackViewerMenu extends React.Component {
     const colorizingModes = [null, 'elevation', 'steepness'];
 
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="road" />
           <span className="hidden-xs"> {t('tools.trackViewer')}</span>
@@ -180,7 +180,7 @@ class TrackViewerMenu extends React.Component {
             </Modal.Footer>
           </Modal>
         }
-      </span>
+      </React.Fragment>
     );
   }
 }

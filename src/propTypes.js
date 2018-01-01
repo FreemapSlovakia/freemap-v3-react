@@ -82,3 +82,18 @@ export const routeAlternative = PropTypes.shape({
     shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
   }).isRequired).isRequired,
 });
+
+export const toastDef = {
+  id: PropTypes.number.isRequired,
+  message: PropTypes.node,
+  messageKey: PropTypes.string,
+  style: PropTypes.string,
+  actions: PropTypes.arrayOf(PropTypes.shape({
+    name: PropTypes.string,
+    nameKey: PropTypes.string,
+    action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
+    style: PropTypes.string,
+  }).isRequired).isRequired,
+};
+
+export const toast = PropTypes.shape(toastDef);

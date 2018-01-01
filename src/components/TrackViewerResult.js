@@ -13,9 +13,6 @@ import 'leaflet-hotline';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
 
-const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
-
 class TrackViewerResult extends React.Component {
   static propTypes = {
     trackGeojson: PropTypes.shape({
@@ -35,6 +32,7 @@ class TrackViewerResult extends React.Component {
     displayingElevationChart: PropTypes.bool,
     colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
     eleSmoothingFactor: PropTypes.number.isRequired,
+    language: PropTypes.string,
   }
 
   state = {
@@ -48,6 +46,7 @@ class TrackViewerResult extends React.Component {
       return;
     }
 
+    // TODO to logic
     if (nextProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(nextProps.trackGeojson)) {
       const geojsonBounds = L.geoJson(nextProps.trackGeojson).getBounds();
       if (geojsonBounds.isValid()) {
@@ -124,7 +123,7 @@ class TrackViewerResult extends React.Component {
   }
 
   render() {
-    const { trackGeojson, startPoints, finishPoints, displayingElevationChart, colorizeTrackBy } = this.props;
+    const { trackGeojson, startPoints, finishPoints, displayingElevationChart, colorizeTrackBy, language } = this.props;
 
     if (!trackGeojson) {
       return null;
@@ -135,6 +134,9 @@ class TrackViewerResult extends React.Component {
 
     const xxx = this.getFeatures('LineString')
       .map(feature => ({ name: feature.properties.name, lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]) }));
+
+    const oneDecimalDigitNumberFormat = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const timeFormat = new Intl.DateTimeFormat(language || 'en', { hour: 'numeric', minute: '2-digit' });
 
     return (
       <React.Fragment key={keyToAssureProperRefresh}>
@@ -260,4 +262,5 @@ export default connect(state => ({
   displayingElevationChart: state.elevationChart.trackGeojson !== null,
   colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+  language: state.l10n.language,
 }))(TrackViewerResult);

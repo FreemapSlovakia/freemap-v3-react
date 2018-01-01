@@ -29,9 +29,9 @@ class ElevationMeasurementResult extends React.Component {
   }
 
   render() {
-    const { point, elevation, language = 'en', t } = this.props;
+    const { point, elevation, language, t } = this.props;
 
-    const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+    const nf1 = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
     return point && (
       <RichMarker
@@ -45,7 +45,7 @@ class ElevationMeasurementResult extends React.Component {
         <Popup closeButton={false} autoClose={false} autoPan={false}>
           <React.Fragment>
             {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(point.lat, 'SN', format, language)} {formatGpsCoord(point.lon, 'WE', format, language)}</div>)}
-            {typeof elevation === 'number' && <div>{t('measurement.elevationLine').replace('{ele}', nf1.format(elevation))}</div>}
+            {typeof elevation === 'number' && <div>{t('measurement.elevationLine')} {nf1.format(elevation)} {t('general.masl')}</div>}
           </React.Fragment>
         </Popup>
       </RichMarker>

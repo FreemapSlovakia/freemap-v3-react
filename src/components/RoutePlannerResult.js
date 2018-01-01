@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
@@ -8,10 +9,9 @@ import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint'
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint, routePlannerSetActiveAlternativeIndex }
   from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import injectL10n from 'fm3/l10nInjector';
 
 import * as FmPropTypes from 'fm3/propTypes';
-
-const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
 class RoutePlannerResult extends React.Component {
   static propTypes = {
@@ -28,6 +28,8 @@ class RoutePlannerResult extends React.Component {
     onAlternativeChange: PropTypes.func.isRequired,
     transportType: PropTypes.string,
     timestamp: PropTypes.number,
+    t: PropTypes.func.isRequired,
+    language: PropTypes.string,
   }
 
   state = {
@@ -92,27 +94,22 @@ class RoutePlannerResult extends React.Component {
   }
 
   handlePolyMouseOut = () => {
-    if (this.dragging) {
-      return;
+    if (!this.dragging) {
+      this.resetOnTimeout();
     }
-    this.resetOnTimeout();
   }
 
   handleFutureMouseOver = () => {
-    if (this.dragging) {
-      return;
-    }
-    if (this.t) {
+    if (!this.dragging && this.t) {
       clearTimeout(this.t);
       this.t = null;
     }
   }
 
   handleFutureMouseOut = () => {
-    if (this.dragging) {
-      return;
+    if (!this.dragging) {
+      this.resetOnTimeout();
     }
-    this.resetOnTimeout();
   }
 
   resetOnTimeout() {
@@ -152,7 +149,9 @@ class RoutePlannerResult extends React.Component {
   }
 
   render() {
-    const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange, transportType, timestamp, alternatives } = this.props;
+    const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange,
+      transportType, timestamp, alternatives, t, language } = this.props;
+
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
       iconSize: [14, 14],
@@ -161,6 +160,8 @@ class RoutePlannerResult extends React.Component {
     });
 
     const { distance, duration, summary0 } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+
+    const nf = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
     return (
       <React.Fragment>
@@ -225,8 +226,8 @@ class RoutePlannerResult extends React.Component {
               : distance ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div>
-                    <div>Vzdialenosť: {nf.format(distance)} km</div>
-                    <div>Čas: {Math.floor(duration / 60)} h {Math.round(duration % 60)} m</div>
+                    <div>{t('routePlanner.distance').replace('{value}', nf.format(distance))}</div>
+                    <div>{t('routePlanner.duration').replace('{h}', Math.floor(duration / 60)).replace('{m}', Math.round(duration % 60))}</div>
                   </div>
                 </Tooltip>
               : null
@@ -292,44 +293,48 @@ class RoutePlannerResult extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    start: state.routePlanner.start,
-    finish: state.routePlanner.finish,
-    midpoints: state.routePlanner.midpoints,
-    alternatives: state.routePlanner.alternatives,
-    activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-    transportType: state.routePlanner.effectiveTransportType,
-    timestamp: state.routePlanner.timestamp,
-  }),
-  dispatch => ({
-    onStartSet(start) {
-      dispatch(routePlannerSetStart(start));
-    },
-    onFinishSet(finish) {
-      dispatch(routePlannerSetFinish(finish));
-    },
-    onAddMidpoint(position, midpoint) {
-      dispatch(routePlannerAddMidpoint(midpoint, position));
-    },
-    onMidpointSet(position, midpoint) {
-      dispatch(routePlannerSetMidpoint(position, midpoint));
-    },
-    onRemoveMidpoint(position) {
-      dispatch(toastsAdd({
-        collapseKey: 'routePlanner.removeMidpoint',
-        message: 'Odstrániť zastávku?',
-        style: 'warning',
-        actions: [
-          { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },
-          { name: 'Nie' },
-        ],
-      }));
-    },
-    onAlternativeChange(index) {
-      dispatch(routePlannerSetActiveAlternativeIndex(index));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      start: state.routePlanner.start,
+      finish: state.routePlanner.finish,
+      midpoints: state.routePlanner.midpoints,
+      alternatives: state.routePlanner.alternatives,
+      activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
+      transportType: state.routePlanner.effectiveTransportType,
+      timestamp: state.routePlanner.timestamp,
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onStartSet(start) {
+        dispatch(routePlannerSetStart(start));
+      },
+      onFinishSet(finish) {
+        dispatch(routePlannerSetFinish(finish));
+      },
+      onAddMidpoint(position, midpoint) {
+        dispatch(routePlannerAddMidpoint(midpoint, position));
+      },
+      onMidpointSet(position, midpoint) {
+        dispatch(routePlannerSetMidpoint(position, midpoint));
+      },
+      onRemoveMidpoint(position) {
+        dispatch(toastsAdd({
+          collapseKey: 'routePlanner.removeMidpoint',
+          message: 'Odstrániť zastávku?',
+          style: 'warning',
+          actions: [
+            { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },
+            { name: 'Nie' },
+          ],
+        }));
+      },
+      onAlternativeChange(index) {
+        dispatch(routePlannerSetActiveAlternativeIndex(index));
+      },
+    }),
+  ),
 )(RoutePlannerResult);
 
 // TODO do it in logic so that GPX export is the same

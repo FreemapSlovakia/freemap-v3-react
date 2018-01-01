@@ -11,8 +11,6 @@ import { area } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
-
 const circularIcon = new L.divIcon({ // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
@@ -27,6 +25,7 @@ class AreaMeasurementResult extends React.Component {
     onPointUpdate: PropTypes.func.isRequired,
     onPointRemove: PropTypes.func.isRequired,
     active: PropTypes.bool,
+    language: PropTypes.string,
   };
 
   state = {
@@ -79,7 +78,8 @@ class AreaMeasurementResult extends React.Component {
   }
 
   render() {
-    const { points } = this.props;
+    const { points, language } = this.props;
+
     const ps = [];
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
@@ -96,6 +96,8 @@ class AreaMeasurementResult extends React.Component {
         northmostPoint = p;
       }
     });
+
+    const nf = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
     return (
       <React.Fragment>
@@ -177,6 +179,7 @@ export default connect(
   state => ({
     points: state.areaMeasurement.points,
     active: state.main.tool === 'measure-area',
+    language: state.l10n.language,
   }),
   dispatch => ({
     onPointAdd(coordinates, position) {
@@ -188,11 +191,17 @@ export default connect(
     onPointRemove(i) {
       dispatch(toastsAdd({
         collapseKey: 'areaMeasurement.removePoint',
-        message: 'Odstrániť bod?',
+        messageKey: 'measurement.removePoint',
         style: 'warning',
         actions: [
-          { name: 'Áno', action: areaMeasurementRemovePoint(i), style: 'danger' },
-          { name: 'Nie' },
+          {
+            nameKey: 'general.yes',
+            action: areaMeasurementRemovePoint(i),
+            style: 'danger',
+          },
+          {
+            nameKey: 'general.no',
+          },
         ],
       }));
     },

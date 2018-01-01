@@ -66,7 +66,7 @@ class InfoPointMenu extends React.Component {
   render() {
     const { onModalLaunch, activeModal, onModalClose, t } = this.props;
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="thumb-tack" />
           <span className="hidden-xs"> {t('tools.infoPoint')}</span>
@@ -106,7 +106,7 @@ class InfoPointMenu extends React.Component {
             </form>
           </Modal>
         }
-      </span>
+      </React.Fragment>
     );
   }
 }

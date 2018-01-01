@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
@@ -13,11 +14,14 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import Dropdown from 'react-bootstrap/lib/Dropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
+import injectL10n from 'fm3/l10nInjector';
+
 class ObjectsMenu extends React.Component {
   static propTypes = {
     onSearch: PropTypes.func.isRequired,
     onLowZoom: PropTypes.func.isRequired,
     zoom: PropTypes.number.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   state = {
@@ -70,11 +74,13 @@ class ObjectsMenu extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
+
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="map-marker" />
-          <span className="hidden-xs"> Miesta</span>
+          <span className="hidden-xs"> {t('tools.objects')}</span>
         </span>
         {' '}
         <Dropdown
@@ -86,7 +92,7 @@ class ObjectsMenu extends React.Component {
           <FormGroup bsRole="toggle">
             <FormControl
               type="text"
-              placeholder="Typ"
+              placeholder={t('objects.type')}
               onChange={this.handleFilterSet}
               value={this.state.filter}
               onFocus={this.handleFilterFocus}
@@ -97,35 +103,38 @@ class ObjectsMenu extends React.Component {
             {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
           </Dropdown.Menu>
         </Dropdown>
-      </span>
+      </React.Fragment>
     );
   }
 }
 
-export default connect(
-  state => ({
-    zoom: state.map.zoom,
-  }),
-  dispatch => ({
-    onSearch(typeId) {
-      dispatch(objectsSetFilter(typeId));
-    },
-    onLowZoom(/* typeId */) {
-      dispatch(toastsAdd({
-        collapseKey: 'objects.lowZoom',
-        message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
-        style: 'warning',
-        actions: [
-          {
-            // name: 'Priblíž a hľadaj', TODO
-            name: 'Priblíž',
-            action: [
-              mapRefocus({ zoom: 12 }),
-              // objectsSetFilter(typeId) it won't work correctly because it uses bounds before refocus
-            ],
-          },
-        ],
-      }));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      zoom: state.map.zoom,
+    }),
+    dispatch => ({
+      onSearch(typeId) {
+        dispatch(objectsSetFilter(typeId));
+      },
+      onLowZoom(/* typeId */) {
+        dispatch(toastsAdd({
+          collapseKey: 'objects.lowZoom',
+          message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+          style: 'warning',
+          actions: [
+            {
+              // name: 'Priblíž a hľadaj', TODO
+              name: 'Priblíž',
+              action: [
+                mapRefocus({ zoom: 12 }),
+                // objectsSetFilter(typeId) it won't work correctly because it uses bounds before refocus
+              ],
+            },
+          ],
+        }));
+      },
+    }),
+  ),
 )(ObjectsMenu);

@@ -26,8 +26,6 @@ export function getPoiType(id) {
   return poiTypesMap.get(id);
 }
 
-const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
-
 function toOverpassFilter(element, filter) {
   return `${element}${filter.map(({
     keyOperation, key, operation = '=', value,
@@ -85,12 +83,15 @@ function toOverpassFilter(element, filter) {
 //   }
 // }
 
+// TODO l10n
 export function toHtml(typeId, tags) {
   const pt = getPoiType(typeId);
   const { name, ele } = tags;
   if (pt) {
     const img = require(`./images/mapIcons/${pt.icon}.png`);
-    return pt.template ? pt.template(tags) : `<img src="${img}"/> ${pt.title}${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `<br/>${nf.format(ele)} m n. m.` : ''}`;
+    const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+    return pt.template ? pt.template(tags)
+      : `<img src="${img}"/> ${pt.title}${name ? `<br/>${escapeHtml(name)}` : ''}${ele ? `<br/>${nf.format(ele)} m n. m.` : ''}`;
   }
   return name && escapeHtml(name);
 }

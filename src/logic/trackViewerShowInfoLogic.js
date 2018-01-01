@@ -5,14 +5,17 @@ import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { smoothElevations, distance } from 'fm3/geoutils';
 
-const oneDecimalDigitNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-const noDecimalDigitsNumberFormat = Intl.NumberFormat('sk', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-const timeFormat = new Intl.DateTimeFormat('sk', { hour: 'numeric', minute: '2-digit' });
-
 export default createLogic({
   type: at.TRACK_VIEWER_SHOW_INFO,
   process({ getState }, dispatch, done) {
-    const { startPoints, finishPoints, trackGeojson, eleSmoothingFactor } = getState().trackViewer;
+    const {
+      trackViewer: { startPoints, finishPoints, trackGeojson, eleSmoothingFactor },
+      l10n: { language },
+    } = getState().trackViewer;
+
+    const oneDecimalDigitNumberFormat = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const noDecimalDigitsNumberFormat = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const timeFormat = new Intl.DateTimeFormat(language || 'en', { hour: 'numeric', minute: '2-digit' });
 
     const tableData = [];
 

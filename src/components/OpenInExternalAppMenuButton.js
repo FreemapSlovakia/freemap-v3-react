@@ -7,14 +7,16 @@ import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import injectL10n from 'fm3/l10nInjector';
 
-export default class OpenInExternalAppMenuButton extends React.Component {
+class OpenInExternalAppMenuButton extends React.Component {
   static propTypes = {
     lat: PropTypes.number.isRequired,
     lon: PropTypes.number.isRequired,
     zoom: PropTypes.number.isRequired,
     mapType: PropTypes.string,
     expertMode: PropTypes.bool,
+    t: PropTypes.func.isRequired,
   };
 
   state = {
@@ -80,24 +82,26 @@ export default class OpenInExternalAppMenuButton extends React.Component {
   }
 
   render() {
+    const { t } = this.props;
+
     return (
       <React.Fragment>
-        <Button ref={this.setButton} onClick={this.handleButtonClick} title="Otvoriť v externej aplikácii">
+        <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('external.openInExternal')}>
           <FontAwesomeIcon icon="external-link" />
         </Button>
         <Overlay rootClose placement="bottom" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
-              <MenuItem onClick={() => this.openIn('osm.org')}>OpenStreetMap</MenuItem>
-              <MenuItem onClick={() => this.openIn('oma.sk')}>OMA</MenuItem>
-              <MenuItem onClick={() => this.openIn('google')}>Google Mapy</MenuItem>
-              <MenuItem onClick={() => this.openIn('hiking.sk')}>Hiking.sk</MenuItem>
-              <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>Mapy.cz Letecká</MenuItem>
+              <MenuItem onClick={() => this.openIn('osm.org')}>{t('external.osm')}</MenuItem>
+              <MenuItem onClick={() => this.openIn('oma.sk')}>{t('external.oma')}</MenuItem>
+              <MenuItem onClick={() => this.openIn('google')}>{t('external.googleMaps')}</MenuItem>
+              <MenuItem onClick={() => this.openIn('hiking.sk')}>{t('external.hiking_sk')}</MenuItem>
+              <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>{t('external.mapy_cz-aerial')}</MenuItem>
               <MenuItem divider />
-              {this.props.expertMode && <MenuItem onClick={() => this.openIn('josm')}>Editor JOSM</MenuItem>}
-              <MenuItem onClick={() => this.openIn('osm.org/id')}>Editor iD</MenuItem>
+              {this.props.expertMode && <MenuItem onClick={() => this.openIn('josm')}>{t('external.josm')}</MenuItem>}
+              <MenuItem onClick={() => this.openIn('osm.org/id')}>{t('external.id')}</MenuItem>
               {this.props.expertMode && <MenuItem divider />}
-              {this.props.expertMode && <MenuItem onClick={() => this.openIn('routing-debug')}>Ladenie navigácie</MenuItem>}
+              {this.props.expertMode && <MenuItem onClick={() => this.openIn('routing-debug')}>{t('external.routing-debug')}</MenuItem>}
             </ul>
           </Popover>
         </Overlay>
@@ -105,3 +109,5 @@ export default class OpenInExternalAppMenuButton extends React.Component {
     );
   }
 }
+
+export default injectL10n()(OpenInExternalAppMenuButton);

@@ -20,8 +20,6 @@ import { getCurrentPosition } from 'fm3/geoutils';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-const nf = Intl.NumberFormat('sk', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-
 class RoutePlannerMenu extends React.Component {
   static propTypes = {
     onStartSet: PropTypes.func.isRequired,
@@ -46,6 +44,7 @@ class RoutePlannerMenu extends React.Component {
     activeAlternativeIndex: PropTypes.number.isRequired,
     alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
     onAlternativeChange: PropTypes.func.isRequired,
+    language: PropTypes.string,
   };
 
   componentWillMount() {
@@ -111,7 +110,8 @@ class RoutePlannerMenu extends React.Component {
     const {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
-      routeFound, expertMode, onToggleElevationChart, t, activeAlternativeIndex, alternatives, onAlternativeChange,
+      routeFound, expertMode, onToggleElevationChart, t, activeAlternativeIndex, alternatives,
+      onAlternativeChange, language,
     } = this.props;
 
     const transportTypes = [
@@ -129,8 +129,10 @@ class RoutePlannerMenu extends React.Component {
 
     const activeAlternative = alternatives[activeAlternativeIndex];
 
+    const nf = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="map-signs" />
           <span className="hidden-xs"> {t('tools.routePlanner')}</span>
@@ -253,7 +255,7 @@ class RoutePlannerMenu extends React.Component {
           <FontAwesomeIcon icon="bar-chart" />
           <span className="hidden-xs"> {t('general.elevationProfile')}</span>
         </Button>
-      </span>
+      </React.Fragment>
     );
   }
 }
@@ -273,6 +275,7 @@ export default compose(
       alternatives: state.routePlanner.alternatives,
       elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
       expertMode: state.main.expertMode,
+      language: state.l10n.language,
     }),
     dispatch => ({
       onStartSet(start) {

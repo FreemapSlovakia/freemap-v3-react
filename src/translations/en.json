@@ -7,7 +7,10 @@
     "delete": "Delete",
     "close": "Close",
     "exitFullscreen": "Cancel fullscreen mode",
-    "fullscreen": "Fullscreen"
+    "fullscreen": "Fullscreen",
+    "yes": "Yes",
+    "no": "No",
+    "masl": "m.a.s.l."
   },
 
   "tools": {
@@ -40,7 +43,9 @@
       "ski": "Downhill skiing",
       "foot": "Foot"
     },
-    "alternative": "Alternatíva"
+    "alternative": "Alternatíva",
+    "distance": "Distance: {value} km",
+    "duration": "Duration: {h} h {m} m"
   },
 
   "more": {
@@ -95,7 +100,7 @@
       "yourRating": "Your rating:",
       "showOnTheMap": "Show in the map",
       "openInNewWindow": "Open in new window",
-      "uploaded": "Uploaded {username} on {createdAt}",
+      "uploaded": "Uploaded by {username} on {createdAt}",
       "captured": "Captured on {takenAt}"
     }
   },
@@ -104,7 +109,8 @@
     "distance": "Distance",
     "elevation": "Elevation and position",
     "area": "Area",
-    "elevationLine": "Elevation: {ele} m.a.s.l."
+    "elevationLine": "Elevation:",
+    "removePoint": "Remove point?"
   },
 
   "trackViewer": {
@@ -140,9 +146,9 @@
         "label": "Tile format for car, hiking and bicycle map:",
         "hint": "Map looks better if PNG format is used but it requires to download cca 4x more data than for JPEG. On slow internet connection we recommend to select JPEG."
       },
-      "overlayPaneOpacity": "Map line features opacity: {value}%",
+      "overlayPaneOpacity": "Map line features opacity:",
       "homeLocation": {
-        "label": "Home location: {value}",
+        "label": "Home location:",
         "select": "Select on the map",
         "undefined": "undefined"
       }
@@ -173,5 +179,33 @@
     "download": "Download changes",
     "olderThan": "return `${days} days`",
     "olderThanFull": "return `Changesets older than ${days} days`"
+  },
+
+  "mapDetails": {
+    "road": "Road info"
+  },
+
+  "objects": {
+    "type": "Type"
+  },
+
+  "external": {
+    "openInExternal": "Open in external application",
+    "osm": "OpenStreetMap",
+    "oma": "OMA",
+    "googleMaps": "Google Maps",
+    "hiking_sk": "Hiking.sk",
+    "mapy_cz-aerial": "Mapy.cz Aerial",
+    "josm": "Edit in JOSM",
+    "id": "Edit in iD",
+    "routing-debug": "Routing debugger"
+  },
+
+  "search": {
+    "inProgress": "Searching…",
+    "noResults": "No results found",
+    "prompt": "Enter the place",
+    "routeFrom": "Route from here",
+    "routeTo": "Route to here"
   }
 }

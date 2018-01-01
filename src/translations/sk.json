@@ -7,7 +7,10 @@
     "delete": "Zmazať",
     "close": "Zavrieť",
     "exitFullscreen": "Zrušiť zobrazenie na celú obrazovku",
-    "fullscreen": "Na celú obrazovku"
+    "fullscreen": "Na celú obrazovku",
+    "yes": "Áno",
+    "no": "Nie",
+    "masl": "m.n.m."
   },
 
   "tools": {
@@ -40,7 +43,9 @@
       "ski": "Zjazdové lyžovanie",
       "foot": "Pešo"
     },
-    "alternative": "Alternatíva"
+    "alternative": "Alternatíva",
+    "distance": "Vzdialenosť: {value} km",
+    "duration": "Čas: {h} h {m} m"
   },
 
   "more": {
@@ -103,7 +108,8 @@
     "distance": "Vzdialenosť",
     "elevation": "Výška a poloha",
     "area": "Plocha",
-    "elevationLine": "Nadmorská výška: {ele} m.n.m."
+    "elevationLine": "Nadmorská výška:",
+    "removePoint": "Odstrániť bod?"
   },
 
   "trackViewer": {
@@ -139,9 +145,9 @@
         "label": "Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:",
         "hint": "Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. Pri pomalom internete preto odporúčame zvoliť JPEG."
       },
-      "overlayPaneOpacity": "Viditeľnosť čiar na mape: {value}%",
+      "overlayPaneOpacity": "Viditeľnosť čiar na mape:",
       "homeLocation": {
-        "label": "Domovská poloha: {value}",
+        "label": "Domovská poloha:",
         "select": "Vybrať na mape",
         "undefined": "neurčená"
       }
@@ -172,5 +178,33 @@
     "download": "Stiahnuť zmeny",
     "olderThan": "return `${days} dn${days === 3 ? 'i' : 'í'}`",
     "olderThanFull": "return `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`"
+  },
+
+  "mapDetails": {
+    "road": "Info o ceste"
+  },
+
+  "objects": {
+    "type": "Typ"
+  },
+
+  "external": {
+    "openInExternal": "Otvoriť v externej aplikácii",
+    "osm": "OpenStreetMap",
+    "oma": "OMA",
+    "googleMaps": "Google Mapy",
+    "hiking_sk": "Hiking.sk",
+    "mapy_cz-aerial": "Mapy.cz Letecká",
+    "josm": "Editor JOSM",
+    "id": "Editor iD",
+    "routing-debug": "Ladenie navigácie"
+  },
+
+  "search": {
+    "inProgress": "Hľadám…",
+    "noResults": "Nenašli sa žiadne výsledky",
+    "prompt": "Zadajte lokalitu",
+    "routeFrom": "Navigovať odtiaľto",
+    "routeTo": "Navigovať sem"
   }
 }

@@ -134,6 +134,8 @@ class Settings extends React.Component {
 
     const selectedOverlayDetails = overlayLayers.find(({ type }) => type === selectedOverlay);
 
+    const nf0 = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+
     return (
       <Modal show={!selectingHomeLocation} onHide={onClose}>
         <form onSubmit={this.handleSave}>
@@ -165,7 +167,7 @@ class Settings extends React.Component {
                 <Alert>{t('settings.map.imgFormat.hint')}</Alert>
                 <hr />
                 <div>
-                  <p>{t('settings.map.overlayPaneOpacity').replace('{value}', (overlayPaneOpacity * 100).toFixed(0))}</p>
+                  <p>{t('settings.map.overlayPaneOpacity')} {nf0.format(overlayPaneOpacity * 100)} %</p>
                   <Slider
                     value={overlayPaneOpacity}
                     min={0}
@@ -177,10 +179,12 @@ class Settings extends React.Component {
                 </div>
                 <hr />
                 <p>
-                  {t('settings.map.homeLocation.label')
-                    .replace('{value}', homeLocation
-                      ? `${formatGpsCoord(homeLocation.lat, 'SN', 'DMS', language)} ${formatGpsCoord(homeLocation.lon, 'WE', 'DMS', language)}`
-                      : t('settings.map.homeLocation.undefined'))}
+                  {t('settings.map.homeLocation.label')}
+                  {' '}
+                  {homeLocation
+                    ? `${formatGpsCoord(homeLocation.lat, 'SN', 'DMS', language)} ${formatGpsCoord(homeLocation.lon, 'WE', 'DMS', language)}`
+                    : t('settings.map.homeLocation.undefined')
+                  }
                 </p>
                 <Button onClick={() => onHomeLocationSelect()}>
                   <FontAwesomeIcon icon="crosshairs" /> {t('settings.map.homeLocation.select')}
@@ -246,7 +250,7 @@ class Settings extends React.Component {
                             {' '}
                             {selectedOverlayDetails.name}
                             {' '}
-                            {(overlayOpacity[selectedOverlay] || 1).toFixed(1) * 100 /* TODO NumberFormat */}%
+                            {nf0.format((overlayOpacity[selectedOverlay] || 1) * 100)} %
                           </React.Fragment>
                         }
                       >
@@ -257,7 +261,7 @@ class Settings extends React.Component {
                               {' '}
                               {overlayName}
                               {' '}
-                              {(overlayOpacity[type] || 1).toFixed(1) * 100 /* TODO NumberFormat */}%
+                              {nf0.format((overlayOpacity[type] || 1) * 100)} %
                             </MenuItem>
                           ))
                         }
@@ -275,7 +279,7 @@ class Settings extends React.Component {
                     <div>
                       <p>
                         {t('settings.expert.trackViewerEleSmoothing.label')
-                          .replace('{value}', trackViewerEleSmoothingFactor /* TODO NumberFormat */)}
+                          .replace('{value}', trackViewerEleSmoothingFactor)}
                       </p>
                       <Slider
                         value={trackViewerEleSmoothingFactor}
