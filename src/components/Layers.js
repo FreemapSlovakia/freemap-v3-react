@@ -100,22 +100,16 @@ class Layers extends React.Component {
   render() {
     const { mapType, overlays, isAdmin } = this.props;
 
-    return (
-      <span>
-        {
-          baseLayers
-            .filter(({ type }) => type === mapType)
-            .filter(({ adminOnly }) => isAdmin || !adminOnly)
-            .map(item => this.getTileLayer(item))
-        }
-        {
-          overlayLayers
-            .filter(({ type }) => overlays.includes(type))
-            .filter(({ adminOnly }) => isAdmin || !adminOnly)
-            .map(item => this.getTileLayer(item))
-        }
-      </span>
-    );
+    return [
+      ...baseLayers
+        .filter(({ type }) => type === mapType)
+        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .map(item => this.getTileLayer(item)),
+      ...overlayLayers
+        .filter(({ type }) => overlays.includes(type))
+        .filter(({ adminOnly }) => isAdmin || !adminOnly)
+        .map(item => this.getTileLayer(item)),
+    ];
   }
 }
 

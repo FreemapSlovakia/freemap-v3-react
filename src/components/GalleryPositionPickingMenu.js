@@ -16,7 +16,7 @@ function GalleryPositionPickingMenu({ pickingPosition, onPositionConfirm, onPosi
 
   return (
     <Panel className="fm-toolbar">
-      <span>Zvoľte pozíciu fotografie</span>
+      Zvoľte pozíciu fotografie
       {' '}
       <Button onClick={onPositionConfirm}>
         <FontAwesomeIcon icon="check" />

@@ -55,7 +55,7 @@ class SearchMenu extends React.Component {
       onDoSearch, results, inProgress, t } = this.props;
 
     return (
-      <span>
+      <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="search" />
         </span>
@@ -81,8 +81,8 @@ class SearchMenu extends React.Component {
               onMouseEnter={() => this.onSuggestionHighlightChange(result)}
               onMouseLeave={() => this.onSuggestionHighlightChange(null)}
             >
-              <span>{result.tags.name} </span><br />
-              <span>({result.geojson.type})</span>
+              {result.tags.name} <br />
+              ({result.geojson.type})
             </div>
           )}
         />
@@ -103,7 +103,7 @@ class SearchMenu extends React.Component {
             </Button>
           </ButtonGroup>
         }
-      </span>
+      </React.Fragment>
     );
   }
 }

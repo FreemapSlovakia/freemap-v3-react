@@ -260,13 +260,10 @@ class Main extends React.Component {
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'gallery' && <GalleryMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
-
-                <span>
-                  {' '}
-                  <Button onClick={this.handleToolCloseClick} title={t('main.closeTool')}>
-                    <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
-                  </Button>
-                </span>
+                {' '}
+                <Button onClick={this.handleToolCloseClick} title={t('main.closeTool')}>
+                  <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
+                </Button>
               </Panel>
             }
             <GalleryPositionPickingMenu />
@@ -337,7 +334,7 @@ class Main extends React.Component {
           <Layers />
 
           {showMenu &&
-            <span>
+            <React.Fragment>
               <SearchResults />
               <ObjectsResult />
               <RoutePlannerResult />
@@ -351,7 +348,7 @@ class Main extends React.Component {
               {tool === 'map-details' && <MapDetails />}
               {showElevationChart && <AsyncElevationChart />}
               {showGalleryPicker && <GalleryPicker />}
-            </span>
+            </React.Fragment>
           }
           <GalleryResult />{/* TODO should not be extra just because for position picking */}
         </Map>
