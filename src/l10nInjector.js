@@ -9,7 +9,8 @@ export default function injectL10n(propertyName = 't') {
         translations: PropTypes.shape({}).isRequired,
       };
 
-      translate = key => (key && key.split('.').reduce((a, b) => (typeof a === 'object' && b in a ? a[b] : '_'), this.props.translations));
+      translate = (key, dflt = '_') =>
+        (key && key.split('.').reduce((a, b) => (typeof a === 'object' && b in a ? a[b] : dflt), this.props.translations));
 
       render() {
         return React.createElement(wrappedComponent, { [propertyName]: this.translate, ...this.props });

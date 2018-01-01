@@ -69,7 +69,10 @@
   "main": {
     "clearMap": "Clear map elements",
     "close": "Close",
-    "closeTool": "Close tool"
+    "closeTool": "Close tool",
+    "locateMe": "Locate me",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out"
   },
 
   "gallery": {
@@ -91,7 +94,9 @@
       "addComment": "Add",
       "yourRating": "Your rating:",
       "showOnTheMap": "Show in the map",
-      "openInNewWindow": "Open in new window"
+      "openInNewWindow": "Open in new window",
+      "uploaded": "Uploaded {username} on {createdAt}",
+      "captured": "Captured on {takenAt}"
     }
   },
 
@@ -161,5 +166,12 @@
         "info": "For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations."
       }
     }
+  },
+
+  "changesets": {
+    "allAuthors": "All authors",
+    "download": "Download changes",
+    "olderThan": "return `${days} days`",
+    "olderThanFull": "return `Changesets older than ${days} days`"
   }
 }

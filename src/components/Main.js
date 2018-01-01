@@ -282,20 +282,24 @@ class Main extends React.Component {
               <ButtonGroup>
                 <Button
                   onClick={this.handleZoomInClick}
-                  title="Priblížiť mapu"
+                  title={t('main.zoomIn')}
                   disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
                 >
                   <FontAwesomeIcon icon="plus" />
                 </Button>
                 <Button
                   onClick={this.handleZoomOutClick}
-                  title="Oddialiť mapu"
+                  title={t('main.zoomOut')}
                   disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
                 >
                   <FontAwesomeIcon icon="minus" />
                 </Button>
               </ButtonGroup>
-              <Button onClick={this.props.onLocate} title="Kde som?" active={this.props.locate}>
+              <Button
+                onClick={this.props.onLocate}
+                title={t('main.locateMe')}
+                active={this.props.locate}
+              >
                 <FontAwesomeIcon icon="dot-circle-o" />
               </Button>
             </ButtonToolbar>

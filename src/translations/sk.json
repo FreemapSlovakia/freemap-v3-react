@@ -68,7 +68,10 @@
   "main": {
     "clearMap": "Vyčistiť mapu",
     "close": "Zavrieť",
-    "closeTool": "Zavrieť nástroj"
+    "closeTool": "Zavrieť nástroj",
+    "locateMe": "Kde som?",
+    "zoomIn": "Priblížiť mapu",
+    "zoomOut": "Oddialiť mapu"
   },
 
   "gallery": {
@@ -90,7 +93,9 @@
       "addComment": "Pridaj",
       "yourRating": "Tvoje hodnotenie:",
       "showOnTheMap": "Ukázať na mape",
-      "openInNewWindow": "Otvoriť v novom okne"
+      "openInNewWindow": "Otvoriť v novom okne",
+      "uploaded": "Nahral {username} dňa {createdAt}",
+      "captured": "Odfotené dňa {takenAt}"
     }
   },
 
@@ -160,5 +165,12 @@
         "info": "Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky."
       }
     }
+  },
+
+  "changesets": {
+    "allAuthors": "Všetci autori",
+    "download": "Stiahnuť zmeny",
+    "olderThan": "return `${days} dn${days === 3 ? 'i' : 'í'}`",
+    "olderThanFull": "return `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`"
   }
 }

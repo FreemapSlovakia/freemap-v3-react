@@ -8,6 +8,8 @@ import ReactStars from 'react-stars';
 
 import * as at from 'fm3/actionTypes';
 import * as FmPropTypes from 'fm3/propTypes';
+import { splitByVars } from 'fm3/stringUtils';
+import injectL10n from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import GalleryEditForm from 'fm3/components/GalleryEditForm';
@@ -24,8 +26,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { galleryClear, galleryRequestImage, galleryShowOnTheMap, gallerySetComment, gallerySubmitComment, gallerySubmitStars,
   galleryEditPicture, galleryDeletePicture, gallerySetEditModel, gallerySavePicture, gallerySetItemForPositionPicking } from 'fm3/actions/galleryActions';
-
-import injectL10n from 'fm3/l10nInjector';
 
 import 'fm3/styles/gallery.scss';
 
@@ -252,14 +252,39 @@ class GalleryViewerModal extends React.Component {
             <br />
             {image &&
               <div className="footer">
-                {isFullscreen && imageIds && <span>{`${index + 1} / ${imageIds.length}`} ｜ </span>}
-                {isFullscreen && title && <span>{title} ｜ </span>}
-                Nahral <b>{image.user.name}</b> dňa <b>{dateFormat.format(createdAt)}</b>
-                {takenAt && <span> ｜ Odfotené dňa <b>{dateFormat.format(takenAt)}</b></span>}
+                {isFullscreen && imageIds && <React.Fragment>{`${index + 1} / ${imageIds.length}`} ｜ </React.Fragment>}
+                {isFullscreen && title && <React.Fragment>{title} ｜ </React.Fragment>}
+                {
+                  splitByVars(t('gallery.viewer.uploaded')).map((token, i) => {
+                    switch (token) {
+                      case '{username}':
+                        return <b key={i}>{image.user.name}</b>;
+                      case '{createdAt}':
+                        return <b key={i}>{dateFormat.format(createdAt)}</b>;
+                      default:
+                        return token;
+                    }
+                  })
+                }
+                {takenAt &&
+                  <React.Fragment>
+                    {' ｜ '}
+                    {
+                      splitByVars(t('gallery.viewer.captured')).map((token, i) => {
+                        switch (token) {
+                          case '{takenAt}':
+                            return <b key={i}>{dateFormat.format(takenAt)}</b>;
+                          default:
+                            return token;
+                        }
+                      })
+                    }
+                  </React.Fragment>
+                }
                 {' ｜ '}
                 <ReactStars className="stars" size={22} value={rating} edit={false} />
                 {description && ` ｜ ${description}`}
-                {tags.map(tag => <span key={tag}> <Label>{tag}</Label></span>)}
+                {tags.map(tag => <React.Fragment key={tag}> <Label>{tag}</Label></React.Fragment>)}
                 {!isFullscreen && editModel &&
                   <form onSubmit={this.handleSave}>
                     <hr />
