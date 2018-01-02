@@ -11,7 +11,8 @@
     "yes": "Áno",
     "no": "Nie",
     "masl": "m.n.m.",
-    "copyCode": "Skopírovať kód"
+    "copyCode": "Skopírovať kód",
+    "loading": "Načítavam…"
   },
 
   "tools": {
@@ -236,5 +237,32 @@
   "embed": {
     "code": "Vložte na vašu stránku tento html kód:",
     "example": "Výsledok bude vyzerať následovne:"
+  },
+
+  "tips": {
+    "previous": "Predošlý tip",
+    "next": "Ďalši tip",
+    "prevent": "Nabudúce nezobrazovať"
+  },
+
+  "supportUs": {
+    "explanation": "Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardware a služby komerčných spoločností.",
+    "account": "Bankové spojenie:",
+    "paypal": "Prispieť cez PayPal",
+    "thanks": "Za každý príspevok vám budeme veľmi vďační.",
+    "registration": "Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009"
+  },
+
+  "gpxExport": {
+    "export": "Exportovať",
+    "what": {
+      "plannedRoute": "vyhľadanú trasu",
+      "objects": "miesta",
+      "pictures": "fotografie (vo viditeľnej časti mapy)",
+      "distanceMeasurement": "meranie vzdialenosti",
+      "areaMeasurement": "meranie plochy",
+      "elevationMeasurement": "meranie výšky a polohy",
+      "infoPoint": "bod v mape"
+    }
   }
 }

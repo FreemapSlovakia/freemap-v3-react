@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -9,16 +10,17 @@ import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportGpx } from 'fm3/actions/mainActions';
+import injectL10n from 'fm3/l10nInjector';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
-  { type: 'plannedRoute', icon: 'map-signs', name: 'vyhľadanú trasu' },
-  { type: 'objects', icon: 'map-marker', name: 'miesta' },
-  { type: 'pictures', icon: 'picture-o', name: 'fotografie (vo viditeľnej časti mapy)' },
-  { type: 'distanceMeasurement', icon: 'arrows-h', name: 'meranie vzdialenosti' },
-  { type: 'areaMeasurement', icon: 'square', name: 'meranie plochy' },
-  { type: 'elevationMeasurement', icon: 'long-arrow-up', name: 'meranie výšky a polohy' },
-  { type: 'infoPoint', icon: 'thumb-tack', name: 'bod v mape' },
+  { type: 'plannedRoute', icon: 'map-signs' },
+  { type: 'objects', icon: 'map-marker' },
+  { type: 'pictures', icon: 'picture-o' },
+  { type: 'distanceMeasurement', icon: 'arrows-h' },
+  { type: 'areaMeasurement', icon: 'square' },
+  { type: 'elevationMeasurement', icon: 'long-arrow-up' },
+  { type: 'infoPoint', icon: 'thumb-tack' },
   // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ];
@@ -28,6 +30,7 @@ export class EmbedMapModal extends React.Component {
     exportables: PropTypes.arrayOf(PropTypes.oneOf(exportableDefinitions.map(({ type }) => type)).isRequired).isRequired,
     onExport: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   state = {
@@ -62,36 +65,36 @@ export class EmbedMapModal extends React.Component {
   }
 
   render() {
-    const { onModalClose, exportables } = this.props;
+    const { onModalClose, exportables, t } = this.props;
 
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FontAwesomeIcon icon="share" /> Exportovať do GPX
+            <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {
-            exportableDefinitions.map(({ type, icon, name }) => (
+            exportableDefinitions.map(({ type, icon }) => (
               <Checkbox
                 key={type}
                 checked={this.state.exportables.includes(type)}
                 disabled={!exportables.includes(type)}
                 onChange={() => this.handleCheckboxChange(type)}
               >
-                Exportovať <FontAwesomeIcon icon={icon} /> {name}
+                {t('gpxExport.export')} <FontAwesomeIcon icon={icon} /> {t(`gpxExport.what.${type}`)}
               </Checkbox>
             ))
           }
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.handleExportClick} disabled={!this.state.exportables.length}>
-            <FontAwesomeIcon icon="share" /> Exportovať
+            <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
           </Button>
           {' '}
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -99,50 +102,53 @@ export class EmbedMapModal extends React.Component {
   }
 }
 
-export default connect(
-  (state) => {
-    const exportables = [];
-    if (state.search.selectedResult) {
-      // exportables.push('search');
-    }
-    if (state.routePlanner.alternatives.length) {
-      exportables.push('plannedRoute');
-    }
-    if (state.objects.objects.length) {
-      exportables.push('objects');
-    }
-    if (state.map.overlays.includes('I')) {
-      exportables.push('pictures');
-    }
-    if (state.areaMeasurement.points.length) {
-      exportables.push('areaMeasurement');
-    }
-    if (state.distanceMeasurement.points.length) {
-      exportables.push('distanceMeasurement');
-    }
-    if (state.elevationMeasurement.point) {
-      exportables.push('elevationMeasurement');
-    }
-    if (state.infoPoint.lat && state.infoPoint.lon) {
-      exportables.push('infoPoint');
-    }
-    if (state.changesets.changesets.length) {
-      // exportables.push('changesets');
-    }
-    if (state.mapDetails.trackInfoPoints) {
-      // exportables.push('mapDetails');
-    }
+export default compose(
+  injectL10n(),
+  connect(
+    (state) => {
+      const exportables = [];
+      if (state.search.selectedResult) {
+        // exportables.push('search');
+      }
+      if (state.routePlanner.alternatives.length) {
+        exportables.push('plannedRoute');
+      }
+      if (state.objects.objects.length) {
+        exportables.push('objects');
+      }
+      if (state.map.overlays.includes('I')) {
+        exportables.push('pictures');
+      }
+      if (state.areaMeasurement.points.length) {
+        exportables.push('areaMeasurement');
+      }
+      if (state.distanceMeasurement.points.length) {
+        exportables.push('distanceMeasurement');
+      }
+      if (state.elevationMeasurement.point) {
+        exportables.push('elevationMeasurement');
+      }
+      if (state.infoPoint.lat && state.infoPoint.lon) {
+        exportables.push('infoPoint');
+      }
+      if (state.changesets.changesets.length) {
+        // exportables.push('changesets');
+      }
+      if (state.mapDetails.trackInfoPoints) {
+        // exportables.push('mapDetails');
+      }
 
-    return {
-      exportables,
-    };
-  },
-  dispatch => ({
-    onModalClose() {
-      dispatch(setActiveModal(null));
+      return {
+        exportables,
+      };
     },
-    onExport(exportables) {
-      dispatch(exportGpx(exportables));
-    },
-  }),
+    dispatch => ({
+      onModalClose() {
+        dispatch(setActiveModal(null));
+      },
+      onExport(exportables) {
+        dispatch(exportGpx(exportables));
+      },
+    }),
+  ),
 )(EmbedMapModal);

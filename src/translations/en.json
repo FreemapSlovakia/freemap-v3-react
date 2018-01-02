@@ -11,7 +11,8 @@
     "yes": "Yes",
     "no": "No",
     "masl": "m.a.s.l.",
-    "copyCode": "Copy code"
+    "copyCode": "Copy code",
+    "loading": "Loading…"
   },
 
   "tools": {
@@ -237,5 +238,32 @@
   "embed": {
     "code": "Put the following code to tour HTML page:",
     "example": "The result will look like this:"
+  },
+
+  "tips": {
+    "previous": "Previous tip",
+    "next": "Next tip",
+    "prevent": "Don't show next time"
+  },
+
+  "supportUs": {
+    "explanation": "Map portal Freemap is created by volunteers for free in their spare time. For the operation it still needs a hardware and services of commercial comapnies which costs us money.",
+    "account": "Bank account:",
+    "paypal": "Donate with PayPal",
+    "thanks": "We'll appreciate every donation. Thank you!",
+    "registration": "Registered in MV/VVS/1-900/90-34343 at 2th of October 2009"
+  },
+
+  "gpxExport": {
+    "export": "Export",
+    "what": {
+      "plannedRoute": "route found",
+      "objects": "objects (POIs)",
+      "pictures": "photos (in the visible map area)",
+      "distanceMeasurement": "distance measurement",
+      "areaMeasurement": "area measutement",
+      "elevationMeasurement": "elevation and position measurement",
+      "infoPoint": "infopoint"
+    }
   }
 }

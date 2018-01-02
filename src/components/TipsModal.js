@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -14,6 +15,7 @@ import tips from 'fm3/tips/index.json';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsNext, tipsPrevious, tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import injectL10n from 'fm3/l10nInjector';
 
 export class TipsModal extends React.Component {
   static propTypes = {
@@ -23,6 +25,7 @@ export class TipsModal extends React.Component {
     onNext: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
     onNextTimePrevent: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   state = {
@@ -76,7 +79,7 @@ export class TipsModal extends React.Component {
   }
 
   render() {
-    const { onPrevious, onNext, onModalClose, tip: tipKey } = this.props;
+    const { onPrevious, onNext, onModalClose, tip: tipKey, t } = this.props;
     const { tip, loading } = this.state;
 
     let title;
@@ -90,8 +93,9 @@ export class TipsModal extends React.Component {
         <Modal.Header closeButton>
           <Modal.Title>
             <FontAwesomeIcon icon="lightbulb-o" />
-            {'Tipy\u00A0 | \u00A0'}
-            {tipKey ? <React.Fragment><FontAwesomeIcon icon={icon} /> {title}</React.Fragment> : 'Načítavam…'}
+            {t('more.tips')}
+            {'\u00A0 | \u00A0'}
+            {tipKey ? <React.Fragment><FontAwesomeIcon icon={icon} /> {title}</React.Fragment> : t('general.loading')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -102,22 +106,22 @@ export class TipsModal extends React.Component {
                 // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{ __html: tip }}
               />
-              : 'Načítavam…'
+              : t('general.loading')
           }
         </Modal.Body>
         <Modal.Footer>
           <FormGroup>
             <Button onClick={onPrevious}>
-              <Glyphicon glyph="chevron-left" /> Predošlý tip
+              <Glyphicon glyph="chevron-left" /> {t('tips.previous')}
             </Button>
             <Button onClick={onNext}>
-              <Glyphicon glyph="chevron-right" /> Ďalši tip
+              <Glyphicon glyph="chevron-right" /> {t('tips.next')}
             </Button>
             {' '}
-            <Checkbox inline onChange={this.handleNextTimePrevent}>Nabudúce nezobrazovať</Checkbox>
+            <Checkbox inline onChange={this.handleNextTimePrevent}>{t('tips.prevent')}</Checkbox>
             {' '}
             <Button onClick={onModalClose}>
-              <Glyphicon glyph="remove" /> Zavrieť
+              <Glyphicon glyph="remove" /> {t('general.close')}
             </Button>
           </FormGroup>
         </Modal.Footer>
@@ -126,22 +130,25 @@ export class TipsModal extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    tip: state.tips.tip,
-  }),
-  dispatch => ({
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-    onPrevious() {
-      dispatch(tipsPrevious());
-    },
-    onNext() {
-      dispatch(tipsNext());
-    },
-    onNextTimePrevent(prevent) {
-      dispatch(tipsPreventNextTime(prevent));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      tip: state.tips.tip,
+    }),
+    dispatch => ({
+      onModalClose() {
+        dispatch(setActiveModal(null));
+      },
+      onPrevious() {
+        dispatch(tipsPrevious());
+      },
+      onNext() {
+        dispatch(tipsNext());
+      },
+      onNextTimePrevent(prevent) {
+        dispatch(tipsPreventNextTime(prevent));
+      },
+    }),
+  ),
 )(TipsModal);
