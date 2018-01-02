@@ -240,7 +240,7 @@ function x(state) {
   const { trackGeojson } = state.trackViewer;
   if (trackGeojson && trackGeojson.features) {
     const firstGeojsonFeature = trackGeojson.features[0];
-    return firstGeojsonFeature && ['LineString', 'MultiLineString'].includes(firstGeojsonFeature.geometry.type);
+    return firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString';
   }
 
   return false;
