@@ -322,7 +322,7 @@ export default compose(
       onRemoveMidpoint(position) {
         dispatch(toastsAdd({
           collapseKey: 'routePlanner.removeMidpoint',
-          message: 'Odstrániť zastávku?',
+          messageKey: 'routePlanner.removeMidpoint',
           style: 'warning',
           actions: [
             { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },

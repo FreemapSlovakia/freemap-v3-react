@@ -1,4 +1,3 @@
-import React from 'react';
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
@@ -100,8 +99,8 @@ export default createLogic({
 
           if (showHint) {
             dispatch(toastsAdd({
-              collapseKey: 'routePlanner.showHint',
-              message: <span>Pre pridanie medzizastávky potiahnite úsek cesty na zvolené miesto.</span>,
+              collapseKey: 'routePlanner.showMidpointHint',
+              messageKey: 'routePlanner.showMidpointHint',
               style: 'info',
               actions: [
                 { name: 'OK' },
@@ -140,7 +139,8 @@ export default createLogic({
         } else {
           dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
           dispatch(toastsAdd({
-            message: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť štart alebo cieľ.',
+            collapseKey: 'routePlanner.routeNotFound',
+            messageKey: 'routePlanner.routeNotFound',
             style: 'warning',
             timeout: 5000,
           }));

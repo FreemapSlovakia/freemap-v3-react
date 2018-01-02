@@ -302,15 +302,15 @@ export default compose(
       onGetCurrentPositionError() {
         dispatch(toastsAdd({
           collapseKey: 'routePlanner.gpsError',
-          message: 'Nepodarilo sa získať aktuálnu polohu.',
+          messageKey: 'routePlanner.gpsError',
           style: 'danger',
           timeout: 5000,
         }));
       },
       onMissingHomeLocation() {
         dispatch(toastsAdd({
-          collapseKey: 'routePlanner.noHome',
-          message: 'Najprv si musíte nastaviť domovskú polohu.',
+          collapseKey: 'routePlanner.noHomeAlert',
+          messageKey: 'routePlanner.noHomeAlert',
           style: 'warning',
           actions: [
             { name: 'Nastav', action: setActiveModal('settings') },

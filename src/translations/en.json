@@ -47,7 +47,12 @@
     },
     "alternative": "Alternatíva",
     "distance": "Distance: {value} km",
-    "duration": "Duration: {h} h {m} m"
+    "duration": "Duration: {h} h {m} m",
+    "removeMidpoint": "Remove this midpoint?",
+    "noHomeAlert": "You must first set your home position in settings.",
+    "showMidpointHint": "To add a midpoint drag route segment to the desired position.",
+    "gpsError": "Error getting your current location.",
+    "routeNotFound": "No route found. Try to change parameters or move the route points."
   },
 
   "more": {
@@ -193,22 +198,26 @@
         "label": "Smoothing level for computing total climb/descend in Track viewer: {value}",
         "info": "For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations."
       }
-    }
+    },
+    "saveSuccess": "Settings have been saved."
   },
 
   "changesets": {
     "allAuthors": "All authors",
     "download": "Download changes",
     "olderThan": "return `${days} days`",
-    "olderThanFull": "return `Changesets older than ${days} days`"
+    "olderThanFull": "return `Changesets older than ${days} days`",
+    "notFound": "No changesets found."
   },
 
   "mapDetails": {
-    "road": "Road info"
+    "road": "Road info",
+    "notFound": "No road found."
   },
 
   "objects": {
-    "type": "Type"
+    "type": "Type",
+    "lowZoomAlert": "Object finding is possible only from zoom level 12."
   },
 
   "external": {
@@ -265,5 +274,18 @@
       "elevationMeasurement": "elevation and position measurement",
       "infoPoint": "infopoint"
     }
+  },
+
+  "logIn": {
+    "with": {
+      "facebook": "Log-in with Facebook",
+      "google": "Log-in with Google",
+      "osm": "Log-in with OpenStreetMap"
+    },
+    "success": "You have been successfuly logged in."
+  },
+
+  "logOut": {
+    "success": "You have been successfuly logged out."
   }
 }

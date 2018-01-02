@@ -1,5 +1,4 @@
 import axios from 'axios';
-import React from 'react';
 import { createLogic } from 'redux-logic';
 
 import * as at from 'fm3/actionTypes';
@@ -17,7 +16,7 @@ export default createLogic({
       if (getState().gallery.items.length === 0) {
         dispatch(toastsAdd({
           collapseKey: 'gallery.upload',
-          message: <span>Fotografie boli úspešne nahrané.</span>,
+          message: 'Fotografie boli úspešne nahrané.',
           timeout: 5000,
           style: 'info',
         }));

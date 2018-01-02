@@ -55,7 +55,7 @@ function setupOsmLoginStep2Listener(store) {
 
         store.dispatch(toastsAdd({
           collapseKey: 'login',
-          message: 'Boli ste úspešne prihlásený.',
+          messageKey: 'logIn.success',
           style: 'info',
           timeout: 5000,
         }));

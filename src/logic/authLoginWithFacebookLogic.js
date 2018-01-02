@@ -37,7 +37,7 @@ export default createLogic({
         .then(({ data }) => {
           dispatch(toastsAdd({
             collapseKey: 'login',
-            message: 'Boli ste úspešne prihlásený.',
+            messageKey: 'logIn.success',
             style: 'info',
             timeout: 5000,
           }));

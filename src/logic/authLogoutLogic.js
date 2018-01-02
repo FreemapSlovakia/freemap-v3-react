@@ -23,7 +23,7 @@ export default createLogic({
         dispatch(authLogout());
         dispatch(toastsAdd({
           collapseKey: 'login',
-          message: 'Boli ste úspešne odhlásený.',
+          messageKey: 'logOut.success',
           style: 'info',
           timeout: 5000,
         }));

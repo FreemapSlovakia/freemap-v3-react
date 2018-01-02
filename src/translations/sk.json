@@ -47,7 +47,12 @@
     },
     "alternative": "Alternatíva",
     "distance": "Vzdialenosť: {value} km",
-    "duration": "Čas: {h} h {m} m"
+    "duration": "Čas: {h} h {m} m",
+    "removeMidpoint": "Odstrániť zastávku?",
+    "noHomeAlert": "Najprv si musíte nastaviť domovskú polohu.",
+    "showMidpointHint": "Pre pridanie medzizastávky potiahnite úsek cesty na zvolené miesto.",
+    "gpsError": "Nepodarilo sa získať aktuálnu polohu.",
+    "routeNotFound": "Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy."
   },
 
   "more": {
@@ -192,22 +197,26 @@
         "label": "Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}",
         "info": "Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky."
       }
-    }
+    },
+    "saveSuccess": "Zmeny boli uložené."
   },
 
   "changesets": {
     "allAuthors": "Všetci autori",
     "download": "Stiahnuť zmeny",
     "olderThan": "return `${days} dn${days === 3 ? 'i' : 'í'}`",
-    "olderThanFull": "return `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`"
+    "olderThanFull": "return `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`",
+    "notFound": "Neboli nájdené žiadne zmeny."
   },
 
   "mapDetails": {
-    "road": "Info o ceste"
+    "road": "Info o ceste",
+    "notFound": "Nebola nájdená žiadna cesta."
   },
 
   "objects": {
-    "type": "Typ"
+    "type": "Typ",
+    "lowZoomAlert": "Vyhľadávanie miest je možné až od priblíženia úrovne 12."
   },
 
   "external": {
@@ -264,5 +273,18 @@
       "elevationMeasurement": "meranie výšky a polohy",
       "infoPoint": "bod v mape"
     }
+  },
+
+  "logIn": {
+    "with": {
+      "facebook": "Prihlásiť sa pomocou Facebooku",
+      "google": "Prihlásiť sa pomocou Googlu",
+      "osm": "Prihlásiť sa pomocou OpenStreetMap"
+    },
+    "success": "Boli ste úspešne prihlásený."
+  },
+
+  "logOut": {
+    "success": "Boli ste úspešne odhlásený."
   }
 }

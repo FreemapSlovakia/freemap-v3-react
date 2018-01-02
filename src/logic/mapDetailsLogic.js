@@ -49,7 +49,7 @@ export default createLogic({
           } else {
             dispatch(toastsAdd({
               collapseKey: 'mapDetails.trackInfo.detail',
-              message: 'Nebola nájdená žiadna cesta',
+              messageKey: 'mapDetails.notFound',
               cancelType: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
               timeout: 5000,
               style: 'info',

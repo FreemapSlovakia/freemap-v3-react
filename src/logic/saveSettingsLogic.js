@@ -26,7 +26,7 @@ export const saveSettingsLogic = createLogic({
       dispatch(tipsPreventNextTime(preventTips));
       dispatch(toastsAdd({
         collapseKey: 'settings.saved',
-        message: 'Zmeny boli uložené.',
+        messageKey: 'settings.saveSuccess',
         style: 'info',
         timeout: 5000,
       }));

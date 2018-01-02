@@ -86,7 +86,7 @@ export const changesetsLogic = createLogic({
           } else if (allChangesetsSoFar.length === 0) {
             dispatch(toastsAdd({
               collapseKey: 'changeset.detail',
-              message: 'Neboli nájdené žiadne zmeny',
+              messageKey: 'changesets.notFound',
               cancelType: [at.SET_TOOL, at.CHANGESETS_SET_AUTHOR_NAME],
               timeout: 5000,
               style: 'info',
