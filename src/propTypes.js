@@ -97,3 +97,16 @@ export const toastDef = {
 };
 
 export const toast = PropTypes.shape(toastDef);
+
+export const startPoint = PropTypes.shape({
+  lat: PropTypes.number.isRequired,
+  lon: PropTypes.number.isRequired,
+  startTime: PropTypes.string,
+});
+
+export const finishPoint = PropTypes.shape({
+  lat: PropTypes.number.isRequired,
+  lon: PropTypes.number.isRequired,
+  lengthInKm: PropTypes.number.isRequired,
+  finishTime: PropTypes.string,
+});

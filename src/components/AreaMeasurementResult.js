@@ -158,7 +158,7 @@ class AreaMeasurementResult extends React.Component {
           />
         }
 
-        {ps.length && this.state.lat &&
+        {!!(ps.length && this.state.lat) &&
           <Polyline
             weight={4}
             interactive={false}

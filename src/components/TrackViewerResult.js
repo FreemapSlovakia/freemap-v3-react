@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import * as FmPropTypes from 'fm3/propTypes';
 import { connect } from 'react-redux';
 import { Tooltip, Polyline } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
@@ -18,17 +19,8 @@ class TrackViewerResult extends React.Component {
     trackGeojson: PropTypes.shape({
       features: PropTypes.array,
     }),
-    startPoints: PropTypes.arrayOf(PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-      startTime: PropTypes.string,
-    })).isRequired,
-    finishPoints: PropTypes.arrayOf(PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-      lengthInKm: PropTypes.number.isRequired,
-      finishTime: PropTypes.string,
-    })).isRequired,
+    startPoints: PropTypes.arrayOf(FmPropTypes.startPoint.isRequired).isRequired,
+    finishPoints: PropTypes.arrayOf(FmPropTypes.finishPoint.isRequired).isRequired,
     displayingElevationChart: PropTypes.bool,
     colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
     eleSmoothingFactor: PropTypes.number.isRequired,

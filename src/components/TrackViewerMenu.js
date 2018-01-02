@@ -111,12 +111,12 @@ class TrackViewerMenu extends React.Component {
         </Button>
         {' '}
         <DropdownButton
+          id="colorizing_mode"
           title={
             <React.Fragment>
               <FontAwesomeIcon icon="paint-brush" /> {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
             </React.Fragment>
           }
-          id="colorizing_mode"
         >
           {
             colorizingModes.map(mode => (
@@ -148,16 +148,16 @@ class TrackViewerMenu extends React.Component {
         {activeModal === 'upload-track' && // TODO move to separate component
           <Modal show onHide={onModalClose}>
             <Modal.Header closeButton>
-              <Modal.Title>Nahrať trasu</Modal.Title>
+              <Modal.Title>{t('trackViewer.uploadModal.title')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
               <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone" disablePreview>
-                Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.
+                {t('trackViewer.uploadModal.drop')}
               </Dropzone>
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={onModalClose}>
-                <Glyphicon glyph="remove" /> Zrušiť
+                <Glyphicon glyph="remove" /> {t('general.cancel')}
               </Button>
             </Modal.Footer>
           </Modal>
@@ -165,17 +165,17 @@ class TrackViewerMenu extends React.Component {
         {activeModal === 'track-viewer-share' && // TODO move to separate component
           <Modal show onHide={onModalClose}>
             <Modal.Header closeButton>
-              <Modal.Title>Zdieľať trasu</Modal.Title>
+              <Modal.Title>{t('trackViewer.shareModal.title')}</Modal.Title>
             </Modal.Header>
             <Modal.Body>
-              <p>Trasa je dostupná na následovnej adrese:</p>
+              <p>{t('trackViewer.shareModal.description')}</p>
               <Alert>
                 <a href={shareURL}>{shareURL}</a>
               </Alert>
             </Modal.Body>
             <Modal.Footer>
               <Button onClick={onModalClose}>
-                <Glyphicon glyph="remove" /> Zavrieť
+                <Glyphicon glyph="remove" /> {t('general.close')}
               </Button>
             </Modal.Footer>
           </Modal>

@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -10,10 +11,12 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
+import injectL10n from 'fm3/l10nInjector';
 
 export class EmbedMapModal extends React.Component {
   static propTypes = {
     onModalClose: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   setFormControl = (textarea) => {
@@ -29,18 +32,20 @@ export class EmbedMapModal extends React.Component {
   }
 
   render() {
-    const { onModalClose } = this.props;
+    const { onModalClose, t } = this.props;
     const shareURL = window.location.href.replace(/&show=[^&]*/, '');
 
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FontAwesomeIcon icon="code" /> Vložit do webstránky
+            <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>Vložte na vašu stránku tento html kód:</p>
+          <p>
+            {t('embed.code')}
+          </p>
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
@@ -48,7 +53,10 @@ export class EmbedMapModal extends React.Component {
             readOnly
             rows={6}
           />
-          <p>Výsledok bude vyzerať následovne:</p>
+          <br />
+          <p>
+            {t('embed.example')}
+          </p>
           <iframe
             title="Freemap.sk"
             style={{ width: '100%', height: '300px', border: '0' }}
@@ -57,11 +65,11 @@ export class EmbedMapModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.handleCopyClick}>
-            <Glyphicon glyph="copy" /> Skopírovať kód
+            <Glyphicon glyph="copy" /> {t('general.copyCode')}
           </Button>
           {' '}
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -69,11 +77,14 @@ export class EmbedMapModal extends React.Component {
   }
 }
 
-export default connect(
-  null,
-  dispatch => ({
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    null,
+    dispatch => ({
+      onModalClose() {
+        dispatch(setActiveModal(null));
+      },
+    }),
+  ),
 )(EmbedMapModal);

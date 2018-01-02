@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -10,10 +11,12 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
+import injectL10n from 'fm3/l10nInjector';
 
 export class ShareMapModal extends React.Component {
   static propTypes = {
     onModalClose: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   };
 
   setFormControl = (textarea) => {
@@ -29,17 +32,17 @@ export class ShareMapModal extends React.Component {
   }
 
   render() {
-    const { onModalClose } = this.props;
+    const { onModalClose, t } = this.props;
     return (
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FontAwesomeIcon icon="share-alt" /> Zdieľať odkaz na mapu
+            <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <p>
-            Zvolený pohľad na mapu je dostupný na tejto adrese:
+            {t('shareMap.label')}
           </p>
           <FormControl
             inputRef={this.setFormControl}
@@ -51,11 +54,11 @@ export class ShareMapModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.handleCopyClick}>
-            <Glyphicon glyph="copy" /> Skopírovať kód
+            <Glyphicon glyph="copy" /> {t('general.copyCode')}
           </Button>
           {' '}
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -63,11 +66,14 @@ export class ShareMapModal extends React.Component {
   }
 }
 
-export default connect(
-  null,
-  dispatch => ({
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    null,
+    dispatch => ({
+      onModalClose() {
+        dispatch(setActiveModal(null));
+      },
+    }),
+  ),
 )(ShareMapModal);

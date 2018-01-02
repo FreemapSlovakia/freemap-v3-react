@@ -10,7 +10,8 @@
     "fullscreen": "Fullscreen",
     "yes": "Yes",
     "no": "No",
-    "masl": "m.a.s.l."
+    "masl": "m.a.s.l.",
+    "copyCode": "Copy code"
   },
 
   "tools": {
@@ -121,6 +122,26 @@
       "none": "Inactive",
       "elevation": "Elevation",
       "steepness": "Steepness"
+    },
+    "details": {
+      "startTime": "Start time",
+      "finishTime": "Finish time",
+      "duration": "Duration",
+      "distance": "Distance",
+      "avgSpeed": "Average speed",
+      "minEle": "Min. elevation",
+      "maxEle": "Max. elevation",
+      "uphill": "Total climb",
+      "downhill": "Total descend",
+      "durationValue": "{h} hours {m} minutes"
+    },
+    "uploadModal": {
+      "title": "Upload the track",
+      "drop": "Drop your .gpx file here or click here to select it."
+    },
+    "shareModal": {
+      "title": "Share the track",
+      "description": "Track is available at the following address:"
     }
   },
 
@@ -207,5 +228,14 @@
     "prompt": "Enter the place",
     "routeFrom": "Route from here",
     "routeTo": "Route to here"
+  },
+
+  "shareMap": {
+    "label": "Current map view is available at the following URL:"
+  },
+
+  "embed": {
+    "code": "Put the following code to tour HTML page:",
+    "example": "The result will look like this:"
   }
 }

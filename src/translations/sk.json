@@ -10,7 +10,8 @@
     "fullscreen": "Na celú obrazovku",
     "yes": "Áno",
     "no": "Nie",
-    "masl": "m.n.m."
+    "masl": "m.n.m.",
+    "copyCode": "Skopírovať kód"
   },
 
   "tools": {
@@ -120,6 +121,26 @@
       "none": "Neaktívne",
       "elevation": "Nadmorská výška",
       "steepness": "Sklon"
+    },
+    "details": {
+      "startTime": "Čas štartu",
+      "finishTime": "Čas v cieli",
+      "duration": "Trvanie",
+      "distance": "Vzdialenosť",
+      "avgSpeed": "Priemerná rýchlosť",
+      "minEle": "Najnižší bod",
+      "maxEle": "Najvyšší bod",
+      "uphill": "Celkové stúpanie",
+      "downhill": "Celkové klesanie",
+      "durationValue": "{h} hodín {m} minút"
+    },
+    "uploadModal": {
+      "title": "Nahrať trasu",
+      "drop": "Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber."
+    },
+    "shareModal": {
+      "title": "Zdieľať trasu",
+      "description": "Trasa je dostupná na následovnej adrese:"
     }
   },
 
@@ -206,5 +227,14 @@
     "prompt": "Zadajte lokalitu",
     "routeFrom": "Navigovať odtiaľto",
     "routeTo": "Navigovať sem"
+  },
+
+  "shareMap": {
+    "label": "Zvolený pohľad na mapu je dostupný na tejto adrese:"
+  },
+
+  "embed": {
+    "code": "Vložte na vašu stránku tento html kód:",
+    "example": "Výsledok bude vyzerať následovne:"
   }
 }

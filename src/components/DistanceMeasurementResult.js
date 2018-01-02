@@ -109,7 +109,7 @@ class DistanceMeasurementResult extends React.Component {
             positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
           />
         }
-        {ps.length && this.state.lat &&
+        {!!(ps.length && this.state.lat) &&
           <Polyline
             weight={4}
             interactive={false}
