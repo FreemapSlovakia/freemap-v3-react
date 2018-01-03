@@ -1,5 +1,5 @@
 const OSM_MAP_ATTR = {
-  type: 'data',
+  type: 'map',
   name: '© OpenStreetMap',
   url: 'https://osm.org/',
 };
