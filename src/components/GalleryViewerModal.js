@@ -284,6 +284,7 @@ class GalleryViewerModal extends React.Component {
                 {' ｜ '}
                 <ReactStars className="stars" size={22} value={rating} edit={false} />
                 {description && ` ｜ ${description}`}
+                {tags.length && ' ｜ '}
                 {tags.map(tag => <React.Fragment key={tag}> <Label>{tag}</Label></React.Fragment>)}
                 {!isFullscreen && editModel &&
                   <form onSubmit={this.handleSave}>
