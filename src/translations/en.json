@@ -5,6 +5,7 @@
     "cancel": "Cancel",
     "modify": "Modify",
     "delete": "Delete",
+    "remove": "Remove",
     "close": "Close",
     "exitFullscreen": "Exit fullscreen mode",
     "fullscreen": "Fullscreen",
@@ -12,7 +13,10 @@
     "no": "No",
     "masl": "m.a.s.l.",
     "copyCode": "Copy code",
-    "loading": "Loading…"
+    "loading": "Loading…",
+    "ok": "OK",
+    "preventShowingAgain": "Don't show next time",
+    "closeWithoutSaving": "Close the window with unsaved changes?"
   },
 
   "tools": {

@@ -5,6 +5,7 @@
     "cancel": "Zrušiť",
     "modify": "Upraviť",
     "delete": "Zmazať",
+    "remove": "Odstrániť",
     "close": "Zavrieť",
     "exitFullscreen": "Zrušiť zobrazenie na celú obrazovku",
     "fullscreen": "Na celú obrazovku",
@@ -12,7 +13,10 @@
     "no": "Nie",
     "masl": "m.n.m.",
     "copyCode": "Skopírovať kód",
-    "loading": "Načítavam…"
+    "loading": "Načítavam…",
+    "ok": "OK",
+    "preventShowingAgain": "Už viac nezobrazovať",
+    "closeWithoutSaving": "Zavrieť okno bez uloženia zmien?"
   },
 
   "tools": {

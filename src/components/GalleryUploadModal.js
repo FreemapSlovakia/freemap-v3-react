@@ -1,6 +1,7 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import PropTypes from 'prop-types';
 import each from 'async/each';
 
@@ -17,6 +18,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import injectL10n from 'fm3/l10nInjector';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
@@ -45,6 +47,7 @@ class GalleryUploadModal extends React.Component {
     visible: PropTypes.bool,
     onUpload: PropTypes.func.isRequired,
     uploading: PropTypes.bool,
+    t: PropTypes.func.isRequired,
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
@@ -175,7 +178,7 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onPositionPick, visible, onUpload, uploading, allTags } = this.props;
+    const { items, onPositionPick, visible, onUpload, uploading, allTags, t } = this.props;
 
     return (
       <Modal show={visible} onHide={this.handleClose}>
@@ -188,6 +191,7 @@ class GalleryUploadModal extends React.Component {
               <GalleryUploadItem
                 key={id}
                 id={id}
+                t={t}
                 filename={file.name}
                 url={url}
                 model={{ position, title, description, takenAt, tags }}
@@ -226,7 +230,7 @@ class GalleryUploadModal extends React.Component {
             {uploading ? ` Nahrávam (${items.length})` : ' Nahrať' }
           </Button>
           <Button onClick={this.handleClose} bsStyle="danger">
-            <Glyphicon glyph="remove" /> Zrušiť
+            <Glyphicon glyph="remove" /> {t('general.cancel')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -240,43 +244,46 @@ function adaptGpsCoordinate({ description }) {
   return m ? parseInt(m[1], 10) + parseFloat(m[2]) / 60 : description;
 }
 
-export default connect(
-  state => ({
-    items: state.gallery.items,
-    visible: state.gallery.pickingPositionForId === null,
-    uploading: !!state.gallery.uploadingId,
-    allTags: state.gallery.tags,
-  }),
-  dispatch => ({
-    onItemAdd(item) {
-      dispatch(galleryAddItem(item));
-    },
-    onItemRemove(id) {
-      dispatch(galleryRemoveItem(id));
-    },
-    onUpload() {
-      dispatch(galleryUpload());
-    },
-    onClose(ask) {
-      if (ask) {
-        dispatch(toastsAdd({
-          collapseKey: 'galleryUploadModal.close',
-          message: 'Zavrieť dialógové okno bez uloženia zmien?',
-          style: 'warning',
-          actions: [
-            { name: 'Áno', action: galleryHideUploadModal(), style: 'danger' },
-            { name: 'Nie' },
-          ],
-        }));
-      } else {
-        dispatch(galleryHideUploadModal());
-      }
-    },
-    onPositionPick(id) {
-      dispatch(gallerySetItemForPositionPicking(id));
-    },
-    onItemChange(id, item) {
-      dispatch(gallerySetItem(id, item));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      items: state.gallery.items,
+      visible: state.gallery.pickingPositionForId === null,
+      uploading: !!state.gallery.uploadingId,
+      allTags: state.gallery.tags,
+    }),
+    dispatch => ({
+      onItemAdd(item) {
+        dispatch(galleryAddItem(item));
+      },
+      onItemRemove(id) {
+        dispatch(galleryRemoveItem(id));
+      },
+      onUpload() {
+        dispatch(galleryUpload());
+      },
+      onClose(ask) {
+        if (ask) {
+          dispatch(toastsAdd({
+            collapseKey: 'galleryUploadModal.close',
+            messageKey: 'general.closeWithoutSaving',
+            style: 'warning',
+            actions: [
+              { nameKey: 'general.yes', action: galleryHideUploadModal(), style: 'danger' },
+              { nameKey: 'general.no' },
+            ],
+          }));
+        } else {
+          dispatch(galleryHideUploadModal());
+        }
+      },
+      onPositionPick(id) {
+        dispatch(gallerySetItemForPositionPicking(id));
+      },
+      onItemChange(id, item) {
+        dispatch(gallerySetItem(id, item));
+      },
+    }),
+  ),
 )(GalleryUploadModal);

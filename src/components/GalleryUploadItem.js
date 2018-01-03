@@ -8,7 +8,6 @@ import Thumbnail from 'react-bootstrap/lib/Thumbnail';
 import * as FmPropTypes from 'fm3/propTypes';
 import GalleryEditForm from 'fm3/components/GalleryEditForm';
 
-
 export default class GalleryUploadItem extends React.Component {
   static propTypes = {
     id: PropTypes.number.isRequired,
@@ -21,6 +20,7 @@ export default class GalleryUploadItem extends React.Component {
     onPositionPick: PropTypes.func.isRequired,
     onModelChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
+    t: PropTypes.func.isRequired,
   }
 
   handleRemove = () => {
@@ -36,9 +36,7 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const {
-      id, filename, url, disabled, model, allTags, error,
-    } = this.props;
+    const { id, filename, url, disabled, model, allTags, error, t } = this.props;
     return (
       <Thumbnail key={id} src={url || require('fm3/images/spinnerbar.gif')} alt={filename}>
         <fieldset disabled={disabled}>
@@ -49,7 +47,7 @@ export default class GalleryUploadItem extends React.Component {
           />
           {' '}
           <Button onClick={this.handleRemove} bsStyle="danger">
-            <FontAwesomeIcon icon="times" /> Odstrániť
+            <FontAwesomeIcon icon="times" /> {t('general.remove')}
           </Button>
         </fieldset>
       </Thumbnail>

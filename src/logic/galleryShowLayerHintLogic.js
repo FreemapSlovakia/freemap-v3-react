@@ -24,8 +24,8 @@ export default createLogic({
         ),
         style: 'info',
         actions: [
-          { name: 'OK' },
-          { name: 'Už viac nezobrazovať', action: galleryLayerHint() },
+          { nameKey: 'general.ok' },
+          { nameKey: 'general.preventShowingAgain', action: galleryLayerHint() },
         ],
       }));
     }
