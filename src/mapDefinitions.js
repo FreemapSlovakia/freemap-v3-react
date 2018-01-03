@@ -32,6 +32,12 @@ const NLC_ATTR = {
   url: 'http://www.nlcsk.org/',
 };
 
+const INFOMAPA_ATTR = {
+  type: 'map',
+  name: '© infomapa.sk',
+  url: 'http://www.infomapa.sk/',
+};
+
 export const baseLayers = [
   ...[
     ['A', 'car'],
@@ -162,11 +168,7 @@ export const baseLayers = [
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
     attribution: [
-      {
-        type: 'map',
-        name: '© infomapa.sk',
-        url: 'http://www.infomapa.sk/',
-      },
+      INFOMAPA_ATTR,
       OSM_DATA_ATTR,
     ],
     key: 'i',
@@ -179,11 +181,7 @@ export const baseLayers = [
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
     attribution: [
-      {
-        type: 'map',
-        name: '© infomapa.sk',
-        url: 'http://www.infomapa.sk/',
-      },
+      INFOMAPA_ATTR,
       OSM_DATA_ATTR,
     ],
     key: 'j',
