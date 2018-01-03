@@ -32,6 +32,7 @@ class MoreMenuButton extends React.Component {
     onTip: PropTypes.func.isRequired,
     onLanguageChange: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
+    chosenLanguage: PropTypes.string,
   };
 
   state = {
@@ -100,6 +101,11 @@ class MoreMenuButton extends React.Component {
     this.props.onLegend();
   }
 
+  handleAutoLanguageClick = () => {
+    this.close();
+    this.props.onLanguageChange(null);
+  }
+
   handleEnglishClick = () => {
     this.close();
     this.props.onLanguageChange('en');
@@ -135,7 +141,7 @@ class MoreMenuButton extends React.Component {
   }
 
   render() {
-    const { user, t } = this.props;
+    const { user, t, chosenLanguage } = this.props;
     const { submenu } = this.state;
 
     return (
@@ -235,10 +241,13 @@ class MoreMenuButton extends React.Component {
                       <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
                     </MenuItem>
                     <MenuItem divider />
-                    <MenuItem onClick={this.handleEnglishClick}>
+                    <MenuItem onClick={this.handleAutoLanguageClick} active={chosenLanguage === null}>
+                      {t('more.automaticLanguage')}
+                    </MenuItem>
+                    <MenuItem onClick={this.handleEnglishClick} active={chosenLanguage === 'en'}>
                       English
                     </MenuItem>
-                    <MenuItem onClick={this.handleSlovakClick}>
+                    <MenuItem onClick={this.handleSlovakClick} active={chosenLanguage === 'sk'}>
                       Slovensky
                     </MenuItem>
                   </React.Fragment>
@@ -293,6 +302,7 @@ export default compose(
   connect(
     state => ({
       user: state.auth.user,
+      chosenLanguage: state.l10n.chosenLanguage,
     }),
     dispatch => ({
       onSettingsShow() {

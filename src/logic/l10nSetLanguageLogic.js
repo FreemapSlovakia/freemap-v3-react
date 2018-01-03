@@ -10,9 +10,12 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
+    const { chosenLanguage } = getState().l10n;
+    const language = chosenLanguage || navigator.languages.map(lang => lang.split('-')[0]).find(lang => ['en', 'sk'].includes(lang)) || 'en';
+
     // TODO handle error
-    import(`fm3/translations/${getState().l10n.language}.json`).then((translations) => {
-      dispatch(l10nSetTranslations(translations));
+    import(`fm3/translations/${language}.json`).then((translations) => {
+      dispatch(l10nSetTranslations(language, translations));
       dispatch(stopProgress(pid));
       done();
     });

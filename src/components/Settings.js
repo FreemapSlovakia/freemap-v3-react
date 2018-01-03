@@ -248,18 +248,18 @@ class Settings extends React.Component {
                           <React.Fragment>
                             <FontAwesomeIcon icon={selectedOverlayDetails.icon} />
                             {' '}
-                            {selectedOverlayDetails.name}
+                            {t(`mapLayers.overlay.${selectedOverlayDetails.type}`)}
                             {' '}
                             {nf0.format((overlayOpacity[selectedOverlay] || 1) * 100)} %
                           </React.Fragment>
                         }
                       >
                         {
-                          overlayLayers.map(({ name: overlayName, type, icon }) => (
+                          overlayLayers.map(({ type, icon }) => (
                             <MenuItem key={type} eventKey={type}>
                               {icon && <FontAwesomeIcon icon={icon} />}
                               {' '}
-                              {overlayName}
+                              {t(`mapLayers.overlay.${type}`)}
                               {' '}
                               {nf0.format((overlayOpacity[type] || 1) * 100)} %
                             </MenuItem>

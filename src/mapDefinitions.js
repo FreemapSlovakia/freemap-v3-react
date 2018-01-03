@@ -1,11 +1,10 @@
 export const baseLayers = [
   ...[
-    ['A', 'Automapa', 'car'],
-    ['T', 'Turistická', '!icon-hiking'],
-    ['C', 'Cyklomapa', 'bicycle'],
-    ['K', 'Lyžiarska', '!icon-skier-skiing'],
-  ].map(([type, name, icon]) => ({
-    name,
+    ['A', 'car'],
+    ['T', '!icon-hiking'],
+    ['C', 'bicycle'],
+    ['K', '!icon-skier-skiing'],
+  ].map(([type, icon]) => ({
     type,
     icon,
     url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
@@ -15,7 +14,6 @@ export const baseLayers = [
     key: type.toLowerCase(),
   })),
   {
-    name: 'Satelitná',
     type: 'S',
     icon: 'plane',
     minZoom: 0,
@@ -23,7 +21,6 @@ export const baseLayers = [
     key: 's',
   },
   {
-    name: 'OpenStreetMap',
     type: 'O',
     icon: 'globe',
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -33,7 +30,6 @@ export const baseLayers = [
     key: 'o',
   },
   {
-    name: 'mtbmap.cz',
     type: 'M',
     url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
     minZoom: 3,
@@ -44,7 +40,6 @@ export const baseLayers = [
     key: 'm',
   },
   {
-    name: 'OpenTopoMap',
     type: 'p',
     url: '//tile.opentopomap.org/{z}/{x}/{y}.png',
     minZoom: 3,
@@ -55,7 +50,6 @@ export const baseLayers = [
     key: 'p',
   },
   {
-    name: 'Humanitárna',
     type: 'b',
     url: 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
     minZoom: 0,
@@ -66,7 +60,6 @@ export const baseLayers = [
     key: 'b',
   },
   {
-    name: 'Verejná doprava (ÖPNV)',
     type: 'd',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
@@ -77,7 +70,6 @@ export const baseLayers = [
     key: 'd',
   },
   {
-    name: 'Infomapa',
     type: 'i',
     icon: 'info',
     url: 'http://{s}.infomapa.sk/0/{z}/{x}/{y}',
@@ -88,7 +80,6 @@ export const baseLayers = [
     key: 'i',
   },
   {
-    name: 'Infomapa ČB',
     type: 'j',
     icon: 'info',
     url: 'http://{s}.infomapa.sk/1/{z}/{x}/{y}',
@@ -99,7 +90,6 @@ export const baseLayers = [
     key: 'j',
   },
   {
-    name: 'Historická',
     type: 'h',
     url: 'http://tms.freemap.sk/historicke/{z}/{x}/{y}.png',
     minNativeZoom: 12,
@@ -112,7 +102,6 @@ export const baseLayers = [
 
 export const overlayLayers = [
   {
-    name: 'Fotografie',
     type: 'I',
     icon: 'picture-o',
     minZoom: 0,
@@ -121,7 +110,6 @@ export const overlayLayers = [
     attribution: 'fotografie © CC-BY-SA', // FIXME it is ignored
   },
   {
-    name: 'Lesné cesty NLC 2016',
     type: 'n',
     icon: 'tree',
     url: '//tiles.freemap.sk/nlc2016/{z}/{x}/{y}.png',
@@ -133,7 +121,6 @@ export const overlayLayers = [
     adminOnly: true,
   },
   {
-    name: 'Lesné cesty NLC',
     type: 'l',
     icon: 'tree',
     url: 'http://gpsteam.eu/cache/nlcml/{z}/{x}/{y}.png',
@@ -144,14 +131,7 @@ export const overlayLayers = [
     zIndex: 2,
     adminOnly: true,
   },
-  ...[
-    ['both', 'Všetko'],
-    ['ride', 'Cyklojazdy'],
-    ['run', 'Beh'],
-    ['water', 'Vodné aktivity'],
-    ['winter', 'Zimné aktivity'],
-  ].map(([type, name], i) => ({
-    name: `Strava (${name})`,
+  ...['both', 'ride', 'run', 'water', 'winter'].map(([type], i) => ({
     type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
     url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
@@ -163,7 +143,6 @@ export const overlayLayers = [
     zIndex: 2,
   })),
   {
-    name: 'OSM GPS stopy',
     type: 'g',
     icon: '!icon-gps-device',
     url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
@@ -175,7 +154,6 @@ export const overlayLayers = [
     zIndex: 2,
   },
   {
-    name: 'Turistické trasy',
     type: 't',
     icon: '!icon-hiking',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
@@ -187,7 +165,6 @@ export const overlayLayers = [
     zIndex: 2,
   },
   {
-    name: 'Cyklotrasy',
     type: 'c',
     icon: 'bicycle',
     url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
@@ -199,7 +176,6 @@ export const overlayLayers = [
     zIndex: 2,
   },
   {
-    name: 'OpenSnowMap',
     type: 'q',
     icon: 'snowflake-o',
     url: '//www.opensnowmap.org/pistes/{z}/{x}/{y}.png',
@@ -211,7 +187,6 @@ export const overlayLayers = [
     zIndex: 2,
   },
   {
-    name: 'Render. klienti',
     type: 'r',
     icon: 'pencil-square-o',
     url: '//old.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
@@ -222,7 +197,3 @@ export const overlayLayers = [
     zIndex: 4,
   },
 ];
-
-// http://tile.mtbmap.cz/mtbmap_tiles/11/1135/705.png
-// http://mtbmap.cz/
-// 3 - 18

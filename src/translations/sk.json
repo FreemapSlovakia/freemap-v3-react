@@ -74,7 +74,8 @@
     "tips": "Tipy",
     "facebook": "Freemap na Facebooku",
     "twitter": "Freemap na Twitteri",
-    "github": "Freemap na GitHub-e"
+    "github": "Freemap na GitHub-e",
+    "automaticLanguage": "Automaticky"
   },
 
   "main": {
@@ -286,5 +287,41 @@
 
   "logOut": {
     "success": "Boli ste úspešne odhlásený."
+  },
+
+  "mapLayers": {
+    "layers": "Vrstvy",
+    "photoFilterWarning": "Filter fotografií je aktívny",
+    "minZoomWarning": "Dostupné až od priblíženia {minZoom}",
+    "base": {
+      "A": "Automapa",
+      "T": "Turistická",
+      "C": "Cyklomapa",
+      "K": "Lyžiarska",
+      "S": "Satelitná",
+      "O": "OpenStreetMap",
+      "M": "mtbmap.cz",
+      "p": "OpenTopoMap",
+      "b": "Humanitárna",
+      "d": "Verejná doprava (ÖPNV)",
+      "i": "Infomapa",
+      "j": "Infomapa ČB",
+      "h": "Historická"
+    },
+    "overlay": {
+      "I": "Fotografie",
+      "n": "Lesné cesty NLC 2016",
+      "l": "Lesné cesty NLC",
+      "g": "OSM GPS stopy",
+      "t": "Turistické trasy",
+      "c": "Cyklotrasy",
+      "q": "OpenSnowMap",
+      "r": "Render. klienti",
+      "s0": "Všetko",
+      "s1": "Cyklojazdy",
+      "s2": "Beh",
+      "s3": "Vodné aktivity",
+      "s4": "Zimné aktivity"
+    }
   }
 }

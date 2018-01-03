@@ -98,13 +98,11 @@ function loadAppState() {
     }
   }
 
-  const languages = ['en', 'sk'];
-
-  let language;
-  if (appState && languages.includes(appState.language)) {
-    ({ language } = appState);
+  if (appState && [null, 'en', 'sk'].includes(appState.language)) {
+    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAA');
+    store.dispatch(l10nSetLanguage(appState.language));
   } else {
-    language = navigator.languages.map(lang => lang.split('-')[0]).find(lang => languages.includes(lang)) || 'en';
+    console.log('BBBBBBBBBBBBBBBBBBBBBBBB');
+    store.dispatch(l10nSetLanguage(null));
   }
-  store.dispatch(l10nSetLanguage(language));
 }

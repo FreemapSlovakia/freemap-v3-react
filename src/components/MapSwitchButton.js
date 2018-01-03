@@ -1,4 +1,5 @@
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -9,6 +10,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import injectL10n from 'fm3/l10nInjector';
 
 class MapSwitchButton extends React.Component {
   static propTypes = {
@@ -19,6 +21,7 @@ class MapSwitchButton extends React.Component {
     expertMode: PropTypes.bool,
     pictureFilterIsActive: PropTypes.bool,
     isAdmin: PropTypes.bool,
+    t: PropTypes.func.isRequired,
   };
 
   state = {
@@ -55,11 +58,11 @@ class MapSwitchButton extends React.Component {
   }
 
   render() {
-    const { isAdmin } = this.props;
+    const { isAdmin, t } = this.props;
 
     return (
       <React.Fragment>
-        <Button ref={this.setButton} onClick={this.handleButtonClick} title="Vrstvy">
+        <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('mapLayers.layers')}>
           <FontAwesomeIcon icon="map-o" />
         </Button>
         <Overlay rootClose placement="top" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
@@ -69,7 +72,7 @@ class MapSwitchButton extends React.Component {
                 baseLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
                   .filter(({ adminOnly }) => isAdmin || !adminOnly)
-                  .map(({ name, type, icon, minZoom, key }) => (
+                  .map(({ type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleMapSelect(type)}
@@ -79,7 +82,7 @@ class MapSwitchButton extends React.Component {
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
                       <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                        {name}
+                        {t(`mapLayers.base.${type}`)}
                       </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
@@ -91,7 +94,7 @@ class MapSwitchButton extends React.Component {
                 overlayLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
                   .filter(({ adminOnly }) => isAdmin || !adminOnly)
-                  .map(({ name, type, icon, minZoom, key }) => (
+                  .map(({ type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleOverlaySelect(type)}
@@ -101,7 +104,7 @@ class MapSwitchButton extends React.Component {
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
                       <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
-                        {name}
+                        {t(`mapLayers.overlay.${type}`)}
                       </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
@@ -110,7 +113,7 @@ class MapSwitchButton extends React.Component {
                           {' '}
                           <FontAwesomeIcon
                             icon="exclamation-triangle"
-                            title={`Dostupné až od priblíženia ${minZoom}`}
+                            title={t('mapLayers.minZoomWarning').replace('{minZoom}', minZoom)}
                             className="text-warning"
                           />
                         </React.Fragment>
@@ -120,7 +123,7 @@ class MapSwitchButton extends React.Component {
                           {' '}
                           <FontAwesomeIcon
                             icon="filter"
-                            title="Filter fotografií je aktívny"
+                            title={t('mapLayers.photoFilterWarning')}
                             className="text-warning"
                           />
                         </React.Fragment>
@@ -136,18 +139,21 @@ class MapSwitchButton extends React.Component {
   }
 }
 
-export default connect(
-  state => ({
-    zoom: state.map.zoom,
-    mapType: state.map.mapType,
-    overlays: state.map.overlays,
-    expertMode: state.main.expertMode,
-    pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
-    isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-  }),
-  dispatch => ({
-    onMapRefocus(changes) {
-      dispatch(mapRefocus(changes));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      zoom: state.map.zoom,
+      mapType: state.map.mapType,
+      overlays: state.map.overlays,
+      expertMode: state.main.expertMode,
+      pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
+      isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
+    }),
+    dispatch => ({
+      onMapRefocus(changes) {
+        dispatch(mapRefocus(changes));
+      },
+    }),
+  ),
 )(MapSwitchButton);

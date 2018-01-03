@@ -123,6 +123,13 @@ button#freemap-logo {
         }
       }
 
+      &>li.active>a {
+        color: #fff;
+        text-decoration: none;
+        outline: 0;
+        background-color: #337ab7;
+      }
+
       .divider {
         height: 1px;
         margin: 9px 0;
@@ -130,6 +137,7 @@ button#freemap-logo {
         background-color: #e5e5e5;
       }
     }
+
   }
 }
 

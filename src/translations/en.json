@@ -72,10 +72,10 @@
     "mapLegend": "Map legend",
     "contacts": "Contacts",
     "tips": "Tips",
-
     "facebook": "Freemap on Facebook",
     "twitter": "Freemap on Twitter",
-    "github": "Freemap on GitHub"
+    "github": "Freemap on GitHub",
+    "automaticLanguage": "Automatic"
   },
 
   "main": {
@@ -287,5 +287,41 @@
 
   "logOut": {
     "success": "You have been successfuly logged out."
+  },
+
+  "mapLayers": {
+    "layers": "Map layers",
+    "photoFilterWarning": "Photo filtering is active",
+    "minZoomWarning": "Accessible from zoom {minZoom}",
+    "base": {
+      "A": "Car",
+      "T": "Hiking",
+      "C": "Bicycle",
+      "K": "Ski",
+      "S": "Aerial",
+      "O": "OpenStreetMap",
+      "M": "mtbmap.cz",
+      "p": "OpenTopoMap",
+      "b": "Humanitarian",
+      "d": "Public transport (ÖPNV)",
+      "i": "Infomap",
+      "j": "Infomap BW",
+      "h": "Historic"
+    },
+    "overlay": {
+      "I": "Photos",
+      "n": "Forest tracks NLC 2016",
+      "l": "Forest tracks NLC",
+      "g": "OSM GPS traces",
+      "t": "Hiking trails",
+      "c": "Bicycle trails",
+      "q": "OpenSnowMap",
+      "r": "Rendering clients",
+      "s0": "Strava (all)",
+      "s1": "Strava (rides)",
+      "s2": "Strava (runs)",
+      "s3": "Strava  (water activities)",
+      "s4": "Strava (winter activities)"
+    }
   }
 }
