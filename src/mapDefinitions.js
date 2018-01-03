@@ -15,9 +15,21 @@ const FM_ATTR = {
   nameKey: 'mapLayers.attr.freemap',
 };
 
-const SRTM = {
+const SRTM_ATTR = {
   type: 'data',
   nameKey: 'mapLayers.attr.srtm',
+};
+
+const STRAVA_ATTR = {
+  type: 'map',
+  name: '© Strava',
+  url: 'https://www.strava.com/',
+};
+
+const NLC_ATTR = {
+  type: 'map',
+  name: '© NLC Zvolen',
+  url: 'http://www.nlcsk.org/',
 };
 
 export const baseLayers = [
@@ -33,7 +45,7 @@ export const baseLayers = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      type !== 'A' && SRTM,
+      type !== 'A' && SRTM_ATTR,
     ].filter(a => a),
     minZoom: 8,
     maxNativeZoom: 16,
@@ -86,7 +98,7 @@ export const baseLayers = [
         url: 'mailto:smmtb@gmail.com',
       },
       OSM_DATA_ATTR,
-      SRTM,
+      SRTM_ATTR,
     ],
     key: 'm',
   },
@@ -104,7 +116,7 @@ export const baseLayers = [
         url: 'https://tile.opentopomap.org/about#verwendung',
       },
       OSM_DATA_ATTR,
-      SRTM,
+      SRTM_ATTR,
     ],
     key: 'p',
   },
@@ -206,13 +218,7 @@ export const overlayLayers = [
     type: 'n',
     icon: 'tree',
     url: '//tiles.freemap.sk/nlc2016/{z}/{x}/{y}.png',
-    attribution: [
-      {
-        type: 'map',
-        name: '© NLC Zvolen',
-        url: 'http://www.nlcsk.org/',
-      },
-    ],
+    attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
     key: 'N',
@@ -223,13 +229,7 @@ export const overlayLayers = [
     type: 'l',
     icon: 'tree',
     url: 'http://gpsteam.eu/cache/nlcml/{z}/{x}/{y}.png',
-    attribution: [
-      {
-        type: 'map',
-        name: '© NLC Zvolen',
-        url: 'http://www.nlcsk.org/',
-      },
-    ],
+    attribution: [NLC_ATTR],
     minZoom: 14,
     maxNativeZoom: 16,
     key: 'L',
@@ -240,13 +240,7 @@ export const overlayLayers = [
     type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
     url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
-    attribution: [
-      {
-        type: 'map',
-        name: '© Strava',
-        url: 'https://www.strava.com/',
-      },
-    ],
+    attribution: [STRAVA_ATTR],
     minZoom: 0,
     maxNativeZoom: 16,
     key: type === 'both' ? 'H' : undefined,
@@ -274,7 +268,7 @@ export const overlayLayers = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      SRTM,
+      SRTM_ATTR,
     ],
     minZoom: 8,
     maxNativeZoom: 16,
@@ -289,7 +283,7 @@ export const overlayLayers = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      SRTM,
+      SRTM_ATTR,
     ],
     minZoom: 8,
     maxNativeZoom: 16,
