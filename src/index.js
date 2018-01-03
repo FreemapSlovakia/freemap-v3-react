@@ -98,11 +98,5 @@ function loadAppState() {
     }
   }
 
-  if (appState && [null, 'en', 'sk'].includes(appState.language)) {
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAAAAA');
-    store.dispatch(l10nSetLanguage(appState.language));
-  } else {
-    console.log('BBBBBBBBBBBBBBBBBBBBBBBB');
-    store.dispatch(l10nSetLanguage(null));
-  }
+  store.dispatch(l10nSetLanguage(appState && [null, 'en', 'sk'].includes(appState.language) ? appState.language : null));
 }
