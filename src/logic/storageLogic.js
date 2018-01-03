@@ -28,7 +28,7 @@ export default createLogic({
       trackViewer: {
         eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
       },
-      language: state.l10n.language || undefined,
+      language: state.l10n.language,
     };
 
     localStorage.setItem('appState', JSON.stringify(appState));
