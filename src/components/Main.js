@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Map, ScaleControl, AttributionControl } from 'react-leaflet';
+import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
@@ -330,7 +330,6 @@ class Main extends React.Component {
           style={{ cursor: mouseCursor }}
         >
           <ScaleControl imperial={false} position="bottomleft" />
-          <AttributionControl ref={this.setAttributionControl} />
           <Layers />
 
           {showMenu &&

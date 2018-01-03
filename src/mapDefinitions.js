@@ -1,3 +1,25 @@
+const OSM_MAP_ATTR = {
+  type: 'data',
+  name: '© OpenStreetMap',
+  url: 'https://osm.org/',
+};
+
+const OSM_DATA_ATTR = {
+  type: 'data',
+  nameKey: 'mapLayers.attr.osmData',
+  url: 'https://osm.org/copyright',
+};
+
+const FM_ATTR = {
+  type: 'map',
+  nameKey: 'mapLayers.attr.freemap',
+};
+
+const SRTM = {
+  type: 'data',
+  nameKey: 'mapLayers.attr.srtm',
+};
+
 export const baseLayers = [
   ...[
     ['A', 'car'],
@@ -8,7 +30,11 @@ export const baseLayers = [
     type,
     icon,
     url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
-    attribution: 'mapa © Freemap Slovakia, dáta © prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      type !== 'A' && SRTM,
+    ].filter(a => a),
     minZoom: 8,
     maxNativeZoom: 16,
     key: type.toLowerCase(),
@@ -19,6 +45,20 @@ export const baseLayers = [
     minZoom: 0,
     maxNativeZoom: 18,
     key: 's',
+    attribution: [
+      {
+        type: 'map',
+        name: '© Bing',
+      },
+      {
+        type: 'map',
+        name: '© Earthstar Geographics SIO',
+      },
+      {
+        type: 'map',
+        name: '© 2017 Microsoft Corporation',
+      },
+    ],
   },
   {
     type: 'O',
@@ -26,7 +66,10 @@ export const baseLayers = [
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 19,
-    attribution: 'dáta © prispievatelia <a href="http://openstreetmap.org" target="_blank">OpenStreetMap</a> contributors',
+    attribution: [
+      OSM_MAP_ATTR,
+      OSM_DATA_ATTR,
+    ],
     key: 'o',
   },
   {
@@ -36,7 +79,15 @@ export const baseLayers = [
     maxNativeZoom: 18,
     icon: 'bicycle',
     showOnlyInExpertMode: true,
-    attribution: 'mapa © <a href="mailto:smmtb@gmail.com">Martin Tesař</a>, dáta © prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© Martin Tesař',
+        url: 'mailto:smmtb@gmail.com',
+      },
+      OSM_DATA_ATTR,
+      SRTM,
+    ],
     key: 'm',
   },
   {
@@ -46,7 +97,15 @@ export const baseLayers = [
     maxNativeZoom: 17,
     icon: 'tree',
     showOnlyInExpertMode: true,
-    attribution: 'mapa © <a href="https://tile.opentopomap.org/about#verwendung" target="_blank">OpenTopoMap</a>, dáta © prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>, SRTM',
+    attribution: [
+      {
+        type: 'map',
+        name: '© OpenTopoMap',
+        url: 'https://tile.opentopomap.org/about#verwendung',
+      },
+      OSM_DATA_ATTR,
+      SRTM,
+    ],
     key: 'p',
   },
   {
@@ -56,7 +115,14 @@ export const baseLayers = [
     maxNativeZoom: 20,
     icon: 'medkit',
     showOnlyInExpertMode: true,
-    attribution: 'mapa © <a href="http://hot.openstreetmap.org" target="_blank">Humanitárny tím OpenStreetMap</a>, dáta © prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      {
+        type: 'map',
+        nameKey: 'mapLayers.attr.hot',
+        url: 'http://hot.openstreetmap.org',
+      },
+      OSM_DATA_ATTR,
+    ],
     key: 'b',
   },
   {
@@ -66,7 +132,14 @@ export const baseLayers = [
     maxNativeZoom: 18,
     icon: 'bus',
     showOnlyInExpertMode: true,
-    attribution: '© prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© MeMoMaps',
+        url: 'https://memomaps.de/en/',
+      },
+      OSM_DATA_ATTR,
+    ],
     key: 'd',
   },
   {
@@ -76,7 +149,14 @@ export const baseLayers = [
     minZoom: 8,
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
-    attribution: 'mapa © 2016 <a href="http://www.infomapa.sk/" target="_blank">www.infomapa.sk</a>, dáta © prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© infomapa.sk',
+        url: 'http://www.infomapa.sk/',
+      },
+      OSM_DATA_ATTR,
+    ],
     key: 'i',
   },
   {
@@ -86,7 +166,14 @@ export const baseLayers = [
     minZoom: 8,
     maxNativeZoom: 18,
     showOnlyInExpertMode: true,
-    attribution: 'mapa © 2016 <a href="http://www.infomapa.sk/" target="_blank">www.infomapa.sk</a>, dáta © prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© infomapa.sk',
+        url: 'http://www.infomapa.sk/',
+      },
+      OSM_DATA_ATTR,
+    ],
     key: 'j',
   },
   {
@@ -96,6 +183,7 @@ export const baseLayers = [
     maxNativeZoom: 12,
     icon: 'institution',
     showOnlyInExpertMode: true,
+    attribution: [],
     key: 'h',
   },
 ];
@@ -107,13 +195,24 @@ export const overlayLayers = [
     minZoom: 0,
     key: 'F',
     zIndex: 3,
-    attribution: 'fotografie © CC-BY-SA', // FIXME it is ignored
+    attribution: [
+      {
+        type: 'photos',
+        name: 'CC-BY-SA',
+      },
+    ],
   },
   {
     type: 'n',
     icon: 'tree',
     url: '//tiles.freemap.sk/nlc2016/{z}/{x}/{y}.png',
-    attribution: '© <a href="http://www.nlcsk.org/" target="_blank">NLC Zvolen</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© NLC Zvolen',
+        url: 'http://www.nlcsk.org/',
+      },
+    ],
     minZoom: 11,
     maxNativeZoom: 15,
     key: 'N',
@@ -124,7 +223,13 @@ export const overlayLayers = [
     type: 'l',
     icon: 'tree',
     url: 'http://gpsteam.eu/cache/nlcml/{z}/{x}/{y}.png',
-    attribution: '© <a href="http://www.nlcsk.org/" target="_blank">NLC Zvolen</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© NLC Zvolen',
+        url: 'http://www.nlcsk.org/',
+      },
+    ],
     minZoom: 14,
     maxNativeZoom: 16,
     key: 'L',
@@ -135,7 +240,13 @@ export const overlayLayers = [
     type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
     url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
-    attribution: '© <a href="https://www.strava.com/" target="_blank">Strava</a>',
+    attribution: [
+      {
+        type: 'map',
+        name: '© Strava',
+        url: 'https://www.strava.com/',
+      },
+    ],
     minZoom: 0,
     maxNativeZoom: 16,
     key: type === 'both' ? 'H' : undefined,
@@ -146,7 +257,10 @@ export const overlayLayers = [
     type: 'g',
     icon: '!icon-gps-device',
     url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
-    attribution: '© prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      OSM_MAP_ATTR,
+      OSM_DATA_ATTR,
+    ],
     minZoom: 0,
     maxNativeZoom: 20,
     key: 'G',
@@ -157,7 +271,11 @@ export const overlayLayers = [
     type: 't',
     icon: '!icon-hiking',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
-    attribution: '© prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      SRTM,
+    ],
     minZoom: 8,
     maxNativeZoom: 16,
     key: 'T',
@@ -168,7 +286,11 @@ export const overlayLayers = [
     type: 'c',
     icon: 'bicycle',
     url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
-    attribution: '© prispievatelia <a href="https://osm.org/copyright" target="_blank">OpenStreetMap</a>',
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      SRTM,
+    ],
     minZoom: 8,
     maxNativeZoom: 16,
     key: 'C',
@@ -179,7 +301,13 @@ export const overlayLayers = [
     type: 'q',
     icon: 'snowflake-o',
     url: '//www.opensnowmap.org/pistes/{z}/{x}/{y}.png',
-    attribution: '© OpenSnowMap.org',
+    attribution: [
+      {
+        type: 'map',
+        name: '© OpenSnowMap.org',
+      },
+      OSM_DATA_ATTR,
+    ],
     minZoom: 0,
     maxNativeZoom: 18,
     key: 'S',
@@ -195,5 +323,8 @@ export const overlayLayers = [
     key: 'R',
     showOnlyInExpertMode: true,
     zIndex: 4,
+    attribution: [
+      FM_ATTR,
+    ],
   },
 ];

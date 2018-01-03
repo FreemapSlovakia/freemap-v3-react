@@ -58,7 +58,7 @@ class MapSwitchButton extends React.Component {
   }
 
   render() {
-    const { isAdmin, t } = this.props;
+    const { isAdmin, t, mapType, overlays, expertMode, zoom, pictureFilterIsActive } = this.props;
 
     return (
       <React.Fragment>
@@ -70,18 +70,18 @@ class MapSwitchButton extends React.Component {
             <ul>
               {
                 baseLayers
-                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
                   .filter(({ adminOnly }) => isAdmin || !adminOnly)
                   .map(({ type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleMapSelect(type)}
                     >
-                      <FontAwesomeIcon icon={this.props.mapType === type ? 'check-circle-o' : 'circle-o'} />
+                      <FontAwesomeIcon icon={mapType === type ? 'check-circle-o' : 'circle-o'} />
                       {' '}
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
-                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+                      <span style={{ textDecoration: zoom < minZoom ? 'line-through' : 'none' }}>
                         {t(`mapLayers.base.${type}`)}
                       </span>
                       {key && ' '}
@@ -92,23 +92,23 @@ class MapSwitchButton extends React.Component {
               <MenuItem divider />
               {
                 overlayLayers
-                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || this.props.expertMode)
+                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
                   .filter(({ adminOnly }) => isAdmin || !adminOnly)
                   .map(({ type, icon, minZoom, key }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleOverlaySelect(type)}
                     >
-                      <FontAwesomeIcon icon={this.props.overlays.includes(type) ? 'check-square-o' : 'square-o'} />
+                      <FontAwesomeIcon icon={overlays.includes(type) ? 'check-square-o' : 'square-o'} />
                       {' '}
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
-                      <span style={{ textDecoration: this.props.zoom < minZoom ? 'line-through' : 'none' }}>
+                      <span style={{ textDecoration: zoom < minZoom ? 'line-through' : 'none' }}>
                         {t(`mapLayers.overlay.${type}`)}
                       </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
-                      {this.props.zoom < minZoom &&
+                      {zoom < minZoom &&
                         <React.Fragment>
                           {' '}
                           <FontAwesomeIcon
@@ -118,7 +118,7 @@ class MapSwitchButton extends React.Component {
                           />
                         </React.Fragment>
                       }
-                      {type === 'I' && this.props.pictureFilterIsActive &&
+                      {type === 'I' && pictureFilterIsActive &&
                         <React.Fragment>
                           {' '}
                           <FontAwesomeIcon
@@ -134,9 +134,56 @@ class MapSwitchButton extends React.Component {
             </ul>
           </Popover>
         </Overlay>
+
+        <div
+          style={{
+            position: 'fixed',
+            right: '0px',
+            bottom: '0px',
+            zIndex: 10,
+            backgroundColor: 'white',
+            padding: '0 6px',
+            borderTopLeftRadius: '4px',
+            borderTop: '1px solid #ccc',
+            borderLeft: '1px solid #ccc',
+            fontSize: '12px',
+          }}
+        >
+          {
+            categorize(
+              [
+                ...baseLayers.filter(({ type }) => mapType === type),
+                ...overlayLayers.filter(({ type }) => overlays.includes(type)),
+              ].reduce((a, b) => [...a, ...b.attribution], []),
+            ).map(({ type, attributions }, i) => [
+              i > 0 ? '; ' : '',
+              t(`mapLayers.type.${type}`),
+              ' ',
+              attributions.map((a, j) => [
+                j > 0 ? ', ' : '',
+                a.url ? <a key={a} href={a.url} target="_blank">{a.name || t(a.nameKey)}</a> : a.name || t(a.nameKey),
+              ]),
+            ])
+          }
+        </div>
       </React.Fragment>
     );
   }
+}
+
+function categorize(attributions) {
+  const res = {};
+  attributions.forEach((attribution) => {
+    let x = res[attribution.type];
+    if (!x) {
+      x = [];
+      res[attribution.type] = x;
+    }
+    if (!x.includes(attribution)) {
+      x.push(attribution);
+    }
+  });
+  return Object.keys(res).map(type => ({ type, attributions: res[type] }));
 }
 
 export default compose(

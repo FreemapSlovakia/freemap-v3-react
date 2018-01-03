@@ -31,7 +31,7 @@ class Layers extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  getTileLayer({ type, url, attribution, minZoom, maxNativeZoom, zIndex = 1 }) {
+  getTileLayer({ type, url, minZoom, maxNativeZoom, zIndex = 1 }) {
     if (type === 'S') {
       return (
         <BingLayer
@@ -59,7 +59,6 @@ class Layers extends React.Component {
     return (
       <TileLayer
         key={type}
-        attribution={attribution}
         url={url.replace('{tileFormat}', this.props.tileFormat)}
         minZoom={minZoom}
         maxZoom={20}

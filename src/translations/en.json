@@ -326,6 +326,18 @@
       "s2": "Strava (runs)",
       "s3": "Strava  (water activities)",
       "s4": "Strava (winter activities)"
+    },
+    "type": {
+      "map": "map",
+      "data": "data",
+      "photos": "pictures"
+    },
+    "attr": {
+      "freemap": "© Freemap Slovakia",
+      "osmData": "© OpenStreetMap contributors",
+      "srtm": "© SRTM",
+      "bing": "© Bing, Earthstar Geographics SIO, © 2017 Microsoft Corporation",
+      "hot": "© Humanitarian OpenStreetMap Team"
     }
   }
 }
