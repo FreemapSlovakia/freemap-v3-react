@@ -16,7 +16,7 @@ export default createLogic({
       if (getState().gallery.items.length === 0) {
         dispatch(toastsAdd({
           collapseKey: 'gallery.upload',
-          message: 'Fotografie boli úspešne nahrané.',
+          messageKey: 'gallery.uploadModal.success',
           timeout: 5000,
           style: 'info',
         }));

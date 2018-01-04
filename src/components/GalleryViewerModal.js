@@ -428,12 +428,12 @@ export default compose(
       onDelete() {
         dispatch(toastsAdd({
           collapseKey: 'gallery.deletePicture',
-          message: 'Zmazať obrázok?',
+          messageKey: 'gallery.viewer.deletePrompt',
           style: 'warning',
           cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
           actions: [
-            { name: 'Áno', action: galleryDeletePicture(), style: 'danger' },
-            { name: 'Nie' },
+            { nameKey: 'general.yes', action: galleryDeletePicture(), style: 'danger' },
+            { nameKey: 'general.no' },
           ],
         }));
       },

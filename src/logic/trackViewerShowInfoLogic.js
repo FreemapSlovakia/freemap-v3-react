@@ -10,7 +10,7 @@ export default createLogic({
   process(_, dispatch, done) {
     dispatch(toastsAdd({
       collapseKey: 'trackViewer.trackInfo',
-      message: <TrackViewerDetails />,
+      message: <TrackViewerDetails />, // TODO only string
       cancelType: [at.CLEAR_MAP, at.TRACK_VIEWER_SET_TRACK_DATA],
       style: 'info',
     }));

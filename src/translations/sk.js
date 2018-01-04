@@ -117,6 +117,7 @@ export default {
       openInNewWindow: 'Otvoriť v novom okne',
       uploaded: 'Nahral {username} dňa {createdAt}',
       captured: 'Odfotené dňa {takenAt}',
+      deletePrompt: 'Zmazať obrázok?',
     },
     editForm: {
       name: 'Názov',
@@ -146,10 +147,12 @@ export default {
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
         </ul>
       `,
+      success: 'Fotografie boli úspešne nahrané.',
     },
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
     },
+    layerHint: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (klávesa "F").',
   },
 
   measurement: {

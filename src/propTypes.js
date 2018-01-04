@@ -85,7 +85,7 @@ export const routeAlternative = PropTypes.shape({
 
 export const toastDef = {
   id: PropTypes.number.isRequired,
-  message: PropTypes.node,
+  message: PropTypes.node, // TODO string only
   messageKey: PropTypes.string,
   style: PropTypes.string,
   actions: PropTypes.arrayOf(PropTypes.shape({

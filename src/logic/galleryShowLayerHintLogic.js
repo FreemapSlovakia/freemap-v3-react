@@ -13,7 +13,7 @@ export default createLogic({
     ) {
       dispatch(toastsAdd({
         collapseKey: 'gallery.showLayerHint',
-        message: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (klávesa "f").',
+        messageKey: 'gallery.layerHint',
         style: 'info',
         actions: [
           { nameKey: 'general.ok' },

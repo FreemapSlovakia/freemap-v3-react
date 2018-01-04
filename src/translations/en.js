@@ -116,6 +116,7 @@ export default {
       openInNewWindow: 'Open in new window',
       uploaded: 'Uploaded by {username} on {createdAt}',
       captured: 'Captured on {takenAt}',
+      deletePrompt: 'Delete this picture?',
     },
     editForm: {
       name: 'Name',
@@ -145,10 +146,12 @@ export default {
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
         </ul>
       `,
+      success: 'Pictures has been successfuly uploaded.',
     },
     locationPicking: {
       title: 'Select photo location',
     },
+    layerHint: 'To show map photo overlay please select Photos from Map layers menu (key "F").',
   },
 
   measurement: {
