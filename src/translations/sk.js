@@ -380,4 +380,28 @@ export default {
     distance: 'Vzdialenosť [km]',
     ele: 'Nadm. výška [m.n.m.]',
   },
+
+  errorCatcher: {
+    html: `
+      <h1>Ups!</h1>
+      <p>
+        Voľačo nedobre sa udialo.
+      </p>
+      <p>
+        Prosíme Ťa, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlás nám túto chybu</a>,
+        prípadne nám ju pošli na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
+        Nezabudni, prosím, priložiť krátky popis, ako sa ti podarilo vyvolať chybu a nižšieuvedené dáta pre ladenie.
+      </p>
+      <p>
+        Ďakujeme.
+      </p>
+      Akcie:
+      <ul>
+        <li><a href="">znovunačítať poslednú stránku</a></li>
+        <li><a href="/">znovunačítať úvodnú stránku</a></li>
+        <li><a href="/?reset-local-storage">zmazať lokálne dáta a znovunačítať úvodnú stránku</a></li>
+      </ul>
+      <h2>Dáta pre ladenie</h2>
+    `,
+  },
 };

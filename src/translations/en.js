@@ -381,4 +381,28 @@ export default {
     distance: 'Distance [km]',
     ele: 'Elevation [m.a.s.l.]',
   },
+
+  errorCatcher: {
+    html: `
+      <h1>Oops!</h1>
+      <p>
+        Something bad has happened.
+      </p>
+      <p>
+        Please, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">report this problem</a>,
+        or email it to <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
+        Please don't forget to add a short description about what have you done to get this error and attached debugging data.
+      </p>
+      <p>
+        Thank you.
+      </p>
+      You can try:
+      <ul>
+        <li><a href="">reload last page</a></li>
+        <li><a href="/">load initial page</a></li>
+        <li><a href="/?reset-local-storage">clear local data and load initial page</a></li>
+      </ul>
+      <h2>Debugging data</h2>
+    `,
+  },
 };
