@@ -152,7 +152,7 @@ export default {
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
     },
-    layerHint: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (klávesa "F").',
+    layerHint: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
   },
 
   measurement: {

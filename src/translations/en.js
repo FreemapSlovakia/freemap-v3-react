@@ -151,7 +151,7 @@ export default {
     locationPicking: {
       title: 'Select photo location',
     },
-    layerHint: 'To show map photo overlay please select Photos from Map layers menu (key "F").',
+    layerHint: 'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
   },
 
   measurement: {
