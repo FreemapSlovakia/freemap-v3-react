@@ -1,0 +1,383 @@
+/* eslint-disable no-template-curly-in-string */
+
+export default {
+  general: {
+    elevationProfile: 'Výškovy profil',
+    save: 'Uložiť',
+    cancel: 'Zrušiť',
+    modify: 'Upraviť',
+    delete: 'Zmazať',
+    remove: 'Odstrániť',
+    close: 'Zavrieť',
+    exitFullscreen: 'Zrušiť zobrazenie na celú obrazovku',
+    fullscreen: 'Na celú obrazovku',
+    yes: 'Áno',
+    no: 'Nie',
+    masl: 'm.n.m.',
+    copyCode: 'Skopírovať kód',
+    loading: 'Načítavam…',
+    ok: 'OK',
+    preventShowingAgain: 'Už viac nezobrazovať',
+    closeWithoutSaving: 'Zavrieť okno bez uloženia zmien?',
+    back: 'Späť',
+  },
+
+  tools: {
+    tools: 'Nástroje',
+    routePlanner: 'Vyhľadávač trás',
+    objects: 'Miesta',
+    gallery: 'Fotografie',
+    measurement: 'Meranie',
+    trackViewer: 'Prehliadač trás (GPX)',
+    infoPoint: 'Bod v mape',
+    changesets: 'Zmeny v mape',
+    mapDetails: 'Detaily v mape',
+  },
+
+  routePlanner: {
+    start: 'Štart',
+    finish: 'Cieľ',
+    point: {
+      pick: 'Vybrať na mape',
+      current: 'Tvoja poloha',
+      home: 'Domov',
+    },
+    transportType: {
+      car: 'Auto, vrátane spoplatnených ciest',
+      'car-free': 'Auto, mimo spoplatnených ciest',
+      imhd: 'MHD (vo vývoji)',
+      bike: 'Bicykel',
+      'foot-stroller': 'S kočíkom / vozíčkom',
+      nordic: 'Bežky',
+      ski: 'Zjazdové lyžovanie',
+      foot: 'Pešo',
+    },
+    alternative: 'Alternatíva',
+    distance: 'Vzdialenosť: {value} km',
+    duration: 'Čas: {h} h {m} m',
+    removeMidpoint: 'Odstrániť zastávku?',
+    noHomeAlert: 'Najprv si musíte nastaviť domovskú polohu.',
+    showMidpointHint: 'Pre pridanie medzizastávky potiahnite úsek cesty na zvolené miesto.',
+    gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
+    routeNotFound: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
+  },
+
+  more: {
+    more: 'Ďalšie',
+    logOut: 'Odhlásiť {name}',
+    logIn: 'Prihlásenie',
+    settings: 'Nastavenia',
+    gpxExport: 'Exportovať do GPX',
+    mapExports: 'Exporty mapy',
+    shareMap: 'Zdieľať mapu',
+    embedMap: 'Vložiť do webstránky',
+    reportMapError: 'Nahlásiť chybu zobrazenia v mape',
+    reportAppError: 'Nahlásiť chybu v portáli',
+    supportUs: 'Podporiť Freemap',
+    help: 'Pomoc',
+    back: 'Naspäť',
+    mapLegend: 'Legenda mapy',
+    contacts: 'Kontakty',
+    tips: 'Tipy',
+    facebook: 'Freemap na Facebooku',
+    twitter: 'Freemap na Twitteri',
+    github: 'Freemap na GitHub-e',
+    automaticLanguage: 'Automaticky',
+  },
+
+  main: {
+    clearMap: 'Vyčistiť mapu',
+    close: 'Zavrieť',
+    closeTool: 'Zavrieť nástroj',
+    locateMe: 'Kde som?',
+    zoomIn: 'Priblížiť mapu',
+    zoomOut: 'Oddialiť mapu',
+    devInfo: 'Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>',
+  },
+
+  gallery: {
+    filter: 'Filter',
+    allPhotos: 'Všetky fotky',
+    upload: 'Nahrať',
+    f: {
+      firstUploaded: 'od prvej nahranej',
+      lastUploaded: 'od posledne nahranej',
+      firstCaptured: 'od najstaršie odfotenej',
+      lastCaptured: 'od najnovšie odfotenej',
+      leastRated: 'od najmenšieho hodnotenia',
+      mostRated: 'od najväčšieho hodnotenia',
+    },
+    viewer: {
+      title: 'Fotografia',
+      comments: 'Komentáre',
+      newComment: 'Nový komentár',
+      addComment: 'Pridaj',
+      yourRating: 'Tvoje hodnotenie:',
+      showOnTheMap: 'Ukázať na mape',
+      openInNewWindow: 'Otvoriť v novom okne',
+      uploaded: 'Nahral {username} dňa {createdAt}',
+      captured: 'Odfotené dňa {takenAt}',
+    },
+    editForm: {
+      name: 'Názov',
+      description: 'Popis',
+      takenAt: {
+        datetime: 'Dátum a čas fotenia',
+        date: 'Dátum fotenia',
+        time: 'Čas fotenia',
+      },
+      location: 'Pozícia',
+      tags: 'Tagy',
+      setLocation: 'Nastaviť pozíciu',
+    },
+    uploadModal: {
+      title: 'Nahrať fotky',
+      uploading: 'Nahrávam ({n})',
+      upload: 'Nahrať',
+      rules: `
+        <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
+        <ul>
+          <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10MB. Väčšie súbory server odmietne.</li>
+          <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania vymazané.</li>
+          <li>Zvýšenú pozornosť venujte tomu, aby ste nahrávali výlučne vlastnú tvorbu.</li>
+          <li>Nahraté fotografie sú ďaľej šírené pod licenciou CC-BY-SA 2.0.</li>
+          <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
+          <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu vymazať, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
+          <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
+        </ul>
+      `,
+    },
+    locationPicking: {
+      title: 'Zvoľte pozíciu fotografie',
+    },
+  },
+
+  measurement: {
+    distance: 'Vzdialenosť',
+    elevation: 'Výška a poloha',
+    area: 'Plocha',
+    elevationLine: 'Nadmorská výška:',
+    removePoint: 'Odstrániť bod?',
+  },
+
+  trackViewer: {
+    upload: 'Nahrať',
+    moreInfo: 'Viac info',
+    share: 'Zdieľať',
+    colorizingMode: {
+      none: 'Neaktívne',
+      elevation: 'Nadmorská výška',
+      steepness: 'Sklon',
+    },
+    details: {
+      startTime: 'Čas štartu',
+      finishTime: 'Čas v cieli',
+      duration: 'Trvanie',
+      distance: 'Vzdialenosť',
+      avgSpeed: 'Priemerná rýchlosť',
+      minEle: 'Najnižší bod',
+      maxEle: 'Najvyšší bod',
+      uphill: 'Celkové stúpanie',
+      downhill: 'Celkové klesanie',
+      durationValue: '{h} hodín {m} minút',
+    },
+    uploadModal: {
+      title: 'Nahrať trasu',
+      drop: 'Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.',
+    },
+    shareModal: {
+      title: 'Zdieľať trasu',
+      description: 'Trasa je dostupná na následovnej adrese:',
+    },
+  },
+
+  infoPoint: {
+    modify: 'Zmeniť popis',
+    edit: {
+      title: 'Zmeniť popis infobodu',
+      label: 'Popis infobodu:',
+      example: 'Tu sa stretneme',
+      hint: 'Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.',
+    },
+  },
+
+  settings: {
+    tab: {
+      map: 'Mapa',
+      account: 'Účet',
+      general: 'Všeobecné',
+      expert: 'Expert',
+    },
+    map: {
+      imgFormat: {
+        label: 'Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:',
+        hint: 'Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. Pri pomalom internete preto odporúčame zvoliť JPEG.',
+      },
+      overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
+      homeLocation: {
+        label: 'Domovská poloha:',
+        select: 'Vybrať na mape',
+        undefined: 'neurčená',
+      },
+    },
+    account: {
+      name: 'Meno',
+      email: 'E-Mail',
+      noAuthInfo: 'Dostupné iba pre prihásených používateľov.',
+    },
+    general: {
+      tips: 'Zobrazovať tipy po otvorení stránky',
+    },
+    expert: {
+      switch: 'Expertný mód:',
+      off: 'Vypnutý',
+      on: 'Zapnutý',
+      offInfo: 'V expertnom móde sú dostupné nástroje pre pokročilých používateľov.',
+      overlayOpacity: 'Viditeľnosť vrstvy:',
+      trackViewerEleSmoothing: {
+        label: 'Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}',
+        info: 'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
+      },
+    },
+    saveSuccess: 'Zmeny boli uložené.',
+  },
+
+  changesets: {
+    allAuthors: 'Všetci autori',
+    download: 'Stiahnuť zmeny',
+    olderThan: "return `${days} dn${days === 3 ? 'i' : 'í'}`",
+    olderThanFull: "return `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`",
+    notFound: 'Neboli nájdené žiadne zmeny.',
+  },
+
+  mapDetails: {
+    road: 'Info o ceste',
+    notFound: 'Nebola nájdená žiadna cesta.',
+  },
+
+  objects: {
+    type: 'Typ',
+    lowZoomAlert: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+  },
+
+  external: {
+    openInExternal: 'Otvoriť v externej aplikácii',
+    osm: 'OpenStreetMap',
+    oma: 'OMA',
+    googleMaps: 'Google Mapy',
+    hiking_sk: 'Hiking.sk',
+    'mapy_cz-aerial': 'Mapy.cz Letecká',
+    josm: 'Editor JOSM',
+    id: 'Editor iD',
+    'routing-debug': 'Ladenie navigácie',
+  },
+
+  search: {
+    inProgress: 'Hľadám…',
+    noResults: 'Nenašli sa žiadne výsledky',
+    prompt: 'Zadajte lokalitu',
+    routeFrom: 'Navigovať odtiaľto',
+    routeTo: 'Navigovať sem',
+  },
+
+  shareMap: {
+    label: 'Zvolený pohľad na mapu je dostupný na tejto adrese:',
+  },
+
+  embed: {
+    code: 'Vložte na vašu stránku tento html kód:',
+    example: 'Výsledok bude vyzerať následovne:',
+  },
+
+  tips: {
+    previous: 'Predošlý tip',
+    next: 'Ďalši tip',
+    prevent: 'Nabudúce nezobrazovať',
+  },
+
+  supportUs: {
+    explanation: 'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardware a služby komerčných spoločností.',
+    account: 'Bankové spojenie:',
+    paypal: 'Prispieť cez PayPal',
+    thanks: 'Za každý príspevok vám budeme veľmi vďační.',
+    registration: 'Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009',
+  },
+
+  gpxExport: {
+    export: 'Exportovať',
+    what: {
+      plannedRoute: 'vyhľadanú trasu',
+      objects: 'miesta',
+      pictures: 'fotografie (vo viditeľnej časti mapy)',
+      distanceMeasurement: 'meranie vzdialenosti',
+      areaMeasurement: 'meranie plochy',
+      elevationMeasurement: 'meranie výšky a polohy',
+      infoPoint: 'bod v mape',
+    },
+  },
+
+  logIn: {
+    with: {
+      facebook: 'Prihlásiť sa pomocou Facebooku',
+      google: 'Prihlásiť sa pomocou Googlu',
+      osm: 'Prihlásiť sa pomocou OpenStreetMap',
+    },
+    success: 'Boli ste úspešne prihlásený.',
+  },
+
+  logOut: {
+    success: 'Boli ste úspešne odhlásený.',
+  },
+
+  mapLayers: {
+    layers: 'Vrstvy',
+    photoFilterWarning: 'Filter fotografií je aktívny',
+    minZoomWarning: 'Dostupné až od priblíženia {minZoom}',
+    base: {
+      A: 'Automapa',
+      T: 'Turistická',
+      C: 'Cyklomapa',
+      K: 'Lyžiarska',
+      S: 'Satelitná',
+      O: 'OpenStreetMap',
+      M: 'mtbmap.cz',
+      p: 'OpenTopoMap',
+      b: 'Humanitárna',
+      d: 'Verejná doprava (ÖPNV)',
+      i: 'Infomapa',
+      j: 'Infomapa ČB',
+      h: 'Historická',
+    },
+    overlay: {
+      I: 'Fotografie',
+      n: 'Lesné cesty NLC 2016',
+      l: 'Lesné cesty NLC',
+      g: 'OSM GPS stopy',
+      t: 'Turistické trasy',
+      c: 'Cyklotrasy',
+      q: 'OpenSnowMap',
+      r: 'Render. klienti',
+      s0: 'Všetko',
+      s1: 'Cyklojazdy',
+      s2: 'Beh',
+      s3: 'Vodné aktivity',
+      s4: 'Zimné aktivity',
+    },
+    type: {
+      map: 'mapa',
+      data: 'dáta',
+      photos: 'fotografie',
+    },
+    attr: {
+      freemap: '© Freemap Slovakia',
+      osmData: '© prispievatelia OpenStreetMap',
+      srtm: '© SRTM',
+      hot: '© Humanitárny tím OpenStreetMap',
+    },
+  },
+
+  elevationChart: {
+    distance: 'Vzdialenosť [km]',
+    ele: 'Nadm. výška [m.n.m.]',
+  },
+};

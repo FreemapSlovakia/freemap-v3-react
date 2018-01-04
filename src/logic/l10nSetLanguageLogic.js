@@ -14,8 +14,8 @@ export default createLogic({
     const language = chosenLanguage || navigator.languages.map(lang => lang.split('-')[0]).find(lang => ['en', 'sk'].includes(lang)) || 'en';
 
     // TODO handle error
-    import(`fm3/translations/${language}.json`).then((translations) => {
-      dispatch(l10nSetTranslations(language, translations));
+    import(`fm3/translations/${language}.js`).then((translations) => {
+      dispatch(l10nSetTranslations(language, translations.default));
       dispatch(stopProgress(pid));
       done();
     });

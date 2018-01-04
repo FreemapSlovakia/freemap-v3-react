@@ -31,7 +31,7 @@ class ElevationMeasurementResult extends React.Component {
   render() {
     const { point, elevation, language, t } = this.props;
 
-    const nf1 = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+    const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
     return point && (
       <RichMarker

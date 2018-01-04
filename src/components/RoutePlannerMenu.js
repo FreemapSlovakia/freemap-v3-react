@@ -129,7 +129,7 @@ class RoutePlannerMenu extends React.Component {
 
     const activeAlternative = alternatives[activeAlternativeIndex];
 
-    const nf = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
     return (
       <React.Fragment>

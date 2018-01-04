@@ -9,8 +9,8 @@ import * as FmPropTypes from 'fm3/propTypes';
 import injectL10n from 'fm3/l10nInjector';
 
 function ElevationChartActivePoint({ elevationChartActivePoint, language, t }) {
-  const nf0 = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const nf1 = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const nf0 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
   return elevationChartActivePoint.lat && (
     <RichMarker

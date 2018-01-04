@@ -183,7 +183,7 @@ class GalleryUploadModal extends React.Component {
     return (
       <Modal show={visible} onHide={this.handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Nahrať fotky</Modal.Title>
+          <Modal.Title>{t('gallery.uploadModal.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {
@@ -211,23 +211,18 @@ class GalleryUploadModal extends React.Component {
               className="dropzone"
               disablePreview
             >
-              <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
-              <ul>
-                <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10MB. Väčšie súbory server odmietne.</li>
-                <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania vymazané.</li>
-                <li>Zvýšenú pozornosť venujte tomu, aby ste nahrávali výlučne vlastnú tvorbu.</li>
-                <li>Nahraté fotografie sú ďaľej šírené pod licenciou CC-BY-SA 2.0.</li>
-                <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
-                <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu vymazať, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
-                <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
-              </ul>
+              <div
+                // eslint-disable-next-line
+                dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }}
+              />
             </Dropzone>
           }
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onUpload} disabled={uploading}>
             <FontAwesomeIcon icon="upload" />
-            {uploading ? ` Nahrávam (${items.length})` : ' Nahrať' }
+            {' '}
+            {uploading ? t('gallery.uploadModal.uploading').replace('{n}', items.length) : t('gallery.uploadModal.upload') }
           </Button>
           <Button onClick={this.handleClose} bsStyle="danger">
             <Glyphicon glyph="remove" /> {t('general.cancel')}

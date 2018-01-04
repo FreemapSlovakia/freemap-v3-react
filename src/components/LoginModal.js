@@ -14,7 +14,7 @@ function LoginModal({ onClose, onLoginWithFacebook, onLoginWithGoogle, onLoginWi
     <Modal show onHide={onClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="sign-in" /> {t('more.log-in')}
+          <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

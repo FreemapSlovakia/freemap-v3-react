@@ -1,14 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { compose } from 'redux';
 import { Line } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
 import { elevationChartSetActivePoint, elevationChartRemoveActivePoint } from 'fm3/actions/elevationChartActions';
 import { elevationChartProfilePoint } from 'fm3/propTypes';
+import injectL10n from 'fm3/l10nInjector';
 
 import 'fm3/styles/elevationChart.scss';
 
-function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePoint }) {
+function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePoint, t, language }) {
+  const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
   const optionsForChartJS = {
     tooltips: {
       enabled: false,
@@ -34,20 +38,20 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
         },
         scaleLabel: {
           display: true,
-          labelString: 'Vzdialenosť [km]',
+          labelString: t('elevationChart.distance'),
         },
       }],
       yAxes: [{
         scaleLabel: {
           display: true,
-          labelString: 'Nadm. výška [m.n.m.]',
+          labelString: t('elevationChart.ele'),
         },
       }],
     },
   };
 
   const dataForChartJS = {
-    xLabels: elevationProfilePoints.map(({ distanceFromStartInMeters }) => (distanceFromStartInMeters / 1000).toFixed(1)),
+    xLabels: elevationProfilePoints.map(({ distanceFromStartInMeters }) => nf1.format(distanceFromStartInMeters / 1000)),
     datasets: [
       {
         fill: true,
@@ -83,18 +87,23 @@ ElevationChart.propTypes = {
   elevationProfilePoints: PropTypes.arrayOf(elevationChartProfilePoint),
   setActivePoint: PropTypes.func.isRequired,
   removeActivePoint: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired,
+  language: PropTypes.string.isRequired,
 };
 
-export default connect(
-  state => ({
-    elevationProfilePoints: state.elevationChart.elevationProfilePoints,
-  }),
-  dispatch => ({
-    setActivePoint(activePoint) {
-      dispatch(elevationChartSetActivePoint(activePoint));
-    },
-    removeActivePoint() {
-      dispatch(elevationChartRemoveActivePoint());
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    state => ({
+      elevationProfilePoints: state.elevationChart.elevationProfilePoints,
+    }),
+    dispatch => ({
+      setActivePoint(activePoint) {
+        dispatch(elevationChartSetActivePoint(activePoint));
+      },
+      removeActivePoint() {
+        dispatch(elevationChartRemoveActivePoint());
+      },
+    }),
+  ),
 )(ElevationChart);

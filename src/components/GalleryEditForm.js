@@ -32,6 +32,7 @@ export default class GalleryEditForm extends React.Component {
     error: PropTypes.string,
     onPositionPick: PropTypes.func,
     onModelChange: PropTypes.func.isRequired,
+    t: PropTypes.func.isRequired,
   }
 
   handleTitleChange = (e) => {
@@ -95,24 +96,33 @@ export default class GalleryEditForm extends React.Component {
   }
 
   render() {
-    const {
-      model, allTags, error, onPositionPick,
-    } = this.props;
+    const { model, allTags, error, onPositionPick, t } = this.props;
+
     return (
       <div>
         {error && <Alert bsStyle="danger">{error}</Alert>}
         <FormGroup>
-          <FormControl placeholder="Názov" type="text" value={model.title} onChange={this.handleTitleChange} />
+          <FormControl
+            placeholder={t('gallery.editForm.name')}
+            type="text"
+            value={model.title}
+            onChange={this.handleTitleChange}
+          />
         </FormGroup>
         <FormGroup>
-          <FormControl placeholder="Popis" componentClass="textarea" value={model.description} onChange={this.handleDescriptionChange} />
+          <FormControl
+            placeholder={t('gallery.editForm.description')}
+            componentClass="textarea"
+            value={model.description}
+            onChange={this.handleDescriptionChange}
+          />
         </FormGroup>
         {
           supportsDatetimeLocal ?
             <FormGroup>
               <FormControl
                 type="datetime-local"
-                placeholder="Dátum a čas fotenia"
+                placeholder={t('gallery.editForm.takenAt.datetime')}
                 value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}T${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
                 onChange={this.handleTakenAtChange}
               />
@@ -123,7 +133,7 @@ export default class GalleryEditForm extends React.Component {
                 <FormGroup>
                   <FormControl
                     type="date"
-                    placeholder="Dátum fotenia"
+                    placeholder={t('gallery.editForm.takenAt.date')}
                     value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
                     onChange={this.handleTakenAtDateChange}
                   />
@@ -131,7 +141,7 @@ export default class GalleryEditForm extends React.Component {
                 <FormGroup>
                   <FormControl
                     type="time"
-                    placeholder="Čas fotenia"
+                    placeholder={t('gallery.editForm.takenAt.time')}
                     value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
                     onChange={this.handleTakenAtTimeChange}
                   />
@@ -143,21 +153,21 @@ export default class GalleryEditForm extends React.Component {
           <InputGroup>
             <FormControl
               type="text"
-              placeholder="Pozícia"
+              placeholder={t('gallery.editForm.location')}
               value={model.position ? `${formatGpsCoord(model.position.lat, 'SN')}, ${formatGpsCoord(model.position.lon, 'WE')}` : ''}
               onClick={onPositionPick}
               readOnly
             />
             <InputGroup.Button>
               <Button onClick={onPositionPick}>
-                <FontAwesomeIcon icon="dot-circle-o" />Nastaviť pozíciu
+                <FontAwesomeIcon icon="dot-circle-o" />{t('gallery.editForm.setLocation')}
               </Button>
             </InputGroup.Button>
           </InputGroup>
         </FormGroup>
         <FormGroup>
           <ReactTags
-            placeholder="Tagy"
+            placeholder={t('gallery.editForm.tags')}
             tags={model.tags.map(tag => ({ id: tag, name: tag }))}
             suggestions={allTags.map(({ name }) => ({ id: name, name }))}
             handleAddition={this.handleTagAdded}

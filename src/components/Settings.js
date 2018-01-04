@@ -134,7 +134,7 @@ class Settings extends React.Component {
 
     const selectedOverlayDetails = overlayLayers.find(({ type }) => type === selectedOverlay);
 
-    const nf0 = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const nf0 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
 
     return (
       <Modal show={!selectingHomeLocation} onHide={onClose}>

@@ -196,7 +196,7 @@ class GalleryViewerModal extends React.Component {
 
     // TODO const loadingMeta = !image || image.id !== activeImageId;
 
-    const dateFormat = new Intl.DateTimeFormat(language || 'en', {
+    const dateFormat = new Intl.DateTimeFormat(language, {
       year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
 
@@ -292,6 +292,7 @@ class GalleryViewerModal extends React.Component {
                     <h5>Úprava</h5>
 
                     <GalleryEditForm
+                      t={t}
                       model={editModel}
                       allTags={allTags}
                       error={null}

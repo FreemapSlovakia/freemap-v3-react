@@ -127,8 +127,8 @@ class TrackViewerResult extends React.Component {
     const xxx = this.getFeatures('LineString')
       .map(feature => ({ name: feature.properties.name, lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]) }));
 
-    const oneDecimalDigitNumberFormat = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-    const timeFormat = new Intl.DateTimeFormat(language || 'en', { hour: 'numeric', minute: '2-digit' });
+    const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const timeFormat = new Intl.DateTimeFormat(language, { hour: 'numeric', minute: '2-digit' });
 
     return (
       <React.Fragment key={keyToAssureProperRefresh}>

@@ -1,11 +1,8 @@
-import React from 'react';
 import { createLogic } from 'redux-logic';
 
 import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryLayerHint } from 'fm3/actions/galleryActions';
-
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 export default createLogic({
   type: at.SET_TOOL,
@@ -16,12 +13,7 @@ export default createLogic({
     ) {
       dispatch(toastsAdd({
         collapseKey: 'gallery.showLayerHint',
-        message: (
-          <span>
-            Pre zapnutie vrstvy s fotografiami zvoľte <FontAwesomeIcon icon="picture-o" /> <i>Fotografie</i>
-            {' z '}<FontAwesomeIcon icon="map-o" /> ponuky vrstiev (klávesa <kbd>f</kbd>).
-          </span>
-        ),
+        message: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (klávesa "f").',
         style: 'info',
         actions: [
           { nameKey: 'general.ok' },

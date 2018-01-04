@@ -42,6 +42,7 @@ export default class GalleryUploadItem extends React.Component {
         <fieldset disabled={disabled}>
           <GalleryEditForm
             {...{ model, allTags, error }}
+            t={t}
             onPositionPick={disabled ? null : this.handlePositionPick}
             onModelChange={this.handleModelChange}
           />

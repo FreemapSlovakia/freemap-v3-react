@@ -12,9 +12,9 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
   //   l10n: { language },
   // } = getState().trackViewer;
 
-  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const noDecimalDigitsNumberFormat = Intl.NumberFormat(language || 'en', { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const timeFormat = new Intl.DateTimeFormat(language || 'en', { hour: 'numeric', minute: '2-digit' });
+  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const noDecimalDigitsNumberFormat = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+  const timeFormat = new Intl.DateTimeFormat(language, { hour: 'numeric', minute: '2-digit' });
 
   const tableData = [];
 
