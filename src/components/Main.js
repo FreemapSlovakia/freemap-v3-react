@@ -211,9 +211,11 @@ class Main extends React.Component {
 
         <div className="header">
           {process.env.DEPLOYMENT === 'next' &&
-            <div className="info-bar">
-              Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
-            </div>
+            <div
+              className="info-bar"
+              // eslint-disable-next-line
+              dangerouslySetInnerHTML={{ __html: t('main.devInfo') }}
+            />
           }
           <div className="menus">
             {window.self === window.top ?
