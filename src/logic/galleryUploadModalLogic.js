@@ -10,7 +10,7 @@ export default createLogic({
   type: [at.GALLERY_SHOW_UPLOAD_MODAL, at.GALLERY_SHOW_FILTER, at.GALLERY_EDIT_PICTURE],
   transform({ getState, action }, next) {
     if (action.type === at.GALLERY_SHOW_UPLOAD_MODAL && !getState().auth.user) {
-      next(toastsAddError('Pre nahrávanie fotiek do galérie musíte byť prihlásený.'));
+      next(toastsAddError('gallery.unauthenticatedError'));
     } else {
       next(action);
     }
@@ -29,8 +29,8 @@ export default createLogic({
       .then(({ data }) => {
         dispatch(gallerySetTags(data));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.tagsFetchingError', err));
       })
       .then(() => {
         dispatch(stopProgress(pid));

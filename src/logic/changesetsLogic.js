@@ -27,8 +27,8 @@ export const changesetsLogic = createLogic({
     });
 
     loadChangesets(toTime, [])
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri získavaní zmien: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('changesets.fetchError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

@@ -26,7 +26,7 @@ export default createLogic({
         }
       })
       .catch((err) => {
-        dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+        dispatch(toastsAddError('logIn.logInError', err));
       })
       .then(() => {
         dispatch(stopProgress(pid));

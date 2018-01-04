@@ -36,8 +36,8 @@ export default createLogic({
       .then(() => {
         dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri hodnotení: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.ratingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

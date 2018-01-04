@@ -34,8 +34,8 @@ export default createLogic({
         .then(({ data }) => {
           dispatch(elevationMeasurementSetElevation(parseFloat(data.elevationProfile[0].height)));
         })
-        .catch((e) => {
-          dispatch(toastsAddError(`Nastala chyba pri získavani výšky bodu: ${e.message}`));
+        .catch((err) => {
+          dispatch(toastsAddError('measurement.elevationFetchError', err));
         })
         .then(() => {
           storeDispatch(stopProgress(pid));

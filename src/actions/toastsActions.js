@@ -1,13 +1,11 @@
 import * as at from 'fm3/actionTypes';
 
-export function toastsAdd({
-  message, messageKey, actions = [], timeout, style, collapseKey, cancelType,
-}) {
+export function toastsAdd({ message, messageKey, messageParams, actions = [], timeout, style, collapseKey, cancelType }) {
   const id = Math.random();
   return {
     type: at.TOASTS_ADD,
     payload: {
-      id, message, messageKey, actions, timeout, style, collapseKey, cancelType,
+      id, message, messageKey, actions, timeout, style, collapseKey, cancelType, messageParams,
     },
   };
 }
@@ -26,9 +24,10 @@ export function toastsRestartTimeout(id) {
 
 // helpers
 
-export function toastsAddError(message) {
+export function toastsAddError(messageKey, err) {
   return toastsAdd({
-    message,
+    messageKey,
+    messageParams: err ? { err: err.message } : {},
     style: 'danger',
     timeout: 5000,
   });

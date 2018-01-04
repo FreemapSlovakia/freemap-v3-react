@@ -90,8 +90,8 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
         elevationProfilePoints[i].ele = height;
       });
       dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
-    }).catch((e) => {
-      dispatch(toastsAddError(`Nastala chyba pri získavani výškoveho profilu: ${e.message}`));
+    }).catch((err) => {
+      dispatch(toastsAddError('elevationChart.fetchError', err));
     })
     .then(() => {
       storeDispatch(stopProgress(pid));

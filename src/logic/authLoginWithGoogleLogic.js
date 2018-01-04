@@ -33,7 +33,7 @@ export default createLogic({
       })
       .catch((err) => {
         if (!['popup_closed_by_user', 'access_denied'].includes(err.error)) {
-          dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+          dispatch(toastsAddError('logIn.logInError', err));
         }
       })
       .then(() => {

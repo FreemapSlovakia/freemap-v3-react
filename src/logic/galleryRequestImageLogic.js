@@ -34,8 +34,8 @@ export default createLogic({
           comments: data.comments.map(comment => ({ ...comment, createdAt: new Date(comment.createdAt) })),
         }));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri načítavaní fotky: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.pictureFetchingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

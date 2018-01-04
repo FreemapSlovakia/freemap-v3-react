@@ -153,6 +153,14 @@ export default {
       title: 'Select photo location',
     },
     layerHint: 'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
+    deletingError: 'Error deleting photo: {err}',
+    tagsFetchingError: 'Error fetching tags: {err}',
+    pictureFetchingError: 'Error fetching photo: {err}',
+    picturesFetchingError: 'Error fetching photos: {err}',
+    savingError: 'Error saving photo: {err}',
+    commentAddingError: 'Error adding comment: {err}',
+    ratingError: 'Error rating photo: {err}',
+    unauthenticatedError: 'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
   },
 
   measurement: {
@@ -161,6 +169,7 @@ export default {
     area: 'Area',
     elevationLine: 'Elevation:',
     removePoint: 'Remove point?',
+    elevationFetchError: 'Error fetching point elevation: {err}',
   },
 
   trackViewer: {
@@ -252,6 +261,7 @@ export default {
     olderThan: 'return `${days} days`',
     olderThanFull: 'return `Changesets older than ${days} days`',
     notFound: 'No changesets found.',
+    fetchError: 'Error fetching changesets: {err}',
   },
 
   mapDetails: {
@@ -327,6 +337,10 @@ export default {
       osm: 'Log-in with OpenStreetMap',
     },
     success: 'You have been successfuly logged in.',
+    logInError: 'Error logging in: {err}',
+    logInError2: 'Error logging in.',
+    logOutError: 'Error logging out: {err}',
+    verifyError: 'Error verifying authentication: {err}',
   },
 
   logOut: {
@@ -384,6 +398,7 @@ export default {
   elevationChart: {
     distance: 'Distance [km]',
     ele: 'Elevation [m.a.s.l.]',
+    fetchError: 'Error fetching elevation profile data: {err}',
   },
 
   errorCatcher: {

@@ -47,8 +47,8 @@ export default createLogic({
           dispatch(galleryRequestImage(ids[0]));
         }
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.picturesFetchingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

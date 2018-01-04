@@ -153,6 +153,14 @@ export default {
       title: 'Zvoľte pozíciu fotografie',
     },
     layerHint: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
+    deletingError: 'Nastala chyba pri mazaní obrázka: {err}',
+    tagsFetchingError: 'Nastala chyba pri načítavaní tagov: {err}',
+    pictureFetchingError: 'Nastala chyba pri načítavaní fotky: {err}',
+    picturesFetchingError: 'Nastala chyba pri načítavaní fotiek: {err}',
+    savingError: 'Nastala chyba pri ukladaní fotky: {err}',
+    commentAddingError: 'Nastala chyba pri pridávani komentára: {err}',
+    ratingError: 'Nastala chyba pri hodnotení: {err}',
+    unauthenticatedError: 'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
   },
 
   measurement: {
@@ -161,6 +169,7 @@ export default {
     area: 'Plocha',
     elevationLine: 'Nadmorská výška:',
     removePoint: 'Odstrániť bod?',
+    elevationFetchError: 'Nastala chyba pri získavani výšky bodu: {err}',
   },
 
   trackViewer: {
@@ -251,6 +260,7 @@ export default {
     olderThan: "return `${days} dn${days === 3 ? 'i' : 'í'}`",
     olderThanFull: "return `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`",
     notFound: 'Neboli nájdené žiadne zmeny.',
+    fetchError: 'Nastala chyba pri získavaní zmien: {err}',
   },
 
   mapDetails: {
@@ -326,6 +336,10 @@ export default {
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
     success: 'Boli ste úspešne prihlásený.',
+    logInError: 'Nepodarilo sa prihlásiť: {err}',
+    logInError2: 'Nepodarilo sa prihlásiť.',
+    logOutError: 'Nepodarilo sa odhlásiť: {err}',
+    verifyError: 'Nepodarilo sa overiť prihlásenie: {err}',
   },
 
   logOut: {
@@ -382,6 +396,7 @@ export default {
   elevationChart: {
     distance: 'Vzdialenosť [km]',
     ele: 'Nadm. výška [m.n.m.]',
+    fetchError: 'Nastala chyba pri získavani výškoveho profilu: {err}',
   },
 
   errorCatcher: {

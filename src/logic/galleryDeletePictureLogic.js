@@ -52,8 +52,8 @@ export default createLogic({
           dispatch(galleryClear());
         }
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri mazaní obrázka: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.deletingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

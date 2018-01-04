@@ -35,8 +35,8 @@ export default createLogic({
         dispatch(gallerySetLayerDirty());
         dispatch(galleryRequestImage(id));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri ukladaní: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.savingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

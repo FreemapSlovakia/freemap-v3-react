@@ -87,6 +87,7 @@ export const toastDef = {
   id: PropTypes.number.isRequired,
   message: PropTypes.node, // TODO string only
   messageKey: PropTypes.string,
+  messageParams: PropTypes.object,
   style: PropTypes.string,
   actions: PropTypes.arrayOf(PropTypes.shape({
     name: PropTypes.string,

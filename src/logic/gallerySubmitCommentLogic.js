@@ -40,8 +40,8 @@ export default createLogic({
       .then(() => {
         dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri pridávani komentára: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.commentAddingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

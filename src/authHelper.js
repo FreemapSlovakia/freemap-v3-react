@@ -63,7 +63,7 @@ function setupOsmLoginStep2Listener(store) {
         store.dispatch(authSetUser(data));
       })
       .catch((err) => {
-        store.dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+        store.dispatch(toastsAddError('logIn.logInError', err));
       })
       .then(() => {
         store.dispatch(stopProgress(pid));
@@ -86,7 +86,7 @@ function verifyUser(store, user) {
       store.dispatch(authSetUser(res.status === 200 ? res.data : null));
     })
     .catch((err) => {
-      store.dispatch(toastsAddError(`Nepodarilo sa overiť prihlásenie: ${err.message}`));
+      store.dispatch(toastsAddError('logIn.verifyError', err));
     })
     .then(() => {
       store.dispatch(stopProgress(pid));

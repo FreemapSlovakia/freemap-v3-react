@@ -16,8 +16,8 @@ export default createLogic({
       .then(({ data }) => {
         dispatch(gallerySetUsers(data));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri načítavaní tagov: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('gallery.tagsFetchingError', err));
       })
       .then(() => {
         dispatch(stopProgress(pid));

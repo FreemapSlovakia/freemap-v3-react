@@ -29,7 +29,7 @@ export default createLogic({
         }));
       })
       .catch((err) => {
-        dispatch(toastsAddError(`Nepodarilo sa odhlásiť: ${err.message}`));
+        dispatch(toastsAddError('logIn.logInError', err));
       })
       .then(() => {
         dispatch(stopProgress(pid));

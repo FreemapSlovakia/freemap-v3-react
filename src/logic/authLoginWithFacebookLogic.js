@@ -20,7 +20,7 @@ export default createLogic({
           if (response2.status === 'connected') {
             login(response2);
           } else {
-            dispatch(toastsAddError('Nepodarilo sa prihlásiť.'));
+            dispatch(toastsAddError('logIn.logInError2'));
             dispatch(stopProgress(pid));
             done();
           }
@@ -44,7 +44,7 @@ export default createLogic({
           dispatch(authSetUser(data));
         })
         .catch((err) => {
-          dispatch(toastsAddError(`Nepodarilo sa prihlásiť: ${err.message}`));
+          dispatch(toastsAddError('logIn.logInError', err));
         })
         .then(() => {
           dispatch(stopProgress(pid));
