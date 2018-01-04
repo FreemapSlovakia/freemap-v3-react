@@ -92,6 +92,7 @@ export default {
     locateMe: 'Locate me',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
+    devInfo: 'This is a testing version of Freemap Slovakia. For production version navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.',
   },
 
   gallery: {

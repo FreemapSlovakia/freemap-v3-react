@@ -92,7 +92,7 @@ export default {
     locateMe: 'Kde som?',
     zoomIn: 'Priblížiť mapu',
     zoomOut: 'Oddialiť mapu',
-    devInfo: 'Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>',
+    devInfo: 'Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.',
   },
 
   gallery: {
