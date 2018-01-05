@@ -11,7 +11,7 @@ import injectL10n from 'fm3/l10nInjector';
 
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility,
-  routePlannerToggleElevationChart, routePlannerSetActiveAlternativeIndex } from 'fm3/actions/routePlannerActions';
+  routePlannerToggleElevationChart, routePlannerSetActiveAlternativeIndex, routePlannerSwapEnds } from 'fm3/actions/routePlannerActions';
 import { setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -45,6 +45,8 @@ class RoutePlannerMenu extends React.Component {
     alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
     onAlternativeChange: PropTypes.func.isRequired,
     language: PropTypes.string,
+    onEndsSwap: PropTypes.func.isRequired,
+    canSwap: PropTypes.bool,
   };
 
   componentWillMount() {
@@ -111,7 +113,7 @@ class RoutePlannerMenu extends React.Component {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
       routeFound, expertMode, onToggleElevationChart, t, activeAlternativeIndex, alternatives,
-      onAlternativeChange, language,
+      onAlternativeChange, language, onEndsSwap, canSwap,
     } = this.props;
 
     const transportTypes = [
@@ -160,6 +162,7 @@ class RoutePlannerMenu extends React.Component {
               <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
             </MenuItem>
           </DropdownButton>
+          <Button onClick={onEndsSwap} disabled={!canSwap} title={t('routePlanner.swap')}>⇆</Button>
           <DropdownButton
             title={
               <span>
@@ -276,6 +279,7 @@ export default compose(
       elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
       expertMode: state.main.expertMode,
       language: state.l10n.language,
+      canSwap: !!(state.routePlanner.start && state.routePlanner.finish),
     }),
     dispatch => ({
       onStartSet(start) {
@@ -323,6 +327,9 @@ export default compose(
       },
       onAlternativeChange(index) {
         dispatch(routePlannerSetActiveAlternativeIndex(index));
+      },
+      onEndsSwap() {
+        dispatch(routePlannerSwapEnds());
       },
     }),
   ),

@@ -37,6 +37,7 @@ export default {
   routePlanner: {
     start: 'Start',
     finish: 'Finish',
+    swap: 'Swap start and finish',
     point: {
       pick: 'Select on the map',
       current: 'Your position',

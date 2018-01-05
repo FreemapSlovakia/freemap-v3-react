@@ -37,6 +37,7 @@ export default {
   routePlanner: {
     start: 'Štart',
     finish: 'Cieľ',
+    swap: 'Prehodiť štart a clieľ',
     point: {
       pick: 'Vybrať na mape',
       current: 'Tvoja poloha',

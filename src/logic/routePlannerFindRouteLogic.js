@@ -4,15 +4,17 @@ import { createLogic } from 'redux-logic';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult, routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
+import * as at from 'fm3/actionTypes';
 
 const updateRouteTypes = [
-  'ROUTE_PLANNER_SET_START',
-  'ROUTE_PLANNER_SET_FINISH',
-  'ROUTE_PLANNER_ADD_MIDPOINT',
-  'ROUTE_PLANNER_SET_MIDPOINT',
-  'ROUTE_PLANNER_REMOVE_MIDPOINT',
-  'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
-  'ROUTE_PLANNER_SET_PARAMS',
+  at.ROUTE_PLANNER_SET_START,
+  at.ROUTE_PLANNER_SET_FINISH,
+  at.ROUTE_PLANNER_SWAP_ENDS,
+  at.ROUTE_PLANNER_ADD_MIDPOINT,
+  at.ROUTE_PLANNER_SET_MIDPOINT,
+  at.ROUTE_PLANNER_REMOVE_MIDPOINT,
+  at.ROUTE_PLANNER_SET_TRANSPORT_TYPE,
+  at.ROUTE_PLANNER_SET_PARAMS,
 ];
 
 const types = {

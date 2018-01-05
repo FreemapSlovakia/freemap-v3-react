@@ -56,3 +56,7 @@ export function routePlannerSetActiveAlternativeIndex(index) {
 export function routePlannerToggleElevationChart() {
   return { type: at.ROUTE_PLANNER_TOGGLE_ELEVATION_CHART };
 }
+
+export function routePlannerSwapEnds() {
+  return { type: at.ROUTE_PLANNER_SWAP_ENDS };
+}
