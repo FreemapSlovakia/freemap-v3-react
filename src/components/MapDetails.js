@@ -6,7 +6,7 @@ import injectL10n from 'fm3/l10nInjector';
 import PropTypes from 'prop-types';
 import * as FmPropTypes from 'fm3/propTypes';
 
-function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmoothingFactor, language, t }) {
+function MapDetails({ startPoints, finishPoints, trackGeojson, eleSmoothingFactor, language, t }) {
   // const {
   //   trackViewer: { startPoints, finishPoints, trackGeojson, eleSmoothingFactor },
   //   l10n: { language },
@@ -101,7 +101,7 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
   );
 }
 
-TrackViewerDetails.propTypes = {
+MapDetails.propTypes = {
   startPoints: PropTypes.arrayOf(FmPropTypes.startPoint.isRequired).isRequired,
   finishPoints: PropTypes.arrayOf(FmPropTypes.finishPoint.isRequired).isRequired,
   trackGeojson: PropTypes.shape({
@@ -123,4 +123,4 @@ export default compose(
       language: state.l10n.language,
     }),
   ),
-)(TrackViewerDetails);
+)(MapDetails);
