@@ -7,6 +7,7 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
+import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportGpx } from 'fm3/actions/mainActions';
@@ -75,6 +76,9 @@ export class EmbedMapModal extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <Alert bsStyle="warning">
+            {t('gpxExport.disabledAlert')}
+          </Alert>
           {
             exportableDefinitions.map(({ type, icon }) => (
               <Checkbox

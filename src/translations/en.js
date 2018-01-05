@@ -337,6 +337,7 @@ export default {
       elevationMeasurement: 'elevation and position measurement',
       infoPoint: 'infopoint',
     },
+    disabledAlert: 'Only checkboxes having anything in the map to export are enabled.',
   },
 
   logIn: {

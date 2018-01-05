@@ -337,6 +337,7 @@ export default {
       elevationMeasurement: 'meranie výšky a polohy',
       infoPoint: 'bod v mape',
     },
+    disabledAlert: 'Aktívne sú iba voľby ktorých objekty sa nachádzajú na mape.',
   },
 
   logIn: {
