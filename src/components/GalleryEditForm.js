@@ -33,6 +33,7 @@ export default class GalleryEditForm extends React.Component {
     onPositionPick: PropTypes.func,
     onModelChange: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
+    language: PropTypes.string.isRequired,
   }
 
   handleTitleChange = (e) => {
@@ -96,7 +97,7 @@ export default class GalleryEditForm extends React.Component {
   }
 
   render() {
-    const { model, allTags, error, onPositionPick, t } = this.props;
+    const { model, allTags, error, onPositionPick, t, language } = this.props;
 
     return (
       <div>
@@ -154,7 +155,7 @@ export default class GalleryEditForm extends React.Component {
             <FormControl
               type="text"
               placeholder={t('gallery.editForm.location')}
-              value={model.position ? `${formatGpsCoord(model.position.lat, 'SN')}, ${formatGpsCoord(model.position.lon, 'WE')}` : ''}
+              value={model.position ? `${formatGpsCoord(model.position.lat, 'SN', language)}, ${formatGpsCoord(model.position.lon, 'WE', language)}` : ''}
               onClick={onPositionPick}
               readOnly
             />

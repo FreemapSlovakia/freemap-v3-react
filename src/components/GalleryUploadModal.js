@@ -48,6 +48,7 @@ class GalleryUploadModal extends React.Component {
     onUpload: PropTypes.func.isRequired,
     uploading: PropTypes.bool,
     t: PropTypes.func.isRequired,
+    language: PropTypes.string.isRequired,
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
@@ -178,7 +179,7 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onPositionPick, visible, onUpload, uploading, allTags, t } = this.props;
+    const { items, onPositionPick, visible, onUpload, uploading, allTags, t, language } = this.props;
 
     return (
       <Modal show={visible} onHide={this.handleClose}>
@@ -192,6 +193,7 @@ class GalleryUploadModal extends React.Component {
                 key={id}
                 id={id}
                 t={t}
+                language={language}
                 filename={file.name}
                 url={url}
                 model={{ position, title, description, takenAt, tags }}
@@ -247,6 +249,7 @@ export default compose(
       visible: state.gallery.pickingPositionForId === null,
       uploading: !!state.gallery.uploadingId,
       allTags: state.gallery.tags,
+      language: state.l10n.language,
     }),
     dispatch => ({
       onItemAdd(item) {

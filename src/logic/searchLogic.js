@@ -12,7 +12,7 @@ export default createLogic({
   type: at.SEARCH_SET_QUERY,
   cancelType: [at.SEARCH_SET_QUERY, at.CLEAR_MAP],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
-    const { query } = getState().search;
+    const { search: { query }, l10n: { language } } = getState();
     if (!query) {
       done();
       return;
@@ -28,7 +28,7 @@ export default createLogic({
 
     if (coords) {
       const format = 'DM';
-      const name = `${formatGpsCoord(coords.lat, 'SN', format)} ${formatGpsCoord(coords.lon, 'WE', format)}`;
+      const name = `${formatGpsCoord(coords.lat, 'SN', format, language)} ${formatGpsCoord(coords.lon, 'WE', format, language)}`;
       dispatch(searchSetResults([
         {
           id: -1,

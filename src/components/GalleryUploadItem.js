@@ -21,6 +21,7 @@ export default class GalleryUploadItem extends React.Component {
     onModelChange: PropTypes.func.isRequired,
     disabled: PropTypes.bool,
     t: PropTypes.func.isRequired,
+    language: PropTypes.string.isRequired,
   }
 
   handleRemove = () => {
@@ -36,13 +37,14 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const { id, filename, url, disabled, model, allTags, error, t } = this.props;
+    const { id, filename, url, disabled, model, allTags, error, t, language } = this.props;
     return (
       <Thumbnail key={id} src={url || require('fm3/images/spinnerbar.gif')} alt={filename}>
         <fieldset disabled={disabled}>
           <GalleryEditForm
             {...{ model, allTags, error }}
             t={t}
+            language={language}
             onPositionPick={disabled ? null : this.handlePositionPick}
             onModelChange={this.handleModelChange}
           />
