@@ -105,8 +105,8 @@ export default createLogic({
               messageKey: 'routePlanner.showMidpointHint',
               style: 'info',
               actions: [
-                { name: 'OK' },
-                { name: 'Už viac nezobrazovať', action: routePlannerPreventHint() },
+                { nameKey: 'general.ok' },
+                { nameKey: 'general.preventShowingAgain', action: routePlannerPreventHint() },
               ],
             }));
           }
