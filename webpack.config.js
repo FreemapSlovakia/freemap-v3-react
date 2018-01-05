@@ -17,6 +17,14 @@ const extractSass = new ExtractTextPlugin({
   disable: !prod,
 });
 
+const cssLoader = {
+  loader: 'css-loader',
+  options: prod ? {
+    minimize: true,
+    sourceMap: true,
+  } : {},
+};
+
 module.exports = {
   context: path.resolve(__dirname, 'src'),
   entry: './boot.js',
@@ -62,14 +70,14 @@ module.exports = {
       {
         test: /\.scss$/,
         loader: extractSass.extract({
-          use: [{ loader: 'css-loader' }, { loader: 'sass-loader' }],
+          use: [cssLoader, { loader: 'sass-loader' }],
           // use style-loader in development
           fallback: 'style-loader',
         }),
       },
       {
         test: /\.css$/,
-        use: ['style-loader', { loader: 'css-loader' }],
+        use: ['style-loader', cssLoader],
       },
       {
         test: /\.md$/,
@@ -112,6 +120,7 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: 'authCallback.html' },
       { from: 'favicon.ico' },
+      { from: '.htaccess' },
       process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
     ].filter(x => x)),
     extractSass,
