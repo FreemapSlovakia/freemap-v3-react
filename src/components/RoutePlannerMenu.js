@@ -42,7 +42,7 @@ class RoutePlannerMenu extends React.Component {
     expertMode: PropTypes.bool,
     t: PropTypes.func.isRequired,
     activeAlternativeIndex: PropTypes.number.isRequired,
-    alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
+    alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative.isRequired).isRequired,
     onAlternativeChange: PropTypes.func.isRequired,
     language: PropTypes.string,
     onEndsSwap: PropTypes.func.isRequired,

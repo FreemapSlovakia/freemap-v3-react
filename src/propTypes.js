@@ -74,10 +74,15 @@ export const routeAlternative = PropTypes.shape({
   duration: PropTypes.number,
   distance: PropTypes.number,
   itinerary: PropTypes.arrayOf(PropTypes.shape({
-    lat: PropTypes.number.isRequired,
-    lon: PropTypes.number.isRequired,
-    desc: PropTypes.string.isRequired,
-    km: PropTypes.number.isRequired,
+    maneuver: PropTypes.shape({
+      location: PropTypes.shape({
+        lat: PropTypes.number.isRequired,
+        lon: PropTypes.number.isRequired,
+      }).isRequired,
+      type: PropTypes.string.isRequired,
+      modifier: PropTypes.string,
+    }).isRequired,
+    distance: PropTypes.number.isRequired,
     mode: PropTypes.string.isRequired,
     shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
   }).isRequired).isRequired,

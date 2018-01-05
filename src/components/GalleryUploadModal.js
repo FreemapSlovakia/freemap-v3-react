@@ -222,7 +222,7 @@ class GalleryUploadModal extends React.Component {
           <Button onClick={onUpload} disabled={uploading}>
             <FontAwesomeIcon icon="upload" />
             {' '}
-            {uploading ? t('gallery.uploadModal.uploading').replace('{n}', items.length) : t('gallery.uploadModal.upload') }
+            {uploading ? t('gallery.uploadModal.uploading', { n: items.length }) : t('gallery.uploadModal.upload') }
           </Button>
           <Button onClick={this.handleClose} bsStyle="danger">
             <Glyphicon glyph="remove" /> {t('general.cancel')}

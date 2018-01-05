@@ -6,7 +6,6 @@ import injectL10n from 'fm3/l10nInjector';
 import PropTypes from 'prop-types';
 import * as FmPropTypes from 'fm3/propTypes';
 import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack } from 'fm3/osmOntologyTools';
-import { splitByVars } from 'fm3/stringUtils';
 
 function RoadDetails({ way, bbox, mapType, language, t }) {
   function handleJosmClick() {
@@ -42,33 +41,27 @@ function RoadDetails({ way, bbox, mapType, language, t }) {
       </dl>
       <p>
         {
-          splitByVars(t('roadDetails.edit')).map((token, i) => {
-            switch (token) {
-              case '{id}':
-                return (
-                  <a
-                    key={i}
-                    href={`https://www.openstreetmap.org/edit?editor=id&way=${way.id}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    iD
-                  </a>
-                );
-              case '{josm}':
-                return (
-                  <a
-                    key={i}
-                    onClick={handleJosmClick}
-                    role="button"
-                    tabIndex={0}
-                  >
-                    JOSM
-                  </a>
-                );
-              default:
-                return token;
-            }
+          t('roadDetails.edit', {
+            id: () => (
+              <a
+                key="id"
+                href={`https://www.openstreetmap.org/edit?editor=id&way=${way.id}`}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                iD
+              </a>
+            ),
+            josm: () => (
+              <a
+                key="josm"
+                onClick={handleJosmClick}
+                role="button"
+                tabIndex={0}
+              >
+                JOSM
+              </a>
+            ),
           })
         }
       </p>

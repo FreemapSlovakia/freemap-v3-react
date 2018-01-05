@@ -7,7 +7,6 @@ import * as FmPropTypes from 'fm3/propTypes';
 import { toastsRemove, toastsStopTimeout, toastsRestartTimeout } from 'fm3/actions/toastsActions';
 import Toast from 'fm3/components/Toast';
 import injectL10n from 'fm3/l10nInjector';
-import { substitute } from 'fm3/stringUtils';
 
 import 'fm3/styles/toasts.scss';
 
@@ -18,7 +17,7 @@ function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart, t }) {
         <Toast
           key={id}
           id={id}
-          message={typeof message === 'string' ? substitute(message || t(messageKey), messageParams) : message}
+          message={typeof message === 'string' ? t(messageKey, messageParams, message) : message}
           style={style}
           onAction={onAction}
           actions={actions.map(action => ({ ...action, name: action.name || t(action.nameKey) }))}

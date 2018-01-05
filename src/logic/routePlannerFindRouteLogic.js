@@ -17,38 +17,6 @@ const updateRouteTypes = [
   at.ROUTE_PLANNER_SET_PARAMS,
 ];
 
-const types = {
-  turn: 'odbočte',
-  'new name': 'choďte',
-  depart: 'začnite',
-  arrive: 'ukončte',
-  merge: 'pokračujte',
-  // 'ramp':
-  'on ramp': 'choďte na príjazdovú cestu',
-  'off ramp': 'opusťte príjazdovú cestu',
-  fork: 'zvoľte cestu',
-  'end of road': 'pokračujte',
-  // 'use lane':
-  continue: 'pokračujte',
-  roundabout: 'vojdite na kruhový objazd',
-  rotary: 'vojdite na okružnú cestu',
-  'roundabout turn': 'na kruhovom objazde odbočte',
-  // 'notification':
-  'exit rotary': 'opusťte okružnú cestu', // undocumented
-  'exit roundabout': 'opusťte kruhový objazd', // undocumented
-};
-
-const modifiers = {
-  uturn: 'otočte sa',
-  'sharp right': 'prudko doprava',
-  'slight right': 'mierne doprava',
-  right: 'doprava',
-  'sharp left': 'prudko doľava',
-  'slight left': 'mierne doľava',
-  left: 'doľava',
-  straight: 'priamo',
-};
-
 export default createLogic({
   type: updateRouteTypes,
   cancelType: [...updateRouteTypes],
@@ -116,12 +84,19 @@ export default createLogic({
             const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({
               name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] },
             }) => ({
-              lat,
-              lon,
-              km: distance / 1000,
+              maneuver: {
+                location: {
+                  lat,
+                  lon,
+                },
+                type,
+                modifier,
+              },
+              distance,
               duration,
-              desc: transportType === 'imhd' ? name :
-                `${types[type] || type}${modifier ? ` ${modifiers[modifier] || modifier}` : ''}${name ? ` na ${name}` : ''}`,
+              name,
+              type,
+              modifier,
               mode,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
               legIndex,

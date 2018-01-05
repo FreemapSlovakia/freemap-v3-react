@@ -39,7 +39,7 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
     duration = (new Date(finishTime) - new Date(startTime)) / 1000;
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration - hours * 3600) / 60);
-    tableData.push(['duration', t('trackViewer.details.durationValue').replace('{h}', hours).replace('{m}', minutes)]);
+    tableData.push(['duration', t('trackViewer.details.durationValue', { h: hours, m: minutes })]);
   }
 
   if (finishPoints.length) {

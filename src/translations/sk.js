@@ -62,6 +62,42 @@ export default {
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
     routeNotFound: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
     fetchingError: 'Nastala chyba pri hľadaní trasy: {err}',
+    maneuverWithName: '{type} {modifier} na {name}',
+    maneuverWithoutName: '{type} {modifier}',
+
+    maneuver: {
+      types: {
+        turn: 'odbočte',
+        'new name': 'choďte',
+        depart: 'začnite',
+        arrive: 'ukončte',
+        merge: 'pokračujte',
+        // 'ramp':
+        'on ramp': 'choďte na príjazdovú cestu',
+        'off ramp': 'opusťte príjazdovú cestu',
+        fork: 'zvoľte cestu',
+        'end of road': 'pokračujte',
+        // 'use lane':
+        continue: 'pokračujte',
+        roundabout: 'vojdite na kruhový objazd',
+        rotary: 'vojdite na okružnú cestu',
+        'roundabout turn': 'na kruhovom objazde odbočte',
+        // 'notification':
+        'exit rotary': 'opusťte okružnú cestu', // undocumented
+        'exit roundabout': 'opusťte kruhový objazd', // undocumented
+      },
+
+      modifiers: {
+        uturn: 'otočte sa',
+        'sharp right': 'prudko doprava',
+        'slight right': 'mierne doprava',
+        right: 'doprava',
+        'sharp left': 'prudko doľava',
+        'slight left': 'mierne doľava',
+        left: 'doľava',
+        straight: 'priamo',
+      },
+    },
   },
 
   more: {

@@ -167,7 +167,7 @@ class MoreMenuButton extends React.Component {
                   {
                     user ?
                       <MenuItem onClick={this.handleLogoutClick}>
-                        <FontAwesomeIcon icon="sign-out" /> {t('more.logOut').replace('{name}', user.name)}
+                        <FontAwesomeIcon icon="sign-out" /> {t('more.logOut', { name: user.name })}
                       </MenuItem>
                       :
                       <MenuItem onClick={this.handleLoginClick}>

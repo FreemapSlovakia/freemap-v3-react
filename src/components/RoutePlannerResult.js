@@ -148,6 +148,17 @@ class RoutePlannerResult extends React.Component {
     this.props.onAlternativeChange(this.state.alt);
   }
 
+  maneuverToText = (name, { type, modifier }) => {
+    const p = 'routePlanner.maneuver';
+    const { t, transportType } = this.props;
+    return transportType === 'imhd' ? name
+      : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
+        type: t(`${p}.types.${type}`, {}, type),
+        modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
+        name,
+      });
+  }
+
   render() {
     const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange,
       transportType, timestamp, alternatives, t, language } = this.props;
@@ -226,8 +237,8 @@ class RoutePlannerResult extends React.Component {
               : distance ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div>
-                    <div>{t('routePlanner.distance').replace('{value}', nf.format(distance))}</div>
-                    <div>{t('routePlanner.duration').replace('{h}', Math.floor(duration / 60)).replace('{m}', Math.round(duration % 60))}</div>
+                    <div>{t('routePlanner.distance', { value: nf.format(distance) })}</div>
+                    <div>{t('routePlanner.duration', { h: Math.floor(duration / 60), m: Math.round(duration % 60) })}</div>
                   </div>
                 </Tooltip>
               : null
@@ -240,14 +251,16 @@ class RoutePlannerResult extends React.Component {
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
-                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map((routeSlice, i) => (
+                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map(({ shapePoints, name, maneuver }, i) => (
                   <Marker
-                    key={`mark-${i}`}
+                    key={i}
                     icon={circularIcon}
-                    position={routeSlice.shapePoints[0]}
+                    position={shapePoints[0]}
                   >
                     <Tooltip direction="right" permanent>
-                      <div>{routeSlice.desc}</div>
+                      <div>
+                        {this.maneuverToText(name, maneuver)}
+                      </div>
                     </Tooltip>
                   </Marker>
                 ))

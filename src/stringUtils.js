@@ -14,7 +14,7 @@ export function splitByVars(input, special) {
     }
 
     last = re.lastIndex;
-    ret.push(special ? { variable: result[2] } : result[1]);
+    ret.push(special ? { variable: result[2], token: result[1] } : result[1]);
   }
 
   if (last < input.length) {
@@ -24,6 +24,20 @@ export function splitByVars(input, special) {
   return ret;
 }
 
-export function substitute(input, params = {}) {
-  return splitByVars(input, true).map(part => (part.variable in params ? params[part.variable] : part)).join('');
+function exec(x) {
+  return typeof x === 'function' ? x() : x;
 }
+
+// for 'foo {a} bar {b} baz' and { a: 'A', b: <Lol /> } returns ['foo A bar ', <Lol />, ' baz']
+// for 'foo {a} bar' and { a: 'A' } returns 'foo A bar'
+export function splitAndSubstitute(input, params = {}) {
+  const x = splitByVars(input, true).map(part => (part.variable ? exec(params[part.variable]) : part))
+    .reduce((a, b) => (typeof b === 'string' && a.length && typeof a[a.length - 1] === 'string' ? [...a.slice(0, -1), a[a.length - 1] + b] : [...a, b]), '');
+  return x.length === 1 ? x[0] : x;
+}
+
+export function translate(translations, key, dflt = '') {
+  return (key && key.split('.').reduce((a, b) => (typeof a === 'object' && b in a ? a[b] : dflt), translations));
+}
+
+// console.log('XXXXXXXXXXXX', splitAndSubstitute('foo {a} bar {b} baz', { a: 'A', b: undefined }));

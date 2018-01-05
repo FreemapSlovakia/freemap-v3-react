@@ -113,7 +113,7 @@ class MapSwitchButton extends React.Component {
                           {' '}
                           <FontAwesomeIcon
                             icon="exclamation-triangle"
-                            title={t('mapLayers.minZoomWarning').replace('{minZoom}', minZoom)}
+                            title={t('mapLayers.minZoomWarning', { minZoom })}
                             className="text-warning"
                           />
                         </React.Fragment>

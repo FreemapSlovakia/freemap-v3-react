@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { translate, splitAndSubstitute } from 'fm3/stringUtils';
 
 export default function injectL10n(propertyName = 't') {
   return (wrappedComponent) => {
@@ -9,11 +10,10 @@ export default function injectL10n(propertyName = 't') {
         translations: PropTypes.shape({}).isRequired,
       };
 
-      translate = (key, dflt = '') =>
-        (key && key.split('.').reduce((a, b) => (typeof a === 'object' && b in a ? a[b] : dflt), this.props.translations));
+      tx = (key, params = {}, dflt = '') => splitAndSubstitute(translate(this.props.translations, key, dflt), params);
 
       render() {
-        return React.createElement(wrappedComponent, { [propertyName]: this.translate, ...this.props });
+        return React.createElement(wrappedComponent, { [propertyName]: this.tx, ...this.props });
       }
     }
 

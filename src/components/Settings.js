@@ -278,8 +278,7 @@ class Settings extends React.Component {
                     <hr />
                     <div>
                       <p>
-                        {t('settings.expert.trackViewerEleSmoothing.label')
-                          .replace('{value}', trackViewerEleSmoothingFactor)}
+                        {t('settings.expert.trackViewerEleSmoothing.label', { value: trackViewerEleSmoothingFactor })}
                       </p>
                       <Slider
                         value={trackViewerEleSmoothingFactor}

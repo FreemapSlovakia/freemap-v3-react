@@ -8,7 +8,6 @@ import ReactStars from 'react-stars';
 
 import * as at from 'fm3/actionTypes';
 import * as FmPropTypes from 'fm3/propTypes';
-import { splitByVars } from 'fm3/stringUtils';
 import injectL10n from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -255,28 +254,17 @@ class GalleryViewerModal extends React.Component {
                 {isFullscreen && imageIds && <React.Fragment>{`${index + 1} / ${imageIds.length}`} ｜ </React.Fragment>}
                 {isFullscreen && title && <React.Fragment>{title} ｜ </React.Fragment>}
                 {
-                  splitByVars(t('gallery.viewer.uploaded')).map((token, i) => {
-                    switch (token) {
-                      case '{username}':
-                        return <b key={i}>{image.user.name}</b>;
-                      case '{createdAt}':
-                        return <b key={i}>{dateFormat.format(createdAt)}</b>;
-                      default:
-                        return token;
-                    }
+                  t('gallery.viewer.uploaded', {
+                    username: () => <b key={image.user.name}>{image.user.name}</b>,
+                    createdAt: () => <b key={createdAt}>{dateFormat.format(createdAt)}</b>,
                   })
                 }
                 {takenAt &&
                   <React.Fragment>
                     {' ｜ '}
                     {
-                      splitByVars(t('gallery.viewer.captured')).map((token, i) => {
-                        switch (token) {
-                          case '{takenAt}':
-                            return <b key={i}>{dateFormat.format(takenAt)}</b>;
-                          default:
-                            return token;
-                        }
+                      t('gallery.viewer.captured', {
+                        takenAt: () => <b key={takenAt}>{dateFormat.format(takenAt)}</b>,
                       })
                     }
                   </React.Fragment>
