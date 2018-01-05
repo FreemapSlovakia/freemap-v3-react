@@ -26,7 +26,6 @@ function RoadDetails({ way, bbox, mapType, language, t }) {
   const trackClass = resolveTrackClass(way.tags);
   const surface = resolveTrackSurface(way.tags);
   const bicycleType = resolveBicycleTypeSuitableForTrack(way.tags);
-  console.log('GGGGGGGGGGGGGGG', bicycleType);
   const isBicycleMap = mapType === 'C';
   const lastEditAt = dateFormat.format(new Date(way.timestamp));
   return (
