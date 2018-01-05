@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import injectL10n from 'fm3/l10nInjector';
 import PropTypes from 'prop-types';
 import * as FmPropTypes from 'fm3/propTypes';
-import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack, translate } from 'fm3/osmOntologyTools';
+import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack } from 'fm3/osmOntologyTools';
 import { splitByVars } from 'fm3/stringUtils';
 
 function RoadDetails({ way, bbox, mapType, language, t }) {
@@ -26,17 +26,18 @@ function RoadDetails({ way, bbox, mapType, language, t }) {
   const trackClass = resolveTrackClass(way.tags);
   const surface = resolveTrackSurface(way.tags);
   const bicycleType = resolveBicycleTypeSuitableForTrack(way.tags);
+  console.log('GGGGGGGGGGGGGGG', bicycleType);
   const isBicycleMap = mapType === 'C';
   const lastEditAt = dateFormat.format(new Date(way.timestamp));
   return (
     <div>
       <dl className="dl-horizontal">
         <dt>{t('roadDetails.roadType')}</dt>
-        <dd style={{ whiteSpace: 'nowrap' }}>{translate('track-class', trackClass)}</dd>
+        <dd style={{ whiteSpace: 'nowrap' }}>{t(`roadDetails.trackClasses.${trackClass}`) || trackClass}</dd>
         <dt>{t('roadDetails.surface')}</dt>
-        <dd>{translate('surface', surface)}</dd>
+        <dd>{t(`roadDetails.surfaces.${surface}`) || surface}</dd>
         {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}
-        {isBicycleMap && <dd style={{ whiteSpace: 'nowrap' }}>{translate('bicycle-type', bicycleType)}</dd>}
+        {isBicycleMap && <dd style={{ whiteSpace: 'nowrap' }}>{t(`roadDetails.bicycleTypes.${bicycleType}`)}</dd>}
         <dt>{t('roadDetails.lastChange')}</dt>
         <dd>{lastEditAt}</dd>
       </dl>
@@ -82,7 +83,7 @@ RoadDetails.propTypes = {
   way: PropTypes.shape({
     tags: PropTypes.object.isRequired,
     id: PropTypes.number.isRequired,
-    timestamp: PropTypes.number.isRequired,
+    timestamp: PropTypes.string.isRequired,
   }),
   bbox: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
   mapType: FmPropTypes.mapType.isRequired,
