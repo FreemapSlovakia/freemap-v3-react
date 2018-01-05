@@ -43,8 +43,8 @@ export default createLogic({
         }));
         dispatch(objectsSetResult(result));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri získavani objektov: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('objects.fetchingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

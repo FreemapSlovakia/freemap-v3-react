@@ -38,8 +38,8 @@ export default createLogic({
           finishPoints: [],
         }));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri získavaní OSM dát: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('osm.fetchingError', err));
       })
       .then(() => {
         dispatch(stopProgress(pid));

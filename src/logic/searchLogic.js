@@ -88,8 +88,8 @@ export default createLogic({
         });
         dispatch(searchSetResults(results));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri spracovaní výsledkov vyhľadávania: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('search.fetchingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

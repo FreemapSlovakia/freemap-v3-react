@@ -12,14 +12,14 @@ export default createLogic({
     axios.get(`${process.env.API_URL}/tracklogs/${trackUID}`, { validateStatus: status => status === 200 })
       .then(({ data }) => {
         if (data.error) {
-          dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${data.error}`));
+          dispatch(toastsAddError('trackViewer.fetchingError', { message: data.error }));
         } else {
           const trackGpx = atob(data.data);
           dispatch(trackViewerSetData({ trackGpx }));
         }
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('trackViewer.fetchingError', err));
       })
       .then(() => {
         done();

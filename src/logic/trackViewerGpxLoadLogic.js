@@ -16,8 +16,8 @@ export default createLogic({
       .then(({ data }) => {
         dispatch(trackViewerSetData({ trackGpx: data }));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nastala chyba pri získavaní GPX záznamu: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('trackViewer.fetchingError', err));
       })
       .then(() => {
         dispatch(stopProgress(pid));

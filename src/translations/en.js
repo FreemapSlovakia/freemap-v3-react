@@ -25,7 +25,7 @@ export default {
   tools: {
     tools: 'Tools',
     routePlanner: 'Route finder',
-    objects: 'Objects (POI)',
+    objects: 'Objects (POIs)',
     gallery: 'Photos',
     measurement: 'Measurement',
     trackViewer: 'Track viewer (GPX)',
@@ -60,6 +60,7 @@ export default {
     showMidpointHint: 'To add a midpoint drag route segment to the desired position.',
     gpsError: 'Error getting your current location.',
     routeNotFound: 'No route found. Try to change parameters or move the route points.',
+    fetchingError: 'Error finding the route: {err}',
   },
 
   more: {
@@ -201,6 +202,9 @@ export default {
       title: 'Share the track',
       description: 'Track is available at the following address:',
     },
+    fetchingError: 'Error fetching track data: {err}',
+    savingError: 'Error saving the track: {err}',
+    tooBigError: 'Size of the uploaded track is bigger than the limit {maxSize} MB.',
   },
 
   infoPoint: {
@@ -253,6 +257,7 @@ export default {
       },
     },
     saveSuccess: 'Settings have been saved.',
+    savingError: 'Errro saving settings: {err}',
   },
 
   changesets: {
@@ -267,11 +272,13 @@ export default {
   mapDetails: {
     road: 'Road info',
     notFound: 'No road found.',
+    fetchingError: 'Error fetching road details: {err}',
   },
 
   objects: {
     type: 'Type',
     lowZoomAlert: 'Object finding is possible only from zoom level 12.',
+    fetchingError: 'Error fetching objects (POIs): {err}',
   },
 
   external: {
@@ -292,6 +299,7 @@ export default {
     prompt: 'Enter the place',
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
+    fetchingError: 'Searching error: {err}',
   },
 
   shareMap: {
@@ -390,7 +398,6 @@ export default {
       freemap: '© Freemap Slovakia',
       osmData: '© OpenStreetMap contributors',
       srtm: '© SRTM',
-      bing: '© Bing, Earthstar Geographics SIO, © 2017 Microsoft Corporation',
       hot: '© Humanitarian OpenStreetMap Team',
     },
   },
@@ -423,5 +430,17 @@ export default {
       </ul>
       <h2>Debugging data</h2>
     `,
+  },
+
+  osm: {
+    fetchingError: 'Error fetching OSM data: {err}',
+  },
+
+  roadDetails: {
+    roadType: 'Road type:',
+    surface: 'Surface:',
+    suitableBikeType: 'Recommended bicycle:',
+    lastChange: 'Last change:',
+    edit: 'Edit in {id} or {josm}.',
   },
 };

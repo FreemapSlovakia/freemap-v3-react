@@ -146,9 +146,9 @@ export default createLogic({
           }));
         }
       })
-      .catch((e) => {
+      .catch((err) => {
         dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
-        dispatch(toastsAddError(`Nastala chyba pri hľadaní trasy: ${e.message}`));
+        dispatch(toastsAddError('routePlanner.fetchingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

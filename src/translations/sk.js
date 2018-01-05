@@ -60,6 +60,7 @@ export default {
     showMidpointHint: 'Pre pridanie medzizastávky potiahnite úsek cesty na zvolené miesto.',
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
     routeNotFound: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
+    fetchingError: 'Nastala chyba pri hľadaní trasy: {err}',
   },
 
   more: {
@@ -201,6 +202,9 @@ export default {
       title: 'Zdieľať trasu',
       description: 'Trasa je dostupná na následovnej adrese:',
     },
+    fetchingError: 'Nastala chyba pri získavaní záznamu trasy: {err}',
+    savingError: 'Nepodarilo sa uložiť trasu: {err}',
+    tooBigError: 'Veľkosť nahraného súboru prevyšuje limit {maxSize} MB.',
   },
 
   infoPoint: {
@@ -223,7 +227,8 @@ export default {
     map: {
       imgFormat: {
         label: 'Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:',
-        hint: 'Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. Pri pomalom internete preto odporúčame zvoliť JPEG.',
+        hint: 'Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. '
+          + 'Pri pomalom internete preto odporúčame zvoliť JPEG.',
       },
       overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
       homeLocation: {
@@ -252,6 +257,7 @@ export default {
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
+    savingError: 'Nastala chyba pri ukladani nastavení: {err}',
   },
 
   changesets: {
@@ -266,11 +272,13 @@ export default {
   mapDetails: {
     road: 'Info o ceste',
     notFound: 'Nebola nájdená žiadna cesta.',
+    fetchingError: 'Nastala chyba pri získavaní detailov o ceste: {err}',
   },
 
   objects: {
     type: 'Typ',
     lowZoomAlert: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+    fetchingError: 'Nastala chyba pri získavani objektov: {err}',
   },
 
   external: {
@@ -291,6 +299,7 @@ export default {
     prompt: 'Zadajte lokalitu',
     routeFrom: 'Navigovať odtiaľto',
     routeTo: 'Navigovať sem',
+    fetchingError: 'Nastala chyba pri spracovaní výsledkov vyhľadávania: {err}',
   },
 
   shareMap: {
@@ -421,5 +430,17 @@ export default {
       </ul>
       <h2>Dáta pre ladenie</h2>
     `,
+  },
+
+  osm: {
+    fetchingError: 'Nastala chyba pri získavaní OSM dát: {err}',
+  },
+
+  roadDetails: {
+    roadType: 'Typ cesty:',
+    surface: 'Povrch:',
+    suitableBikeType: 'Vhodný typ bicykla:',
+    lastChange: 'Posledná zmena:',
+    edit: 'Upraviť v editore {id}, alebo {josm}.',
   },
 };

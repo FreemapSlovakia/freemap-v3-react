@@ -11,7 +11,7 @@ export default createLogic({
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGpx } = getState().trackViewer;
     if (trackGpx.length > (process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
-      dispatch(toastsAddError(`Veľkosť nahraného súboru prevyšuje ${process.env.MAX_GPX_TRACK_SIZE_IN_MB} MB. Zdieľanie podporujeme len pre menšie súbory.`));
+      dispatch(toastsAddError('trackViewer.tooBigError', null, { maxSize: process.env.MAX_GPX_TRACK_SIZE_IN_MB }));
       done();
       return;
     }
@@ -33,8 +33,8 @@ export default createLogic({
       .then(({ data }) => {
         dispatch(trackViewerSetTrackUID(data.uid));
       })
-      .catch((e) => {
-        dispatch(toastsAddError(`Nepodarilo sa nahrať súbor: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('trackViewer.savingError', err));
       })
       .then(() => {
         storeDispatch(stopProgress(pid));

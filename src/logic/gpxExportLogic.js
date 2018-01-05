@@ -11,9 +11,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export const gpxExportLogic = createLogic({
   type: at.EXPORT_GPX,
-  process({
-    getState, action, cancelled$, storeDispatch,
-  }, dispatch, done) {
+  process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
     const doc = document.implementation.createDocument(GPX_NS, 'gpx');
 
     addAttribute(doc.documentElement, 'version', '1.1');
@@ -32,9 +30,7 @@ export const gpxExportLogic = createLogic({
     createElement(meta, 'time', new Date().toISOString());
     createElement(meta, 'keywords', action.payload.join(' '));
 
-    const {
-      distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner,
-    } = getState();
+    const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
 
     const set = new Set(action.payload);
 
@@ -76,8 +72,8 @@ export const gpxExportLogic = createLogic({
         .then(({ data }) => {
           addPictures(doc, data);
         })
-        .catch((e) => {
-          dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
+        .catch((err) => {
+          dispatch(toastsAddError('gallery.picturesFetchingError', err));
         });
 
       promises.push(p);

@@ -1,17 +1,22 @@
 import { createLogic } from 'redux-logic';
 import axios from 'axios';
+import { toastsAddError } from 'fm3/actions/toastsActions';
+import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 import * as at from 'fm3/actionTypes';
 
 export default createLogic({
   type: at.TIPS_PREVENT_NEXT_TIME,
-  process({ getState }, dispatch, done) {
+  process({ getState, storeDispatch }, dispatch, done) {
     localStorage.setItem('preventTips', getState().tips.preventTips);
 
     if (!getState().auth.user) {
       done();
       return;
     }
+
+    const pid = Math.random();
+    dispatch(startProgress(pid));
 
     axios.patch(
       `${process.env.API_URL}/auth/settings`,
@@ -26,11 +31,11 @@ export default createLogic({
         // cancelToken: source.token,
       },
     )
-      .catch(() => {
-        // TODO dispatch(toastsAddError(`Nastala chyba pri ukladaní nastavenia: ${e.message}`));
+      .catch((err) => {
+        dispatch(toastsAddError('settings.savingError', err));
       })
       .then(() => {
-        // TODO storeDispatch(stopProgress(pid));
+        storeDispatch(stopProgress(pid));
         done();
       });
   },

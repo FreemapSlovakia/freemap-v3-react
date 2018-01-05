@@ -24,10 +24,10 @@ export function toastsRestartTimeout(id) {
 
 // helpers
 
-export function toastsAddError(messageKey, err) {
+export function toastsAddError(messageKey, err, params = {}) {
   return toastsAdd({
     messageKey,
-    messageParams: err ? { err: err.message } : {},
+    messageParams: { ...params, ...(err ? { err: err.message } : {}) },
     style: 'danger',
     timeout: 5000,
   });

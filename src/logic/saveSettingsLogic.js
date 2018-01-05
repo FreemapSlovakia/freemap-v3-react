@@ -73,8 +73,8 @@ export const saveSettingsLogic = createLogic({
           dispatch(authSetUser(Object.assign({}, getState().auth.user, { name: user.name, email: user.email })));
           dispatchRest();
         })
-        .catch((e) => {
-          dispatch(toastsAddError(`Nastala chyba pri načítavaní fotiek: ${e.message}`));
+        .catch((err) => {
+          dispatch(toastsAddError('settings.savingError', err));
         })
         .then(() => {
           storeDispatch(stopProgress(pid));
