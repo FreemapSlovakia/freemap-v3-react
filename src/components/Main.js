@@ -76,6 +76,7 @@ import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
+import 'fm3/bootstrap/css/bootstrap.css';
 import 'fm3/styles/main.scss';
 import 'leaflet/dist/leaflet.css';
 import 'fm3/styles/leaflet.scss';
