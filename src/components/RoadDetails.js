@@ -31,13 +31,13 @@ function RoadDetails({ way, bbox, mapType, language, t }) {
   return (
     <div>
       <dl className="dl-horizontal">
-        <dt>{t('roadDetails.roadType')}Typ cesty:</dt>
+        <dt>{t('roadDetails.roadType')}</dt>
         <dd style={{ whiteSpace: 'nowrap' }}>{translate('track-class', trackClass)}</dd>
-        <dt>{t('roadDetails.surface')}Povrch:</dt>
+        <dt>{t('roadDetails.surface')}</dt>
         <dd>{translate('surface', surface)}</dd>
-        {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}Vhodný typ bicykla:</dt>}
+        {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}
         {isBicycleMap && <dd style={{ whiteSpace: 'nowrap' }}>{translate('bicycle-type', bicycleType)}</dd>}
-        <dt>{t('roadDetails.lastChange')}Posledná zmena:</dt>
+        <dt>{t('roadDetails.lastChange')}</dt>
         <dd>{lastEditAt}</dd>
       </dl>
       <p>
@@ -81,7 +81,7 @@ RoadDetails.propTypes = {
   t: PropTypes.func.isRequired,
   way: PropTypes.shape({
     tags: PropTypes.object.isRequired,
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     timestamp: PropTypes.number.isRequired,
   }),
   bbox: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,

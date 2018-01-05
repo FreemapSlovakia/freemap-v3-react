@@ -18,7 +18,7 @@ function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart, t }) {
         <Toast
           key={id}
           id={id}
-          message={substitute(message || t(messageKey), messageParams)}
+          message={typeof message === 'string' ? substitute(message || t(messageKey), messageParams) : message}
           style={style}
           onAction={onAction}
           actions={actions.map(action => ({ ...action, name: action.name || t(action.nameKey) }))}

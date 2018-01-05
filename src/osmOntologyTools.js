@@ -28,11 +28,11 @@ const trackGradeToBike = {
 
 export function resolveBicycleTypeSuitableForTrack(tags) {
   if (['motorway', 'trunk'].indexOf(tags.highway) >= 0) {
-    return 'no-bike';
+    return trackGradeToBike['no-bike'];
   }
 
   if (resolveTrackSurface(tags) === 'asphalt') {
-    return 'road-bike';
+    return trackGradeToBike['road-bike'];
   }
 
   if (tags.tracktype) {
