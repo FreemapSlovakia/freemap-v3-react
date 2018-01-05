@@ -128,7 +128,9 @@ module.exports = {
       name: 'runtime',
     }),
     new webpack.HashedModuleIdsPlugin(),
-    prod && new webpack.optimize.UglifyJsPlugin(),
+    prod && new webpack.optimize.UglifyJsPlugin({
+      sourceMap: true,
+    }),
   ].filter(x => x),
   devServer: {
     disableHostCheck: true,
