@@ -30,20 +30,24 @@ class ObjectsMenu extends React.Component {
     focused: false,
   }
 
-  getGroupMenuItems = ({ id: gid, title: groupTitle }) => {
+  getGroupMenuItems = ({ id: gid }) => {
+    const { t } = this.props;
+
     const items = poiTypes
       .filter(({ group }) => group === gid)
-      .filter(({ title }) => title.toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
-      .map(({ group, title, id, icon }) => (
+      .filter(({ id }) => t(`objects.subcategories.${id}`).toLowerCase().indexOf(this.state.filter.toLowerCase()) !== -1)
+      .map(({ group, id, icon }) => (
         <MenuItem key={id} eventKey={id} onSelect={this.select}>
-          <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {title}
+          <img src={require(`../images/mapIcons/${icon}.png`)} alt={`${group}-${icon}`} /> {t(`objects.subcategories.${id}`)}
         </MenuItem>
       ));
 
     return items.length === 0 ? null : (
       <React.Fragment key={gid}>
         <MenuItem divider />
-        <MenuItem header>{groupTitle}</MenuItem>
+        <MenuItem header>
+          {t(`objects.categories.${gid}`)}
+        </MenuItem>
         {items}
       </React.Fragment>
     );

@@ -2,7 +2,6 @@
   {
     "id": 1,
     "categoryId": 1,
-    "name": "Jaskyňa",
     "filename": "cave_entrance",
     "filter": [
       {
@@ -14,7 +13,6 @@
   {
     "id": 2,
     "categoryId": 1,
-    "name": "Vrch",
     "filename": "peak",
     "filter": [
       {
@@ -26,7 +24,6 @@
   {
     "id": 3,
     "categoryId": 2,
-    "name": "Čerpacia stanica",
     "filename": "fuel",
     "filter": [
       {
@@ -38,7 +35,6 @@
   {
     "id": 4,
     "categoryId": 8,
-    "name": "Reštaurácia",
     "filename": "restaurant",
     "filter": [
       {
@@ -50,7 +46,6 @@
   {
     "id": 5,
     "categoryId": 8,
-    "name": "Hotel",
     "filename": "hotel",
     "filter": [
       {
@@ -62,7 +57,6 @@
   {
     "id": 6,
     "categoryId": 2,
-    "name": "Parkovisko",
     "filename": "parking",
     "filter": [
       {
@@ -74,7 +68,6 @@
   {
     "id": 7,
     "categoryId": 3,
-    "name": "Letisko",
     "filename": "airport",
     "filter": [
       {
@@ -86,7 +79,6 @@
   {
     "id": 8,
     "categoryId": 3,
-    "name": "Železničná stanica",
     "filename": "train",
     "filter": [
       {
@@ -98,7 +90,6 @@
   {
     "id": 9,
     "categoryId": 3,
-    "name": "Autobusová stanica",
     "filename": "bus_station",
     "filter": [
       {
@@ -110,7 +101,6 @@
   {
     "id": 10,
     "categoryId": 3,
-    "name": "Autobusová zastávka",
     "filename": "bus_stop",
     "filter": [
       {
@@ -123,7 +113,6 @@
   {
     "id": 11,
     "categoryId": 4,
-    "name": "Hrad",
     "filename": "castle",
     "filter": [
       {
@@ -140,7 +129,6 @@
   {
     "id": 12,
     "categoryId": 4,
-    "name": "Zámok",
     "filename": "chateau",
     "filter": [
       {
@@ -157,7 +145,6 @@
   {
     "id": 13,
     "categoryId": 4,
-    "name": "Zrúcanina",
     "filename": "ruins",
     "filter": [
       {
@@ -173,7 +160,6 @@
   {
     "id": 14,
     "categoryId": 4,
-    "name": "Múzeum",
     "filename": "museum",
     "filter": [
       {
@@ -185,7 +171,6 @@
   {
     "id": 15,
     "categoryId": 4,
-    "name": "Pamätihodnosť",
     "filename": "monument",
     "filter": [
       {
@@ -202,7 +187,6 @@
   {
     "id": 16,
     "categoryId": 4,
-    "name": "Pamätník",
     "filename": "memorial",
     "filter": [
       {
@@ -219,7 +203,6 @@
   {
     "id": 17,
     "categoryId": 5,
-    "name": "Lekáreň",
     "filename": "pharmacy",
     "filter": [
       {
@@ -231,7 +214,6 @@
   {
     "id": 18,
     "categoryId": 5,
-    "name": "Nemocnica",
     "filename": "hospital",
     "filter": [
       {
@@ -243,7 +225,6 @@
   {
     "id": 19,
     "categoryId": 5,
-    "name": "Ordinácia",
     "filename": "doctor",
     "filter": [
       {
@@ -255,7 +236,6 @@
   {
     "id": 20,
     "categoryId": 2,
-    "name": "Polícia",
     "filename": "police",
     "filter": [
       {
@@ -267,7 +247,6 @@
   {
     "id": 21,
     "categoryId": 5,
-    "name": "Poliklinika",
     "filename": "clinic",
     "filter": [
       {
@@ -279,7 +258,6 @@
   {
     "id": 22,
     "categoryId": 3,
-    "name": "Hraničný prechod",
     "filename": "border_control",
     "filter": [
       {
@@ -291,7 +269,6 @@
   {
     "id": 23,
     "categoryId": 5,
-    "name": "Nemocnica s pohotovosťou",
     "filename": "emergency",
     "filter": [
       {
@@ -307,7 +284,6 @@
   {
     "id": 24,
     "categoryId": 6,
-    "name": "Supermarket",
     "filename": "supermarket",
     "filter": [
       {
@@ -319,7 +295,6 @@
   {
     "id": 26,
     "categoryId": 7,
-    "name": "Jadrová elektráreň",
     "filename": "nuclear",
     "filter": [
       {
@@ -335,7 +310,6 @@
   {
     "id": 27,
     "categoryId": 7,
-    "name": "Tepelná elektráreň (uhlie)",
     "filename": "fossil",
     "filter": [
       {
@@ -351,7 +325,6 @@
   {
     "id": 28,
     "categoryId": 7,
-    "name": "Vodná elektráreň",
     "filename": "hydro",
     "filter": [
       {
@@ -367,7 +340,6 @@
   {
     "id": 29,
     "categoryId": 7,
-    "name": "Veterná elektráreň",
     "filename": "wind",
     "filter": [
       {
@@ -383,7 +355,6 @@
   {
     "id": 30,
     "categoryId": 6,
-    "name": "Potraviny",
     "filename": "convenience",
     "filter": [
       {
@@ -395,7 +366,6 @@
   {
     "id": 31,
     "categoryId": 2,
-    "name": "Hasičská stanica",
     "filename": "firestation",
     "filter": [
       {
@@ -407,7 +377,6 @@
   {
     "id": 32,
     "categoryId": 4,
-    "name": "Kostol",
     "filename": "place_of_worship",
     "filter": [
       {
@@ -424,7 +393,6 @@
   {
     "id": 33,
     "categoryId": 8,
-    "name": "Pohostinstvo",
     "filename": "pub",
     "filter": [
       {
@@ -436,7 +404,6 @@
   {
     "id": 34,
     "categoryId": 2,
-    "name": "Banka",
     "filename": "bank",
     "filter": [
       {
@@ -453,7 +420,6 @@
   {
     "id": 35,
     "categoryId": 2,
-    "name": "Bankomat",
     "filename": "atm",
     "filter": [
       {
@@ -465,7 +431,6 @@
   {
     "id": 36,
     "categoryId": 8,
-    "name": "Rýchle občerstvenie",
     "filename": "fast_food",
     "filter": [
       {
@@ -477,7 +442,6 @@
   {
     "id": 39,
     "categoryId": 2,
-    "name": "Banka",
     "filename": "bank",
     "filter": [
       {
@@ -493,7 +457,6 @@
   {
     "id": 40,
     "categoryId": 1,
-    "name": "Výhľad",
     "filename": "viewpoint",
     "filter": [
       {
@@ -505,7 +468,6 @@
   {
     "id": 41,
     "categoryId": 8,
-    "name": "Kemping",
     "filename": "camping",
     "filter": [
       {
@@ -517,7 +479,6 @@
   {
     "id": 42,
     "categoryId": 1,
-    "name": "Chránené stromy",
     "filename": "protected_tree",
     "filter": [
       {
@@ -533,7 +494,6 @@
   {
     "id": 43,
     "categoryId": 1,
-    "name": "Prameň",
     "filename": "spring",
     "filter": [
       {
@@ -545,7 +505,6 @@
   {
     "id": 44,
     "categoryId": 9,
-    "name": "Rázcestník",
     "filename": "stand",
     "filter": [
       {
@@ -561,7 +520,6 @@
   {
     "id": 45,
     "categoryId": 9,
-    "name": "Orientačná mapa",
     "filename": "map",
     "filter": [
       {
@@ -573,7 +531,6 @@
   {
     "id": 46,
     "categoryId": 9,
-    "name": "Útulňa",
     "filename": "wilderness_hut",
     "filter": [
       {
@@ -585,7 +542,6 @@
   {
     "id": 47,
     "categoryId": 9,
-    "name": "Prístrešok, altánok",
     "filename": "shelter",
     "filter": [
       {
@@ -597,7 +553,6 @@
   {
     "id": 48,
     "categoryId": 2,
-    "name": "Poštový úrad",
     "filename": "post_office",
     "filter": [
       {
@@ -609,7 +564,6 @@
   {
     "id": 49,
     "categoryId": 4,
-    "name": "Pamätník, bojisko",
     "filename": "battlefield",
     "filter": [
       {
@@ -621,7 +575,6 @@
   {
     "id": 50,
     "categoryId": 9,
-    "name": "Polovnícky posed",
     "filename": "hunting_stand",
     "filter": [
       {
@@ -633,7 +586,6 @@
   {
     "id": 51,
     "categoryId": 11,
-    "name": "Vysielač",
     "filename": "tower_communication",
     "filter": [
       {
@@ -649,7 +601,6 @@
   {
     "id": 52,
     "categoryId": 9,
-    "name": "Rozhľadňa",
     "filename": "tower_observation",
     "filter": [
       {
@@ -665,7 +616,6 @@
   {
     "id": 53,
     "categoryId": 8,
-    "name": "Motel",
     "filename": "motel",
     "filter": [
       {
@@ -677,7 +627,6 @@
   {
     "id": 54,
     "categoryId": 8,
-    "name": "Penzión",
     "filename": "guest_house",
     "filter": [
       {
@@ -689,7 +638,6 @@
   {
     "id": 55,
     "categoryId": 8,
-    "name": "Privát",
     "filename": "hostel",
     "filter": [
       {
@@ -701,7 +649,6 @@
   {
     "id": 56,
     "categoryId": 10,
-    "name": "Regionálne mesto",
     "filename": "region",
     "filter": [
       {
@@ -717,7 +664,6 @@
   {
     "id": 57,
     "categoryId": 10,
-    "name": "Okresné mesto",
     "filename": "county",
     "filter": [
       {
@@ -733,7 +679,6 @@
   {
     "id": 58,
     "categoryId": 10,
-    "name": "Veľké mesto",
     "filename": "city",
     "filter": [
       {
@@ -749,7 +694,6 @@
   {
     "id": 59,
     "categoryId": 10,
-    "name": "Mesto",
     "filename": "town",
     "filter": [
       {
@@ -765,7 +709,6 @@
   {
     "id": 60,
     "categoryId": 10,
-    "name": "Obec",
     "filename": "village",
     "filter": [
       {
@@ -777,7 +720,6 @@
   {
     "id": 61,
     "categoryId": 10,
-    "name": "Osada",
     "filename": "hamlet",
     "filter": [
       {
@@ -789,7 +731,6 @@
   {
     "id": 62,
     "categoryId": 10,
-    "name": "Mestský obvod",
     "filename": "suburb",
     "filter": [
       {
@@ -801,7 +742,6 @@
   {
     "id": 63,
     "categoryId": 9,
-    "name": "Horáreň",
     "filename": "ranger_house",
     "filter": [
       {
@@ -813,7 +753,6 @@
   {
     "id": 64,
     "categoryId": 5,
-    "name": "Zubár",
     "filename": "dentist",
     "filter": [
       {
@@ -825,7 +764,6 @@
   {
     "id": 65,
     "categoryId": 15,
-    "name": "Predajňa bicyklov",
     "filename": "bicycle",
     "filter": [
       {
@@ -837,7 +775,6 @@
   {
     "id": 66,
     "categoryId": 15,
-    "name": "Stojan na bicykle",
     "filename": "bicycle_parking",
     "filter": [
       {
@@ -849,7 +786,6 @@
   {
     "id": 67,
     "categoryId": 15,
-    "name": "Prenájom bicyklov",
     "filename": "bicycle_rental",
     "filter": [
       {
@@ -861,7 +797,6 @@
   {
     "id": 68,
     "categoryId": 6,
-    "name": "Predaj alkoholu",
     "filename": "alcohol",
     "filter": [
       {
@@ -873,7 +808,6 @@
   {
     "id": 69,
     "categoryId": 6,
-    "name": "Umenie",
     "filename": "art",
     "filter": [
       {
@@ -885,7 +819,6 @@
   {
     "id": 70,
     "categoryId": 6,
-    "name": "Pekáreň",
     "filename": "bakery",
     "filter": [
       {
@@ -897,7 +830,6 @@
   {
     "id": 71,
     "categoryId": 6,
-    "name": "Starostlivosť o krásu",
     "filename": "beauty",
     "filter": [
       {
@@ -909,7 +841,6 @@
   {
     "id": 72,
     "categoryId": 6,
-    "name": "Postele",
     "filename": "bed",
     "filter": [
       {
@@ -921,7 +852,6 @@
   {
     "id": 73,
     "categoryId": 6,
-    "name": "Nápoje",
     "filename": "beverages",
     "filter": [
       {
@@ -933,7 +863,6 @@
   {
     "id": 74,
     "categoryId": 6,
-    "name": "Kníhkupectvo",
     "filename": "books",
     "filter": [
       {
@@ -945,7 +874,6 @@
   {
     "id": 75,
     "categoryId": 6,
-    "name": "Butik",
     "filename": "boutique",
     "filter": [
       {
@@ -957,7 +885,6 @@
   {
     "id": 76,
     "categoryId": 6,
-    "name": "Mäsiarstvo",
     "filename": "butcher",
     "filter": [
       {
@@ -969,7 +896,6 @@
   {
     "id": 77,
     "categoryId": 6,
-    "name": "Predaj áut",
     "filename": "car",
     "filter": [
       {
@@ -981,7 +907,6 @@
   {
     "id": 78,
     "categoryId": 6,
-    "name": "Autoservis",
     "filename": "car_repair",
     "filter": [
       {
@@ -993,7 +918,6 @@
   {
     "id": 79,
     "categoryId": 6,
-    "name": "Charita",
     "filename": "charity",
     "filter": [
       {
@@ -1005,7 +929,6 @@
   {
     "id": 80,
     "categoryId": 6,
-    "name": "Drogéria",
     "filename": "chemist",
     "filter": [
       {
@@ -1017,7 +940,6 @@
   {
     "id": 81,
     "categoryId": 6,
-    "name": "Oblečenie",
     "filename": "clothes",
     "filter": [
       {
@@ -1029,7 +951,6 @@
   {
     "id": 82,
     "categoryId": 6,
-    "name": "Počítače",
     "filename": "computer",
     "filter": [
       {
@@ -1041,7 +962,6 @@
   {
     "id": 83,
     "categoryId": 6,
-    "name": "Cukrovinky",
     "filename": "confectionery",
     "filter": [
       {
@@ -1053,7 +973,6 @@
   {
     "id": 84,
     "categoryId": 6,
-    "name": "Kopírovanie",
     "filename": "copyshop",
     "filter": [
       {
@@ -1065,7 +984,6 @@
   {
     "id": 85,
     "categoryId": 6,
-    "name": "Záclony a závesy",
     "filename": "curtain",
     "filter": [
       {
@@ -1077,7 +995,6 @@
   {
     "id": 86,
     "categoryId": 6,
-    "name": "Delikatesy",
     "filename": "deli",
     "filter": [
       {
@@ -1089,7 +1006,6 @@
   {
     "id": 87,
     "categoryId": 6,
-    "name": "Obchodný dom",
     "filename": "department_store",
     "filter": [
       {
@@ -1101,7 +1017,6 @@
   {
     "id": 88,
     "categoryId": 6,
-    "name": "Potápačské potreby",
     "filename": "dive",
     "filter": [
       {
@@ -1113,7 +1028,6 @@
   {
     "id": 89,
     "categoryId": 6,
-    "name": "Čistiareň",
     "filename": "dry_cleaning",
     "filter": [
       {
@@ -1125,7 +1039,6 @@
   {
     "id": 90,
     "categoryId": 6,
-    "name": "Domáce výrobky",
     "filename": "doityourself",
     "filter": [
       {
@@ -1137,7 +1050,6 @@
   {
     "id": 91,
     "categoryId": 6,
-    "name": "Elektronika",
     "filename": "electronics",
     "filter": [
       {
@@ -1149,7 +1061,6 @@
   {
     "id": 92,
     "categoryId": 6,
-    "name": "Erotika",
     "filename": "erotic",
     "filter": [
       {
@@ -1161,7 +1072,6 @@
   {
     "id": 93,
     "categoryId": 6,
-    "name": "Firemná predajňa",
     "filename": "fabric",
     "filter": [
       {
@@ -1173,7 +1083,6 @@
   {
     "id": 94,
     "categoryId": 6,
-    "name": "Farmárske produkty",
     "filename": "farm",
     "filter": [
       {
@@ -1185,7 +1094,6 @@
   {
     "id": 95,
     "categoryId": 6,
-    "name": "Kvetinárstvo",
     "filename": "florist",
     "filter": [
       {
@@ -1197,7 +1105,6 @@
   {
     "id": 96,
     "categoryId": 6,
-    "name": "Obrazy",
     "filename": "frame",
     "filter": [
       {
@@ -1209,7 +1116,6 @@
   {
     "id": 97,
     "categoryId": 6,
-    "name": "furnace",
     "filename": "furnace",
     "filter": [
       {
@@ -1221,7 +1127,6 @@
   {
     "id": 98,
     "categoryId": 6,
-    "name": "funeral_directors",
     "filename": "funeral_directors",
     "filter": [
       {
@@ -1233,7 +1138,6 @@
   {
     "id": 99,
     "categoryId": 6,
-    "name": "Nábytok",
     "filename": "furniture",
     "filter": [
       {
@@ -1245,7 +1149,6 @@
   {
     "id": 100,
     "categoryId": 6,
-    "name": "Záhradné centrum",
     "filename": "garden_centre",
     "filter": [
       {
@@ -1257,7 +1160,6 @@
   {
     "id": 101,
     "categoryId": 6,
-    "name": "Rozličný tovar",
     "filename": "general",
     "filter": [
       {
@@ -1269,7 +1171,6 @@
   {
     "id": 102,
     "categoryId": 6,
-    "name": "Darčeková predajňa",
     "filename": "gift",
     "filter": [
       {
@@ -1281,7 +1182,6 @@
   {
     "id": 103,
     "categoryId": 6,
-    "name": "glaziery",
     "filename": "glaziery",
     "filter": [
       {
@@ -1293,7 +1193,6 @@
   {
     "id": 104,
     "categoryId": 6,
-    "name": "Ovocie, zelenina",
     "filename": "greengrocer",
     "filter": [
       {
@@ -1305,7 +1204,6 @@
   {
     "id": 105,
     "categoryId": 6,
-    "name": "Kaderníctvo",
     "filename": "hairdresser",
     "filter": [
       {
@@ -1317,7 +1215,6 @@
   {
     "id": 106,
     "categoryId": 6,
-    "name": "Železiarstvo",
     "filename": "hardware",
     "filter": [
       {
@@ -1329,7 +1226,6 @@
   {
     "id": 107,
     "categoryId": 6,
-    "name": "Načúvacie pomôcky",
     "filename": "hearing_aids",
     "filter": [
       {
@@ -1341,7 +1237,6 @@
   {
     "id": 108,
     "categoryId": 6,
-    "name": "HI-FI",
     "filename": "hifi",
     "filter": [
       {
@@ -1353,7 +1248,6 @@
   {
     "id": 109,
     "categoryId": 6,
-    "name": "Zmrzlina",
     "filename": "ice_cream",
     "filter": [
       {
@@ -1365,7 +1259,6 @@
   {
     "id": 110,
     "categoryId": 6,
-    "name": "interior_decoration",
     "filename": "interior_decoration",
     "filter": [
       {
@@ -1377,7 +1270,6 @@
   {
     "id": 111,
     "categoryId": 6,
-    "name": "Zlatníctvo",
     "filename": "jewelry",
     "filter": [
       {
@@ -1389,7 +1281,6 @@
   {
     "id": 112,
     "categoryId": 6,
-    "name": "Kiosk",
     "filename": "kiosk",
     "filter": [
       {
@@ -1401,7 +1292,6 @@
   {
     "id": 113,
     "categoryId": 6,
-    "name": "Kuchynské potreby",
     "filename": "kitchen",
     "filter": [
       {
@@ -1413,7 +1303,6 @@
   {
     "id": 114,
     "categoryId": 6,
-    "name": "Práčovňa",
     "filename": "laundry",
     "filter": [
       {
@@ -1425,7 +1314,6 @@
   {
     "id": 115,
     "categoryId": 6,
-    "name": "Nákupné centrum",
     "filename": "mall",
     "filter": [
       {
@@ -1437,7 +1325,6 @@
   {
     "id": 116,
     "categoryId": 6,
-    "name": "Masáže",
     "filename": "massage",
     "filter": [
       {
@@ -1449,7 +1336,6 @@
   {
     "id": 117,
     "categoryId": 6,
-    "name": "Mobilné telefóny",
     "filename": "mobile_phone",
     "filter": [
       {
@@ -1461,7 +1347,6 @@
   {
     "id": 118,
     "categoryId": 6,
-    "name": "money_lender",
     "filename": "money_lender",
     "filter": [
       {
@@ -1473,7 +1358,6 @@
   {
     "id": 119,
     "categoryId": 6,
-    "name": "Motocykle",
     "filename": "motorcycle",
     "filter": [
       {
@@ -1485,7 +1369,6 @@
   {
     "id": 120,
     "categoryId": 6,
-    "name": "Hudobné nástroje",
     "filename": "musical_instrument",
     "filter": [
       {
@@ -1497,7 +1380,6 @@
   {
     "id": 121,
     "categoryId": 6,
-    "name": "Noviny",
     "filename": "newsagent",
     "filter": [
       {
@@ -1509,7 +1391,6 @@
   {
     "id": 122,
     "categoryId": 6,
-    "name": "Optika",
     "filename": "optician",
     "filter": [
       {
@@ -1521,7 +1402,6 @@
   {
     "id": 123,
     "categoryId": 6,
-    "name": "Organické potraviny",
     "filename": "organic",
     "filter": [
       {
@@ -1533,7 +1413,6 @@
   {
     "id": 124,
     "categoryId": 6,
-    "name": "Outdoor",
     "filename": "outdoor",
     "filter": [
       {
@@ -1545,7 +1424,6 @@
   {
     "id": 125,
     "categoryId": 6,
-    "name": "Farby",
     "filename": "paint",
     "filter": [
       {
@@ -1557,7 +1435,6 @@
   {
     "id": 126,
     "categoryId": 6,
-    "name": "pawnbroker",
     "filename": "pawnbroker",
     "filter": [
       {
@@ -1569,7 +1446,6 @@
   {
     "id": 127,
     "categoryId": 6,
-    "name": "Zvieratá",
     "filename": "pet",
     "filter": [
       {
@@ -1581,7 +1457,6 @@
   {
     "id": 128,
     "categoryId": 6,
-    "name": "Plody mora",
     "filename": "seafood",
     "filter": [
       {
@@ -1593,7 +1468,6 @@
   {
     "id": 129,
     "categoryId": 6,
-    "name": "Second hand",
     "filename": "second_hand",
     "filter": [
       {
@@ -1605,7 +1479,6 @@
   {
     "id": 130,
     "categoryId": 6,
-    "name": "Obuv",
     "filename": "shoes",
     "filter": [
       {
@@ -1617,7 +1490,6 @@
   {
     "id": 131,
     "categoryId": 6,
-    "name": "Športové potreby",
     "filename": "sports",
     "filter": [
       {
@@ -1629,7 +1501,6 @@
   {
     "id": 132,
     "categoryId": 6,
-    "name": "Papierníctvo",
     "filename": "stationery",
     "filter": [
       {
@@ -1641,7 +1512,6 @@
   {
     "id": 133,
     "categoryId": 6,
-    "name": "Tetovanie",
     "filename": "tattoo",
     "filter": [
       {
@@ -1653,7 +1523,6 @@
   {
     "id": 134,
     "categoryId": 6,
-    "name": "Hračkárstvo",
     "filename": "toys",
     "filter": [
       {
@@ -1665,7 +1534,6 @@
   {
     "id": 135,
     "categoryId": 6,
-    "name": "Stavebniny",
     "filename": "building_supplies",
     "filter": [
       {
@@ -1681,7 +1549,6 @@
   {
     "id": 136,
     "categoryId": 6,
-    "name": "vacant",
     "filename": "vacant",
     "filter": [
       {
@@ -1693,7 +1560,6 @@
   {
     "id": 137,
     "categoryId": 6,
-    "name": "Vysávače",
     "filename": "vacuum_cleaner",
     "filter": [
       {
@@ -1705,7 +1571,6 @@
   {
     "id": 138,
     "categoryId": 6,
-    "name": "variety_store",
     "filename": "variety_store",
     "filter": [
       {
@@ -1717,7 +1582,6 @@
   {
     "id": 139,
     "categoryId": 6,
-    "name": "Video/DVD",
     "filename": "video",
     "filter": [
       {
@@ -1729,7 +1593,6 @@
   {
     "id": 140,
     "categoryId": 11,
-    "name": "ZOO",
     "filename": "zoo",
     "filter": [
       {
@@ -1741,7 +1604,6 @@
   {
     "id": 141,
     "categoryId": 9,
-    "name": "Horská chata",
     "filename": "alpine_hut",
     "filter": [
       {
@@ -1753,7 +1615,6 @@
   {
     "id": 142,
     "categoryId": 9,
-    "name": "Atrakcia",
     "filename": "attraction",
     "filter": [
       {
@@ -1765,7 +1626,6 @@
   {
     "id": 143,
     "categoryId": 2,
-    "name": "Toalety",
     "filename": "toilets",
     "filter": [
       {
@@ -1777,7 +1637,6 @@
   {
     "id": 144,
     "categoryId": 2,
-    "name": "Telefón",
     "filename": "telephone",
     "filter": [
       {
@@ -1789,7 +1648,6 @@
   {
     "id": 145,
     "categoryId": 2,
-    "name": "Miestny úrad",
     "filename": "townhall",
     "filter": [
       {
@@ -1801,7 +1659,6 @@
   {
     "id": 146,
     "categoryId": 11,
-    "name": "Väznica",
     "filename": "prison",
     "filter": [
       {
@@ -1813,7 +1670,6 @@
   {
     "id": 147,
     "categoryId": 6,
-    "name": "Trhovisko",
     "filename": "marketplace",
     "filter": [
       {
@@ -1825,7 +1681,6 @@
   {
     "id": 148,
     "categoryId": 8,
-    "name": "Bar",
     "filename": "bar",
     "filter": [
       {
@@ -1837,7 +1692,6 @@
   {
     "id": 149,
     "categoryId": 8,
-    "name": "Kaviareň",
     "filename": "cafe",
     "filter": [
       {
@@ -1849,7 +1703,6 @@
   {
     "id": 150,
     "categoryId": 8,
-    "name": "Verejný gril",
     "filename": "bbq",
     "filter": [
       {
@@ -1861,7 +1714,6 @@
   {
     "id": 151,
     "categoryId": 2,
-    "name": "Pitná voda",
     "filename": "drinking_water",
     "filter": [
       {
@@ -1873,7 +1725,6 @@
   {
     "id": 152,
     "categoryId": 2,
-    "name": "Taxi",
     "filename": "taxi",
     "filter": [
       {
@@ -1885,7 +1736,6 @@
   {
     "id": 153,
     "categoryId": 2,
-    "name": "Knižnica",
     "filename": "library",
     "filter": [
       {
@@ -1897,7 +1747,6 @@
   {
     "id": 154,
     "categoryId": 2,
-    "name": "Umývačka áut",
     "filename": "car_wash",
     "filter": [
       {
@@ -1909,7 +1758,6 @@
   {
     "id": 155,
     "categoryId": 5,
-    "name": "Veterinár",
     "filename": "veterinary",
     "filter": [
       {
@@ -1921,7 +1769,6 @@
   {
     "id": 156,
     "categoryId": 3,
-    "name": "Semafór",
     "filename": "traffic_signals",
     "filter": [
       {
@@ -1933,7 +1780,6 @@
   {
     "id": 157,
     "categoryId": 3,
-    "name": "Železničná zástavka",
     "filename": "halt",
     "filter": [
       {
@@ -1945,7 +1791,6 @@
   {
     "id": 158,
     "categoryId": 3,
-    "name": "Železničné priecestie",
     "filename": "level_crossing",
     "filter": [
       {
@@ -1957,7 +1802,6 @@
   {
     "id": 159,
     "categoryId": 3,
-    "name": "Zástavka električky",
     "filename": "tram_stop",
     "filter": [
       {
@@ -1969,7 +1813,6 @@
   {
     "id": 160,
     "categoryId": 3,
-    "name": "Heliport",
     "filename": "helipad",
     "filter": [
       {
@@ -1981,7 +1824,6 @@
   {
     "id": 161,
     "categoryId": 11,
-    "name": "Vodárenská veža",
     "filename": "water_tower",
     "filter": [
       {
@@ -1993,7 +1835,6 @@
   {
     "id": 162,
     "categoryId": 11,
-    "name": "Veterný mlyn",
     "filename": "windmill",
     "filter": [
       {
@@ -2005,7 +1846,6 @@
   {
     "id": 163,
     "categoryId": 2,
-    "name": "Sauna",
     "filename": "sauna",
     "filter": [
       {
@@ -2017,7 +1857,6 @@
   {
     "id": 164,
     "categoryId": 2,
-    "name": "Čerpacia stanica LPG",
     "filename": "fuel",
     "filter": [
       {
@@ -2033,7 +1872,6 @@
   {
     "id": 166,
     "categoryId": 12,
-    "name": "Park pre psov",
     "filename": "dog_park",
     "filter": [
       {
@@ -2045,7 +1883,6 @@
   {
     "id": 167,
     "categoryId": 12,
-    "name": "Športové centrum",
     "filename": "sports_centre",
     "filter": [
       {
@@ -2057,7 +1894,6 @@
   {
     "id": 168,
     "categoryId": 12,
-    "name": "Kurzy golfu",
     "filename": "golf_course",
     "filter": [
       {
@@ -2069,7 +1905,6 @@
   {
     "id": 169,
     "categoryId": 12,
-    "name": "Štadión",
     "filename": "stadium",
     "filter": [
       {
@@ -2081,7 +1916,6 @@
   {
     "id": 170,
     "categoryId": 12,
-    "name": "Ihrisko",
     "filename": "pitch",
     "filter": [
       {
@@ -2093,7 +1927,6 @@
   {
     "id": 171,
     "categoryId": 12,
-    "name": "Vodný park",
     "filename": "water_park",
     "filter": [
       {
@@ -2105,7 +1938,6 @@
   {
     "id": 172,
     "categoryId": 12,
-    "name": "Vypúštanie lodí",
     "filename": "slipway",
     "filter": [
       {
@@ -2117,7 +1949,6 @@
   {
     "id": 173,
     "categoryId": 12,
-    "name": "Rybolov",
     "filename": "fishing",
     "filter": [
       {
@@ -2129,7 +1960,6 @@
   {
     "id": 174,
     "categoryId": 12,
-    "name": "Park",
     "filename": "park",
     "filter": [
       {
@@ -2141,7 +1971,6 @@
   {
     "id": 175,
     "categoryId": 12,
-    "name": "Detské ihrisko",
     "filename": "playground",
     "filter": [
       {
@@ -2153,7 +1982,6 @@
   {
     "id": 176,
     "categoryId": 12,
-    "name": "Záhrada",
     "filename": "garden",
     "filter": [
       {
@@ -2165,7 +1993,6 @@
   {
     "id": 177,
     "categoryId": 12,
-    "name": "Verejná plocha",
     "filename": "common",
     "filter": [
       {
@@ -2177,7 +2004,6 @@
   {
     "id": 178,
     "categoryId": 12,
-    "name": "Klzisko",
     "filename": "ice_rink",
     "filter": [
       {
@@ -2189,7 +2015,6 @@
   {
     "id": 179,
     "categoryId": 12,
-    "name": "Mini-golf",
     "filename": "miniature_golf",
     "filter": [
       {
@@ -2201,7 +2026,6 @@
   {
     "id": 180,
     "categoryId": 12,
-    "name": "Tanec",
     "filename": "dance",
     "filter": [
       {
@@ -2213,7 +2037,6 @@
   {
     "id": 181,
     "categoryId": 14,
-    "name": "Základná škola",
     "filename": "school",
     "filter": [
       {
@@ -2225,7 +2048,6 @@
   {
     "id": 182,
     "categoryId": 13,
-    "name": "9pin",
     "filename": "9pin",
     "filter": [
       {
@@ -2237,7 +2059,6 @@
   {
     "id": 183,
     "categoryId": 13,
-    "name": "Bowling",
     "filename": "10pin",
     "filter": [
       {
@@ -2249,7 +2070,6 @@
   {
     "id": 184,
     "categoryId": 13,
-    "name": "Americký futbal",
     "filename": "american_football",
     "filter": [
       {
@@ -2261,7 +2081,6 @@
   {
     "id": 185,
     "categoryId": 13,
-    "name": "Lukostrelba",
     "filename": "archery",
     "filter": [
       {
@@ -2273,7 +2092,6 @@
   {
     "id": 186,
     "categoryId": 13,
-    "name": "Atletika",
     "filename": "athletics",
     "filter": [
       {
@@ -2285,7 +2103,6 @@
   {
     "id": 187,
     "categoryId": 13,
-    "name": "australian_football",
     "filename": "australian_football",
     "filter": [
       {
@@ -2297,7 +2114,6 @@
   {
     "id": 188,
     "categoryId": 13,
-    "name": "Baseball",
     "filename": "baseball",
     "filter": [
       {
@@ -2309,7 +2125,6 @@
   {
     "id": 189,
     "categoryId": 13,
-    "name": "Basketball",
     "filename": "basketball",
     "filter": [
       {
@@ -2321,7 +2136,6 @@
   {
     "id": 190,
     "categoryId": 13,
-    "name": "Plážový volejbal",
     "filename": "beachvolleyball",
     "filter": [
       {
@@ -2333,7 +2147,6 @@
   {
     "id": 191,
     "categoryId": 13,
-    "name": "Bmx",
     "filename": "bmx",
     "filter": [
       {
@@ -2345,7 +2158,6 @@
   {
     "id": 192,
     "categoryId": 13,
-    "name": "Boules",
     "filename": "boules",
     "filter": [
       {
@@ -2357,7 +2169,6 @@
   {
     "id": 193,
     "categoryId": 13,
-    "name": "Bowls",
     "filename": "bowls",
     "filter": [
       {
@@ -2369,7 +2180,6 @@
   {
     "id": 194,
     "categoryId": 13,
-    "name": "canadian_football",
     "filename": "canadian_football",
     "filter": [
       {
@@ -2381,7 +2191,6 @@
   {
     "id": 195,
     "categoryId": 13,
-    "name": "Kanoe",
     "filename": "canoe",
     "filter": [
       {
@@ -2393,7 +2202,6 @@
   {
     "id": 196,
     "categoryId": 13,
-    "name": "Šach",
     "filename": "chess",
     "filter": [
       {
@@ -2405,7 +2213,6 @@
   {
     "id": 197,
     "categoryId": 13,
-    "name": "Lezenie",
     "filename": "climbing",
     "filter": [
       {
@@ -2417,7 +2224,6 @@
   {
     "id": 198,
     "categoryId": 13,
-    "name": "Kriket",
     "filename": "cricket",
     "filter": [
       {
@@ -2429,7 +2235,6 @@
   {
     "id": 199,
     "categoryId": 13,
-    "name": "cricket_nets",
     "filename": "cricket_nets",
     "filter": [
       {
@@ -2441,7 +2246,6 @@
   {
     "id": 200,
     "categoryId": 13,
-    "name": "croquet",
     "filename": "croquet",
     "filter": [
       {
@@ -2453,7 +2257,6 @@
   {
     "id": 201,
     "categoryId": 13,
-    "name": "Bicyklovanie",
     "filename": "cycling",
     "filter": [
       {
@@ -2465,7 +2268,6 @@
   {
     "id": 202,
     "categoryId": 13,
-    "name": "Potápanie",
     "filename": "diving",
     "filter": [
       {
@@ -2477,7 +2279,6 @@
   {
     "id": 203,
     "categoryId": 13,
-    "name": "Preteky psov",
     "filename": "dog_racing",
     "filter": [
       {
@@ -2489,7 +2290,6 @@
   {
     "id": 204,
     "categoryId": 13,
-    "name": "Jazdenie na koni",
     "filename": "equestrian",
     "filter": [
       {
@@ -2501,7 +2301,6 @@
   {
     "id": 205,
     "categoryId": 13,
-    "name": "Futbal",
     "filename": "football",
     "filter": [
       {
@@ -2513,7 +2312,6 @@
   {
     "id": 206,
     "categoryId": 13,
-    "name": "gaelic_football",
     "filename": "gaelic_football",
     "filter": [
       {
@@ -2525,7 +2323,6 @@
   {
     "id": 207,
     "categoryId": 13,
-    "name": "Golf",
     "filename": "golf",
     "filter": [
       {
@@ -2537,7 +2334,6 @@
   {
     "id": 208,
     "categoryId": 13,
-    "name": "Gymnastika",
     "filename": "gymnastics",
     "filter": [
       {
@@ -2549,7 +2345,6 @@
   {
     "id": 209,
     "categoryId": 13,
-    "name": "Hokej",
     "filename": "hockey",
     "filter": [
       {
@@ -2561,7 +2356,6 @@
   {
     "id": 210,
     "categoryId": 13,
-    "name": "horseshoes",
     "filename": "horseshoes",
     "filter": [
       {
@@ -2573,7 +2367,6 @@
   {
     "id": 211,
     "categoryId": 13,
-    "name": "Dostihy",
     "filename": "horse_racing",
     "filter": [
       {
@@ -2585,7 +2378,6 @@
   {
     "id": 212,
     "categoryId": 13,
-    "name": "ice_stock",
     "filename": "ice_stock",
     "filter": [
       {
@@ -2597,7 +2389,6 @@
   {
     "id": 213,
     "categoryId": 13,
-    "name": "korfball",
     "filename": "korfball",
     "filter": [
       {
@@ -2609,7 +2400,6 @@
   {
     "id": 214,
     "categoryId": 13,
-    "name": "Motorky",
     "filename": "motor",
     "filter": [
       {
@@ -2621,7 +2411,6 @@
   {
     "id": 215,
     "categoryId": 13,
-    "name": "Multi",
     "filename": "multi",
     "filter": [
       {
@@ -2633,7 +2422,6 @@
   {
     "id": 216,
     "categoryId": 13,
-    "name": "orienteering",
     "filename": "orienteering",
     "filter": [
       {
@@ -2645,7 +2433,6 @@
   {
     "id": 217,
     "categoryId": 13,
-    "name": "paddle_tennis",
     "filename": "paddle_tennis",
     "filter": [
       {
@@ -2657,7 +2444,6 @@
   {
     "id": 218,
     "categoryId": 13,
-    "name": "Paraglajding",
     "filename": "paragliding",
     "filter": [
       {
@@ -2669,7 +2455,6 @@
   {
     "id": 219,
     "categoryId": 13,
-    "name": "pelota",
     "filename": "pelota",
     "filter": [
       {
@@ -2681,7 +2466,6 @@
   {
     "id": 220,
     "categoryId": 13,
-    "name": "racquet",
     "filename": "racquet",
     "filter": [
       {
@@ -2693,7 +2477,6 @@
   {
     "id": 221,
     "categoryId": 13,
-    "name": "rowing",
     "filename": "rowing",
     "filter": [
       {
@@ -2705,7 +2488,6 @@
   {
     "id": 222,
     "categoryId": 13,
-    "name": "rugby_league",
     "filename": "rugby_league",
     "filter": [
       {
@@ -2717,7 +2499,6 @@
   {
     "id": 223,
     "categoryId": 13,
-    "name": "rugby_union",
     "filename": "rugby_union",
     "filter": [
       {
@@ -2729,7 +2510,6 @@
   {
     "id": 224,
     "categoryId": 13,
-    "name": "Strelba",
     "filename": "shooting",
     "filter": [
       {
@@ -2741,7 +2521,6 @@
   {
     "id": 225,
     "categoryId": 13,
-    "name": "Korčulovanie",
     "filename": "skating",
     "filter": [
       {
@@ -2753,7 +2532,6 @@
   {
     "id": 226,
     "categoryId": 13,
-    "name": "Skateboard",
     "filename": "skateboard",
     "filter": [
       {
@@ -2765,7 +2543,6 @@
   {
     "id": 227,
     "categoryId": 13,
-    "name": "Lyžovanie",
     "filename": "skiing",
     "filter": [
       {
@@ -2777,7 +2554,6 @@
   {
     "id": 228,
     "categoryId": 13,
-    "name": "Futbal",
     "filename": "soccer",
     "filter": [
       {
@@ -2789,7 +2565,6 @@
   {
     "id": 229,
     "categoryId": 13,
-    "name": "Plávanie",
     "filename": "swimming",
     "filter": [
       {
@@ -2801,7 +2576,6 @@
   {
     "id": 230,
     "categoryId": 13,
-    "name": "Stolný tenis",
     "filename": "table_tennis",
     "filter": [
       {
@@ -2813,7 +2587,6 @@
   {
     "id": 231,
     "categoryId": 13,
-    "name": "Hádzaná",
     "filename": "team_handball",
     "filter": [
       {
@@ -2825,7 +2598,6 @@
   {
     "id": 232,
     "categoryId": 13,
-    "name": "Tenis",
     "filename": "tennis",
     "filter": [
       {
@@ -2837,7 +2609,6 @@
   {
     "id": 233,
     "categoryId": 13,
-    "name": "Tobogan",
     "filename": "toboggan",
     "filter": [
       {
@@ -2849,7 +2620,6 @@
   {
     "id": 234,
     "categoryId": 13,
-    "name": "Volejbal",
     "filename": "volleyball",
     "filter": [
       {
@@ -2861,7 +2631,6 @@
   {
     "id": 235,
     "categoryId": 13,
-    "name": "Vodné lyžovanie",
     "filename": "water_ski",
     "filter": [
       {
@@ -2873,7 +2642,6 @@
   {
     "id": 236,
     "categoryId": 14,
-    "name": "Univerzita",
     "filename": "university",
     "filter": [
       {
@@ -2885,7 +2653,6 @@
   {
     "id": 237,
     "categoryId": 14,
-    "name": "Materská škola",
     "filename": "kindergarten",
     "filter": [
       {
@@ -2897,7 +2664,6 @@
   {
     "id": 238,
     "categoryId": 14,
-    "name": "Stredná škola",
     "filename": "college",
     "filter": [
       {
@@ -2909,7 +2675,6 @@
   {
     "id": 239,
     "categoryId": 14,
-    "name": "Autoškola",
     "filename": "driving_school",
     "filter": [
       {
@@ -2921,7 +2686,6 @@
   {
     "id": 240,
     "categoryId": 4,
-    "name": "Kaplnka",
     "filename": "chapel",
     "filter": [
       {
@@ -2937,7 +2701,6 @@
   {
     "id": 241,
     "categoryId": 9,
-    "name": "Miesto na piknik",
     "filename": "picnic_site",
     "filter": [
       {
@@ -2949,7 +2712,6 @@
   {
     "id": 242,
     "categoryId": 9,
-    "name": "Miesto s ohniskom",
     "filename": "fireplace",
     "filter": [
       {
@@ -2961,7 +2723,6 @@
   {
     "id": 243,
     "categoryId": 10,
-    "name": "Lokalita",
     "filename": "locality",
     "filter": [
       {
@@ -2973,7 +2734,6 @@
   {
     "id": 244,
     "categoryId": 1,
-    "name": "Vodopád",
     "filename": "waterfall",
     "filter": [
       {
@@ -2985,7 +2745,6 @@
   {
     "id": 245,
     "categoryId": 1,
-    "name": "Jazero",
     "filename": "lake",
     "filter": [
       {
@@ -3002,7 +2761,6 @@
   {
     "id": 246,
     "categoryId": 1,
-    "name": "Priehrada",
     "filename": "riverbank",
     "filter": [
       {
@@ -3018,7 +2776,6 @@
   {
     "id": 248,
     "categoryId": 1,
-    "name": "Prírodná rezervácia",
     "filename": "boundary_reserve",
     "filter": [
       {
@@ -3034,7 +2791,6 @@
   {
     "id": 249,
     "categoryId": 1,
-    "name": "Prírodná pamiatka",
     "filename": "boundary_monument",
     "filter": [
       {
@@ -3050,7 +2806,6 @@
   {
     "id": 250,
     "categoryId": 1,
-    "name": "Chránený areál",
     "filename": "boundary_protected_site",
     "filter": [
       {
@@ -3066,7 +2821,6 @@
   {
     "id": 251,
     "categoryId": 1,
-    "name": "Chránená krajinná oblasť",
     "filename": "boundary_protected_area",
     "filter": [
       {
@@ -3082,7 +2836,6 @@
   {
     "id": 252,
     "categoryId": 1,
-    "name": "Národný park",
     "filename": "boundary_national_park",
     "filter": [
       {
@@ -3098,7 +2851,6 @@
   {
     "id": 253,
     "categoryId": 2,
-    "name": "Automat na mlieko",
     "filename": "vending_machine_milk",
     "filter": [
       {
@@ -3114,7 +2866,6 @@
   {
     "id": 254,
     "categoryId": 1,
-    "name": "Významné mokriny (RAMSAR)",
     "filename": "boundary_protected_area_ramsar",
     "filter": [
       {
@@ -3130,7 +2881,6 @@
   {
     "id": 255,
     "categoryId": 10,
-    "name": "Adresné body",
     "filename": "addr",
     "filter": [
       {
@@ -3142,7 +2892,6 @@
   {
     "id": 256,
     "categoryId": 11,
-    "name": "Banícka šachta",
     "filename": "mineshaft",
     "filter": [
       {
@@ -3154,7 +2903,6 @@
   {
     "id": 257,
     "categoryId": 11,
-    "name": "Štôlňa",
     "filename": "adit",
     "filter": [
       {
@@ -3166,7 +2914,6 @@
   {
     "id": 258,
     "categoryId": 11,
-    "name": "Studňa",
     "filename": "water_well",
     "filter": [
       {
@@ -3178,7 +2925,6 @@
   {
     "id": 259,
     "categoryId": 4,
-    "name": "Kríž",
     "filename": "wayside_cross",
     "filter": [
       {
@@ -3190,7 +2936,6 @@
   {
     "id": 260,
     "categoryId": 4,
-    "name": "Svätyňa",
     "filename": "wayside_shrine",
     "filter": [
       {
@@ -3202,7 +2947,6 @@
   {
     "id": 261,
     "categoryId": 13,
-    "name": "Posilňovňa",
     "filename": "gym",
     "filter": [
       {
@@ -3214,7 +2958,6 @@
   {
     "id": 262,
     "categoryId": 7,
-    "name": "Paroplynová elektráreň",
     "filename": "generator_gas",
     "filter": [
       {
@@ -3230,7 +2973,6 @@
   {
     "id": 263,
     "categoryId": 4,
-    "name": "Kaštiel",
     "filename": "manor",
     "filter": [
       {
@@ -3242,7 +2984,6 @@
   {
     "id": 264,
     "categoryId": 1,
-    "name": "Geomorfologické členenie",
     "filename": "geomorphological_unit",
     "filter": [
       {
@@ -3254,7 +2995,6 @@
   {
     "id": 265,
     "categoryId": 11,
-    "name": "Vojenský bunker",
     "filename": "bunker",
     "filter": [
       {
@@ -3266,7 +3006,6 @@
   {
     "id": 266,
     "categoryId": 3,
-    "name": "Príjazd/Výjazd z diaľnice",
     "filename": "motorway_junction",
     "filter": [
       {
@@ -3278,7 +3017,6 @@
   {
     "id": 267,
     "categoryId": 4,
-    "name": "Sochy",
     "filename": "sculpture",
     "filter": [
       {
@@ -3294,7 +3032,6 @@
   {
     "id": 268,
     "categoryId": 11,
-    "name": "Komín",
     "filename": "chimney",
     "filter": [
       {
@@ -3306,7 +3043,6 @@
   {
     "id": 269,
     "categoryId": 13,
-    "name": "Paragliding",
     "filename": "paragliding",
     "filter": [
       {
@@ -3322,7 +3058,6 @@
   {
     "id": 270,
     "categoryId": 13,
-    "name": "Závesné lietanie",
     "filename": "hanggliding",
     "filter": [
       {
@@ -3338,7 +3073,6 @@
   {
     "id": 271,
     "categoryId": 9,
-    "name": "Krmelec",
     "filename": "feeding",
     "filter": [
       {
@@ -3351,7 +3085,6 @@
   {
     "id": 272,
     "categoryId": 9,
-    "name": "Ohnisko",
     "filename": "fireplace",
     "filter": [
       {
@@ -3363,7 +3096,6 @@
   {
     "id": 273,
     "categoryId": 13,
-    "name": "Bedminton/Squash",
     "filename": "tennis",
     "filter": [
       {
@@ -3376,7 +3108,6 @@
   {
     "id": 274,
     "categoryId": 15,
-    "name": "Rázcestník",
     "filename": "stand",
     "filter": [
       {
@@ -3392,7 +3123,6 @@
   {
     "id": 275,
     "categoryId": 13,
-    "name": "Nabíjacia stanica pre bicykle",
     "filename": "ecycle_charging",
     "filter": [
       {

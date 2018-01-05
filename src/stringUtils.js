@@ -41,3 +41,13 @@ export function translate(translations, key, dflt = '') {
 }
 
 // console.log('XXXXXXXXXXXX', splitAndSubstitute('foo {a} bar {b} baz', { a: 'A', b: undefined }));
+
+
+export function escapeHtml(unsafe) {
+  return unsafe
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}

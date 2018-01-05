@@ -1,77 +1,62 @@
 [
   {
     "id": 1,
-    "name": "Príroda",
     "filename": "nature"
   },
   {
     "id": 2,
-    "name": "Služby",
     "filename": "services"
   },
   {
     "id": 3,
-    "name": "Doprava",
     "filename": "transport"
   },
   {
     "id": 4,
-    "name": "Pamiatky",
     "filename": "landmark"
   },
   {
     "id": 5,
-    "name": "Zdravotníctvo",
     "filename": "health"
   },
   {
     "id": 6,
-    "name": "Obchody",
     "filename": "shopping"
   },
   {
     "id": 7,
-    "name": "Energetika",
     "filename": "power"
   },
   {
     "id": 8,
-    "name": "Ubytovanie a Stravovanie",
     "filename": "accomodation"
   },
   {
     "id": 9,
-    "name": "Turizmus, turistika",
     "filename": "hiking"
   },
   {
     "id": 10,
-    "name": "Uzemné členenie",
     "filename": "place"
   },
   {
     "id": 11,
-    "name": "Ostatné",
     "filename": "other"
   },
   {
     "id": 12,
-    "name": "Voľný čas",
     "filename": "leisure"
   },
   {
     "id": 13,
-    "name": "Šport",
     "filename": "sport"
   },
   {
     "id": 14,
-    "name": "Vzdelávanie",
     "filename": "education"
   },
   {
     "id": 15,
-    "name": "Bicyklovanie",
     "filename": "cycling"
   }
 ]
