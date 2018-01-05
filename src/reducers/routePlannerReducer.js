@@ -40,7 +40,7 @@ export default function routePlanner(state = initialState, action) {
     case at.ROUTE_PLANNER_SET_FINISH:
       return { ...state, finish: action.payload, pickMode: state.start ? null : 'finish' };
     case at.ROUTE_PLANNER_SWAP_ENDS:
-      return { ...state, start: state.finish, finish: state.start, midpoint: [...state.midpoints].reverse() };
+      return { ...state, start: state.finish, finish: state.start, midpoints: [...state.midpoints].reverse() };
     case at.ROUTE_PLANNER_ADD_MIDPOINT:
       return update(state, { midpoints: { $splice: [[action.payload.position, 0, action.payload.midpoint]] } });
     case at.ROUTE_PLANNER_SET_MIDPOINT:
