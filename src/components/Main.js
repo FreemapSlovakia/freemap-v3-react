@@ -80,6 +80,7 @@ import 'fm3/bootstrap/css/bootstrap.css';
 import 'fm3/styles/main.scss';
 import 'leaflet/dist/leaflet.css';
 import 'fm3/styles/leaflet.scss';
+import Attribution from './Attribution';
 
 class Main extends React.Component {
   static propTypes = {
@@ -274,6 +275,8 @@ class Main extends React.Component {
             <HomeLocationPickingMenu />
           </div>
         </div>
+
+        <Attribution />
 
         <div className="fm-type-zoom-control">
           <Panel className="fm-toolbar">
