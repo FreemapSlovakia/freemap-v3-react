@@ -2,7 +2,7 @@
 
 export default {
   general: {
-    elevationProfile: 'Výškovy profil',
+    elevationProfile: 'Výškový profil',
     save: 'Uložiť',
     cancel: 'Zrušiť',
     modify: 'Upraviť',
@@ -37,7 +37,7 @@ export default {
   routePlanner: {
     start: 'Štart',
     finish: 'Cieľ',
-    swap: 'Prehodiť štart a clieľ',
+    swap: 'Prehodiť štart a cieľ',
     point: {
       pick: 'Vybrať na mape',
       current: 'Tvoja poloha',
@@ -58,7 +58,7 @@ export default {
     duration: 'Čas: {h} h {m} m',
     removeMidpoint: 'Odstrániť zastávku?',
     noHomeAlert: 'Najprv si musíte nastaviť domovskú polohu.',
-    showMidpointHint: 'Pre pridanie medzizastávky potiahnite úsek cesty na zvolené miesto.',
+    showMidpointHint: 'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
     routeNotFound: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
     fetchingError: 'Nastala chyba pri hľadaní trasy: {err}',
@@ -66,7 +66,7 @@ export default {
     maneuverWithoutName: '{type} {modifier}',
 
     maneuver: {
-      types: {
+      types: 
         turn: 'odbočte',
         'new name': 'choďte',
         depart: 'začnite',
@@ -139,7 +139,7 @@ export default {
     upload: 'Nahrať',
     f: {
       firstUploaded: 'od prvej nahranej',
-      lastUploaded: 'od posledne nahranej',
+      lastUploaded: 'od poslednej nahranej',
       firstCaptured: 'od najstaršie odfotenej',
       lastCaptured: 'od najnovšie odfotenej',
       leastRated: 'od najmenšieho hodnotenia',
@@ -179,7 +179,7 @@ export default {
           <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10MB. Väčšie súbory server odmietne.</li>
           <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania vymazané.</li>
           <li>Zvýšenú pozornosť venujte tomu, aby ste nahrávali výlučne vlastnú tvorbu.</li>
-          <li>Nahraté fotografie sú ďaľej šírené pod licenciou CC-BY-SA 2.0.</li>
+          <li>Nahraté fotografie sú ďalej šírené pod licenciou CC-BY-SA 2.0.</li>
           <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
           <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu vymazať, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
@@ -196,7 +196,7 @@ export default {
     pictureFetchingError: 'Nastala chyba pri načítavaní fotky: {err}',
     picturesFetchingError: 'Nastala chyba pri načítavaní fotiek: {err}',
     savingError: 'Nastala chyba pri ukladaní fotky: {err}',
-    commentAddingError: 'Nastala chyba pri pridávani komentára: {err}',
+    commentAddingError: 'Nastala chyba pri pridávaní komentára: {err}',
     ratingError: 'Nastala chyba pri hodnotení: {err}',
     unauthenticatedError: 'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
   },
@@ -207,7 +207,7 @@ export default {
     area: 'Plocha',
     elevationLine: 'Nadmorská výška:',
     removePoint: 'Odstrániť bod?',
-    elevationFetchError: 'Nastala chyba pri získavani výšky bodu: {err}',
+    elevationFetchError: 'Nastala chyba pri získavaní výšky bodu: {err}',
   },
 
   trackViewer: {
@@ -237,7 +237,7 @@ export default {
     },
     shareModal: {
       title: 'Zdieľať trasu',
-      description: 'Trasa je dostupná na následovnej adrese:',
+      description: 'Trasa je dostupná na nasledovnej adrese:',
     },
     fetchingError: 'Nastala chyba pri získavaní záznamu trasy: {err}',
     savingError: 'Nepodarilo sa uložiť trasu: {err}',
@@ -277,7 +277,7 @@ export default {
     account: {
       name: 'Meno',
       email: 'E-Mail',
-      noAuthInfo: 'Dostupné iba pre prihásených používateľov.',
+      noAuthInfo: 'Dostupné iba pre prihlásených používateľov.',
     },
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',
@@ -294,7 +294,7 @@ export default {
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
-    savingError: 'Nastala chyba pri ukladani nastavení: {err}',
+    savingError: 'Nastala chyba pri ukladaní nastavení: {err}',
   },
 
   changesets: {
@@ -315,7 +315,7 @@ export default {
   objects: {
     type: 'Typ',
     lowZoomAlert: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
-    fetchingError: 'Nastala chyba pri získavani objektov: {err}',
+    fetchingError: 'Nastala chyba pri získavaní objektov: {err}',
     categories: {
       1: 'Príroda',
       2: 'Služby',
@@ -326,7 +326,7 @@ export default {
       7: 'Energetika',
       8: 'Ubytovanie a Stravovanie',
       9: 'Turizmus, turistika',
-      10: 'Uzemné členenie',
+      10: 'Územné členenie',
       11: 'Ostatné',
       12: 'Voľný čas',
       13: 'Šport',
@@ -380,7 +380,7 @@ export default {
       47: 'Prístrešok, altánok',
       48: 'Poštový úrad',
       49: 'Pamätník, bojisko',
-      50: 'Polovnícky posed',
+      50: 'Poľovnícky posed',
       51: 'Vysielač',
       52: 'Rozhľadňa',
       53: 'Motel',
@@ -462,7 +462,7 @@ export default {
       129: 'Second hand',
       130: 'Obuv',
       131: 'Športové potreby',
-      132: 'Papierníctvo',
+      132: 'Papiernictvo',
       133: 'Tetovanie',
       134: 'Hračkárstvo',
       135: 'Stavebniny',
@@ -486,7 +486,7 @@ export default {
       153: 'Knižnica',
       154: 'Umývačka áut',
       155: 'Veterinár',
-      156: 'Semafór',
+      156: 'Semafor',
       157: 'Železničná zástavka',
       158: 'Železničné priecestie',
       159: 'Zástavka električky',
@@ -501,7 +501,7 @@ export default {
       169: 'Štadión',
       170: 'Ihrisko',
       171: 'Vodný park',
-      172: 'Vypúštanie lodí',
+      172: 'Vypúšťanie lodí',
       173: 'Rybolov',
       174: 'Park',
       175: 'Detské ihrisko',
@@ -514,7 +514,7 @@ export default {
       182: '9pin',
       183: 'Bowling',
       184: 'Americký futbal',
-      185: 'Lukostrelba',
+      185: 'Lukostreľba',
       186: 'Atletika',
       187: 'australian_football',
       188: 'Baseball',
@@ -547,14 +547,14 @@ export default {
       215: 'Multi',
       216: 'orienteering',
       217: 'paddle_tennis',
-      218: 'Paraglajding',
+      218: 'Paragliding',
       219: 'pelota',
       220: 'racquet',
       221: 'rowing',
       222: 'rugby_league',
       223: 'rugby_union',
-      224: 'Strelba',
-      225: 'Korčulovanie',
+      224: 'Streľba',
+      225: 'Korčuľovanie',
       226: 'Skateboard',
       227: 'Lyžovanie',
       228: 'Futbal',
@@ -591,7 +591,7 @@ export default {
       260: 'Svätyňa',
       261: 'Posilňovňa',
       262: 'Paroplynová elektráreň',
-      263: 'Kaštiel',
+      263: 'Kaštieľ',
       264: 'Geomorfologické členenie',
       265: 'Vojenský bunker',
       266: 'Príjazd/Výjazd z diaľnice',
@@ -634,12 +634,12 @@ export default {
 
   embed: {
     code: 'Vložte na vašu stránku tento html kód:',
-    example: 'Výsledok bude vyzerať následovne:',
+    example: 'Výsledok bude vyzerať nasledovne:',
   },
 
   tips: {
     previous: 'Predošlý tip',
-    next: 'Ďalši tip',
+    next: 'Ďalší tip',
     prevent: 'Nabudúce nezobrazovať',
   },
 
@@ -732,27 +732,27 @@ export default {
   elevationChart: {
     distance: 'Vzdialenosť [km]',
     ele: 'Nadm. výška [m.n.m.]',
-    fetchError: 'Nastala chyba pri získavani výškoveho profilu: {err}',
+    fetchError: 'Nastala chyba pri získavaní výškového profilu: {err}',
   },
 
   errorCatcher: {
     html: `
       <h1>Ups!</h1>
       <p>
-        Voľačo nedobre sa udialo.
+        Voľačo nedobré sa udialo.
       </p>
       <p>
         Prosíme Ťa, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlás nám túto chybu</a>,
         prípadne nám ju pošli na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-        Nezabudni, prosím, priložiť krátky popis, ako sa ti podarilo vyvolať chybu a nižšieuvedené dáta pre ladenie.
+        Nezabudni, prosím, priložiť krátky popis, ako sa ti podarilo vyvolať chybu a nižšie uvedené dáta pre ladenie.
       </p>
       <p>
         Ďakujeme.
       </p>
       Akcie:
       <ul>
-        <li><a href="">znovunačítať poslednú stránku</a></li>
-        <li><a href="/">znovunačítať úvodnú stránku</a></li>
+        <li><a href="">znovu načítať poslednú stránku</a></li>
+        <li><a href="/">znovu načítať úvodnú stránku</a></li>
         <li><a href="/?reset-local-storage">zmazať lokálne dáta a znovunačítať úvodnú stránku</a></li>
       </ul>
       <h2>Dáta pre ladenie</h2>
@@ -793,11 +793,11 @@ export default {
       service: 'prístupová',
       unclassified: 'prístupová',
       residential: 'prístupová',
-      grade1: 'kvalitná spevená cesta (1. stupeň)',
-      grade2: 'udržiavaná spevená cesta  (2. stupeň)',
-      grade3: 'spevená cesta  (3. stupeň)',
+      grade1: 'kvalitná spevnená cesta (1. stupeň)',
+      grade2: 'udržiavaná spevnená cesta  (2. stupeň)',
+      grade3: 'spevnená cesta  (3. stupeň)',
       grade4: 'poľná cesta/zvážnica (4. stupeň)',
-      grade5: 'ťazko priestupná/zarastená cesta (5. stupeň)',
+      grade5: 'ťažko priechodná/zarastená cesta (5. stupeň)',
       path: 'chodník',
       footway: 'chodník',
       pedestrian: 'pešia zóna',
