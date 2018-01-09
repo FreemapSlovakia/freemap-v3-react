@@ -68,7 +68,7 @@ class MapSwitchButton extends React.Component {
         <Overlay rootClose placement="top" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
-              {
+              { // TODO base and overlay layers have too much duplicate code
                 baseLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
                   .filter(({ adminOnly }) => isAdmin || !adminOnly)
@@ -81,7 +81,9 @@ class MapSwitchButton extends React.Component {
                       {' '}
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
-                      {t(`mapLayers.base.${type}`)}
+                      <span style={{ textDecoration: zoom < minZoom ? 'line-through' : 'none' }}>
+                        {t(`mapLayers.base.${type}`)}
+                      </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
                       {zoom < minZoom &&
