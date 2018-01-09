@@ -39,7 +39,8 @@ export default class GalleryUploadItem extends React.Component {
   render() {
     const { id, filename, url, disabled, model, allTags, error, t, language } = this.props;
     return (
-      <Thumbnail key={id} src={url || require('fm3/images/spinnerbar.gif')} alt={filename}>
+      <React.Fragment key={id}>
+        <img className="gallery-image gallery-image-upload" src={url || require('fm3/images/spinnerbar.gif')} alt={filename} />
         <fieldset disabled={disabled}>
           <GalleryEditForm
             {...{ model, allTags, error }}
@@ -53,7 +54,8 @@ export default class GalleryUploadItem extends React.Component {
             <FontAwesomeIcon icon="times" /> {t('general.remove')}
           </Button>
         </fieldset>
-      </Thumbnail>
+        <hr />
+      </React.Fragment>
     );
   }
 }

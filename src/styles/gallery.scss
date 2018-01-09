@@ -12,6 +12,10 @@
     -webkit-filter: blur(3px) grayscale(100%); /* Safari 6.0 - 9.0 */
     filter: blur(3px) grayscale(100%);
   }
+
+  &-upload {
+    margin: 0 auto 10px;
+  }
 }
 
 .carousel-control.disabled, .carousel-control.disabled:hover {
