@@ -81,11 +81,19 @@ class MapSwitchButton extends React.Component {
                       {' '}
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
-                      <span style={{ textDecoration: zoom < minZoom ? 'line-through' : 'none' }}>
-                        {t(`mapLayers.base.${type}`)}
-                      </span>
+                      {t(`mapLayers.base.${type}`)}
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
+                      {zoom < minZoom &&
+                        <React.Fragment>
+                          {' '}
+                          <FontAwesomeIcon
+                            icon="exclamation-triangle"
+                            title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
+                            className="text-warning"
+                          />
+                        </React.Fragment>
+                      }
                     </MenuItem>
                   ))
               }
@@ -113,7 +121,7 @@ class MapSwitchButton extends React.Component {
                           {' '}
                           <FontAwesomeIcon
                             icon="exclamation-triangle"
-                            title={t('mapLayers.minZoomWarning', { minZoom })}
+                            title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
                             className="text-warning"
                           />
                         </React.Fragment>
