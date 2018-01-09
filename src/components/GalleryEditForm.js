@@ -155,7 +155,7 @@ export default class GalleryEditForm extends React.Component {
             <FormControl
               type="text"
               placeholder={t('gallery.editForm.location')}
-              value={model.position ? `${formatGpsCoord(model.position.lat, 'SN', language)}, ${formatGpsCoord(model.position.lon, 'WE', language)}` : ''}
+              value={model.position ? `${formatGpsCoord(model.position.lat, 'SN', 'DMS', language)}, ${formatGpsCoord(model.position.lon, 'WE', 'DMS', language)}` : ''}
               onClick={onPositionPick}
               readOnly
             />
