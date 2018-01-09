@@ -57,8 +57,8 @@ export default {
     distance: 'Distance: {value} km',
     duration: 'Duration: {h} h {m} m',
     removeMidpoint: 'Remove this midpoint?',
-    noHomeAlert: 'You must first set your home position in settings.',
-    showMidpointHint: 'To add a midpoint drag route segment to the desired position.',
+    noHomeAlert: 'You need to set your home position in settings first.',
+    showMidpointHint: 'To add a midpoint, drag a route segment.',
     gpsError: 'Error getting your current location.',
     routeNotFound: 'No route found. Try to change parameters or move the route points.',
     fetchingError: 'Error finding the route: {err}',
@@ -78,24 +78,24 @@ export default {
         fork: 'zvoľte cestu',
         'end of road': 'pokračujte',
         // 'use lane':
-        continue: 'pokračujte',
-        roundabout: 'vojdite na kruhový objazd',
-        rotary: 'vojdite na okružnú cestu',
-        'roundabout turn': 'na kruhovom objazde odbočte',
+        continue: 'continue',
+        roundabout: 'enter a roundabout',
+        rotary: 'enter a circle',
+        'roundabout turn': 'at a roundabout, turn',
         // 'notification':
-        'exit rotary': 'opusťte okružnú cestu', // undocumented
-        'exit roundabout': 'opusťte kruhový objazd', // undocumented
+        'exit rotary': 'exit the circle', // undocumented
+        'exit roundabout': 'exit the roundabout', // undocumented
       },
 
       modifiers: {
-        uturn: 'otočte sa',
-        'sharp right': 'prudko doprava',
-        'slight right': 'mierne doprava',
-        right: 'doprava',
-        'sharp left': 'prudko doľava',
-        'slight left': 'mierne doľava',
-        left: 'doľava',
-        straight: 'priamo',
+        uturn: 'take a U-turn',
+        'sharp right': 'sharply right',
+        'slight right': 'slightly right',
+        right: 'right',
+        'sharp left': 'sharply left',
+        'slight left': 'slightly left',
+        left: 'left',
+        straight: 'straight',
       },
     },
   },
@@ -179,8 +179,8 @@ export default {
           <li>Do not upload too small photos (thumbnails). Maximum dimensions are not limited. The maximum file size is limited to 10MB. Bigger files will be rejected.</li>
           <li>Upload only photos of landscapes or documentation pictures. Portraits and macro photos are undesirable and will be deleted without warning.</li>
           <li>Please upload only your own photos.</li>
-          <li>Uploaded photos are further distributed under the license CC-BY-SA 2.0.</li>
-          <li>The operator Freemap.sk hereby disclaims all liability and is not liable for direct or indirect damages resulting from publication of a photo in the gallery. The person who has uploaded the picture on the server is fully responsible for the photo.</li>
+          <li>By uploading the photos, you agree they will be distributed under the terms of CC-BY-SA 2.0 license.</li>
+          <li>The operator (Freemap.sk) hereby disclaims all liability and is not liable for direct or indirect damages resulting from publication of a photo in the gallery. The person who has uploaded the picture on the server is fully responsible for the photo.</li>
           <li>The operator reserves the right to edit the description, name, position and tags of photo, or to delete the photo if the content is inappropriate (violate these rules).</li>
           <li>The operator reserves the right to delete the account in case that the user repeatedly violates the gallery policy by publishing inappropriate content.</li>
         </ul>
@@ -276,7 +276,7 @@ export default {
     },
     account: {
       name: 'Name',
-      email: 'E-Mail',
+      email: 'Email',
       noAuthInfo: 'Only for logged-in users.',
     },
     general: {
@@ -314,7 +314,7 @@ export default {
 
   objects: {
     type: 'Type',
-    lowZoomAlert: 'Object finding is possible only from zoom level 12.',
+    lowZoomAlert: 'To see objects by their type, you need to zoom in to at least level 12.',
     fetchingError: 'Error fetching objects (POIs): {err}',
     categories: {
       1: 'Nature',
@@ -326,7 +326,7 @@ export default {
       7: 'Energetics',
       8: 'Accomodation and food',
       9: 'Tourism',
-      10: 'Uzemné členenie',
+      10: 'Administrative division',
       11: 'Others',
       12: 'Free time',
       13: 'Sport',
@@ -355,7 +355,7 @@ export default {
       19: 'Ordinácia',
       20: 'Police',
       21: 'Clinic',
-      22: 'Hraničný prechod',
+      22: 'Border crossing',
       23: 'Hospital with emergency',
       24: 'Supermarket',
       26: 'Nuclear power plant',
@@ -667,9 +667,9 @@ export default {
 
   logIn: {
     with: {
-      facebook: 'Log-in with Facebook',
-      google: 'Log-in with Google',
-      osm: 'Log-in with OpenStreetMap',
+      facebook: 'Log in with Facebook',
+      google: 'Log in with Google',
+      osm: 'Log in with OpenStreetMap',
     },
     success: 'You have been successfuly logged in.',
     logInError: 'Error logging in: {err}',
@@ -742,7 +742,7 @@ export default {
         Something bad has happened.
       </p>
       <p>
-        Please, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">report this problem</a>,
+        Please <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">report this problem</a>,
         or email it to <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
         Please don't forget to add a short description about what have you done to get this error and attached debugging data.
       </p>
