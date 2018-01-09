@@ -66,7 +66,7 @@ export default {
     maneuverWithoutName: '{type} {modifier}',
 
     maneuver: {
-      types: 
+      types: {
         turn: 'odbočte',
         'new name': 'choďte',
         depart: 'začnite',
