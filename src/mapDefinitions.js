@@ -234,7 +234,7 @@ export const overlayLayers = [
     zIndex: 2,
     adminOnly: true,
   },
-  ...['both', 'ride', 'run', 'water', 'winter'].map(([type], i) => ({
+  ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
     type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
     url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
