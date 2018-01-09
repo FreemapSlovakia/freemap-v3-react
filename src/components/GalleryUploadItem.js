@@ -4,7 +4,6 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import 'react-tag-autocomplete/example/styles.css';
 
 import Button from 'react-bootstrap/lib/Button';
-import Thumbnail from 'react-bootstrap/lib/Thumbnail';
 import * as FmPropTypes from 'fm3/propTypes';
 import GalleryEditForm from 'fm3/components/GalleryEditForm';
 
