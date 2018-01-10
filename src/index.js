@@ -98,5 +98,5 @@ function loadAppState() {
     }
   }
 
-  store.dispatch(l10nSetLanguage(appState && [null, 'en', 'sk'].includes(appState.language) ? appState.language : null));
+  store.dispatch(l10nSetLanguage(appState && [null, 'en', 'sk', 'cs'].includes(appState.language) ? appState.language : null));
 }

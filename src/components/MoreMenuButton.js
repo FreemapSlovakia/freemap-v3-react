@@ -116,6 +116,11 @@ class MoreMenuButton extends React.Component {
     this.props.onLanguageChange('sk');
   }
 
+  handleCzechClick = () => {
+    this.close();
+    this.props.onLanguageChange('cs');
+  }
+
   handleLanguageClick = () => {
     this.setState({ submenu: 'language' });
   }
@@ -249,6 +254,9 @@ class MoreMenuButton extends React.Component {
                     </MenuItem>
                     <MenuItem onClick={this.handleSlovakClick} active={chosenLanguage === 'sk'}>
                       Slovensky
+                    </MenuItem>
+                    <MenuItem onClick={this.handleCzechClick} active={chosenLanguage === 'cs'}>
+                      Česky
                     </MenuItem>
                   </React.Fragment>
                 : null
