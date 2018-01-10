@@ -118,10 +118,8 @@ module.exports = {
       inject: false,
     }),
     new CopyWebpackPlugin([
-      { from: 'authCallback.html' },
-      { from: 'favicon.ico' },
-      { from: '.htaccess' },
-      process.env.DEPLOYMENT === 'next' && { from: 'CNAME' },
+      { from: { glob: 'static', dot: true }, flatten: true },
+
     ].filter(x => x)),
     extractSass,
     new webpack.optimize.CommonsChunkPlugin({
