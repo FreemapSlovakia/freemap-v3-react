@@ -1,5 +1,6 @@
 /* eslint-disable no-underscore-dangle */
 if (!global.Intl) {
+  global.hasNoNativeIntl = true;
   require.ensure([
     'intl',
   ], (require) => {

@@ -16,7 +16,7 @@ export default createLogic({
     // TODO handle error
     Promise.all([
       import(`fm3/translations/${language}.js`),
-      import(`intl/locale-data/jsonp/${language}.js`),
+      global.hasNoNativeIntl && import(`intl/locale-data/jsonp/${language}.js`),
     ]).then(([translations]) => {
       dispatch(l10nSetTranslations(language, translations.default));
       dispatch(stopProgress(pid));
