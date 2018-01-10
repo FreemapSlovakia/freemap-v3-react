@@ -176,11 +176,11 @@ export default {
       rules: `
         <p>Zatáhněte sem fotky, nebo sem klikněte pro jejich výběr.</p>
         <ul>
-          <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je však omezena velikost souboru na max. 10MB. Větší soubory server odmítne.</li>
+          <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je ale omezena velikost souboru na max. 10MB. Větší soubory server odmítne.</li>
           <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>
           <li>Zvýšenou pozornost věnujte tomu, abyste nahrávali výlučně vlastní tvorbu.</li>
           <li>Zaznam fotografie jsou dále šířeny pod licencí CC-BY-SA 2.0.</li>
-          <li>Provozovatel Freemap.sk se tímto zbavuje jakékoli odpovědnosti a neodpovídá za přímé ani nepřímé škody vzniklé zveřejněním fotografie v galerii, za fotografii nese plnou odpovědnost osoba, která fotografii na server uložila.</li>
+          <li>Provozovatel Freemap.sk se tímto zbavuje jakékoli odpovědnosti a neodpovídá za přímé ani nepřímé škody vzniklé zveřejněním fotografie v galerii. Za fotografii nese plnou odpovědnost osoba, která fotografii na server uložila.</li>
           <li>Provozovatel si vyhrazuje právo upravit popis, název, pozici a tagy fotografie nebo fotografii vymazat, pokud je její obsah nevhodný (porušuje tato pravidla).</li>
           <li>Provozovatel si vyhrazuje právo zrušit účet v případě, že uživatel opakovaně porušuje pravidla galerie zveřejňováním nevhodného obsahu.</li>
         </ul>
@@ -689,7 +689,7 @@ external: {
     base: {
       A: 'Automapa',
       T: 'Turistická',
-      C: 'cyklomapy',
+      C: 'Cyklomapy',
       K: 'Lyžařská',
       S: 'Satelitní',
       O: 'OpenStreetMap',
@@ -711,7 +711,7 @@ external: {
       q: 'OpenSnowMap',
       r: 'Render. klienti ',
       s0: 'Vše',
-      s1: 'cyklojízdy',
+      s1: 'Cyklojízdy',
       s2: 'Běh',
       s3: 'Vodní aktivity',
       s4: 'Zimní aktivity',
@@ -739,10 +739,10 @@ external: {
     html: `
       <h1>Ups!</h1>
       <p>
-        Něco nedobré se událo.
+        Stala se chyba.
       </p>
       <p>
-        Prosíme Tě, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlas nám tuhle chybu</a>,
+        Prosím, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlas nám tuhle chybu</a>,
         případně nám ji pošli na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
         Nezapomeň prosím přiložit krátký popis, jak se ti podařilo vyvolat chybu a níže uvedená data pro ladění.
       </p>
@@ -767,7 +767,7 @@ osm: {
     surface: 'Povrch:',
     suitableBikeType: 'Vhodný typ kola:',
     lastChange: 'Poslední změna:',
-    edit: 'Upravit v editoru {id} nebo {JOSM}.',
+    edit: 'Upravit v editoru {id} nebo {josm}.',
     surfaces: {
       asphalt: 'asfalt',
       gravel: 'štěrk',
