@@ -153,8 +153,8 @@ export default {
       yourRating: 'Tvé hodnocení:',
       showOnTheMap: 'Ukázat na mapě',
       openInNewWindow: 'Otevřít v novém okně',
-      uploaded: 'Nahrál {username} dne {created}',
-      captured: 'Odfoceno dne {taken}',
+      uploaded: 'Nahrál {username} dne {createdAt}',
+      captured: 'Odfoceno dne {takenAt}',
       deletePrompt: 'Smazat obrázek?',
     },
     editForm: {
