@@ -142,7 +142,7 @@ export default function handleLocationChange(store, location) {
     }
   }
 
-  const gpxUrl = query['gpx-url'];
+  const gpxUrl = query['gpx-url'] || query.load /* backward compatibility */;
   if (gpxUrl && gpxUrl !== getState().trackViewer.gpxUrl) {
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
