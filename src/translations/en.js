@@ -713,7 +713,7 @@ export default {
       s0: 'Strava (all)',
       s1: 'Strava (rides)',
       s2: 'Strava (runs)',
-      s3: 'Strava  (water activities)',
+      s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
     },
     type: {
