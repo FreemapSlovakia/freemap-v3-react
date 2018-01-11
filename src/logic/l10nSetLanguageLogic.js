@@ -15,8 +15,11 @@ export default createLogic({
 
     // TODO handle error
     Promise.all([
-      import(`fm3/translations/${language}.js`),
-      global.hasNoNativeIntl && import(`intl/locale-data/jsonp/${language}.js`),
+      import(/* webpackChunkName: "translations" */`fm3/translations/${language}.js`),
+      !global.hasNoNativeIntl ? null
+        : language === 'sk' ? import(/* webpackChunkName: "locale-data-sk" */'intl/locale-data/jsonp/sk.js')
+          : language === 'cs' ? import(/* webpackChunkName: "locale-data-cs" */'intl/locale-data/jsonp/cs.js')
+            : import(/* webpackChunkName: "locale-data-en" */'intl/locale-data/jsonp/en.js'),
     ]).then(([translations]) => {
       dispatch(l10nSetTranslations(language, translations.default));
       dispatch(stopProgress(pid));
