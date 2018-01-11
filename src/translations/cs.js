@@ -58,7 +58,7 @@ export default {
     duration: 'Čas: {h} h {m} m',
     removeMidpoint: 'Odstranit zastávku?',
     noHomeAlert: 'Nejprve si musíte nastavit výchozí polohu.',
-    showMidpointHint: 'Pro přidání přechodného bodu zatáhněte úsek silnice na zvolené místo.',
+    showMidpointHint: 'Pro přidání průchozího bodu přetáhněte úsek silnice na zvolené místo.',
     gpsError: 'Nelze získat aktuální polohu.',
     routeNotFound: 'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
     fetchingError: 'Nastala chyba při hledání trasy: {err}',
@@ -80,7 +80,7 @@ export default {
         // 'use lane':
         continue: 'pokračujte',
         roundabout: 'vejděte na kruhový objezd',
-        rotary: 'vejděte na okružní cestu',
+        rotary: 'vjeďte na okružní cestu',
         'roundabout turn': 'na kruhovém objezdu odbočte',
         // 'notification':
         'exit rotary': 'opusťte okružní cestu', // undocumented
@@ -233,7 +233,7 @@ export default {
     },
     uploadModal: {
       title: 'Nahrát trasu',
-      drop: 'Vytáhněte sem .gpx soubor, nebo sem klikněte pro jeho výběr.',
+      drop: 'Přetáhněte sem .gpx soubor, nebo sem klikněte pro jeho výběr.',
     },
     shareModal: {
       title: 'Sdílet trasu',
@@ -400,7 +400,7 @@ export default {
       67: 'Půjčovna kol',
       68: 'Prodej alkoholu',
       69: 'Umění',
-      70: 'Pekáreň',
+      70: 'Pekárna',
       71: 'Péče o krásu',
       72: 'Postele',
       73: 'Nápoje',
@@ -584,14 +584,14 @@ export default {
       253: 'Automat na mléko',
       254: 'Významné mokřiny (Ramsar)',
       255: 'Adresní body',
-      256: 'Banícka šachta',
+      256: 'Hornická šachta',
       257: 'Štola',
       258: 'Studna',
       259: 'Kříž',
       260: 'Svatyně',
       261: 'Posilovna',
       262: 'Paroplynová elektrárna',
-      263: 'Kaštieľ',
+      263: 'Kaštěl',
       264: 'Geomorfologické členění',
       265: 'Vojenský bunkr',
       266: 'Příjezd / Výjezd z dálnice',
@@ -662,7 +662,7 @@ export default {
       elevationMeasurement: 'měření výšky a polohy',
       infoPoint: 'bod v mapě',
     },
-    disabledAlert: 'Aktivní jsou pouze volby nichž objekty se nacházejí na mapě.',
+    disabledAlert: 'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
   },
 
   logIn: {
@@ -786,9 +786,9 @@ export default {
     trackClasses: {
       motorway: 'dálnice',
       trunk: 'rychlostní silnice',
-      primary: 'cesta I. třídy',
-      secondary: 'cesta II. třídy ',
-      tertiary: 'cesta III. třídy ',
+      primary: 'silnice I. třídy',
+      secondary: 'silnice II. třídy ',
+      tertiary: 'silnice III. třídy ',
       service: 'přístupová',
       unclassified: 'přístupová',
       residential: 'přístupová',
@@ -803,8 +803,8 @@ export default {
       unknown: 'neznámý',
     },
     bicycleTypes: {
-      'road-bike': 'cestný',
-      'trekking-bike': 'trekkingové',
+      'road-bike': 'silniční',
+      'trekking-bike': 'trekové',
       'mtb-bike': 'horský',
       'no-bike': 'vjezd na kole zakázán',
       unknown: 'neznámý',
