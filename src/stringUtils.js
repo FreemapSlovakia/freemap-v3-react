@@ -1,4 +1,4 @@
-export function splitByVars(input, special) {
+function splitByVars(input, special) {
   const re = /(\{([a-zA-Z][a-zA-Z0-9]*)\})/g;
   let last = 0;
   const ret = [];
@@ -37,11 +37,13 @@ export function splitAndSubstitute(input, params = {}) {
 }
 
 export function translate(translations, key, dflt = '') {
+  if (!key) {
+    throw new Error('missing key');
+  }
   return (key && key.split('.').reduce((a, b) => (typeof a === 'object' && b in a ? a[b] : dflt), translations));
 }
 
 // console.log('XXXXXXXXXXXX', splitAndSubstitute('foo {a} bar {b} baz', { a: 'A', b: undefined }));
-
 
 export function escapeHtml(unsafe) {
   return unsafe
