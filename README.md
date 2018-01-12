@@ -8,8 +8,6 @@ Features:
 * picture gallery
 * various tools (searching, measurement, route planning, changesets, ...)
 
-Note that the portal is (so far) only in Slovak language.
-
 ## Requirements
 
 * Node 8
