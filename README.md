@@ -4,11 +4,11 @@ Next version of web portal maintained by [Slovak OpenStreetMap community](https:
 
 Features:
 
-* maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country skiing map)
+* maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country ski map)
 * picture gallery
 * various tools (searching, measurement, route planning, changesets, ...)
 
-Note that the protal is (so far) only in Slovak language.
+Note that the portal is (so far) only in Slovak language.
 
 ## Requirements
 
