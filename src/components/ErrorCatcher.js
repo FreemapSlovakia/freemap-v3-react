@@ -33,6 +33,9 @@ class ErrorCatcher extends React.Component {
     }
 
     const simplerState = { ...state, l10n: { ...state.l10n, translations: undefined } };
+    if (simplerState.auth.user) {
+      delete simplerState.auth.user.authToken;
+    }
 
     return (
       <div style={{ padding: '10px' }}>
