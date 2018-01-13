@@ -321,10 +321,10 @@ export default compose(
     }),
     dispatch => ({
       onStartSet(start) {
-        dispatch(routePlannerSetStart(start));
+        dispatch(routePlannerSetStart(start, true));
       },
       onFinishSet(finish) {
-        dispatch(routePlannerSetFinish(finish));
+        dispatch(routePlannerSetFinish(finish, true));
       },
       onAddMidpoint(position, midpoint) {
         dispatch(routePlannerAddMidpoint(midpoint, position));

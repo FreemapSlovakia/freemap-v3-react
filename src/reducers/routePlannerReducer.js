@@ -36,9 +36,19 @@ export default function routePlanner(state = initialState, action) {
         transportType: action.payload.transportType,
       };
     case at.ROUTE_PLANNER_SET_START:
-      return { ...state, start: action.payload, pickMode: state.finish ? null : 'finish' };
+      return {
+        ...state,
+        start: action.payload.start,
+        pickMode: state.finish ? 'start' : 'finish',
+        midpoints: state.effectiveTransportType !== 'imhd' && !action.payload.move && state.start ? [state.start, ...state.midpoints] : state.midpoints,
+      };
     case at.ROUTE_PLANNER_SET_FINISH:
-      return { ...state, finish: action.payload, pickMode: state.start ? null : 'finish' };
+      return {
+        ...state,
+        finish: action.payload.finish,
+        pickMode: state.start ? 'finish' : 'start',
+        midpoints: state.effectiveTransportType !== 'imhd' && !action.payload.move && state.finish ? [...state.midpoints, state.finish] : state.midpoints,
+      };
     case at.ROUTE_PLANNER_SWAP_ENDS:
       return { ...state, start: state.finish, finish: state.start, midpoints: [...state.midpoints].reverse() };
     case at.ROUTE_PLANNER_ADD_MIDPOINT:
