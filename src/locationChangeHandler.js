@@ -32,7 +32,7 @@ export default function handleLocationChange(store, location) {
       (point !== null || (i === 0 || i === points.length - 1)));
       // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
-    if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd)$/.test(query.transport) && pointsOk) {
+    if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(query.transport) && pointsOk) {
       const { start, finish, midpoints, transportType } = getState().routePlanner;
 
       const latLons = points.map(point => (point ? { lat: point[0], lon: point[1] } : null));

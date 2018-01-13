@@ -46,6 +46,7 @@ export default {
     transportType: {
       car: 'Car',
       'car-free': 'Car (toll free)',
+      bikesharing: 'Bike sharing',
       imhd: 'Public transport (in devel.)',
       bike: 'Bicycle',
       'foot-stroller': 'Stroller / Wheelchair',
@@ -98,6 +99,7 @@ export default {
         straight: 'straight',
       },
     },
+    imhdAttribution: 'public transport routes',
   },
 
   more: {

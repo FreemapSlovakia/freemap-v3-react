@@ -151,7 +151,7 @@ class RoutePlannerResult extends React.Component {
   maneuverToText = (name, { type, modifier }) => {
     const p = 'routePlanner.maneuver';
     const { t, transportType } = this.props;
-    return transportType === 'imhd' ? name
+    return isSpecial(transportType) ? name
       : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
         type: t(`${p}.types.${type}`, {}, type),
         modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
@@ -162,6 +162,8 @@ class RoutePlannerResult extends React.Component {
   render() {
     const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange,
       transportType, timestamp, alternatives, t, language } = this.props;
+
+    const special = isSpecial(transportType);
 
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
@@ -227,7 +229,7 @@ class RoutePlannerResult extends React.Component {
             onClick={this.handleEndPointClick}
           >
             {
-              transportType === 'imhd' && summary0 ?
+              special && summary0 ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div
                     // eslint-disable-next-line
@@ -246,12 +248,12 @@ class RoutePlannerResult extends React.Component {
           </RichMarker>
         }
         {
-          (transportType !== 'imhd' ? alternatives : alternatives.map(addMissingSegments))
+          (!special ? alternatives : alternatives.map(addMissingSegments))
           .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
-                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map(({ shapePoints, name, maneuver }, i) => (
+                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver }, i) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -274,7 +276,7 @@ class RoutePlannerResult extends React.Component {
                     weight={10}
                     color="#fff"
                     onClick={() => onAlternativeChange(alt)}
-                    onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
+                    onMouseMove={special ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
                     onMouseOut={this.handlePolyMouseOut}
                   />
                 ))
@@ -288,7 +290,7 @@ class RoutePlannerResult extends React.Component {
                     weight={6}
                     color={
                       alt !== activeAlternativeIndex ? '#868e96'
-                        : transportType !== 'imhd' && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
+                        : !special && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
                         : 'hsl(211, 100%, 50%)'
                     }
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
@@ -388,4 +390,8 @@ function addMissingSegments(alt) {
   }
 
   return { ...alt, itinerary: routeSlices };
+}
+
+function isSpecial(transportType) {
+  return ['imhd', 'bikesharing'].includes(transportType);
 }

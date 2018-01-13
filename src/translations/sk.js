@@ -46,6 +46,7 @@ export default {
     transportType: {
       car: 'Auto, vrátane spoplatnených ciest',
       'car-free': 'Auto, mimo spoplatnených ciest',
+      bikesharing: 'Bike sharing',
       imhd: 'MHD (vo vývoji)',
       bike: 'Bicykel',
       'foot-stroller': 'S kočíkom / vozíčkom',
@@ -98,6 +99,7 @@ export default {
         straight: 'priamo',
       },
     },
+    imhdAttribution: 'trasy liniek MHD',
   },
 
   more: {
