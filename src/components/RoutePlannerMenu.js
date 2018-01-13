@@ -216,21 +216,21 @@ class RoutePlannerMenu extends React.Component {
             <DropdownButton
               id="transport-type"
               title={
-                transportType === 'imhd' && activeAlternative.summary0
-                  ? activeAlternative.summary0.replace(/ \(.*/, '')
+                transportType === 'imhd' && activeAlternative.extra && activeAlternative.extra.price
+                  ? imhdSummary(t, language, activeAlternative.extra)
                   : `${nf.format(activeAlternative.distance)} km / ${Math.floor(activeAlternative.duration / 60)} h ${Math.round(activeAlternative.duration % 60)} m`
               }
             >
               {
-                alternatives.map(({ duration, distance, summary0 }, i) => (
+                alternatives.map(({ duration, distance, extra }, i) => (
                   <MenuItem
                     eventKey={i}
                     key={i}
                     active={i === activeAlternativeIndex}
                     onClick={() => onAlternativeChange(i)}
                   >
-                    {transportType === 'imhd' && summary0
-                      ? summary0
+                    {transportType === 'imhd' && extra && extra.price
+                      ? imhdSummary(t, language, extra)
                       : `${nf.format(distance)} km / ${Math.floor(duration / 60)} h ${Math.round(duration % 60)} m`
                     }
                   </MenuItem>
@@ -334,3 +334,12 @@ export default compose(
     }),
   ),
 )(RoutePlannerMenu);
+
+function imhdSummary(t, language, extra) {
+  const { price, arrival, buses } = extra;
+  return t('routePlanner.imhd.total.short', {
+    price: Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price),
+    arrival,
+    buses: buses && buses.join(', '),
+  });
+}

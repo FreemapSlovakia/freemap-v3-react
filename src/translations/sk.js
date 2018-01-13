@@ -98,6 +98,24 @@ export default {
         straight: 'priamo',
       },
     },
+
+    imhd: {
+      total: {
+        short: 'príchod: {arrival} | cena: {price} € | linky: {buses}',
+        full: 'príchod: {arrival} | cena: {price} € | linky: {buses} | trvanie {total} minút{br1}(do odchodu: {home} | pešo: {foot} | MHD: {bus} | čakanie: {wait})',
+      },
+      step: {
+        foot: 'o {departure} choď {duration} minút na {destination}',
+        bus: '{departure} {type} {number} na {destination}',
+      },
+      type: {
+        bus: 'autobus',
+        tram: 'električka',
+        trolleybus: 'trolejbus',
+        foot: 'pešo',
+      },
+      target: 'do cieľa',
+    },
   },
 
   more: {

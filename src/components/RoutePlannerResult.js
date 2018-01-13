@@ -148,10 +148,10 @@ class RoutePlannerResult extends React.Component {
     this.props.onAlternativeChange(this.state.alt);
   }
 
-  maneuverToText = (name, { type, modifier }) => {
+  maneuverToText = (name, { type, modifier }, extra) => {
     const p = 'routePlanner.maneuver';
     const { t, transportType } = this.props;
-    return transportType === 'imhd' ? name
+    return transportType === 'imhd' ? imhdStep(t, extra)
       : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
         type: t(`${p}.types.${type}`, {}, type),
         modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
@@ -170,7 +170,7 @@ class RoutePlannerResult extends React.Component {
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
 
-    const { distance, duration, summary0 } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+    const { distance, duration, extra } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -227,12 +227,11 @@ class RoutePlannerResult extends React.Component {
             onClick={this.handleEndPointClick}
           >
             {
-              transportType === 'imhd' && summary0 ?
+              transportType === 'imhd' && extra && extra.price ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
-                  <div
-                    // eslint-disable-next-line
-                    dangerouslySetInnerHTML={{ __html: summary0.replace(/( \(.*)/, ',<br />$1') }}
-                  />
+                  <div>
+                    {imhdSummary(t, language, extra)}
+                  </div>
                 </Tooltip>
               : distance ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
@@ -251,7 +250,7 @@ class RoutePlannerResult extends React.Component {
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
-                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map(({ shapePoints, name, maneuver }, i) => (
+                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map(({ shapePoints, name, maneuver, extra }, i) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -259,7 +258,7 @@ class RoutePlannerResult extends React.Component {
                   >
                     <Tooltip direction="right" permanent>
                       <div>
-                        {this.maneuverToText(name, maneuver)}
+                        {this.maneuverToText(name, maneuver, extra)}
                       </div>
                     </Tooltip>
                   </Marker>
@@ -388,4 +387,31 @@ function addMissingSegments(alt) {
   }
 
   return { ...alt, itinerary: routeSlices };
+}
+
+function imhdSummary(t, language, extra) {
+  const { duration: { total, foot, bus, home, walk, wait }, price, arrival, buses } = extra;
+  return t('routePlanner.imhd.total.full', {
+    total: <b key="total">{Math.round(total / 60)}</b>,
+    foot: <b key="foot">{Math.round(foot / 60)}</b>,
+    bus: <b key="bus">{Math.round(bus / 60)}</b>,
+    home: <b key="home">{Math.round(home / 60)}</b>,
+    walk: <b key="walk">{Math.round(walk / 60)}</b>,
+    wait: <b key="wait">{Math.round(wait / 60)}</b>,
+    price: <b key="price">{Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price)}</b>,
+    arrival: <b key="arrival">{arrival}</b>,
+    buses: buses && buses.map(b => <React.Fragment key={b}><b>{b}</b></React.Fragment>),
+    br1: <br key="br1" />,
+    br2: <br key="br2" />,
+  });
+}
+
+function imhdStep(t, { type, destination, departure, duration, number }) {
+  return t(`routePlanner.imhd.step.${type === 'foot' ? 'foot' : 'bus'}`, {
+    type: t(`routePlanner.imhd.type.${type}`),
+    destination: destination === 'TARGET' ? t('routePlanner.imhd.target') : destination,
+    departure,
+    duration: Math.round(duration / 60),
+    number,
+  });
 }
