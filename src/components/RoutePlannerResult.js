@@ -275,6 +275,7 @@ class RoutePlannerResult extends React.Component {
                     positions={routeSlice.shapePoints}
                     weight={10}
                     color="#fff"
+                    bubblingMouseEvents={false}
                     onClick={() => onAlternativeChange(alt)}
                     onMouseMove={special ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
                     onMouseOut={this.handlePolyMouseOut}
@@ -296,6 +297,7 @@ class RoutePlannerResult extends React.Component {
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
                     interactive={false}
+                    bubblingMouseEvents={false}
                   />
                 ))
               }
