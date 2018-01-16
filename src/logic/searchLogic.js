@@ -18,10 +18,6 @@ export default createLogic({
       return;
     }
 
-    if (true) {
-      throw new Error('AAAAAA');
-    }
-
     let coords;
     try {
       coords = parseCoordinates(query);
