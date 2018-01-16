@@ -186,10 +186,6 @@ class Main extends React.Component {
       showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity,
     } = this.props;
 
-    if (true) {
-      throw new Error('ddd');
-    }
-
     return (
       <React.Fragment>
         <style>
