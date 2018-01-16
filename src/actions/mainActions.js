@@ -52,10 +52,6 @@ export function enableUpdatingUrl() {
   return { type: at.ENABLE_UPDATING_URL };
 }
 
-export function reducingError(action, error) {
-  return { type: at.REDUCING_ERROR, payload: { action, error } };
-}
-
 export function saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
   return { type: at.SAVE_SETTINGS, payload: { tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips } };
 }

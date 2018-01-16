@@ -746,7 +746,7 @@ export default {
       <p>
         Prosíme Ťa, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlás nám túto chybu</a>,
         prípadne nám ju pošli na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-        Nezabudni, prosím, priložiť krátky popis, ako sa ti podarilo vyvolať chybu a nižšie uvedené dáta pre ladenie.
+        Nezabudni, prosím, priložiť krátky popis, ako sa ti podarilo vyvolať chybu.
       </p>
       <p>
         Ďakujeme.
@@ -757,7 +757,6 @@ export default {
         <li><a href="/">znovu načítať úvodnú stránku</a></li>
         <li><a href="/?reset-local-storage">zmazať lokálne dáta a znovunačítať úvodnú stránku</a></li>
       </ul>
-      <h2>Dáta pre ladenie</h2>
     `,
   },
 

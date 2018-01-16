@@ -10,8 +10,6 @@ const initialState = {
   locate: false,
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
-  reducingError: null,
-  erroredAction: null,
 };
 
 export default function main(state = initialState, action) {
@@ -60,10 +58,6 @@ export default function main(state = initialState, action) {
       return { ...state, activeModal: 'tips' };
     case at.ENABLE_UPDATING_URL:
       return { ...state, urlUpdatingEnabled: true };
-    case at.REDUCING_ERROR:
-      return { ...state, reducingError: action.payload.error, erroredAction: action.payload.action };
-    case at.UNHANDLED_LOGIC_ERROR:
-      return { ...state, reducingError: action.payload, erroredAction: null };
     default:
       return state;
   }

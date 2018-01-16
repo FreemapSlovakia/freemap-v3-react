@@ -1,3 +1,4 @@
+import 'fm3/globalErrorHandler';
 import 'babel-polyfill';
 import 'fullscreen-api-polyfill';
 
@@ -13,7 +14,8 @@ import ErrorCatcher from 'fm3/components/ErrorCatcher';
 import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
-import { mainLoadState, enableUpdatingUrl, reducingError } from 'fm3/actions/mainActions';
+import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { errorReducingError } from 'fm3/actions/errorActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
@@ -47,7 +49,7 @@ const errorHandlingMiddleware = () => next => (action) => {
   } catch (error) {
     // eslint-disable-next-line
     console.error('Reducing error:', error);
-    return next(reducingError(action, error));
+    return next(errorReducingError(action, error));
   }
 };
 

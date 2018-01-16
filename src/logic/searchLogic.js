@@ -18,7 +18,6 @@ export default createLogic({
       return;
     }
 
-
     let coords;
     try {
       coords = parseCoordinates(query);

@@ -4,37 +4,32 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import injectL10n from 'fm3/l10nInjector';
+import { errorComponentError } from 'fm3/actions/errorActions';
 
 class ErrorCatcher extends React.Component {
   static propTypes = {
     children: PropTypes.node,
-    erroredAction: PropTypes.shape({}),
-    reducingError: PropTypes.instanceOf(Error),
-    state: PropTypes.shape({
-      l10n: PropTypes.shape({
-        translations: PropTypes.shape({}),
-      }),
-    }),
+    errored: PropTypes.bool,
     t: PropTypes.func.isRequired,
+    onError: PropTypes.func.isRequired,
+    ticketId: PropTypes.string,
   }
 
   state = {};
 
   componentDidCatch(error, info) {
-    this.setState({ error, info });
+    // hack for globalErrorHandler.js
+    // eslint-disable-next-line
+    error.handledInErrorCatcher = true;
+    this.setState({ error });
+    this.props.onError(error, info.componentStack);
   }
 
   render() {
-    const { t, reducingError, children, erroredAction, state } = this.props;
-    const { error, info } = this.state;
+    const { t, errored, children, ticketId } = this.props;
 
-    if (!error && !reducingError) {
+    if (!this.state.error && !errored) {
       return children;
-    }
-
-    const simplerState = { ...state, l10n: { ...state.l10n, translations: undefined } };
-    if (simplerState.auth.user) {
-      delete simplerState.auth.user.authToken;
     }
 
     return (
@@ -43,27 +38,9 @@ class ErrorCatcher extends React.Component {
           // eslint-disable-next-line
           dangerouslySetInnerHTML={{ __html: t('errorCatcher.html') }}
         />
-        <pre>
-          {
-            [
-              ['URL', window.location.href],
-              ['User Agent', navigator.userAgent],
-              ['Errored Action', erroredAction],
-              ['Reducing Error', reducingError && reducingError.stack],
-              ['Component Error', error && error.stack],
-              ['Component Stack', info && info.componentStack],
-              ['App State', JSON.stringify(simplerState, null, 2)],
-              ['Local Storage', Object
-                .keys(localStorage)
-                .map(key => `${key}\n${localStorage.getItem(key)}`)
-                .join('\n----------------\n'),
-              ],
-            ]
-              .filter(([, x]) => x)
-              .map(([title, detail]) => `================\n${title}\n================\n${detail}`)
-              .join('\n')
-          }
-        </pre>
+        <p>
+          Ticket ID: {ticketId}
+        </p>
       </div>
     );
   }
@@ -73,9 +50,13 @@ export default compose(
   injectL10n(),
   connect(
     state => ({
-      state,
-      erroredAction: state.main.erroredAction,
-      reducingError: state.main.reducingError,
+      errored: !!state.error.reducingError,
+      ticketId: state.error.ticketId,
+    }),
+    dispatch => ({
+      onError(error, componentStack) {
+        dispatch(errorComponentError(error, componentStack));
+      },
     }),
   ),
 )(ErrorCatcher);
