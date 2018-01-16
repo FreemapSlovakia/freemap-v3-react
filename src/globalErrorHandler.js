@@ -1,33 +1,38 @@
 import axios from 'axios';
+import { errorSetTicketId } from 'fm3/actions/errorActions';
 
 // eslint-disable-next-line
 Error.prototype.toJSON = function toJSON() {
   return this.stack;
 };
 
-window.addEventListener('error', ({ error }) => {
-  // setTimeout is hack to not handle error if already handled in componentDidCatch
-  setTimeout(() => {
-    if (!error.handledInErrorCatcher) {
-      handleError(error);
-    }
-  });
-});
+let store;
 
-function handleError(error) {
+export function setStore(s) {
+  store = s;
+}
+
+window.addEventListener('error', ({ error }) => {
   // eslint-disable-next-line
   console.error('Application error:', error);
+
+  const hasStore = !!store;
+
+  const s = store && store.getState();
+  const state = s && { ...s, l10n: { ...s.l10n, translations: null } };
 
   axios.post(
     `${process.env.API_URL}/logger`,
     {
       level: 'error',
-      message: 'Global webapp error.',
+      message: 'Webapp error.',
       details: {
         url: window.location.href,
         userAgent: navigator.userAgent,
         localStorage,
         error: error.stack,
+        state,
+        action: error.action,
       },
     },
     {
@@ -35,9 +40,18 @@ function handleError(error) {
     },
   )
     .then(({ data }) => {
-      document.body.innerHTML = `
-        <h1>Application error</h1>
-        <p>Ticket ID: ${data.id}.</p>
-        <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>`;
+      if (hasStore) {
+        store.dispatch(errorSetTicketId(data.id));
+      } else {
+        document.body.innerHTML = `
+          <h1>Application error</h1>
+          <p>Ticket ID: ${data.id}.</p>
+          <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>`;
+      }
+    })
+    .catch((err) => {
+      // eslint-disable-next-line
+      console.error(err);
+      store.dispatch(errorSetTicketId('???'));
     });
-}
+});

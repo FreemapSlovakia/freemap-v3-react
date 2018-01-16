@@ -1,4 +1,4 @@
-import 'fm3/globalErrorHandler';
+import { setStore } from 'fm3/globalErrorHandler';
 import 'babel-polyfill';
 import 'fullscreen-api-polyfill';
 
@@ -15,7 +15,7 @@ import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
 import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
-import { errorReducingError } from 'fm3/actions/errorActions';
+// import { errorSetError } from 'fm3/actions/errorActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
@@ -25,6 +25,7 @@ import handleLocationChange from 'fm3/locationChangeHandler';
 import initAuthHelper from 'fm3/authHelper';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
+import * as at from 'fm3/actionTypes';
 
 import 'fm3/styles/bootstrap-override.scss';
 
@@ -37,25 +38,36 @@ if (window.self !== window.top) {
 }
 
 const logicMiddleware = createLogicMiddleware(logics);
-const middlewares = [logicMiddleware];
+
+const errorHandlingMiddleware = () => next => (action) => {
+  try {
+    if (action.type === at.UNHANDLED_LOGIC_ERROR) {
+      const err = new Error('Logic error');
+      err.action = action;
+      throw err;
+    }
+
+    return next(action);
+  } catch (error) {
+    error.action = error;
+    setTimeout(() => { // to make it uncaught
+      throw error;
+    });
+    return null;
+  }
+};
+
+const middlewares = [errorHandlingMiddleware, logicMiddleware];
 
 if (process.env.NODE_ENV !== 'production') {
   middlewares.push(createLogger());
 }
 
-const errorHandlingMiddleware = () => next => (action) => {
-  try {
-    return next(action);
-  } catch (error) {
-    // eslint-disable-next-line
-    console.error('Reducing error:', error);
-    return next(errorReducingError(action, error));
-  }
-};
-
 middlewares.push(errorHandlingMiddleware);
 
 const store = createStore(reducer, applyMiddleware(...middlewares));
+
+setStore(store);
 
 logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
