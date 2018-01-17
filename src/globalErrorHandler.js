@@ -50,5 +50,4 @@ function handle(id) {
       <p>Ticket ID: ${id}.</p>
       <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>`;
   }
-
 }
