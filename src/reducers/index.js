@@ -1,7 +1,6 @@
 import { combineReducers } from 'redux';
 
 import main from 'fm3/reducers/mainReducer';
-import error from 'fm3/reducers/errorReducer';
 import map from 'fm3/reducers/mapReducer';
 import routePlanner from 'fm3/reducers/routePlannerReducer';
 import areaMeasurement from 'fm3/reducers/areaMeasurementReducer';
@@ -22,7 +21,6 @@ import l10n from 'fm3/reducers/l10nReducer';
 
 export default combineReducers({
   main,
-  error,
   map,
   routePlanner,
   areaMeasurement,

@@ -744,9 +744,9 @@ export default {
         Stala se chyba.
       </p>
       <p>
-        Prosím, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlas nám tuhle chybu</a>,
-        případně nám ji pošli na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-        Nezapomeň prosím přiložit krátký popis, jak se ti podařilo vyvolat chybu.
+        Chyba nám byla automaticky reportována s ID <b>{errorTicketId}</b>.
+        Chybu můžeš nahlásit i na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+        případně nám poslat detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
       </p>
       <p>
         Děkujeme.

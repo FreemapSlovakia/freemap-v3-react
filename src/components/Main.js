@@ -180,6 +180,9 @@ class Main extends React.Component {
   }
 
   render() {
+    if (true) {
+      throw new Error('SSSSSSSSSSSS');
+    }
     const {
       lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,

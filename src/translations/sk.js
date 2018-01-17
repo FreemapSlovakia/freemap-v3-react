@@ -744,9 +744,9 @@ export default {
         Voľačo nedobré sa udialo.
       </p>
       <p>
-        Prosíme Ťa, <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">nahlás nám túto chybu</a>,
-        prípadne nám ju pošli na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-        Nezabudni, prosím, priložiť krátky popis, ako sa ti podarilo vyvolať chybu.
+        Chyba nám bola automaticky reportovaná s ID <b>{errorTicketId}</b>.
+        Chybu môžeš nahlásiť aj na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+        prípadne nám poslať detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
       </p>
       <p>
         Ďakujeme.

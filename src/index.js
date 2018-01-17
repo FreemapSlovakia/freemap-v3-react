@@ -5,14 +5,9 @@ import 'fullscreen-api-polyfill';
 import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux';
-import { createLogicMiddleware } from 'redux-logic';
-import { createLogger } from 'redux-logger';
 
 import Main from 'fm3/components/Main';
 import ErrorCatcher from 'fm3/components/ErrorCatcher';
-import reducer from 'fm3/reducers';
-import logics from 'fm3/logic';
 
 import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
@@ -25,7 +20,7 @@ import handleLocationChange from 'fm3/locationChangeHandler';
 import initAuthHelper from 'fm3/authHelper';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
-import * as at from 'fm3/actionTypes';
+import createStore from 'fm3/storeCreator';
 
 import 'fm3/styles/bootstrap-override.scss';
 
@@ -37,39 +32,9 @@ if (window.self !== window.top) {
   document.body.classList.add('embedded');
 }
 
-const logicMiddleware = createLogicMiddleware(logics);
-
-const errorHandlingMiddleware = () => next => (action) => {
-  try {
-    if (action.type === at.UNHANDLED_LOGIC_ERROR) {
-      const err = new Error('Logic error');
-      err.action = action;
-      throw err;
-    }
-
-    return next(action);
-  } catch (error) {
-    error.action = error;
-    setTimeout(() => { // to make it uncaught
-      throw error;
-    });
-    return null;
-  }
-};
-
-const middlewares = [errorHandlingMiddleware, logicMiddleware];
-
-if (process.env.NODE_ENV !== 'production') {
-  middlewares.push(createLogger());
-}
-
-middlewares.push(errorHandlingMiddleware);
-
-const store = createStore(reducer, applyMiddleware(...middlewares));
+const store = createStore();
 
 setStore(store);
-
-logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
 const { location } = history;
 

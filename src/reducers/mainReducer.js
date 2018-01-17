@@ -10,6 +10,7 @@ const initialState = {
   locate: false,
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
+  errorTicketId: null,
 };
 
 export default function main(state = initialState, action) {
@@ -58,6 +59,8 @@ export default function main(state = initialState, action) {
       return { ...state, activeModal: 'tips' };
     case at.ENABLE_UPDATING_URL:
       return { ...state, urlUpdatingEnabled: true };
+    case at.SET_ERROR_TICKET_ID:
+      return { ...state, errorTicketId: action.payload };
     default:
       return state;
   }

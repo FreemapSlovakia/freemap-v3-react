@@ -9,7 +9,7 @@ class ErrorCatcher extends React.Component {
   static propTypes = {
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
-    ticketId: PropTypes.string,
+    errorTicketId: PropTypes.string,
   }
 
   state = {};
@@ -20,22 +20,18 @@ class ErrorCatcher extends React.Component {
   }
 
   render() {
-    const { t, children, ticketId } = this.props;
+    const { t, children, errorTicketId } = this.props;
 
-    if (!this.state.error && !ticketId) {
+    if (!this.state.error && !errorTicketId) {
       return children;
     }
 
     return (
-      <div style={{ padding: '10px' }}>
-        <div
-          // eslint-disable-next-line
-          dangerouslySetInnerHTML={{ __html: t('errorCatcher.html') }}
-        />
-        <p>
-          Ticket ID: {ticketId}
-        </p>
-      </div>
+      <div
+        style={{ padding: '10px' }}
+        // eslint-disable-next-line
+        dangerouslySetInnerHTML={{ __html: t('errorCatcher.html', { errorTicketId: errorTicketId || '...' }) }}
+      />
     );
   }
 }
@@ -44,7 +40,7 @@ export default compose(
   injectL10n(),
   connect(
     state => ({
-      ticketId: state.error.ticketId,
+      errorTicketId: state.main.errorTicketId,
     }),
   ),
 )(ErrorCatcher);

@@ -55,3 +55,7 @@ export function enableUpdatingUrl() {
 export function saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
   return { type: at.SAVE_SETTINGS, payload: { tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips } };
 }
+
+export function setErrorTicketId(id) {
+  return { type: at.SET_ERROR_TICKET_ID, payload: id };
+}

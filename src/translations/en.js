@@ -744,9 +744,9 @@ export default {
         Something bad has happened.
       </p>
       <p>
-        Please <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">report this problem</a>,
-        or email it to <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-        Please don't forget to add a short description about what have you done to get this error.
+        The error has been automatically reported under Ticket ID <b>{errorTicketId}</b>.
+        You can report the problem at <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+        or eventually email us the details at <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
       </p>
       <p>
         Thank you.

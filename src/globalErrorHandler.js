@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { errorSetTicketId } from 'fm3/actions/errorActions';
+import { setErrorTicketId } from 'fm3/actions/mainActions';
 
 // eslint-disable-next-line
 Error.prototype.toJSON = function toJSON() {
@@ -41,7 +41,7 @@ window.addEventListener('error', ({ error }) => {
   )
     .then(({ data }) => {
       if (hasStore) {
-        store.dispatch(errorSetTicketId(data.id));
+        store.dispatch(setErrorTicketId(data.id));
       } else {
         document.body.innerHTML = `
           <h1>Application error</h1>
@@ -52,6 +52,6 @@ window.addEventListener('error', ({ error }) => {
     .catch((err) => {
       // eslint-disable-next-line
       console.error(err);
-      store.dispatch(errorSetTicketId('???'));
+      store.dispatch(setErrorTicketId('???'));
     });
 });
