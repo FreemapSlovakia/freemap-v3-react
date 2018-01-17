@@ -15,7 +15,7 @@ export const urlLogic = createLogic({
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
     at.ELEVATION_MEASUREMENT_SET_POINT,
     at.GALLERY_SET_FILTER, at.SET_ACTIVE_MODAL, /^TIPS_.*/,
-    at.AUTH_CHOOSE_LOGIN_METHOD, at.AUTH_LOGIN_CLOSE,
+    at.AUTH_CHOOSE_LOGIN_METHOD, at.AUTH_LOGIN_CLOSE, /^AUTH_LOGIN_WITH_.*/,
     /^OSM_LOAD_.*/, at.ENABLE_UPDATING_URL,
   ],
   process({ getState, action }, dispatch, done) {
