@@ -16,8 +16,6 @@ window.addEventListener('error', ({ error }) => {
   // eslint-disable-next-line
   console.error('Application error:', error);
 
-  const hasStore = !!store;
-
   const s = store && store.getState();
   const state = s && { ...s, l10n: { ...s.l10n, translations: null } };
 
@@ -38,20 +36,24 @@ window.addEventListener('error', ({ error }) => {
     {
       validateStatus: status => status === 200,
     },
-  )
-    .then(({ data }) => {
-      if (hasStore) {
-        store.dispatch(setErrorTicketId(data.id));
-      } else {
-        document.body.innerHTML = `
-          <h1>Application error</h1>
-          <p>Ticket ID: ${data.id}.</p>
-          <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>`;
-      }
-    })
-    .catch((err) => {
-      // eslint-disable-next-line
-      console.error(err);
-      store.dispatch(setErrorTicketId('???'));
-    });
+  ).then(
+    ({ data }) => {
+      handle(data.id);
+    },
+    () => {
+      handle('???');
+    },
+  );
 });
+
+function handle(id) {
+  if (store) {
+    store.dispatch(setErrorTicketId(id));
+  } else {
+    document.body.innerHTML = `
+      <h1>Application error</h1>
+      <p>Ticket ID: ${id}.</p>
+      <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>`;
+  }
+
+}
