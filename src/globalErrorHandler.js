@@ -1,11 +1,6 @@
 import axios from 'axios';
 import { setErrorTicketId } from 'fm3/actions/mainActions';
 
-// eslint-disable-next-line
-Error.prototype.toJSON = function toJSON() {
-  return this.stack;
-};
-
 let store;
 
 export function setStore(s) {
