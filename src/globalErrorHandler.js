@@ -25,7 +25,7 @@ window.addEventListener('error', ({ error }) => {
         localStorage,
         error: error.stack,
         state,
-        action: error.action,
+        action: error.action && error.action.payload instanceof Error ? { ...error.action, payload: error.action.payload.stack } : error.action,
       },
     },
     {
