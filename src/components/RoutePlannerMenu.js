@@ -220,7 +220,10 @@ class RoutePlannerMenu extends React.Component {
               id="transport-type"
               title={
                 special && activeAlternative.summary0
-                  ? <span dangerouslySetInnerHTML={{ __html: activeAlternative.summary0.replace(/ \(.*/, '') }} />
+                  ? <span
+                    // eslint-disable-next-line
+                    dangerouslySetInnerHTML={{ __html: activeAlternative.summary0.replace(/ \(.*/, '') }}
+                  />
                   : `${nf.format(activeAlternative.distance)} km / ${Math.floor(activeAlternative.duration / 60)} h ${Math.round(activeAlternative.duration % 60)} m`
               }
             >
@@ -233,7 +236,10 @@ class RoutePlannerMenu extends React.Component {
                     onClick={() => onAlternativeChange(i)}
                   >
                     {special && summary0
-                      ? <span dangerouslySetInnerHTML={{ __html: summary0 }} />
+                      ? <span
+                        // eslint-disable-next-line
+                        dangerouslySetInnerHTML={{ __html: summary0 }}
+                      />
                       : `${nf.format(distance)} km / ${Math.floor(duration / 60)} h ${Math.round(duration % 60)} m`
                     }
                   </MenuItem>
