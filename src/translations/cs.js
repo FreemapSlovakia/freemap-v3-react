@@ -58,7 +58,7 @@ export default {
     transportType: {
       car: 'Auto, včetně zpoplatněných silnic',
       'car-free': 'Auto, mimo zpoplatněných silnic',
-      bikesharing: 'Bike sharing',
+      bikesharing: 'Bike sharing (ve vývoji)',
       imhd: 'MHD (ve vývoji)',
       bike: 'Kolo',
       'foot-stroller': 'S kočárkem / vozíčkem',

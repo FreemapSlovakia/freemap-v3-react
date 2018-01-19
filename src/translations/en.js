@@ -58,7 +58,7 @@ export default {
     transportType: {
       car: 'Car',
       'car-free': 'Car (toll free)',
-      bikesharing: 'Bike sharing',
+      bikesharing: 'Bike sharing (in devel.)',
       imhd: 'Public transport (in devel.)',
       bike: 'Bicycle',
       'foot-stroller': 'Stroller / Wheelchair',
