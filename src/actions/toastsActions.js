@@ -29,6 +29,5 @@ export function toastsAddError(messageKey, err, params = {}) {
     messageKey,
     messageParams: { ...params, ...(err ? { err: err.message } : {}) },
     style: 'danger',
-    timeout: 5000,
   });
 }

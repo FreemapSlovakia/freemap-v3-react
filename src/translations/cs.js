@@ -1,5 +1,16 @@
 /* eslint-disable no-template-curly-in-string */
 
+const errorMarkup = `<h1>Chyba aplikace</h1>
+<p>
+  Chyba nám byla automaticky reportována pod ID <b>{ticketId}</b>.
+  Můžeš ji nahlásit i na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+  případně nám poslat detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
+</p>
+<p>
+  Děkujeme.
+</p>
+`;
+
 export default {
   general: {
     elevationProfile: 'Výškový profil',
@@ -20,6 +31,7 @@ export default {
     preventShowingAgain: 'Už více nezobrazovat',
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     back: 'Zpět',
+    internalError: `!HTML!${errorMarkup}`,
   },
 
   tools: {
@@ -738,20 +750,10 @@ export default {
   },
 
   errorCatcher: {
-    html: `
-      <h1>Ups!</h1>
+    html: `${errorMarkup}
       <p>
-        Stala se chyba.
+        Akce:
       </p>
-      <p>
-        Chyba nám byla automaticky reportována s ID <b>{errorTicketId}</b>.
-        Chybu můžeš nahlásit i na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
-        případně nám poslat detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-      </p>
-      <p>
-        Děkujeme.
-      </p>
-      akce:
       <ul>
         <li><a href="">znovu načíst poslední stránku</a></li>
         <li><a href="/">znovu načíst úvodní stránku</a></li>

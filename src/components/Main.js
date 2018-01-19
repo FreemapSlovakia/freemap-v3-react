@@ -198,7 +198,6 @@ class Main extends React.Component {
           {process.env.DEPLOYMENT === 'next' &&
             <div
               className="info-bar"
-              // eslint-disable-next-line
               dangerouslySetInnerHTML={{ __html: t('main.devInfo') }}
             />
           }

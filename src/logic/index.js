@@ -50,6 +50,7 @@ import saveSettingsLogic from 'fm3/logic/saveSettingsLogic';
 import tipsPreventLogic from 'fm3/logic/tipsPreventLogic';
 import tipsChangeLogic from 'fm3/logic/tipsChangeLogic';
 import l10nSetLanguageLogic from 'fm3/logic/l10nSetLanguageLogic';
+import errorLogic from 'fm3/logic/errorLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
@@ -104,4 +105,5 @@ export default [
   tipsChangeLogic,
   tipsPreventLogic,
   l10nSetLanguageLogic,
+  errorLogic,
 ];

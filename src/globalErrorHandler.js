@@ -7,26 +7,47 @@ export function setStore(s) {
   store = s;
 }
 
-window.addEventListener('error', ({ error }) => {
-  // eslint-disable-next-line
-  console.error('Application error:', error);
+// eslint-disable-next-line
+Error.prototype.toJSON = function toJSON() {
+  return {
+    name: this.name,
+    message: this.message,
+    fileName: this.fileName,
+    lineNumber: this.lineNumber,
+    columnNumber: this.columnNumber,
+    description: this.description, // MS
+    number: this.number, // MS
+    stack: this.stack,
+  };
+};
 
-  const s = store && store.getState();
-  const state = s && { ...s, l10n: { ...s.l10n, translations: null } };
+window.addEventListener('error', (evt) => {
+  sendError({
+    kind: 'global',
+    message: evt.message,
+    filename: evt.filename,
+    lineno: evt.lineno,
+    colno: evt.colno,
+    error: evt.error,
+  });
+});
+
+export function sendError(errDetails) {
+  // eslint-disable-next-line
+  console.error('Application error:', errDetails);
+
+  const state = store && store.getState();
 
   axios.post(
     `${process.env.API_URL}/logger`,
     {
       level: 'error',
       message: 'Webapp error.',
-      details: {
-        url: window.location.href,
-        userAgent: navigator.userAgent,
-        localStorage,
-        error: error.stack,
-        state,
-        action: error.action && error.action.payload instanceof Error ? { ...error.action, payload: error.action.payload.stack } : error.action,
-      },
+      error: errDetails,
+      url: window.location.href,
+      userAgent: navigator.userAgent,
+      localStorage,
+      state: { ...state, l10n: { ...state.l10n, translations: null } },
     },
     {
       validateStatus: status => status === 200,
@@ -39,7 +60,7 @@ window.addEventListener('error', ({ error }) => {
       handle('???');
     },
   );
-});
+}
 
 function handle(id) {
   if (store) {

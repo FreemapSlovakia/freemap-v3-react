@@ -231,10 +231,7 @@ class RoutePlannerResult extends React.Component {
             {
               special && summary0 ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
-                  <div
-                    // eslint-disable-next-line
-                    dangerouslySetInnerHTML={{ __html: summary0.replace(/( \(.*)/, ',<br />$1') }}
-                  />
+                  <div dangerouslySetInnerHTML={{ __html: summary0.replace(/( \(.*)/, ',<br />$1') }} />
                 </Tooltip>
               : distance ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>

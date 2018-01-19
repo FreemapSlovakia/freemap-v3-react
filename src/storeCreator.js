@@ -6,6 +6,7 @@ import reducer from 'fm3/reducers';
 import logics from 'fm3/logic';
 
 import * as at from 'fm3/actionTypes';
+import { sendError } from 'fm3/globalErrorHandler';
 
 export default function createReduxStore() {
   const logicMiddleware = createLogicMiddleware(logics);
@@ -13,15 +14,13 @@ export default function createReduxStore() {
   const errorHandlingMiddleware = () => next => (action) => {
     try {
       if (action.type === at.UNHANDLED_LOGIC_ERROR) {
-        throw new Error('Logic error');
+        sendError({ kind: 'unhandledLogic', error: action.payload });
+        return null;
       }
 
       return next(action);
     } catch (error) {
-      error.action = action;
-      setTimeout(() => { // to prevent redux-logic to catch it
-        throw error;
-      });
+      sendError({ kind: 'reducer', error, action });
       return null;
     }
   };

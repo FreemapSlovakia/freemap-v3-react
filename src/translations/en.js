@@ -1,5 +1,16 @@
 /* eslint-disable no-template-curly-in-string */
 
+const errorMarkup = `
+<h1>Application error!</h1>
+<p>
+  The error has been automatically reported under Ticket ID <b>{ticketId}</b>.
+  You can report the problem at <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+  or eventually email us the details at <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
+</p>
+<p>
+  Thank you.
+</p>`;
+
 export default {
   general: {
     elevationProfile: 'Elevation profile',
@@ -20,6 +31,7 @@ export default {
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
+    internalError: `!HTML!${errorMarkup}`,
   },
 
   tools: {
@@ -738,20 +750,10 @@ export default {
   },
 
   errorCatcher: {
-    html: `
-      <h1>Oops!</h1>
+    html: `${errorMarkup}
       <p>
-        Something bad has happened.
+        You can try:
       </p>
-      <p>
-        The error has been automatically reported under Ticket ID <b>{errorTicketId}</b>.
-        You can report the problem at <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
-        or eventually email us the details at <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
-      </p>
-      <p>
-        Thank you.
-      </p>
-      You can try:
       <ul>
         <li><a href="">reload last page</a></li>
         <li><a href="/">load initial page</a></li>

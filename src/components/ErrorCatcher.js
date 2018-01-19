@@ -21,15 +21,14 @@ class ErrorCatcher extends React.Component {
   render() {
     const { t, children, errorTicketId } = this.props;
 
-    if (!this.state.error && !errorTicketId) {
+    if (!this.state.error) {
       return children;
     }
 
     return (
       <div
         style={{ padding: '10px' }}
-        // eslint-disable-next-line
-        dangerouslySetInnerHTML={{ __html: t('errorCatcher.html', { errorTicketId: errorTicketId || '...' }) }}
+        dangerouslySetInnerHTML={{ __html: t('errorCatcher.html', { ticketId: errorTicketId || '...' }) }}
       />
     );
   }

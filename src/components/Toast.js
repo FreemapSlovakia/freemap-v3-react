@@ -43,7 +43,11 @@ export default class Toast extends React.Component {
         onMouseLeave={this.handleMouseLeave}
         onDismiss={this.handleAlertDismiss}
       >
-        <div className="toast-message">{message}</div>
+        {
+          message.startsWith('!HTML!')
+            ? <div className="toast-message" dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
+            : <div className="toast-message">{message}</div>
+        }
         {buttonActions.length > 0 &&
           <React.Fragment>
             <br />

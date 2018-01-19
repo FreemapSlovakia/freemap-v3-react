@@ -213,10 +213,7 @@ class GalleryUploadModal extends React.Component {
               className="dropzone"
               disablePreview
             >
-              <div
-                // eslint-disable-next-line
-                dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }}
-              />
+              <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
             </Dropzone>
           }
         </Modal.Body>
