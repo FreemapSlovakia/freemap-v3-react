@@ -169,7 +169,7 @@ export const urlLogic = createLogic({
     const search = `?${queryParts.join('&')}`;
 
     if (window.location.search !== search) {
-      history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ search });
+      history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ pathname: '/', search });
     }
 
     done();
