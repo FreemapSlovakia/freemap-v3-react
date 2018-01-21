@@ -1,24 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
 import { translate, splitAndSubstitute } from 'fm3/stringUtils';
 
 export default function injectL10n(propertyName = 't') {
-  return (wrappedComponent) => {
-    class L10n extends React.Component {
-      static propTypes = {
-        translations: PropTypes.shape({}).isRequired,
-      };
+  return wrappedComponent => props => React.createElement(wrappedComponent, { [propertyName]: tx, ...props });
+}
 
-      tx = (key, params = {}, dflt = '') => splitAndSubstitute(translate(this.props.translations, key, dflt), params);
-
-      render() {
-        return React.createElement(wrappedComponent, { [propertyName]: this.tx, ...this.props });
-      }
-    }
-
-    return connect(state => ({
-      translations: state.l10n.translations,
-    }))(L10n);
-  };
+function tx(key, params = {}, dflt = '') {
+  const t = translate(global.translations || {}, key, dflt);
+  return typeof t === 'function' ? t(params) : splitAndSubstitute(t, params);
 }

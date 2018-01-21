@@ -148,15 +148,16 @@ class RoutePlannerResult extends React.Component {
     this.props.onAlternativeChange(this.state.alt);
   }
 
-  maneuverToText = (name, { type, modifier }) => {
+  maneuverToText = (name, { type, modifier }, extra) => {
     const p = 'routePlanner.maneuver';
     const { t, transportType } = this.props;
-    return isSpecial(transportType) ? name
-      : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
-        type: t(`${p}.types.${type}`, {}, type),
-        modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
-        name,
-      });
+    return transportType === 'imhd' ? imhdStep(t, this.props.language, extra)
+      : transportType === 'bikesharing' ? bikesharingStep(t, extra)
+        : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
+          type: t(`${p}.types.${type}`, {}, type),
+          modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
+          name,
+        });
   }
 
   render() {
@@ -172,7 +173,7 @@ class RoutePlannerResult extends React.Component {
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
 
-    const { distance, duration, summary0 } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+    const { distance, duration, extra } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -229,9 +230,11 @@ class RoutePlannerResult extends React.Component {
             onClick={this.handleEndPointClick}
           >
             {
-              special && summary0 ?
+              isSpecial(transportType) && extra && extra.numbers ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
-                  <div dangerouslySetInnerHTML={{ __html: summary0.replace(/( \(.*)/, ',<br />$1') }} />
+                  <div>
+                    {imhdSummary(t, language, extra)}
+                  </div>
                 </Tooltip>
               : distance ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
@@ -250,7 +253,7 @@ class RoutePlannerResult extends React.Component {
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
-                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver }, i) => (
+                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra }, i) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -258,7 +261,7 @@ class RoutePlannerResult extends React.Component {
                   >
                     <Tooltip direction="right" permanent>
                       <div>
-                        {this.maneuverToText(name, maneuver)}
+                        {this.maneuverToText(name, maneuver, extra)}
                       </div>
                     </Tooltip>
                   </Marker>
@@ -339,8 +342,8 @@ export default compose(
           messageKey: 'routePlanner.removeMidpoint',
           style: 'warning',
           actions: [
-            { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },
-            { name: 'Nie' },
+            { nameKey: 'general.yes', action: routePlannerRemoveMidpoint(position), style: 'danger' },
+            { nameKey: 'general.no' },
           ],
         }));
       },
@@ -389,6 +392,47 @@ function addMissingSegments(alt) {
   }
 
   return { ...alt, itinerary: routeSlices };
+}
+
+function imhdSummary(t, language, extra) {
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const { duration: { foot, bus, home, wait }, price, arrival, numbers } = extra;
+
+  return t('routePlanner.imhd.total.full', {
+    total: Math.round((foot + bus + home + wait) / 60),
+    foot: Math.round(foot / 60),
+    bus: Math.round(bus / 60),
+    home: Math.round(home / 60),
+    walk: Math.round(foot / 60),
+    wait: Math.round(wait / 60),
+    price: Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price),
+    arrival: dateFormat.format(arrival * 1000),
+    numbers,
+  });
+}
+
+function imhdStep(t, language, { type, destination, departure, duration, number }) {
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  return t(`routePlanner.imhd.step.${type === 'foot' ? 'foot' : 'bus'}`, {
+    type: t(`routePlanner.imhd.type.${type}`),
+    destination,
+    departure: dateFormat.format(departure * 1000),
+    duration: Math.round(duration / 60),
+    number,
+  });
+}
+
+function bikesharingStep(t, { type, destination, duration }) {
+  return t(`routePlanner.bikesharing.step.${type}`, {
+    destination,
+    duration: Math.round(duration / 60),
+  });
 }
 
 function isSpecial(transportType) {

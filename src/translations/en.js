@@ -1,4 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
+import React, { Fragment } from 'react';
 
 const errorMarkup = `
 <h1>Application error!</h1>
@@ -67,8 +68,12 @@ export default {
       foot: 'Foot',
     },
     alternative: 'Alternative',
-    distance: 'Distance: {value} km',
-    duration: 'Duration: {h} h {m} m',
+    // eslint-disable-next-line
+    distance: ({ value }) => <Fragment>Distance: <b>{value} km</b></Fragment>,
+    // eslint-disable-next-line
+    duration: ({ h, m }) => <Fragment>Duration: <b>{h} h {m} m</b></Fragment>,
+    // eslint-disable-next-line
+    summary: ({ distance, h, m }) => <Fragment>Distance: <b>{distance} km</b> | Duration: <b>{h} h {m} m</b></Fragment>,
     removeMidpoint: 'Remove this midpoint?',
     noHomeAlert: 'You need to set your home position in settings first.',
     showMidpointHint: 'To add a midpoint, drag a route segment.',
@@ -109,6 +114,40 @@ export default {
         'slight left': 'slightly left',
         left: 'left',
         straight: 'straight',
+      },
+    },
+    imhd: {
+      total: {
+        // eslint-disable-next-line
+        short: ({ arrival, price, numbers }) =>
+          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Line: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
+        // eslint-disable-next-line
+        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) =>
+          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Line: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Duration <b>{total} {numberize(total, ['minutes', 'minute'])}</b><br />To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.: <b>{bus}</b>, waiting: <b>{wait} {numberize(wait, ['minutes', 'minute'])}</b></Fragment>,
+      },
+      step: {
+        // eslint-disable-next-line
+        foot: ({ departure, duration, destination }) =>
+          <Fragment>at <b>{departure}</b> walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}</Fragment>,
+        // eslint-disable-next-line
+        bus: ({ departure, type, number, destination }) =>
+          <Fragment>at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b></Fragment>,
+      },
+      type: {
+        bus: 'take bus',
+        tram: 'take tram',
+        trolleybus: 'take trolleybus',
+        foot: 'walk',
+      },
+    },
+    bikesharing: {
+      step: {
+        // eslint-disable-next-line
+        foot: ({ duration, destination }) =>
+          <Fragment>walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}</Fragment>,
+        // eslint-disable-next-line
+        bicycle: ({ duration, destination }) =>
+          <Fragment>bicycle <b>{duration} {numberize(duration, ['minutes', 'minte'])}</b> to <b>{destination}</b></Fragment>,
       },
     },
     imhdAttribution: 'public transport routes',
@@ -815,3 +854,7 @@ export default {
     },
   },
 };
+
+function numberize(n, words) {
+  return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
+}

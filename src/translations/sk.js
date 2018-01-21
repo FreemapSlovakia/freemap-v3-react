@@ -1,4 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
+import React, { Fragment } from 'react';
 
 const errorMarkup = `<h1>Chyba aplikácie</h1>
 <p>
@@ -66,8 +67,12 @@ export default {
       foot: 'Pešo',
     },
     alternative: 'Alternatíva',
-    distance: 'Vzdialenosť: {value} km',
-    duration: 'Čas: {h} h {m} m',
+    // eslint-disable-next-line
+    distance: ({ value }) => <Fragment>Vzdialenosť: <b>{value} km</b></Fragment>,
+    // eslint-disable-next-line
+    duration: ({ h, m }) => <Fragment>Trvanie: <b>{h} h {m} m</b></Fragment>,
+    // eslint-disable-next-line
+    summary: ({ distance, h, m }) => <Fragment>Vzdialenosť: <b>{distance} km</b> | Trvanie: <b>{h} h {m} m</b></Fragment>,
     removeMidpoint: 'Odstrániť zastávku?',
     noHomeAlert: 'Najprv si musíte nastaviť domovskú polohu.',
     showMidpointHint: 'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
@@ -108,6 +113,41 @@ export default {
         'slight left': 'mierne doľava',
         left: 'doľava',
         straight: 'priamo',
+      },
+    },
+
+    imhd: {
+      total: {
+        // eslint-disable-next-line
+        short: ({ arrival, price, numbers }) =>
+          <Fragment>Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
+        // eslint-disable-next-line
+        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) =>
+          <Fragment>Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Trvanie <b>{total} {numberize(total, ['minút', 'minúta', 'minúty'])}</b><br />Do odchodu: <b>{home}</b>, pešo: <b>{foot}</b>, MHD: <b>{bus}</b>, čakanie: <b>{wait} {numberize(wait, ['minút', 'minúta', 'minúty'])}</b></Fragment>,
+      },
+      step: {
+        // eslint-disable-next-line
+        foot: ({ departure, duration, destination }) =>
+          <Fragment>o <b>{departure}</b> pešo <b>{duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}</b> {destination === 'TARGET' ? <b>do cieľa</b> : <Fragment>na <b>{destination}</b></Fragment>}</Fragment>,
+        // eslint-disable-next-line
+        bus: ({ departure, type, number, destination }) =>
+          <Fragment>o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b></Fragment>,
+      },
+      type: {
+        bus: 'autobusom',
+        tram: 'električkou',
+        trolleybus: 'trolejbusom',
+        foot: 'pešo',
+      },
+    },
+    bikesharing: {
+      step: {
+        // eslint-disable-next-line
+        foot: ({ duration, destination }) =>
+          <Fragment>pešo <b>{duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}</b> {destination === 'TARGET' ? <b>do cieľa</b> : <Fragment>na <b>{destination}</b></Fragment>}</Fragment>,
+        // eslint-disable-next-line
+        bicycle: ({ duration, destination }) =>
+          <Fragment>bicyklom <b>{duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}</b> na <b>{destination}</b></Fragment>,
       },
     },
     imhdAttribution: 'trasy liniek MHD',
@@ -814,3 +854,7 @@ export default {
     },
   },
 };
+
+function numberize(n, words) {
+  return n < 1 ? words[0] : n < 2 ? words[1] : n < 5 ? words[2] : words[0];
+}

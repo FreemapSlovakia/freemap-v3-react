@@ -21,7 +21,8 @@ export default createLogic({
           : language === 'cs' ? import(/* webpackChunkName: "locale-data-cs" */'intl/locale-data/jsonp/cs.js')
             : import(/* webpackChunkName: "locale-data-en" */'intl/locale-data/jsonp/en.js'),
     ]).then(([translations]) => {
-      dispatch(l10nSetTranslations(language, translations.default));
+      global.translations = translations.default;
+      dispatch(l10nSetTranslations(language, {}));
       dispatch(stopProgress(pid));
       done();
     });

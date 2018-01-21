@@ -80,9 +80,9 @@ export default createLogic({
           }
 
           const alts = routes.map((route) => {
-            const { legs, distance: totalDistance, duration: totalDuration } = route;
+            const { legs, distance: totalDistance, duration: totalDuration, extra: totalExtra } = route;
             const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({
-              name, distance, duration, mode, geometry, maneuver: { type, modifier, location: [lon, lat] },
+              name, distance, duration, mode, geometry, extra, maneuver: { type, modifier, location: [lon, lat] },
             }) => ({
               maneuver: {
                 location: {
@@ -100,13 +100,14 @@ export default createLogic({
               mode,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
               legIndex,
+              extra,
             }))));
 
             return {
               itinerary,
               distance: totalDistance / 1000,
               duration: totalDuration / 60,
-              summary0: legs[0].summary,
+              extra: totalExtra,
             };
           });
 

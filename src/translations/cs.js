@@ -1,4 +1,5 @@
 /* eslint-disable no-template-curly-in-string */
+import React, { Fragment } from 'react';
 
 const errorMarkup = `<h1>Chyba aplikace</h1>
 <p>
@@ -67,8 +68,12 @@ export default {
       foot: 'Pěšky',
     },
     alternative: 'Alternativa',
-    distance: 'Vzdálenost: {value} km',
-    duration: 'Čas: {h} h {m} m',
+    // eslint-disable-next-line
+    distance: ({ value }) => <Fragment>Vzdálenost: <b>{value} km</b></Fragment>,
+    // eslint-disable-next-line
+    duration: ({ h, m }) => <Fragment>Trvání: <b>{h} h {m} m</b></Fragment>,
+    // eslint-disable-next-line
+    summary: ({ distance, h, m }) => <Fragment>Vzdálenost: <b>{distance} km</b> | Trvání: <b>{h} h {m} m</b></Fragment>,
     removeMidpoint: 'Odstranit zastávku?',
     noHomeAlert: 'Nejprve si musíte nastavit výchozí polohu.',
     showMidpointHint: 'Pro přidání průchozího bodu přetáhněte úsek silnice na zvolené místo.',
@@ -109,6 +114,41 @@ export default {
         'slight left': 'mírně doleva',
         left: 'doleva',
         straight: 'rovně',
+      },
+    },
+
+    imhd: {
+      total: {
+        // eslint-disable-next-line
+        short: ({ arrival, price, numbers }) =>
+          <Fragment>Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
+        // eslint-disable-next-line
+        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) =>
+          <Fragment>Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Trvání <b>{total} {numberize(total, ['minut', 'minúta', 'minuty'])}</b><br />Do odchodu: <b>{home}</b>, pěšky: <b>{foot}</b>, MHD: <b>{bus}</b>, čekaní: <b>{wait} {numberize(wait, ['minut', 'minúta', 'minuty'])}</b></Fragment>,
+      },
+      step: {
+        // eslint-disable-next-line
+        foot: ({ departure, duration, destination }) =>
+          <Fragment>o <b>{departure}</b> pěšky <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> {destination === 'TARGET' ? <b>do cíle</b> : <Fragment>na <b>{destination}</b></Fragment>}</Fragment>,
+        // eslint-disable-next-line
+        bus: ({ departure, type, number, destination }) =>
+          <Fragment>o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b></Fragment>,
+      },
+      type: {
+        bus: 'autobusem',
+        tram: 'tramvají',
+        trolleybus: 'trolejbusem',
+        foot: 'pěšky',
+      },
+    },
+    bikesharing: {
+      step: {
+        // eslint-disable-next-line
+        foot: ({ duration, destination }) =>
+          <Fragment>pěšky <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> {destination === 'TARGET' ? <b>do cíle</b> : <Fragment>na <b>{destination}</b></Fragment>}</Fragment>,
+        // eslint-disable-next-line
+        bicycle: ({ duration, destination }) =>
+          <Fragment>kolem <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> na <b>{destination}</b></Fragment>,
       },
     },
     imhdAttribution: 'trasy linek MHD',
@@ -608,7 +648,7 @@ export default {
       263: 'Kaštěl',
       264: 'Geomorfologické členění',
       265: 'Vojenský bunkr',
-      266: 'Příjezd / Výjezd z dálnice',
+      266: 'Příchod / Výjezd z dálnice',
       267: 'Sochy',
       268: 'Komín',
       269: 'Paragliding',
@@ -814,3 +854,7 @@ export default {
     },
   },
 };
+
+function numberize(n, words) {
+  return n < 1 ? words[0] : n < 2 ? words[1] : n < 5 ? words[2] : words[0];
+}
