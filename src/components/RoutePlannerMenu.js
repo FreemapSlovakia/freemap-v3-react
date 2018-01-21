@@ -134,8 +134,6 @@ class RoutePlannerMenu extends React.Component {
 
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
-    const special = ['imhd', 'bikesharing'].includes(transportType);
-
     return (
       <React.Fragment>
         <span className="fm-label">
@@ -221,7 +219,11 @@ class RoutePlannerMenu extends React.Component {
               title={
                 transportType === 'imhd' && activeAlternative.extra && activeAlternative.extra.price
                   ? imhdSummary(t, language, activeAlternative.extra)
-                  : `${nf.format(activeAlternative.distance)} km / ${Math.floor(activeAlternative.duration / 60)} h ${Math.round(activeAlternative.duration % 60)} m`
+                  : t('routePlanner.summary', {
+                    distance: nf.format(activeAlternative.distance),
+                    h: Math.floor(activeAlternative.duration / 60),
+                    m: Math.round(activeAlternative.duration % 60),
+                  })
               }
             >
               {
@@ -234,7 +236,11 @@ class RoutePlannerMenu extends React.Component {
                   >
                     {transportType === 'imhd' && extra && extra.price
                       ? imhdSummary(t, language, extra)
-                      : `${nf.format(distance)} km / ${Math.floor(duration / 60)} h ${Math.round(duration % 60)} m`
+                      : t('routePlanner.summary', {
+                        distance: nf.format(distance),
+                        h: Math.floor(duration / 60),
+                        m: Math.round(duration % 60),
+                      })
                     }
                   </MenuItem>
                 ))
@@ -339,10 +345,14 @@ export default compose(
 )(RoutePlannerMenu);
 
 function imhdSummary(t, language, extra) {
-  const { price, arrival, buses } = extra;
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const { price, arrival, numbers } = extra;
   return t('routePlanner.imhd.total.short', {
     price: Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price),
-    arrival,
-    buses: buses && buses.join(', '),
+    arrival: dateFormat.format(arrival * 1000),
+    numbers,
   });
 }

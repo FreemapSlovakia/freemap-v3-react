@@ -151,12 +151,13 @@ class RoutePlannerResult extends React.Component {
   maneuverToText = (name, { type, modifier }, extra) => {
     const p = 'routePlanner.maneuver';
     const { t, transportType } = this.props;
-    return isSpecial(transportType) ? imhdStep(t, extra)
-      : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
-        type: t(`${p}.types.${type}`, {}, type),
-        modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
-        name,
-      });
+    return transportType === 'imhd' ? imhdStep(t, this.props.language, extra)
+      : transportType === 'bikesharing' ? bikesharingStep(t, extra)
+        : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
+          type: t(`${p}.types.${type}`, {}, type),
+          modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
+          name,
+        });
   }
 
   render() {
@@ -229,7 +230,7 @@ class RoutePlannerResult extends React.Component {
             onClick={this.handleEndPointClick}
           >
             {
-              isSpecial(transportType) ?
+              isSpecial(transportType) && extra && extra.numbers ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div>
                     {imhdSummary(t, language, extra)}
@@ -341,8 +342,8 @@ export default compose(
           messageKey: 'routePlanner.removeMidpoint',
           style: 'warning',
           actions: [
-            { name: 'Áno', action: routePlannerRemoveMidpoint(position), style: 'danger' },
-            { name: 'Nie' },
+            { nameKey: 'general.yes', action: routePlannerRemoveMidpoint(position), style: 'danger' },
+            { nameKey: 'general.no' },
           ],
         }));
       },
@@ -394,29 +395,43 @@ function addMissingSegments(alt) {
 }
 
 function imhdSummary(t, language, extra) {
-  const { duration: { total, foot, bus, home, walk, wait }, price, arrival, buses } = extra;
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    hour: '2-digit', minute: '2-digit',
+  });
+
+  const { duration: { foot, bus, home, wait }, price, arrival, numbers } = extra;
+
   return t('routePlanner.imhd.total.full', {
-    total: <b key="total">{Math.round(total / 60)}</b>,
-    foot: <b key="foot">{Math.round(foot / 60)}</b>,
-    bus: <b key="bus">{Math.round(bus / 60)}</b>,
-    home: <b key="home">{Math.round(home / 60)}</b>,
-    walk: <b key="walk">{Math.round(walk / 60)}</b>,
-    wait: <b key="wait">{Math.round(wait / 60)}</b>,
-    price: <b key="price">{Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price)}</b>,
-    arrival: <b key="arrival">{arrival}</b>,
-    buses: buses && buses.map(b => <React.Fragment key={b}><b>{b}</b></React.Fragment>),
-    br1: <br key="br1" />,
-    br2: <br key="br2" />,
+    total: Math.round((foot + bus + home + wait) / 60),
+    foot: Math.round(foot / 60),
+    bus: Math.round(bus / 60),
+    home: Math.round(home / 60),
+    walk: Math.round(foot / 60),
+    wait: Math.round(wait / 60),
+    price: Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price),
+    arrival: dateFormat.format(arrival * 1000),
+    numbers,
   });
 }
 
-function imhdStep(t, { type, destination, departure, duration, number }) {
+function imhdStep(t, language, { type, destination, departure, duration, number }) {
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    hour: '2-digit', minute: '2-digit',
+  });
+
   return t(`routePlanner.imhd.step.${type === 'foot' ? 'foot' : 'bus'}`, {
     type: t(`routePlanner.imhd.type.${type}`),
-    destination: destination === 'TARGET' ? t('routePlanner.imhd.target') : destination,
-    departure,
+    destination,
+    departure: dateFormat.format(departure * 1000),
     duration: Math.round(duration / 60),
     number,
+  });
+}
+
+function bikesharingStep(t, { type, destination, duration }) {
+  return t(`routePlanner.bikesharing.step.${type}`, {
+    destination,
+    duration: Math.round(duration / 60),
   });
 }
 
