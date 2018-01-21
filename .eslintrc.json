@@ -28,6 +28,7 @@
     "import/prefer-default-export": 0,
     "react/require-default-props": 0,
     "react/forbid-prop-types": 1,
+    "react/no-danger": 0,
     "no-mixed-operators": 0,
     "global-require": 0,
     "import/no-dynamic-require": 0,

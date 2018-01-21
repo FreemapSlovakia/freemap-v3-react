@@ -96,6 +96,7 @@ export default compose(
   connect(
     state => ({
       elevationProfilePoints: state.elevationChart.elevationProfilePoints,
+      language: state.l10n.language,
     }),
     dispatch => ({
       setActivePoint(activePoint) {

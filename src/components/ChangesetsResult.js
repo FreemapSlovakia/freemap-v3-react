@@ -11,7 +11,7 @@ import { changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
 import 'fm3/styles/changesets.scss';
 
 const timeFormat = new Intl.DateTimeFormat(
-  'sk',
+  'sk', // TODO language
   {
     day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit',
   },

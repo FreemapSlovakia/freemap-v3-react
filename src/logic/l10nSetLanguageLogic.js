@@ -11,10 +11,16 @@ export default createLogic({
     dispatch(startProgress(pid));
 
     const { chosenLanguage } = getState().l10n;
-    const language = chosenLanguage || navigator.languages.map(lang => lang.split('-')[0]).find(lang => ['en', 'sk'].includes(lang)) || 'en';
+    const language = chosenLanguage || navigator.languages.map(lang => lang.split('-')[0]).find(lang => ['en', 'sk', 'cs'].includes(lang)) || 'en';
 
     // TODO handle error
-    import(`fm3/translations/${language}.js`).then((translations) => {
+    Promise.all([
+      import(/* webpackChunkName: "translations" */`fm3/translations/${language}.js`),
+      !global.hasNoNativeIntl ? null
+        : language === 'sk' ? import(/* webpackChunkName: "locale-data-sk" */'intl/locale-data/jsonp/sk.js')
+          : language === 'cs' ? import(/* webpackChunkName: "locale-data-cs" */'intl/locale-data/jsonp/cs.js')
+            : import(/* webpackChunkName: "locale-data-en" */'intl/locale-data/jsonp/en.js'),
+    ]).then(([translations]) => {
       dispatch(l10nSetTranslations(language, translations.default));
       dispatch(stopProgress(pid));
       done();

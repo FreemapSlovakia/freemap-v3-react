@@ -7,7 +7,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import injectL10n from 'fm3/l10nInjector';
 
-function Attribution({ t, mapType, overlays }) {
+function Attribution({ t, mapType, overlays, imhd }) {
   return (
     <div
       style={{
@@ -39,6 +39,7 @@ function Attribution({ t, mapType, overlays }) {
           ]),
         ])
       }
+      {imhd && <React.Fragment>; {t('routePlanner.imhdAttribution')} © <a href="https://imhd.sk" target="_blank" rel="noopener noreferrer">imhd.sk</a></React.Fragment>}
     </div>
   );
 }
@@ -47,6 +48,7 @@ Attribution.propTypes = {
   overlays: FmPropTypes.overlays.isRequired,
   mapType: FmPropTypes.mapType.isRequired,
   t: PropTypes.func.isRequired,
+  imhd: PropTypes.bool,
 };
 
 function categorize(attributions) {
@@ -74,6 +76,7 @@ export default compose(
       expertMode: state.main.expertMode,
       pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
       isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
+      imhd: state.routePlanner.effectiveTransportType === 'imhd',
     }),
     dispatch => ({
       onMapRefocus(changes) {

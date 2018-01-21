@@ -4,14 +4,14 @@
   position: absolute;
   z-index: 10001;
   background-color: rgba(255, 255, 255, 0.88);
-  bottom: 0px;
+  bottom: 53px;
   left: 0px;
   border-radius: 10px;
-  min-width: 45%;
+  width: 50%;
   padding: 10px;
   margin: 10px;
 
   @media ($smartphone-screen) {
-    width: calc(100% - 10px);
+    width: calc(100% - 20px);
   }
 }

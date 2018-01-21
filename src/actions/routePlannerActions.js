@@ -1,11 +1,11 @@
 import * as at from 'fm3/actionTypes';
 
-export function routePlannerSetStart(start) {
-  return { type: at.ROUTE_PLANNER_SET_START, payload: start };
+export function routePlannerSetStart(start, move) {
+  return { type: at.ROUTE_PLANNER_SET_START, payload: { start, move } };
 }
 
-export function routePlannerSetFinish(finish) {
-  return { type: at.ROUTE_PLANNER_SET_FINISH, payload: finish };
+export function routePlannerSetFinish(finish, move) {
+  return { type: at.ROUTE_PLANNER_SET_FINISH, payload: { finish, move } };
 }
 
 export function routePlannerAddMidpoint(midpoint, position) {

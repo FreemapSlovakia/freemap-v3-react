@@ -103,7 +103,6 @@ export class TipsModal extends React.Component {
             tip ?
               <div
                 style={loading ? { opacity: 0.5, cursor: 'progress' } : {}}
-                // eslint-disable-next-line react/no-danger
                 dangerouslySetInnerHTML={{ __html: tip }}
               />
               : t('general.loading')

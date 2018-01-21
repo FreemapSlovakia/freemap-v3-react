@@ -151,7 +151,7 @@ class RoutePlannerResult extends React.Component {
   maneuverToText = (name, { type, modifier }, extra) => {
     const p = 'routePlanner.maneuver';
     const { t, transportType } = this.props;
-    return transportType === 'imhd' ? imhdStep(t, extra)
+    return isSpecial(transportType) ? imhdStep(t, extra)
       : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
         type: t(`${p}.types.${type}`, {}, type),
         modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
@@ -162,6 +162,8 @@ class RoutePlannerResult extends React.Component {
   render() {
     const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange,
       transportType, timestamp, alternatives, t, language } = this.props;
+
+    const special = isSpecial(transportType);
 
     const Icon = L.divIcon;
     const circularIcon = new Icon({ // CircleMarker is not draggable
@@ -227,7 +229,7 @@ class RoutePlannerResult extends React.Component {
             onClick={this.handleEndPointClick}
           >
             {
-              transportType === 'imhd' && extra && extra.price ?
+              isSpecial(transportType) ?
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   <div>
                     {imhdSummary(t, language, extra)}
@@ -245,12 +247,12 @@ class RoutePlannerResult extends React.Component {
           </RichMarker>
         }
         {
-          (transportType !== 'imhd' ? alternatives : alternatives.map(addMissingSegments))
+          (!special ? alternatives : alternatives.map(addMissingSegments))
           .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
-                alt === activeAlternativeIndex && transportType === 'imhd' && itinerary.map(({ shapePoints, name, maneuver, extra }, i) => (
+                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra }, i) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -272,8 +274,9 @@ class RoutePlannerResult extends React.Component {
                     positions={routeSlice.shapePoints}
                     weight={10}
                     color="#fff"
+                    bubblingMouseEvents={false}
                     onClick={() => onAlternativeChange(alt)}
-                    onMouseMove={transportType === 'imhd' ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
+                    onMouseMove={special ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
                     onMouseOut={this.handlePolyMouseOut}
                   />
                 ))
@@ -287,12 +290,13 @@ class RoutePlannerResult extends React.Component {
                     weight={6}
                     color={
                       alt !== activeAlternativeIndex ? '#868e96'
-                        : transportType !== 'imhd' && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
+                        : !special && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
                         : 'hsl(211, 100%, 50%)'
                     }
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
                     interactive={false}
+                    bubblingMouseEvents={false}
                   />
                 ))
               }
@@ -320,10 +324,10 @@ export default compose(
     }),
     dispatch => ({
       onStartSet(start) {
-        dispatch(routePlannerSetStart(start));
+        dispatch(routePlannerSetStart(start, true));
       },
       onFinishSet(finish) {
-        dispatch(routePlannerSetFinish(finish));
+        dispatch(routePlannerSetFinish(finish, true));
       },
       onAddMidpoint(position, midpoint) {
         dispatch(routePlannerAddMidpoint(midpoint, position));
@@ -414,4 +418,8 @@ function imhdStep(t, { type, destination, departure, duration, number }) {
     duration: Math.round(duration / 60),
     number,
   });
+}
+
+function isSpecial(transportType) {
+  return ['imhd', 'bikesharing'].includes(transportType);
 }

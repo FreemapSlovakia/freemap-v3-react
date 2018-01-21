@@ -55,7 +55,7 @@ export function getMapStateDiffFromUrl(state1, state2) {
     changes.mapType = mapType;
   }
 
-  if (overlays.join('') !== state2.overlays.join('')) {
+  if (mapType && overlays.join('') !== state2.overlays.join('')) {
     changes.overlays = overlays;
   }
 

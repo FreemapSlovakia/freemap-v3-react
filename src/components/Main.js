@@ -106,7 +106,6 @@ class Main extends React.Component {
     onMapReset: PropTypes.func.isRequired,
     showMenu: PropTypes.bool,
     expertMode: PropTypes.bool,
-    extraAttribution: PropTypes.string,
     t: PropTypes.func.isRequired,
     overlayPaneOpacity: PropTypes.number.isRequired,
   };
@@ -126,25 +125,9 @@ class Main extends React.Component {
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
-  componentDidUpdate(prevProps) {
-    const { extraAttribution } = this.props;
-    if (this.attributionControl && prevProps.extraAttribution !== extraAttribution) {
-      if (prevProps.extraAttribution) {
-        this.attributionControl.leafletElement.removeAttribution(prevProps.extraAttribution);
-      }
-      if (extraAttribution) {
-        this.attributionControl.leafletElement.addAttribution(extraAttribution);
-      }
-    }
-  }
-
   componentWillUnmount() {
     document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
     setMapLeafletElement(null);
-  }
-
-  setAttributionControl = (ele) => {
-    this.attributionControl = ele;
   }
 
   handleFullscreenChange = () => {
@@ -215,7 +198,6 @@ class Main extends React.Component {
           {process.env.DEPLOYMENT === 'next' &&
             <div
               className="info-bar"
-              // eslint-disable-next-line
               dangerouslySetInnerHTML={{ __html: t('main.devInfo') }}
             />
           }
@@ -322,7 +304,6 @@ class Main extends React.Component {
         <Map
           zoomControl={false}
           attributionControl={false}
-          minZoom={8}
           maxZoom={20}
           ref={(map) => { this.map = map; }}
           center={L.latLng(lat, lon)}
@@ -383,7 +364,6 @@ export default compose(
       showLoginModal: state.auth.chooseLoginMethod,
       showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
       expertMode: state.main.expertMode,
-      extraAttribution: state.routePlanner.effectiveTransportType === 'imhd' ? 'trasy liniek MHD © <a href="https://imhd.sk" target="_blank">imhd.sk</a>' : null,
       overlayPaneOpacity: state.map.overlayPaneOpacity,
     }),
     dispatch => ({

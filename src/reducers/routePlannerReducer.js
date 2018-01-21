@@ -32,13 +32,23 @@ export default function routePlanner(state = initialState, action) {
         } : {}),
         start: action.payload.start,
         finish: action.payload.finish,
-        midpoints: action.payload.transportType === 'imhd' ? [] : action.payload.midpoints,
+        midpoints: isSpecial(action.payload.transportType) ? [] : action.payload.midpoints,
         transportType: action.payload.transportType,
       };
     case at.ROUTE_PLANNER_SET_START:
-      return { ...state, start: action.payload, pickMode: state.finish ? null : 'finish' };
+      return {
+        ...state,
+        start: action.payload.start,
+        pickMode: state.finish ? 'start' : 'finish',
+        midpoints: !isSpecial(state.effectiveTransportType) && !action.payload.move && state.start ? [state.start, ...state.midpoints] : state.midpoints,
+      };
     case at.ROUTE_PLANNER_SET_FINISH:
-      return { ...state, finish: action.payload, pickMode: state.start ? null : 'finish' };
+      return {
+        ...state,
+        finish: action.payload.finish,
+        pickMode: state.start ? 'finish' : 'start',
+        midpoints: !isSpecial(state.effectiveTransportType) && !action.payload.move && state.finish ? [...state.midpoints, state.finish] : state.midpoints,
+      };
     case at.ROUTE_PLANNER_SWAP_ENDS:
       return { ...state, start: state.finish, finish: state.start, midpoints: [...state.midpoints].reverse() };
     case at.ROUTE_PLANNER_ADD_MIDPOINT:
@@ -60,11 +70,15 @@ export default function routePlanner(state = initialState, action) {
         timestamp: action.payload.timestamp,
         activeAlternativeIndex: 0,
         effectiveTransportType: action.payload.transportType,
-        midpoints: action.payload.transportType === 'imhd' ? [] : state.midpoints,
+        midpoints: isSpecial(action.payload.transportType) ? [] : state.midpoints,
       };
     case at.ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX:
       return { ...state, activeAlternativeIndex: action.payload };
     default:
       return state;
   }
+}
+
+function isSpecial(transportType) {
+  return ['imhd', 'bikesharing'].includes(transportType);
 }

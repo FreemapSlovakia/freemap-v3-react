@@ -121,6 +121,7 @@ class RoutePlannerMenu extends React.Component {
       ['car-free', 'car'],
       ['imhd', 'bus'],
       ['bike', 'bicycle'],
+      ['bikesharing', 'bicycle'],
       (expertMode || transportType === 'foot-stroller') && ['foot-stroller', 'wheelchair-alt'],
       ['nordic', '!icon-skier-skiing'],
       (expertMode || transportType === 'ski') && ['ski', '!icon-skiing'],
@@ -132,6 +133,8 @@ class RoutePlannerMenu extends React.Component {
     const activeAlternative = alternatives[activeAlternativeIndex];
 
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    const special = ['imhd', 'bikesharing'].includes(transportType);
 
     return (
       <React.Fragment>
@@ -191,7 +194,7 @@ class RoutePlannerMenu extends React.Component {
           title={
             <React.Fragment>
               <FontAwesomeIcon icon={activeTransportType[1]} />
-              {activeTransportType[0] === 'car' && <FontAwesomeIcon icon="money" />}
+              {['car', 'bikesharing'].includes(activeTransportType[0]) && <FontAwesomeIcon icon="money" />}
               <span className="hidden-xs"> {t(`routePlanner.transportType.${activeTransportType[0]}`).replace(/\s*,.*/, '')}</span>
             </React.Fragment>
           }
@@ -205,7 +208,7 @@ class RoutePlannerMenu extends React.Component {
                 active={transportType === type}
                 onClick={() => onTransportTypeChange(type)}
               >
-                <FontAwesomeIcon icon={icon} />{type === 'car' && <FontAwesomeIcon icon="money" />} {t(`routePlanner.transportType.${type}`)}
+                <FontAwesomeIcon icon={icon} />{['car', 'bikesharing'].includes(type) && <FontAwesomeIcon icon="money" />} {t(`routePlanner.transportType.${type}`)}
               </MenuItem>
             ))
           }

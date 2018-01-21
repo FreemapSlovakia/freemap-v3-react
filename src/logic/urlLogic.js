@@ -2,20 +2,21 @@ import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
 import refModals from 'fm3/refModals';
 import allTips from 'fm3/tips/index.json';
+import * as at from 'fm3/actionTypes';
 
 const tipKeys = allTips.map(([key]) => key);
 
 export const urlLogic = createLogic({
   type: [
-    'MAP_LOAD_STATE', 'MAP_REFOCUS', /^ROUTE_PLANNER_/, 'SET_TOOL', 'CLEAR_MAP', 'MAP_RESET',
-    'TRACK_VIEWER_SET_TRACK_UID', 'TRACK_VIEWER_COLORIZE_TRACK_BY', 'TRACK_VIEWER_DOWNLOAD_TRACK',
-    'GALLERY_REQUEST_IMAGE', 'GALLERY_CLEAR', 'GALLERY_SHOW_FILTER', 'GALLERY_HIDE_FILTER', 'GALLERY_SHOW_UPLOAD_MODAL', 'GALLERY_HIDE_UPLOAD_MODAL',
-    'CHANGESETS_SET_DAYS', 'CHANGESETS_SET_AUTHOR_NAME',
+    at.MAP_LOAD_STATE, at.MAP_REFOCUS, /^ROUTE_PLANNER_/, at.SET_TOOL, at.CLEAR_MAP, at.MAP_RESET,
+    at.TRACK_VIEWER_SET_TRACK_UID, at.TRACK_VIEWER_COLORIZE_TRACK_BY, at.TRACK_VIEWER_DOWNLOAD_TRACK,
+    at.GALLERY_REQUEST_IMAGE, at.GALLERY_CLEAR, at.GALLERY_SHOW_FILTER, at.GALLERY_HIDE_FILTER, at.GALLERY_SHOW_UPLOAD_MODAL, at.GALLERY_HIDE_UPLOAD_MODAL,
+    at.CHANGESETS_SET_DAYS, at.CHANGESETS_SET_AUTHOR_NAME,
     /^INFO_POINT_.*/, /^DISTANCE_MEASUREMENT_.*/, /^AREA_MEASUREMENT_.*/,
-    'ELEVATION_MEASUREMENT_SET_POINT',
-    'GALLERY_SET_FILTER', 'SET_ACTIVE_MODAL', /^TIPS_.*/,
-    'AUTH_CHOOSE_LOGIN_METHOD', 'AUTH_LOGIN_CLOSE',
-    /^OSM_LOAD_.*/,
+    at.ELEVATION_MEASUREMENT_SET_POINT,
+    at.GALLERY_SET_FILTER, at.SET_ACTIVE_MODAL, /^TIPS_.*/,
+    at.AUTH_CHOOSE_LOGIN_METHOD, at.AUTH_LOGIN_CLOSE, /^AUTH_LOGIN_WITH_.*/,
+    /^OSM_LOAD_.*/, at.ENABLE_UPDATING_URL,
   ],
   process({ getState, action }, dispatch, done) {
     const {
@@ -168,7 +169,7 @@ export const urlLogic = createLogic({
     const search = `?${queryParts.join('&')}`;
 
     if (window.location.search !== search) {
-      history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ search });
+      history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ pathname: '/', search });
     }
 
     done();
