@@ -120,10 +120,10 @@ export default {
       total: {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) =>
-          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Line: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
+          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) =>
-          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Line: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Duration <b>{total} {numberize(total, ['minutes', 'minute'])}</b><br />To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.: <b>{bus}</b>, waiting: <b>{wait} {numberize(wait, ['minutes', 'minute'])}</b></Fragment>,
+          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Duration <b>{total} {numberize(total, ['minutes', 'minute'])}</b><br />To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.: <b>{bus}</b>, waiting: <b>{wait} {numberize(wait, ['minutes', 'minute'])}</b></Fragment>,
       },
       step: {
         // eslint-disable-next-line
