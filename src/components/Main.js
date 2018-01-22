@@ -1,3 +1,6 @@
+import 'fm3/bootstrap/css/bootstrap.css';
+import 'leaflet/dist/leaflet.css';
+
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Map, ScaleControl } from 'react-leaflet';
@@ -75,12 +78,10 @@ import { setTool, setLocation, clearMap, toggleLocate } from 'fm3/actions/mainAc
 import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
+import Attribution from 'fm3/components/Attribution';
 
-import 'fm3/bootstrap/css/bootstrap.css';
 import 'fm3/styles/main.scss';
-import 'leaflet/dist/leaflet.css';
 import 'fm3/styles/leaflet.scss';
-import Attribution from './Attribution';
 
 class Main extends React.Component {
   static propTypes = {
