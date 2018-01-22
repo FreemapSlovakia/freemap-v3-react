@@ -13,7 +13,7 @@ import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { mapLoadState } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
-import { l10nSetLanguage } from 'fm3/actions/l10nActions';
+import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
@@ -77,5 +77,5 @@ function loadAppState() {
     }
   }
 
-  store.dispatch(l10nSetLanguage(appState && [null, 'en', 'sk', 'cs'].includes(appState.language) ? appState.language : null));
+  store.dispatch(l10nSetChosenLanguage(appState && [null, 'en', 'sk', 'cs'].includes(appState.language) ? appState.language : null));
 }

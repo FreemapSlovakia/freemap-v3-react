@@ -13,7 +13,7 @@ import injectL10n from 'fm3/l10nInjector';
 import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
 import { authStartLogout, authChooseLoginMethod } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
-import { l10nSetLanguage } from 'fm3/actions/l10nActions';
+import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
 class MoreMenuButton extends React.Component {
   static propTypes = {
@@ -347,7 +347,7 @@ export default compose(
         dispatch(tipsShow(which));
       },
       onLanguageChange(lang) {
-        dispatch(l10nSetLanguage(lang));
+        dispatch(l10nSetChosenLanguage(lang));
       },
     }),
   ),

@@ -2,7 +2,7 @@ import tips from 'fm3/tips/index.json';
 import * as at from 'fm3/actionTypes';
 
 const initialState = {
-  tip: 'attribution',
+  tip: null,
   preventTips: false,
 };
 
@@ -11,7 +11,7 @@ export default function reduceTips(state = initialState, action) {
     case at.TIPS_SHOW:
       return { ...state, tip: action.payload };
     case at.TIPS_NEXT:
-      return { ...state, tip: tips[(ft(action.payload === null ? 'attribution' : action.payload || state.tip) + 1) % tips.length][0] };
+      return { ...state, tip: tips[(ft(action.payload === null ? 'freemap' : action.payload || state.tip) + 1) % tips.length][0] };
     case at.TIPS_PREVIOUS:
       return { ...state, tip: tips[(ft(state.tip) + tips.length - 1) % tips.length][0] };
     case at.TIPS_PREVENT_NEXT_TIME:

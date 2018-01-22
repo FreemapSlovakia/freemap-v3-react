@@ -2,10 +2,10 @@ import { createLogic } from 'redux-logic';
 
 import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { l10nSetTranslations } from 'fm3/actions/l10nActions';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
 export default createLogic({
-  type: at.L10N_SET_LANGUAGE,
+  type: at.L10N_SET_CHOSEN_LANGUAGE,
   process({ getState }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
@@ -22,7 +22,7 @@ export default createLogic({
             : import(/* webpackChunkName: "locale-data-en" */'intl/locale-data/jsonp/en.js'),
     ]).then(([translations]) => {
       global.translations = translations.default;
-      dispatch(l10nSetTranslations(language, {}));
+      dispatch(l10nSetLanguage(language));
       dispatch(stopProgress(pid));
       done();
     });

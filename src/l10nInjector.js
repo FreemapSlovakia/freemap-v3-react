@@ -1,8 +1,11 @@
 import React from 'react';
 import { translate, splitAndSubstitute } from 'fm3/stringUtils';
+import { connect } from 'react-redux';
 
 export default function injectL10n(propertyName = 't') {
-  return wrappedComponent => props => React.createElement(wrappedComponent, { [propertyName]: tx, ...props });
+  return wrappedComponent => connect(state => ({
+    language: state.l10n.language,
+  }))(props => React.createElement(wrappedComponent, { [propertyName]: tx, ...props }));
 }
 
 function tx(key, params = {}, dflt = '') {

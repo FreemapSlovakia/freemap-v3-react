@@ -1,6 +1,6 @@
-Na [freemap.sk](https://www.freemap.sk) viete vyhľadávať aj presuny pomocou liniek MHD. Vyhľadávač zatiaľ funguje iba v Bratislave.
+Na stránke si viete vyhľadávať aj presuny pomocou liniek MHD. Vyhľadávač zatiaľ funguje iba v Bratislave.
 
-Dvoma kliknutiami nastavíte začiatok a cieľ vašej trasy. Trasu s viac alternatívami zobrázíme na mape.
+Dvoma kliknutiami nastavíte začiatok a cieľ vašej trasy. Trasu s viacerými alternatívami zobrázíme na mape.
 
 Plná čiara ukazuje presun pomocou vozidla MHD, bodkovaná čiara ukazuje pešie presuny (napr. na zastávku, medzi zastávkami).
 
