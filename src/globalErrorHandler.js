@@ -56,7 +56,11 @@ export function sendError(errDetails) {
     },
   ).then(
     ({ data }) => {
-      handle(data.id);
+      if (errDetails.message === 'Script error.') {
+        // don't show to user
+      } else {
+        handle(data.id);
+      }
     },
     () => {
       handle('???');
