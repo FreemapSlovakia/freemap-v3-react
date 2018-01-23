@@ -43,11 +43,13 @@ export function sendError(errDetails) {
     {
       level: 'error',
       message: 'Webapp error.',
-      error: errDetails,
-      url: window.location.href,
-      userAgent: navigator.userAgent,
-      localStorage,
-      state: { ...state, l10n: { ...state.l10n, translations: null } },
+      details: {
+        error: errDetails,
+        url: window.location.href,
+        userAgent: navigator.userAgent,
+        localStorage,
+        state,
+      },
     },
     {
       validateStatus: status => status === 200,
