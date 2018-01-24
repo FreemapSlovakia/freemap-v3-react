@@ -11,7 +11,10 @@ export default createLogic({
     dispatch(startProgress(pid));
 
     const { chosenLanguage } = getState().l10n;
-    const language = chosenLanguage || navigator.languages.map(lang => lang.split('-')[0]).find(lang => ['en', 'sk', 'cs'].includes(lang)) || 'en';
+    const language = chosenLanguage
+      || navigator.languages && navigator.languages.map(lang => simplify(lang)).find(lang => ['en', 'sk', 'cs'].includes(lang))
+      || simplify(navigator.language)
+      || 'en';
 
     // TODO handle error
     Promise.all([
@@ -28,3 +31,7 @@ export default createLogic({
     });
   },
 });
+
+function simplify(lang) {
+  return lang && lang.replace(/-.*/, '');
+}
