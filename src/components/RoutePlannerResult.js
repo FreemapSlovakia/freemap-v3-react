@@ -253,7 +253,7 @@ class RoutePlannerResult extends React.Component {
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
               {
-                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra }, i) => (
+                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra: extra1 }, i) => (
                   <Marker
                     key={i}
                     icon={circularIcon}
@@ -261,7 +261,7 @@ class RoutePlannerResult extends React.Component {
                   >
                     <Tooltip direction="right" permanent>
                       <div>
-                        {this.maneuverToText(name, maneuver, extra)}
+                        {this.maneuverToText(name, maneuver, extra1)}
                       </div>
                     </Tooltip>
                   </Marker>
