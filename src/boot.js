@@ -1,3 +1,9 @@
+import storage from 'local-storage-fallback';
+
+if (!window.localStorage) {
+  window.localStorage = storage;
+}
+
 /* eslint-disable no-underscore-dangle */
 if (!global.Intl) {
   global.hasNoNativeIntl = true;
