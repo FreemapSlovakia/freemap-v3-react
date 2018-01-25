@@ -7,7 +7,7 @@ export default createLogic({
   process({ getState }, dispatch, done) {
     const { main: { tool } } = getState();
     if (tool) {
-      window.ga('send', 'event', 'Tool', 'set', tool);
+      window.ga('send', 'event', 'Tool', 'setTool', tool);
     }
     done();
   },

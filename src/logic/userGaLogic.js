@@ -7,7 +7,7 @@ export default createLogic({
   process({ getState }, dispatch, done) {
     const { auth: { user } } = getState();
     if (user) {
-      window.ga('send', 'event', 'Auth', 'setUserId', user.id);
+      window.ga('send', 'event', 'Auth', 'setUser', user.id);
     }
     done();
   },

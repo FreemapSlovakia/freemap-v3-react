@@ -10,6 +10,7 @@ export default createLogic({
   process({ getState }, dispatch, done) {
     const { map: { mapType, overlays } } = getState();
     if (prevMapType !== mapType) {
+      window.ga('set', 'dimension1', mapType);
       window.ga('send', 'event', 'Map', 'setMapType', mapType);
       prevMapType = mapType;
     }
