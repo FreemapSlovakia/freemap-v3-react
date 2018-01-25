@@ -26,6 +26,8 @@ export default createLogic({
 
     const { id } = image;
 
+    window.ga('send', 'event', 'Gallery', 'submitStars', stars);
+
     axios.post(`${process.env.API_URL}/gallery/pictures/${id}/rating`, { stars }, {
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,

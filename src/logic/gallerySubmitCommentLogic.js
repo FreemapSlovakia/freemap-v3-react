@@ -24,6 +24,8 @@ export default createLogic({
 
     const { id } = image;
 
+    window.ga('send', 'event', 'Gallery', 'submitComment');
+
     axios.post(
       `${process.env.API_URL}/gallery/pictures/${id}/comments`,
       {

@@ -51,6 +51,10 @@ import tipsPreventLogic from 'fm3/logic/tipsPreventLogic';
 import tipsChangeLogic from 'fm3/logic/tipsChangeLogic';
 import l10nSetLanguageLogic from 'fm3/logic/l10nSetLanguageLogic';
 import errorLogic from 'fm3/logic/errorLogic';
+import toolGaLogic from 'fm3/logic/toolGaLogic';
+import mapTypeGaLogic from 'fm3/logic/mapTypeGaLogic';
+import userGaLogic from 'fm3/logic/userGaLogic';
+import galleryShowImageGaLogic from 'fm3/logic/galleryShowImageGaLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
@@ -106,4 +110,8 @@ export default [
   tipsPreventLogic,
   l10nSetLanguageLogic,
   errorLogic,
+  toolGaLogic,
+  mapTypeGaLogic,
+  userGaLogic,
+  galleryShowImageGaLogic,
 ];
