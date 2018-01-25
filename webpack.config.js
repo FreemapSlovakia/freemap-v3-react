@@ -103,11 +103,11 @@ module.exports = {
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
-        API_URL: JSON.stringify(
-          process.env.DEPLOYMENT === 'www' ? 'https://backend.freemap.sk'
-            : process.env.DEPLOYMENT === 'next' ? 'http://backend.freemap.sk:3001'
-              : 'http://localhost:3000',
-        ),
+        API_URL: JSON.stringify({
+          www: 'https://backend.freemap.sk',
+          next: 'http://backend.freemap.sk:3001',
+        }[process.env.DEPLOYMENT] || 'http://localhost:3000'),
+        GA_TRACKING_CODE: JSON.stringify({ www: 'UA-89861822-3', next: 'UA-89861822-4' }[process.env.DEPLOYMENT] || null),
       },
     }),
     new WebpackCleanupPlugin({
