@@ -6,7 +6,7 @@ import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
 import RichMarker from 'fm3/components/RichMarker';
 import PropTypes from 'prop-types';
 
-class InfoPoint extends React.Component {
+class InfoPointResult extends React.Component {
   static propTypes = {
     lat: PropTypes.number,
     lon: PropTypes.number,
@@ -65,4 +65,4 @@ export default connect(
       dispatch(infoPointChangePosition(lat, lon));
     },
   }),
-)(InfoPoint);
+)(InfoPointResult);

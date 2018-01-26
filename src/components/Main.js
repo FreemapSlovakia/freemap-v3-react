@@ -53,13 +53,13 @@ import MoreMenuButton from 'fm3/components/MoreMenuButton';
 import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
 
 import InfoPointMenu from 'fm3/components/InfoPointMenu';
-import InfoPoint from 'fm3/components/InfoPoint';
+import InfoPointResult from 'fm3/components/InfoPointResult';
 
 import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
 import ChangesetsResult from 'fm3/components/ChangesetsResult';
 
 import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
-import MapDetails from 'fm3/components/MapDetails';
+import MapDetailsResult from 'fm3/components/MapDetailsResult';
 
 import ShareMapModal from 'fm3/components/ShareMapModal';
 import EmbedMapModal from 'fm3/components/EmbedMapModal';
@@ -330,9 +330,9 @@ class Main extends React.Component {
               <AreaMeasurementResult />
               <LocationResult />
               <TrackViewerResult />
-              <InfoPoint />
+              <InfoPointResult />
               <ChangesetsResult />
-              {tool === 'map-details' && <MapDetails />}
+              {tool === 'map-details' && <MapDetailsResult />}
               {showElevationChart && <AsyncElevationChart />}
               {showGalleryPicker && <GalleryPicker />}
             </React.Fragment>
