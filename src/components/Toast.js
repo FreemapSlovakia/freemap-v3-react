@@ -44,7 +44,7 @@ export default class Toast extends React.Component {
         onDismiss={this.handleAlertDismiss}
       >
         {
-          message.startsWith('!HTML!')
+          typeof message === 'string' && message.startsWith('!HTML!')
             ? <div className="toast-message" dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
             : <div className="toast-message">{message}</div>
         }
