@@ -352,8 +352,8 @@ export default {
   changesets: {
     allAuthors: 'Všichni autoři',
     download: 'Stáhnout změny',
-    olderThan: "return` $ {days} dn $ {days === 3? 'i': 'í'} `",
-    olderThanFull: "return` Změny novější než $ {days} dn $ {days === 3? 'i': 'í'} `",
+    olderThan: ({ days }) => `${days} dn ${days === 3 ? 'i' : 'í'}`,
+    olderThanFull: ({ days }) => `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
     notFound: 'Nebyly nalezeny žádné změny.',
     fetchError: 'Nastala chyba při získávání změn: {err}',
   },

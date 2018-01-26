@@ -52,6 +52,7 @@ class ChangesetsMenu extends React.Component {
 
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh, t } = this.props;
+
     return (
       <React.Fragment>
         <span className="fm-label">
@@ -61,21 +62,14 @@ class ChangesetsMenu extends React.Component {
         {' '}
         <Form inline>
           <ButtonGroup>
-            <DropdownButton
-              id="days"
-              // eslint-disable-next-line
-              title={new Function('days', t('changesets.olderThanFull', '"_"'))(days)}
-            >
+            <DropdownButton id="days" title={t('changesets.olderThanFull', { days }, () => '')}>
               {[3, 7, 14, 30].map(d => (
                 <MenuItem
                   key={d}
                   disabled={!this.canSearchWithThisAmountOfDays(d)}
                   onClick={() => (this.canSearchWithThisAmountOfDays(d) ? onChangesetsSetDays(d) : false)}
                 >
-                  {
-                    // eslint-disable-next-line
-                    new Function('days', t('changesets.olderThan', '"_"'))(d)
-                  }
+                  {t('changesets.olderThan', { days: d }, () => {})}
                 </MenuItem>
               ))}
             </DropdownButton>
