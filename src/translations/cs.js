@@ -74,7 +74,6 @@ export default {
     duration: ({ h, m }) => <Fragment>Trvání: <b>{h} h {m} m</b></Fragment>,
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => <Fragment>Vzdálenost: <b>{distance} km</b> | Trvání: <b>{h} h {m} m</b></Fragment>,
-    removeMidpoint: 'Odstranit zastávku?',
     noHomeAlert: 'Nejprve si musíte nastavit výchozí polohu.',
     showMidpointHint: 'Pro přidání průchozího bodu přetáhněte úsek silnice na zvolené místo.',
     gpsError: 'Nelze získat aktuální polohu.',

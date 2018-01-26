@@ -8,7 +8,6 @@ import RichMarker from 'fm3/components/RichMarker';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint, routePlannerSetActiveAlternativeIndex }
   from 'fm3/actions/routePlannerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import injectL10n from 'fm3/l10nInjector';
 
 import * as FmPropTypes from 'fm3/propTypes';
@@ -337,15 +336,7 @@ export default compose(
         dispatch(routePlannerSetMidpoint(position, midpoint));
       },
       onRemoveMidpoint(position) {
-        dispatch(toastsAdd({
-          collapseKey: 'routePlanner.removeMidpoint',
-          messageKey: 'routePlanner.removeMidpoint',
-          style: 'warning',
-          actions: [
-            { nameKey: 'general.yes', action: routePlannerRemoveMidpoint(position), style: 'danger' },
-            { nameKey: 'general.no' },
-          ],
-        }));
+        dispatch(routePlannerRemoveMidpoint(position));
       },
       onAlternativeChange(index) {
         dispatch(routePlannerSetActiveAlternativeIndex(index));

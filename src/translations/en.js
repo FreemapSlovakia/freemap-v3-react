@@ -74,7 +74,6 @@ export default {
     duration: ({ h, m }) => <Fragment>Duration: <b>{h} h {m} m</b></Fragment>,
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => <Fragment>Distance: <b>{distance} km</b> | Duration: <b>{h} h {m} m</b></Fragment>,
-    removeMidpoint: 'Remove this midpoint?',
     noHomeAlert: 'You need to set your home position in settings first.',
     showMidpointHint: 'To add a midpoint, drag a route segment.',
     gpsError: 'Error getting your current location.',

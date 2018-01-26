@@ -73,7 +73,6 @@ export default {
     duration: ({ h, m }) => <Fragment>Trvanie: <b>{h} h {m} m</b></Fragment>,
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => <Fragment>Vzdialenosť: <b>{distance} km</b> | Trvanie: <b>{h} h {m} m</b></Fragment>,
-    removeMidpoint: 'Odstrániť zastávku?',
     noHomeAlert: 'Najprv si musíte nastaviť domovskú polohu.',
     showMidpointHint: 'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
