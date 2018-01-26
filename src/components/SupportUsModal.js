@@ -42,6 +42,11 @@ export function SupportUsModal({ onModalClose, t }) {
           {t('supportUs.thanks')}
         </p>
         <hr />
+        <p>2% z dane</p>
+        <p>
+           Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie informácie a tlačivá potrebné k poukázaniu 2% z dane nájdete na <a href="http://wiki.freemap.sk/dvepercenta">wiki.freemap.sk/dvepercenta</a>.
+        </p>
+        <hr />
         <address>
           Občianske združenie<br />
           <br />
