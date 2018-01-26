@@ -259,7 +259,6 @@ export default {
     elevation: 'Výška a poloha',
     area: 'Plocha',
     elevationLine: 'Nadmorská výška:',
-    removePoint: 'Odstrániť bod?',
     elevationFetchError: 'Nastala chyba pri získavaní výšky bodu: {err}',
   },
 

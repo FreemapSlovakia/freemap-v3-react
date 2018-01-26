@@ -5,7 +5,6 @@ import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 
 import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { area } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
@@ -189,21 +188,7 @@ export default connect(
       dispatch(areaMeasurementUpdatePoint(i, coordinates));
     },
     onPointRemove(i) {
-      dispatch(toastsAdd({
-        collapseKey: 'areaMeasurement.removePoint',
-        messageKey: 'measurement.removePoint',
-        style: 'warning',
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: areaMeasurementRemovePoint(i),
-            style: 'danger',
-          },
-          {
-            nameKey: 'general.no',
-          },
-        ],
-      }));
+      dispatch(areaMeasurementRemovePoint(i));
     },
   }),
 )(AreaMeasurementResult);

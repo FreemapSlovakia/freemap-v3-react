@@ -259,7 +259,6 @@ export default {
     elevation: 'Elevation and position',
     area: 'Area',
     elevationLine: 'Elevation:',
-    removePoint: 'Remove point?',
     elevationFetchError: 'Error fetching point elevation: {err}',
   },
 

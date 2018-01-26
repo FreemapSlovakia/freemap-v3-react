@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
 import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint } from 'fm3/actions/distanceMeasurementActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 
@@ -175,21 +174,7 @@ export default connect(
       dispatch(distanceMeasurementUpdatePoint(i, point));
     },
     onPointRemove(id) {
-      dispatch(toastsAdd({
-        collapseKey: 'distanceMeasurement.removePoint',
-        messageKey: 'measurement.removePoint',
-        style: 'warning',
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: distanceMeasurementRemovePoint(id),
-            style: 'danger',
-          },
-          {
-            nameKey: 'general.no',
-          },
-        ],
-      }));
+      dispatch(distanceMeasurementRemovePoint(id));
     },
   }),
 )(DistanceMeasurementResult);
