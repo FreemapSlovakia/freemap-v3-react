@@ -41,6 +41,7 @@ class GalleryResult extends React.Component {
     mapEventEmitter.removeListener('mapClick', this.handleMapClick);
   }
 
+  // TODO mode to GalleryMenu to be consistent with other tools
   handleMapClick = (lat, lon) => {
     if (this.props.isPickingPosition) {
       this.props.onPositionPick(lat, lon);
