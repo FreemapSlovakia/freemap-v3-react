@@ -38,7 +38,6 @@ import gallerySavePictureLogic from 'fm3/logic/gallerySavePictureLogic';
 import galleryShowOnTheMapLogic from 'fm3/logic/galleryShowOnTheMapLogic';
 import galleryShowLayerHintLogic from 'fm3/logic/galleryShowLayerHintLogic';
 import galleryPreventLayerHintLogic from 'fm3/logic/galleryPreventLayerHintLogic';
-import infoPointLogic from 'fm3/logic/infoPointLogic';
 import changesetsLogic from 'fm3/logic/changesetsLogic';
 import authSaveUserLogic from 'fm3/logic/authSaveUserLogic';
 import authLoginWithOsmLogic from 'fm3/logic/authLoginWithOsmLogic';
@@ -97,7 +96,6 @@ export default [
   galleryShowOnTheMapLogic,
   galleryShowLayerHintLogic,
   galleryPreventLayerHintLogic,
-  infoPointLogic,
   changesetsLogic,
   authSaveUserLogic,
   authLoginWithOsmLogic,

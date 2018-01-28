@@ -149,13 +149,13 @@ function addElevationMeasurement(doc, { point, elevation }) {
   }
 }
 
-function addInfoPoint(doc, { lat, lon, label }) {
-  if (lat && lon) {
+function addInfoPoint(doc, { points }) {
+  points.forEach(({ lat, lon, label }) => {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
     if (label) {
       createElement(wptEle, 'name', label);
     }
-  }
+  });
 }
 
 function addObjects(doc, { objects }) {

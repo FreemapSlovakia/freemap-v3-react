@@ -54,6 +54,7 @@ import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
 
 import InfoPointMenu from 'fm3/components/InfoPointMenu';
 import InfoPointResult from 'fm3/components/InfoPointResult';
+import InfoPointLabelModal from 'fm3/components/InfoPointLabelModal';
 
 import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
 import ChangesetsResult from 'fm3/components/ChangesetsResult';
@@ -300,6 +301,7 @@ class Main extends React.Component {
         {activeModal === 'about' && <AboutModal />}
         {activeModal === 'supportUs' && <SupportUsModal />}
         {activeModal === 'legend' && <AsyncLegendModal />}
+        {activeModal === 'info-point-change-label' && <InfoPointLabelModal />}
         {showLoginModal && <LoginModal />}
 
         <Map

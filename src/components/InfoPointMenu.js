@@ -4,67 +4,36 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Alert from 'react-bootstrap/lib/Alert';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
-import { infoPointChangePosition, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
+import { infoPointAdd, infoPointDelete } from 'fm3/actions/infoPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import injectL10n from 'fm3/l10nInjector';
 
 class InfoPointMenu extends React.Component {
   static propTypes = {
-    activeModal: PropTypes.string,
-    onModalClose: PropTypes.func.isRequired,
-    onModalLaunch: PropTypes.func.isRequired,
-    label: PropTypes.string,
-    onInfoPointChangePosition: PropTypes.func.isRequired,
-    inEditMode: PropTypes.bool.isRequired,
-    onInfoPointChangeLabel: PropTypes.func.isRequired,
+    onLabelModify: PropTypes.func.isRequired,
+    onInfoPointAdd: PropTypes.func.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    isActive: PropTypes.bool,
     t: PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      editedLabel: props.label,
-    };
-  }
-
   componentWillMount() {
-    mapEventEmitter.on('mapClick', this.handleInfoPointMove);
+    mapEventEmitter.on('mapClick', this.handleInfoPointAdd);
   }
 
   componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handleInfoPointMove);
+    mapEventEmitter.removeListener('mapClick', this.handleInfoPointAdd);
   }
 
-  handleInfoPointMove = (lat, lon) => {
-    if (this.props.inEditMode) {
-      this.props.onInfoPointChangePosition(lat, lon);
-    }
-  }
-
-  handleLocalLabelChange(editedLabel) {
-    this.setState({ editedLabel });
-  }
-
-  saveLabel = () => {
-    let label = this.state.editedLabel;
-    if (label && label.length === 0) {
-      label = null;
-    }
-    this.props.onInfoPointChangeLabel(label);
-    this.props.onModalClose();
+  handleInfoPointAdd = (lat, lon) => {
+    this.props.onInfoPointAdd(lat, lon);
   }
 
   render() {
-    const { onModalLaunch, activeModal, onModalClose, t } = this.props;
+    const { onLabelModify, isActive, onDelete, t } = this.props;
     return (
       <React.Fragment>
         <span className="fm-label">
@@ -72,40 +41,15 @@ class InfoPointMenu extends React.Component {
           <span className="hidden-xs"> {t('tools.infoPoint')}</span>
         </span>
         {' '}
-        <Button onClick={() => onModalLaunch('info-point-change-label')}>
+        <Button onClick={onLabelModify} disabled={!isActive}>
           <FontAwesomeIcon icon="tag" />
           <span className="hidden-xs"> {t('infoPoint.modify')}</span>
         </Button>
-
-        {activeModal === 'info-point-change-label' &&
-          <Modal show onHide={onModalClose}>
-            <form>
-              <Modal.Header closeButton>
-                <Modal.Title>{t('infoPoint.edit.title')}</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <FormGroup>
-                  <ControlLabel>{t('infoPoint.edit.label')}</ControlLabel>
-                  <FormControl
-                    type="text"
-                    placeholder={t('infoPoint.edit.example')}
-                    value={this.state.editedLabel || ''}
-                    onChange={e => this.handleLocalLabelChange(e.target.value)}
-                  />
-                </FormGroup>
-                <Alert>{t('infoPoint.edit.hint')}</Alert>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button bsStyle="info" onClick={() => this.saveLabel()}>
-                  <Glyphicon glyph="floppy-disk" /> {t('general.save')}
-                </Button>
-                <Button onClick={onModalClose}>
-                  <Glyphicon glyph="remove" /> {t('general.cancel')}
-                </Button>
-              </Modal.Footer>
-            </form>
-          </Modal>
-        }
+        {' '}
+        <Button onClick={onDelete} disabled={!isActive}>
+          <FontAwesomeIcon icon="trash-o" />
+          <span className="hidden-xs"> {t('general.delete')}</span>
+        </Button>
       </React.Fragment>
     );
   }
@@ -117,20 +61,17 @@ export default compose(
     state => ({
       activeModal: state.main.activeModal,
       label: state.infoPoint.label,
-      inEditMode: state.main.tool === 'info-point',
+      isActive: state.infoPoint.activeIndex !== null,
     }),
     dispatch => ({
-      onInfoPointChangePosition(lat, lon) {
-        dispatch(infoPointChangePosition(lat, lon));
+      onInfoPointAdd(lat, lon) {
+        dispatch(infoPointAdd(lat, lon, ''));
       },
-      onInfoPointChangeLabel(label) {
-        dispatch(infoPointChangeLabel(label));
+      onLabelModify() {
+        dispatch(setActiveModal('info-point-change-label'));
       },
-      onModalLaunch(modalName) {
-        dispatch(setActiveModal(modalName));
-      },
-      onModalClose() {
-        dispatch(setActiveModal(null));
+      onDelete() {
+        dispatch(infoPointDelete());
       },
     }),
   ),

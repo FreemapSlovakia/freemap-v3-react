@@ -93,11 +93,8 @@ export const urlLogic = createLogic({
       queryParts.push(`changesets-author=${encodeURIComponent(changesets.authorName)}`);
     }
 
-    if (infoPoint.lat && infoPoint.lon) {
-      queryParts.push(`info-point=${serializePoint(infoPoint)}`);
-      if (infoPoint.label) {
-        queryParts.push(`info-point-label=${encodeURIComponent(infoPoint.label)}`);
-      }
+    if (infoPoint.points.length) {
+      queryParts.push(...infoPoint.points.map(point => `info-point=${serializePoint(point)}${point.label ? `,${encodeURIComponent(point.label)}` : ''}`));
     }
 
     if (distanceMeasurement.points && distanceMeasurement.points.length) {

@@ -132,7 +132,7 @@ export default compose(
       if (state.elevationMeasurement.point) {
         exportables.push('elevationMeasurement');
       }
-      if (state.infoPoint.lat && state.infoPoint.lon) {
+      if (state.infoPoint.points.length) {
         exportables.push('infoPoint');
       }
       if (state.changesets.changesets.length) {

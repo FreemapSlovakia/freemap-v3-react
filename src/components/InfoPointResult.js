@@ -2,17 +2,21 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
-import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
+import { infoPointChangePosition, infoPointSetActiveIndex } from 'fm3/actions/infoPointActions';
 import RichMarker from 'fm3/components/RichMarker';
 import PropTypes from 'prop-types';
 
 class InfoPointResult extends React.Component {
   static propTypes = {
-    lat: PropTypes.number,
-    lon: PropTypes.number,
-    label: PropTypes.string,
-    inEditMode: PropTypes.bool.isRequired,
+    points: PropTypes.arrayOf(PropTypes.shape({
+      lat: PropTypes.number,
+      lon: PropTypes.number,
+      label: PropTypes.string,
+    }).isRequired).isRequired,
     onInfoPointPositionChange: PropTypes.func.isRequired,
+    onSelect: PropTypes.func.isRequired,
+    change: PropTypes.number.isRequired,
+    activeIndex: PropTypes.number,
   };
 
   handleDragEnd = (e) => {
@@ -20,49 +24,47 @@ class InfoPointResult extends React.Component {
     this.props.onInfoPointPositionChange(coords.lat, coords.lng);
   }
 
-  handlePointClick = () => {
-    // just to prevent click propagation to map
-  }
-
   render() {
-    const { lat, lon, label, inEditMode } = this.props;
+    const { points, change, onSelect, activeIndex } = this.props;
 
-    return lat && (
+    return points.map(({ lat, lon, label }, i) => (
       <RichMarker
+        key={`${change}-${i}`}
         faIcon="info"
         faIconLeftPadding="2px"
-        draggable={inEditMode}
         onDragend={this.handleDragEnd}
         position={L.latLng(lat, lon)}
-        onClick={this.handlePointClick}
+        onClick={() => onSelect(i)}
+        color={activeIndex === i ? '#65b2ff' : undefined}
+        draggable={activeIndex === i}
       >
         {label &&
           <Tooltip
             className="compact"
-            offset={new L.Point(9, -25)}
+            offset={new L.Point(11, -25)}
             direction="right"
             permanent
           >
-            <span>
-              {label}
-            </span>
+            <span>{label}</span>
           </Tooltip>
         }
       </RichMarker>
-    );
+    ));
   }
 }
 
 export default connect(
   state => ({
-    lat: state.infoPoint.lat,
-    lon: state.infoPoint.lon,
-    label: state.infoPoint.label,
-    inEditMode: state.main.tool === 'info-point',
+    points: state.infoPoint.points,
+    change: state.infoPoint.change,
+    activeIndex: state.infoPoint.activeIndex,
   }),
   dispatch => ({
     onInfoPointPositionChange(lat, lon) {
       dispatch(infoPointChangePosition(lat, lon));
+    },
+    onSelect(index) {
+      dispatch(infoPointSetActiveIndex(index));
     },
   }),
 )(InfoPointResult);

@@ -10,7 +10,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack, trackViewerColorizeTrackBy, trackViewerGpxLoad } from 'fm3/actions/trackViewerActions';
 import { osmLoadNode, osmLoadWay, osmLoadRelation, osmClear } from 'fm3/actions/osmActions';
-import { infoPointSet, infoPointChangeLabel } from 'fm3/actions/infoPointActions';
+import { infoPointAdd, infoPointChangeLabel, infoPointSetAll } from 'fm3/actions/infoPointActions';
 import { galleryRequestImage, gallerySetFilter, galleryShowFilter, galleryShowUploadModal, galleryClear, galleryHideFilter, galleryHideUploadModal } from 'fm3/actions/galleryActions';
 import { changesetsSetDays, changesetsSetAuthorName, changesetsSet } from 'fm3/actions/changesetsActions';
 import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
@@ -70,17 +70,7 @@ export default function handleLocationChange(store, location) {
     dispatch(trackViewerColorizeTrackBy(null));
   }
 
-  const ipMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(query['info-point'] || '');
-  if (ipMatch) {
-    const { infoPoint } = getState();
-    const point = { lat: parseFloat(ipMatch[1]), lon: parseFloat(ipMatch[2]) };
-    const label = query['info-point-label'];
-    if (serializePoint(point) !== serializePoint(infoPoint) || infoPoint.label !== label) {
-      dispatch(infoPointSet(point.lat, point.lon, label));
-    }
-  } else if (getState().infoPoint.lat || getState().infoPoint.lon) {
-    dispatch(infoPointSet(null, null, null));
-  }
+  handleInfoPoint(getState, dispatch, query);
 
   if (query['changesets-days']) {
     const urlDays = parseInt(query['changesets-days'], 10);
@@ -131,12 +121,12 @@ export default function handleLocationChange(store, location) {
 
   if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
     const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
-    dispatch(infoPointSet(lat, lon));
+    dispatch(infoPointAdd(lat, lon));
   }
 
   if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
     const { lat, lon, label } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
-    dispatch(infoPointSet(lat, lon));
+    dispatch(infoPointAdd(lat, lon));
     if (label) {
       dispatch(infoPointChangeLabel(label));
     }
@@ -274,6 +264,26 @@ function handleGallery(getState, dispatch, query) {
     }
   } else if (getState().gallery.showUploadModal) {
     dispatch(galleryHideUploadModal());
+  }
+}
+
+function handleInfoPoint(getState, dispatch, query) {
+  const infoPoint = query['info-point'];
+  const ips = (!infoPoint ? [] : Array.isArray(infoPoint) ? infoPoint : [infoPoint])
+    .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?),?(.*)$/.exec(ip))
+    .filter(ipMatch => ipMatch)
+    .map(ipMatch => ({ lat: parseFloat(ipMatch[1]), lon: parseFloat(ipMatch[2]), label: ipMatch[3] ? decodeURIComponent(ipMatch[3]) : '' }));
+
+  // backward compatibility
+  if (query['info-point-label'] && ips.length) {
+    ips[0].label = decodeURIComponent(query['info-point-label']);
+  }
+
+  // compare
+  if (
+    ips.map(({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`).sort().join('\n')
+      !== getState().infoPoint.points.map(({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`).sort().join('\n')) {
+    dispatch(infoPointSetAll(ips));
   }
 }
 
