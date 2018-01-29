@@ -34,7 +34,8 @@ class InfoPointLabelModal extends React.Component {
     this.setState({ editedLabel });
   }
 
-  saveLabel = () => {
+  saveLabel = (e) => {
+    e.preventDefault();
     this.props.onInfoPointChangeLabel(this.state.editedLabel);
     this.props.onModalClose();
   }
@@ -43,7 +44,7 @@ class InfoPointLabelModal extends React.Component {
     const { onModalClose, t } = this.props;
     return (
       <Modal show onHide={onModalClose}>
-        <form>
+        <form onSubmit={this.saveLabel}>
           <Modal.Header closeButton>
             <Modal.Title>{t('infoPoint.edit.title')}</Modal.Title>
           </Modal.Header>
@@ -60,10 +61,10 @@ class InfoPointLabelModal extends React.Component {
             <Alert>{t('infoPoint.edit.hint')}</Alert>
           </Modal.Body>
           <Modal.Footer>
-            <Button bsStyle="info" onClick={this.saveLabel}>
+            <Button type="submit" bsStyle="info">
               <Glyphicon glyph="floppy-disk" /> {t('general.save')}
             </Button>
-            <Button onClick={onModalClose}>
+            <Button type="button" onClick={onModalClose}>
               <Glyphicon glyph="remove" /> {t('general.cancel')}
             </Button>
           </Modal.Footer>
