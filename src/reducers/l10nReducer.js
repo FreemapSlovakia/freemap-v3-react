@@ -2,7 +2,7 @@ import * as at from 'fm3/actionTypes';
 
 const initialState = {
   chosenLanguage: null,
-  language: 'en',
+  language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
 
 export default function l10n(state = initialState, action) {
