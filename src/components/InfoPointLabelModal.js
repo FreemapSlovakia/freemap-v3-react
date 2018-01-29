@@ -15,7 +15,7 @@ import { infoPointChangeLabel } from 'fm3/actions/infoPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import injectL10n from 'fm3/l10nInjector';
 
-class InfoPointMenu extends React.Component {
+class InfoPointLabelModal extends React.Component {
   static propTypes = {
     onModalClose: PropTypes.func.isRequired,
     label: PropTypes.string.isRequired,
@@ -88,4 +88,4 @@ export default compose(
       },
     }),
   ),
-)(InfoPointMenu);
+)(InfoPointLabelModal);

@@ -125,7 +125,6 @@ class Settings extends React.Component {
       overlayOpacity, overlayPaneOpacity, trackViewerEleSmoothingFactor,
       name, email, preventTips, selectedOverlay } = this.state;
 
-      // TODO compare overlay opacity
     const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode',
       'trackViewerEleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
       .some(prop => this.state[prop] !== this.props[prop])

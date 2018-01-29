@@ -35,6 +35,8 @@ import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
 
 import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
 import TrackViewerResult from 'fm3/components/TrackViewerResult';
+import TrackViewerUploadModal from 'fm3/components/TrackViewerUploadModal';
+import TrackViewerShareModal from 'fm3/components/TrackViewerShareModal';
 
 import GalleryMenu from 'fm3/components/GalleryMenu';
 import GalleryResult from 'fm3/components/GalleryResult';
@@ -302,6 +304,8 @@ class Main extends React.Component {
         {activeModal === 'supportUs' && <SupportUsModal />}
         {activeModal === 'legend' && <AsyncLegendModal />}
         {activeModal === 'info-point-change-label' && <InfoPointLabelModal />}
+        {activeModal === 'upload-track' && <TrackViewerUploadModal />}
+        {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
         {showLoginModal && <LoginModal />}
 
         <Map

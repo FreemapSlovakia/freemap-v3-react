@@ -16,7 +16,6 @@ export default createLogic({
       || simplify(navigator.language)
       || 'en';
 
-    // TODO handle error
     Promise.all([
       import(/* webpackChunkName: "translations" */`fm3/translations/${language}.js`),
       !global.hasNoNativeIntl ? null
@@ -27,6 +26,9 @@ export default createLogic({
       global.translations = translations.default;
       dispatch(l10nSetLanguage(language));
       dispatch(stopProgress(pid));
+      done();
+    }).catch((err) => {
+      dispatch(err);
       done();
     });
   },
