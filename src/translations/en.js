@@ -237,7 +237,7 @@ export default {
           <li>The operator reserves the right to delete the account in case that the user repeatedly violates the gallery policy by publishing inappropriate content.</li>
         </ul>
       `,
-      success: 'Pictures has been successfully uploaded.',
+      success: 'Pictures have been successfully uploaded.',
     },
     locationPicking: {
       title: 'Select photo location',
