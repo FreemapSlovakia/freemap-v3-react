@@ -29,7 +29,9 @@ Features:
     npm run livereload
     ```
 
-1. Open the application by visiting `http://local.freemap.sk:9000/`.
+1. Install [development CA certificate](./ssl/Freemap_CA.crt) to your browser.
+
+1. Open the application by visiting `https://local.freemap.sk:9000/`.
 
 ## Compiling for the production
 

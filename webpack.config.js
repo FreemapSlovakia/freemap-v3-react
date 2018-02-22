@@ -5,6 +5,8 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
+const WebpackPwaManifest = require('webpack-pwa-manifest');
+const OfflinePlugin = require('offline-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -117,10 +119,24 @@ module.exports = {
       template: '!!ejs-loader!src/index.html',
       inject: false,
     }),
+    new WebpackPwaManifest({
+      name: 'Freemap Slovakia',
+      short_name: 'Freemap',
+      description: 'OpenStreetMap based map application',
+      background_color: '#ffffff',
+      theme_color: '#ffffff',
+      'theme-color': '#ffffff',
+      icons: [
+        {
+          src: path.resolve('src/images/freemap-logo-small.png'),
+          sizes: [96, 128, 192, 256, 384, 512], // multiple sizes
+        },
+      ],
+      orientation: 'any',
+    }),
     new CopyWebpackPlugin([
       { from: { glob: 'static', dot: true }, flatten: true },
-
-    ].filter(x => x)),
+    ]),
     extractSass,
     new webpack.optimize.CommonsChunkPlugin({
       name: 'runtime',
@@ -128,6 +144,17 @@ module.exports = {
     new webpack.HashedModuleIdsPlugin(),
     prod && new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
+    }),
+    new OfflinePlugin({
+      publicPath: '/',
+      caches: 'all',
+      externals: [
+        '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+      ],
+      ServiceWorker: {
+        navigateFallbackURL: '/',
+      },
+      AppCache: null, // disable
     }),
   ].filter(x => x),
   devServer: {

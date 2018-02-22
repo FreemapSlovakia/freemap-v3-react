@@ -6,6 +6,8 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
+import * as OfflinePluginRuntime from 'offline-plugin/runtime';
+
 import Main from 'fm3/components/Main';
 import ErrorCatcher from 'fm3/components/ErrorCatcher';
 
@@ -27,6 +29,8 @@ import 'fm3/styles/bootstrap-override.scss';
 if (window.location.search === '?reset-local-storage') {
   localStorage.clear();
 }
+
+OfflinePluginRuntime.install();
 
 if (window.self !== window.top) {
   document.body.classList.add('embedded');
