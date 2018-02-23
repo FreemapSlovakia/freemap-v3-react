@@ -170,7 +170,9 @@ class GalleryViewerModal extends React.Component {
   }
 
   handleFullscreen = () => {
-    if (document.fullscreenElement === this.fullscreenElement) {
+    if (!document.exitFullscreen) {
+      // unsupported
+    } else if (document.fullscreenElement === this.fullscreenElement) {
       document.exitFullscreen();
     } else {
       this.fullscreenElement.requestFullscreen();
@@ -359,10 +361,12 @@ class GalleryViewerModal extends React.Component {
             <FontAwesomeIcon icon="dot-circle-o" />
             <span className="hidden-xs"> {t('gallery.viewer.showOnTheMap')}</span>
           </Button>
-          <Button onClick={this.handleFullscreen}>
-            <Glyphicon glyph="fullscreen" />
-            <span className="hidden-xs hidden-sm"> {t('general.fullscreen')}</span>
-          </Button>
+          {document.exitFullscreen &&
+            <Button onClick={this.handleFullscreen}>
+              <Glyphicon glyph="fullscreen" />
+              <span className="hidden-xs hidden-sm"> {t('general.fullscreen')}</span>
+            </Button>
+          }
           <Button href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`} target="_blank">
             <FontAwesomeIcon icon="external-link" />
             <span className="hidden-sm hidden-xs"> {t('gallery.viewer.openInNewWindow')}</span>

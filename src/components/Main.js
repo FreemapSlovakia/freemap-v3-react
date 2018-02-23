@@ -166,7 +166,9 @@ class Main extends React.Component {
   }
 
   handleFullscreenClick = () => {
-    if (document.fullscreenElement) {
+    if (!document.exitFullscreen) {
+      // undupported
+    } else if (document.fullscreenElement) {
       document.exitFullscreen();
     } else {
       document.body.requestFullscreen();
@@ -225,12 +227,14 @@ class Main extends React.Component {
                           <Button onClick={onMapClear} title={t('main.clearMap')}>
                             <FontAwesomeIcon icon="eraser" />
                           </Button>
-                          <Button
-                            onClick={this.handleFullscreenClick}
-                            title={document.fullscreenElement ? t('general.exitFullscreen') : t('general.fullscreen')}
-                          >
-                            <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                          </Button>
+                          {document.exitFullscreen &&
+                            <Button
+                              onClick={this.handleFullscreenClick}
+                              title={document.fullscreenElement ? t('general.exitFullscreen') : t('general.fullscreen')}
+                            >
+                              <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                            </Button>
+                          }
                           <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
                           <MoreMenuButton />
                         </ButtonGroup>
