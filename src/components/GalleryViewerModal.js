@@ -20,7 +20,6 @@ import Label from 'react-bootstrap/lib/Label';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
-import Form from 'react-bootstrap/lib/Form';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -211,21 +210,20 @@ class GalleryViewerModal extends React.Component {
       <Modal show onHide={onClose} bsSize="large">
         <Modal.Header closeButton>
           <Modal.Title>
-            <Form inline>
-              {t('gallery.viewer.title')}
-              {' '}
-              {imageIds &&
-                <FormControl
-                  componentClass="select"
-                  value={index}
-                  onChange={this.handleIndexChange}
-                >
-                  {imageIds.map((_, i) => <option key={i} value={i}>{i + 1}</option>)}
-                </FormControl>
-              }
+            {t('gallery.viewer.title')}
+            {' '}
+            {imageIds &&
+              <FormControl
+                componentClass="select"
+                value={index}
+                onChange={this.handleIndexChange}
+                style={{ width: 'auto', display: 'inline-block' }}
+              >
+                {imageIds.map((_, i) => <option key={i} value={i}>{i + 1}</option>)}
+              </FormControl>
+            }
 
-              {imageIds ? ` / ${imageIds.length} ` : ''}{title && `- ${title}`}
-            </Form>
+            {imageIds ? ` / ${imageIds.length} ` : ''}{title && `- ${title}`}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

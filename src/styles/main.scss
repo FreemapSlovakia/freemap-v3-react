@@ -94,6 +94,10 @@ button#freemap-logo {
   }
 }
 
+.dropdown-menu>li>a {
+  padding: 5px 20px;
+}
+
 .fm-menu {
   .popover-content {
     padding: 0;
@@ -109,7 +113,7 @@ button#freemap-logo {
 
       &>li>a {
         display: block;
-        padding: 3px 20px;
+        padding: 5px 20px;
         clear: both;
         font-weight: 400;
         line-height: 1.42857143;
