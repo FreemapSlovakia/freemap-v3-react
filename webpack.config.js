@@ -19,6 +19,11 @@ const extractSass = new ExtractTextPlugin({
   disable: !prod,
 });
 
+const extractCss = new ExtractTextPlugin({
+  filename: '[name].[contenthash].css',
+  disable: !prod,
+});
+
 const cssLoader = {
   loader: 'css-loader',
   options: prod ? {
@@ -73,13 +78,15 @@ module.exports = {
         test: /\.scss$/,
         loader: extractSass.extract({
           use: [cssLoader, { loader: 'sass-loader' }],
-          // use style-loader in development
           fallback: 'style-loader',
         }),
       },
       {
         test: /\.css$/,
-        use: ['style-loader', cssLoader],
+        loader: extractCss.extract({
+          use: cssLoader,
+          fallback: 'style-loader',
+        }),
       },
       {
         test: /\.md$/,
@@ -137,6 +144,7 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: { glob: 'static', dot: true }, flatten: true },
     ]),
+    extractCss,
     extractSass,
     new webpack.optimize.CommonsChunkPlugin({
       name: 'runtime',
