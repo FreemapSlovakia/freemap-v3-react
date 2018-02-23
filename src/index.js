@@ -30,7 +30,9 @@ if (window.location.search === '?reset-local-storage') {
   localStorage.clear();
 }
 
-OfflinePluginRuntime.install();
+if (process.env.NODE_ENV) {
+  OfflinePluginRuntime.install();
+}
 
 if (window.self !== window.top) {
   document.body.classList.add('embedded');
