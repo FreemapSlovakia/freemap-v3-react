@@ -91,6 +91,6 @@
   },
   "homepage": "https://github.com/FreemapSlovakia/freemap-v3-react",
   "scripts": {
-    "livereload": "webpack-dev-server --https --key ssl/freemap.sk.key --cert ssl/freemap.sk.pem --host local.freemap.sk --port 9000 --content-base=src --inline --watch"
+    "livereload": "webpack-dev-server --https --key ssl/freemap.sk.key --cert ssl/freemap.sk.pem --host 0.0.0.0 --port 9000 --content-base=src --inline --watch"
   }
 }
