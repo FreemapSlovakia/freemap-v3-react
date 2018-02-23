@@ -107,7 +107,7 @@ module.exports = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env': {
-        NODE_ENV: JSON.stringify(prod ? 'production' : 'undefined'), // for react
+        NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react
         BROWSER: JSON.stringify(true),
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
