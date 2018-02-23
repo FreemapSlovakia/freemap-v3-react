@@ -30,6 +30,7 @@ if (window.location.search === '?reset-local-storage') {
   localStorage.clear();
 }
 
+// prevent for development to make hot reloading working
 if (process.env.NODE_ENV) {
   OfflinePluginRuntime.install();
 }
