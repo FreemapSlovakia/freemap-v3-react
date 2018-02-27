@@ -24,6 +24,7 @@ import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
 import createStore from 'fm3/storeCreator';
 
+import 'font-awesome/scss/font-awesome.scss';
 import 'fm3/styles/bootstrap-override.scss';
 
 if (window.location.search === '?reset-local-storage') {
