@@ -665,6 +665,7 @@ export default {
     oma: 'OMA',
     googleMaps: 'Google Mapy',
     hiking_sk: 'Hiking.sk',
+    mojamapa_sk: 'mojamapa.sk',
     'mapy_cz-aerial': 'Mapy.cz Letecká',
     josm: 'Editor JOSM',
     id: 'Editor iD',

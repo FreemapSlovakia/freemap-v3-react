@@ -664,6 +664,7 @@ export default {
     oma: 'OMA',
     googleMaps: 'Google Maps',
     hiking_sk: 'Hiking.sk',
+    mojamapa_sk: 'mojamapa.sk',
     'mapy_cz-aerial': 'Mapy.cz Aerial',
     josm: 'Edit in JOSM',
     id: 'Edit in iD',

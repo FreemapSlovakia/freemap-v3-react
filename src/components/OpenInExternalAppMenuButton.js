@@ -65,6 +65,9 @@ class OpenInExternalAppMenuButton extends React.Component {
       case 'oma.sk':
         window.open(`http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`);
         break;
+      case 'mojamapa.sk':
+        window.open(`https://mojamapa.sk?op=C-${lon}-${lat}`);
+        break;
       case 'routing-debug':
         window.open(`https://routing.epsilon.sk/debug.php?lat=${lat}&lon=${lon}&zoom=${zoom}&profil=${{ C: 'bike', K: 'ski', A: 'car' }[mapType] || 'foot'}`);
         break;
@@ -97,6 +100,7 @@ class OpenInExternalAppMenuButton extends React.Component {
               <MenuItem onClick={() => this.openIn('google')}>{t('external.googleMaps')}</MenuItem>
               <MenuItem onClick={() => this.openIn('hiking.sk')}>{t('external.hiking_sk')}</MenuItem>
               <MenuItem onClick={() => this.openIn('mapy.cz/ophoto')}>{t('external.mapy_cz-aerial')}</MenuItem>
+              <MenuItem onClick={() => this.openIn('mojamapa.sk')}>{t('external.mojamapa_sk')}</MenuItem>
               <MenuItem divider />
               {this.props.expertMode && <MenuItem onClick={() => this.openIn('josm')}>{t('external.josm')}</MenuItem>}
               <MenuItem onClick={() => this.openIn('osm.org/id')}>{t('external.id')}</MenuItem>
