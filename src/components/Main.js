@@ -10,6 +10,7 @@ import { compose } from 'redux';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
+import CloseButton from 'react-bootstrap/lib/CloseButton';
 import Panel from 'react-bootstrap/lib/Panel';
 
 import injectL10n from 'fm3/l10nInjector';
@@ -114,6 +115,10 @@ class Main extends React.Component {
     overlayPaneOpacity: PropTypes.number.isRequired,
   };
 
+  state = {
+    showInfoBar: true,
+  }
+
   componentWillMount() {
     this.props.onCheckLogin();
   }
@@ -185,6 +190,12 @@ class Main extends React.Component {
     this.props.onMapRefocus({ zoom });
   }
 
+  handleInfoBarCloseClick = () => {
+    this.setState({
+      showInfoBar: false,
+    });
+  }
+
   render() {
     const {
       lat, lon, zoom, mapType,
@@ -201,11 +212,11 @@ class Main extends React.Component {
         <Toasts />
 
         <div className="header">
-          {process.env.DEPLOYMENT === 'next' &&
-            <div
-              className="info-bar"
-              dangerouslySetInnerHTML={{ __html: t('main.devInfo') }}
-            />
+          {this.state.showInfoBar &&
+            <div className="info-bar">
+              <CloseButton onClick={this.handleInfoBarCloseClick} />
+              <div dangerouslySetInnerHTML={{ __html: t(process.env.DEPLOYMENT === 'next' ? 'main.devInfo' : 'main.twoPercent') }} />
+            </div>
           }
           <div className="menus">
             {window.self === window.top ?

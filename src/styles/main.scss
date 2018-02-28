@@ -32,6 +32,11 @@
 .info-bar {
   background-color: #ffa;
   text-align: center;
+
+  & > button {
+    float: right;
+    margin: 0 4px;
+  }
 }
 
 .menus {

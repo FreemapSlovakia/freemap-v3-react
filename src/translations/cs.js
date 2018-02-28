@@ -184,6 +184,7 @@ export default {
     zoomIn: 'Přiblížit mapu',
     zoomOut: 'Oddálit mapu',
     devInfo: 'Toto je testovací verze portálu Freemap Slovakia. Pro ostrou verzi přejděte na <a href="https://www.freemap.sk/">www.freemap.sk</a>. ',
+    twoPercent: '<a href="http://wiki.freemap.sk/dvepercenta" target="_blank">Podporte tvorbu voľných máp na Slovensku svojimi 2% z dane!</a>',
   },
 
   gallery: {
