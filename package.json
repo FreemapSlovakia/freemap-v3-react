@@ -76,7 +76,7 @@
     "webpack": "3.11.0",
     "webpack-cleanup-plugin": "0.5.1",
     "webpack-dev-server": "2.11.1",
-    "webpack-pwa-manifest": "3.5.0"
+    "webpack-pwa-manifest": "3.6.0"
   },
   "repository": {
     "type": "git",
