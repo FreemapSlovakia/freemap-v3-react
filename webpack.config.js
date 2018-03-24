@@ -6,7 +6,7 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
-const OfflinePlugin = require('offline-plugin');
+// const OfflinePlugin = require('offline-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -153,17 +153,17 @@ module.exports = {
     prod && new webpack.optimize.UglifyJsPlugin({
       sourceMap: true,
     }),
-    new OfflinePlugin({
-      publicPath: '/',
-      caches: 'all',
-      externals: [
-        '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
-      ],
-      ServiceWorker: {
-        navigateFallbackURL: '/',
-      },
-      AppCache: null, // disable
-    }),
+    // new OfflinePlugin({
+    //   publicPath: '/',
+    //   caches: 'all',
+    //   externals: [
+    //     '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
+    //   ],
+    //   ServiceWorker: {
+    //     navigateFallbackURL: '/',
+    //   },
+    //   AppCache: null, // disable
+    // }),
   ].filter(x => x),
   devServer: {
     disableHostCheck: true,
