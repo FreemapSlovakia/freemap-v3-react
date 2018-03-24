@@ -145,7 +145,7 @@ class DistanceMeasurementResult extends React.Component {
                 {...props}
               >
                 {i % 2 === 0 &&
-                  <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
+                  <Tooltip key={`${p.id}-${ps.length}`} className="compact" offset={[-4, 0]} direction="right" permanent={i === ps.length - 1}>
                     <span>{nf.format(dist / 1000)} km</span>
                   </Tooltip>
                 }
