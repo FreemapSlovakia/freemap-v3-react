@@ -234,17 +234,17 @@ export const overlayLayers = [
     zIndex: 2,
     adminOnly: true,
   },
-  ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
-    type: `s${i}`,
-    icon: 'scribd', // TODO use correct logo
-    url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
-    attribution: [STRAVA_ATTR],
-    minZoom: 0,
-    maxNativeZoom: 16,
-    key: type === 'both' ? 'H' : undefined,
-    showOnlyInExpertMode: true,
-    zIndex: 2,
-  })),
+  // ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
+  //   type: `s${i}`,
+  //   icon: 'scribd', // TODO use correct logo
+  //   url: `//heatmap-external-{s}.strava.com/tiles/${type}/bluered/{z}/{x}/{y}.png?px=256`,
+  //   attribution: [STRAVA_ATTR],
+  //   minZoom: 0,
+  //   maxNativeZoom: 16,
+  //   key: type === 'both' ? 'H' : undefined,
+  //   showOnlyInExpertMode: true,
+  //   zIndex: 2,
+  // })),
   {
     type: 'g',
     icon: '!icon-gps-device',
