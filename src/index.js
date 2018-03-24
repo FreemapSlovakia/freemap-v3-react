@@ -33,7 +33,7 @@ if (window.location.search === '?reset-local-storage') {
 
 // prevent for development to make hot reloading working
 if (process.env.NODE_ENV) {
-  OfflinePluginRuntime.install();
+  // TODO make it working reliably ... OfflinePluginRuntime.install();
 }
 
 if (window.self !== window.top) {
