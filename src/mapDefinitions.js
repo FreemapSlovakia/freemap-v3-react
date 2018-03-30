@@ -20,11 +20,11 @@ const SRTM_ATTR = {
   nameKey: 'mapLayers.attr.srtm',
 };
 
-const STRAVA_ATTR = {
-  type: 'map',
-  name: '© Strava',
-  url: 'https://www.strava.com/',
-};
+// const STRAVA_ATTR = {
+//   type: 'map',
+//   name: '© Strava',
+//   url: 'https://www.strava.com/',
+// };
 
 const NLC_ATTR = {
   type: 'map',
