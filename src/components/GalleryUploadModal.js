@@ -74,20 +74,21 @@ class GalleryUploadModal extends React.Component {
 
       const keywords = [];
 
-      try {
-        keywords.push(...tags.Keywords.description.split(',').map(x => x.trim()).filter(x => x));
-      } catch (e) {
-        // ignore
-      }
-      try {
-        keywords.push(...tags.subject.value.map(({ description }) => description));
-      } catch (e) {
-        // ignore
-      }
+      // try {
+      //   keywords.push(...tags.Keywords.description.split(',').map(x => x.trim()).filter(x => x));
+      // } catch (e) {
+      //   // ignore
+      // }
+      // try {
+      //   keywords.push(...tags.subject.value.map(({ description }) => description));
+      // } catch (e) {
+      //   // ignore
+      // }
 
       const id = nextId;
       nextId += 1;
 
+      const description = tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '';
       const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
       this.props.onItemAdd({
         id,
@@ -97,7 +98,7 @@ class GalleryUploadModal extends React.Component {
           lon: adaptGpsCoordinate(tags.GPSLongitude) * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
         } : null,
         title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
-        description: tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '',
+        description: /CAMERA|^DCIM/.test(description) ? '' : description,
         takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
         tags: keywords,
       });
