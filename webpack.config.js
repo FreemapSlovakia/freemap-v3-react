@@ -61,7 +61,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!(exifreader)\/).*/,
         loader: 'babel-loader',
         options: {
           presets: ['react', 'es2015', 'stage-2'],
