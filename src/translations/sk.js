@@ -736,6 +736,7 @@ export default {
   },
 
   mapLayers: {
+    missingStravaAuth: 'Prosím prihláste sa najprv na strava.com a obnovte túto stránku.',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
     minZoomWarning: 'Dostupné až od priblíženia {minZoom}',

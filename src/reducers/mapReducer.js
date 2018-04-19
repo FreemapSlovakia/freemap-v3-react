@@ -9,6 +9,7 @@ const initialState = {
   overlayOpacity: {},
   overlayPaneOpacity: 0.65,
   tileFormat: 'png',
+  stravaAuth: false,
 };
 
 export default function map(state = initialState, action) {
@@ -75,6 +76,8 @@ export default function map(state = initialState, action) {
         overlayPaneOpacity: typeof settings.overlayPaneOpacity === 'number' ? settings.overlayPaneOpacity : state.overlayPaneOpacity,
       } : state;
     }
+    case at.MAP_SET_STRAVA_AUTH:
+      return { ...state, stravaAuth: action.payload };
     default:
       return state;
   }

@@ -32,3 +32,7 @@ export function mapSetOverlayPaneOpacity(overlayPaneOpacity) {
 export function mapLoadState(payload) {
   return { type: at.MAP_LOAD_STATE, payload };
 }
+
+export function mapSetStravaAuth(payload) {
+  return { type: at.MAP_SET_STRAVA_AUTH, payload };
+}

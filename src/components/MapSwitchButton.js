@@ -21,6 +21,7 @@ class MapSwitchButton extends React.Component {
     expertMode: PropTypes.bool,
     pictureFilterIsActive: PropTypes.bool,
     isAdmin: PropTypes.bool,
+    stravaAuth: PropTypes.bool,
     t: PropTypes.func.isRequired,
   };
 
@@ -58,7 +59,7 @@ class MapSwitchButton extends React.Component {
   }
 
   render() {
-    const { isAdmin, t, mapType, overlays, expertMode, zoom, pictureFilterIsActive } = this.props;
+    const { isAdmin, t, mapType, overlays, expertMode, zoom, pictureFilterIsActive, stravaAuth } = this.props;
 
     return (
       <React.Fragment>
@@ -104,7 +105,7 @@ class MapSwitchButton extends React.Component {
                 overlayLayers
                   .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
                   .filter(({ adminOnly }) => isAdmin || !adminOnly)
-                  .map(({ type, icon, minZoom, key }) => (
+                  .map(({ type, icon, minZoom, key, strava }) => (
                     <MenuItem
                       key={type}
                       onClick={() => this.handleOverlaySelect(type)}
@@ -113,7 +114,7 @@ class MapSwitchButton extends React.Component {
                       {' '}
                       <FontAwesomeIcon icon={icon || 'map-o'} />
                       {' '}
-                      <span style={{ textDecoration: zoom < minZoom ? 'line-through' : 'none' }}>
+                      <span style={{ textDecoration: zoom < minZoom || strava && !stravaAuth ? 'line-through' : 'none' }}>
                         {t(`mapLayers.overlay.${type}`)}
                       </span>
                       {key && ' '}
@@ -124,6 +125,16 @@ class MapSwitchButton extends React.Component {
                           <FontAwesomeIcon
                             icon="exclamation-triangle"
                             title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
+                            className="text-warning"
+                          />
+                        </React.Fragment>
+                      }
+                      {strava && !stravaAuth &&
+                        <React.Fragment>
+                          {' '}
+                          <FontAwesomeIcon
+                            icon="exclamation-triangle"
+                            title={t('mapLayers.missingStravaAuth')}
                             className="text-warning"
                           />
                         </React.Fragment>
@@ -159,6 +170,7 @@ export default compose(
       expertMode: state.main.expertMode,
       pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
       isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
+      stravaAuth: state.map.stravaAuth,
     }),
     dispatch => ({
       onMapRefocus(changes) {

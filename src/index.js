@@ -1,6 +1,7 @@
 import { setStore } from 'fm3/globalErrorHandler';
 import 'babel-polyfill';
 import 'fullscreen-api-polyfill';
+import axios from 'axios';
 
 import React from 'react';
 import { render } from 'react-dom';
@@ -13,7 +14,7 @@ import ErrorCatcher from 'fm3/components/ErrorCatcher';
 
 import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
-import { mapLoadState } from 'fm3/actions/mapActions';
+import { mapLoadState, mapSetStravaAuth } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
@@ -55,6 +56,8 @@ initAuthHelper(store);
 
 store.dispatch(enableUpdatingUrl());
 
+checkStravaAuth();
+
 render(
   <Provider store={store}>
     <ErrorCatcher>
@@ -86,4 +89,12 @@ function loadAppState() {
   }
 
   store.dispatch(l10nSetChosenLanguage(appState && [null, 'en', 'sk', 'cs'].includes(appState.language) ? appState.language : null));
+}
+
+function checkStravaAuth() {
+  const img = new Image();
+  img.onload = () => {
+    store.dispatch(mapSetStravaAuth(true));
+  };
+  img.src = 'https://heatmap-external-a.strava.com/tiles-auth/both/bluered/16/36718/22612.png';
 }

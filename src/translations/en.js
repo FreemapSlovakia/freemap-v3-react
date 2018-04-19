@@ -736,6 +736,7 @@ export default {
   },
 
   mapLayers: {
+    missingStravaAuth: 'Please log-in on strava.com first and then reload this page.',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
     minZoomWarning: 'Accessible from zoom {minZoom}',
