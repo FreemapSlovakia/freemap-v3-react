@@ -1,7 +1,6 @@
 import { setStore } from 'fm3/globalErrorHandler';
 import 'babel-polyfill';
 import 'fullscreen-api-polyfill';
-import axios from 'axios';
 
 import React from 'react';
 import { render } from 'react-dom';
