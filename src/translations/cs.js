@@ -737,7 +737,7 @@ export default {
   },
 
   mapLayers: {
-    missingStravaAuth: 'Prosím prihláste sa najprv na strava.com a obnovte túto stránku.', // TODO translate
+    missingStravaAuth: 'Prosím přihlašte se nejprve na strava.com/heatmap a následně obnovte tuto stránku.',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     minZoomWarning: 'Dostupné až od přiblížení {minZoom}',

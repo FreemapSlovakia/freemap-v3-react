@@ -48,7 +48,11 @@ class MapSwitchButton extends React.Component {
     }
   }
 
-  handleOverlaySelect = (overlay) => {
+  handleOverlaySelect = (e, overlay) => {
+    if (e.target.dataset && e.target.dataset.strava) {
+      window.open('https://www.strava.com/heatmap');
+      return;
+    }
     const s = new Set(this.props.overlays);
     if (s.has(overlay)) {
       s.delete(overlay);
@@ -108,7 +112,7 @@ class MapSwitchButton extends React.Component {
                   .map(({ type, icon, minZoom, key, strava }) => (
                     <MenuItem
                       key={type}
-                      onClick={() => this.handleOverlaySelect(type)}
+                      onClick={e => this.handleOverlaySelect(e, type)}
                     >
                       <FontAwesomeIcon icon={overlays.includes(type) ? 'check-square-o' : 'square-o'} />
                       {' '}
@@ -133,6 +137,7 @@ class MapSwitchButton extends React.Component {
                         <React.Fragment>
                           {' '}
                           <FontAwesomeIcon
+                            data-strava
                             icon="exclamation-triangle"
                             title={t('mapLayers.missingStravaAuth')}
                             className="text-warning"
