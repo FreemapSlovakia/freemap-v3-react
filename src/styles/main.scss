@@ -30,12 +30,17 @@
 }
 
 .info-bar {
-  background-color: #ffa;
-  text-align: center;
+  @media screen {
+    background-color: #ffa;
+    text-align: center;
 
-  & > button {
-    float: right;
-    margin: 0 4px;
+    & > button {
+      float: right;
+      margin: 0 4px;
+    }
+  }
+  @media print {
+    display: none;
   }
 }
 
@@ -53,6 +58,19 @@
   top: 10px;
   left: 68px;
   margin-right: 10px;
+}
+
+#freemap-logo-print {
+  @media print {
+    top: 4px;
+    left: 4px;
+    z-index: 2000;
+    position: absolute;
+  }
+
+  @media screen {
+    display: none;
+  }
 }
 
 button#freemap-logo {
@@ -151,15 +169,21 @@ button#freemap-logo {
 }
 
 .fm-toolbar {
-  margin: 0 3px 8px;
-  background-color: rgba(255, 255, 255, 0.80);
-  display: inline-block;
-  vertical-align: top;
+  @media screen {
+    margin: 0 3px 8px;
+    background-color: rgba(255, 255, 255, 0.80);
+    display: inline-block;
+    vertical-align: top;
 
-  padding: 4px;
+    padding: 4px;
 
-  form {
-    display: inline;
+    form {
+      display: inline;
+    }
+  }
+
+  @media print {
+    display: none !important;
   }
 }
 
@@ -190,4 +214,17 @@ button#freemap-logo {
   display: inline-block;
   min-width: 20px;
   margin-bottom: 2px;
+}
+
+.fm-attribution {
+  position: fixed;
+  right: 0px;
+  bottom: 0px;
+  z-index: 10;
+  background-color: white !important; // also for print
+  padding: 0 6px;
+  border-top-left-radius: 4px;
+  border-top: 1px solid #ccc;
+  border-left: 1px solid #ccc;
+  font-size: 12px;
 }

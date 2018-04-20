@@ -9,20 +9,7 @@ import injectL10n from 'fm3/l10nInjector';
 
 function Attribution({ t, mapType, overlays, imhd }) {
   return (
-    <div
-      style={{
-        position: 'fixed',
-        right: '0px',
-        bottom: '0px',
-        zIndex: 10,
-        backgroundColor: 'white',
-        padding: '0 6px',
-        borderTopLeftRadius: '4px',
-        borderTop: '1px solid #ccc',
-        borderLeft: '1px solid #ccc',
-        fontSize: '12px',
-      }}
-    >
+    <div className="fm-attribution">
       {
         categorize(
           [
