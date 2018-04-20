@@ -59,7 +59,7 @@ export class TipsModal extends React.Component {
 
   loadTip(props) {
     this.setState({ loading: true });
-    import(`fm3/tips/${props.tip}.md`)
+    import(/* webpackChunkName: "tip-[request]" */`fm3/tips/${props.tip}.md`)
       .then((tip) => {
         this.setState({
           tip,
@@ -68,7 +68,7 @@ export class TipsModal extends React.Component {
       })
       .catch(() => {
         this.setState({
-          tip: 'Tip sa nepodarilo načítať.',
+          tip: 'Tip sa nepodarilo načítať.', // TODO translate
           loading: false,
         });
       });

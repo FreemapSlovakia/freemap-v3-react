@@ -17,11 +17,8 @@ export default createLogic({
       || 'en';
 
     Promise.all([
-      import(/* webpackChunkName: "translations" */`fm3/translations/${language}.js`),
-      !global.hasNoNativeIntl ? null
-        : language === 'sk' ? import(/* webpackChunkName: "locale-data-sk" */'intl/locale-data/jsonp/sk.js')
-          : language === 'cs' ? import(/* webpackChunkName: "locale-data-cs" */'intl/locale-data/jsonp/cs.js')
-            : import(/* webpackChunkName: "locale-data-en" */'intl/locale-data/jsonp/en.js'),
+      import(/* webpackChunkName: "translations-[request]" */`fm3/translations/${language}.js`),
+      !global.hasNoNativeIntl ? null : import(/* webpackChunkName: "localeData-[request]" */`intl/locale-data/jsonp/${language}.js`),
     ]).then(([translations]) => {
       global.translations = translations.default;
       dispatch(l10nSetLanguage(language));

@@ -1,7 +1,7 @@
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
@@ -14,16 +14,6 @@ const renderer = new marked.Renderer();
 
 renderer.link = (href, title, text) => `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
 
-const extractSass = new ExtractTextPlugin({
-  filename: '[name].[contenthash].css',
-  disable: !prod,
-});
-
-const extractCss = new ExtractTextPlugin({
-  filename: '[name].[contenthash].css',
-  disable: !prod,
-});
-
 const cssLoader = {
   loader: 'css-loader',
   options: prod ? {
@@ -33,11 +23,12 @@ const cssLoader = {
 };
 
 module.exports = {
+  mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
   entry: './boot.js',
   output: {
     filename: '[name].[chunkhash].js',
-    chunkFilename: '[id].[chunkhash].js',
+    chunkFilename: '[name].[chunkhash].js',
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
@@ -76,17 +67,18 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: extractSass.extract({
-          use: [cssLoader, { loader: 'sass-loader' }],
-          fallback: 'style-loader',
-        }),
+        use: [
+          prod ? MiniCssExtractPlugin.loader : 'style-loader',
+          cssLoader,
+          'sass-loader',
+        ],
       },
       {
         test: /\.css$/,
-        loader: extractCss.extract({
-          use: cssLoader,
-          fallback: 'style-loader',
-        }),
+        use: [
+          prod ? MiniCssExtractPlugin.loader : 'style-loader',
+          cssLoader,
+        ],
       },
       {
         test: /\.md$/,
@@ -101,6 +93,11 @@ module.exports = {
             },
           },
         ],
+      },
+      {
+        test: /\.mjs$/,
+        include: /node_modules/,
+        type: 'javascript/auto',
       },
     ],
   },
@@ -144,15 +141,15 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: { glob: 'static', dot: true }, flatten: true },
     ]),
-    extractCss,
-    extractSass,
-    new webpack.optimize.CommonsChunkPlugin({
-      name: 'runtime',
+    prod && new MiniCssExtractPlugin({
+      // Options similar to the same options in webpackOptions.output
+      // both options are optional
+      filename: '[name].[chunkhash].css',
+      chunkFilename: '[name].[chunkhash].css',
     }),
     new webpack.HashedModuleIdsPlugin(),
-    prod && new webpack.optimize.UglifyJsPlugin({
-      sourceMap: true,
-    }),
+    new webpack.ContextReplacementPlugin(/intl\/locale-data\/jsonp$/, /(sk|cs|en)\.js/),
+    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     // new OfflinePlugin({
     //   publicPath: '/',
     //   caches: 'all',
