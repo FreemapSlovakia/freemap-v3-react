@@ -209,9 +209,7 @@ class Main extends React.Component {
           {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
         </style>
 
-        {window.matchMedia('print').matches &&
-          <img id="freemap-logo-print" src={require('../images/freemap-logo-print.png')} width="150" height="54" alt="freemap logo" />
-        }
+        <div id="print-logo" />
 
         <Toasts />
 
