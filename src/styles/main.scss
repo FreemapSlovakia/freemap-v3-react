@@ -60,14 +60,17 @@
   margin-right: 10px;
 }
 
-@media print {
-  #print-logo:after {
-    top: -30px;
-    left: -85px;
-    content: url('../images/freemap-logo-print.png');
-    transform: scale(.5);
+#freemap-logo-print {
+  @media print {
+    top: 4px;
+    left: 4px;
     z-index: 2000;
     position: absolute;
+    display: block !important;
+  }
+
+  @media screen {
+    display: none;
   }
 }
 

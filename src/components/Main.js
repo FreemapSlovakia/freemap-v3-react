@@ -209,7 +209,8 @@ class Main extends React.Component {
           {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
         </style>
 
-        <div id="print-logo" />
+        {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
+        <img id="freemap-logo-print" src={require('../images/freemap-logo-print.png')} width="150" height="54" alt="freemap logo" style={{ display: 'none' }} />
 
         <Toasts />
 
