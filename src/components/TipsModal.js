@@ -60,7 +60,7 @@ export class TipsModal extends React.Component {
   loadTip(props) {
     this.setState({ loading: true });
     import(/* webpackChunkName: "tip-[request]" */`fm3/tips/${props.tip}.md`)
-      .then((tip) => {
+      .then(({ default: tip }) => {
         this.setState({
           tip,
           loading: false,
