@@ -182,8 +182,7 @@ export default {
     locateMe: 'Locate me',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
-    devInfo: 'This is a testing version of Freemap Slovakia. For production version navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.',
-    twoPercent: '<a href="http://wiki.freemap.sk/dvepercenta" target="_blank">Podporte tvorbu voľných máp na Slovensku svojimi 2% z dane!</a>',
+    devInfo: () => <div>This is a testing version of Freemap Slovakia. For production version navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.</div>,
   },
 
   gallery: {

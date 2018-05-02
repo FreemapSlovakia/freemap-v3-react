@@ -215,10 +215,10 @@ class Main extends React.Component {
         <Toasts />
 
         <div className="header">
-          {this.state.showInfoBar &&
+          {process.env.DEPLOYMENT === 'next' && this.state.showInfoBar &&
             <div className="info-bar">
               <CloseButton onClick={this.handleInfoBarCloseClick} />
-              <div dangerouslySetInnerHTML={{ __html: t(process.env.DEPLOYMENT === 'next' ? 'main.devInfo' : 'main.twoPercent') }} />
+              {t('main.devInfo')}
             </div>
           }
           <div className="menus">
