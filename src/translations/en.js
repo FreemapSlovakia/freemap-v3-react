@@ -352,7 +352,7 @@ export default {
     allAuthors: 'All authors',
     download: 'Download changes',
     olderThan: ({ days }) => `${days} days`,
-    olderThanFull: ({ days }) => `Changesets older than ${days} days`,
+    olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
     fetchError: 'Error fetching changesets: {err}',
   },
