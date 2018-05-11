@@ -384,9 +384,8 @@
         "value": "place_of_worship"
       },
       {
-        "key": "place_of_worship:type",
-        "operation": "~",
-        "value": "^(chapel|)$"
+        "key": "building",
+        "value": "church"
       }
     ]
   },
@@ -2693,7 +2692,7 @@
         "value": "place_of_worship"
       },
       {
-        "key": "place_of_worship:type",
+        "key": "building",
         "value": "chapel"
       }
     ]
