@@ -27,7 +27,7 @@ export default {
     no: 'Ne',
     masl: 'm.n.m.',
     copyCode: 'Zkopírovat kód',
-    loading: 'Načítám ...',
+    loading: 'Načítám…',
     ok: 'OK',
     preventShowingAgain: 'Už více nezobrazovat',
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
@@ -673,7 +673,7 @@ export default {
   },
 
   search: {
-    inProgress: 'Hledám ...',
+    inProgress: 'Hledám…',
     noResults: 'Nebyly nalezeny žádné výsledky',
     prompt: 'Zadejte lokalitu',
     routeFrom: 'Navigovat odsud',
