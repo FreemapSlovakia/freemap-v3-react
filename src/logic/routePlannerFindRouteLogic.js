@@ -44,6 +44,7 @@ export default createLogic({
       alternatives: true,
       steps: true,
       geometries: 'geojson',
+      // continue_straight: true,
     };
 
     if (transportType === 'car-free') {
