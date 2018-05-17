@@ -810,7 +810,7 @@ export default {
     surface: 'Povrch:',
     suitableBikeType: 'Vhodný typ kola:',
     lastChange: 'Poslední změna:',
-    edit: 'Upravit v editoru {id} nebo {josm}.',
+    showDetails: 'Zobrazit detaily na osm.org',
     surfaces: {
       asphalt: 'asfalt',
       gravel: 'štěrk',

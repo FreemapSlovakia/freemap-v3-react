@@ -31,7 +31,7 @@ function RoadDetails({ way, bbox, mapType, language, t }) {
     <div>
       <dl className="dl-horizontal">
         <dt>{t('roadDetails.roadType')}</dt>
-        <dd style={{ whiteSpace: 'nowrap' }}>{t(`roadDetails.trackClasses.${trackClass}`) || trackClass}</dd>
+        <dd>{t(`roadDetails.trackClasses.${trackClass}`) || trackClass}</dd>
         <dt>{t('roadDetails.surface')}</dt>
         <dd>{t(`roadDetails.surfaces.${surface}`) || surface}</dd>
         {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}
@@ -41,28 +41,14 @@ function RoadDetails({ way, bbox, mapType, language, t }) {
       </dl>
       <p>
         {
-          t('roadDetails.edit', {
-            id: () => (
-              <a
-                key="id"
-                href={`https://www.openstreetmap.org/edit?editor=id&way=${way.id}`}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                iD
-              </a>
-            ),
-            josm: () => (
-              <a
-                key="josm"
-                onClick={handleJosmClick}
-                role="button"
-                tabIndex={0}
-              >
-                JOSM
-              </a>
-            ),
-          })
+          <a
+            key="allDetails"
+            href={`https://www.openstreetmap.org/way/${way.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {t('roadDetails.showDetails')}
+          </a>
         }
       </p>
     </div>
