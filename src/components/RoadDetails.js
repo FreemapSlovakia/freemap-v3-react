@@ -1,4 +1,3 @@
-import axios from 'axios';
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
@@ -7,19 +6,7 @@ import PropTypes from 'prop-types';
 import * as FmPropTypes from 'fm3/propTypes';
 import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack } from 'fm3/osmOntologyTools';
 
-function RoadDetails({ way, bbox, mapType, language, t }) {
-  function handleJosmClick() {
-    axios.get(`${window.location.protocol}//localhost:${window.location.protocol === 'http:' ? 8111 : 8112}/load_and_zoom`, {
-      params: {
-        select: `way${way.id}`,
-        left: bbox[1],
-        right: bbox[3],
-        top: bbox[2],
-        bottom: bbox[0],
-      },
-    });
-  }
-
+function RoadDetails({ way, mapType, language, t }) {
   const dateFormat = new Intl.DateTimeFormat(language, { day: '2-digit', month: '2-digit', year: 'numeric' });
 
   const trackClass = resolveTrackClass(way.tags);
@@ -63,7 +50,6 @@ RoadDetails.propTypes = {
     id: PropTypes.number.isRequired,
     timestamp: PropTypes.string.isRequired,
   }),
-  bbox: PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
   mapType: FmPropTypes.mapType.isRequired,
 };
 
