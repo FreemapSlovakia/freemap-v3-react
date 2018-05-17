@@ -123,3 +123,6 @@ export function galleryList(orderBy) {
 export function galleryLayerHint() {
   return { type: at.GALLERY_PREVENT_LAYER_HINT };
 }
+export function galleryHideGalleryOverlayOnToolLeave(hideOnLeave) {
+  return { type: at.GALLERY_HIDE_GALLERY_OVERLAY_ON_TOOL_LEAVE, payload: hideOnLeave };
+}

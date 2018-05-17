@@ -30,12 +30,16 @@ const initialState = {
 
   editModel: null,
   showPosition: false,
+  hideGalleryOverlayOnToolLeave: false,
 };
 
 export default function gallery(state = initialState, action) {
   switch (action.type) {
     case at.CLEAR_MAP:
-      return { ...initialState, dirtySeq: state.dirtySeq };
+      return { ...initialState,
+        dirtySeq: state.dirtySeq,
+        hideGalleryOverlayOnToolLeave: state.hideGalleryOverlayOnToolLeave,
+      };
     case at.GALLERY_SET_IMAGE_IDS:
       return {
         ...state,
@@ -158,6 +162,8 @@ export default function gallery(state = initialState, action) {
       return { ...state, showPosition: true };
     case at.GALLERY_CANCEL_SHOW_ON_THE_MAP:
       return { ...state, showPosition: false };
+    case at.GALLERY_HIDE_GALLERY_OVERLAY_ON_TOOL_LEAVE:
+      return { ...state, hideGalleryOverlayOnToolLeave: action.payload };
     default:
       return state;
   }
