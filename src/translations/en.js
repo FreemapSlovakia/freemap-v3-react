@@ -810,7 +810,7 @@ export default {
     surface: 'Surface:',
     suitableBikeType: 'Recommended bicycle:',
     lastChange: 'Last change:',
-    edit: 'Edit in {id} or {josm}.',
+    showDetails: 'Show details in osm.org',
     surfaces: {
       asphalt: 'asphalt',
       gravel: 'gravel',
