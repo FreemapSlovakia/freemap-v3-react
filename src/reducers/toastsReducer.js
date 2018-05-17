@@ -6,6 +6,10 @@ const initialState = {
 
 export default function toasts(state = initialState, action) {
   switch (action.type) {
+    case at.CLEAR_MAP:
+      return initialState;
+    case at.SET_TOOL:
+      return initialState;
     case at.TOASTS_ADD: {
       const { collapseKey } = action.payload;
       if (collapseKey) {
