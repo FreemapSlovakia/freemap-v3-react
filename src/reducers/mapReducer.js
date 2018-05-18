@@ -10,6 +10,8 @@ const initialState = {
   overlayPaneOpacity: 0.65,
   tileFormat: 'png',
   stravaAuth: false,
+  tool: null,
+  removeGalleryOverlayOnGalleryToolQuit: false,
 };
 
 export default function map(state = initialState, action) {
@@ -78,6 +80,19 @@ export default function map(state = initialState, action) {
     }
     case at.MAP_SET_STRAVA_AUTH:
       return { ...state, stravaAuth: action.payload };
+    case at.SET_TOOL: {
+      const currentTool = state.tool;
+      const nextTool = action.payload;
+      let overlays = [...state.overlays];
+      let removeGalleryOverlayOnGalleryToolQuit = false;
+      if (nextTool === 'gallery' && !overlays.includes('I')) {
+        overlays.push('I');
+        removeGalleryOverlayOnGalleryToolQuit = true;
+      } else if (currentTool === 'gallery' && nextTool !== 'gallery' && state.removeGalleryOverlayOnGalleryToolQuit) {
+        overlays = overlays.filter(o => o !== 'I');
+      }
+      return { ...state, overlays, tool: nextTool, removeGalleryOverlayOnGalleryToolQuit };
+    }
     default:
       return state;
   }
