@@ -81,8 +81,9 @@ export default class GalleryEditForm extends React.Component {
   }
 
   handleTagAdded = ({ name }) => {
-    if (!this.props.model.tags.includes(name)) {
-      this.changeModel('tags', [...this.props.model.tags, name]);
+    const fixed = name.toLowerCase().trim().replace(/ {2,}|[^\w-]/g, ' ');
+    if (!this.props.model.tags.includes(fixed)) {
+      this.changeModel('tags', [...this.props.model.tags, fixed]);
     }
   }
 
