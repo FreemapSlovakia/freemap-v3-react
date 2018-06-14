@@ -22,7 +22,7 @@ function Attribution({ t, mapType, overlays, imhd }) {
           ' ',
           attributions.map((a, j) => [
             j > 0 ? ', ' : '',
-            a.url ? <a key={a} href={a.url} target="_blank">{a.name || t(a.nameKey)}</a> : a.name || t(a.nameKey),
+            a.url ? <a key={a} href={a.url} target="_blank" rel="noopener noreferrer">{a.name || t(a.nameKey)}</a> : a.name || t(a.nameKey),
           ]),
         ])
       }
