@@ -38,6 +38,15 @@ export default createLogic({
       tags: item.tags,
     }));
 
+    // TODO doesn't work (at least in Chrome)
+    // formData.append('meta', new Blob([JSON.stringify({
+    //   title: item.title,
+    //   description: item.description,
+    //   position: item.position,
+    //   takenAt: item.takenAt && item.takenAt.toISOString(),
+    //   tags: item.tags,
+    // })], { type: 'application/json' }));
+
     axios.post(`${process.env.API_URL}/gallery/pictures`, formData, {
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,
