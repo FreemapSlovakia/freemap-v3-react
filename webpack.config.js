@@ -52,7 +52,7 @@ module.exports = {
       },
       {
         test: /\.js$/,
-        exclude: /node_modules\/(?!(exifreader)\/).*/,
+        exclude: /node_modules\/(?!(exifreader|query-string|strict-uri-encode)\/).*/,
         loader: 'babel-loader',
         options: {
           presets: ['react', 'es2015', 'stage-2'],
