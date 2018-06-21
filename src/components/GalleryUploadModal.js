@@ -90,12 +90,14 @@ class GalleryUploadModal extends React.Component {
 
       const description = tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '';
       const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
+      const rawLat = adaptGpsCoordinate(tags.GPSLatitude);
+      const rawLon = adaptGpsCoordinate(tags.GPSLongitude);
       this.props.onItemAdd({
         id,
         file,
-        position: tags.GPSLatitude && tags.GPSLongitude ? {
-          lat: adaptGpsCoordinate(tags.GPSLatitude) * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
-          lon: adaptGpsCoordinate(tags.GPSLongitude) * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
+        position: rawLat && rawLon ? {
+          lat: rawLat * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
+          lon: rawLon * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
         } : null,
         title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
         description: /CAMERA|^DCIM/.test(description) ? '' : description,
@@ -233,10 +235,24 @@ class GalleryUploadModal extends React.Component {
   }
 }
 
-// adds support for Olympus
-function adaptGpsCoordinate({ description }) {
-  const m = /^(\d+),(\d+(\.\d+)?)[NSWE]$/.exec(description);
-  return m ? parseInt(m[1], 10) + parseFloat(m[2]) / 60 : description;
+// adds support for Olympus and other weirdos
+function adaptGpsCoordinate(x) {
+  if (!x) {
+    return Number.NaN;
+  }
+
+  const { description, value } = x;
+  const p = /^(\d+),(\d+(\.\d+)?)[NSWE]$/;
+  let m = p.exec(description);
+  if (m) {
+    return parseInt(m[1], 10) + parseFloat(m[2]) / 60;
+  }
+  m = p.exec(value);
+  if (m) {
+    return parseInt(m[1], 10) + parseFloat(m[2]) / 60;
+  }
+
+  return parseFloat(description);
 }
 
 export default compose(
