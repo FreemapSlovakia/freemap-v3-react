@@ -73,4 +73,3 @@ export function getMapStateDiffFromUrl(state1, state2) {
 
   return changes;
 }
-
