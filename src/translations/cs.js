@@ -239,6 +239,7 @@ export default {
         </ul>
       `,
       success: 'Fotografie byly úspěšně nahrány.',
+      showPreview: 'Zobrazit náhledy (náročnější na výkon a paměť)',
     },
     locationPicking: {
       title: 'Zvolte pozici fotografie',

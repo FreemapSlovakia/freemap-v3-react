@@ -8,6 +8,7 @@ const initialState = {
   showUploadModal: false,
   items: [],
   pickingPositionForId: null,
+  showPreview: true,
 
   uploadingId: null,
 
@@ -158,6 +159,8 @@ export default function gallery(state = initialState, action) {
       return { ...state, showPosition: true };
     case at.GALLERY_CANCEL_SHOW_ON_THE_MAP:
       return { ...state, showPosition: false };
+    case at.GALLERY_TOGGLE_SHOW_PREVIEW:
+      return { ...state, showPreview: !state.showPreview };
     default:
       return state;
   }

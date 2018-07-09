@@ -8,11 +8,12 @@ import each from 'async/each';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
+import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
 import { galleryAddItem, galleryRemoveItem, gallerySetItem, gallerySetItemForPositionPicking,
-  galleryUpload, galleryHideUploadModal } from 'fm3/actions/galleryActions';
+  galleryUpload, galleryHideUploadModal, galleryToggleShowPreview } from 'fm3/actions/galleryActions';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -46,9 +47,11 @@ class GalleryUploadModal extends React.Component {
     onItemChange: PropTypes.func.isRequired,
     visible: PropTypes.bool,
     onUpload: PropTypes.func.isRequired,
+    onShowPreviewToggle: PropTypes.func.isRequired,
     uploading: PropTypes.bool,
     t: PropTypes.func.isRequired,
     language: PropTypes.string.isRequired,
+    showPreview: PropTypes.bool,
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
@@ -104,6 +107,11 @@ class GalleryUploadModal extends React.Component {
         takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
         tags: keywords,
       });
+
+      if (!this.props.showPreview) {
+        cb();
+        return;
+      }
 
       const img = new Image();
       const url = URL.createObjectURL(file);
@@ -182,7 +190,7 @@ class GalleryUploadModal extends React.Component {
   }
 
   render() {
-    const { items, onPositionPick, visible, onUpload, uploading, allTags, t, language } = this.props;
+    const { items, onPositionPick, visible, onUpload, uploading, allTags, t, language, showPreview, onShowPreviewToggle } = this.props;
 
     return (
       <Modal show={visible} onHide={this.handleClose}>
@@ -206,18 +214,25 @@ class GalleryUploadModal extends React.Component {
                 onPositionPick={onPositionPick}
                 onModelChange={this.handleModelChange}
                 disabled={uploading}
+                showPreview={showPreview}
               />
             ))
           }
           {!uploading &&
-            <Dropzone
-              onDrop={this.handleFileDrop}
-              accept=".jpg,.jpeg"
-              className="dropzone"
-              disablePreview
-            >
-              <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
-            </Dropzone>
+            <React.Fragment>
+              <Checkbox onChange={onShowPreviewToggle} checked={showPreview} disabled={!!items.length}>
+                {t('gallery.uploadModal.showPreview')}
+              </Checkbox>
+
+              <Dropzone
+                onDrop={this.handleFileDrop}
+                accept=".jpg,.jpeg"
+                className="dropzone"
+                disablePreview
+              >
+                <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
+              </Dropzone>
+            </React.Fragment>
           }
         </Modal.Body>
         <Modal.Footer>
@@ -263,6 +278,7 @@ export default compose(
       visible: state.gallery.pickingPositionForId === null,
       uploading: !!state.gallery.uploadingId,
       allTags: state.gallery.tags,
+      showPreview: state.gallery.showPreview,
       language: state.l10n.language,
     }),
     dispatch => ({
@@ -295,6 +311,9 @@ export default compose(
       },
       onItemChange(id, item) {
         dispatch(gallerySetItem(id, item));
+      },
+      onShowPreviewToggle() {
+        dispatch(galleryToggleShowPreview());
       },
     }),
   ),

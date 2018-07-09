@@ -123,3 +123,7 @@ export function galleryList(orderBy) {
 export function galleryLayerHint() {
   return { type: at.GALLERY_PREVENT_LAYER_HINT };
 }
+
+export function galleryToggleShowPreview() {
+  return { type: at.GALLERY_TOGGLE_SHOW_PREVIEW };
+}

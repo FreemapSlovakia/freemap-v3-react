@@ -238,6 +238,7 @@ export default {
         </ul>
       `,
       success: 'Pictures have been successfully uploaded.',
+      showPreview: 'Show previews (uses more CPU load and memory)',
     },
     locationPicking: {
       title: 'Select photo location',

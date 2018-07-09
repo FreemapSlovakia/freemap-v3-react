@@ -21,6 +21,7 @@ export default class GalleryUploadItem extends React.Component {
     disabled: PropTypes.bool,
     t: PropTypes.func.isRequired,
     language: PropTypes.string.isRequired,
+    showPreview: PropTypes.bool,
   }
 
   handleRemove = () => {
@@ -36,10 +37,14 @@ export default class GalleryUploadItem extends React.Component {
   }
 
   render() {
-    const { id, filename, url, disabled, model, allTags, error, t, language } = this.props;
+    const { id, filename, url, disabled, model, allTags, error, t, language, showPreview } = this.props;
     return (
       <React.Fragment key={id}>
-        <img className="gallery-image gallery-image-upload" src={url || require('fm3/images/spinnerbar.gif')} alt={filename} />
+        {showPreview ?
+          <img className="gallery-image gallery-image-upload" src={url || require('fm3/images/spinnerbar.gif')} alt={filename} />
+          :
+          <h4>{filename}</h4>
+        }
         <fieldset disabled={disabled}>
           <GalleryEditForm
             {...{ model, allTags, error }}
