@@ -51,8 +51,8 @@ export function SupportUsModal({ onModalClose, t }) {
           Občianske združenie<br />
           <br />
           Freemap Slovakia<br />
-          Matičná 8/A5<br />
-          900 28 Ivanka pri Dunaji<br />
+          Chrenovec-Brusno 351<br />
+          972 32 Chrenovec-Brusno<br />
           <br />
           {t('supportUs.registration')}<br />
           <br />
