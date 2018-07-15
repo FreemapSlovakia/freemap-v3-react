@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { setErrorTicketId } from 'fm3/actions/mainActions';
+import storage from 'fm3/storage';
 
 let store;
 
@@ -49,7 +50,7 @@ export function sendError(errDetails) {
         error: errDetails,
         url: window.location.href,
         userAgent: navigator.userAgent,
-        localStorage,
+        storage,
         state,
       },
     },

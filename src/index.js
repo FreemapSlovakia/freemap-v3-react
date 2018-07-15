@@ -23,12 +23,13 @@ import initAuthHelper from 'fm3/authHelper';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
 import createStore from 'fm3/storeCreator';
+import storage from 'fm3/storage';
 
 import 'font-awesome/scss/font-awesome.scss';
 import 'fm3/styles/bootstrap-override.scss';
 
 if (window.location.search === '?reset-local-storage') {
-  localStorage.clear();
+  storage.clear();
 }
 
 // prevent for development to make hot reloading working
@@ -36,9 +37,7 @@ if (process.env.NODE_ENV) {
   // TODO make it working reliably ... OfflinePluginRuntime.install();
 }
 
-if (window.self !== window.top) {
-  document.body.classList.add('embedded');
-}
+document.body.classList.add(window.self === window.top ? 'full' : 'embedded');
 
 const store = createStore();
 
@@ -70,7 +69,7 @@ render(
 function loadAppState() {
   let appState;
   try {
-    appState = JSON.parse(localStorage.getItem('appState'));
+    appState = JSON.parse(storage.getItem('appState'));
   } catch (e) {
     // ignore
   }

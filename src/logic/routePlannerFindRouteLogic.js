@@ -5,6 +5,7 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { routePlannerSetResult, routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 import * as at from 'fm3/actionTypes';
+import storage from 'fm3/storage';
 
 const updateRouteTypes = [
   at.ROUTE_PLANNER_SET_START,
@@ -64,7 +65,7 @@ export default createLogic({
         if (code === 'Ok') {
           const showHint = true
             && !getState().routePlanner.shapePoints
-            && !localStorage.getItem('routePlannerPreventHint')
+            && !storage.getItem('routePlannerPreventHint')
             && !midpoints.lenght
             && ['ROUTE_PLANNER_SET_START', 'ROUTE_PLANNER_SET_FINISH'].includes(action.type);
 

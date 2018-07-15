@@ -6,17 +6,18 @@ import { setHomeLocation, startProgress, stopProgress, setActiveModal } from 'fm
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import storage from 'fm3/storage';
 
 export default function initAuthHelper(store) {
   try {
-    store.dispatch(authSetUser(JSON.parse(localStorage.getItem('user'))));
+    store.dispatch(authSetUser(JSON.parse(storage.getItem('user'))));
   } catch (e) {
-    const authToken = localStorage.getItem('authToken'); // for compatibility
+    const authToken = storage.getItem('authToken'); // for compatibility
     if (authToken) {
       store.dispatch(authSetUser({ authToken, name: '...' }));
     }
   } finally {
-    localStorage.removeItem('authToken'); // for compatibility
+    storage.removeItem('authToken'); // for compatibility
   }
 
   const { user } = store.getState().auth;
@@ -101,10 +102,10 @@ function handleTips(store) {
   // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
   if (!embedded && history.location.search.substring(1).split('&').every(x => /^(map|layers)=|^$/.test(x))) {
     if (!store.getState().auth.user) {
-      store.dispatch(tipsPreventNextTime(localStorage.getItem('preventTips') === 'true'));
+      store.dispatch(tipsPreventNextTime(storage.getItem('preventTips') === 'true'));
     }
     if (!store.getState().tips.preventTips) {
-      store.dispatch(tipsNext(localStorage.getItem('tip') || null));
+      store.dispatch(tipsNext(storage.getItem('tip') || null));
       store.dispatch(setActiveModal('tips'));
     }
   }

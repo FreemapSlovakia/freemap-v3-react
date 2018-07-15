@@ -1,4 +1,5 @@
 import { createLogic } from 'redux-logic';
+import storage from 'fm3/storage';
 
 export default createLogic({
   type: '*',
@@ -31,6 +32,6 @@ export default createLogic({
       language: state.l10n.language,
     };
 
-    localStorage.setItem('appState', JSON.stringify(appState));
+    storage.setItem('appState', JSON.stringify(appState));
   },
 });
