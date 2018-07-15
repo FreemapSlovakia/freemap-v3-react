@@ -30,7 +30,6 @@ export default class RichMarker extends React.Component {
 
   createMarkerIcon() {
     const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = this.props;
-    const oneLetterLabel = label && label.toString().charAt(0);
 
     const gradinentDef = `
       <defs>
@@ -47,7 +46,7 @@ export default class RichMarker extends React.Component {
         ${(label || image || faIcon) ? gradinentDef : ''}
         <path d="M 156.063 11.734 C 74.589 11.734 8.53 79.093 8.53 162.204 C 8.53 185.48 13.716 207.552 22.981 227.212 C 23.5 228.329 156.063 493.239 156.063 493.239 L 287.546 230.504 C 297.804 210.02 303.596 186.803 303.596 162.204 C 303.596 79.093 237.551 11.734 156.063 11.734 Z" style="stroke-width: 10; fill: ${color}; stroke-opacity: 0.5; stroke: white;"/>
         ${(label || image || faIcon) ? `<ellipse cx="154.12" cy="163.702" rx="119.462" ry="119.462" style="stroke-width: 10; stroke-opacity: 0.6; fill: url(#gradient-${color});"/>` : ''}
-        ${label ? `<text x="103.319" y="227.615" style="fill: rgba(0, 0, 0, 0.682353); font-size: 183.6px; font-weight: bold; white-space: pre; font-family: Sans-Serif">${oneLetterLabel}</text>` : ''}
+        ${label ? `<text x="150" y="227.615" style="fill: rgba(0, 0, 0, 0.682353); font-size: 183.6px; font-weight: bold; white-space: pre; font-family: Sans-Serif; text-anchor: middle">${label}</text>` : ''}
         ${image ? `<image x="74" y="84" width="160" height="160" xlink:href="${image}">` : ''}
       </svg>`;
 
