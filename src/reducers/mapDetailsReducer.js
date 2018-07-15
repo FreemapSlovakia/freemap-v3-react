@@ -9,6 +9,8 @@ const initialState = {
 
 export default function mapDetails(state = initialState, action) {
   switch (action.type) {
+    case at.CLEAR_MAP:
+      return initialState;
     case at.MAP_DETAILS_SET_SUBTOOL:
       return { ...state, subtool: action.payload.subtool };
     case at.MAP_DETAILS_SET_USER_SELECTED_POSITION:
