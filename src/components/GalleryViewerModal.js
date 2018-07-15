@@ -199,12 +199,18 @@ class GalleryViewerModal extends React.Component {
     const { isFullscreen, loading, imgKey } = this.state;
 
     const nextImageId = imageIds && imageIds[index + 1];
+    const prevImageId = index > 0 && imageIds && imageIds[index - 1];
 
     // TODO const loadingMeta = !image || image.id !== activeImageId;
 
     const dateFormat = new Intl.DateTimeFormat(language, {
       year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
+
+    const getImageUrl = id =>
+      `${process.env.API_URL}/gallery/pictures/${id}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`;
+
+    const sizes = isFullscreen ? undefined : '(min-width: 992px) 868px, 568px';
 
     return (
       <Modal show onHide={onClose} bsSize="large">
@@ -234,8 +240,8 @@ class GalleryViewerModal extends React.Component {
                   key={imgKey}
                   ref={this.setImageElement}
                   className={`gallery-image ${loading ? 'loading' : ''}`}
-                  src={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
-                  sizes={isFullscreen ? undefined : '(min-width: 992px) 868px, 568px'}
+                  src={getImageUrl(activeImageId)}
+                  sizes={sizes}
                   alt={title}
                 />
                 {
@@ -243,8 +249,18 @@ class GalleryViewerModal extends React.Component {
                     <img
                       key={`next-${imgKey}`}
                       style={{ display: 'none' }}
-                      src={`${process.env.API_URL}/gallery/pictures/${nextImageId}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`}
-                      sizes={isFullscreen ? undefined : '(min-width: 992px) 868px, 568px'}
+                      src={getImageUrl(nextImageId)}
+                      sizes={sizes}
+                      alt="next"
+                    />
+                }
+                {
+                  prevImageId !== undefined && !loading &&
+                    <img
+                      key={`next-${imgKey}`}
+                      style={{ display: 'none' }}
+                      src={getImageUrl(prevImageId)}
+                      sizes={sizes}
                       alt="next"
                     />
                 }
