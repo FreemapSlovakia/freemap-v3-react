@@ -30,9 +30,9 @@
     "react-async-component": "2.0.0",
     "react-bootstrap": "0.32.1",
     "react-bootstrap-typeahead": "3.1.5",
-    "react-chartjs-2": "2.7.2",
+    "react-chartjs-2": "2.7.3",
     "react-dom": "16.4.1",
-    "react-dropzone": "4.2.11",
+    "react-dropzone": "4.2.13",
     "react-leaflet": "1.9.1",
     "react-leaflet-bing": "3.1.0",
     "react-overlays": "0.8.3",
@@ -43,7 +43,7 @@
     "redux": "4.0.0",
     "redux-logger": "3.0.6",
     "redux-logic": "0.15.0",
-    "rxjs": "6.2.1"
+    "rxjs": "6.2.2"
   },
   "devDependencies": {
     "babel-core": "6.26.3",
@@ -73,7 +73,7 @@
     "sass-loader": "7.0.3",
     "style-loader": "0.21.0",
     "url-loader": "1.0.1",
-    "webpack": "4.15.1",
+    "webpack": "4.16.0",
     "webpack-cleanup-plugin": "0.5.1",
     "webpack-cli": "3.0.8",
     "webpack-dev-server": "3.1.4",
