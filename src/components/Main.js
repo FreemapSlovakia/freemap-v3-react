@@ -256,7 +256,10 @@ class Main extends React.Component {
                     }
                   </Panel>
                 </React.Fragment>
-              ) : <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+              ) :
+                <Panel className="fm-toolbar">
+                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+                </Panel>
             }
             {showMenu && tool &&
               <Panel className="fm-toolbar">

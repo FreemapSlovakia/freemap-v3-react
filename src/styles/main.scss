@@ -90,9 +90,11 @@ button#freemap-logo {
   transition: .1s ease-in-out;
 
   @media ($smartphone-screen) {
-    background-image: url(../images/freemap-logo-small.png);
-    background-size: 42px 34px;
-    width: 42px;
+    .full {
+      background-image: url(../images/freemap-logo-small.png);
+      background-size: 42px 34px;
+      width: 42px;
+    }
   }
 
   &.in-progress {
