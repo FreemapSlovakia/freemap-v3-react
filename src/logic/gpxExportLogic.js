@@ -133,11 +133,12 @@ function addPictures(doc, pictures) {
 }
 
 function addADMeasurement(doc, { points }) {
-  const rteEle = createElement(doc.documentElement, 'rte');
+  const trkEle = createElement(doc.documentElement, 'trk');
+  const trksegEle = createElement(trkEle, 'trkseg');
 
   if (points.length) {
     points.forEach(({ lat, lon }) => {
-      createElement(rteEle, 'rtept', undefined, { lat, lon });
+      createElement(trksegEle, 'trkpt', undefined, { lat, lon });
     });
   }
 }
@@ -188,12 +189,12 @@ function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
   });
 
   alternatives.forEach(({ itinerary }, i) => {
-    const rteEle = createElement(doc.documentElement, 'rte');
-    createElement(rteEle, 'name', `Alternatíva ${i + 1}`);
-
+    const trkEle = createElement(doc.documentElement, 'trk');
+    createElement(trkEle, 'name', `Alternatíva ${i + 1}`);
+    const trksegEle = createElement(trkEle, 'trkseg');
     itinerary.forEach(({ shapePoints }) => {
       shapePoints.forEach(([lat, lon]) => {
-        createElement(rteEle, 'rtept', undefined, { lat, lon });
+        createElement(trksegEle, 'trkpt', undefined, { lat, lon });
       });
     });
   });
