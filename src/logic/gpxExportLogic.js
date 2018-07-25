@@ -15,12 +15,12 @@ export const gpxExportLogic = createLogic({
     const doc = document.implementation.createDocument(GPX_NS, 'gpx');
 
     addAttribute(doc.documentElement, 'version', '1.1');
-    addAttribute(doc.documentElement, 'creator', 'http://next.freemap.sk/');
+    addAttribute(doc.documentElement, 'creator', 'https://www.freemap.sk/');
 
     const meta = createElement(doc.documentElement, 'metadata');
     const copyright = createElement(meta, 'copyright', undefined, { author: 'OpenStreetMap contributors' });
     createElement(copyright, 'license', 'http://www.openstreetmap.org/copyright');
-    createElement(meta, 'desc', 'Export from http://next.freemap.sk/');
+    createElement(meta, 'desc', 'Export from https://www.freemap.sk/');
     const author = createElement(meta, 'author');
     createElement(author, 'name', 'Freemap Slovakia');
     createElement(author, 'email', 'freemap@freemap.sk');
