@@ -265,7 +265,7 @@ export const overlayLayers = [
   },
   {
     type: 'l',
-    icon: '!icon-hiking',
+    icon: 'font',
     url: '//tiles.freemap.sk/names/{z}/{x}/{y}.png',
     attribution: [
       FM_ATTR,
@@ -274,7 +274,7 @@ export const overlayLayers = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: 'L',
-    showOnlyInExpertMode: false,
+    showOnlyInExpertMode: true,
     zIndex: 2,
   },
   {
