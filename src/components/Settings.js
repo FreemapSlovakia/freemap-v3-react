@@ -119,6 +119,15 @@ class Settings extends React.Component {
     });
   }
 
+  handleOverlayOpacityChange = (newOpacity) => {
+    this.setState(state => ({
+      overlayOpacity: {
+        ...state.overlayOpacity,
+        [state.selectedOverlay]: newOpacity,
+      },
+    }));
+  }
+
   render() {
     const { onClose, onHomeLocationSelect, selectingHomeLocation, user, language, t } = this.props;
     const { homeLocation, tileFormat, expertMode,
@@ -166,7 +175,12 @@ class Settings extends React.Component {
                 <Alert>{t('settings.map.imgFormat.hint')}</Alert>
                 <hr />
                 <div>
-                  <p>{t('settings.map.overlayPaneOpacity')} {nf0.format(overlayPaneOpacity * 100)} %</p>
+                  <p>
+                    {t('settings.map.overlayPaneOpacity')}
+                    {' '}
+                    {nf0.format(overlayPaneOpacity * 100)}
+                    {' %'}
+                  </p>
                   <Slider
                     value={overlayPaneOpacity}
                     min={0}
@@ -186,7 +200,9 @@ class Settings extends React.Component {
                   }
                 </p>
                 <Button onClick={() => onHomeLocationSelect()}>
-                  <FontAwesomeIcon icon="crosshairs" /> {t('settings.map.homeLocation.select')}
+                  <FontAwesomeIcon icon="crosshairs" />
+                  {' '}
+                  {t('settings.map.homeLocation.select')}
                 </Button>
               </Tab>
               <Tab title={t('settings.tab.account')} eventKey={2}>
@@ -226,7 +242,7 @@ class Settings extends React.Component {
                     {t('settings.expert.on')}
                   </Button>
                 </ButtonGroup>
-                {!expertMode &&
+                {!expertMode && (
                   <React.Fragment>
                     <br />
                     <br />
@@ -234,8 +250,8 @@ class Settings extends React.Component {
                       {t('settings.expert.offInfo')}
                     </Alert>
                   </React.Fragment>
-                }
-                {expertMode &&
+                )}
+                {expertMode && (
                   <React.Fragment>
                     <hr />
                     <div>
@@ -243,7 +259,7 @@ class Settings extends React.Component {
                       <DropdownButton
                         id="overlayOpacity"
                         onSelect={this.handleOverlaySelect}
-                        title={
+                        title={(
                           <React.Fragment>
                             <FontAwesomeIcon icon={selectedOverlayDetails.icon} />
                             {' '}
@@ -251,7 +267,7 @@ class Settings extends React.Component {
                             {' '}
                             {nf0.format((overlayOpacity[selectedOverlay] || 1) * 100)} %
                           </React.Fragment>
-                        }
+                        )}
                       >
                         {
                           overlayLayers.map(({ type, icon }) => (
@@ -271,7 +287,7 @@ class Settings extends React.Component {
                         max={1.0}
                         step={0.1}
                         tooltip={false}
-                        onChange={newOpacity => this.setState({ overlayOpacity: { ...this.state.overlayOpacity, [selectedOverlay]: newOpacity } })}
+                        onChange={this.handleOverlayOpacityChange}
                       />
                     </div>
                     <hr />
@@ -292,7 +308,7 @@ class Settings extends React.Component {
                       {t('settings.expert.trackViewerEleSmoothing.info')}
                     </Alert>
                   </React.Fragment>
-                }
+                )}
               </Tab>
             </Tabs>
           </Modal.Body>

@@ -26,6 +26,5 @@ export function getPoiType(id) {
 function toOverpassFilter(element, filter) {
   return `${element}${filter.map(({
     keyOperation, key, operation = '=', value,
-  }) =>
-    `[${keyOperation || ''}"${key}"${value === undefined ? '' : `${operation || '='}"${value}"`}]`).join('')}({{bbox}});`;
+  }) => `[${keyOperation || ''}"${key}"${value === undefined ? '' : `${operation || '='}"${value}"`}]`).join('')}({{bbox}});`;
 }

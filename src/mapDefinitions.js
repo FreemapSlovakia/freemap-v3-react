@@ -223,17 +223,6 @@ export const overlayLayers = [
     zIndex: 2,
     adminOnly: true,
   },
-  {
-    type: 'l',
-    icon: 'tree',
-    url: 'http://gpsteam.eu/cache/nlcml/{z}/{x}/{y}.png',
-    attribution: [NLC_ATTR],
-    minZoom: 14,
-    maxNativeZoom: 16,
-    key: 'L',
-    zIndex: 2,
-    adminOnly: true,
-  },
   ...['both', 'ride', 'run', /* 'water', */ 'winter'].map((type, i) => ({
     type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
@@ -267,12 +256,25 @@ export const overlayLayers = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      SRTM_ATTR,
     ],
     minZoom: 8,
     maxNativeZoom: 16,
     key: 'T',
     showOnlyInExpertMode: true,
+    zIndex: 2,
+  },
+  {
+    type: 'l',
+    icon: '!icon-hiking',
+    url: '//tiles.freemap.sk/names/{z}/{x}/{y}.png',
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+    ],
+    minZoom: 8,
+    maxNativeZoom: 16,
+    key: 'L',
+    showOnlyInExpertMode: false,
     zIndex: 2,
   },
   {
@@ -282,7 +284,6 @@ export const overlayLayers = [
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
-      SRTM_ATTR,
     ],
     minZoom: 8,
     maxNativeZoom: 16,

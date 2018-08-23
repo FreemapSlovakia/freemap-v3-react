@@ -48,7 +48,7 @@ export default class Toast extends React.Component {
             ? <div className="toast-message" dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
             : <div className="toast-message">{message}</div>
         }
-        {buttonActions.length > 0 &&
+        {buttonActions.length > 0 && (
           <React.Fragment>
             <br />
             <ButtonToolbar>
@@ -59,7 +59,7 @@ export default class Toast extends React.Component {
               }
             </ButtonToolbar>
           </React.Fragment>
-        }
+        )}
       </Alert>
     );
   }

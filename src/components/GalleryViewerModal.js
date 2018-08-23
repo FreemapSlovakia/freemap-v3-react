@@ -109,10 +109,10 @@ class GalleryViewerModal extends React.Component {
   }
 
   handleFullscreenChange = () => {
-    this.setState({
+    this.setState(state => ({
       isFullscreen: document.fullscreenElement === this.fullscreenElement,
-      imgKey: this.state.imgKey + 1,
-    });
+      imgKey: state.imgKey + 1,
+    }));
 
     this.forceUpdate();
   }
@@ -207,8 +207,9 @@ class GalleryViewerModal extends React.Component {
       year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
     });
 
-    const getImageUrl = id =>
-      `${process.env.API_URL}/gallery/pictures/${id}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`;
+    const getImageUrl = id => (
+      `${process.env.API_URL}/gallery/pictures/${id}/image?width=${isFullscreen ? window.innerWidth : window.matchMedia('(min-width: 992px)').matches ? 868 : 568}`
+    );
 
     const sizes = isFullscreen ? undefined : '(min-width: 992px) 868px, 568px';
 
@@ -218,7 +219,7 @@ class GalleryViewerModal extends React.Component {
           <Modal.Title>
             {t('gallery.viewer.title')}
             {' '}
-            {imageIds &&
+            {imageIds && (
               <FormControl
                 componentClass="select"
                 value={index}
@@ -227,7 +228,7 @@ class GalleryViewerModal extends React.Component {
               >
                 {imageIds.map((_, i) => <option key={i} value={i}>{i + 1}</option>)}
               </FormControl>
-            }
+            )}
 
             {imageIds ? ` / ${imageIds.length} ` : ''}{title && `- ${title}`}
           </Modal.Title>
@@ -244,46 +245,44 @@ class GalleryViewerModal extends React.Component {
                   sizes={sizes}
                   alt={title}
                 />
-                {
-                  nextImageId !== undefined && !loading &&
-                    <img
-                      key={`next-${imgKey}`}
-                      style={{ display: 'none' }}
-                      src={getImageUrl(nextImageId)}
-                      sizes={sizes}
-                      alt="next"
-                    />
-                }
-                {
-                  prevImageId !== undefined && !loading &&
-                    <img
-                      key={`next-${imgKey}`}
-                      style={{ display: 'none' }}
-                      src={getImageUrl(prevImageId)}
-                      sizes={sizes}
-                      alt="next"
-                    />
-                }
+                {nextImageId !== undefined && !loading && (
+                  <img
+                    key={`next-${imgKey}`}
+                    style={{ display: 'none' }}
+                    src={getImageUrl(nextImageId)}
+                    sizes={sizes}
+                    alt="next"
+                  />
+                )}
+                {prevImageId !== undefined && !loading && (
+                  <img
+                    key={`next-${imgKey}`}
+                    style={{ display: 'none' }}
+                    src={getImageUrl(prevImageId)}
+                    sizes={sizes}
+                    alt="next"
+                  />
+                )}
               </div>
-              {imageIds &&
+              {imageIds && (
                 <a
                   className={`left carousel-control ${index < 1 ? 'disabled' : ''}`}
                   onClick={this.handlePreviousClick}
                 >
                   <Glyphicon glyph="chevron-left" />
                 </a>
-              }
-              {imageIds &&
+              )}
+              {imageIds && (
                 <a
                   className={`right carousel-control ${index >= imageIds.length - 1 ? 'disabled' : ''}`}
                   onClick={this.handleNextClick}
                 >
                   <Glyphicon glyph="chevron-right" />
                 </a>
-              }
+              )}
             </div>
             <br />
-            {image &&
+            {image && (
               <div className="footer">
                 {isFullscreen && imageIds && <React.Fragment>{`${index + 1} / ${imageIds.length}`} ｜ </React.Fragment>}
                 {isFullscreen && title && <React.Fragment>{title} ｜ </React.Fragment>}
@@ -293,7 +292,7 @@ class GalleryViewerModal extends React.Component {
                     createdAt: () => <b key={createdAt}>{dateFormat.format(createdAt)}</b>,
                   })
                 }
-                {takenAt &&
+                {takenAt && (
                   <React.Fragment>
                     {' ｜ '}
                     {
@@ -302,13 +301,13 @@ class GalleryViewerModal extends React.Component {
                       })
                     }
                   </React.Fragment>
-                }
+                )}
                 {' ｜ '}
                 <ReactStars className="stars" size={22} value={rating} edit={false} />
                 {description && ` ｜ ${description}`}
                 {tags.length > 0 && ' ｜ '}
                 {tags.map(tag => <React.Fragment key={tag}> <Label>{tag}</Label></React.Fragment>)}
-                {!isFullscreen && editModel &&
+                {!isFullscreen && editModel && (
                   <form onSubmit={this.handleSave}>
                     <hr />
                     <h5>Úprava</h5>
@@ -327,8 +326,8 @@ class GalleryViewerModal extends React.Component {
                       <Glyphicon glyph="save" /> {t('general.save')}
                     </Button>
                   </form>
-                }
-                {!isFullscreen &&
+                )}
+                {!isFullscreen && (
                   <React.Fragment>
                     <hr />
                     <h5>{t('gallery.viewer.comments')}</h5>
@@ -337,7 +336,7 @@ class GalleryViewerModal extends React.Component {
                         {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>: {c.comment}
                       </p>
                     ))}
-                    {user &&
+                    {user && (
                       <form onSubmit={this.handleCommentFormSubmit}>
                         <FormGroup>
                           <InputGroup>
@@ -356,8 +355,8 @@ class GalleryViewerModal extends React.Component {
                           </InputGroup>
                         </FormGroup>
                       </form>
-                    }
-                    {user &&
+                    )}
+                    {user && (
                       <div>
                         {t('gallery.viewer.yourRating')}
                         {' '}
@@ -369,15 +368,15 @@ class GalleryViewerModal extends React.Component {
                           onChange={onStarsChange}
                         />
                       </div>
-                    }
+                    )}
                   </React.Fragment>
-                }
+                )}
               </div>
-            }
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer>
-          {image && user && (user.isAdmin || user.id === image.user.id) &&
+          {image && user && (user.isAdmin || user.id === image.user.id) && (
             <React.Fragment>
               <Button onClick={onEdit} active={!!editModel}>
                 <Glyphicon glyph="edit" />
@@ -388,17 +387,17 @@ class GalleryViewerModal extends React.Component {
                 <span className="hidden-xs"> {t('general.delete')}</span>
               </Button>
             </React.Fragment>
-          }
+          )}
           <Button onClick={onShowOnTheMap}>
             <FontAwesomeIcon icon="dot-circle-o" />
             <span className="hidden-xs"> {t('gallery.viewer.showOnTheMap')}</span>
           </Button>
-          {document.exitFullscreen &&
+          {document.exitFullscreen && (
             <Button onClick={this.handleFullscreen}>
               <Glyphicon glyph="fullscreen" />
               <span className="hidden-xs hidden-sm"> {t('general.fullscreen')}</span>
             </Button>
-          }
+          )}
           <Button href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`} target="_blank">
             <FontAwesomeIcon icon="external-link" />
             <span className="hidden-sm hidden-xs"> {t('gallery.viewer.openInNewWindow')}</span>

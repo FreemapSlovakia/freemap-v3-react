@@ -27,7 +27,6 @@ class ObjectsMenu extends React.Component {
   state = {
     filter: '',
     dropdownOpened: false,
-    focused: false,
   }
 
   getGroupMenuItems = ({ id: gid }) => {
@@ -57,16 +56,10 @@ class ObjectsMenu extends React.Component {
     this.setState({ filter: e.target.value });
   }
 
-  handleFilterFocus = () => {
-    this.setState({ focused: true });
-  }
-
-  handleFilterBlur = () => {
-    this.setState({ focused: false });
-  }
-
   handleToggle = () => {
-    this.setState({ dropdownOpened: !this.state.dropdownOpened || this.state.focused });
+    this.setState(state => ({
+      dropdownOpened: !state.dropdownOpened,
+    }));
   }
 
   select = (id) => {
@@ -99,8 +92,6 @@ class ObjectsMenu extends React.Component {
               placeholder={t('objects.type')}
               onChange={this.handleFilterSet}
               value={this.state.filter}
-              onFocus={this.handleFilterFocus}
-              onBlur={this.handleFilterBlur}
             />
           </FormGroup>
           <Dropdown.Menu>

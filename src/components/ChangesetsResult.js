@@ -21,11 +21,12 @@ const ONE_DAY = (1000 * 60 * 60 * 24);
 
 class Changesets extends React.Component {
   opacityOf = (changeset, now) => {
-    if (this.props.days === null) {
+    const { days } = this.props;
+    if (days === null) {
       return 1;
     }
     const changesetAgeInDays = (now - changeset.closedAt) / ONE_DAY;
-    const freshness = ((this.props.days - changesetAgeInDays) / this.props.days); // <0.0, 1.0>
+    const freshness = ((days - changesetAgeInDays) / days); // <0.0, 1.0>
     const opacity = freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
     return opacity;
   }
@@ -52,7 +53,10 @@ class Changesets extends React.Component {
             permanent
           >
             <div className="shortened">
-              <b>{changeset.userName}: </b>
+              <b>
+                {changeset.userName}
+                {': '}
+              </b>
               {changeset.description}
             </div>
           </Tooltip>
@@ -103,7 +107,8 @@ export default connect(
             <dd>{timeFormat.format(changeset.closedAt)}</dd>
           </dl>
           <p>
-            Viac detailov na{' '}
+            Viac detailov na
+            {' '}
             <a
               href={`https://www.openstreetmap.org/changeset/${changeset.id}`}
               target="_blank"

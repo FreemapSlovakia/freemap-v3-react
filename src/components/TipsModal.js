@@ -57,6 +57,10 @@ export class TipsModal extends React.Component {
     }
   }
 
+  handleNextTimePrevent = (e) => {
+    this.props.onNextTimePrevent(e.target.checked);
+  }
+
   loadTip(props) {
     this.setState({ loading: true });
     import(/* webpackChunkName: "tip-[request]" */`fm3/tips/${props.tip}.md`)
@@ -72,10 +76,6 @@ export class TipsModal extends React.Component {
           loading: false,
         });
       });
-  }
-
-  handleNextTimePrevent = (e) => {
-    this.props.onNextTimePrevent(e.target.checked);
   }
 
   render() {
@@ -99,14 +99,14 @@ export class TipsModal extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {
-            tip ?
-              <div
-                style={loading ? { opacity: 0.5, cursor: 'progress' } : {}}
-                dangerouslySetInnerHTML={{ __html: tip }}
-              />
-              : t('general.loading')
-          }
+          {tip ? (
+            <div
+              style={loading ? { opacity: 0.5, cursor: 'progress' } : {}}
+              dangerouslySetInnerHTML={{ __html: tip }}
+            />
+          ) : (
+            t('general.loading')
+          )}
         </Modal.Body>
         <Modal.Footer>
           <FormGroup>

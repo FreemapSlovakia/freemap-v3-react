@@ -52,12 +52,16 @@ class ChangesetsMenu extends React.Component {
 
   render() {
     const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh, t } = this.props;
+    const { authorName } = this.state;
 
     return (
       <React.Fragment>
         <span className="fm-label">
           <FontAwesomeIcon icon="pencil" />
-          <span className="hidden-xs"> {t('tools.changesets')}</span>
+          <span className="hidden-xs">
+            {' '}
+            {t('tools.changesets')}
+          </span>
         </span>
         {' '}
         <Form inline>
@@ -81,11 +85,11 @@ class ChangesetsMenu extends React.Component {
                 type="text"
                 placeholder={t('changesets.allAuthors')}
                 onChange={e => this.setState({ authorName: e.target.value === '' ? null : e.target.value })}
-                value={this.state.authorName || ''}
+                value={authorName || ''}
               />
               <InputGroup.Button>
                 <Button
-                  disabled={!this.state.authorName}
+                  disabled={!authorName}
                   onClick={() => this.setState({ authorName: null })}
                 >
                   <FontAwesomeIcon icon="times" />
@@ -96,11 +100,14 @@ class ChangesetsMenu extends React.Component {
           {' '}
           <Button
             disabled={!this.canSearchWithThisAmountOfDays(days)}
-            onClick={() => onChangesetsSetAuthorNameAndRefresh(days, this.state.authorName)}
+            onClick={() => onChangesetsSetAuthorNameAndRefresh(days, authorName)}
             title={t('changesets.download')}
           >
             <FontAwesomeIcon icon="refresh" />
-            <span className="hidden-xs"> {t('changesets.download')}</span>
+            <span className="hidden-xs">
+              {' '}
+              {t('changesets.download')}
+            </span>
           </Button>
         </Form>
       </React.Fragment>

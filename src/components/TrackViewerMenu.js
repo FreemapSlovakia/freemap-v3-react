@@ -75,11 +75,11 @@ class TrackViewerMenu extends React.Component {
         {' '}
         <DropdownButton
           id="colorizing_mode"
-          title={
+          title={(
             <React.Fragment>
               <FontAwesomeIcon icon="paint-brush" /> {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
             </React.Fragment>
-          }
+          )}
         >
           {
             [null, 'elevation', 'steepness'].map(mode => (

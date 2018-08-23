@@ -47,13 +47,14 @@ class GalleryPicker extends React.Component {
     const { zoom } = this.props;
     const { lat, lon } = this.state;
 
-    return lat && lon ?
+    return lat && lon ? (
       <Circle
         interactive={false}
         center={[lat, lon]}
         radius={5000 / 2 ** zoom * 1000}
         stroke={false}
-      /> : null;
+      />
+    ) : null;
   }
 }
 

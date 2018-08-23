@@ -120,7 +120,7 @@ export default class GalleryEditForm extends React.Component {
           />
         </FormGroup>
         {
-          supportsDatetimeLocal ?
+          supportsDatetimeLocal ? (
             <FormGroup>
               <FormControl
                 type="datetime-local"
@@ -129,27 +129,26 @@ export default class GalleryEditForm extends React.Component {
                 onChange={this.handleTakenAtChange}
               />
             </FormGroup>
-            :
-            (
-              <React.Fragment>
-                <FormGroup>
-                  <FormControl
-                    type="date"
-                    placeholder={t('gallery.editForm.takenAt.date')}
-                    value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
-                    onChange={this.handleTakenAtDateChange}
-                  />
-                </FormGroup>
-                <FormGroup>
-                  <FormControl
-                    type="time"
-                    placeholder={t('gallery.editForm.takenAt.time')}
-                    value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
-                    onChange={this.handleTakenAtTimeChange}
-                  />
-                </FormGroup>
-              </React.Fragment>
-            )
+          ) : (
+            <React.Fragment>
+              <FormGroup>
+                <FormControl
+                  type="date"
+                  placeholder={t('gallery.editForm.takenAt.date')}
+                  value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
+                  onChange={this.handleTakenAtDateChange}
+                />
+              </FormGroup>
+              <FormGroup>
+                <FormControl
+                  type="time"
+                  placeholder={t('gallery.editForm.takenAt.time')}
+                  value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
+                  onChange={this.handleTakenAtTimeChange}
+                />
+              </FormGroup>
+            </React.Fragment>
+          )
         }
         <FormGroup>
           <InputGroup>

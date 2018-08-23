@@ -56,14 +56,6 @@ class AreaMeasurementResult extends React.Component {
     this.props.onPointAdd({ lat, lon, id }, pos);
   }
 
-  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }, id) {
-    this.props.onPointUpdate(i, { lat, lon, id });
-  }
-
-  handleMarkerClick(id) {
-    this.props.onPointRemove(id);
-  }
-
   handleMouseMove = (lat, lon, originalEvent) => {
     if (this.props.active && originalEvent.target.classList.contains('leaflet-container')) {
       this.setState({ lat, lon });
@@ -74,6 +66,14 @@ class AreaMeasurementResult extends React.Component {
 
   handleMouseOut = () => {
     this.setState({ lat: undefined, lon: undefined });
+  }
+
+  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }, id) {
+    this.props.onPointUpdate(i, { lat, lon, id });
+  }
+
+  handleMarkerClick(id) {
+    this.props.onPointRemove(id);
   }
 
   render() {
@@ -100,7 +100,7 @@ class AreaMeasurementResult extends React.Component {
 
     return (
       <React.Fragment>
-        {!Number.isNaN(areaSize) &&
+        {!Number.isNaN(areaSize) && (
           <RichMarker
             autoOpenPopup
             interactive={false}
@@ -116,48 +116,46 @@ class AreaMeasurementResult extends React.Component {
               </span>
             </Popup>
           </RichMarker>
-        }
+        )}
 
-        {
-          ps.map((p, i) => {
-            const props = i % 2 ? {
-              icon: circularIcon,
-              opacity: 0.5,
-              onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
-            } : {
-              // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-              icon: circularIcon,
-              opacity: 1,
-              onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-              onClick: () => this.handleMarkerClick(p.id),
-            };
+        {ps.map((p, i) => {
+          const props = i % 2 ? {
+            icon: circularIcon,
+            opacity: 0.5,
+            onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
+          } : {
+            // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+            icon: circularIcon,
+            opacity: 1,
+            onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
+            onClick: () => this.handleMarkerClick(p.id),
+          };
 
-            return (
-              <Marker
-                key={`point-${p.id}`}
-                draggable
-                position={L.latLng(p.lat, p.lon)}
-                {...props}
-              >
-                {/* i % 2 === 0 &&
-                  <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
-                    <span>{nf.format(dist / 1000)} km</span>
-                  </Tooltip>
-                */}
-              </Marker>
-            );
-          })
-        }
+          return (
+            <Marker
+              key={`point-${p.id}`}
+              draggable
+              position={L.latLng(p.lat, p.lon)}
+              {...props}
+            >
+              {/* i % 2 === 0 &&
+                <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
+                  <span>{nf.format(dist / 1000)} km</span>
+                </Tooltip>
+              */}
+            </Marker>
+          );
+        })}
 
-        {ps.length > 2 &&
+        {ps.length > 2 && (
           <Polygon
             weight={4}
             interactive={false}
             positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
           />
-        }
+        )}
 
-        {!!(ps.length && this.state.lat) &&
+        {!!(ps.length && this.state.lat) && (
           <Polyline
             weight={4}
             interactive={false}
@@ -168,7 +166,7 @@ class AreaMeasurementResult extends React.Component {
               ...(ps.length < 3 ? [] : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
             ]}
           />
-        }
+        )}
       </React.Fragment>
     );
   }

@@ -87,7 +87,7 @@ class SearchMenu extends React.Component {
           )}
         />
         {' '}
-        {selectedResult &&
+        {selectedResult && (
           <ButtonGroup>
             <Button
               title={t('search.routeFrom')}
@@ -102,7 +102,7 @@ class SearchMenu extends React.Component {
               <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
             </Button>
           </ButtonGroup>
-        }
+        )}
       </React.Fragment>
     );
   }

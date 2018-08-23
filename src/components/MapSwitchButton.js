@@ -91,7 +91,7 @@ class MapSwitchButton extends React.Component {
                       </span>
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
-                      {zoom < minZoom &&
+                      {zoom < minZoom && (
                         <React.Fragment>
                           {' '}
                           <FontAwesomeIcon
@@ -100,62 +100,61 @@ class MapSwitchButton extends React.Component {
                             className="text-warning"
                           />
                         </React.Fragment>
-                      }
+                      )}
                     </MenuItem>
                   ))
               }
               <MenuItem divider />
-              {
-                overlayLayers
-                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
-                  .filter(({ adminOnly }) => isAdmin || !adminOnly)
-                  .map(({ type, icon, minZoom, key, strava }) => (
-                    <MenuItem
-                      key={type}
-                      onClick={e => this.handleOverlaySelect(e, type)}
-                    >
-                      <FontAwesomeIcon icon={overlays.includes(type) ? 'check-square-o' : 'square-o'} />
-                      {' '}
-                      <FontAwesomeIcon icon={icon || 'map-o'} />
-                      {' '}
-                      <span style={{ textDecoration: zoom < minZoom || strava && !stravaAuth ? 'line-through' : 'none' }}>
-                        {t(`mapLayers.overlay.${type}`)}
-                      </span>
-                      {key && ' '}
-                      {key && <kbd>{key}</kbd>}
-                      {zoom < minZoom &&
-                        <React.Fragment>
-                          {' '}
-                          <FontAwesomeIcon
-                            icon="exclamation-triangle"
-                            title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
-                            className="text-warning"
-                          />
-                        </React.Fragment>
-                      }
-                      {strava && !stravaAuth &&
-                        <React.Fragment>
-                          {' '}
-                          <FontAwesomeIcon
-                            data-strava
-                            icon="exclamation-triangle"
-                            title={t('mapLayers.missingStravaAuth')}
-                            className="text-warning"
-                          />
-                        </React.Fragment>
-                      }
-                      {type === 'I' && pictureFilterIsActive &&
-                        <React.Fragment>
-                          {' '}
-                          <FontAwesomeIcon
-                            icon="filter"
-                            title={t('mapLayers.photoFilterWarning')}
-                            className="text-warning"
-                          />
-                        </React.Fragment>
-                      }
-                    </MenuItem>
-                  ))
+              {overlayLayers
+                .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
+                .filter(({ adminOnly }) => isAdmin || !adminOnly)
+                .map(({ type, icon, minZoom, key, strava }) => (
+                  <MenuItem
+                    key={type}
+                    onClick={e => this.handleOverlaySelect(e, type)}
+                  >
+                    <FontAwesomeIcon icon={overlays.includes(type) ? 'check-square-o' : 'square-o'} />
+                    {' '}
+                    <FontAwesomeIcon icon={icon || 'map-o'} />
+                    {' '}
+                    <span style={{ textDecoration: zoom < minZoom || strava && !stravaAuth ? 'line-through' : 'none' }}>
+                      {t(`mapLayers.overlay.${type}`)}
+                    </span>
+                    {key && ' '}
+                    {key && <kbd>{key}</kbd>}
+                    {zoom < minZoom && (
+                      <React.Fragment>
+                        {' '}
+                        <FontAwesomeIcon
+                          icon="exclamation-triangle"
+                          title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
+                          className="text-warning"
+                        />
+                      </React.Fragment>
+                    )}
+                    {strava && !stravaAuth && (
+                      <React.Fragment>
+                        {' '}
+                        <FontAwesomeIcon
+                          data-strava
+                          icon="exclamation-triangle"
+                          title={t('mapLayers.missingStravaAuth')}
+                          className="text-warning"
+                        />
+                      </React.Fragment>
+                    )}
+                    {type === 'I' && pictureFilterIsActive && (
+                      <React.Fragment>
+                        {' '}
+                        <FontAwesomeIcon
+                          icon="filter"
+                          title={t('mapLayers.photoFilterWarning')}
+                          className="text-warning"
+                        />
+                      </React.Fragment>
+                    )}
+                  </MenuItem>
+                ))
               }
             </ul>
           </Popover>

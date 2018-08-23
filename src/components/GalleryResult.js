@@ -58,13 +58,13 @@ class GalleryResult extends React.Component {
 
     return (
       <React.Fragment>
-        {pickingPosition &&
+        {pickingPosition && (
           <RichMarker
             draggable
             position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
             onDragend={this.handlePositionMarkerDragEnd}
           />
-        }
+        )}
         {showPosition && image && <RichMarker position={L.latLng(image.lat, image.lon)} />}
         {!isPickingPosition && activeImageId && !showPosition && <GalleryViewerModal />}
         {showFilter && <GalleryFilterModal />}

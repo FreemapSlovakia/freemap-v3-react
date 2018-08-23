@@ -118,19 +118,31 @@ export default {
     imhd: {
       total: {
         // eslint-disable-next-line
-        short: ({ arrival, price, numbers }) =>
-          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
+        short: ({ arrival, price, numbers }) => (
+          <Fragment>
+            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}
+          </Fragment>
+        ),
         // eslint-disable-next-line
-        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) =>
-          <Fragment>Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Duration <b>{total} {numberize(total, ['minutes', 'minute'])}</b><br />To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.: <b>{bus}</b>, waiting: <b>{wait} {numberize(wait, ['minutes', 'minute'])}</b></Fragment>,
+        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
+          <Fragment>
+            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Duration <b>{total} {numberize(total, ['minutes', 'minute'])}</b><br />To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.: <b>{bus}</b>, waiting: <b>{wait} {numberize(wait, ['minutes', 'minute'])}</b>
+          </Fragment>
+        ),
       },
       step: {
         // eslint-disable-next-line
-        foot: ({ departure, duration, destination }) =>
-          <Fragment>at <b>{departure}</b> walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}</Fragment>,
+        foot: ({ departure, duration, destination }) => (
+          <Fragment>
+            at <b>{departure}</b> walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}
+          </Fragment>
+        ),
         // eslint-disable-next-line
-        bus: ({ departure, type, number, destination }) =>
-          <Fragment>at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b></Fragment>,
+        bus: ({ departure, type, number, destination }) => (
+          <Fragment>
+            at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
+          </Fragment>
+        ),
       },
       type: {
         bus: 'take bus',
@@ -142,11 +154,17 @@ export default {
     bikesharing: {
       step: {
         // eslint-disable-next-line
-        foot: ({ duration, destination }) =>
-          <Fragment>walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}</Fragment>,
+        foot: ({ duration, destination }) => (
+          <Fragment>
+            walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}
+          </Fragment>
+        ),
         // eslint-disable-next-line
-        bicycle: ({ duration, destination }) =>
-          <Fragment>bicycle <b>{duration} {numberize(duration, ['minutes', 'minte'])}</b> to <b>{destination}</b></Fragment>,
+        bicycle: ({ duration, destination }) => (
+          <Fragment>
+            bicycle <b>{duration} {numberize(duration, ['minutes', 'minte'])}</b> to <b>{destination}</b>
+          </Fragment>
+        ),
       },
     },
     imhdAttribution: 'public transport routes',
@@ -757,8 +775,8 @@ export default {
     },
     overlay: {
       I: 'Photos',
-      n: 'Forest tracks NLC 2016',
-      l: 'Forest tracks NLC',
+      n: 'Forest tracks NLC',
+      l: 'Names',
       g: 'OSM GPS traces',
       t: 'Hiking trails',
       c: 'Bicycle trails',

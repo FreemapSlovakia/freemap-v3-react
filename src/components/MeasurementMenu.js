@@ -112,12 +112,12 @@ class MeasurementMenu extends React.Component {
           </Button>
         </ButtonGroup>
         {' '}
-        {tool === 'measure-dist' &&
+        {tool === 'measure-dist' && (
           <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
             <FontAwesomeIcon icon="bar-chart" />
             <span className="hidden-xs"> {t('general.elevationProfile')}</span>
           </Button>
-        }
+        )}
       </React.Fragment>
     );
   }

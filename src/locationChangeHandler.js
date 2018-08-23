@@ -28,9 +28,10 @@ export default function handleLocationChange(store, location) {
 
   {
     const points = query.points ? query.points.split(',').map(point => (point ? point.split('/').map(coord => parseFloat(coord)) : null)) : [];
-    const pointsOk = points.length && points.every((point, i) =>
-      (point !== null || (i === 0 || i === points.length - 1)));
-      // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
+    const pointsOk = points.length && points.every((point, i) => (
+      point !== null || (i === 0 || i === points.length - 1)
+    ));
+    // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
     if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(query.transport) && pointsOk) {
       const { start, finish, midpoints, transportType } = getState().routePlanner;

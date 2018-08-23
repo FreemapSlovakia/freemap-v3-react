@@ -27,6 +27,14 @@ class OpenInExternalAppMenuButton extends React.Component {
     this.button = button;
   };
 
+  handleButtonClick = () => {
+    this.setState({ show: true });
+  }
+
+  handleHide = () => {
+    this.setState({ show: false });
+  }
+
   openIn(where) {
     this.setState({ show: false });
 
@@ -74,14 +82,6 @@ class OpenInExternalAppMenuButton extends React.Component {
       default:
         break;
     }
-  }
-
-  handleButtonClick = () => {
-    this.setState({ show: true });
-  }
-
-  handleHide = () => {
-    this.setState({ show: false });
   }
 
   render() {

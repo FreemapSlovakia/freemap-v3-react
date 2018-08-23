@@ -5,9 +5,9 @@ import * as FmPropTypes from 'fm3/propTypes';
 import { Polyline } from 'react-leaflet';
 
 function MapDetailsResult({ trackInfoPoints }) {
-  return trackInfoPoints ?
+  return !trackInfoPoints ? null : (
     <Polyline positions={(trackInfoPoints || []).map(point => [point.lat, point.lon])} interactive={false} weight={8} />
-    : null;
+  );
 }
 
 MapDetailsResult.propTypes = {

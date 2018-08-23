@@ -40,11 +40,11 @@ export default class GalleryUploadItem extends React.Component {
     const { id, filename, url, disabled, model, allTags, error, t, language, showPreview } = this.props;
     return (
       <React.Fragment key={id}>
-        {showPreview ?
+        {showPreview ? (
           <img className="gallery-image gallery-image-upload" src={url || require('fm3/images/spinnerbar.gif')} alt={filename} />
-          :
+        ) : (
           <h4>{filename}</h4>
-        }
+        )}
         <fieldset disabled={disabled}>
           <GalleryEditForm
             {...{ model, allTags, error }}

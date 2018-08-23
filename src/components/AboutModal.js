@@ -15,47 +15,70 @@ export function AboutModal({ onModalClose }) {
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" /> Kontakty
+          <FontAwesomeIcon icon="address-card-o" />
+          {' '}
+          Kontakty
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <h3>Občianske združenie</h3>
         <address>
-          Freemap Slovakia<br />
-          Matičná 8/A5<br />
-          900 28 Ivanka pri Dunaji<br />
+          Freemap Slovakia
+          <br />
+          Matičná 8/A5
+          <br />
+          900 28 Ivanka pri Dunaji
+          <br />
         </address>
         <p>
           Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009
         </p>
         <p>
-          IČO: <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" target="_blank" rel="noopener noreferrer">42173639</a><br />
+          {'IČO: '}
+          <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" target="_blank" rel="noopener noreferrer">42173639</a>
+          <br />
           DIČ: 2022912870
         </p>
         <p>
-          Bankové spojenie: VÚB 2746389453/0200<br />
+          Bankové spojenie: VÚB 2746389453/0200
+          <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
         <p>
-          E-mail: <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
+          {'E-mail: '}
+          <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
         <h3>Všeobecné kontakty</h3>
         <ul>
-          <li>Predstavenstvo: <a href="oz@freemap.sk">oz@freemap.sk</a></li>
+          <li>
+            {'Predstavenstvo: '}
+            <a href="oz@freemap.sk">oz@freemap.sk</a>
+          </li>
         </ul>
 
         <h3>Členovia predstavenstva</h3>
         <ul>
-          <li>Predseda: Michal Bellovič (Prievidza) - <a href="mailto:michal.bellovic@freemap.sk">michal.bellovic@freemap.sk</a></li>
-          <li>Podpredseda: Ing. Martin Ždila (Košice) - <a href="mailto:martin.zdila@freemap.sk">martin.zdila@freemap.sk</a></li>
-          <li>Tajomník: Mgr. Ing. Michal Páleník, PhD. (Bratislava) - <a href="mailto:michal.palenik@freemap.sk">michal.palenik@freemap.sk</a></li>
+          <li>
+            {'Predseda: Michal Bellovič (Prievidza) - '}
+            <a href="mailto:michal.bellovic@freemap.sk">michal.bellovic@freemap.sk</a>
+          </li>
+          <li>
+            {'Tajomník: Ing. Martin Ždila (Košice) - '}
+            <a href="mailto:martin.zdila@freemap.sk">martin.zdila@freemap.sk</a>
+          </li>
+          <li>
+            {'Podpredseda: Mgr. Ing. Michal Páleník, PhD. (Bratislava) - '}
+            <a href="mailto:michal.palenik@freemap.sk">michal.palenik@freemap.sk</a>
+          </li>
         </ul>
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <Glyphicon glyph="remove" />
+            {' '}
+            Zavrieť
           </Button>
         </FormGroup>
       </Modal.Footer>

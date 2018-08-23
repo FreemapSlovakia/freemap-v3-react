@@ -215,53 +215,52 @@ class Main extends React.Component {
         <Toasts />
 
         <div className="header">
-          {process.env.DEPLOYMENT === 'next' && this.state.showInfoBar &&
+          {process.env.DEPLOYMENT === 'next' && this.state.showInfoBar && (
             <div className="info-bar">
               <CloseButton onClick={this.handleInfoBarCloseClick} />
               {t('main.devInfo')}
             </div>
-          }
+          )}
           <div className="menus">
-            {window.self === window.top ?
-              (
-                <React.Fragment>
-                  <Panel className="fm-toolbar">
-                    <Button
-                      id="freemap-logo"
-                      className={progress ? 'in-progress' : 'idle'}
-                      onClick={onMapReset}
-                    />
-                    {showMenu && <SearchMenu />}
-                  </Panel>
-                  <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
-                    {showMenu &&
-                      <ButtonToolbar>
-                        <ButtonGroup>
-                          <ToolsMenuButton />
-                          <Button onClick={onMapClear} title={t('main.clearMap')}>
-                            <FontAwesomeIcon icon="eraser" />
-                          </Button>
-                          {document.exitFullscreen &&
-                            <Button
-                              onClick={this.handleFullscreenClick}
-                              title={document.fullscreenElement ? t('general.exitFullscreen') : t('general.fullscreen')}
-                            >
-                              <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
-                            </Button>
-                          }
-                          <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
-                          <MoreMenuButton />
-                        </ButtonGroup>
-                      </ButtonToolbar>
-                    }
-                  </Panel>
-                </React.Fragment>
-              ) :
+            {window.self === window.top ? (
+              <React.Fragment>
                 <Panel className="fm-toolbar">
-                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+                  <Button
+                    id="freemap-logo"
+                    className={progress ? 'in-progress' : 'idle'}
+                    onClick={onMapReset}
+                  />
+                  {showMenu && <SearchMenu />}
                 </Panel>
-            }
-            {showMenu && tool &&
+                <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
+                  {showMenu && (
+                    <ButtonToolbar>
+                      <ButtonGroup>
+                        <ToolsMenuButton />
+                        <Button onClick={onMapClear} title={t('main.clearMap')}>
+                          <FontAwesomeIcon icon="eraser" />
+                        </Button>
+                        {document.exitFullscreen && (
+                          <Button
+                            onClick={this.handleFullscreenClick}
+                            title={document.fullscreenElement ? t('general.exitFullscreen') : t('general.fullscreen')}
+                          >
+                            <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                          </Button>
+                        )}
+                        <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
+                        <MoreMenuButton />
+                      </ButtonGroup>
+                    </ButtonToolbar>
+                  )}
+                </Panel>
+              </React.Fragment>
+            ) : (
+              <Panel className="fm-toolbar">
+                <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+              </Panel>
+            )}
+            {showMenu && tool && (
               <Panel className="fm-toolbar">
                 {tool === 'objects' && <ObjectsMenu />}
                 {tool === 'route-planner' && <RoutePlannerMenu />}
@@ -276,7 +275,7 @@ class Main extends React.Component {
                   <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
                 </Button>
               </Panel>
-            }
+            )}
             <GalleryPositionPickingMenu />
             <GalleryShowPositionMenu />
             <HomeLocationPickingMenu />
@@ -347,7 +346,7 @@ class Main extends React.Component {
           <ScaleControl imperial={false} position="bottomleft" />
           <Layers />
 
-          {showMenu &&
+          {showMenu && (
             <React.Fragment>
               <SearchResults />
               <ObjectsResult />
@@ -363,7 +362,7 @@ class Main extends React.Component {
               {showElevationChart && <AsyncElevationChart />}
               {showGalleryPicker && <GalleryPicker />}
             </React.Fragment>
-          }
+          )}
           <GalleryResult />{/* TODO should not be extra just because for position picking */}
         </Map>
       </React.Fragment>

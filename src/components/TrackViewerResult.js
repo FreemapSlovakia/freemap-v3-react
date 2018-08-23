@@ -141,15 +141,15 @@ class TrackViewerResult extends React.Component {
               positions={lineData}
               color="#fff"
             >
-              {name &&
+              {name && (
                 <Tooltip className="compact" direction="top" permanent>
                   <span>{name}</span>
                 </Tooltip>
-              }
+              )}
             </Polyline>
           ))
         }
-        {colorizeTrackBy &&
+        {colorizeTrackBy && (
           (colorizeTrackBy === 'elevation' ? this.getColorLineDataForElevation() : this.getColorLineDataForSteepness()).map((positions, i) => (
             <Hotline
               key={`${colorizeTrackBy}-${i}`}
@@ -159,15 +159,15 @@ class TrackViewerResult extends React.Component {
               outlineWidth={0}
             />
           ))
-        }
-        {colorizeTrackBy === null &&
+        )}
+        {colorizeTrackBy === null && (
           <Polyline
             weight={6}
             interactive={false}
             positions={xxx.map(({ lineData }) => lineData)}
             color="#838"
           />
-        }
+        )}
         {
           this.getFeatures('Point').map(({ geometry, properties }, i) => (
             <RichMarker
@@ -177,11 +177,11 @@ class TrackViewerResult extends React.Component {
               position={L.latLng(geometry.coordinates[1], geometry.coordinates[0])}
               onClick={this.handlePointClick}
             >
-              {properties.name &&
+              {properties.name && (
                 <Tooltip className="compact" offset={new L.Point(10, -25)} direction="right" permanent>
                   <span>{properties.name}</span>
                 </Tooltip>
-              }
+              )}
             </RichMarker>
           ))
         }
@@ -195,11 +195,11 @@ class TrackViewerResult extends React.Component {
               position={L.latLng(p.lat, p.lon)}
               onClick={this.handlePointClick}
             >
-              {p.startTime &&
+              {p.startTime && (
                 <Tooltip className="compact" offset={new L.Point(10, -25)} direction="right" permanent>
                   <span>{timeFormat.format(new Date(p.startTime))}</span>
                 </Tooltip>
-              }
+              )}
             </RichMarker>
           ))
         }
@@ -225,7 +225,7 @@ class TrackViewerResult extends React.Component {
           ))
         }
 
-        {this.state.infoLat &&
+        {this.state.infoLat && (
           <RichMarker
             faIcon="info"
             color="grey"
@@ -239,7 +239,7 @@ class TrackViewerResult extends React.Component {
               </span>
             </Tooltip>
           </RichMarker>
-        }
+        )}
 
         <ElevationChartActivePoint />
       </React.Fragment>

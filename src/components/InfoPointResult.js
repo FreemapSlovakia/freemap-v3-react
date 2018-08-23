@@ -38,7 +38,7 @@ class InfoPointResult extends React.Component {
         color={activeIndex === i ? '#65b2ff' : undefined}
         draggable={activeIndex === i}
       >
-        {label &&
+        {label && (
           <Tooltip
             className="compact"
             offset={new L.Point(11, -25)}
@@ -47,7 +47,7 @@ class InfoPointResult extends React.Component {
           >
             <span>{label}</span>
           </Tooltip>
-        }
+        )}
       </RichMarker>
     ));
   }

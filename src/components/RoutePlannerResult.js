@@ -48,28 +48,16 @@ class RoutePlannerResult extends React.Component {
     }
   }
 
-  handleRouteMarkerDragEnd(movedPointType, position, event) {
-    this.dragging = false;
-
-    const { lat, lng: lon } = event.target.getLatLng();
-
-    switch (movedPointType) {
-      case 'start':
-        this.props.onStartSet({ lat, lon });
-        break;
-      case 'finish':
-        this.props.onFinishSet({ lat, lon });
-        break;
-      case 'midpoint':
-        this.props.onMidpointSet(position, { lat, lon });
-        break;
-      default:
-        throw new Error('unknown pointType');
-    }
-  }
-
-  handleMidpointClick(position) {
-    this.props.onRemoveMidpoint(position);
+  maneuverToText = (name, { type, modifier }, extra) => {
+    const p = 'routePlanner.maneuver';
+    const { t, transportType } = this.props;
+    return transportType === 'imhd' ? imhdStep(t, this.props.language, extra)
+      : transportType === 'bikesharing' ? bikesharingStep(t, extra)
+        : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
+          type: t(`${p}.types.${type}`, {}, type),
+          modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
+          name,
+        });
   }
 
   handleEndPointClick = () => {
@@ -111,18 +99,6 @@ class RoutePlannerResult extends React.Component {
     }
   }
 
-  resetOnTimeout() {
-    if (this.t) {
-      clearTimeout(this.t);
-    }
-    this.t = setTimeout(() => {
-      this.setState({
-        lat: null,
-        lon: null,
-      });
-    }, 200);
-  }
-
   handleDragStart = () => {
     if (this.t) {
       clearTimeout(this.t);
@@ -147,16 +123,41 @@ class RoutePlannerResult extends React.Component {
     this.props.onAlternativeChange(this.state.alt);
   }
 
-  maneuverToText = (name, { type, modifier }, extra) => {
-    const p = 'routePlanner.maneuver';
-    const { t, transportType } = this.props;
-    return transportType === 'imhd' ? imhdStep(t, this.props.language, extra)
-      : transportType === 'bikesharing' ? bikesharingStep(t, extra)
-        : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
-          type: t(`${p}.types.${type}`, {}, type),
-          modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
-          name,
-        });
+
+  handleRouteMarkerDragEnd(movedPointType, position, event) {
+    this.dragging = false;
+
+    const { lat, lng: lon } = event.target.getLatLng();
+
+    switch (movedPointType) {
+      case 'start':
+        this.props.onStartSet({ lat, lon });
+        break;
+      case 'finish':
+        this.props.onFinishSet({ lat, lon });
+        break;
+      case 'midpoint':
+        this.props.onMidpointSet(position, { lat, lon });
+        break;
+      default:
+        throw new Error('unknown pointType');
+    }
+  }
+
+  handleMidpointClick(position) {
+    this.props.onRemoveMidpoint(position);
+  }
+
+  resetOnTimeout() {
+    if (this.t) {
+      clearTimeout(this.t);
+    }
+    this.t = setTimeout(() => {
+      this.setState({
+        lat: null,
+        lon: null,
+      });
+    }, 200);
   }
 
   render() {
@@ -178,7 +179,7 @@ class RoutePlannerResult extends React.Component {
 
     return (
       <React.Fragment>
-        {start &&
+        {start && (
           <RichMarker
             faIcon="play"
             zIndexOffset={10}
@@ -190,8 +191,8 @@ class RoutePlannerResult extends React.Component {
             position={L.latLng(start.lat, start.lon)}
             onClick={this.handleEndPointClick}
           />
-        }
-        {this.state.lat !== null && this.state.lon !== null &&
+        )}
+        {this.state.lat !== null && this.state.lon !== null && (
           <Marker
             draggable
             icon={circularIcon}
@@ -202,22 +203,20 @@ class RoutePlannerResult extends React.Component {
             position={L.latLng(this.state.lat, this.state.lon)}
             onClick={this.handleFutureClick}
           />
-        }
-        {
-          midpoints.map(({ lat, lon }, i) => (
-            <RichMarker
-              draggable
-              onDragStart={this.handleDragStart}
-              onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
-              onClick={() => this.handleMidpointClick(i)}
-              key={`midpoint-${i}`}
-              zIndexOffset={9}
-              label={i + 1}
-              position={L.latLng(lat, lon)}
-            />
-          ))
-        }
-        {finish &&
+        )}
+        {midpoints.map(({ lat, lon }, i) => (
+          <RichMarker
+            draggable
+            onDragStart={this.handleDragStart}
+            onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
+            onClick={() => this.handleMidpointClick(i)}
+            key={`midpoint-${i}`}
+            zIndexOffset={9}
+            label={i + 1}
+            position={L.latLng(lat, lon)}
+          />
+        ))}
+        {finish && (
           <RichMarker
             faIcon="stop"
             color="#d9534f"
@@ -228,26 +227,25 @@ class RoutePlannerResult extends React.Component {
             position={L.latLng(finish.lat, finish.lon)}
             onClick={this.handleEndPointClick}
           >
-            {
-              isSpecial(transportType) && extra && extra.numbers ?
-                <Tooltip direction="top" offset={[0, -36]} permanent>
-                  <div>
-                    {imhdSummary(t, language, extra)}
-                  </div>
-                </Tooltip>
-              : distance ?
-                <Tooltip direction="top" offset={[0, -36]} permanent>
-                  <div>
-                    <div>{t('routePlanner.distance', { value: nf.format(distance) })}</div>
-                    <div>{t('routePlanner.duration', { h: Math.floor(duration / 60), m: Math.round(duration % 60) })}</div>
-                  </div>
-                </Tooltip>
-              : null
-            }
+            {isSpecial(transportType) && extra && extra.numbers ? (
+              <Tooltip direction="top" offset={[0, -36]} permanent>
+                <div>
+                  {imhdSummary(t, language, extra)}
+                </div>
+              </Tooltip>
+            ) : distance ? (
+              <Tooltip direction="top" offset={[0, -36]} permanent>
+                <div>
+                  <div>{t('routePlanner.distance', { value: nf.format(distance) })}</div>
+                  <div>{t('routePlanner.duration', { h: Math.floor(duration / 60), m: Math.round(duration % 60) })}</div>
+                </div>
+              </Tooltip>
+            ) : (
+              null
+            )}
           </RichMarker>
-        }
-        {
-          (!special ? alternatives : alternatives.map(addMissingSegments))
+        )}
+        {(!special ? alternatives : alternatives.map(addMissingSegments))
           .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
           .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
             <React.Fragment key={`alt-${timestamp}-${alt}`}>
@@ -291,7 +289,7 @@ class RoutePlannerResult extends React.Component {
                     color={
                       alt !== activeAlternativeIndex ? '#868e96'
                         : !special && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
-                        : 'hsl(211, 100%, 50%)'
+                          : 'hsl(211, 100%, 50%)'
                     }
                     opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                     dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}

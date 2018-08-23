@@ -105,8 +105,8 @@ export default function gallery(state = initialState, action) {
       return {
         ...state,
         pickingPositionForId: action.payload,
-        pickingPosition: action.payload === -1 ? state.editModel.position :
-          typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
+        pickingPosition: action.payload === -1 ? state.editModel.position
+          : typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
       };
     case at.GALLERY_UPLOAD:
     {

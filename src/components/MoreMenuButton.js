@@ -164,21 +164,20 @@ class MoreMenuButton extends React.Component {
         >
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
-              {submenu === null ?
+              {submenu === null ? (
                 <React.Fragment>
                   <MenuItem onClick={this.handleLanguageClick}>
                     <FontAwesomeIcon icon="language" /> Language / Jazyk <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
-                  {
-                    user ?
-                      <MenuItem onClick={this.handleLogoutClick}>
-                        <FontAwesomeIcon icon="sign-out" /> {t('more.logOut', { name: user.name })}
-                      </MenuItem>
-                      :
-                      <MenuItem onClick={this.handleLoginClick}>
-                        <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
-                      </MenuItem>
-                  }
+                  {user ? (
+                    <MenuItem onClick={this.handleLogoutClick}>
+                      <FontAwesomeIcon icon="sign-out" /> {t('more.logOut', { name: user.name })}
+                    </MenuItem>
+                  ) : (
+                    <MenuItem onClick={this.handleLoginClick}>
+                      <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={this.handleSettingsShowClick}>
                     <FontAwesomeIcon icon="cog" /> {t('more.settings')}
                   </MenuItem>
@@ -210,59 +209,60 @@ class MoreMenuButton extends React.Component {
                     <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> {t('more.supportUs')} <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
                   </MenuItem>
                 </React.Fragment>
-                : submenu === 'help' ?
-                  <React.Fragment>
-                    <MenuItem header>
-                      <FontAwesomeIcon icon="book" /> {t('more.help')}
-                    </MenuItem>
-                    <MenuItem onClick={this.handleBackClick}>
-                      <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
-                    </MenuItem>
-                    <MenuItem divider />
-                    <MenuItem onClick={this.handleLegendClick}>
-                      <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
-                    </MenuItem>
-                    <MenuItem onClick={this.handleAboutClick}>
-                      <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
-                    </MenuItem>
-                    <MenuItem divider />
-                    <MenuItem header>
-                      <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
-                    </MenuItem>
-                    {
-                      tips.map(([key, name, icon]) => (
-                        <MenuItem key={key} onSelect={this.handleTipSelect} eventKey={key}>
-                          <FontAwesomeIcon icon={icon} /> {name}
-                        </MenuItem>
-                      ))
-                    }
-                  </React.Fragment>
-                : submenu === 'language' ?
-                  <React.Fragment>
-                    <MenuItem header>
-                      <FontAwesomeIcon icon="language" /> Language / Jazyk
-                    </MenuItem>
-                    <MenuItem onClick={this.handleBackClick}>
-                      <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
-                    </MenuItem>
-                    <MenuItem divider />
-                    <MenuItem onClick={this.handleAutoLanguageClick} active={chosenLanguage === null}>
-                      {t('more.automaticLanguage')}
-                    </MenuItem>
-                    <MenuItem onClick={this.handleEnglishClick} active={chosenLanguage === 'en'}>
-                      English
-                    </MenuItem>
-                    <MenuItem onClick={this.handleSlovakClick} active={chosenLanguage === 'sk'}>
-                      Slovensky
-                    </MenuItem>
-                    <MenuItem onClick={this.handleCzechClick} active={chosenLanguage === 'cs'}>
-                      Česky
-                    </MenuItem>
-                  </React.Fragment>
-                : null
-              }
+              ) : submenu === 'help' ? (
+                <React.Fragment>
+                  <MenuItem header>
+                    <FontAwesomeIcon icon="book" /> {t('more.help')}
+                  </MenuItem>
+                  <MenuItem onClick={this.handleBackClick}>
+                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                  </MenuItem>
+                  <MenuItem divider />
+                  <MenuItem onClick={this.handleLegendClick}>
+                    <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+                  </MenuItem>
+                  <MenuItem onClick={this.handleAboutClick}>
+                    <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
+                  </MenuItem>
+                  <MenuItem divider />
+                  <MenuItem header>
+                    <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
+                  </MenuItem>
+                  {
+                    tips.map(([key, name, icon]) => (
+                      <MenuItem key={key} onSelect={this.handleTipSelect} eventKey={key}>
+                        <FontAwesomeIcon icon={icon} /> {name}
+                      </MenuItem>
+                    ))
+                  }
+                </React.Fragment>
+              ) : submenu === 'language' ? (
+                <React.Fragment>
+                  <MenuItem header>
+                    <FontAwesomeIcon icon="language" /> Language / Jazyk
+                  </MenuItem>
+                  <MenuItem onClick={this.handleBackClick}>
+                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                  </MenuItem>
+                  <MenuItem divider />
+                  <MenuItem onClick={this.handleAutoLanguageClick} active={chosenLanguage === null}>
+                    {t('more.automaticLanguage')}
+                  </MenuItem>
+                  <MenuItem onClick={this.handleEnglishClick} active={chosenLanguage === 'en'}>
+                    English
+                  </MenuItem>
+                  <MenuItem onClick={this.handleSlovakClick} active={chosenLanguage === 'sk'}>
+                    Slovensky
+                  </MenuItem>
+                  <MenuItem onClick={this.handleCzechClick} active={chosenLanguage === 'cs'}>
+                    Česky
+                  </MenuItem>
+                </React.Fragment>
+              ) : (
+                null
+              )}
             </ul>
-            {submenu === null &&
+            {submenu === null && (
               <div style={{ margin: '4px 18px', fontSize: '18px' }}>
                 <a
                   onClick={this.handleItemClick}
@@ -297,7 +297,7 @@ class MoreMenuButton extends React.Component {
                   <FontAwesomeIcon icon="github" />
                 </a>
               </div>
-            }
+            )}
           </Popover>
         </Overlay>
       </React.Fragment>

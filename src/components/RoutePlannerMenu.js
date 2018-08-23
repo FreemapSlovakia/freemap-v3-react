@@ -143,12 +143,12 @@ class RoutePlannerMenu extends React.Component {
         {' '}
         <ButtonGroup>
           <DropdownButton
-            title={
+            title={(
               <span>
                 <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
                 <span className="hidden-xs"> {t('routePlanner.start')}</span>
               </span>
-            }
+            )}
             id="set-start-dropdown"
             onClick={() => onPickPointModeChange('start')}
             active={pickPointMode === 'start'}
@@ -165,12 +165,12 @@ class RoutePlannerMenu extends React.Component {
           </DropdownButton>
           <Button onClick={onEndsSwap} disabled={!canSwap} title={t('routePlanner.swap')}>⇆</Button>
           <DropdownButton
-            title={
+            title={(
               <span>
                 <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
                 <span className="hidden-xs"> {t('routePlanner.finish')}</span>
               </span>
-            }
+            )}
             id="set-finish-dropdown"
             onClick={() => onPickPointModeChange('finish')}
             active={pickPointMode === 'finish'}
@@ -189,13 +189,13 @@ class RoutePlannerMenu extends React.Component {
         {' '}
         <DropdownButton
           id="transport-type"
-          title={
+          title={(
             <React.Fragment>
               <FontAwesomeIcon icon={activeTransportType[1]} />
               {['car', 'bikesharing'].includes(activeTransportType[0]) && <FontAwesomeIcon icon="money" />}
               <span className="hidden-xs"> {t(`routePlanner.transportType.${activeTransportType[0]}`).replace(/\s*,.*/, '')}</span>
             </React.Fragment>
-          }
+          )}
         >
           {
             transportTypes.filter(x => x).map(([type, icon]) => (
@@ -211,7 +211,7 @@ class RoutePlannerMenu extends React.Component {
             ))
           }
         </DropdownButton>
-        {alternatives.length > 1 &&
+        {alternatives.length > 1 && (
           <React.Fragment>
             {' '}
             <DropdownButton
@@ -247,7 +247,7 @@ class RoutePlannerMenu extends React.Component {
               }
             </DropdownButton>
           </React.Fragment>
-        }
+        )}
         {/* ' '}
         <Button
           onClick={() => onItineraryVisibilityToggle()}

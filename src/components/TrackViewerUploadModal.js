@@ -26,20 +26,22 @@ class TrackViewerUploadModal extends React.Component {
   }
 
   handleFileDrop = (acceptedFiles, rejectedFiles) => {
+    const { onUpload, onLoadError } = this.props;
+
     if (acceptedFiles.length) {
       const reader = new FileReader();
       reader.readAsText(acceptedFiles[0], 'UTF-8');
       reader.onload = (event) => {
-        this.props.onUpload(event.target.result);
+        onUpload(event.target.result);
       };
 
       reader.onerror = (e) => {
-        this.props.onLoadError(`Nepodarilo sa spracovať súbor: ${e && e.message}`);
+        onLoadError(`Nepodarilo sa spracovať súbor: ${e && e.message}`);
       };
     }
 
     if (rejectedFiles.length) {
-      this.props.onLoadError('Nesprávny formát súboru: Nahraný súbor musí mať príponu .gpx');
+      onLoadError('Nesprávny formát súboru: Nahraný súbor musí mať príponu .gpx');
     }
   }
 
@@ -59,7 +61,9 @@ class TrackViewerUploadModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onClose}>
-            <Glyphicon glyph="remove" /> {t('general.cancel')}
+            <Glyphicon glyph="remove" />
+            {' '}
+            {t('general.cancel')}
           </Button>
         </Modal.Footer>
       </Modal>

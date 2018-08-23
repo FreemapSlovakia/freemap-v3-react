@@ -119,19 +119,31 @@ export default {
     imhd: {
       total: {
         // eslint-disable-next-line
-        short: ({ arrival, price, numbers }) =>
-          <Fragment>Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}</Fragment>,
+        short: ({ arrival, price, numbers }) => (
+          <Fragment>
+            Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}
+          </Fragment>
+        ),
         // eslint-disable-next-line
-        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) =>
-          <Fragment>Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Trvání <b>{total} {numberize(total, ['minut', 'minúta', 'minuty'])}</b><br />Do odchodu: <b>{home}</b>, pěšky: <b>{foot}</b>, MHD: <b>{bus}</b>, čekaní: <b>{wait} {numberize(wait, ['minut', 'minúta', 'minuty'])}</b></Fragment>,
+        full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
+          <Fragment>
+            Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Trvání <b>{total} {numberize(total, ['minut', 'minúta', 'minuty'])}</b><br />Do odchodu: <b>{home}</b>, pěšky: <b>{foot}</b>, MHD: <b>{bus}</b>, čekaní: <b>{wait} {numberize(wait, ['minut', 'minúta', 'minuty'])}</b>
+          </Fragment>
+        ),
       },
       step: {
         // eslint-disable-next-line
-        foot: ({ departure, duration, destination }) =>
-          <Fragment>o <b>{departure}</b> pěšky <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> {destination === 'TARGET' ? <b>do cíle</b> : <Fragment>na <b>{destination}</b></Fragment>}</Fragment>,
+        foot: ({ departure, duration, destination }) => (
+          <Fragment>
+            o <b>{departure}</b> pěšky <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> {destination === 'TARGET' ? <b>do cíle</b> : <Fragment>na <b>{destination}</b></Fragment>}
+          </Fragment>
+        ),
         // eslint-disable-next-line
-        bus: ({ departure, type, number, destination }) =>
-          <Fragment>o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b></Fragment>,
+        bus: ({ departure, type, number, destination }) => (
+          <Fragment>
+            o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b>
+          </Fragment>
+        ),
       },
       type: {
         bus: 'autobusem',
@@ -143,11 +155,17 @@ export default {
     bikesharing: {
       step: {
         // eslint-disable-next-line
-        foot: ({ duration, destination }) =>
-          <Fragment>pěšky <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> {destination === 'TARGET' ? <b>do cíle</b> : <Fragment>na <b>{destination}</b></Fragment>}</Fragment>,
+        foot: ({ duration, destination }) => (
+          <Fragment>
+            pěšky <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> {destination === 'TARGET' ? <b>do cíle</b> : <Fragment>na <b>{destination}</b></Fragment>}
+          </Fragment>
+        ),
         // eslint-disable-next-line
-        bicycle: ({ duration, destination }) =>
-          <Fragment>kolem <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> na <b>{destination}</b></Fragment>,
+        bicycle: ({ duration, destination }) => (
+          <Fragment>
+            kolem <b>{duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}</b> na <b>{destination}</b>
+          </Fragment>
+        ),
       },
     },
     imhdAttribution: 'trasy linek MHD',
@@ -758,8 +776,8 @@ export default {
     },
     overlay: {
       I: 'Fotografie',
-      n: 'Lesní cesty NLC 2016',
-      l: 'Lesní cesty NLC',
+      n: 'Lesní cesty NLC',
+      l: 'Názvy',
       g: 'OSM GPS stopy',
       t: 'Turistické trasy',
       c: 'Cyklotrasy',

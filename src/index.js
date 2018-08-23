@@ -57,12 +57,13 @@ store.dispatch(enableUpdatingUrl());
 checkStravaAuth();
 
 render(
-  <Provider store={store}>
-    <ErrorCatcher>
-      <Main />
-    </ErrorCatcher>
-  </Provider>
-  ,
+  (
+    <Provider store={store}>
+      <ErrorCatcher>
+        <Main />
+      </ErrorCatcher>
+    </Provider>
+  ),
   document.getElementById('app'),
 );
 

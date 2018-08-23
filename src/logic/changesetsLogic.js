@@ -83,7 +83,8 @@ export const changesetsLogic = createLogic({
           if (arrayOfrawChangesets.length === 100) {
             const toTimeOfOldestChangeset = arrayOfrawChangesets[arrayOfrawChangesets.length - 1].getAttribute('closed_at');
             return loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
-          } else if (allChangesetsSoFar.length === 0) {
+          }
+          if (allChangesetsSoFar.length === 0) {
             dispatch(toastsAdd({
               collapseKey: 'changeset.detail',
               messageKey: 'changesets.notFound',
