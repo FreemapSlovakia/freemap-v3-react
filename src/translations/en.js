@@ -384,7 +384,10 @@ export default {
 
   objects: {
     type: 'Type',
-    lowZoomAlert: 'To see objects by their type, you need to zoom in to at least level 12.',
+    lowZoomAlert: {
+      message: 'To see objects by their type, you need to zoom in to at least level 12.',
+      zoom: 'Zoom-in',
+    },
     fetchingError: 'Error fetching objects (POIs): {err}',
     categories: {
       1: 'Nature',

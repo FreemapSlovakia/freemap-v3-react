@@ -384,7 +384,10 @@ export default {
 
   objects: {
     type: 'Typ',
-    lowZoomAlert: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+    lowZoomAlert: {
+      message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
+      zoom: 'Priblíž',
+    },
     fetchingError: 'Nastala chyba pri získavaní objektov: {err}',
     categories: {
       1: 'Príroda',

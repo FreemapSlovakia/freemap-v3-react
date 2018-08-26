@@ -116,12 +116,12 @@ export default compose(
       onLowZoom(/* typeId */) {
         dispatch(toastsAdd({
           collapseKey: 'objects.lowZoomAlert',
-          messageKey: 'lowZoomAlert',
+          messageKey: 'objects.lowZoomAlert.message',
           style: 'warning',
           actions: [
             {
               // name: 'Priblíž a hľadaj', TODO
-              name: 'Priblíž',
+              nameKey: 'objects.lowZoomAlert.zoom',
               action: [
                 mapRefocus({ zoom: 12 }),
                 // objectsSetFilter(typeId) it won't work correctly because it uses bounds before refocus
