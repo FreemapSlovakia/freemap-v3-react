@@ -1,7 +1,7 @@
 import * as at from 'fm3/actionTypes';
 
 export function mapDetailsSetSubtool(subtool) {
-  return { type: at.MAP_DETAILS_SET_SUBTOOL, payload: { subtool } };
+  return { type: at.MAP_DETAILS_SET_SUBTOOL, payload: subtool };
 }
 
 export function mapDetailsSetUserSelectedPosition(lat, lon) {
@@ -9,5 +9,5 @@ export function mapDetailsSetUserSelectedPosition(lat, lon) {
 }
 
 export function mapDetailsSetTrackInfoPoints(trackInfoPoints) {
-  return { type: at.MAP_DETAILS_SET_TRACK_INFO_POINTS, payload: { trackInfoPoints } };
+  return { type: at.MAP_DETAILS_SET_TRACK_INFO_POINTS, payload: trackInfoPoints };
 }

@@ -63,7 +63,6 @@ import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
 import ChangesetsResult from 'fm3/components/ChangesetsResult';
 
 import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
-import MapDetailsResult from 'fm3/components/MapDetailsResult';
 
 import ShareMapModal from 'fm3/components/ShareMapModal';
 import EmbedMapModal from 'fm3/components/EmbedMapModal';
@@ -358,7 +357,6 @@ class Main extends React.Component {
               <TrackViewerResult />
               <InfoPointResult />
               <ChangesetsResult />
-              {tool === 'map-details' && <MapDetailsResult />}
               {showElevationChart && <AsyncElevationChart />}
               {showGalleryPicker && <GalleryPicker />}
             </React.Fragment>
