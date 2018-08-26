@@ -22,7 +22,11 @@ import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 const tipKeys = tips.map(([key]) => key);
 
 export default function handleLocationChange(store, location) {
-  const { getState, dispatch } = store;
+  const { getState, dispatch: dispatch0 } = store;
+
+  const dispatch = (action) => {
+    dispatch0({ ...action, meta: { ...(action.meta || {}), isLocationChange: true } });
+  };
 
   const query = queryString.parse(location.search);
 

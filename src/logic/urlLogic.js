@@ -6,6 +6,8 @@ import * as at from 'fm3/actionTypes';
 
 const tipKeys = allTips.map(([key]) => key);
 
+let lastActionType;
+
 export const urlLogic = createLogic({
   type: [
     at.MAP_LOAD_STATE, at.MAP_REFOCUS, /^ROUTE_PLANNER_/, at.SET_TOOL, at.CLEAR_MAP, at.MAP_RESET,
@@ -165,8 +167,14 @@ export const urlLogic = createLogic({
 
     const search = `?${queryParts.join('&')}`;
 
-    if (window.location.search !== search) {
-      history[action.type === 'MAP_REFOCUS' ? 'replace' : 'push']({ pathname: '/', search });
+    if (window.location.search !== !search && !(action.meta && action.meta.isLocationChange)) {
+      const method = [
+        at.MAP_REFOCUS,
+        at.DISTANCE_MEASUREMENT_UPDATE_POINT,
+        at.AREA_MEASUREMENT_UPDATE_POINT,
+      ].includes(lastActionType) ? 'replace' : 'push';
+      history[method]({ pathname: '/', search });
+      lastActionType = action.type;
     }
 
     done();
