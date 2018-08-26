@@ -263,20 +263,6 @@ export const overlayLayers = [
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
-  ...[['1', '1', ''], ['2', '2', 'h'], ['3', '3', 'c']].map(([type, key, suffix]) => ({
-    type,
-    icon: 'font',
-    url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-    ],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    key,
-    showOnlyInExpertMode: true,
-    zIndex: 2,
-  })),
   {
     type: 'c',
     icon: 'bicycle',
@@ -308,6 +294,20 @@ export const overlayLayers = [
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
+  ...[['1', '1', ''], ['2', '2', 'h'], ['3', '3', 'c']].map(([type, key, suffix]) => ({
+    type,
+    icon: 'font',
+    url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+    ],
+    minZoom: 8,
+    maxNativeZoom: 16,
+    key,
+    showOnlyInExpertMode: true,
+    zIndex: 2,
+  })),
   {
     type: 'r',
     icon: 'pencil-square-o',
