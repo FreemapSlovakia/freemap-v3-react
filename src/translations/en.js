@@ -776,7 +776,9 @@ export default {
     overlay: {
       I: 'Photos',
       n: 'Forest tracks NLC',
-      l: 'Names',
+      1: 'Names (car)',
+      2: 'Names (hiking)',
+      3: 'Names (bicycle)',
       g: 'OSM GPS traces',
       t: 'Hiking trails',
       c: 'Bicycle trails',

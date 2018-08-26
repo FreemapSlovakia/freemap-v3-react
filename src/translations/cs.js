@@ -777,7 +777,9 @@ export default {
     overlay: {
       I: 'Fotografie',
       n: 'Lesní cesty NLC',
-      l: 'Názvy',
+      1: 'Názvy (auto)',
+      2: 'Názvy (turistika)',
+      3: 'Názvy (cyklo)',
       g: 'OSM GPS stopy',
       t: 'Turistické trasy',
       c: 'Cyklotrasy',
