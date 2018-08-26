@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TileLayer } from 'react-leaflet';
-import { BingLayer } from 'react-leaflet-bing';
 import GalleryLayer from 'fm3/components/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
+import BingLayer from './BingLayer';
 
 class Layers extends React.Component {
   static propTypes = {

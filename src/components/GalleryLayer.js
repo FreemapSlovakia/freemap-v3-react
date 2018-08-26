@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GridLayer } from 'react-leaflet';
+import { GridLayer, withLeaflet } from 'react-leaflet';
 
 import { galleryFilter } from 'fm3/propTypes';
 
@@ -87,7 +87,7 @@ const galleryLayer = L.GridLayer.extend({
   },
 });
 
-export default class GalleryLayer extends GridLayer {
+class GalleryLayer extends GridLayer {
   static propTypes = {
     filter: galleryFilter.isRequired,
   };
@@ -103,3 +103,5 @@ export default class GalleryLayer extends GridLayer {
   //   }
   // }
 }
+
+export default withLeaflet(GalleryLayer);

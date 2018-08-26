@@ -29,11 +29,11 @@
     "react": "16.4.2",
     "react-async-component": "2.0.0",
     "react-bootstrap": "0.32.3",
-    "react-bootstrap-typeahead": "3.2.1",
+    "react-bootstrap-typeahead": "3.2.2",
     "react-chartjs-2": "2.7.4",
     "react-dom": "16.4.2",
     "react-dropzone": "5.0.1",
-    "react-leaflet": "1.9.1",
+    "react-leaflet": "2.0.1",
     "react-leaflet-bing": "3.1.0",
     "react-overlays": "0.8.3",
     "react-rangeslider": "2.2.0",
@@ -76,7 +76,7 @@
     "webpack": "4.17.1",
     "webpack-cleanup-plugin": "0.5.1",
     "webpack-cli": "3.1.0",
-    "webpack-dev-server": "3.1.5",
+    "webpack-dev-server": "3.1.6",
     "webpack-pwa-manifest": "3.7.1"
   },
   "repository": {

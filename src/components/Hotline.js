@@ -1,12 +1,12 @@
 import PropTypes from 'prop-types';
-import { Polyline, PropTypes as LeafletPropTypes } from 'react-leaflet';
 import 'leaflet-hotline';
+import { Path, withLeaflet } from 'react-leaflet';
 
-export default class Hotline extends Polyline {
+class Hotline extends Path {
   static propTypes = {
     positions: PropTypes.oneOfType([
-      LeafletPropTypes.latlngList,
-      PropTypes.arrayOf(LeafletPropTypes.latlngList),
+      PropTypes.arrayOf(PropTypes.number),
+      PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number)),
     ]).isRequired,
     weight: PropTypes.number,
     outlineWidth: PropTypes.number,
@@ -26,3 +26,5 @@ export default class Hotline extends Polyline {
     }
   }
 }
+
+export default withLeaflet(Hotline);
