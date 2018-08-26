@@ -167,7 +167,7 @@ export const urlLogic = createLogic({
 
     const search = `?${queryParts.join('&')}`;
 
-    if (window.location.search !== !search && !(action.meta && action.meta.isLocationChange)) {
+    if (window.location.search !== search && !(action.meta && action.meta.isLocationChange)) {
       const method = [
         at.MAP_REFOCUS,
         at.DISTANCE_MEASUREMENT_UPDATE_POINT,
