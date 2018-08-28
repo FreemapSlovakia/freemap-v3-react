@@ -55,7 +55,18 @@ module.exports = {
         exclude: /node_modules\/(?!(exifreader|query-string|strict-uri-encode)\/).*/,
         loader: 'babel-loader',
         options: {
-          presets: ['react', 'es2015', 'stage-2'],
+          presets: [
+            ['@babel/preset-env', {
+              targets: {
+                browsers: ['> 0.25%'],
+              },
+            }],
+            '@babel/preset-react',
+          ],
+          plugins: [
+            '@babel/plugin-syntax-dynamic-import',
+            '@babel/plugin-proposal-class-properties',
+          ],
         },
       },
       {
