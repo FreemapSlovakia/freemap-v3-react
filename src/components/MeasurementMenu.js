@@ -34,7 +34,7 @@ class MeasurementMenu extends React.Component {
     t: PropTypes.func.isRequired,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 

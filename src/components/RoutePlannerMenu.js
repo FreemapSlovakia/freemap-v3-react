@@ -49,7 +49,7 @@ class RoutePlannerMenu extends React.Component {
     canSwap: PropTypes.bool,
   };
 
-  componentWillMount() {
+  componentDidMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
 

@@ -32,9 +32,8 @@ class TrackViewerMenu extends React.Component {
     t: PropTypes.func.isRequired,
   }
 
-  componentWillReceiveProps(newProps) {
-    const userHasUploadedTrackAndWantsToShareIt = this.props.trackUID === null && newProps.trackUID !== null;
-    if (userHasUploadedTrackAndWantsToShareIt) {
+  componentDidUpdate(prevProps) {
+    if (prevProps.trackUID === null && this.props.trackUID !== null) {
       this.props.onShare();
     }
   }

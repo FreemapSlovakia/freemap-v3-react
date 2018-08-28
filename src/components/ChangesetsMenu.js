@@ -19,27 +19,28 @@ class ChangesetsMenu extends React.Component {
   static propTypes = {
     days: PropTypes.number,
     zoom: PropTypes.number.isRequired,
+    // eslint-disable-next-line
     authorName: PropTypes.string,
     onChangesetsSetDays: PropTypes.func.isRequired,
     onChangesetsSetAuthorNameAndRefresh: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
   };
 
-  constructor(props) {
-    super(props);
-    this.state = {
-      authorName: this.props.authorName,
-    };
-  }
+  state = {
+    authorName: null,
+    // eslint-disable-next-line
+    authorNameFromProps: null,
+  };
 
-  componentWillReceiveProps(nextProps) {
-    const settingAuthorNameFromChangesetDetailToast = nextProps.authorName !== this.state.authorName
-      && nextProps.days === this.props.days
-      && nextProps.zoom === this.props.zoom;
-
-    if (settingAuthorNameFromChangesetDetailToast) {
-      this.setState({ authorName: nextProps.authorName });
+  static getDerivedStateFromProps(props, state) {
+    if (props.authorName !== state.authorNameFromProps) {
+      return {
+        authorName: props.authorName,
+        authorNameFromProps: props.authorName,
+      };
     }
+
+    return null;
   }
 
   canSearchWithThisAmountOfDays = (amountOfDays) => {
@@ -48,6 +49,10 @@ class ChangesetsMenu extends React.Component {
     }
     const { zoom } = this.props;
     return (amountOfDays === 3 && zoom >= 9) || (amountOfDays === 7 && zoom >= 10) || (amountOfDays === 14 && zoom >= 11);
+  }
+
+  handleAuthorNameChange = (e) => {
+    this.setState({ authorName: e.target.value === '' ? null : e.target.value });
   }
 
   render() {
@@ -84,7 +89,7 @@ class ChangesetsMenu extends React.Component {
               <FormControl
                 type="text"
                 placeholder={t('changesets.allAuthors')}
-                onChange={e => this.setState({ authorName: e.target.value === '' ? null : e.target.value })}
+                onChange={this.handleAuthorNameChange}
                 value={authorName || ''}
               />
               <InputGroup.Button>

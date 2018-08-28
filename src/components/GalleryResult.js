@@ -33,7 +33,7 @@ class GalleryResult extends React.Component {
 
   state = {};
 
-  componentWillMount() {
+  componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);
   }
 

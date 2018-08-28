@@ -33,14 +33,15 @@ class TrackViewerResult extends React.Component {
     infoDistanceKm: undefined,
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!nextProps.trackGeojson) {
+  componentDidUpdate(prevProps) {
+    const { trackGeojson } = this.props;
+    if (!trackGeojson) {
       return;
     }
 
     // TODO to logic
-    if (nextProps.trackGeojson && JSON.stringify(this.props.trackGeojson) !== JSON.stringify(nextProps.trackGeojson)) {
-      const geojsonBounds = L.geoJson(nextProps.trackGeojson).getBounds();
+    if (trackGeojson && JSON.stringify(prevProps.trackGeojson) !== JSON.stringify(trackGeojson)) {
+      const geojsonBounds = L.geoJson(trackGeojson).getBounds();
       if (geojsonBounds.isValid()) {
         getMapLeafletElement().fitBounds(geojsonBounds);
       }

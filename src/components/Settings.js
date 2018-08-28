@@ -71,7 +71,7 @@ class Settings extends React.Component {
     };
   }
 
-  componentWillMount() {
+  componentDidMount() {
     mapEventEmitter.on('mapClick', this.onHomeLocationSelected);
   }
 

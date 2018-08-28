@@ -77,19 +77,24 @@ class GalleryViewerModal extends React.Component {
     loading: true,
     isFullscreen: false,
     imgKey: 0,
+    // eslint-disable-next-line
+    activeImageId: null,
+  }
+
+  static getDerivedStateFromProps(props, state) {
+    if (props.activeImageId !== state.activeImageId) {
+      return {
+        loading: true,
+        activeImageId: props.activeImageId,
+      };
+    }
+
+    return null;
   }
 
   componentDidMount() {
     document.addEventListener('keydown', this.handleKeydown);
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
-  }
-
-  componentWillReceiveProps(nextProps) {
-    if (nextProps.activeImageId !== this.props.activeImageId) {
-      this.setState({
-        loading: true,
-      });
-    }
   }
 
   componentWillUnmount() {

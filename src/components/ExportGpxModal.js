@@ -35,13 +35,13 @@ export class EmbedMapModal extends React.Component {
   };
 
   state = {
-    exportables: [],
+    exportables: null,
   }
 
-  componentWillMount() {
-    this.setState({
+  static getDerivedStateFromProps(props, state) {
+    return state.exportables ? null : {
       exportables: this.props.exportables,
-    });
+    };
   }
 
   setFormControl = (textarea) => {

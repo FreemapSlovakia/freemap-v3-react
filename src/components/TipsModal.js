@@ -33,16 +33,15 @@ export class TipsModal extends React.Component {
     tip: null,
   }
 
-  componentWillMount() {
-    this.loadTip(this.props);
-  }
-
   componentDidMount() {
+    this.loadTip();
     document.addEventListener('keydown', this.handleKeydown);
   }
 
-  componentWillReceiveProps(nextProps) {
-    this.loadTip(nextProps);
+  componentDidUpdate(prevProps) {
+    if (prevProps.tip !== this.props.tip) {
+      this.loadTip();
+    }
   }
 
   componentWillUnmount() {
@@ -61,9 +60,9 @@ export class TipsModal extends React.Component {
     this.props.onNextTimePrevent(e.target.checked);
   }
 
-  loadTip(props) {
+  loadTip() {
     this.setState({ loading: true });
-    import(/* webpackChunkName: "tip-[request]" */`fm3/tips/${props.tip}.md`)
+    import(/* webpackChunkName: "tip-[request]" */`fm3/tips/${this.props.tip}.md`)
       .then(({ default: tip }) => {
         this.setState({
           tip,

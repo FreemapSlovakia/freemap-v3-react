@@ -118,11 +118,9 @@ class Main extends React.Component {
     showInfoBar: true,
   }
 
-  componentWillMount() {
-    this.props.onCheckLogin();
-  }
-
   componentDidMount() {
+    this.props.onCheckLogin();
+
     setMapLeafletElement(this.map.leafletElement);
     document.addEventListener('keydown', (event) => {
       if (event.keyCode === 27 /* escape key */ && !this.props.ignoreEscape) {

@@ -15,7 +15,7 @@ class GalleryPicker extends React.Component {
 
   state = {};
 
-  componentWillMount() {
+  componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
     mapEventEmitter.on('mouseOut', this.handleMouseOut);
