@@ -250,7 +250,7 @@ class GalleryViewerModal extends React.Component {
                   sizes={sizes}
                   alt={title}
                 />
-                {nextImageId !== undefined && !loading && (
+                {!!nextImageId && !loading && (
                   <img
                     key={`next-${imgKey}`}
                     style={{ display: 'none' }}
@@ -259,13 +259,13 @@ class GalleryViewerModal extends React.Component {
                     alt="next"
                   />
                 )}
-                {prevImageId !== undefined && !loading && (
+                {!!prevImageId && !loading && (
                   <img
-                    key={`next-${imgKey}`}
+                    key={`prev-${imgKey}`}
                     style={{ display: 'none' }}
                     src={getImageUrl(prevImageId)}
                     sizes={sizes}
-                    alt="next"
+                    alt="prev"
                   />
                 )}
               </div>
