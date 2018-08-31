@@ -49,7 +49,7 @@ export class EmbedMapModal extends React.Component {
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
-            value={`<iframe src="${shareURL}" style="width: 500px; height: 300px; border: 0" />`}
+            value={`<iframe src="${shareURL}" style="width: 500px; height: 300px; border: 0" allowfullscreen />`}
             readOnly
             rows={6}
           />
@@ -61,6 +61,7 @@ export class EmbedMapModal extends React.Component {
             title="Freemap.sk"
             style={{ width: '100%', height: '300px', border: '0' }}
             src={shareURL}
+            allowFullScreen
           />
         </Modal.Body>
         <Modal.Footer>
