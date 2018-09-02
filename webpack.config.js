@@ -50,9 +50,8 @@ module.exports = {
           fix: false,
         },
       },
-      {
-        test: /\.js$/,
-        exclude: /node_modules\/(?!(exifreader|query-string|strict-uri-encode)\/).*/,
+      { // babelify some very modern libraries
+        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
@@ -61,7 +60,26 @@ module.exports = {
                 browsers: ['> 0.25%'],
               },
             }],
-            '@babel/preset-react',
+          ],
+        },
+      },
+      {
+        test: /\.js$/,
+        loader: 'babel-loader',
+        exclude: /\bnode_modules\b/,
+        options: {
+          presets: [
+            ['@babel/preset-env', {
+              targets: {
+                browsers: ['> 0.25%'],
+              },
+              useBuiltIns: 'usage',
+              shippedProposals: true,
+              modules: false,
+            }],
+            ['@babel/preset-react', {
+              development: !prod,
+            }],
           ],
           plugins: [
             '@babel/plugin-syntax-dynamic-import',

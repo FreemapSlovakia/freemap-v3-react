@@ -1,5 +1,4 @@
 import { setStore } from 'fm3/globalErrorHandler';
-import '@babel/polyfill';
 import 'fullscreen-api-polyfill';
 
 import React from 'react';

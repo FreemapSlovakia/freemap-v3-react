@@ -5,9 +5,9 @@ const p = new Promise((resolve) => {
   r = resolve;
 });
 
-module.exports = function getAuth2() {
+export default function getAuth2() {
   return auth2 ? Promise.resolve([auth2]) : p;
-};
+}
 
 window.handleGoogleAuthApiLoad = () => {
   window.gapi.load('auth2', () => {

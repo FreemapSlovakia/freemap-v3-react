@@ -4,7 +4,17 @@ import { Marker } from 'react-leaflet';
 
 export default class RichMarker extends React.Component {
   static propTypes = {
-    ...Marker.propTypes,
+    // --- from Marker:
+    draggable: PropTypes.bool,
+    opacity: PropTypes.number,
+    position: PropTypes.oneOfType([
+      PropTypes.arrayOf(PropTypes.number), // [number, number]
+      PropTypes.shape({ lat: PropTypes.number, lng: PropTypes.number }),
+      PropTypes.shape({ lat: PropTypes.number, lon: PropTypes.number }),
+    ]).isRequired,
+    zIndexOffset: PropTypes.number,
+
+    // --- own:
     label: PropTypes.oneOfType([
       PropTypes.string,
       PropTypes.number,
