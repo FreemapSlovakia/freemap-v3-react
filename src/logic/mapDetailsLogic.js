@@ -23,23 +23,41 @@ export default createLogic({
         source.cancel();
       });
 
-      axios.post(
-        '//overpass-api.de/api/interpreter',
-        '[out:json];('
-          // + `node(around:33,${userSelectedLat},${userSelectedLon})['natural'];`
-          + `way(around:33,${userSelectedLat},${userSelectedLon})['highway'];`
-          // + `relation(around:33,${userSelectedLat},${userSelectedLon})["type"="route"]["route"="hiking"];`
-          + ');out geom meta;',
-        {
-          validateStatus: status => status === 200,
-          cancelToken: source.token,
-        },
-      )
-        .then(({ data }) => {
-          if (data.elements && data.elements.length > 0) {
+      Promise.all([
+        axios.post(
+          '//overpass-api.de/api/interpreter',
+          '[out:json];('
+            // + `node(around:33,${userSelectedLat},${userSelectedLon});`
+            + `way(around:33,${userSelectedLat},${userSelectedLon})[highway];`
+            // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
+            + ');out geom meta;',
+          {
+            validateStatus: status => status === 200,
+            cancelToken: source.token,
+          },
+        ),
+        Promise.resolve({ data: { elements: [] } }),
+        // axios.post(
+        //   '//overpass-api.de/api/interpreter',
+        //   `[out:json];
+        //     is_in(${userSelectedLat},${userSelectedLon})->.a;
+        //     way(pivot.a);
+        //     out geom meta;
+        //     relation(pivot.a);
+        //     out geom meta;
+        //   `,
+        //   {
+        //     validateStatus: status => status === 200,
+        //     cancelToken: source.token,
+        //   },
+        // ),
+      ])
+        .then(([{ data }, { data: data1 }]) => {
+          const elements = [...(data.elements || []), ...(data1.elements || [])];
+          if (elements.length > 0) {
             const geojson = {
               type: 'FeatureCollection',
-              features: data.elements.map(element => (
+              features: elements.map(element => (
                 element.type === 'way' ? {
                   type: 'Feature',
                   geometry: {
