@@ -43,7 +43,7 @@ class Settings extends React.Component {
     overlayOpacity: PropTypes.shape({}).isRequired,
     overlayPaneOpacity: PropTypes.number.isRequired,
     expertMode: PropTypes.bool.isRequired,
-    trackViewerEleSmoothingFactor: PropTypes.number.isRequired,
+    eleSmoothingFactor: PropTypes.number.isRequired,
     selectingHomeLocation: PropTypes.bool,
     user: PropTypes.shape({
       name: PropTypes.string,
@@ -63,7 +63,7 @@ class Settings extends React.Component {
       overlayOpacity: props.overlayOpacity,
       overlayPaneOpacity: props.overlayPaneOpacity,
       expertMode: props.expertMode,
-      trackViewerEleSmoothingFactor: props.trackViewerEleSmoothingFactor,
+      eleSmoothingFactor: props.eleSmoothingFactor,
       name: props.user && props.user.name || '',
       email: props.user && props.user.email || '',
       preventTips: props.preventTips,
@@ -93,7 +93,7 @@ class Settings extends React.Component {
       this.state.overlayOpacity,
       this.state.overlayPaneOpacity,
       this.state.expertMode,
-      this.state.trackViewerEleSmoothingFactor,
+      this.state.eleSmoothingFactor,
       this.props.user ? { name: this.state.name.trim() || null, email: this.state.email.trim() || null } : null,
       this.state.preventTips,
     );
@@ -131,11 +131,11 @@ class Settings extends React.Component {
   render() {
     const { onClose, onHomeLocationSelect, selectingHomeLocation, user, language, t } = this.props;
     const { homeLocation, tileFormat, expertMode,
-      overlayOpacity, overlayPaneOpacity, trackViewerEleSmoothingFactor,
+      overlayOpacity, overlayPaneOpacity, eleSmoothingFactor,
       name, email, preventTips, selectedOverlay } = this.state;
 
     const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode',
-      'trackViewerEleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
+      'eleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
       .some(prop => this.state[prop] !== this.props[prop])
       || user && (name !== (user.name || '') || email !== (user.email || ''))
       || overlayLayers.some(({ type }) => (overlayOpacity[type] || 1) !== (this.props.overlayOpacity[type] || 1));
@@ -293,15 +293,15 @@ class Settings extends React.Component {
                     <hr />
                     <div>
                       <p>
-                        {t('settings.expert.trackViewerEleSmoothing.label', { value: trackViewerEleSmoothingFactor })}
+                        {t('settings.expert.trackViewerEleSmoothing.label', { value: eleSmoothingFactor })}
                       </p>
                       <Slider
-                        value={trackViewerEleSmoothingFactor}
+                        value={eleSmoothingFactor}
                         min={1}
                         max={10}
                         step={1}
                         tooltip={false}
-                        onChange={newValue => this.setState({ trackViewerEleSmoothingFactor: newValue })}
+                        onChange={newValue => this.setState({ eleSmoothingFactor: newValue })}
                       />
                     </div>
                     <Alert>
@@ -335,7 +335,7 @@ export default compose(
       overlayOpacity: state.map.overlayOpacity,
       overlayPaneOpacity: state.map.overlayPaneOpacity,
       expertMode: state.main.expertMode,
-      trackViewerEleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+      eleSmoothingFactor: state.main.eleSmoothingFactor,
       selectingHomeLocation: state.main.selectingHomeLocation,
       user: state.auth.user,
       preventTips: state.tips.preventTips,
@@ -343,9 +343,9 @@ export default compose(
     }),
     dispatch => ({
       onSave(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode,
-        trackViewerEleSmoothingFactor, user, preventTips) {
+        eleSmoothingFactor, user, preventTips) {
         dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode,
-          trackViewerEleSmoothingFactor, user, preventTips));
+          eleSmoothingFactor, user, preventTips));
       },
       onClose() {
         dispatch(setActiveModal(null));

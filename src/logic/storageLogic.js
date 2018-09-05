@@ -27,7 +27,7 @@ export default createLogic({
         tileFormat: mapState.tileFormat,
       },
       trackViewer: {
-        eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+        eleSmoothingFactor: state.main.eleSmoothingFactor,
       },
       language: state.l10n.language,
     };

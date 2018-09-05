@@ -22,7 +22,7 @@ function ElevationChartActivePoint({ elevationChartActivePoint, language, t }) {
     >
       <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
         <span>
-          {nf1.format(elevationChartActivePoint.distanceFromStartInMeters / 1000)} km,
+          {nf1.format(elevationChartActivePoint.distance / 1000)} km,
           {' '}
           {nf0.format(elevationChartActivePoint.ele)} {t('general.masl')}
         </span>

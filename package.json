@@ -12,7 +12,7 @@
     "async": "2.6.1",
     "axios": "0.18.0",
     "chart.js": "2.7.2",
-    "enzyme": "3.5.0",
+    "enzyme": "3.6.0",
     "eventemitter3": "3.1.0",
     "exifreader": "2.5.0",
     "file-saver": "1.3.8",
@@ -43,8 +43,8 @@
     "react-tag-autocomplete": "5.6.0",
     "redux": "4.0.0",
     "redux-logger": "3.0.6",
-    "redux-logic": "1.0.1",
-    "rxjs": "6.3.1"
+    "redux-logic": "1.0.2",
+    "rxjs": "6.3.2"
   },
   "devDependencies": {
     "@babel/core": "7.0.0",
@@ -54,7 +54,7 @@
     "@babel/preset-env": "7.0.0",
     "@babel/preset-react": "7.0.0",
     "babel-eslint": "9.0.0",
-    "babel-loader": "8.0.1",
+    "babel-loader": "8.0.2",
     "copy-webpack-plugin": "4.5.2",
     "css-loader": "1.0.0",
     "ejs-loader": "0.3.1",
@@ -75,7 +75,7 @@
     "sass-loader": "7.1.0",
     "style-loader": "0.23.0",
     "url-loader": "1.1.1",
-    "webpack": "4.17.1",
+    "webpack": "4.17.2",
     "webpack-cleanup-plugin": "0.5.1",
     "webpack-cli": "3.1.0",
     "webpack-dev-server": "3.1.7",

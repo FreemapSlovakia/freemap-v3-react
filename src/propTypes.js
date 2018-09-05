@@ -36,7 +36,7 @@ export const elevationChartProfilePoint = PropTypes.shape({
   lat: PropTypes.number,
   lon: PropTypes.number,
   ele: PropTypes.number,
-  distanceFromStartInMeters: PropTypes.number,
+  distance: PropTypes.number,
 });
 
 export const points = PropTypes.arrayOf(point);

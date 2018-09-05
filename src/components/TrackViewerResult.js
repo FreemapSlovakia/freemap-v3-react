@@ -51,7 +51,7 @@ class TrackViewerResult extends React.Component {
   getFeatures = type => turfFlatten(this.props.trackGeojson).features.filter(f => f.geometry.type === type);
 
   getColorLineDataForElevation = () => this.getFeatures('LineString').map((feature) => {
-    const latLonSmoothEles = smoothElevations(feature, this.props.eleSmoothingFactor);
+    const latLonSmoothEles = smoothElevations(feature.geometry.coordinates, this.props.eleSmoothingFactor);
     const eles = latLonSmoothEles.map(lonLatEle => lonLatEle[2]);
     const maxEle = Math.max(...eles);
     const minEle = Math.min(...eles);
@@ -62,7 +62,7 @@ class TrackViewerResult extends React.Component {
   });
 
   getColorLineDataForSteepness = () => this.getFeatures('LineString').map((feature) => {
-    const latLonSmoothEles = smoothElevations(feature, this.props.eleSmoothingFactor);
+    const latLonSmoothEles = smoothElevations(feature.geometry.coordinates, this.props.eleSmoothingFactor);
     let prevLatLonEle = latLonSmoothEles[0];
     return latLonSmoothEles.map((latLonEle) => {
       const [lat, lon, ele] = latLonEle;
@@ -254,6 +254,6 @@ export default connect(state => ({
   finishPoints: state.trackViewer.finishPoints,
   displayingElevationChart: state.elevationChart.trackGeojson !== null,
   colorizeTrackBy: state.trackViewer.colorizeTrackBy,
-  eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+  eleSmoothingFactor: state.main.eleSmoothingFactor,
   language: state.l10n.language,
 }))(TrackViewerResult);

@@ -19,20 +19,15 @@ export default createLogic({
         source.cancel();
       });
 
-      axios.get('//open.mapquestapi.com/elevation/v1/profile', {
+      axios.get(`${process.env.API_URL}/geotools/elevation`, {
         params: {
-          key: process.env.MAPQUEST_API_KEY,
-          latLngCollection: `${point.lat},${point.lon}`,
+          coordinates: `${point.lat},${point.lon}`,
         },
         validateStatus: status => status === 200,
         cancelToken: source.token,
       })
-      // freemap service
-      // axios.get(`//www.freemap.sk/api/0.1/elevation/${point.lat}%7C${point.lon}`, {
-      //   validateStatus: status => status === 200,
-      // })
         .then(({ data }) => {
-          dispatch(elevationMeasurementSetElevation(parseFloat(data.elevationProfile[0].height)));
+          dispatch(elevationMeasurementSetElevation(parseFloat(data[0])));
         })
         .catch((err) => {
           dispatch(toastsAddError('measurement.elevationFetchError', err));

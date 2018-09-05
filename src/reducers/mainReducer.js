@@ -11,6 +11,7 @@ const initialState = {
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
   errorTicketId: null,
+  eleSmoothingFactor: 5,
 };
 
 export default function main(state = initialState, action) {
@@ -33,6 +34,7 @@ export default function main(state = initialState, action) {
             : null,
         expertMode: p && p.settings && p.settings.expertMode !== undefined
           ? p.settings.expertMode : state.expertMode,
+        eleSmoothingFactor: p && p.settings && p.settings.trackViewerEleSmoothingFactor !== undefined ? p.settings.trackViewerEleSmoothingFactor : state.eleSmoothingFactor,
       };
     }
     case at.AUTH_LOGOUT:
@@ -61,6 +63,8 @@ export default function main(state = initialState, action) {
       return { ...state, urlUpdatingEnabled: true };
     case at.SET_ERROR_TICKET_ID:
       return { ...state, errorTicketId: action.payload };
+    case at.TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR:
+      return { ...state, eleSmoothingFactor: action.payload };
     default:
       return state;
   }

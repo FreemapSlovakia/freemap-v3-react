@@ -6,7 +6,7 @@ const initialState = {
     lat: null,
     lon: null,
     ele: null,
-    distanceFromStartInMeters: null,
+    distance: null,
   },
   elevationProfilePoints: null,
 };

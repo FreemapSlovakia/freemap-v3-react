@@ -57,7 +57,8 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
   let maxEle = -Infinity;
   let uphillEleSum = 0;
   let downhillEleSum = 0;
-  const smoothedLatLonEles = smoothElevations(firstRealFeature, eleSmoothingFactor);
+  console.log('BBBBBBBBBB', firstRealFeature.geometry.coordinates, eleSmoothingFactor);
+  const smoothedLatLonEles = smoothElevations(firstRealFeature.geometry.coordinates, eleSmoothingFactor);
   let [previousLatLonEle] = smoothedLatLonEles;
 
   smoothedLatLonEles.forEach((latLonEle) => {
@@ -119,7 +120,7 @@ export default compose(
       startPoints: state.trackViewer.startPoints,
       finishPoints: state.trackViewer.finishPoints,
       trackGeojson: state.trackViewer.trackGeojson,
-      eleSmoothingFactor: state.trackViewer.eleSmoothingFactor,
+      eleSmoothingFactor: state.main.eleSmoothingFactor,
       language: state.l10n.language,
     }),
   ),

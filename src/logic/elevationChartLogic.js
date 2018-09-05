@@ -16,18 +16,18 @@ export default createLogic({
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGeojson } = getState().elevationChart;
     const totalDistanceInKm = turfLineDistance(trackGeojson);
-    let deltaInMeters;
-    if (totalDistanceInKm < 1.0) {
-      deltaInMeters = 5;
-    } else if (totalDistanceInKm < 5.0) {
-      deltaInMeters = 25;
-    } else if (totalDistanceInKm < 10.0) {
-      deltaInMeters = 50;
-    } else if (totalDistanceInKm < 50.0) {
-      deltaInMeters = 250;
-    } else {
-      deltaInMeters = 500;
-    }
+    const deltaInMeters = totalDistanceInKm;
+    // if (totalDistanceInKm < 1.0) {
+    //   deltaInMeters = 5;
+    // } else if (totalDistanceInKm < 5.0) {
+    //   deltaInMeters = 25;
+    // } else if (totalDistanceInKm < 10.0) {
+    //   deltaInMeters = 50;
+    // } else if (totalDistanceInKm < 50.0) {
+    //   deltaInMeters = 250;
+    // } else {
+    //   deltaInMeters = 500;
+    // }
 
     if (containsElevations(trackGeojson)) {
       resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispatch, done);
@@ -39,7 +39,7 @@ export default createLogic({
 
 function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispatch, done) {
   const lonLatEleCoords = trackGeojson.geometry.coordinates;
-  let distanceFromStartInMeters = 0.0;
+  let distance = 0.0;
   let currentXAxisPointCounter = 0;
   let prevLonlatEle = null;
   const elevationProfilePoints = [];
@@ -47,10 +47,10 @@ function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispa
     if (prevLonlatEle) {
       const [prevLon, prevLat] = prevLonlatEle;
       const distanceToPreviousPointInMeters = distance(lat, lon, prevLat, prevLon);
-      distanceFromStartInMeters += distanceToPreviousPointInMeters;
-      if (currentXAxisPointCounter * deltaInMeters <= distanceFromStartInMeters) {
+      distance += distanceToPreviousPointInMeters;
+      if (currentXAxisPointCounter * deltaInMeters <= distance) {
         elevationProfilePoints.push({
-          lat, lon, ele, distanceFromStartInMeters,
+          lat, lon, ele, distance,
         });
         currentXAxisPointCounter += 1;
       }
@@ -63,30 +63,28 @@ function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispa
 }
 
 function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done) {
-  const deltaInKm = deltaInMeters / 1000.0;
+  const deltaInKm = deltaInMeters / 1000;
   const elevationProfilePoints = [];
-  for (let distanceFromStartInKm = 0.0; distanceFromStartInKm <= totalDistanceInKm; distanceFromStartInKm += deltaInKm) {
-    const [lon, lat] = turfAlong(trackGeojson, distanceFromStartInKm).geometry.coordinates;
-    elevationProfilePoints.push({ lat, lon, distanceFromStartInMeters: distanceFromStartInKm * 1000.0 });
+  for (let dist = 0.0; dist <= totalDistanceInKm; dist += deltaInKm) {
+    const [lon, lat] = turfAlong(trackGeojson, dist).geometry.coordinates;
+    elevationProfilePoints.push({ lat, lon, distance: dist * 1000 });
   }
 
-  const latlonsForMapQuest = elevationProfilePoints.map(({ lat, lon }) => `${lat},${lon}`).join(',');
   const pid = Math.random();
   dispatch(startProgress(pid));
   const source = axios.CancelToken.source();
   cancelled$.subscribe(() => {
     source.cancel();
   });
-  axios.get('//open.mapquestapi.com/elevation/v1/profile', {
+  axios.get(`${process.env.API_URL}/geotools/elevation`, {
     params: {
-      key: process.env.MAPQUEST_API_KEY,
-      latLngCollection: latlonsForMapQuest,
+      coordinates: elevationProfilePoints.map(({ lat, lon }) => `${lat},${lon}`).join(','),
     },
     validateStatus: status => status === 200,
     cancelToken: source.token,
   })
-    .then(({ data: { elevationProfile } }) => {
-      elevationProfile.forEach(({ height }, i) => {
+    .then(({ data }) => {
+      data.forEach((height, i) => {
         elevationProfilePoints[i].ele = height;
       });
       dispatch(elevationChartSetElevationProfile(elevationProfilePoints));

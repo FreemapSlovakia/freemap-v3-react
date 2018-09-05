@@ -84,8 +84,7 @@ export function containsElevations(geojson) {
 }
 
 // returns array of [lat, lon, smoothedEle] triplets
-export function smoothElevations(geojson, eleSmoothingFactor) {
-  const coords = geojson.geometry.coordinates;
+export function smoothElevations(coords, eleSmoothingFactor) {
   let prevFloatingWindowEle = 0;
   return coords.map((lonLatEle, i) => {
     const floatingWindow = coords.slice(i, i + eleSmoothingFactor).filter(e => e).sort();
