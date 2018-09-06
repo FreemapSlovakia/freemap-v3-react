@@ -39,7 +39,7 @@ export default createLogic({
 
 function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispatch, done) {
   const lonLatEleCoords = trackGeojson.geometry.coordinates;
-  let distance = 0.0;
+  let dist = 0.0;
   let currentXAxisPointCounter = 0;
   let prevLonlatEle = null;
   const elevationProfilePoints = [];
@@ -47,10 +47,10 @@ function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispa
     if (prevLonlatEle) {
       const [prevLon, prevLat] = prevLonlatEle;
       const distanceToPreviousPointInMeters = distance(lat, lon, prevLat, prevLon);
-      distance += distanceToPreviousPointInMeters;
-      if (currentXAxisPointCounter * deltaInMeters <= distance) {
+      dist += distanceToPreviousPointInMeters;
+      if (currentXAxisPointCounter * deltaInMeters <= dist) {
         elevationProfilePoints.push({
-          lat, lon, ele, distance,
+          lat, lon, ele, distance: dist,
         });
         currentXAxisPointCounter += 1;
       }
