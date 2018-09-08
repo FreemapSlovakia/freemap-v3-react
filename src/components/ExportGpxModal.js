@@ -40,7 +40,7 @@ export class EmbedMapModal extends React.Component {
 
   static getDerivedStateFromProps(props, state) {
     return state.exportables ? null : {
-      exportables: this.props.exportables,
+      exportables: props.exportables,
     };
   }
 
