@@ -57,7 +57,6 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
   let maxEle = -Infinity;
   let uphillEleSum = 0;
   let downhillEleSum = 0;
-  console.log('BBBBBBBBBB', firstRealFeature.geometry.coordinates, eleSmoothingFactor);
   const smoothedLatLonEles = smoothElevations(firstRealFeature.geometry.coordinates, eleSmoothingFactor);
   let [previousLatLonEle] = smoothedLatLonEles;
 
