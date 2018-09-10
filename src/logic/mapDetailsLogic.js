@@ -10,6 +10,21 @@ import RoadDetails from 'fm3/components/RoadDetails';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { lineString, point, featureCollection } from '@turf/helpers';
 
+const mappings = {
+  way: element => lineString(element.geometry.map(({ lat, lon }) => [lon, lat])),
+  node: element => point([element.lon, element.lat]),
+  relation: element => ({
+    type: 'Feature',
+    geometry: {
+      type: 'GeometryCollection',
+      geometries: element.members
+        .filter(({ type }) => ['way', 'node'/* TODO , 'relation' */].includes(type))
+        .map(member => (
+          member.type === 'way' ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat])) : point([member.lon, member.lat]))),
+    },
+  }),
+};
+
 export default createLogic({
   type: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
   cancelType: [at.SET_TOOL, at.CLEAR_MAP],
@@ -56,21 +71,7 @@ export default createLogic({
         .then(([{ data }, { data: data1 }]) => {
           const elements = [...(data.elements || []), ...(data1.elements || [])];
           if (elements.length > 0) {
-            const geojson = featureCollection(elements.map(element => (
-              element.type === 'way' ? lineString(element.geometry.map(({ lat, lon }) => [lon, lat]))
-                : element.type === 'node' ? point([element.lon, element.lat])
-                  : { // relation
-                    type: 'Feature',
-                    geometry: {
-                      type: 'GeometryCollection',
-                      geometries: element.members
-                        .filter(({ type }) => ['way', 'node'/* TODO , 'relation' */].includes(type))
-                        .map(member => (
-                          member.type === 'way' ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat])) : point([member.lon, member.lat])
-                        )),
-                    },
-                  }
-            )));
+            const geojson = featureCollection(elements.map(element => mappings[element.type](element)));
 
             data.elements.forEach((element) => {
               dispatch(toastsAdd({
