@@ -8,6 +8,7 @@
     "@turf/along": "6.0.1",
     "@turf/flatten": "5.1.5",
     "@turf/helpers": "6.1.4",
+    "@turf/invariant": "6.1.2",
     "@turf/line-distance": "4.7.3",
     "@turf/line-slice": "5.1.5",
     "async": "2.6.1",

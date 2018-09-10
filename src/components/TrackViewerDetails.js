@@ -57,13 +57,13 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
   let maxEle = -Infinity;
   let uphillEleSum = 0;
   let downhillEleSum = 0;
-  const smoothedLatLonEles = smoothElevations(firstRealFeature.geometry.coordinates, eleSmoothingFactor);
-  let [previousLatLonEle] = smoothedLatLonEles;
+  const smoothed = smoothElevations(firstRealFeature.geometry.coordinates, eleSmoothingFactor);
+  let [prevCoord] = smoothed;
 
-  smoothedLatLonEles.forEach((latLonEle) => {
-    const distanceFromPrevPointInMeters = distance(latLonEle[0], latLonEle[1], previousLatLonEle[0], previousLatLonEle[1]);
+  smoothed.forEach((coord) => {
+    const distanceFromPrevPointInMeters = distance(coord[1], coord[0], prevCoord[1], prevCoord[0]);
     if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
-      const ele = latLonEle[2];
+      const ele = coord[2];
       if (ele < minEle) {
         minEle = ele;
       }
@@ -71,13 +71,13 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
         maxEle = ele;
       }
 
-      const eleDiff = ele - previousLatLonEle[2];
+      const eleDiff = ele - prevCoord[2];
       if (eleDiff < 0) {
         downhillEleSum += eleDiff * -1;
       } else if (eleDiff > 0) {
         uphillEleSum += eleDiff;
       }
-      previousLatLonEle = latLonEle;
+      prevCoord = coord;
     }
   });
   if (minEle !== Infinity) {

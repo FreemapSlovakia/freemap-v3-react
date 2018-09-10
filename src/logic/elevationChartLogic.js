@@ -2,6 +2,7 @@ import axios from 'axios';
 import { createLogic } from 'redux-logic';
 import turfAlong from '@turf/along';
 import turfLineDistance from '@turf/line-distance';
+import { getCoords, getCoord } from '@turf/invariant';
 
 import * as at from 'fm3/actionTypes';
 import { distance, containsElevations } from 'fm3/geoutils';
@@ -16,44 +17,26 @@ export default createLogic({
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGeojson } = getState().elevationChart;
     const totalDistanceInKm = turfLineDistance(trackGeojson);
-    const deltaInMeters = totalDistanceInKm;
-    // if (totalDistanceInKm < 1.0) {
-    //   deltaInMeters = 5;
-    // } else if (totalDistanceInKm < 5.0) {
-    //   deltaInMeters = 25;
-    // } else if (totalDistanceInKm < 10.0) {
-    //   deltaInMeters = 50;
-    // } else if (totalDistanceInKm < 50.0) {
-    //   deltaInMeters = 250;
-    // } else {
-    //   deltaInMeters = 500;
-    // }
 
     if (containsElevations(trackGeojson)) {
-      resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispatch, done);
+      resolveElevationProfilePointsLocally(trackGeojson, totalDistanceInKm, dispatch, done);
     } else {
-      resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done);
+      resolveElevationProfilePointsViaApi(trackGeojson, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done);
     }
   },
 });
 
-function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispatch, done) {
-  const lonLatEleCoords = trackGeojson.geometry.coordinates;
-  let dist = 0.0;
-  let currentXAxisPointCounter = 0;
+function resolveElevationProfilePointsLocally(trackGeojson, totalDistanceInKm, dispatch, done) {
+  let dist = 0;
   let prevLonlatEle = null;
   const elevationProfilePoints = [];
-  lonLatEleCoords.forEach(([lon, lat, ele]) => {
+  getCoords(trackGeojson).forEach(([lon, lat, ele]) => {
     if (prevLonlatEle) {
       const [prevLon, prevLat] = prevLonlatEle;
-      const distanceToPreviousPointInMeters = distance(lat, lon, prevLat, prevLon);
-      dist += distanceToPreviousPointInMeters;
-      if (currentXAxisPointCounter * deltaInMeters <= dist) {
-        elevationProfilePoints.push({
-          lat, lon, ele, distance: dist,
-        });
-        currentXAxisPointCounter += 1;
-      }
+      dist += distance(lat, lon, prevLat, prevLon);
+      elevationProfilePoints.push({
+        lat, lon, ele, distance: dist,
+      });
     }
     prevLonlatEle = [lon, lat, ele];
   });
@@ -62,11 +45,11 @@ function resolveElevationProfilePointsLocally(trackGeojson, deltaInMeters, dispa
   done();
 }
 
-function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done) {
-  const deltaInKm = deltaInMeters / 1000;
+function resolveElevationProfilePointsViaApi(trackGeojson, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done) {
+  const delta = Math.min(0.1, totalDistanceInKm / (window.innerWidth / 2));
   const elevationProfilePoints = [];
-  for (let dist = 0.0; dist <= totalDistanceInKm; dist += deltaInKm) {
-    const [lon, lat] = turfAlong(trackGeojson, dist).geometry.coordinates;
+  for (let dist = 0; dist <= totalDistanceInKm; dist += delta) {
+    const [lon, lat] = getCoord(turfAlong(trackGeojson, dist));
     elevationProfilePoints.push({ lat, lon, distance: dist * 1000 });
   }
 
@@ -76,16 +59,31 @@ function resolveElevationProfilePointsViaMapquest(trackGeojson, deltaInMeters, t
   cancelled$.subscribe(() => {
     source.cancel();
   });
-  axios.get(`${process.env.API_URL}/geotools/elevation`, {
-    params: {
-      coordinates: elevationProfilePoints.map(({ lat, lon }) => `${lat},${lon}`).join(','),
+  axios.post(
+    `${process.env.API_URL}/geotools/elevation`,
+    elevationProfilePoints.map(({ lat, lon }) => ([lat, lon])),
+    {
+      validateStatus: status => status === 200,
+      cancelToken: source.token,
     },
-    validateStatus: status => status === 200,
-    cancelToken: source.token,
-  })
+  )
     .then(({ data }) => {
-      data.forEach((height, i) => {
-        elevationProfilePoints[i].ele = height;
+      let climbUp = 0;
+      let climbDown = 0;
+      let prevEle;
+      data.forEach((ele, i) => {
+        if (i) {
+          const d = ele - prevEle;
+          if (d > 0) {
+            climbUp += d;
+          } else {
+            climbDown -= d;
+          }
+        }
+
+        // TODO following are computed data, should not go to store
+        Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
+        prevEle = ele;
       });
       dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
     }).catch((err) => {

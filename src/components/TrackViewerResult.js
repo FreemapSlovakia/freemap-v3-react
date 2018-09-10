@@ -12,6 +12,7 @@ import turfLineDistance from '@turf/line-distance';
 import turfFlatten from '@turf/flatten';
 import 'leaflet-hotline';
 import { point } from '@turf/helpers';
+import { getCoords } from '@turf/invariant';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
 
@@ -52,27 +53,27 @@ class TrackViewerResult extends React.Component {
   getFeatures = type => turfFlatten(this.props.trackGeojson).features.filter(f => f.geometry.type === type);
 
   getColorLineDataForElevation = () => this.getFeatures('LineString').map((feature) => {
-    const latLonSmoothEles = smoothElevations(feature.geometry.coordinates, this.props.eleSmoothingFactor);
-    const eles = latLonSmoothEles.map(lonLatEle => lonLatEle[2]);
+    const smoothed = smoothElevations(getCoords(feature), this.props.eleSmoothingFactor);
+    const eles = smoothed.map(coord => coord[2]);
     const maxEle = Math.max(...eles);
     const minEle = Math.min(...eles);
-    return latLonSmoothEles.map((latLonEle) => {
-      const color = (latLonEle[2] - minEle) / (maxEle - minEle);
-      return [latLonEle[0], latLonEle[1], color || 0];
+    return smoothed.map((coord) => {
+      const color = (coord[2] - minEle) / (maxEle - minEle);
+      return [coord[1], coord[0], color || 0];
     });
   });
 
   getColorLineDataForSteepness = () => this.getFeatures('LineString').map((feature) => {
-    const latLonSmoothEles = smoothElevations(feature.geometry.coordinates, this.props.eleSmoothingFactor);
-    let prevLatLonEle = latLonSmoothEles[0];
-    return latLonSmoothEles.map((latLonEle) => {
-      const [lat, lon, ele] = latLonEle;
-      const d = distance(lat, lon, prevLatLonEle[0], prevLatLonEle[1]);
+    const smoothed = smoothElevations(getCoords(feature), this.props.eleSmoothingFactor);
+    let prevCoord = smoothed[0];
+    return smoothed.map((coord) => {
+      const [lon, lat, ele] = coord;
+      const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
       let angle = 0;
       if (d > 0) {
-        angle = (ele - prevLatLonEle[2]) / d;
+        angle = (ele - prevCoord[2]) / d;
       }
-      prevLatLonEle = latLonEle;
+      prevCoord = coord;
       const color = angle / 0.5 + 0.5;
       return [lat, lon, color || 0];
     });
@@ -120,8 +121,10 @@ class TrackViewerResult extends React.Component {
     // TODO rather compute some hash or better - detect real change
     const keyToAssureProperRefresh = `OOXlDWrtVn-${(JSON.stringify(trackGeojson) + displayingElevationChart).length}`; // otherwise GeoJSON will still display the first data
 
-    const xxx = this.getFeatures('LineString')
-      .map(feature => ({ name: feature.properties.name, lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]) }));
+    const xxx = this.getFeatures('LineString').map(feature => ({
+      name: feature.properties.name,
+      lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]),
+    }));
 
     const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
     const timeFormat = new Intl.DateTimeFormat(language, { hour: 'numeric', minute: '2-digit' });

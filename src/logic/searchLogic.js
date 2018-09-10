@@ -64,9 +64,7 @@ export default createLogic({
     })
       .then(({ data }) => {
         const results = (data.results || []).map((d, id) => {
-          const { name } = d.properties;
           const geometryType = d.geometry.type;
-          const tags = { name, type: geometryType };
           let centerLonlat;
           if (geometryType === 'Point') {
             centerLonlat = d.geometry.coordinates;
@@ -76,13 +74,14 @@ export default createLogic({
             [centerLonlat] = d.geometry.coordinates;
           }
           const [centerLon, centerLat] = centerLonlat;
+          const { name } = d.properties;
           return {
             id,
             label: name,
             geojson: d.geometry,
             lat: centerLat,
             lon: centerLon,
-            tags,
+            tags: { name, type: geometryType },
           };
         });
         dispatch(searchSetResults(results));

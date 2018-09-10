@@ -72,6 +72,11 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
           ],
         }}
       />
+      <p style={{ marginLeft: '4px' }}>
+        {t('trackViewer.details.uphill')}: {nf0.format(elevationProfilePoints[elevationProfilePoints.length - 1].climbUp)} m,
+        {' '}
+        {t('trackViewer.details.downhill')}: {nf0.format(elevationProfilePoints[elevationProfilePoints.length - 1].climbDown)} m
+      </p>
     </div>
   );
 }

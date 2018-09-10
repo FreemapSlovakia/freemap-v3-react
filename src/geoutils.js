@@ -103,6 +103,6 @@ export function smoothElevations(coords, eleSmoothingFactor) {
       flotingWindowEle = prevFloatingWindowEle;
     }
     prevFloatingWindowEle = flotingWindowEle;
-    return [lonLatEle[1], lonLatEle[0], flotingWindowEle];
+    return [lonLatEle[0], lonLatEle[1], flotingWindowEle];
   });
 }
