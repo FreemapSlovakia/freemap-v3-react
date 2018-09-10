@@ -23,13 +23,13 @@ function ObjectsResult({ objects, t, language }) {
           <span>
             {
               pt ? (
-                <React.Fragment>
+                <>
                   {t(`objects.subcategories.${pt.id}`)}
                   {name && <br />}
                   {name}
                   {ele && <br />}
                   {ele && `${nf.format(ele)} m n. m.`}
-                </React.Fragment>
+                </>
               ) : name
             }
           </span>

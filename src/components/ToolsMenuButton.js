@@ -42,7 +42,7 @@ class ToolsMenuButton extends React.Component {
     const { t, tool } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('tools.tools')} id="tools-button">
           <FontAwesomeIcon icon="briefcase" />
         </Button>
@@ -78,7 +78,7 @@ class ToolsMenuButton extends React.Component {
             </ul>
           </Popover>
         </Overlay>
-      </React.Fragment>
+      </>
     );
   }
 }

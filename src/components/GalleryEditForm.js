@@ -130,7 +130,7 @@ export default class GalleryEditForm extends React.Component {
               />
             </FormGroup>
           ) : (
-            <React.Fragment>
+            <>
               <FormGroup>
                 <FormControl
                   type="date"
@@ -147,7 +147,7 @@ export default class GalleryEditForm extends React.Component {
                   onChange={this.handleTakenAtTimeChange}
                 />
               </FormGroup>
-            </React.Fragment>
+            </>
           )
         }
         <FormGroup>

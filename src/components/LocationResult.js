@@ -6,10 +6,10 @@ import RichMarker from 'fm3/components/RichMarker';
 
 function LocationResult({ gpsLocation }) {
   return gpsLocation ? (
-    <React.Fragment>
+    <>
       <Circle center={L.latLng(gpsLocation.lat, gpsLocation.lon)} radius={gpsLocation.accuracy / 2} />
       <RichMarker position={L.latLng(gpsLocation.lat, gpsLocation.lon)} interactive={false} />
-    </React.Fragment>
+    </>
   ) : null;
 }
 

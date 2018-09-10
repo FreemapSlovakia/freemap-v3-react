@@ -100,7 +100,7 @@ class DistanceMeasurementResult extends React.Component {
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
     return (
-      <React.Fragment>
+      <>
         {ps.length > 2 && (
           <Polyline
             weight={4}
@@ -153,7 +153,7 @@ class DistanceMeasurementResult extends React.Component {
         })}
 
         <ElevationChartActivePoint />
-      </React.Fragment>
+      </>
     );
   }
 }

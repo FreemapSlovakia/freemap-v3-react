@@ -88,7 +88,7 @@ class OpenInExternalAppMenuButton extends React.Component {
     const { t } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('external.openInExternal')}>
           <FontAwesomeIcon icon="external-link" />
         </Button>
@@ -109,7 +109,7 @@ class OpenInExternalAppMenuButton extends React.Component {
             </ul>
           </Popover>
         </Overlay>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -74,7 +74,7 @@ class ObjectsMenu extends React.Component {
     const { t } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="map-marker" />
           <span className="hidden-xs"> {t('tools.objects')}</span>
@@ -98,7 +98,7 @@ class ObjectsMenu extends React.Component {
             {poiTypeGroups.map(pointTypeGroup => this.getGroupMenuItems(pointTypeGroup))}
           </Dropdown.Menu>
         </Dropdown>
-      </React.Fragment>
+      </>
     );
   }
 }

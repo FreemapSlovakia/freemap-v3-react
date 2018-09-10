@@ -27,14 +27,14 @@ function Attribution({ t, mapType, overlays, imhd }) {
         ])
       }
       {imhd && (
-        <React.Fragment>
+        <>
           {'; '}
           {t('routePlanner.imhdAttribution')}
           {' © '}
           <a href="https://imhd.sk" target="_blank" rel="noopener noreferrer">
             imhd.sk
           </a>
-        </React.Fragment>
+        </>
       )}
     </div>
   );

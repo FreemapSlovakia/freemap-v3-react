@@ -219,7 +219,7 @@ class GalleryUploadModal extends React.Component {
             ))
           }
           {!uploading && (
-            <React.Fragment>
+            <>
               <Checkbox onChange={onShowPreviewToggle} checked={showPreview} disabled={!!items.length}>
                 {t('gallery.uploadModal.showPreview')}
               </Checkbox>
@@ -232,7 +232,7 @@ class GalleryUploadModal extends React.Component {
               >
                 <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
               </Dropzone>
-            </React.Fragment>
+            </>
           )}
         </Modal.Body>
         <Modal.Footer>

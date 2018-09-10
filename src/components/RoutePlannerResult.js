@@ -178,7 +178,7 @@ class RoutePlannerResult extends React.Component {
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
     return (
-      <React.Fragment>
+      <>
         {start && (
           <RichMarker
             faIcon="play"
@@ -302,7 +302,7 @@ class RoutePlannerResult extends React.Component {
           ))
         }
         <ElevationChartActivePoint />
-      </React.Fragment>
+      </>
     );
   }
 }

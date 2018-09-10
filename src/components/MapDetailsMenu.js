@@ -36,7 +36,7 @@ class MapDetailsMenu extends React.Component {
   render() {
     const { subtool, onSubtoolChange, t } = this.props;
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="info" />
           <span className="hidden-xs"> {t('tools.mapDetails')}</span>
@@ -50,7 +50,7 @@ class MapDetailsMenu extends React.Component {
           <FontAwesomeIcon icon="road" />
           <span className="hidden-xs"> {t('mapDetails.road')}</span>
         </Button>
-      </React.Fragment>
+      </>
     );
   }
 }

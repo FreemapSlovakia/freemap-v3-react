@@ -60,7 +60,7 @@ class ChangesetsMenu extends React.Component {
     const { authorName } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="pencil" />
           <span className="hidden-xs">
@@ -115,7 +115,7 @@ class ChangesetsMenu extends React.Component {
             </span>
           </Button>
         </Form>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -57,7 +57,7 @@ class GalleryResult extends React.Component {
     const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal, showPosition, image } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         {pickingPosition && (
           <RichMarker
             draggable
@@ -69,7 +69,7 @@ class GalleryResult extends React.Component {
         {!isPickingPosition && activeImageId && !showPosition && <GalleryViewerModal />}
         {showFilter && <GalleryFilterModal />}
         {showUploadModal && <AsyncGalleryUploadModal />}
-      </React.Fragment>
+      </>
     );
   }
 }

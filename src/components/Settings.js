@@ -207,7 +207,7 @@ class Settings extends React.Component {
               </Tab>
               <Tab title={t('settings.tab.account')} eventKey={2}>
                 {user ? (
-                  <React.Fragment>
+                  <>
                     <FormGroup>
                       <ControlLabel>{t('settings.account.name')}</ControlLabel>
                       <FormControl value={name} onChange={this.handleNameChange} required />
@@ -216,7 +216,7 @@ class Settings extends React.Component {
                       <ControlLabel>{t('settings.account.email')}</ControlLabel>
                       <FormControl type="email" value={email} onChange={this.handleEmailChange} />
                     </FormGroup>
-                  </React.Fragment>
+                  </>
                 ) : (
                   <Alert>{t('settings.account.noAuthInfo')}</Alert>
                 )}
@@ -243,16 +243,16 @@ class Settings extends React.Component {
                   </Button>
                 </ButtonGroup>
                 {!expertMode && (
-                  <React.Fragment>
+                  <>
                     <br />
                     <br />
                     <Alert>
                       {t('settings.expert.offInfo')}
                     </Alert>
-                  </React.Fragment>
+                  </>
                 )}
                 {expertMode && (
-                  <React.Fragment>
+                  <>
                     <hr />
                     <div>
                       <p>{t('settings.expert.overlayOpacity')}</p>
@@ -260,13 +260,13 @@ class Settings extends React.Component {
                         id="overlayOpacity"
                         onSelect={this.handleOverlaySelect}
                         title={(
-                          <React.Fragment>
+                          <>
                             <FontAwesomeIcon icon={selectedOverlayDetails.icon} />
                             {' '}
                             {t(`mapLayers.overlay.${selectedOverlayDetails.type}`)}
                             {' '}
                             {nf0.format((overlayOpacity[selectedOverlay] || 1) * 100)} %
-                          </React.Fragment>
+                          </>
                         )}
                       >
                         {
@@ -307,7 +307,7 @@ class Settings extends React.Component {
                     <Alert>
                       {t('settings.expert.trackViewerEleSmoothing.info')}
                     </Alert>
-                  </React.Fragment>
+                  </>
                 )}
               </Tab>
             </Tabs>

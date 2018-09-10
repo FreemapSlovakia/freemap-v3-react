@@ -52,7 +52,7 @@ class TrackViewerMenu extends React.Component {
       onShowTrackInfo, trackGeojsonIsSuitableForElevationChart, onToggleElevationChart, t } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="road" />
           <span className="hidden-xs"> {t('tools.trackViewer')}</span>
@@ -75,9 +75,9 @@ class TrackViewerMenu extends React.Component {
         <DropdownButton
           id="colorizing_mode"
           title={(
-            <React.Fragment>
+            <>
               <FontAwesomeIcon icon="paint-brush" /> {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
-            </React.Fragment>
+            </>
           )}
         >
           {
@@ -106,7 +106,7 @@ class TrackViewerMenu extends React.Component {
           <FontAwesomeIcon icon="share-alt" />
           <span className="hidden-xs"> {t('trackViewer.share')}</span>
         </Button>
-      </React.Fragment>
+      </>
     );
   }
 }

@@ -150,7 +150,7 @@ class MoreMenuButton extends React.Component {
     const { submenu } = this.state;
 
     return (
-      <React.Fragment>
+      <>
         <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('more.more')}>
           <FontAwesomeIcon icon="ellipsis-v" />
         </Button>
@@ -165,7 +165,7 @@ class MoreMenuButton extends React.Component {
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
               {submenu === null ? (
-                <React.Fragment>
+                <>
                   <MenuItem onClick={this.handleLanguageClick}>
                     <FontAwesomeIcon icon="language" /> Language / Jazyk <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
@@ -208,9 +208,9 @@ class MoreMenuButton extends React.Component {
                   <MenuItem onClick={this.handleSupportUsClick}>
                     <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> {t('more.supportUs')} <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
                   </MenuItem>
-                </React.Fragment>
+                </>
               ) : submenu === 'help' ? (
-                <React.Fragment>
+                <>
                   <MenuItem header>
                     <FontAwesomeIcon icon="book" /> {t('more.help')}
                   </MenuItem>
@@ -235,9 +235,9 @@ class MoreMenuButton extends React.Component {
                       </MenuItem>
                     ))
                   }
-                </React.Fragment>
+                </>
               ) : submenu === 'language' ? (
-                <React.Fragment>
+                <>
                   <MenuItem header>
                     <FontAwesomeIcon icon="language" /> Language / Jazyk
                   </MenuItem>
@@ -257,7 +257,7 @@ class MoreMenuButton extends React.Component {
                   <MenuItem onClick={this.handleCzechClick} active={chosenLanguage === 'cs'}>
                     Česky
                   </MenuItem>
-                </React.Fragment>
+                </>
               ) : (
                 null
               )}
@@ -300,7 +300,7 @@ class MoreMenuButton extends React.Component {
             )}
           </Popover>
         </Overlay>
-      </React.Fragment>
+      </>
     );
   }
 }

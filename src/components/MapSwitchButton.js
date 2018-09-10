@@ -66,7 +66,7 @@ class MapSwitchButton extends React.Component {
     const { isAdmin, t, mapType, overlays, expertMode, zoom, pictureFilterIsActive, stravaAuth } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('mapLayers.layers')}>
           <FontAwesomeIcon icon="map-o" />
         </Button>
@@ -92,14 +92,14 @@ class MapSwitchButton extends React.Component {
                       {key && ' '}
                       {key && <kbd>{key}</kbd>}
                       {zoom < minZoom && (
-                        <React.Fragment>
+                        <>
                           {' '}
                           <FontAwesomeIcon
                             icon="exclamation-triangle"
                             title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
                             className="text-warning"
                           />
-                        </React.Fragment>
+                        </>
                       )}
                     </MenuItem>
                   ))
@@ -123,17 +123,17 @@ class MapSwitchButton extends React.Component {
                     {key && ' '}
                     {key && <kbd>{key}</kbd>}
                     {zoom < minZoom && (
-                      <React.Fragment>
+                      <>
                         {' '}
                         <FontAwesomeIcon
                           icon="exclamation-triangle"
                           title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
                           className="text-warning"
                         />
-                      </React.Fragment>
+                      </>
                     )}
                     {strava && !stravaAuth && (
-                      <React.Fragment>
+                      <>
                         {' '}
                         <FontAwesomeIcon
                           data-strava
@@ -141,17 +141,17 @@ class MapSwitchButton extends React.Component {
                           title={t('mapLayers.missingStravaAuth')}
                           className="text-warning"
                         />
-                      </React.Fragment>
+                      </>
                     )}
                     {type === 'I' && pictureFilterIsActive && (
-                      <React.Fragment>
+                      <>
                         {' '}
                         <FontAwesomeIcon
                           icon="filter"
                           title={t('mapLayers.photoFilterWarning')}
                           className="text-warning"
                         />
-                      </React.Fragment>
+                      </>
                     )}
                   </MenuItem>
                 ))
@@ -159,7 +159,7 @@ class MapSwitchButton extends React.Component {
             </ul>
           </Popover>
         </Overlay>
-      </React.Fragment>
+      </>
     );
   }
 }

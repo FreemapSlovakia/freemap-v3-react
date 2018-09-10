@@ -135,7 +135,7 @@ class RoutePlannerMenu extends React.Component {
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="map-signs" />
           <span className="hidden-xs"> {t('tools.routePlanner')}</span>
@@ -190,11 +190,11 @@ class RoutePlannerMenu extends React.Component {
         <DropdownButton
           id="transport-type"
           title={!activeTransportType ? '' : (
-            <React.Fragment>
+            <>
               <FontAwesomeIcon icon={activeTransportType[1]} />
               {['car', 'bikesharing'].includes(activeTransportType[0]) && <FontAwesomeIcon icon="money" />}
               <span className="hidden-xs"> {t(`routePlanner.transportType.${activeTransportType[0]}`).replace(/\s*,.*/, '')}</span>
-            </React.Fragment>
+            </>
           )}
         >
           {
@@ -212,7 +212,7 @@ class RoutePlannerMenu extends React.Component {
           }
         </DropdownButton>
         {alternatives.length > 1 && (
-          <React.Fragment>
+          <>
             {' '}
             <DropdownButton
               id="transport-type"
@@ -246,7 +246,7 @@ class RoutePlannerMenu extends React.Component {
                 ))
               }
             </DropdownButton>
-          </React.Fragment>
+          </>
         )}
         {/* ' '}
         <Button
@@ -267,7 +267,7 @@ class RoutePlannerMenu extends React.Component {
           <FontAwesomeIcon icon="bar-chart" />
           <span className="hidden-xs"> {t('general.elevationProfile')}</span>
         </Button>
-      </React.Fragment>
+      </>
     );
   }
 }

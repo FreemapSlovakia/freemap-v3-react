@@ -94,7 +94,7 @@ export class TipsModal extends React.Component {
             <FontAwesomeIcon icon="lightbulb-o" />
             {t('more.tips')}
             {'\u00A0 | \u00A0'}
-            {tipKey ? <React.Fragment><FontAwesomeIcon icon={icon} /> {title}</React.Fragment> : t('general.loading')}
+            {tipKey ? <><FontAwesomeIcon icon={icon} /> {title}</> : t('general.loading')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>

@@ -43,10 +43,10 @@ class ElevationMeasurementResult extends React.Component {
         draggable
       >
         <Popup closeButton={false} autoClose={false} autoPan={false}>
-          <React.Fragment>
+          <>
             {['D', 'DM', 'DMS'].map(format => <div key={format}>{formatGpsCoord(point.lat, 'SN', format, language)} {formatGpsCoord(point.lon, 'WE', format, language)}</div>)}
             {typeof elevation === 'number' && <div>{t('measurement.elevationLine')} {nf1.format(elevation)} {t('general.masl')}</div>}
-          </React.Fragment>
+          </>
         </Popup>
       </RichMarker>
     );

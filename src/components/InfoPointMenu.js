@@ -35,7 +35,7 @@ class InfoPointMenu extends React.Component {
   render() {
     const { onLabelModify, isActive, onDelete, t } = this.props;
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="thumb-tack" />
           <span className="hidden-xs"> {t('tools.infoPoint')}</span>
@@ -50,7 +50,7 @@ class InfoPointMenu extends React.Component {
           <FontAwesomeIcon icon="trash-o" />
           <span className="hidden-xs"> {t('general.delete')}</span>
         </Button>
-      </React.Fragment>
+      </>
     );
   }
 }

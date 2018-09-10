@@ -55,7 +55,7 @@ class SearchMenu extends React.Component {
       onDoSearch, results, inProgress, t } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <span className="fm-label">
           <FontAwesomeIcon icon="search" />
         </span>
@@ -103,7 +103,7 @@ class SearchMenu extends React.Component {
             </Button>
           </ButtonGroup>
         )}
-      </React.Fragment>
+      </>
     );
   }
 }

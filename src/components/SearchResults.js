@@ -10,7 +10,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 function SearchResults({ highlightedResult, selectedResult }) {
   return (
-    <React.Fragment>
+    <>
       {displayAsPoint(highlightedResult) && <Point searchResult={highlightedResult} />}
       {displayAsMultiPoint(highlightedResult) && <MultiPoint searchResult={highlightedResult} />}
       {displayAsPolyline(highlightedResult) && <Polyline searchResult={highlightedResult} />}
@@ -23,7 +23,7 @@ function SearchResults({ highlightedResult, selectedResult }) {
       {displayAsMultiLineString(selectedResult) && <MultiLineString searchResult={selectedResult} />}
       {displayAsPolygon(selectedResult) && <Polygon searchResult={selectedResult} />}
       {displayAsMultiPolygon(selectedResult) && <MultiPolygon searchResult={selectedResult} />}
-    </React.Fragment>
+    </>
   );
 }
 

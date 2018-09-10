@@ -289,8 +289,8 @@ class GalleryViewerModal extends React.Component {
             <br />
             {image && (
               <div className="footer">
-                {isFullscreen && imageIds && <React.Fragment>{`${index + 1} / ${imageIds.length}`} ｜ </React.Fragment>}
-                {isFullscreen && title && <React.Fragment>{title} ｜ </React.Fragment>}
+                {isFullscreen && imageIds && <>{`${index + 1} / ${imageIds.length}`} ｜ </>}
+                {isFullscreen && title && <>{title} ｜ </>}
                 {
                   t('gallery.viewer.uploaded', {
                     username: () => <b key={image.user.name}>{image.user.name}</b>,
@@ -298,14 +298,14 @@ class GalleryViewerModal extends React.Component {
                   })
                 }
                 {takenAt && (
-                  <React.Fragment>
+                  <>
                     {' ｜ '}
                     {
                       t('gallery.viewer.captured', {
                         takenAt: () => <b key={takenAt}>{dateFormat.format(takenAt)}</b>,
                       })
                     }
-                  </React.Fragment>
+                  </>
                 )}
                 {' ｜ '}
                 <ReactStars className="stars" size={22} value={rating} edit={false} />
@@ -333,7 +333,7 @@ class GalleryViewerModal extends React.Component {
                   </form>
                 )}
                 {!isFullscreen && (
-                  <React.Fragment>
+                  <>
                     <hr />
                     <h5>{t('gallery.viewer.comments')}</h5>
                     {comments.map(c => (
@@ -374,7 +374,7 @@ class GalleryViewerModal extends React.Component {
                         />
                       </div>
                     )}
-                  </React.Fragment>
+                  </>
                 )}
               </div>
             )}
@@ -382,7 +382,7 @@ class GalleryViewerModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           {image && user && (user.isAdmin || user.id === image.user.id) && (
-            <React.Fragment>
+            <>
               <Button onClick={onEdit} active={!!editModel}>
                 <Glyphicon glyph="edit" />
                 <span className="hidden-xs"> {t('general.modify')}</span>
@@ -391,7 +391,7 @@ class GalleryViewerModal extends React.Component {
                 <Glyphicon glyph="trash" />
                 <span className="hidden-xs"> {t('general.delete')}</span>
               </Button>
-            </React.Fragment>
+            </>
           )}
           <Button onClick={onShowOnTheMap}>
             <FontAwesomeIcon icon="dot-circle-o" />

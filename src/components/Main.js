@@ -201,7 +201,7 @@ class Main extends React.Component {
     } = this.props;
 
     return (
-      <React.Fragment>
+      <>
         <style>
           {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
         </style>
@@ -220,7 +220,7 @@ class Main extends React.Component {
           )}
           <div className="menus">
             {window.self === window.top ? (
-              <React.Fragment>
+              <>
                 <Panel className="fm-toolbar">
                   <Button
                     id="freemap-logo"
@@ -251,7 +251,7 @@ class Main extends React.Component {
                     </ButtonToolbar>
                   )}
                 </Panel>
-              </React.Fragment>
+              </>
             ) : (
               <Panel className="fm-toolbar">
                 <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
@@ -344,7 +344,7 @@ class Main extends React.Component {
           <Layers />
 
           {showMenu && (
-            <React.Fragment>
+            <>
               <SearchResults />
               <ObjectsResult />
               <RoutePlannerResult />
@@ -357,11 +357,11 @@ class Main extends React.Component {
               <ChangesetsResult />
               {showElevationChart && <AsyncElevationChart />}
               {showGalleryPicker && <GalleryPicker />}
-            </React.Fragment>
+            </>
           )}
           <GalleryResult />{/* TODO should not be extra just because for position picking */}
         </Map>
-      </React.Fragment>
+      </>
     );
   }
 }

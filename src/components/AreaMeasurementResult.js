@@ -99,7 +99,7 @@ class AreaMeasurementResult extends React.Component {
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
 
     return (
-      <React.Fragment>
+      <>
         {!Number.isNaN(areaSize) && (
           <RichMarker
             autoOpenPopup
@@ -167,7 +167,7 @@ class AreaMeasurementResult extends React.Component {
             ]}
           />
         )}
-      </React.Fragment>
+      </>
     );
   }
 }
