@@ -14,6 +14,8 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
   const nf0 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
   const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
+  const { climbUp, climbDown, distance } = elevationProfilePoints[elevationProfilePoints.length - 1];
+
   return (
     <div className="elevationChart">
       <Line
@@ -38,7 +40,7 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
               type: 'linear',
               ticks: {
                 userCallback: label => nf1.format(label / 1000),
-                max: elevationProfilePoints[elevationProfilePoints.length - 1].distance,
+                max: distance,
               },
               scaleLabel: {
                 display: true,
@@ -57,7 +59,7 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
           },
         }}
         data={{
-          xLabels: elevationProfilePoints.map(({ distance }) => nf1.format(distance / 1000)),
+          xLabels: elevationProfilePoints.map(p => nf1.format(p.distance / 1000)),
           datasets: [
             {
               fill: true,
@@ -72,11 +74,13 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
           ],
         }}
       />
-      <p style={{ marginLeft: '4px' }}>
-        {t('trackViewer.details.uphill')}: {nf0.format(elevationProfilePoints[elevationProfilePoints.length - 1].climbUp)} m,
-        {' '}
-        {t('trackViewer.details.downhill')}: {nf0.format(elevationProfilePoints[elevationProfilePoints.length - 1].climbDown)} m
-      </p>
+      {typeof climbUp === 'number' && (
+        <p style={{ marginLeft: '4px' }}>
+          {t('trackViewer.details.uphill')}: {nf0.format(climbUp)} m,
+          {' '}
+          {t('trackViewer.details.downhill')}: {nf0.format(climbDown)} m
+        </p>
+      )}
     </div>
   );
 }
