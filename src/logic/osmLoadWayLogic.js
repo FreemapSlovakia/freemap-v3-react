@@ -1,5 +1,7 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
+import { lineString } from '@turf/helpers';
+
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
@@ -25,13 +27,7 @@ export default createLogic({
         dispatch(trackViewerSetData({
           trackGeojson: {
             type: 'FeatureCollection',
-            features: Object.keys(ways).map(id => ({
-              type: 'Feature',
-              geometry: {
-                type: 'LineString',
-                coordinates: ways[id],
-              },
-            })),
+            features: Object.keys(ways).map(id => lineString(ways[id])),
           },
           startPoints: [],
           finishPoints: [],

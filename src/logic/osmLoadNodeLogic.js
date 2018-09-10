@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
+import { point } from '@turf/helpers';
 
 import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -26,13 +27,7 @@ export default createLogic({
         dispatch(trackViewerSetData({
           trackGeojson: {
             type: 'FeatureCollection',
-            features: Object.keys(nodes).map(id => ({
-              type: 'Feature',
-              geometry: {
-                type: 'Point',
-                coordinates: nodes[id],
-              },
-            })),
+            features: Object.keys(nodes).map(id => point(nodes[id])),
           },
           startPoints: [],
           finishPoints: [],

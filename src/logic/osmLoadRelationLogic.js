@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
+import { lineString, point } from '@turf/helpers';
 
 import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -33,22 +34,10 @@ export default createLogic({
           const ref = x.getAttribute('ref');
           switch (type) {
             case 'node':
-              features.push({
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: nodes[ref],
-                },
-              });
+              features.push(point(nodes[ref]));
               break;
             case 'way':
-              features.push({
-                type: 'Feature',
-                geometry: {
-                  type: 'LineString',
-                  coordinates: ways[ref],
-                },
-              });
+              features.push(lineString(ways[ref]));
               break;
             case 'relation':
             default:

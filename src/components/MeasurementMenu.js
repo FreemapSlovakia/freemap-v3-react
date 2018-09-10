@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
+import { lineString } from '@turf/helpers';
 
 import injectL10n from 'fm3/l10nInjector';
 
@@ -77,13 +78,7 @@ class MeasurementMenu extends React.Component {
     if (isActive) {
       this.props.onElevationChartClose();
     } else {
-      this.props.onElevationChartTrackGeojsonSet({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: this.props.distancePoints.map(p => [p.lon, p.lat]),
-        },
-      });
+      this.props.onElevationChartTrackGeojsonSet(lineString(this.props.distancePoints.map(p => [p.lon, p.lat])));
     }
   }
 

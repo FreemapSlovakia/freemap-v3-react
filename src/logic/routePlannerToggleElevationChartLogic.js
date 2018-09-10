@@ -1,4 +1,5 @@
 import { createLogic } from 'redux-logic';
+import { lineString } from '@turf/helpers';
 
 import * as at from 'fm3/actionTypes';
 import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
@@ -12,14 +13,11 @@ export default createLogic({
       dispatch(elevationChartClose());
     } else if (!shown && toggling || shown && !toggling) {
       const { alternatives, activeAlternativeIndex } = getState().routePlanner;
-      dispatch(elevationChartSetTrackGeojson({
-        type: 'Feature',
-        geometry: {
-          type: 'LineString',
-          coordinates: [].concat(...alternatives[activeAlternativeIndex].itinerary.map(({ shapePoints }) => shapePoints))
-            .map(([lat, lon]) => [lon, lat]),
-        },
-      }));
+      dispatch(elevationChartSetTrackGeojson(lineString(
+        [].concat(
+          ...alternatives[activeAlternativeIndex].itinerary.map(({ shapePoints }) => shapePoints),
+        ).map(([lat, lon]) => [lon, lat]),
+      )));
     }
     done();
   },

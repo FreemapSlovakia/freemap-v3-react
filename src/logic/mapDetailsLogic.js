@@ -8,6 +8,7 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import RoadDetails from 'fm3/components/RoadDetails';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import { lineString, point, featureCollection } from '@turf/helpers';
 
 export default createLogic({
   type: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
@@ -55,38 +56,21 @@ export default createLogic({
         .then(([{ data }, { data: data1 }]) => {
           const elements = [...(data.elements || []), ...(data1.elements || [])];
           if (elements.length > 0) {
-            const geojson = {
-              type: 'FeatureCollection',
-              features: elements.map(element => (
-                element.type === 'way' ? {
-                  type: 'Feature',
-                  geometry: {
-                    type: 'LineString',
-                    coordinates: element.geometry.map(({ lat, lon }) => [lon, lat]),
-                  },
-                } : element.type === 'node' ? {
-                  type: 'Feature',
-                  geometry: {
-                    type: 'Point',
-                    coordinates: [element.lon, element.lat],
-                  },
-                } : { // relation
-                  type: 'Feature',
-                  geometry: {
-                    type: 'GeometryCollection',
-                    geometries: element.members.filter(({ type }) => ['way', 'node'/* TODO , 'relation' */].includes(type)).map(member => (
-                      member.type === 'way' ? {
-                        type: 'LineString',
-                        coordinates: member.geometry.map(({ lat, lon }) => [lon, lat]),
-                      } : { // node
-                        type: 'Point',
-                        coordinates: [member.lon, member.lat],
-                      }
-                    )),
-                  },
-                }
-              )),
-            };
+            const geojson = featureCollection(elements.map(element => (
+              element.type === 'way' ? lineString(element.geometry.map(({ lat, lon }) => [lon, lat]))
+                : element.type === 'node' ? point([element.lon, element.lat])
+                  : { // relation
+                    type: 'Feature',
+                    geometry: {
+                      type: 'GeometryCollection',
+                      geometries: element.members
+                        .filter(({ type }) => ['way', 'node'/* TODO , 'relation' */].includes(type))
+                        .map(member => (
+                          member.type === 'way' ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat])) : point([member.lon, member.lat])
+                        )),
+                    },
+                  }
+            )));
 
             data.elements.forEach((element) => {
               dispatch(toastsAdd({

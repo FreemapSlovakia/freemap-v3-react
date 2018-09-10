@@ -11,6 +11,7 @@ import turfLineSlice from '@turf/line-slice';
 import turfLineDistance from '@turf/line-distance';
 import turfFlatten from '@turf/flatten';
 import 'leaflet-hotline';
+import { point } from '@turf/helpers';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
 
@@ -100,14 +101,8 @@ class TrackViewerResult extends React.Component {
   }
 
   computeInfoDistanceKm = (infoLat, infoLon, geojsonLineString) => {
-    const p1 = {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: geojsonLineString.geometry.coordinates[0] },
-    };
-    const p2 = {
-      type: 'Feature',
-      geometry: { type: 'Point', coordinates: [infoLon, infoLat] },
-    };
+    const p1 = point(geojsonLineString.geometry.coordinates[0]);
+    const p2 = point([infoLon, infoLat]);
     return turfLineDistance(turfLineSlice(p1, p2, geojsonLineString));
   }
 
