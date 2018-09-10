@@ -128,7 +128,7 @@ class RoutePlannerMenu extends React.Component {
       ['foot', '!icon-hiking'],
     ];
 
-    const activeTransportType = transportTypes.filter(x => x).find(([type]) => type === transportType) || [];
+    const activeTransportType = transportTypes.filter(x => x).find(([type]) => type === transportType);
 
     const activeAlternative = alternatives[activeAlternativeIndex];
 
@@ -189,7 +189,7 @@ class RoutePlannerMenu extends React.Component {
         {' '}
         <DropdownButton
           id="transport-type"
-          title={(
+          title={!activeTransportType ? '' : (
             <React.Fragment>
               <FontAwesomeIcon icon={activeTransportType[1]} />
               {['car', 'bikesharing'].includes(activeTransportType[0]) && <FontAwesomeIcon icon="money" />}
