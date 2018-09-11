@@ -1,5 +1,5 @@
 import { createLogic } from 'redux-logic';
-import turfLineDistance from '@turf/line-distance';
+import turfLength from '@turf/length';
 import toGeoJSON from '@mapbox/togeojson';
 import * as at from 'fm3/actionTypes';
 
@@ -19,7 +19,7 @@ export default createLogic({
     const finishPoints = [];
     trackGeojson.features.forEach((feature) => {
       if (feature.geometry.type === 'LineString') {
-        const lengthInKm = turfLineDistance(feature);
+        const lengthInKm = turfLength(feature);
         const coords = feature.geometry.coordinates;
         const startLonlat = coords[0];
         let startTime;

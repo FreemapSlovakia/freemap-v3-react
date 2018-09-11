@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { createLogic } from 'redux-logic';
 import turfAlong from '@turf/along';
-import turfLineDistance from '@turf/line-distance';
+import turfLength from '@turf/length';
 import { getCoords, getCoord } from '@turf/invariant';
 
 import * as at from 'fm3/actionTypes';
@@ -16,17 +16,16 @@ export default createLogic({
   cancelType: [at.ELEVATION_CHART_SET_TRACK_GEOJSON, at.SET_TOOL, at.ELEVATION_CHART_CLOSE],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGeojson } = getState().elevationChart;
-    const totalDistanceInKm = turfLineDistance(trackGeojson);
 
     if (containsElevations(trackGeojson)) {
-      resolveElevationProfilePointsLocally(trackGeojson, totalDistanceInKm, dispatch, done);
+      resolveElevationProfilePointsLocally(trackGeojson, dispatch, done);
     } else {
-      resolveElevationProfilePointsViaApi(trackGeojson, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done);
+      resolveElevationProfilePointsViaApi(trackGeojson, dispatch, cancelled$, storeDispatch, done);
     }
   },
 });
 
-function resolveElevationProfilePointsLocally(trackGeojson, totalDistanceInKm, dispatch, done) {
+function resolveElevationProfilePointsLocally(trackGeojson, dispatch, done) {
   let dist = 0;
   let prevLonlatEle = null;
   const elevationProfilePoints = [];
@@ -45,7 +44,8 @@ function resolveElevationProfilePointsLocally(trackGeojson, totalDistanceInKm, d
   done();
 }
 
-function resolveElevationProfilePointsViaApi(trackGeojson, totalDistanceInKm, dispatch, cancelled$, storeDispatch, done) {
+function resolveElevationProfilePointsViaApi(trackGeojson, dispatch, cancelled$, storeDispatch, done) {
+  const totalDistanceInKm = turfLength(trackGeojson);
   const delta = Math.min(0.1, totalDistanceInKm / (window.innerWidth / 2));
   const elevationProfilePoints = [];
   for (let dist = 0; dist <= totalDistanceInKm; dist += delta) {

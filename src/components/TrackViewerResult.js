@@ -8,7 +8,7 @@ import RichMarker from 'fm3/components/RichMarker';
 import Hotline from 'fm3/components/Hotline';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
-import turfLineDistance from '@turf/line-distance';
+import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
 import 'leaflet-hotline';
 import { point } from '@turf/helpers';
@@ -104,7 +104,7 @@ class TrackViewerResult extends React.Component {
   computeInfoDistanceKm = (infoLat, infoLon, geojsonLineString) => {
     const p1 = point(geojsonLineString.geometry.coordinates[0]);
     const p2 = point([infoLon, infoLat]);
-    return turfLineDistance(turfLineSlice(p1, p2, geojsonLineString));
+    return turfLength(turfLineSlice(p1, p2, geojsonLineString));
   }
 
   handlePointClick = () => {
