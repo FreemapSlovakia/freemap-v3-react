@@ -54,6 +54,8 @@ class SearchMenu extends React.Component {
     const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult,
       onDoSearch, results, inProgress, t } = this.props;
 
+    const embed = window.self !== window.top;
+
     return (
       <>
         <span className="fm-label">
@@ -87,7 +89,7 @@ class SearchMenu extends React.Component {
           )}
         />
         {' '}
-        {selectedResult && (
+        {selectedResult && !embed && (
           <ButtonGroup>
             <Button
               title={t('search.routeFrom')}

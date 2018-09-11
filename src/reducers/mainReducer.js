@@ -12,6 +12,7 @@ const initialState = {
   urlUpdatingEnabled: false,
   errorTicketId: null,
   eleSmoothingFactor: 5,
+  embedFeatures: [],
 };
 
 export default function main(state = initialState, action) {
@@ -65,6 +66,8 @@ export default function main(state = initialState, action) {
       return { ...state, errorTicketId: action.payload };
     case at.TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR:
       return { ...state, eleSmoothingFactor: action.payload };
+    case at.SET_EMBED_FEATURES:
+      return { ...state, embedFeatures: action.payload };
     default:
       return state;
   }

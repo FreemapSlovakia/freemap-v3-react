@@ -710,6 +710,13 @@ export default {
   embed: {
     code: 'Vložte na vaši stránku tento html kód:',
     example: 'Výsledek bude vypadat následovně:',
+    dimensions: 'Velikost:',
+    height: 'Výška:',
+    width: 'Šířka:',
+    enableFeatures: 'Povolit funkce:',
+    enableSearch: 'vyhledávání',
+    enableMapSwitch: 'přepínání vrstev mapy',
+    enableLocateMe: 'nalezení vlastní pozice',
   },
 
   tips: {

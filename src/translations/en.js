@@ -709,6 +709,13 @@ export default {
   embed: {
     code: 'Put the following code to your HTML page:',
     example: 'The result will look like this:',
+    dimensions: 'Dimensions:',
+    height: 'Height:',
+    width: 'Width:',
+    enableFeatures: 'Enable features:',
+    enableSearch: 'search',
+    enableMapSwitch: 'map layer switch',
+    enableLocateMe: 'find me',
   },
 
   tips: {

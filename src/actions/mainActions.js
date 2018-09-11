@@ -59,3 +59,7 @@ export function saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPa
 export function setErrorTicketId(id) {
   return { type: at.SET_ERROR_TICKET_ID, payload: id };
 }
+
+export function setEmbedFeatures(features) {
+  return { type: at.SET_EMBED_FEATURES, payload: features };
+}

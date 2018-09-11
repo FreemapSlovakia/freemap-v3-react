@@ -112,6 +112,7 @@ class Main extends React.Component {
     expertMode: PropTypes.bool,
     t: PropTypes.func.isRequired,
     overlayPaneOpacity: PropTypes.number.isRequired,
+    embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
   state = {
@@ -123,7 +124,8 @@ class Main extends React.Component {
 
     setMapLeafletElement(this.map.leafletElement);
     document.addEventListener('keydown', (event) => {
-      if (event.keyCode === 27 /* escape key */ && !this.props.ignoreEscape) {
+      const embed = window.self !== window.top;
+      if (!embed && event.keyCode === 27 /* escape key */ && !this.props.ignoreEscape) {
         this.props.onToolSet(null);
       }
     });
@@ -197,8 +199,10 @@ class Main extends React.Component {
     const {
       lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity,
+      showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity, embedFeatures,
     } = this.props;
+
+    const embed = window.self !== window.top;
 
     return (
       <>
@@ -219,7 +223,14 @@ class Main extends React.Component {
             </div>
           )}
           <div className="menus">
-            {window.self === window.top ? (
+            {embed ? (
+              <>
+                <Panel className="fm-toolbar">
+                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
+                  {showMenu && embedFeatures.includes('search') && <SearchMenu />}
+                </Panel>
+              </>
+            ) : (
               <>
                 <Panel className="fm-toolbar">
                   <Button
@@ -252,10 +263,6 @@ class Main extends React.Component {
                   )}
                 </Panel>
               </>
-            ) : (
-              <Panel className="fm-toolbar">
-                <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
-              </Panel>
             )}
             {showMenu && tool && (
               <Panel className="fm-toolbar">
@@ -267,10 +274,14 @@ class Main extends React.Component {
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'gallery' && <GalleryMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
-                {' '}
-                <Button onClick={this.handleToolCloseClick} title={t('main.closeTool')}>
-                  <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
-                </Button>
+                {!embed && (
+                  <>
+                    {' '}
+                    <Button onClick={this.handleToolCloseClick} title={t('main.closeTool')}>
+                      <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
+                    </Button>
+                  </>
+                )}
               </Panel>
             )}
             <GalleryPositionPickingMenu />
@@ -284,7 +295,7 @@ class Main extends React.Component {
         <div className="fm-type-zoom-control">
           <Panel className="fm-toolbar">
             <ButtonToolbar>
-              <MapSwitchButton />
+              {(!embed || !embedFeatures.includes('noMapSwitch')) && <MapSwitchButton />}
               <ButtonGroup>
                 <Button
                   onClick={this.handleZoomInClick}
@@ -301,13 +312,15 @@ class Main extends React.Component {
                   <FontAwesomeIcon icon="minus" />
                 </Button>
               </ButtonGroup>
-              <Button
-                onClick={this.props.onLocate}
-                title={t('main.locateMe')}
-                active={this.props.locate}
-              >
-                <FontAwesomeIcon icon="dot-circle-o" />
-              </Button>
+              {(!embed || !embedFeatures.includes('noLocateMe')) && (
+                <Button
+                  onClick={this.props.onLocate}
+                  title={t('main.locateMe')}
+                  active={this.props.locate}
+                >
+                  <FontAwesomeIcon icon="dot-circle-o" />
+                </Button>
+              )}
             </ButtonToolbar>
           </Panel>
         </div>
@@ -374,6 +387,7 @@ export default compose(
       lon: state.map.lon,
       zoom: state.map.zoom,
       tool: state.main.tool,
+      embedFeatures: state.main.embedFeatures,
       mapType: state.map.mapType,
       activeModal: state.main.activeModal,
       progress: !!state.main.progress.length,

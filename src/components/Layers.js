@@ -21,6 +21,7 @@ class Layers extends React.Component {
     galleryDirtySeq: PropTypes.number.isRequired,
     galleryFilter: FmPropTypes.galleryFilter.isRequired,
     isAdmin: PropTypes.bool,
+    embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
   };
 
   componentDidMount() {
@@ -70,10 +71,13 @@ class Layers extends React.Component {
   }
 
   handleKeydown = (event) => {
-    const { disableKeyboard, onMapTypeChange, isAdmin, overlays, onOverlaysChange } = this.props;
+    const { disableKeyboard, onMapTypeChange, isAdmin, overlays, onOverlaysChange, embedFeatures } = this.props;
+
+    const embed = window.self !== window.top;
 
     if (disableKeyboard || event.ctrlKey || event.altKey || event.metaKey || event.isComposing
       || ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
+      || embed && embedFeatures.includes('noMapSwitch')
     ) {
       return;
     }
@@ -123,6 +127,7 @@ export default connect(
     galleryFilter: state.gallery.filter,
     galleryDirtySeq: state.gallery.dirtySeq,
     isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
+    embedFeatures: state.main.embedFeatures,
   }),
   (dispatch, props) => ({
     onMapTypeChange(mapType) {

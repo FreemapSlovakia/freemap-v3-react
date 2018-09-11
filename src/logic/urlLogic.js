@@ -165,6 +165,10 @@ export const urlLogic = createLogic({
       queryParts.push(`tip=${tips.tip}`);
     }
 
+    if (main.embedFeatures.length) {
+      queryParts.push(`embed=${main.embedFeatures.join(',')}`);
+    }
+
     const search = `?${queryParts.join('&')}`;
 
     if (window.location.search !== search && !(action.meta && action.meta.isLocationChange)) {

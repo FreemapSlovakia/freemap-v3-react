@@ -5,7 +5,7 @@ import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl, getInfoPointDetailsIfIsOl
 import refModals from 'fm3/refModals';
 import tips from 'fm3/tips/index.json';
 
-import { setActiveModal, setTool } from 'fm3/actions/mainActions';
+import { setActiveModal, setTool, setEmbedFeatures } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { trackViewerDownloadTrack, trackViewerColorizeTrackBy, trackViewerGpxLoad } from 'fm3/actions/trackViewerActions';
@@ -198,6 +198,10 @@ export default function handleLocationChange(store, location) {
     }
   } else if (getState().auth.chooseLoginMethod) {
     dispatch(authLoginClose());
+  }
+
+  if ((query.embed || '') !== getState().main.embedFeatures.join(',')) {
+    dispatch(setEmbedFeatures(!query.embed || query.embed === '' ? [] : query.embed.split(',')));
   }
 }
 

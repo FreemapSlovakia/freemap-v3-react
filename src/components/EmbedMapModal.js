@@ -7,6 +7,10 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import FormControl from 'react-bootstrap/lib/FormControl';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
+import Checkbox from 'react-bootstrap/lib/Checkbox';
+import InputGroup from 'react-bootstrap/lib/InputGroup';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
@@ -17,6 +21,14 @@ export class EmbedMapModal extends React.Component {
   static propTypes = {
     onModalClose: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
+  };
+
+  state = {
+    width: 500,
+    height: 300,
+    enableSearch: true,
+    enableMapSwitch: true,
+    enableLocateMe: true,
   };
 
   setFormControl = (textarea) => {
@@ -31,27 +43,85 @@ export class EmbedMapModal extends React.Component {
     document.execCommand('copy');
   }
 
+  handleWidthChange = (e) => {
+    this.setState({
+      width: e.target.value,
+    });
+  }
+
+  handleHeightChange = (e) => {
+    this.setState({
+      height: e.target.value,
+    });
+  }
+
+  handleEnableSearchChange = (e) => {
+    this.setState({
+      enableSearch: e.target.checked,
+    });
+  }
+
+  handleEnableMapSwitchChange = (e) => {
+    this.setState({
+      enableMapSwitch: e.target.checked,
+    });
+  }
+
+  handleEnableLocateMeChange = (e) => {
+    this.setState({
+      enableLocateMe: e.target.checked,
+    });
+  }
+
   render() {
     const { onModalClose, t } = this.props;
-    const shareURL = window.location.href.replace(/&show=[^&]*/, '');
+    const { width, height, enableSearch, enableMapSwitch, enableLocateMe } = this.state;
+
+    const embedFeatures = [
+      enableSearch && 'search',
+      !enableMapSwitch && 'noMapSwitch',
+      !enableLocateMe && 'noLocateMe',
+    ].filter(x => x);
+    const shareURL = `${window.location.href.replace(/&show=[^&]*/, '')}${embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''}`;
 
     return (
-      <Modal show onHide={onModalClose}>
+      <Modal show onHide={onModalClose} className="dynamic">
         <Modal.Header closeButton>
           <Modal.Title>
             <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
+          <FormGroup style={{ maxWidth: '542px' }}>
+            <ControlLabel>{t('embed.dimensions')}</ControlLabel>
+            <InputGroup>
+              <InputGroup.Addon>{t('embed.width')}</InputGroup.Addon>
+              <FormControl type="number" value={width} min={100} max={1600} step={10} required onChange={this.handleWidthChange} />
+              <InputGroup.Addon>{t('embed.height')}</InputGroup.Addon>
+              <FormControl type="number" value={height} min={100} max={1200} step={10} required onChange={this.handleHeightChange} />
+            </InputGroup>
+          </FormGroup>
+
+          <strong>{t('embed.enableFeatures')}</strong>
+          <Checkbox onChange={this.handleEnableSearchChange} checked={enableSearch}>
+            {t('embed.enableSearch')}
+          </Checkbox>
+          <Checkbox onChange={this.handleEnableMapSwitchChange} checked={enableMapSwitch}>
+            {t('embed.enableMapSwitch')}
+          </Checkbox>
+          <Checkbox onChange={this.handleEnableLocateMeChange} checked={enableLocateMe}>
+            {t('embed.enableLocateMe')}
+          </Checkbox>
+          <hr />
           <p>
             {t('embed.code')}
           </p>
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
-            value={`<iframe src="${shareURL}" style="width: 500px; height: 300px; border: 0" allowfullscreen />`}
+            value={`<iframe src="${shareURL}" style="width: ${width}x; height: ${height}px; border: 0" allowfullscreen />`}
             readOnly
-            rows={6}
+            rows={3}
           />
           <br />
           <p>
@@ -59,7 +129,7 @@ export class EmbedMapModal extends React.Component {
           </p>
           <iframe
             title="Freemap.sk"
-            style={{ width: '100%', height: '300px', border: '0' }}
+            style={{ width: `${width}px`, height: `${height}px`, border: '0' }}
             src={shareURL}
             allowFullScreen
           />

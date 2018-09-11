@@ -708,7 +708,14 @@ export default {
 
   embed: {
     code: 'Vložte na vašu stránku tento html kód:',
-    example: 'Výsledok bude vyzerať nasledovne:',
+    example: 'Výsledok bude vyzerať následovne:',
+    dimensions: 'Veľkosť:',
+    height: 'Výška:',
+    width: 'Šírka:',
+    enableFeatures: 'Povoliť funkcie:',
+    enableSearch: 'vyhľadávanie',
+    enableMapSwitch: 'prepínanie vrstiev mapy',
+    enableLocateMe: 'nájdenie vlastnej pozície',
   },
 
   tips: {
