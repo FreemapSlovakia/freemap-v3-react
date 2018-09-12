@@ -430,7 +430,10 @@ export default compose(
 )(Main);
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
-  mapEventEmitter.emit('mapClick', lat, lon);
+  // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
+  if (!window.preventMapClick) {
+    mapEventEmitter.emit('mapClick', lat, lon);
+  }
 }
 
 function handleMapMouseMove({ latlng: { lat, lng: lon }, originalEvent }) {

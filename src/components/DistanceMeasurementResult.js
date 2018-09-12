@@ -44,6 +44,7 @@ class DistanceMeasurementResult extends React.Component {
   }
 
   handlePoiAdd = (lat, lon, position, id0) => {
+    handleDragStart();
     const { points } = this.props;
     const pos = position ? Math.ceil(position / 2) : points.length;
     let id;
@@ -134,6 +135,8 @@ class DistanceMeasurementResult extends React.Component {
             opacity: 1,
             onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
             onClick: () => this.handleMarkerClick(p.id),
+            onDragstart: handleDragStart,
+            onDragend: handleDragEnd,
           };
 
           return (
@@ -156,6 +159,18 @@ class DistanceMeasurementResult extends React.Component {
       </>
     );
   }
+}
+
+// see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
+function handleDragStart() {
+  window.preventMapClick = true;
+}
+
+// see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
+function handleDragEnd() {
+  setTimeout(() => {
+    window.preventMapClick = false;
+  });
 }
 
 export default connect(
