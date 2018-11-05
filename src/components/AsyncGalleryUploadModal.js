@@ -1,7 +1,12 @@
-import { asyncComponent } from 'react-async-component';
+import React, { lazy, Suspense } from 'react';
+import AsyncLoadingIndicator from 'fm3/components/AsyncLoadingIndicator';
 
-export default asyncComponent({
-  resolve: () => import(/* webpackChunkName: "galleryUploadModal" */ 'fm3/components/GalleryUploadModal'),
-  // LoadingComponent: ({ productId }) => <div>Loading {productId}</div>, // Optional
-  // ErrorComponent: ({ error }) => <div>{error.message}</div> // Optional
-});
+const GalleryUploadModal = lazy(() => import(/* webpackChunkName: "galleryUploadModal" */ 'fm3/components/GalleryUploadModal'));
+
+export default function AsyncGalleryUploadModal() {
+  return (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <GalleryUploadModal />
+    </Suspense>
+  );
+}

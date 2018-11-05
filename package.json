@@ -30,7 +30,6 @@
     "prop-types": "15.6.2",
     "query-string": "5.1.1",
     "react": "16.6.0",
-    "react-async-component": "2.0.0",
     "react-bootstrap": "0.32.4",
     "react-bootstrap-typeahead": "3.2.4",
     "react-chartjs-2": "2.7.4",

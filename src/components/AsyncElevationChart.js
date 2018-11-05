@@ -1,7 +1,12 @@
-import { asyncComponent } from 'react-async-component';
+import React, { lazy, Suspense } from 'react';
+import AsyncLoadingIndicator from 'fm3/components/AsyncLoadingIndicator';
 
-export default asyncComponent({
-  resolve: () => import(/* webpackChunkName: "elevationChart" */ 'fm3/components/ElevationChart'),
-  // LoadingComponent: ({ productId }) => <div>Loading {productId}</div>, // Optional
-  // ErrorComponent: ({ error }) => <div>{error.message}</div> // Optional
-});
+const ElevationChart = lazy(() => import(/* webpackChunkName: "elevationChart" */ 'fm3/components/ElevationChart'));
+
+export default function AsyncElevationChart() {
+  return (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <ElevationChart />
+    </Suspense>
+  );
+}

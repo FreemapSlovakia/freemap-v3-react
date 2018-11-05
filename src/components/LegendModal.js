@@ -24,7 +24,7 @@ export function Legend({ onModalClose }) {
         <p>
           Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.
         </p>
-        <PanelGroup accordion>
+        <PanelGroup accordion id="pg1">
           {
             require('fm3/legend/index.json').map((c, i) => (
               <Panel key={`yyy${c.n}`} header={c.n} eventKey={i}>
