@@ -7,7 +7,7 @@ import GalleryLayer from 'fm3/components/GalleryLayer';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
-import BingLayer from './BingLayer';
+import { BingLayer } from 'react-leaflet-bing';
 
 class Layers extends React.Component {
   static propTypes = {

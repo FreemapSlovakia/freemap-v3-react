@@ -1,7 +1,12 @@
-import { asyncComponent } from 'react-async-component';
+import React, { lazy, Suspense } from 'react';
+import AsyncLoadingIndicator from 'fm3/components/AsyncLoadingIndicator';
 
-export default asyncComponent({
-  resolve: () => import(/* webpackChunkName: "legendModal" */ 'fm3/components/LegendModal'),
-  // LoadingComponent: ({ productId }) => <div>Loading {productId}</div>, // Optional
-  // ErrorComponent: ({ error }) => <div>{error.message}</div> // Optional
-});
+const LegendModal = lazy(() => import(/* webpackChunkName: "legendModal" */ 'fm3/components/LegendModal'));
+
+export default function AsyncLegendModal() {
+  return (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <LegendModal />
+    </Suspense>
+  );
+}

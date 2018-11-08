@@ -119,7 +119,7 @@ export class EmbedMapModal extends React.Component {
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
-            value={`<iframe src="${shareURL}" style="width: ${width}x; height: ${height}px; border: 0" allowfullscreen />`}
+            value={`<iframe src="${shareURL}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen />`}
             readOnly
             rows={3}
           />

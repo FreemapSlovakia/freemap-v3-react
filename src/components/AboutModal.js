@@ -25,9 +25,9 @@ export function AboutModal({ onModalClose }) {
         <address>
           Freemap Slovakia
           <br />
-          Matičná 8/A5
+          Chrenove-Brusno 351
           <br />
-          900 28 Ivanka pri Dunaji
+          972 32 Chrenovec-Brusno
           <br />
         </address>
         <p>
@@ -35,7 +35,7 @@ export function AboutModal({ onModalClose }) {
         </p>
         <p>
           {'IČO: '}
-          <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" target="_blank" rel="noopener noreferrer">42173639</a>
+          <a href="http://ives.minv.sk/rez/registre/pages/detailoz.aspx?id=196796" target="_blank" rel="noopener noreferrer">42173639</a>
           <br />
           DIČ: 2022912870
         </p>
