@@ -58,20 +58,6 @@ export const baseLayers = [
     key: type.toLowerCase(),
   })),
   {
-    type: 'X',
-    icon: 'flask',
-    url: 'http://www.freemap.sk:4000/{z}/{x}/{y}',
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ].filter(a => a),
-    minZoom: 8,
-    maxNativeZoom: 16,
-    key: 'x',
-    showOnlyInExpertMode: true,
-  },
-  {
     type: 'S',
     icon: 'plane',
     minZoom: 0,
@@ -209,6 +195,20 @@ export const baseLayers = [
     showOnlyInExpertMode: true,
     attribution: [],
     key: 'h',
+  },
+  {
+    type: 'X',
+    icon: 'flask',
+    url: 'http://tiles-ng.freemap.sk/{z}/{x}/{y}',
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      SRTM_ATTR,
+    ].filter(a => a),
+    minZoom: 6,
+    maxNativeZoom: 18,
+    key: 'x',
+    showOnlyInExpertMode: true,
   },
 ];
 

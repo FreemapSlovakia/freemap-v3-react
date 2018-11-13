@@ -783,6 +783,7 @@ export default {
       i: 'Infomapa',
       j: 'Infomapa ČB',
       h: 'Historická',
+      X: 'Experimentálni Outdoor',
     },
     overlay: {
       I: 'Fotografie',

@@ -782,6 +782,7 @@ export default {
       i: 'Infomap',
       j: 'Infomap BW',
       h: 'Historic',
+      X: 'Experimental Outdoor',
     },
     overlay: {
       I: 'Photos',
