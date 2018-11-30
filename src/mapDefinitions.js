@@ -48,6 +48,7 @@ export const baseLayers = [
     type,
     icon,
     url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
+    subdomains: 'abcd',
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
