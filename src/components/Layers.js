@@ -32,7 +32,7 @@ class Layers extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  getTileLayer({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains }) {
+  getTileLayer({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains = 'abc' }) {
     if (type === 'S') {
       return (
         <BingLayer
