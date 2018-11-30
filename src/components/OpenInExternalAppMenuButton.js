@@ -58,7 +58,7 @@ class OpenInExternalAppMenuButton extends React.Component {
           },
         };
         [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
-          axios.get(`${proto}//localhost:${port}/load_and_zoom`, opts);
+          axios.get(`${proto}://localhost:${port}/load_and_zoom`, opts);
         });
         break;
       }
