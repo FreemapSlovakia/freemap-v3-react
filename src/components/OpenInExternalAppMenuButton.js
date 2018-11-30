@@ -49,13 +49,16 @@ class OpenInExternalAppMenuButton extends React.Component {
         break;
       case 'josm': {
         const bounds = getMapLeafletElement().getBounds();
-        axios.get(`${window.location.protocol}//localhost:${window.location.protocol === 'http:' ? 8111 : 8112}/load_and_zoom`, {
+        const opts = {
           params: {
             left: bounds.getWest(),
             right: bounds.getEast(),
             top: bounds.getNorth(),
             bottom: bounds.getSouth(),
           },
+        };
+        [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
+          axios.get(`${proto}//localhost:${port}/load_and_zoom`, opts);
         });
         break;
       }
