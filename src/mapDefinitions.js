@@ -32,12 +32,6 @@ const NLC_ATTR = {
   url: 'http://www.nlcsk.org/',
 };
 
-const INFOMAPA_ATTR = {
-  type: 'map',
-  name: '© infomapa.sk',
-  url: 'http://www.infomapa.sk/',
-};
-
 export const baseLayers = [
   ...[
     ['A', 'car'],
@@ -128,23 +122,6 @@ export const baseLayers = [
     key: 'p',
   },
   {
-    type: 'b',
-    url: 'http://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png',
-    minZoom: 0,
-    maxNativeZoom: 20,
-    icon: 'medkit',
-    showOnlyInExpertMode: true,
-    attribution: [
-      {
-        type: 'map',
-        nameKey: 'mapLayers.attr.hot',
-        url: 'http://hot.openstreetmap.org',
-      },
-      OSM_DATA_ATTR,
-    ],
-    key: 'b',
-  },
-  {
     type: 'd',
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
@@ -160,32 +137,6 @@ export const baseLayers = [
       OSM_DATA_ATTR,
     ],
     key: 'd',
-  },
-  {
-    type: 'i',
-    icon: 'info',
-    url: 'http://{s}.infomapa.sk/0/{z}/{x}/{y}',
-    minZoom: 8,
-    maxNativeZoom: 18,
-    showOnlyInExpertMode: true,
-    attribution: [
-      INFOMAPA_ATTR,
-      OSM_DATA_ATTR,
-    ],
-    key: 'i',
-  },
-  {
-    type: 'j',
-    icon: 'info',
-    url: 'http://{s}.infomapa.sk/1/{z}/{x}/{y}',
-    minZoom: 8,
-    maxNativeZoom: 18,
-    showOnlyInExpertMode: true,
-    attribution: [
-      INFOMAPA_ATTR,
-      OSM_DATA_ATTR,
-    ],
-    key: 'j',
   },
   {
     type: 'h',
