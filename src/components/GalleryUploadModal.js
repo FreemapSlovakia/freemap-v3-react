@@ -230,7 +230,12 @@ class GalleryUploadModal extends React.Component {
                 className="dropzone"
                 disablePreview
               >
-                <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
+                {({ getRootProps, getInputProps }) => (
+                  <div {...getRootProps()} className="dropzone">
+                    <input {...getInputProps()} />
+                    <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
+                  </div>
+                )}
               </Dropzone>
             </>
           )}
