@@ -58,10 +58,6 @@ class SearchMenu extends React.Component {
 
     return (
       <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="search" />
-        </span>
-        {' '}
         <AsyncTypeahead
           isLoading={inProgress}
           labelKey="label"
@@ -72,7 +68,7 @@ class SearchMenu extends React.Component {
           onSearch={onDoSearch}
           options={results}
           searchText={t('search.inProgress')}
-          placeholder="Brusno"
+          placeholder="&#xF002; Brusno"
           clearButton
           onChange={this.handleSelectionChange}
           emptyLabel={t('search.noResults')}

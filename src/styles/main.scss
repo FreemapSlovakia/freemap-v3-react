@@ -89,14 +89,6 @@ button#freemap-logo {
 	-webkit-transition: .1s ease-in-out;
   transition: .1s ease-in-out;
 
-  @media ($smartphone-screen) {
-    .full {
-      background-image: url(../images/freemap-logo-small.png);
-      background-size: 42px 34px;
-      width: 42px;
-    }
-  }
-
   &.in-progress {
     animation: pulse 1s infinite;
   }
@@ -105,6 +97,19 @@ button#freemap-logo {
     cursor: pointer;
     -webkit-transform: scale(1.05);
     transform: scale(1.05);
+  }
+}
+
+@media ($smartphone-screen) {
+  .full {
+    button#freemap-logo {
+      background-image: url(../images/freemap-logo-small.png);
+      background-size: 42px 34px;
+      width: 42px;
+    }
+    .fm-label {
+      display: none;
+    }
   }
 }
 
