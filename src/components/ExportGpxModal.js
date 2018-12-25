@@ -44,13 +44,6 @@ export class ExportGpxModal extends React.Component {
     };
   }
 
-  setFormControl = (textarea) => {
-    this.textarea = textarea;
-    if (textarea) {
-      textarea.select();
-    }
-  }
-
   handleExportClick = () => {
     this.props.onExport(this.state.exportables);
   }
