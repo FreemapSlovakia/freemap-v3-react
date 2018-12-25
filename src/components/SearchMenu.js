@@ -11,7 +11,6 @@ import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import * as FmPropTypes from 'fm3/propTypes';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import injectL10n from 'fm3/l10nInjector';
 
 import 'fm3/styles/search.scss';
