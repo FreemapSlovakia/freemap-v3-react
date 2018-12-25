@@ -26,7 +26,7 @@ const exportableDefinitions = [
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ];
 
-export class EmbedMapModal extends React.Component {
+export class ExportGpxModal extends React.Component {
   static propTypes = {
     exportables: PropTypes.arrayOf(PropTypes.oneOf(exportableDefinitions.map(({ type }) => type)).isRequired).isRequired,
     onExport: PropTypes.func.isRequired,
@@ -155,4 +155,4 @@ export default compose(
       },
     }),
   ),
-)(EmbedMapModal);
+)(ExportGpxModal);
