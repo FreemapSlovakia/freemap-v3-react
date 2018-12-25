@@ -192,6 +192,7 @@ export default {
     twitter: 'Freemap na Twitteru',
     github: 'Freemap na GitHub-u',
     automaticLanguage: 'Automaticky',
+    pdfExport: 'Exportovat do PDF (pro tisk)',
   },
 
   main: {

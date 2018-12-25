@@ -16,6 +16,7 @@ import trackViewerGpxLoadLogic from 'fm3/logic/trackViewerGpxLoadLogic';
 import trackViewerShowInfoLogic from 'fm3/logic/trackViewerShowInfoLogic';
 import trackViewerToggleElevationChartLogic from 'fm3/logic/trackViewerToggleElevationChartLogic';
 import gpxExportLogic from 'fm3/logic/gpxExportLogic';
+import pdfExportLogic from 'fm3/logic/pdfExportLogic';
 import osmLoadRelationLogic from 'fm3/logic/osmLoadRelationLogic';
 import osmLoadNodeLogic from 'fm3/logic/osmLoadNodeLogic';
 import osmLoadWayLogic from 'fm3/logic/osmLoadWayLogic';
@@ -75,6 +76,7 @@ export default [
   trackViewerShowInfoLogic,
   trackViewerToggleElevationChartLogic,
   gpxExportLogic,
+  pdfExportLogic,
   osmLoadNodeLogic,
   osmLoadWayLogic,
   toastsAddLogic,

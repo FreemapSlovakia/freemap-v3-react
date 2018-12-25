@@ -67,6 +67,7 @@ import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
 import ShareMapModal from 'fm3/components/ShareMapModal';
 import EmbedMapModal from 'fm3/components/EmbedMapModal';
 import ExportGpxModal from 'fm3/components/ExportGpxModal';
+import ExportPdfModal from 'fm3/components/ExportPdfModal';
 import LoginModal from 'fm3/components/LoginModal';
 import TipsModal from 'fm3/components/TipsModal';
 import AboutModal from 'fm3/components/AboutModal';
@@ -329,6 +330,7 @@ class Main extends React.Component {
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {activeModal === 'export-gpx' && <ExportGpxModal />}
+        {activeModal === 'export-pdf' && <ExportPdfModal />}
         {activeModal === 'tips' && <TipsModal />}
         {activeModal === 'about' && <AboutModal />}
         {activeModal === 'supportUs' && <SupportUsModal />}

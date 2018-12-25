@@ -191,6 +191,7 @@ export default {
     twitter: 'Freemap on Twitter',
     github: 'Freemap on GitHub',
     automaticLanguage: 'Automatic',
+    pdfExport: 'Export to PDF (for printing)',
   },
 
   main: {

@@ -19,6 +19,7 @@ class MoreMenuButton extends React.Component {
   static propTypes = {
     onSettingsShow: PropTypes.func.isRequired,
     onGpxExport: PropTypes.func.isRequired,
+    onPdfExport: PropTypes.func.isRequired,
     onShare: PropTypes.func.isRequired,
     onEmbed: PropTypes.func.isRequired,
     onSupportUs: PropTypes.func.isRequired,
@@ -79,6 +80,11 @@ class MoreMenuButton extends React.Component {
   handleGpxExportClick = () => {
     this.close();
     this.props.onGpxExport();
+  }
+
+  handlePdfExportClick = () => {
+    this.close();
+    this.props.onPdfExport();
   }
 
   handleEmbedClick = () => {
@@ -182,6 +188,9 @@ class MoreMenuButton extends React.Component {
                     <FontAwesomeIcon icon="cog" /> {t('more.settings')}
                   </MenuItem>
                   <MenuItem divider />
+                  <MenuItem onClick={this.handlePdfExportClick}>
+                    <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
+                  </MenuItem>
                   <MenuItem onClick={this.handleGpxExportClick}>
                     <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
                   </MenuItem>
@@ -318,6 +327,9 @@ export default compose(
       },
       onGpxExport() {
         dispatch(setActiveModal('export-gpx'));
+      },
+      onPdfExport() {
+        dispatch(setActiveModal('export-pdf'));
       },
       onShare() {
         dispatch(setActiveModal('share'));

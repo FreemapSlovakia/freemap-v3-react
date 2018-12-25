@@ -36,6 +36,10 @@ export function exportGpx(exportables) {
   return { type: at.EXPORT_GPX, payload: exportables };
 }
 
+export function exportPdf(settings) {
+  return { type: at.EXPORT_PDF, payload: settings };
+}
+
 export function clearMap() {
   return { type: at.CLEAR_MAP };
 }

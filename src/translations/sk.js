@@ -191,6 +191,7 @@ export default {
     twitter: 'Freemap na Twitteri',
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
+    pdfExport: 'Exportovať do PDF (pre tlač)',
   },
 
   main: {
