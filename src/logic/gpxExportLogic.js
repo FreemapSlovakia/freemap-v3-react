@@ -5,7 +5,7 @@ import qs from 'query-string';
 
 import * as at from 'fm3/actionTypes';
 import { createElement, addAttribute, GPX_NS } from 'fm3/gpxExporter';
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -106,6 +106,7 @@ export const gpxExportLogic = createLogic({
         //console.log(serializer.serializeToString(doc));
 
         FileSaver.saveAs(new Blob([serializer.serializeToString(doc)], { type: 'application/json' }), 'export.gpx');
+        dispatch(setActiveModal(null));
         done();
       });
   },
