@@ -6,6 +6,7 @@ const WebpackCleanupPlugin = require('webpack-cleanup-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
+const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 // const OfflinePlugin = require('offline-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
@@ -13,14 +14,6 @@ const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 const renderer = new marked.Renderer();
 
 renderer.link = (href, title, text) => `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
-
-const cssLoader = {
-  loader: 'css-loader',
-  options: prod ? {
-    minimize: true,
-    sourceMap: true,
-  } : {},
-};
 
 module.exports = {
   mode: prod ? 'production' : 'development',
@@ -98,7 +91,7 @@ module.exports = {
         test: /\.scss$/,
         use: [
           prod ? MiniCssExtractPlugin.loader : 'style-loader',
-          cssLoader,
+          'css-loader',
           'sass-loader',
         ],
       },
@@ -106,7 +99,7 @@ module.exports = {
         test: /\.css$/,
         use: [
           prod ? MiniCssExtractPlugin.loader : 'style-loader',
-          cssLoader,
+          'css-loader',
         ],
       },
       {
@@ -175,6 +168,12 @@ module.exports = {
       // both options are optional
       filename: '[name].[chunkhash].css',
       chunkFilename: '[name].[chunkhash].css',
+    }),
+    prod && new OptimizeCssAssetsPlugin({
+      cssProcessor: require('cssnano'),
+      cssProcessorPluginOptions: {
+        preset: ['default', { discardComments: { removeAll: true } }],
+      },
     }),
     new webpack.HashedModuleIdsPlugin(),
     new webpack.ContextReplacementPlugin(/intl\/locale-data\/jsonp$/, /(sk|cs|en)\.js/),
