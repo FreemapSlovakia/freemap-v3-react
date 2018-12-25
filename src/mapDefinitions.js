@@ -160,7 +160,6 @@ export const baseLayers = [
     minZoom: 6,
     maxNativeZoom: 18,
     key: 'x',
-    showOnlyInExpertMode: true,
   },
 ];
 
