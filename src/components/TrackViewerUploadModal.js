@@ -55,8 +55,19 @@ class TrackViewerUploadModal extends React.Component {
           <Modal.Title>{t('trackViewer.uploadModal.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Dropzone onDrop={this.handleFileDrop} multiple={false} accept=".gpx" className="dropzone" disablePreview>
-            {t('trackViewer.uploadModal.drop')}
+          <Dropzone
+            onDrop={this.handleFileDrop}
+            multiple={false}
+            accept=".gpx"
+            className="dropzone"
+            disablePreview
+          >
+            {({ getRootProps, getInputProps }) => (
+              <div {...getRootProps()} className="dropzone">
+                <input {...getInputProps()} />
+                {t('trackViewer.uploadModal.drop')}
+              </div>
+            )}
           </Dropzone>
         </Modal.Body>
         <Modal.Footer>
