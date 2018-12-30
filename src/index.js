@@ -80,9 +80,9 @@ if (process.env.NODE_ENV) {
         ],
       }));
     },
-    onUpdateFailed() {
-      // TODO console.log('SW Event:', 'onUpdateFailed');
-    },
+    // TODO
+    // onUpdateFailed() {
+    // },
   });
 }
 
