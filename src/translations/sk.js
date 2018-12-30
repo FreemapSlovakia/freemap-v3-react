@@ -192,6 +192,7 @@ export default {
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
     pdfExport: 'Exportovať do PDF (pre tlač)',
+    appUpdated: 'Je dostupná aktualizácia. Obnoviť stránku?',
   },
 
   main: {

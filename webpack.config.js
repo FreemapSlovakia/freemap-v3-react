@@ -7,7 +7,7 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-// const OfflinePlugin = require('offline-plugin');
+const OfflinePlugin = require('offline-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -177,17 +177,14 @@ module.exports = {
     new webpack.HashedModuleIdsPlugin(),
     new webpack.ContextReplacementPlugin(/intl\/locale-data\/jsonp$/, /(sk|cs|en)\.js/),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    // new OfflinePlugin({
-    //   publicPath: '/',
-    //   caches: 'all',
-    //   externals: [
-    //     '//maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css',
-    //   ],
-    //   ServiceWorker: {
-    //     navigateFallbackURL: '/',
-    //   },
-    //   AppCache: null, // disable
-    // }),
+    new OfflinePlugin({
+      autoUpdate: true,
+      ServiceWorker: {
+        events: true,
+        minify: true,
+      },
+      AppCache: null, // disable
+    }),
   ].filter(x => x),
   devServer: {
     disableHostCheck: true,

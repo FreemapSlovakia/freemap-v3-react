@@ -55,6 +55,7 @@ import toolGaLogic from 'fm3/logic/toolGaLogic';
 import mapTypeGaLogic from 'fm3/logic/mapTypeGaLogic';
 import userGaLogic from 'fm3/logic/userGaLogic';
 import galleryShowImageGaLogic from 'fm3/logic/galleryShowImageGaLogic';
+import reloadAppLogic from 'fm3/logic/reloadAppLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
@@ -114,4 +115,5 @@ export default [
   mapTypeGaLogic,
   userGaLogic,
   galleryShowImageGaLogic,
+  reloadAppLogic,
 ];

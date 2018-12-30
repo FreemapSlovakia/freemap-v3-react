@@ -67,3 +67,7 @@ export function setErrorTicketId(id) {
 export function setEmbedFeatures(features) {
   return { type: at.SET_EMBED_FEATURES, payload: features };
 }
+
+export function reloadApp() {
+  return { type: at.RELOAD_APP };
+}

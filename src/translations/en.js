@@ -33,6 +33,7 @@ export default {
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
     internalError: `!HTML!${errorMarkup}`,
+    appUpdated: 'New update is available. Would you like to refresh the page?',
   },
 
   tools: {

@@ -5,16 +5,17 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
-// import * as OfflinePluginRuntime from 'offline-plugin/runtime';
+import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 
 import Main from 'fm3/components/Main';
 import ErrorCatcher from 'fm3/components/ErrorCatcher';
 
-import { mainLoadState, enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { mainLoadState, enableUpdatingUrl, reloadApp } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { mapLoadState, mapSetStravaAuth } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import history from 'fm3/history';
 import handleLocationChange from 'fm3/locationChangeHandler';
@@ -29,11 +30,6 @@ import 'fm3/styles/bootstrap-override.scss';
 
 if (window.location.search === '?reset-local-storage') {
   storage.clear();
-}
-
-// prevent for development to make hot reloading working
-if (process.env.NODE_ENV) {
-  // TODO make it working reliably ... OfflinePluginRuntime.install();
 }
 
 document.body.classList.add(window.self === window.top ? 'full' : 'embedded');
@@ -65,6 +61,30 @@ render(
   ),
   document.getElementById('app'),
 );
+
+// prevent for development to make hot reloading working
+if (process.env.NODE_ENV) {
+  OfflinePluginRuntime.install({
+    onUpdateReady() {
+      // Tells to new SW to take control immediately
+      OfflinePluginRuntime.applyUpdate();
+    },
+    onUpdated() {
+      store.dispatch(toastsAdd({
+        collapseKey: 'app.update',
+        messageKey: 'general.appUpdated',
+        style: 'info',
+        actions: [
+          { nameKey: 'general.yes', action: reloadApp() },
+          { nameKey: 'general.no' },
+        ],
+      }));
+    },
+    onUpdateFailed() {
+      // TODO console.log('SW Event:', 'onUpdateFailed');
+    },
+  });
+}
 
 function loadAppState() {
   let appState;

@@ -67,6 +67,7 @@ class Layers extends React.Component {
         opacity={this.props.overlayOpacity[type] || 1}
         zIndex={zIndex}
         subdomains={subdomains}
+        errorTileUrl={require('../images/missing-tile-256x256.png')}
       />
     );
   }
