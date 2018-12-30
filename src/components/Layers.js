@@ -32,7 +32,7 @@ class Layers extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  getTileLayer({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains = 'abc' }) {
+  getTileLayer({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains = 'abc', detectRetina }) {
     if (type === 'S') {
       return (
         <BingLayer
@@ -68,6 +68,7 @@ class Layers extends React.Component {
         zIndex={zIndex}
         subdomains={subdomains}
         errorTileUrl={require('../images/missing-tile-256x256.png')}
+        detectRetina={detectRetina}
       />
     );
   }

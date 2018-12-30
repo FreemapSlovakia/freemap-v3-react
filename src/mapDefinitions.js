@@ -151,8 +151,8 @@ export const baseLayers = [
   {
     type: 'X',
     icon: 'flask',
-    url: window.devicePixelRatio > 1.5
-      ? `http://tiles-ng.freemap.sk/scaled/${window.devicePixelRatio}/{z}/{x}/{y}`
+    url: L.Browser.retina
+      ? 'http://tiles-ng.freemap.sk/scaled/2/{z}/{x}/{y}'
       : 'http://tiles-ng.freemap.sk/{z}/{x}/{y}',
     attribution: [
       FM_ATTR,
@@ -162,6 +162,7 @@ export const baseLayers = [
     minZoom: 6,
     maxNativeZoom: 18,
     key: 'x',
+    detectRetina: true,
   },
 ];
 
