@@ -151,18 +151,15 @@ export const baseLayers = [
   {
     type: 'X',
     icon: 'flask',
-    url: L.Browser.retina
-      ? 'http://tiles-ng.freemap.sk/scaled/2/{z}/{x}/{y}'
-      : 'http://tiles-ng.freemap.sk/{z}/{x}/{y}',
+    url: `http://tiles-ng.freemap.sk/{z}/{x}/{y}${window.devicePixelRatio === 1 ? '' : `@${window.devicePixelRatio}x`}`,
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ].filter(a => a),
     minZoom: 6,
-    maxNativeZoom: 18,
+    maxNativeZoom: 19,
     key: 'x',
-    detectRetina: true,
   },
 ];
 
