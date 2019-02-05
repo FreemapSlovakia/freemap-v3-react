@@ -195,7 +195,7 @@ export const overlayLayers = [
   {
     type: 'n',
     icon: 'tree',
-    url: '//tiles.freemap.sk/nlc2016/{z}/{x}/{y}.png',
+    url: '//tiles.freemap.sk/nlc2017/{z}/{x}/{y}.png',
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
