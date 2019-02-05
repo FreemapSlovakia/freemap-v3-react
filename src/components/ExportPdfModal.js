@@ -31,6 +31,7 @@ export class ExportPdfModal extends React.Component {
     shadedRelief: true,
     hikingTrails: true,
     bicycleTrails: true,
+    skiTrails: true,
     scale: 1,
     area: 'visible',
   }
@@ -60,6 +61,12 @@ export class ExportPdfModal extends React.Component {
   handleBicycleTrailsChange = () => {
     this.setState(s => ({
       bicycleTrails: !s.bicycleTrails,
+    }));
+  }
+
+  handleSkiTrailsChange = () => {
+    this.setState(s => ({
+      skiTrails: !s.skiTrails,
     }));
   }
 
@@ -140,6 +147,12 @@ export class ExportPdfModal extends React.Component {
             onChange={this.handleBicycleTrailsChange}
           >
             Cyklotrasy
+          </Checkbox>
+          <Checkbox
+            checked={this.state.skiTrails}
+            onChange={this.handleSkiTrailsChange}
+          >
+            Lyžiarské trasy
           </Checkbox>
           <hr />
           <p>Mierka mapy: {nf.format(this.state.scale)}</p>

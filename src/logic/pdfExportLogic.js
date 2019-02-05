@@ -7,7 +7,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 export const pdfExportLogic = createLogic({
   type: at.EXPORT_PDF,
   process({ getState, action }, dispatch, done) {
-    const { scale, area, shadedRelief, contours, hikingTrails, bicycleTrails } = action.payload;
+    const { scale, area, shadedRelief, contours, hikingTrails, bicycleTrails, skiTrails } = action.payload;
 
     let w;
     let n;
@@ -32,7 +32,7 @@ export const pdfExportLogic = createLogic({
     // localhost:4000
     window.open(`http://tiles-ng.freemap.sk/pdf?zoom=${getState().map.zoom}`
       + `&bbox=${w},${s},${e},${n}&scale=${scale}`
-      + `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&shading=${shadedRelief}&contours=${contours}`);
+      + `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&shading=${shadedRelief}&contours=${contours}`);
     dispatch(setActiveModal(null));
     done();
   },
