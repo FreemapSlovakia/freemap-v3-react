@@ -101,6 +101,8 @@ class GalleryViewerModal extends React.Component {
       userId: '',
       takenAtFrom: '',
       takenAtTo: '',
+      createdAtFrom: '',
+      createdAtTo: '',
       ratingFrom: '',
       ratingTo: '',
     });
