@@ -5,6 +5,7 @@ import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetImageIds, galleryRequestImage } from 'fm3/actions/galleryActions';
+import { createFilter } from 'fm3/galleryUtils';
 
 export default createLogic({
   type: at.GALLERY_LIST,
@@ -19,23 +20,12 @@ export default createLogic({
       source.cancel();
     });
 
-    const {
-      tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo,
-    } = getState().gallery.filter;
-
     axios.get(`${process.env.API_URL}/gallery/pictures`, {
       params: {
         by: 'order',
         orderBy: payload.substring(1),
         direction: payload[0] === '+' ? 'asc' : 'desc',
-        tag,
-        userId,
-        ratingFrom,
-        ratingTo,
-        takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
-        takenAtTo: takenAtTo && takenAtTo.toISOString(),
-        createdAtFrom: createdAtFrom && createdAtFrom.toISOString(),
-        createdAtTo: createdAtTo && createdAtTo.toISOString(),
+        ...createFilter(getState().gallery.filter),
       },
       validateStatus: status => status === 200,
       cancelToken: source.token,

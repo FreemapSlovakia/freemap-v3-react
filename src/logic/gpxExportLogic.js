@@ -8,6 +8,7 @@ import { createElement, addAttribute, GPX_NS } from 'fm3/gpxExporter';
 import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { createFilter } from 'fm3/galleryUtils';
 
 export const gpxExportLogic = createLogic({
   type: at.EXPORT_GPX,
@@ -45,24 +46,13 @@ export const gpxExportLogic = createLogic({
         source.cancel();
       });
 
-      const {
-        tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo,
-      } = getState().gallery.filter;
-
       const b = getMapLeafletElement().getBounds();
 
       const p = axios.get(`${process.env.API_URL}/gallery/pictures`, {
         params: {
           by: 'bbox',
           bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-          tag,
-          userId,
-          ratingFrom,
-          ratingTo,
-          takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
-          takenAtTo: takenAtTo && takenAtTo.toISOString(),
-          createdAtFrom: createdAtFrom && createdAtFrom.toISOString(),
-          createdAtTo: createdAtTo && createdAtTo.toISOString(),
+          ...createFilter(getState().gallery.filter),
           fields: ['id', 'title', 'description', 'takenAt'],
         },
         paramsSerializer: qs.stringify,

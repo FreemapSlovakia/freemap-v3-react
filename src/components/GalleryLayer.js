@@ -2,6 +2,7 @@ import axios from 'axios';
 import { GridLayer, withLeaflet } from 'react-leaflet';
 
 import { galleryFilter } from 'fm3/propTypes';
+import { createFilter } from 'fm3/galleryUtils';
 
 const galleryLayer = L.GridLayer.extend({
   createTile(coords, done) {
@@ -27,22 +28,13 @@ const galleryLayer = L.GridLayer.extend({
 
     const k = 2 ** coords.z;
 
-    const { tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo } = this.options.filter;
-
     axios.get(
       `${process.env.API_URL}/gallery/pictures`,
       {
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
-          tag,
-          userId,
-          ratingFrom,
-          ratingTo,
-          takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
-          takenAtTo: takenAtTo && takenAtTo.toISOString(),
-          createdAtFrom: createdAtFrom && createdAtFrom.toISOString(),
-          createdAtTo: createdAtTo && createdAtTo.toISOString(),
+          ...createFilter(this.options.filter),
         },
         validateStatus: status => status === 200,
       },
