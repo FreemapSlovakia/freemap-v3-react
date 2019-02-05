@@ -215,7 +215,10 @@ function handleGallery(getState, dispatch, query) {
   const qCreatedAtFrom = new Date(query['gallery-created-at-from']);
   const qCreatedAtTo = new Date(query['gallery-created-at-to']);
 
-  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo || !Number.isNaN(qTakenAtFrom.getTime()) || !Number.isNaN(qTakenAtTo.getTime())) {
+  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo
+      || !Number.isNaN(qTakenAtFrom.getTime()) || !Number.isNaN(qTakenAtTo.getTime())
+      || !Number.isNaN(qCreatedAtFrom.getTime()) || !Number.isNaN(qCreatedAtTo.getTime())
+  ) {
     const { filter } = getState().gallery;
     const newFilter = {};
     if (qUserId && filter.userId !== qUserId) {
