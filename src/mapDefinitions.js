@@ -161,7 +161,22 @@ export const baseLayers = [
     maxNativeZoom: 19,
     key: 'x',
   },
-];
+  !process.env.NODE_ENV && (
+    {
+      type: 'Y',
+      icon: 'flask',
+      url: `http://localhost:4000/{z}/{x}/{y}${window.devicePixelRatio === 1 ? '' : `@${window.devicePixelRatio}x`}`,
+      attribution: [
+        FM_ATTR,
+        OSM_DATA_ATTR,
+        SRTM_ATTR,
+      ].filter(a => a),
+      minZoom: 6,
+      maxNativeZoom: 19,
+      key: 'y',
+    }
+  ),
+].filter(x => x);
 
 export const overlayLayers = [
   {
