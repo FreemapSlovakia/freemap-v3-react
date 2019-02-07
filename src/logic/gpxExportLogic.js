@@ -17,17 +17,16 @@ export const gpxExportLogic = createLogic({
 
     addAttribute(doc.documentElement, 'version', '1.1');
     addAttribute(doc.documentElement, 'creator', 'https://www.freemap.sk/');
-
     const meta = createElement(doc.documentElement, 'metadata');
-    const copyright = createElement(meta, 'copyright', undefined, { author: 'OpenStreetMap contributors' });
-    createElement(copyright, 'license', 'http://www.openstreetmap.org/copyright');
-    createElement(meta, 'desc', 'Export from https://www.freemap.sk/');
+    createElement(meta, 'desc', 'Exported from https://www.freemap.sk/');
     const author = createElement(meta, 'author');
     createElement(author, 'name', 'Freemap Slovakia');
-    createElement(author, 'email', 'freemap@freemap.sk');
+    createElement(author, 'email', undefined, { id: 'freemap', domain: 'freemap.sk' });
     const link = createElement(author, 'link', undefined, { href: 'https://www.freemap.sk/' });
     createElement(link, 'text', 'Freemap Slovakia');
     createElement(link, 'type', 'text/html');
+    const copyright = createElement(meta, 'copyright', undefined, { author: 'OpenStreetMap contributors' });
+    createElement(copyright, 'license', 'http://www.openstreetmap.org/copyright');
     createElement(meta, 'time', new Date().toISOString());
     createElement(meta, 'keywords', action.payload.join(' '));
 
