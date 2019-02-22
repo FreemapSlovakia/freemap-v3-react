@@ -91,17 +91,21 @@ class GalleryUploadModal extends React.Component {
       const id = nextId;
       nextId += 1;
 
+      const NS = { S: -1, N: 1 };
+      const EW = { W: -1, E: 1 };
+
       const description = tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '';
       const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
-      const rawLat = adaptGpsCoordinate(tags.GPSLatitude);
-      const rawLon = adaptGpsCoordinate(tags.GPSLongitude);
+      const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
+      const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
+
+      const lat = rawLat * (NS[(latRef || (tags.GPSLatitudeRef || { value: [] }).value[0] || '').toUpperCase()] || Number.NaN);
+      const lon = rawLon * (EW[(lonRef || (tags.GPSLongitudeRef || { value: [] }).value[0] || '').toUpperCase()] || Number.NaN);
+
       this.props.onItemAdd({
         id,
         file,
-        position: rawLat && rawLon ? {
-          lat: rawLat * (tags.GPSLatitudeRef.value[0] === 'S' ? -1 : 1),
-          lon: rawLon * (tags.GPSLongitudeRef.value[0] === 'W' ? -1 : 1),
-        } : null,
+        position: Number.isNaN(lat) || Number.isNaN(lon) ? null : { lat, lon },
         title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
         description: /CAMERA|^DCIM/.test(description) ? '' : description,
         takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
@@ -258,21 +262,26 @@ class GalleryUploadModal extends React.Component {
 // adds support for Olympus and other weirdos
 function adaptGpsCoordinate(x) {
   if (!x) {
-    return Number.NaN;
+    return [Number.NaN, null];
   }
+
+  // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
 
   const { description, value } = x;
-  const p = /^(\d+),(\d+(\.\d+)?)[NSWE]$/;
-  let m = p.exec(description);
-  if (m) {
-    return parseInt(m[1], 10) + parseFloat(m[2]) / 60;
+  const p = /^(?:(\d+),)?(\d+(?:\.\d+)?)([NSWE])?$/;
+  const m1 = p.exec(description);
+  const m2 = p.exec(value);
+  if (m1 && (!m2 || !m2[3])) {
+    return parse2(m1);
   }
-  m = p.exec(value);
-  if (m) {
-    return parseInt(m[1], 10) + parseFloat(m[2]) / 60;
+  if (m2) {
+    return parse2(m2);
   }
+  return [Number.NaN, null];
+}
 
-  return parseFloat(description);
+function parse2(m) {
+  return [m[1] === undefined ? parseFloat(m[2]) : (parseInt(m[1], 10) + parseFloat(m[2]) / 60), m[3] || null];
 }
 
 export default compose(
