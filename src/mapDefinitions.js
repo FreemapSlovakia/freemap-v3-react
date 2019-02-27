@@ -33,25 +33,25 @@ const NLC_ATTR = {
 };
 
 export const baseLayers = [
-  // ...[
-  //   ['A', 'car'],
-  //   ['T', '!icon-hiking'],
-  //   ['C', 'bicycle'],
-  //   ['K', '!icon-skier-skiing'],
-  // ].map(([type, icon]) => ({
-  //   type,
-  //   icon,
-  //   url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
-  //   subdomains: 'abcd',
-  //   attribution: [
-  //     FM_ATTR,
-  //     OSM_DATA_ATTR,
-  //     type !== 'A' && SRTM_ATTR,
-  //   ].filter(a => a),
-  //   minZoom: 8,
-  //   maxNativeZoom: 16,
-  //   key: type.toLowerCase(),
-  // })),
+  ...[
+    ['A', 'car'],
+    ['T', '!icon-hiking'],
+    ['C', 'bicycle'],
+    ['K', '!icon-skier-skiing'],
+  ].map(([type, icon]) => ({
+    type,
+    icon,
+    url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
+    subdomains: 'abcd',
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      type !== 'A' && SRTM_ATTR,
+    ].filter(a => a),
+    minZoom: 8,
+    maxNativeZoom: 16,
+    key: type.toLowerCase(),
+  })),
   {
     type: 'S',
     icon: 'plane',
