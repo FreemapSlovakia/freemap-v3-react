@@ -43,13 +43,13 @@ module.exports = {
         },
       },
       { // babelify some very modern libraries
-        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode)\/.*\.js$/,
+        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
             ['@babel/preset-env', {
               targets: {
-                browsers: ['> 0.25%'],
+                browsers: ['> 1%'],
               },
             }],
           ],
@@ -63,7 +63,7 @@ module.exports = {
           presets: [
             ['@babel/preset-env', {
               targets: {
-                browsers: ['> 0.25%'],
+                browsers: ['> 1%'],
               },
               useBuiltIns: 'usage',
               shippedProposals: true,
