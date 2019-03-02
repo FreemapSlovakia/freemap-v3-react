@@ -15,6 +15,7 @@ const updateRouteTypes = [
   at.ROUTE_PLANNER_SET_MIDPOINT,
   at.ROUTE_PLANNER_REMOVE_MIDPOINT,
   at.ROUTE_PLANNER_SET_TRANSPORT_TYPE,
+  at.ROUTE_PLANNER_SET_MODE,
   at.ROUTE_PLANNER_SET_PARAMS,
 ];
 
@@ -22,7 +23,7 @@ export default createLogic({
   type: updateRouteTypes,
   cancelType: [...updateRouteTypes],
   process({ getState, cancelled$, storeDispatch, action }, dispatch, done) {
-    const { start, finish, midpoints, transportType } = getState().routePlanner;
+    const { start, finish, midpoints, transportType, mode } = getState().routePlanner;
     if (!start || !finish) {
       done();
       return;
@@ -42,9 +43,11 @@ export default createLogic({
     });
 
     const params = {
-      alternatives: true,
+      alternatives: mode === 'route' || undefined,
       steps: true,
       geometries: 'geojson',
+      roundtrip: mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
+      source: mode === 'route' ? undefined : 'first',
       // continue_straight: true,
     };
 
@@ -56,12 +59,12 @@ export default createLogic({
       params.exclude = 'stroller';
     }
 
-    axios.get(`https://routing.epsilon.sk/route/v1/${transportType.replace(/-.*/, '')}/${allPoints}`, {
+    axios.get(`https://routing.epsilon.sk/${mode === 'route' ? 'route' : 'trip'}/v1/${transportType.replace(/-.*/, '')}/${allPoints}`, {
       params,
       validateStatus: status => [200, 400].includes(status),
       cancelToken: source.token,
     })
-      .then(({ data: { code, routes } }) => {
+      .then(({ data: { code, trips, routes } }) => {
         if (code === 'Ok') {
           const showHint = true
             && !getState().routePlanner.shapePoints
@@ -81,10 +84,10 @@ export default createLogic({
             }));
           }
 
-          const alts = routes.map((route) => {
+          const alts = (routes || trips).map((route) => {
             const { legs, distance: totalDistance, duration: totalDuration, extra: totalExtra } = route;
             const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({
-              name, distance, duration, mode, geometry, extra, maneuver: { type, modifier, location: [lon, lat] },
+              name, distance, duration, mode: m, geometry, extra, maneuver: { type, modifier, location: [lon, lat] },
             }) => ({
               maneuver: {
                 location: {
@@ -99,7 +102,7 @@ export default createLogic({
               name,
               type,
               modifier,
-              mode,
+              mode: m,
               shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
               legIndex,
               extra,

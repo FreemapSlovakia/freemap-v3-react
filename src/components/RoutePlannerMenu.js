@@ -9,7 +9,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
 import injectL10n from 'fm3/l10nInjector';
 
-import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType,
+import { routePlannerSetStart, routePlannerSetFinish, routePlannerSetTransportType, routePlannerSetMode,
   routePlannerSetPickMode, routePlannerToggleItineraryVisibility,
   routePlannerToggleElevationChart, routePlannerSetActiveAlternativeIndex, routePlannerSwapEnds } from 'fm3/actions/routePlannerActions';
 import { setActiveModal, startProgress, stopProgress } from 'fm3/actions/mainActions';
@@ -25,8 +25,10 @@ class RoutePlannerMenu extends React.Component {
     onStartSet: PropTypes.func.isRequired,
     onFinishSet: PropTypes.func.isRequired,
     transportType: PropTypes.string,
+    mode: PropTypes.oneOf(['route', 'trip', 'roundtrip']).isRequired,
     pickPointMode: PropTypes.string,
     onTransportTypeChange: PropTypes.func.isRequired,
+    onModeChange: PropTypes.func.isRequired,
     onPickPointModeChange: PropTypes.func.isRequired,
     homeLocation: FmPropTypes.point,
     // onItineraryVisibilityToggle: PropTypes.func.isRequired,
@@ -113,7 +115,7 @@ class RoutePlannerMenu extends React.Component {
       pickPointMode, transportType, onTransportTypeChange, onPickPointModeChange,
       /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
       routeFound, expertMode, onToggleElevationChart, t, activeAlternativeIndex, alternatives,
-      onAlternativeChange, language, onEndsSwap, canSwap,
+      onAlternativeChange, language, onEndsSwap, canSwap, mode, onModeChange,
     } = this.props;
 
     const transportTypes = [
@@ -163,28 +165,32 @@ class RoutePlannerMenu extends React.Component {
               <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
             </MenuItem>
           </DropdownButton>
-          <Button onClick={onEndsSwap} disabled={!canSwap} title={t('routePlanner.swap')}>⇆</Button>
-          <DropdownButton
-            title={(
-              <span>
-                <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
-                <span className="hidden-xs"> {t('routePlanner.finish')}</span>
-              </span>
-            )}
-            id="set-finish-dropdown"
-            onClick={() => onPickPointModeChange('finish')}
-            active={pickPointMode === 'finish'}
-          >
-            <MenuItem>
-              <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
-            </MenuItem>
-            <MenuItem onClick={this.handleFinishCurrent}>
-              <FontAwesomeIcon icon="bullseye" /> {t('routePlanner.point.current')}
-            </MenuItem>
-            <MenuItem onClick={this.handleFinishHome}>
-              <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
-            </MenuItem>
-          </DropdownButton>
+          {mode === 'route' && (
+            <>
+              <Button onClick={onEndsSwap} disabled={!canSwap} title={t('routePlanner.swap')}>⇆</Button>
+              <DropdownButton
+                title={(
+                  <span>
+                    <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
+                    <span className="hidden-xs"> {t('routePlanner.finish')}</span>
+                  </span>
+                )}
+                id="set-finish-dropdown"
+                onClick={() => onPickPointModeChange('finish')}
+                active={pickPointMode === 'finish'}
+              >
+                <MenuItem>
+                  <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
+                </MenuItem>
+                <MenuItem onClick={this.handleFinishCurrent}>
+                  <FontAwesomeIcon icon="bullseye" /> {t('routePlanner.point.current')}
+                </MenuItem>
+                <MenuItem onClick={this.handleFinishHome}>
+                  <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
+                </MenuItem>
+              </DropdownButton>
+            </>
+          )}
         </ButtonGroup>
         {' '}
         <DropdownButton
@@ -206,7 +212,28 @@ class RoutePlannerMenu extends React.Component {
                 active={transportType === type}
                 onClick={() => onTransportTypeChange(type)}
               >
-                <FontAwesomeIcon icon={icon} />{['car', 'bikesharing'].includes(type) && <FontAwesomeIcon icon="money" />} {t(`routePlanner.transportType.${type}`)}
+                <FontAwesomeIcon icon={icon} />{['car', 'bikesharing'].includes(type) && <FontAwesomeIcon icon="money" />}
+                {' '}
+                {t(`routePlanner.transportType.${type}`)}
+              </MenuItem>
+            ))
+          }
+        </DropdownButton>
+        {' '}
+        <DropdownButton
+          id="mode"
+          title={t(`routePlanner.mode.${mode}`)}
+        >
+          {
+            ['route', /* 'trip', */'roundtrip'].map(mode1 => (
+              <MenuItem
+                eventKey={mode1}
+                key={mode1}
+                title={t(`routePlanner.mode.${mode1}`)}
+                active={mode === mode1}
+                onClick={() => onModeChange(mode1)}
+              >
+                {t(`routePlanner.mode.${mode1}`)}
               </MenuItem>
             ))
           }
@@ -279,6 +306,7 @@ export default compose(
       pickMode: state.routePlanner.pickMode,
       homeLocation: state.main.homeLocation,
       transportType: state.routePlanner.transportType,
+      mode: state.routePlanner.mode,
       pickPointMode: state.routePlanner.pickMode,
       itineraryIsVisible: state.routePlanner.itineraryIsVisible,
       routeFound: !!state.routePlanner.alternatives.length,
@@ -302,6 +330,9 @@ export default compose(
       },
       onTransportTypeChange(transportType) {
         dispatch(routePlannerSetTransportType(transportType));
+      },
+      onModeChange(mode) {
+        dispatch(routePlannerSetMode(mode));
       },
       onPickPointModeChange(pickMode) {
         dispatch(routePlannerSetPickMode(pickMode));

@@ -38,7 +38,7 @@ export default function handleLocationChange(store, location) {
     // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
     if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(query.transport) && pointsOk) {
-      const { start, finish, midpoints, transportType } = getState().routePlanner;
+      const { start, finish, midpoints, transportType, mode } = getState().routePlanner;
 
       const latLons = points.map(point => (point ? { lat: point[0], lon: point[1] } : null));
       const nextStart = latLons[0];
@@ -46,11 +46,14 @@ export default function handleLocationChange(store, location) {
       const nextFinish = latLons.length > 1 ? latLons[latLons.length - 1] : null;
 
       if (query.transport !== transportType
-          || serializePoint(start) !== serializePoint(nextStart)
-          || serializePoint(finish) !== serializePoint(nextFinish)
-          || midpoints.length !== nextMidpoints.length
-          || midpoints.some((midpoint, i) => serializePoint(midpoint) !== serializePoint(nextMidpoints[i]))) {
-        dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport));
+        || serializePoint(start) !== serializePoint(nextStart)
+        || serializePoint(finish) !== serializePoint(nextFinish)
+        || midpoints.length !== nextMidpoints.length
+        || midpoints.some((midpoint, i) => serializePoint(midpoint) !== serializePoint(nextMidpoints[i]))
+        || (mode === 'route' ? undefined : mode) !== query['route-mode']
+      ) {
+        dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport,
+          [/* 'trip', */'roundtrip'].includes(query['route-mode']) ? query['route-mode'] : 'route'));
       }
     } else if (getState().routePlanner.start || getState().routePlanner.finish) {
       dispatch(routePlannerSetParams(null, null, [], getState().routePlanner.transportType));

@@ -57,6 +57,10 @@ export const urlLogic = createLogic({
       if (routePlanner.transportType) {
         queryParts.push(`transport=${routePlanner.transportType}`);
       }
+
+      if (routePlanner.mode !== 'route') {
+        queryParts.push(`route-mode=${routePlanner.mode}`);
+      }
     }
 
     if (trackViewer.trackUID) {

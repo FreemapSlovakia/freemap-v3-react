@@ -68,6 +68,11 @@ export default {
       ski: 'Downhill skiing',
       foot: 'Foot',
     },
+    mode: {
+      route: 'Route',
+      trip: 'Trip',
+      roundtrip: 'Roundtrip',
+    },
     alternative: 'Alternative',
     // eslint-disable-next-line
     distance: ({ value }) => <Fragment>Distance: <b>{value} km</b></Fragment>,

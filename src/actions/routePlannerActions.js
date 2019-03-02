@@ -24,6 +24,10 @@ export function routePlannerSetTransportType(transportType) {
   return { type: at.ROUTE_PLANNER_SET_TRANSPORT_TYPE, payload: transportType };
 }
 
+export function routePlannerSetMode(mode) {
+  return { type: at.ROUTE_PLANNER_SET_MODE, payload: mode };
+}
+
 export function routePlannerSetPickMode(pickMode) {
   return { type: at.ROUTE_PLANNER_SET_PICK_MODE, payload: pickMode };
 }
@@ -36,11 +40,11 @@ export function routePlannerToggleItineraryVisibility() {
   return { type: at.ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY };
 }
 
-export function routePlannerSetParams(start, finish, midpoints, transportType) {
+export function routePlannerSetParams(start, finish, midpoints, transportType, mode) {
   return {
     type: at.ROUTE_PLANNER_SET_PARAMS,
     payload: {
-      start, finish, midpoints, transportType,
+      start, finish, midpoints, transportType, mode,
     },
   };
 }

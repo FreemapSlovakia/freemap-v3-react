@@ -67,6 +67,11 @@ export default {
       ski: 'Sjezdové lyžování',
       foot: 'Pěšky',
     },
+    mode: {
+      route: 'Trasa',
+      trip: 'Výlet',
+      roundtrip: 'Okruh',
+    },
     alternative: 'Alternativa',
     // eslint-disable-next-line
     distance: ({ value }) => <Fragment>Vzdálenost: <b>{value} km</b></Fragment>,

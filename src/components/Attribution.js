@@ -72,7 +72,7 @@ export default compose(
       expertMode: state.main.expertMode,
       pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
       isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-      imhd: state.routePlanner.effectiveTransportType === 'imhd',
+      imhd: state.routePlanner.transportType === 'imhd',
     }),
     dispatch => ({
       onMapRefocus(changes) {

@@ -26,6 +26,7 @@ class RoutePlannerResult extends React.Component {
     onRemoveMidpoint: PropTypes.func.isRequired,
     onAlternativeChange: PropTypes.func.isRequired,
     transportType: PropTypes.string,
+    mode: PropTypes.oneOf(['route', 'trip', 'roundtrip']).isRequired,
     timestamp: PropTypes.number,
     t: PropTypes.func.isRequired,
     language: PropTypes.string,
@@ -40,6 +41,29 @@ class RoutePlannerResult extends React.Component {
     if (this.t) {
       clearTimeout(this.t);
     }
+  }
+
+  getSummary() {
+    const { transportType, t, language, activeAlternativeIndex, alternatives } = this.props;
+    const { distance, duration, extra } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+
+    return isSpecial(transportType) && extra && extra.numbers ? (
+      <Tooltip direction="top" offset={[0, -36]} permanent>
+        <div>
+          {imhdSummary(t, language, extra)}
+        </div>
+      </Tooltip>
+    ) : distance ? (
+      <Tooltip direction="top" offset={[0, -36]} permanent>
+        <div>
+          <div>{t('routePlanner.distance', { value: nf.format(distance) })}</div>
+          <div>{t('routePlanner.duration', { h: Math.floor(duration / 60), m: Math.round(duration % 60) })}</div>
+        </div>
+      </Tooltip>
+    ) : (
+      null
+    );
   }
 
   bringToFront = (ele) => {
@@ -61,7 +85,9 @@ class RoutePlannerResult extends React.Component {
   }
 
   handleEndPointClick = () => {
-    // just to prevent click propagation to map
+    if (this.props.mode !== 'route') {
+      this.props.onFinishSet(null);
+    }
   }
 
   handlePolyMouseMove = (e, segment, alt) => {
@@ -123,7 +149,6 @@ class RoutePlannerResult extends React.Component {
     this.props.onAlternativeChange(this.state.alt);
   }
 
-
   handleRouteMarkerDragEnd(movedPointType, position, event) {
     this.dragging = false;
 
@@ -162,7 +187,7 @@ class RoutePlannerResult extends React.Component {
 
   render() {
     const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange,
-      transportType, timestamp, alternatives, t, language } = this.props;
+      transportType, timestamp, alternatives, mode } = this.props;
 
     const special = isSpecial(transportType);
 
@@ -173,9 +198,7 @@ class RoutePlannerResult extends React.Component {
       html: '<div class="circular-leaflet-marker-icon"></div>',
     });
 
-    const { distance, duration, extra } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
-
-    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const isRoute = mode === 'route';
 
     return (
       <>
@@ -190,7 +213,9 @@ class RoutePlannerResult extends React.Component {
             onDragEnd={e => this.handleRouteMarkerDragEnd('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
             onClick={this.handleEndPointClick}
-          />
+          >
+            {!isRoute && this.getSummary()}
+          </RichMarker>
         )}
         {this.state.lat !== null && this.state.lon !== null && (
           <Marker
@@ -212,14 +237,15 @@ class RoutePlannerResult extends React.Component {
             onClick={() => this.handleMidpointClick(i)}
             key={`midpoint-${i}`}
             zIndexOffset={9}
-            label={i + 1}
+            faIcon={isRoute ? undefined : 'flag'}
+            label={isRoute ? i + 1 : undefined}
             position={L.latLng(lat, lon)}
           />
         ))}
         {finish && (
           <RichMarker
-            faIcon="stop"
-            color="#d9534f"
+            faIcon={isRoute ? 'stop' : 'flag'}
+            color={isRoute ? '#d9534f' : undefined}
             zIndexOffset={10}
             draggable
             onDragStart={this.handleDragStart}
@@ -227,22 +253,7 @@ class RoutePlannerResult extends React.Component {
             position={L.latLng(finish.lat, finish.lon)}
             onClick={this.handleEndPointClick}
           >
-            {isSpecial(transportType) && extra && extra.numbers ? (
-              <Tooltip direction="top" offset={[0, -36]} permanent>
-                <div>
-                  {imhdSummary(t, language, extra)}
-                </div>
-              </Tooltip>
-            ) : distance ? (
-              <Tooltip direction="top" offset={[0, -36]} permanent>
-                <div>
-                  <div>{t('routePlanner.distance', { value: nf.format(distance) })}</div>
-                  <div>{t('routePlanner.duration', { h: Math.floor(duration / 60), m: Math.round(duration % 60) })}</div>
-                </div>
-              </Tooltip>
-            ) : (
-              null
-            )}
+            {isRoute && this.getSummary()}
           </RichMarker>
         )}
         {(!special ? alternatives : alternatives.map(addMissingSegments))
@@ -316,7 +327,8 @@ export default compose(
       midpoints: state.routePlanner.midpoints,
       alternatives: state.routePlanner.alternatives,
       activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-      transportType: state.routePlanner.effectiveTransportType,
+      transportType: state.routePlanner.transportType,
+      mode: state.routePlanner.mode,
       timestamp: state.routePlanner.timestamp,
       language: state.l10n.language,
     }),

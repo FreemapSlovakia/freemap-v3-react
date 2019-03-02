@@ -1,17 +1,21 @@
 import update from 'immutability-helper';
 import * as at from 'fm3/actionTypes';
 
-const initialState = {
-  start: null,
-  midpoints: [],
-  finish: null,
-  transportType: null,
-  effectiveTransportType: null,
-  pickMode: 'start',
-  itineraryIsVisible: false,
+const clearResult = {
   alternatives: [],
   activeAlternativeIndex: 0,
   timestamp: null,
+};
+
+const initialState = {
+  transportType: null,
+  start: null,
+  midpoints: [],
+  finish: null,
+  pickMode: 'start',
+  itineraryIsVisible: false,
+  mode: 'route',
+  ...clearResult,
 };
 
 export default function routePlanner(state = initialState, action) {
@@ -22,6 +26,7 @@ export default function routePlanner(state = initialState, action) {
       return {
         ...initialState,
         transportType: state.transportType,
+        mode: state.mode,
       };
     case at.ROUTE_PLANNER_SET_PARAMS:
       return {
@@ -29,25 +34,32 @@ export default function routePlanner(state = initialState, action) {
         ...(action.payload.start === null || action.payload.finish === null ? {
           ...initialState,
           transportType: state.transportType,
+          mode: state.mode,
         } : {}),
         start: action.payload.start,
         finish: action.payload.finish,
         midpoints: isSpecial(action.payload.transportType) ? [] : action.payload.midpoints,
         transportType: action.payload.transportType,
+        mode: action.payload.mode || 'route',
       };
     case at.ROUTE_PLANNER_SET_START:
       return {
         ...state,
         start: action.payload.start,
+        midpoints: !isSpecial(state.transportType) && !action.payload.move && state.start ? [state.start, ...state.midpoints] : state.midpoints,
         pickMode: state.finish ? 'start' : 'finish',
-        midpoints: !isSpecial(state.effectiveTransportType) && !action.payload.move && state.start ? [state.start, ...state.midpoints] : state.midpoints,
       };
     case at.ROUTE_PLANNER_SET_FINISH:
-      return {
+      return action.payload.finish === null ? { // only possible in (round)trip mode
+        ...state,
+        finish: state.midpoints.length ? state.midpoints[state.midpoints.length - 1] : null,
+        midpoints: state.midpoints.length ? state.midpoints.slice(0, state.midpoints.length - 1) : [],
+        pickMode: state.start ? 'finish' : 'start',
+      } : {
         ...state,
         finish: action.payload.finish,
+        midpoints: !isSpecial(state.transportType) && !action.payload.move && state.finish ? [...state.midpoints, state.finish] : state.midpoints,
         pickMode: state.start ? 'finish' : 'start',
-        midpoints: !isSpecial(state.effectiveTransportType) && !action.payload.move && state.finish ? [...state.midpoints, state.finish] : state.midpoints,
       };
     case at.ROUTE_PLANNER_SWAP_ENDS:
       return { ...state, start: state.finish, finish: state.start, midpoints: [...state.midpoints].reverse() };
@@ -58,7 +70,9 @@ export default function routePlanner(state = initialState, action) {
     case at.ROUTE_PLANNER_REMOVE_MIDPOINT:
       return update(state, { midpoints: { $splice: [[action.payload, 1]] } });
     case at.ROUTE_PLANNER_SET_TRANSPORT_TYPE:
-      return { ...state, transportType: action.payload };
+      return { ...state, ...clearResult, transportType: action.payload };
+    case at.ROUTE_PLANNER_SET_MODE:
+      return { ...state, ...clearResult, mode: action.payload };
     case at.ROUTE_PLANNER_SET_PICK_MODE:
       return { ...state, pickMode: action.payload };
     case at.ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY:
@@ -69,7 +83,6 @@ export default function routePlanner(state = initialState, action) {
         alternatives: action.payload.alternatives,
         timestamp: action.payload.timestamp,
         activeAlternativeIndex: 0,
-        effectiveTransportType: action.payload.transportType,
         midpoints: isSpecial(action.payload.transportType) ? [] : state.midpoints,
       };
     case at.ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX:
