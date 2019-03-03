@@ -16,7 +16,7 @@ export default createLogic({
       focusPoint = finish;
     }
 
-    if (!getMapLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
+    if (focusPoint && !getMapLeafletElement().getBounds().contains(L.latLng(focusPoint.lat, focusPoint.lon))) {
       dispatch(mapRefocus({ lat: focusPoint.lat, lon: focusPoint.lon }));
     }
 
