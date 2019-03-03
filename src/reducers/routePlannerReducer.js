@@ -21,7 +21,7 @@ const initialState = {
 export default function routePlanner(state = initialState, action) {
   switch (action.type) {
     case at.SET_TOOL:
-      return { ...state, pickMode: !state.start ? 'start' : !state.finish ? 'finish' : null };
+      return { ...state, pickMode: !state.start ? 'start' : state.mode === 'roundtrip' || !state.finish ? 'finish' : null };
     case at.CLEAR_MAP:
       return {
         ...initialState,
@@ -47,7 +47,7 @@ export default function routePlanner(state = initialState, action) {
         ...state,
         start: action.payload.start,
         midpoints: !isSpecial(state.transportType) && !action.payload.move && state.start ? [state.start, ...state.midpoints] : state.midpoints,
-        pickMode: state.finish ? 'start' : 'finish',
+        pickMode: state.finish && state.mode !== 'roundtrip' ? null : 'finish',
       };
     case at.ROUTE_PLANNER_SET_FINISH:
       return action.payload.finish === null ? { // only possible in (round)trip mode

@@ -84,6 +84,10 @@ class RoutePlannerResult extends React.Component {
         });
   }
 
+  handleStartPointClick = () => {
+    // prevent default
+  }
+
   handleEndPointClick = () => {
     if (this.props.mode !== 'route') {
       this.props.onFinishSet(null);
@@ -212,7 +216,7 @@ class RoutePlannerResult extends React.Component {
             onDragStart={this.handleDragStart}
             onDragEnd={e => this.handleRouteMarkerDragEnd('start', null, e)}
             position={L.latLng(start.lat, start.lon)}
-            onClick={this.handleEndPointClick}
+            onClick={this.handleStartPointClick}
           >
             {!isRoute && this.getSummary()}
           </RichMarker>
