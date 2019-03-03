@@ -68,9 +68,9 @@ export default {
       foot: 'Pěšky',
     },
     mode: {
-      route: 'Trasa',
-      trip: 'Výlet',
-      roundtrip: 'Okruh',
+      route: 'Po pořadí',
+      trip: 'Návštěva míst',
+      roundtrip: 'Návštěva míst (okruh)',
     },
     alternative: 'Alternativa',
     // eslint-disable-next-line

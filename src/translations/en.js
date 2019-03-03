@@ -69,9 +69,9 @@ export default {
       foot: 'Foot',
     },
     mode: {
-      route: 'Route',
-      trip: 'Trip',
-      roundtrip: 'Roundtrip',
+      route: 'Ordered',
+      trip: 'Visiting places',
+      roundtrip: 'Visiting places (roundtrip)',
     },
     alternative: 'Alternative',
     // eslint-disable-next-line

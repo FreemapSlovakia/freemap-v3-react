@@ -89,7 +89,7 @@ class RoutePlannerResult extends React.Component {
   }
 
   handleEndPointClick = () => {
-    if (this.props.mode !== 'route') {
+    if (this.props.mode === 'roundtrip') {
       this.props.onFinishSet(null);
     }
   }
@@ -248,8 +248,8 @@ class RoutePlannerResult extends React.Component {
         ))}
         {finish && (
           <RichMarker
-            faIcon={isRoute ? 'stop' : 'flag'}
-            color={isRoute ? '#d9534f' : undefined}
+            faIcon={mode !== 'roundtrip' ? 'stop' : 'flag'}
+            color={mode !== 'roundtrip' ? '#d9534f' : undefined}
             zIndexOffset={10}
             draggable
             onDragStart={this.handleDragStart}

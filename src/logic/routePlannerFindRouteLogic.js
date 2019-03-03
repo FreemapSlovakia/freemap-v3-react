@@ -48,6 +48,7 @@ export default createLogic({
       geometries: 'geojson',
       roundtrip: mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
       source: mode === 'route' ? undefined : 'first',
+      destination: mode === 'trip' ? 'last' : undefined,
       // continue_straight: true,
     };
 

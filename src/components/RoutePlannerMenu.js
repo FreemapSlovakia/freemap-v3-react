@@ -165,7 +165,7 @@ class RoutePlannerMenu extends React.Component {
               <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
             </MenuItem>
           </DropdownButton>
-          {mode === 'route' && (
+          {mode !== 'roundtrip' && (
             <>
               <Button onClick={onEndsSwap} disabled={!canSwap} title={t('routePlanner.swap')}>⇆</Button>
               <DropdownButton
@@ -225,7 +225,7 @@ class RoutePlannerMenu extends React.Component {
           title={t(`routePlanner.mode.${mode}`)}
         >
           {
-            ['route', /* 'trip', */'roundtrip'].map(mode1 => (
+            ['route', 'trip', 'roundtrip'].map(mode1 => (
               <MenuItem
                 eventKey={mode1}
                 key={mode1}
