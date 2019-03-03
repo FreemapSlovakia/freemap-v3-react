@@ -10,7 +10,7 @@ export default createLogic({
     if (tool === 'route-planner' && !(start && finish)) {
       const { mapType } = getState().map;
       dispatch(routePlannerSetTransportType(
-        ['T', 'p'].includes(mapType) ? 'foot' : mapType === 'K' ? 'nordic'
+        ['T', 'p', 'X'].includes(mapType) ? 'foot' : mapType === 'K' ? 'nordic'
           : ['C', 'M'].includes(mapType) ? 'bike' : mapType === 'd' ? 'imhd' : 'car'));
     }
 
