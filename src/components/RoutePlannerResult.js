@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -12,39 +12,42 @@ import injectL10n from 'fm3/l10nInjector';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
-class RoutePlannerResult extends React.Component {
-  static propTypes = {
-    start: FmPropTypes.point,
-    finish: FmPropTypes.point,
-    midpoints: FmPropTypes.points,
-    activeAlternativeIndex: PropTypes.number.isRequired,
-    alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
-    onStartSet: PropTypes.func.isRequired,
-    onFinishSet: PropTypes.func.isRequired,
-    onMidpointSet: PropTypes.func.isRequired,
-    onAddMidpoint: PropTypes.func.isRequired,
-    onRemoveMidpoint: PropTypes.func.isRequired,
-    onAlternativeChange: PropTypes.func.isRequired,
-    transportType: PropTypes.string,
-    mode: PropTypes.oneOf(['route', 'trip', 'roundtrip']).isRequired,
-    timestamp: PropTypes.number,
-    t: PropTypes.func.isRequired,
-    language: PropTypes.string,
-  }
+RoutePlannerResult.propTypes = {
+  start: FmPropTypes.point,
+  finish: FmPropTypes.point,
+  midpoints: FmPropTypes.points,
+  activeAlternativeIndex: PropTypes.number.isRequired,
+  alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
+  onStartSet: PropTypes.func.isRequired,
+  onFinishSet: PropTypes.func.isRequired,
+  onMidpointSet: PropTypes.func.isRequired,
+  onAddMidpoint: PropTypes.func.isRequired,
+  onRemoveMidpoint: PropTypes.func.isRequired,
+  onAlternativeChange: PropTypes.func.isRequired,
+  transportType: PropTypes.string,
+  mode: PropTypes.oneOf(['route', 'trip', 'roundtrip']).isRequired,
+  timestamp: PropTypes.number,
+  t: PropTypes.func.isRequired,
+  language: PropTypes.string,
+};
 
-  state = {
-    lat: null,
-    lon: null,
-  }
+function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex, alternatives,
+  mode, onFinishSet, onAddMidpoint, onAlternativeChange,
+  onStartSet, onMidpointSet, onRemoveMidpoint, start, midpoints, finish, timestamp },
+) {
+  const tRef = useRef();
+  const draggingRef = useRef();
 
-  componentWillUnmount() {
-    if (this.t) {
-      clearTimeout(this.t);
-    }
-  }
+  const [dragLat, setDragLat] = useState(null);
+  const [dragLon, setDragLon] = useState(null);
+  const [dragSegment, setDragSegment] = useState(null);
+  const [dragAlt, setDragAlt] = useState(null);
 
-  getSummary() {
-    const { transportType, t, language, activeAlternativeIndex, alternatives } = this.props;
+  useEffect(() => () => {
+    clearTimeout(tRef.current);
+  }, []);
+
+  function getSummary() {
     const { distance, duration, extra } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
     const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 
@@ -66,260 +69,249 @@ class RoutePlannerResult extends React.Component {
     );
   }
 
-  bringToFront = (ele) => {
+  const bringToFront = useCallback((ele) => {
     if (ele) {
       ele.leafletElement.bringToFront();
     }
-  }
+  });
 
-  maneuverToText = (name, { type, modifier }, extra) => {
+  const maneuverToText = useCallback((name, { type, modifier }, extra) => {
     const p = 'routePlanner.maneuver';
-    const { t, transportType } = this.props;
-    return transportType === 'imhd' ? imhdStep(t, this.props.language, extra)
+    return transportType === 'imhd' ? imhdStep(t, language, extra)
       : transportType === 'bikesharing' ? bikesharingStep(t, extra)
         : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
           type: t(`${p}.types.${type}`, {}, type),
           modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
           name,
         });
-  }
+  }, [t, transportType, language]);
 
-  handleStartPointClick = () => {
+  const handleStartPointClick = useCallback(() => {
     // prevent default
-  }
+  });
 
-  handleEndPointClick = () => {
-    if (this.props.mode === 'roundtrip') {
-      this.props.onFinishSet(null);
+  const handleEndPointClick = useCallback(() => {
+    if (mode === 'roundtrip') {
+      onFinishSet(null);
     }
-  }
+  }, [mode, onFinishSet]);
 
-  handlePolyMouseMove = (e, segment, alt) => {
-    if (this.dragging) {
+  const handlePolyMouseMove = useCallback((e, segment, alt) => {
+    if (draggingRef.current) {
       return;
     }
-    if (this.t) {
-      clearTimeout(this.t);
-      this.t = null;
+    if (tRef.current) {
+      clearTimeout(tRef.current);
+      tRef.current = null;
     }
-    this.setState({
-      lat: e.latlng.lat,
-      lon: e.latlng.lng,
-      segment,
-      alt,
-    });
-  }
 
-  handlePolyMouseOut = () => {
-    if (!this.dragging) {
-      this.resetOnTimeout();
+    setDragLat(e.latlng.lat);
+    setDragLon(e.latlng.lng);
+    setDragSegment(segment);
+    setDragAlt(alt);
+  });
+
+  const handlePolyMouseOut = useCallback(() => {
+    if (!draggingRef.current) {
+      resetOnTimeout();
     }
-  }
+  }, [resetOnTimeout]);
 
-  handleFutureMouseOver = () => {
-    if (!this.dragging && this.t) {
-      clearTimeout(this.t);
-      this.t = null;
+  const handleFutureMouseOver = useCallback(() => {
+    if (!draggingRef.current && tRef.current) {
+      clearTimeout(tRef.current);
+      tRef.current = null;
     }
-  }
+  });
 
-  handleFutureMouseOut = () => {
-    if (!this.dragging) {
-      this.resetOnTimeout();
+  const handleFutureMouseOut = useCallback(() => {
+    if (!draggingRef.current) {
+      resetOnTimeout();
     }
-  }
+  }, [resetOnTimeout]);
 
-  handleDragStart = () => {
-    if (this.t) {
-      clearTimeout(this.t);
+  const handleDragStart = useCallback(() => {
+    if (tRef.current) {
+      clearTimeout(tRef.current);
     }
-    this.dragging = true;
-  }
+    draggingRef.current = true;
+  });
 
-  handleFutureDragEnd = (e) => {
-    this.dragging = false;
-    this.setState({
-      lat: null,
-      lon: null,
-    });
+  const handleFutureDragEnd = useCallback((e) => {
+    draggingRef.current = false;
+    setDragLat(null);
+    setDragLon(null);
 
-    this.props.onAddMidpoint(this.state.segment, {
+    onAddMidpoint(dragSegment, {
       lat: e.target.getLatLng().lat,
       lon: e.target.getLatLng().lng,
     });
-  }
+  }, [onAddMidpoint, dragSegment]);
 
-  handleFutureClick = () => {
-    this.props.onAlternativeChange(this.state.alt);
-  }
+  const handleFutureClick = useCallback(() => {
+    onAlternativeChange(dragAlt);
+  }, [onAlternativeChange, dragAlt]);
 
-  handleRouteMarkerDragEnd(movedPointType, position, event) {
-    this.dragging = false;
+  const handleRouteMarkerDragEnd = useCallback((movedPointType, position, event) => {
+    draggingRef.current = false;
 
     const { lat, lng: lon } = event.target.getLatLng();
 
     switch (movedPointType) {
       case 'start':
-        this.props.onStartSet({ lat, lon });
+        onStartSet({ lat, lon });
         break;
       case 'finish':
-        this.props.onFinishSet({ lat, lon });
+        onFinishSet({ lat, lon });
         break;
       case 'midpoint':
-        this.props.onMidpointSet(position, { lat, lon });
+        onMidpointSet(position, { lat, lon });
         break;
       default:
         throw new Error('unknown pointType');
     }
-  }
+  }, [onStartSet, onFinishSet, onMidpointSet]);
 
-  handleMidpointClick(position) {
-    this.props.onRemoveMidpoint(position);
-  }
+  const handleMidpointClick = useCallback((position) => {
+    onRemoveMidpoint(position);
+  }, [onRemoveMidpoint]);
 
-  resetOnTimeout() {
-    if (this.t) {
-      clearTimeout(this.t);
+  const resetOnTimeout = useCallback(() => {
+    if (tRef.current) {
+      clearTimeout(tRef.current);
     }
-    this.t = setTimeout(() => {
-      this.setState({
-        lat: null,
-        lon: null,
-      });
+    tRef.current = setTimeout(() => {
+      setDragLat(null);
+      setDragLon(null);
     }, 200);
-  }
+  });
 
-  render() {
-    const { start, midpoints, finish, activeAlternativeIndex, onAlternativeChange,
-      transportType, timestamp, alternatives, mode } = this.props;
+  const special = isSpecial(transportType);
 
-    const special = isSpecial(transportType);
+  const Icon = L.divIcon;
+  const circularIcon = new Icon({ // CircleMarker is not draggable
+    iconSize: [14, 14],
+    iconAnchor: [7, 7],
+    html: '<div class="circular-leaflet-marker-icon"></div>',
+  });
 
-    const Icon = L.divIcon;
-    const circularIcon = new Icon({ // CircleMarker is not draggable
-      iconSize: [14, 14],
-      iconAnchor: [7, 7],
-      html: '<div class="circular-leaflet-marker-icon"></div>',
-    });
+  const isRoute = mode === 'route';
 
-    const isRoute = mode === 'route';
-
-    return (
-      <>
-        {start && (
-          <RichMarker
-            faIcon="play"
-            zIndexOffset={10}
-            faIconLeftPadding="2px"
-            color="#409a40"
-            draggable
-            onDragStart={this.handleDragStart}
-            onDragEnd={e => this.handleRouteMarkerDragEnd('start', null, e)}
-            position={L.latLng(start.lat, start.lon)}
-            onClick={this.handleStartPointClick}
-          >
-            {!isRoute && this.getSummary()}
-          </RichMarker>
-        )}
-        {this.state.lat !== null && this.state.lon !== null && (
-          <Marker
-            draggable
-            icon={circularIcon}
-            onDragStart={this.handleDragStart}
-            onDragEnd={this.handleFutureDragEnd}
-            onMouseOver={this.handleFutureMouseOver}
-            onMouseOut={this.handleFutureMouseOut}
-            position={L.latLng(this.state.lat, this.state.lon)}
-            onClick={this.handleFutureClick}
-          />
-        )}
-        {midpoints.map(({ lat, lon }, i) => (
-          <RichMarker
-            draggable
-            onDragStart={this.handleDragStart}
-            onDragEnd={e => this.handleRouteMarkerDragEnd('midpoint', i, e)}
-            onClick={() => this.handleMidpointClick(i)}
-            key={`midpoint-${i}`}
-            zIndexOffset={9}
-            faIcon={isRoute ? undefined : 'flag'}
-            label={isRoute ? i + 1 : undefined}
-            position={L.latLng(lat, lon)}
-          />
-        ))}
-        {finish && (
-          <RichMarker
-            faIcon={mode !== 'roundtrip' ? 'stop' : 'flag'}
-            color={mode !== 'roundtrip' ? '#d9534f' : undefined}
-            zIndexOffset={10}
-            draggable
-            onDragStart={this.handleDragStart}
-            onDragEnd={e => this.handleRouteMarkerDragEnd('finish', null, e)}
-            position={L.latLng(finish.lat, finish.lon)}
-            onClick={this.handleEndPointClick}
-          >
-            {isRoute && this.getSummary()}
-          </RichMarker>
-        )}
-        {(!special ? alternatives : alternatives.map(addMissingSegments))
-          .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
-          .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
-            <React.Fragment key={`alt-${timestamp}-${alt}`}>
-              {
-                alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra: extra1 }, i) => (
-                  <Marker
-                    key={i}
-                    icon={circularIcon}
-                    position={shapePoints[0]}
-                  >
-                    <Tooltip direction="right" permanent>
-                      <div>
-                        {this.maneuverToText(name, maneuver, extra1)}
-                      </div>
-                    </Tooltip>
-                  </Marker>
-                ))
-              }
-              {
-                itinerary.map((routeSlice, i) => (
-                  <Polyline
-                    key={`slice-${i}`}
-                    ref={ele => this.bringToFront(ele)}
-                    positions={routeSlice.shapePoints}
-                    weight={10}
-                    color="#fff"
-                    bubblingMouseEvents={false}
-                    onClick={() => onAlternativeChange(alt)}
-                    onMouseMove={special ? undefined : e => this.handlePolyMouseMove(e, routeSlice.legIndex, alt)}
-                    onMouseOut={this.handlePolyMouseOut}
-                  />
-                ))
-              }
-              {
-                itinerary.map((routeSlice, i) => (
-                  <Polyline
-                    key={`slice-${timestamp}-${alt}-${i}`}
-                    ref={ele => this.bringToFront(ele)}
-                    positions={routeSlice.shapePoints}
-                    weight={6}
-                    color={
-                      alt !== activeAlternativeIndex ? '#868e96'
-                        : !special && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
-                          : 'hsl(211, 100%, 50%)'
-                    }
-                    opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                    dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
-                    interactive={false}
-                    bubblingMouseEvents={false}
-                  />
-                ))
-              }
-            </React.Fragment>
-          ))
-        }
-        <ElevationChartActivePoint />
-      </>
-    );
-  }
+  return (
+    <>
+      {start && (
+        <RichMarker
+          faIcon="play"
+          zIndexOffset={10}
+          faIconLeftPadding="2px"
+          color="#409a40"
+          draggable
+          onDragStart={handleDragStart}
+          onDragEnd={e => handleRouteMarkerDragEnd('start', null, e)}
+          position={L.latLng(start.lat, start.lon)}
+          onClick={handleStartPointClick}
+        >
+          {!isRoute && getSummary()}
+        </RichMarker>
+      )}
+      {dragLat !== null && dragLon !== null && (
+        <Marker
+          draggable
+          icon={circularIcon}
+          onDragStart={handleDragStart}
+          onDragEnd={handleFutureDragEnd}
+          onMouseOver={handleFutureMouseOver}
+          onMouseOut={handleFutureMouseOut}
+          position={L.latLng(dragLat, dragLon)}
+          onClick={handleFutureClick}
+        />
+      )}
+      {midpoints.map(({ lat, lon }, i) => (
+        <RichMarker
+          draggable
+          onDragStart={handleDragStart}
+          onDragEnd={e => handleRouteMarkerDragEnd('midpoint', i, e)}
+          onClick={() => handleMidpointClick(i)}
+          key={`midpoint-${i}`}
+          zIndexOffset={9}
+          faIcon={isRoute ? undefined : 'flag'}
+          label={isRoute ? i + 1 : undefined}
+          position={L.latLng(lat, lon)}
+        />
+      ))}
+      {finish && (
+        <RichMarker
+          faIcon={mode !== 'roundtrip' ? 'stop' : 'flag'}
+          color={mode !== 'roundtrip' ? '#d9534f' : undefined}
+          zIndexOffset={10}
+          draggable
+          onDragStart={handleDragStart}
+          onDragEnd={e => handleRouteMarkerDragEnd('finish', null, e)}
+          position={L.latLng(finish.lat, finish.lon)}
+          onClick={handleEndPointClick}
+        >
+          {isRoute && getSummary()}
+        </RichMarker>
+      )}
+      {(!special ? alternatives : alternatives.map(addMissingSegments))
+        .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
+        .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
+          <React.Fragment key={`alt-${timestamp}-${alt}`}>
+            {
+              alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra: extra1 }, i) => (
+                <Marker
+                  key={i}
+                  icon={circularIcon}
+                  position={shapePoints[0]}
+                >
+                  <Tooltip direction="right" permanent>
+                    <div>
+                      {maneuverToText(name, maneuver, extra1)}
+                    </div>
+                  </Tooltip>
+                </Marker>
+              ))
+            }
+            {
+              itinerary.map((routeSlice, i) => (
+                <Polyline
+                  key={`slice-${i}`}
+                  ref={bringToFront}
+                  positions={routeSlice.shapePoints}
+                  weight={10}
+                  color="#fff"
+                  bubblingMouseEvents={false}
+                  onClick={() => onAlternativeChange(alt)}
+                  onMouseMove={special ? undefined : e => handlePolyMouseMove(e, routeSlice.legIndex, alt)}
+                  onMouseOut={handlePolyMouseOut}
+                />
+              ))
+            }
+            {
+              itinerary.map((routeSlice, i) => (
+                <Polyline
+                  key={`slice-${timestamp}-${alt}-${i}`}
+                  ref={bringToFront}
+                  positions={routeSlice.shapePoints}
+                  weight={6}
+                  color={
+                    alt !== activeAlternativeIndex ? '#868e96'
+                      : !special && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
+                        : 'hsl(211, 100%, 50%)'
+                  }
+                  opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                  dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
+                  interactive={false}
+                  bubblingMouseEvents={false}
+                />
+              ))
+            }
+          </React.Fragment>
+        ))
+      }
+      <ElevationChartActivePoint />
+    </>
+  );
 }
 
 export default compose(

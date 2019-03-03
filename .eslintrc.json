@@ -7,7 +7,8 @@
     "node": true
   },
   "plugins": [
-    "react"
+    "react",
+    "react-hooks"
   ],
   "extends": [
     "airbnb"
@@ -53,7 +54,9 @@
     "function-paren-newline": 0,
     "object-curly-newline": 0,
     "react/destructuring-assignment": 0,
-    "react/jsx-one-expression-per-line": 0
+    "react/jsx-one-expression-per-line": 0,
+    "react-hooks/rules-of-hooks": "error",
+    "react-hooks/exhaustive-deps": "warn"
   },
   "globals": {
     "L": true,
