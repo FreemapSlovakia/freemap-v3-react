@@ -151,7 +151,7 @@ export const baseLayers = [
   {
     type: 'X',
     icon: 'flask',
-    url: `http://tiles-ng.freemap.sk/{z}/{x}/{y}${window.devicePixelRatio === 1 ? '' : `@${window.devicePixelRatio}x`}`,
+    url: `https://tiles-ng.freemap.sk/{z}/{x}/{y}${window.devicePixelRatio === 1 ? '' : `@${window.devicePixelRatio}x`}`,
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,
