@@ -33,6 +33,7 @@ export default {
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     back: 'Zpět',
     internalError: `!HTML!${errorMarkup}`,
+    appUpdated: 'Je dostupná aktualizce. Obnovit stránku?',
   },
 
   tools: {
@@ -198,7 +199,6 @@ export default {
     github: 'Freemap na GitHub-u',
     automaticLanguage: 'Automaticky',
     pdfExport: 'Exportovat do PDF (pro tisk)',
-    appUpdated: 'Je dostupná aktualizce. Obnovit stránku?',
   },
 
   main: {
@@ -209,6 +209,7 @@ export default {
     zoomIn: 'Přiblížit mapu',
     zoomOut: 'Oddálit mapu',
     devInfo: () => <div>Toto je testovací verze portálu Freemap Slovakia. Pro ostrou verzi přejděte na <a href="https://www.freemap.sk/">www.freemap.sk</a>.</div>,
+    copyright: 'Licence',
   },
 
   gallery: {

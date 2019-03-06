@@ -308,7 +308,7 @@ class Main extends React.Component {
                   </Popover>
                 )}
               >
-                <Button title={t('main.locateMe')}>
+                <Button title={t('main.copyright')}>
                   <FontAwesomeIcon icon="copyright" />
                 </Button>
               </OverlayTrigger>

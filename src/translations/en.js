@@ -208,6 +208,7 @@ export default {
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     devInfo: () => <div>This is a testing version of Freemap Slovakia. For production version navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.</div>,
+    copyright: 'Copyright',
   },
 
   gallery: {
