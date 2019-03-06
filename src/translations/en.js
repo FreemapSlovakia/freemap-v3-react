@@ -811,10 +811,10 @@ export default {
       photos: 'pictures',
     },
     attr: {
-      freemap: '© Freemap Slovakia',
-      osmData: '© OpenStreetMap contributors',
-      srtm: '© SRTM',
-      hot: '© Humanitarian OpenStreetMap Team',
+      freemap: '©\xa0Freemap Slovakia',
+      osmData: '©\xa0OpenStreetMap contributors',
+      srtm: '©\xa0SRTM',
+      hot: '©\xa0Humanitarian OpenStreetMap Team',
     },
   },
 

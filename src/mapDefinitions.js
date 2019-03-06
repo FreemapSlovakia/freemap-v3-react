@@ -1,6 +1,6 @@
 const OSM_MAP_ATTR = {
   type: 'map',
-  name: '© OpenStreetMap',
+  name: '©\xa0OpenStreetMap',
   url: 'https://osm.org/',
 };
 
@@ -22,13 +22,13 @@ const SRTM_ATTR = {
 
 const STRAVA_ATTR = {
   type: 'map',
-  name: '© Strava',
+  name: '©\xa0Strava',
   url: 'https://www.strava.com/',
 };
 
 const NLC_ATTR = {
   type: 'map',
-  name: '© NLC Zvolen',
+  name: '©\xa0NLC Zvolen',
   url: 'http://www.nlcsk.org/',
 };
 
@@ -61,15 +61,15 @@ export const baseLayers = [
     attribution: [
       {
         type: 'map',
-        name: '© Bing',
+        name: '©\xa0Bing',
       },
       {
         type: 'map',
-        name: '© Earthstar Geographics SIO',
+        name: '©\xa0Earthstar Geographics SIO',
       },
       {
         type: 'map',
-        name: '© 2017 Microsoft Corporation',
+        name: '©\xa02017 Microsoft Corporation',
       },
     ],
   },
@@ -95,7 +95,7 @@ export const baseLayers = [
     attribution: [
       {
         type: 'map',
-        name: '© Martin Tesař',
+        name: '©\xa0Martin Tesař',
         url: 'mailto:smmtb@gmail.com',
       },
       OSM_DATA_ATTR,
@@ -113,7 +113,7 @@ export const baseLayers = [
     attribution: [
       {
         type: 'map',
-        name: '© OpenTopoMap',
+        name: '©\xa0OpenTopoMap',
         url: 'https://tile.opentopomap.org/about#verwendung',
       },
       OSM_DATA_ATTR,
@@ -131,7 +131,7 @@ export const baseLayers = [
     attribution: [
       {
         type: 'map',
-        name: '© MeMoMaps',
+        name: '©\xa0MeMoMaps',
         url: 'https://memomaps.de/en/',
       },
       OSM_DATA_ATTR,
@@ -264,7 +264,7 @@ export const overlayLayers = [
     attribution: [
       {
         type: 'map',
-        name: '© OpenSnowMap.org',
+        name: '©\xa0OpenSnowMap.org',
       },
       OSM_DATA_ATTR,
     ],

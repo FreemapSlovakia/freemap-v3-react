@@ -224,15 +224,6 @@ button#freemap-logo {
   margin-bottom: 2px;
 }
 
-.fm-attribution {
-  position: fixed;
-  right: 0px;
-  bottom: 0px;
-  z-index: 10;
-  background-color: white !important; // also for print
-  padding: 0 6px;
-  border-top-left-radius: 4px;
-  border-top: 1px solid #ccc;
-  border-left: 1px solid #ccc;
-  font-size: 12px;
+.fm-attr-popover {
+  max-width: 400px;
 }

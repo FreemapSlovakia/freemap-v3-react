@@ -12,6 +12,8 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import CloseButton from 'react-bootstrap/lib/CloseButton';
 import Panel from 'react-bootstrap/lib/Panel';
+import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
+import Popover from 'react-bootstrap/lib/Popover';
 
 import injectL10n from 'fm3/l10nInjector';
 
@@ -114,6 +116,8 @@ class Main extends React.Component {
     t: PropTypes.func.isRequired,
     overlayPaneOpacity: PropTypes.number.isRequired,
     embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
+    overlays: FmPropTypes.overlays.isRequired,
+    imhd: PropTypes.bool,
   };
 
   state = {
@@ -200,7 +204,7 @@ class Main extends React.Component {
     const {
       lat, lon, zoom, mapType,
       tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity, embedFeatures,
+      showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity, embedFeatures, overlays, imhd,
     } = this.props;
 
     const embed = window.self !== window.top;
@@ -291,9 +295,25 @@ class Main extends React.Component {
           </div>
         </div>
 
-        <Attribution />
-
         <div className="fm-type-zoom-control">
+          <Panel className="fm-toolbar" style={{ float: 'right', marginRight: '10px' }}>
+            <ButtonToolbar>
+              <OverlayTrigger
+                trigger="click"
+                rootClose
+                placement="top"
+                overlay={(
+                  <Popover id="popover-positioned-right" className="fm-attr-popover">
+                    <Attribution t={t} mapType={mapType} overlays={overlays} imhd={imhd} />
+                  </Popover>
+                )}
+              >
+                <Button title={t('main.locateMe')}>
+                  <FontAwesomeIcon icon="copyright" />
+                </Button>
+              </OverlayTrigger>
+            </ButtonToolbar>
+          </Panel>
           <Panel className="fm-toolbar">
             <ButtonToolbar>
               {(!embed || !embedFeatures.includes('noMapSwitch')) && <MapSwitchButton />}
@@ -404,6 +424,8 @@ export default compose(
       showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
       expertMode: state.main.expertMode,
       overlayPaneOpacity: state.map.overlayPaneOpacity,
+      overlays: state.map.overlays, // for attribution
+      imhd: state.routePlanner.transportType === 'imhd', // for attribution
     }),
     dispatch => ({
       onToolSet(tool) {
