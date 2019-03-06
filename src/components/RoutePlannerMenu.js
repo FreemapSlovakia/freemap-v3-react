@@ -223,6 +223,7 @@ class RoutePlannerMenu extends React.Component {
         <DropdownButton
           id="mode"
           title={t(`routePlanner.mode.${mode}`)}
+          disabled={['imhd', 'bikesharing'].includes(transportType)}
         >
           {
             ['route', 'trip', 'roundtrip'].map(mode1 => (

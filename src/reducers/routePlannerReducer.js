@@ -40,7 +40,7 @@ export default function routePlanner(state = initialState, action) {
         finish: action.payload.finish,
         midpoints: isSpecial(action.payload.transportType) ? [] : action.payload.midpoints,
         transportType: action.payload.transportType,
-        mode: action.payload.mode || 'route',
+        mode: isSpecial(action.payload.transportType) ? 'route' : (action.payload.mode || 'route'),
       };
     case at.ROUTE_PLANNER_SET_START:
       return {
@@ -70,9 +70,14 @@ export default function routePlanner(state = initialState, action) {
     case at.ROUTE_PLANNER_REMOVE_MIDPOINT:
       return update(state, { midpoints: { $splice: [[action.payload, 1]] } });
     case at.ROUTE_PLANNER_SET_TRANSPORT_TYPE:
-      return { ...state, ...clearResult, transportType: action.payload };
+      return {
+        ...state,
+        ...clearResult,
+        transportType: action.payload,
+        mode: isSpecial(action.payload) ? 'route' : state.mode,
+      };
     case at.ROUTE_PLANNER_SET_MODE:
-      return { ...state, ...clearResult, mode: action.payload };
+      return { ...state, ...clearResult, mode: isSpecial(state.transportType) ? 'route' : action.payload };
     case at.ROUTE_PLANNER_SET_PICK_MODE:
       return { ...state, pickMode: action.payload };
     case at.ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY:
