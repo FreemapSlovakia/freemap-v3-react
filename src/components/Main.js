@@ -75,6 +75,7 @@ import TipsModal from 'fm3/components/TipsModal';
 import AboutModal from 'fm3/components/AboutModal';
 import SupportUsModal from 'fm3/components/SupportUsModal';
 import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
+import TrackingModal from 'fm3/components/TrackingModal';
 
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
@@ -358,6 +359,7 @@ class Main extends React.Component {
         {activeModal === 'info-point-change-label' && <InfoPointLabelModal />}
         {activeModal === 'upload-track' && <TrackViewerUploadModal />}
         {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
+        {activeModal === 'tracking' && <TrackingModal />}
         {showLoginModal && <LoginModal />}
 
         <Map

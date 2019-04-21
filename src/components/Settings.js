@@ -15,6 +15,9 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
+import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
+import Tooltip from 'react-bootstrap/lib/Tooltip';
+import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
@@ -128,6 +131,12 @@ class Settings extends React.Component {
     }));
   }
 
+  handleExpertModeChange = (e) => {
+    this.setState({
+      expertMode: e.target.checked,
+    });
+  }
+
   render() {
     const { onClose, onHomeLocationSelect, selectingHomeLocation, user, language, t } = this.props;
     const { homeLocation, tileFormat, expertMode,
@@ -153,6 +162,20 @@ class Settings extends React.Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
+            <Checkbox onChange={this.handleExpertModeChange} checked={expertMode}>
+              {t('settings.expert.switch')}
+              {' '}
+              <OverlayTrigger
+                placement="right"
+                overlay={(
+                  <Tooltip id="tooltip">
+                    <div dangerouslySetInnerHTML={{ __html: t('settings.expertInfo') }} />
+                  </Tooltip>
+                )}
+              >
+                <FontAwesomeIcon icon="question-circle-o" />
+              </OverlayTrigger>
+            </Checkbox>
             <Tabs id="setting-tabs">
               <Tab title={t('settings.tab.map')} eventKey={1}>
                 <p>{t('settings.map.imgFormat.label')}</p>
@@ -190,67 +213,6 @@ class Settings extends React.Component {
                     onChange={newValue => this.setState({ overlayPaneOpacity: newValue })}
                   />
                 </div>
-                <hr />
-                <p>
-                  {t('settings.map.homeLocation.label')}
-                  {' '}
-                  {homeLocation
-                    ? `${formatGpsCoord(homeLocation.lat, 'SN', 'DMS', language)} ${formatGpsCoord(homeLocation.lon, 'WE', 'DMS', language)}`
-                    : t('settings.map.homeLocation.undefined')
-                  }
-                </p>
-                <Button onClick={() => onHomeLocationSelect()}>
-                  <FontAwesomeIcon icon="crosshairs" />
-                  {' '}
-                  {t('settings.map.homeLocation.select')}
-                </Button>
-              </Tab>
-              <Tab title={t('settings.tab.account')} eventKey={2}>
-                {user ? (
-                  <>
-                    <FormGroup>
-                      <ControlLabel>{t('settings.account.name')}</ControlLabel>
-                      <FormControl value={name} onChange={this.handleNameChange} required />
-                    </FormGroup>
-                    <FormGroup>
-                      <ControlLabel>{t('settings.account.email')}</ControlLabel>
-                      <FormControl type="email" value={email} onChange={this.handleEmailChange} />
-                    </FormGroup>
-                  </>
-                ) : (
-                  <Alert>{t('settings.account.noAuthInfo')}</Alert>
-                )}
-              </Tab>
-              <Tab title={t('settings.tab.general')} eventKey={3}>
-                <Checkbox onChange={this.handleShowTipsChange} checked={!preventTips}>
-                  {t('settings.general.tips')}
-                </Checkbox>
-              </Tab>
-              <Tab title={t('settings.tab.expert')} eventKey={4}>
-                <p>{t('settings.expert.switch')}</p>
-                <ButtonGroup>
-                  <Button
-                    active={!expertMode}
-                    onClick={() => this.setState({ expertMode: false })}
-                  >
-                    {t('settings.expert.off')}
-                  </Button>
-                  <Button
-                    active={expertMode}
-                    onClick={() => this.setState({ expertMode: true })}
-                  >
-                    {t('settings.expert.on')}
-                  </Button>
-                </ButtonGroup>
-                {!expertMode && (
-                  <>
-                    <br />
-                    <br />
-                    <Alert>
-                      {t('settings.expert.offInfo')}
-                    </Alert>
-                  </>
-                )}
                 {expertMode && (
                   <>
                     <hr />
@@ -290,6 +252,10 @@ class Settings extends React.Component {
                         onChange={this.handleOverlayOpacityChange}
                       />
                     </div>
+                  </>
+                )}
+                {expertMode && (
+                  <>
                     <hr />
                     <div>
                       <p>
@@ -309,6 +275,41 @@ class Settings extends React.Component {
                     </Alert>
                   </>
                 )}
+                <hr />
+                <p>
+                  {t('settings.map.homeLocation.label')}
+                  {' '}
+                  {homeLocation
+                    ? `${formatGpsCoord(homeLocation.lat, 'SN', 'DMS', language)} ${formatGpsCoord(homeLocation.lon, 'WE', 'DMS', language)}`
+                    : t('settings.map.homeLocation.undefined')
+                  }
+                </p>
+                <Button onClick={() => onHomeLocationSelect()}>
+                  <FontAwesomeIcon icon="crosshairs" />
+                  {' '}
+                  {t('settings.map.homeLocation.select')}
+                </Button>
+              </Tab>
+              <Tab title={t('settings.tab.account')} eventKey={2}>
+                {user ? (
+                  <>
+                    <FormGroup>
+                      <ControlLabel>{t('settings.account.name')}</ControlLabel>
+                      <FormControl value={name} onChange={this.handleNameChange} required />
+                    </FormGroup>
+                    <FormGroup>
+                      <ControlLabel>{t('settings.account.email')}</ControlLabel>
+                      <FormControl type="email" value={email} onChange={this.handleEmailChange} />
+                    </FormGroup>
+                  </>
+                ) : (
+                  <Alert>{t('settings.account.noAuthInfo')}</Alert>
+                )}
+              </Tab>
+              <Tab title={t('settings.tab.general')} eventKey={3}>
+                <Checkbox onChange={this.handleShowTipsChange} checked={!preventTips}>
+                  {t('settings.general.tips')}
+                </Checkbox>
               </Tab>
             </Tabs>
           </Modal.Body>

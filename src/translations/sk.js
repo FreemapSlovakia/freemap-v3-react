@@ -360,11 +360,18 @@ export default {
     general: {
       tips: 'Zobrazovať tipy po otvorení stránky',
     },
+    expertInfo: `
+      <div style="text-align: left">
+        V expertnom móde sú dostupné nástroje pre pokročilých používateľov, napríklad:
+        <ul>
+          <li>rozšírené nastavenia</li>
+          <li>extra mapové vrstvy</li>
+          <li>extra profily vyhľadávača trás</li>
+        </ul>
+      </div>
+    `,
     expert: {
-      switch: 'Expertný mód:',
-      off: 'Vypnutý',
-      on: 'Zapnutý',
-      offInfo: 'V expertnom móde sú dostupné nástroje pre pokročilých používateľov.',
+      switch: 'Expertný mód',
       overlayOpacity: 'Viditeľnosť vrstvy:',
       trackViewerEleSmoothing: {
         label: 'Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}',

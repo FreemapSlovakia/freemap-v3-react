@@ -400,10 +400,10 @@
     "close.less",
     "component-animations.less",
     "dropdowns.less",
+    "tooltip.less",
     "popovers.less",
     "modals.less",
     "carousel.less"
   ],
-  "js": [],
-  "customizerUrl": "https://getbootstrap.com/docs/3.3/customize/?id=2314f56d7167d5b4f48339bdc7ecd0b1"
+  "js": []
 }

@@ -360,11 +360,18 @@ export default {
     general: {
       tips: 'Show tips on page opening',
     },
+    expertInfo: `
+      <div style="text-align: left">
+        Expert mode offers features for advanced users, for example:
+        <ul>
+          <li>extended settings</li>
+          <li>extra map layers</li>
+          <li>extra route finder profiles</li>
+        </ul>
+      </div>
+    `,
     expert: {
-      switch: 'Expert mode:',
-      off: 'Off',
-      on: 'On',
-      offInfo: 'Expert mode offers features for advanced users.',
+      switch: 'Expert mode',
       overlayOpacity: 'Layer opacity:',
       trackViewerEleSmoothing: {
         label: 'Smoothing level for computing total climb/descend in Track viewer: {value}',
