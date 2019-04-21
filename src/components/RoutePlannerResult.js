@@ -73,7 +73,7 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
     if (ele) {
       ele.leafletElement.bringToFront();
     }
-  });
+  }, []);
 
   const maneuverToText = useCallback((name, { type, modifier }, extra) => {
     const p = 'routePlanner.maneuver';
@@ -88,7 +88,7 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
 
   const handleStartPointClick = useCallback(() => {
     // prevent default
-  });
+  }, []);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
@@ -109,7 +109,7 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
     setDragLon(e.latlng.lng);
     setDragSegment(segment);
     setDragAlt(alt);
-  });
+  }, []);
 
   const handlePolyMouseOut = useCallback(() => {
     if (!draggingRef.current) {
@@ -122,7 +122,7 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
       clearTimeout(tRef.current);
       tRef.current = null;
     }
-  });
+  }, []);
 
   const handleFutureMouseOut = useCallback(() => {
     if (!draggingRef.current) {
@@ -135,7 +135,7 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
       clearTimeout(tRef.current);
     }
     draggingRef.current = true;
-  });
+  }, []);
 
   const handleFutureDragEnd = useCallback((e) => {
     draggingRef.current = false;
@@ -184,7 +184,7 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
       setDragLat(null);
       setDragLon(null);
     }, 200);
-  });
+  }, []);
 
   const special = isSpecial(transportType);
 
