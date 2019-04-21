@@ -58,6 +58,7 @@ class SearchMenu extends React.Component {
     return (
       <>
         <AsyncTypeahead
+          id="search"
           isLoading={inProgress}
           labelKey="label"
           useCache={false}

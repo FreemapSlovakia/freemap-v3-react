@@ -362,16 +362,15 @@ export default {
       tips: 'Zobrazovat tipy po otevření stránky',
     },
     expertInfo: `
-    <div style="text-align: left">
-      V expertním módu jsou dostupné nástroje pro pokročilé uživatele, kupříkladu:
-      <ul>
-        <li>pokročilá nastavení</li>
-        <li>extra mapové vrstvy</li>
-        <li>extra profily vyhledávače tras</li>
-      </ul>
-    </div>
+      <div style="text-align: left">
+        V expertním módu jsou dostupné nástroje pro pokročilé uživatele, kupříkladu:
+        <ul>
+          <li>pokročilá nastavení</li>
+          <li>extra mapové vrstvy</li>
+          <li>extra profily vyhledávače tras</li>
+        </ul>
+      </div>
     `,
-    'V expertním módu jsou dostupné nástroje pro pokročilé uživatele.',
     expert: {
       switch: 'Expertní mód',
       overlayOpacity: 'Viditelnost vrstvy:',
