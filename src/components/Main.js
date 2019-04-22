@@ -88,6 +88,7 @@ import Attribution from 'fm3/components/Attribution';
 
 import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
+import TrackingModal from './tracking/TrackingModal';
 
 class Main extends React.Component {
   static propTypes = {
@@ -347,6 +348,7 @@ class Main extends React.Component {
         </div>
 
         {activeModal === 'settings' && <Settings />}
+        {['tracking', 'tracking-add'].includes(activeModal) && <TrackingModal />}
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {activeModal === 'export-gpx' && <ExportGpxModal />}

@@ -56,6 +56,9 @@ import mapTypeGaLogic from 'fm3/logic/mapTypeGaLogic';
 import userGaLogic from 'fm3/logic/userGaLogic';
 import galleryShowImageGaLogic from 'fm3/logic/galleryShowImageGaLogic';
 import reloadAppLogic from 'fm3/logic/reloadAppLogic';
+import trackingDeleteDeviceLogic from 'fm3/logic/trackingDeleteDeviceLogic';
+import trackingLoadDevicesLogic from 'fm3/logic/trackingLoadDevicesLogic';
+import trackingSaveDeviceLogic from 'fm3/logic/trackingSaveDeviceLogic';
 
 export default [
   routePlannerSetupTransportTypeLogic,
@@ -116,4 +119,7 @@ export default [
   userGaLogic,
   galleryShowImageGaLogic,
   reloadAppLogic,
+  trackingLoadDevicesLogic,
+  trackingDeleteDeviceLogic,
+  trackingSaveDeviceLogic,
 ];

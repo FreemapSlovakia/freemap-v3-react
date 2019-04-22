@@ -385,6 +385,7 @@
     "print.less",
     "type.less",
     "code.less",
+    "tables.less",
     "forms.less",
     "buttons.less",
     "responsive-utilities.less",
