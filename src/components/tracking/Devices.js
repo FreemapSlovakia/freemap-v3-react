@@ -1,4 +1,3 @@
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 import React, { useEffect } from 'react';
 import PropTypes from 'prop-types';
@@ -7,22 +6,23 @@ import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
 import Button from 'react-bootstrap/lib/Button';
 
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingLoadDevices } from 'fm3/actions/trackingActions';
+import { trackingLoadDevices, trackingModifyDevice } from 'fm3/actions/trackingActions';
+import Device from './Device';
 
-function TrackingModal({ onClose, onOpen, onAdd, devices, language }) {
+function TrackingModal({ onClose, onOpen, onAdd, devices }) {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
 
-  const dateFormat = new Intl.DateTimeFormat(language, {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
-  });
-
   return (
     <>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <FontAwesomeIcon icon="bullseye" /> Tracking Devices
+        </Modal.Title>
+      </Modal.Header>
       <Modal.Body>
         <Table striped bordered>
           <thead>
@@ -36,20 +36,7 @@ function TrackingModal({ onClose, onOpen, onAdd, devices, language }) {
             </tr>
           </thead>
           <tbody>
-            {devices.map(device => (
-              <tr>
-                <td>{device.name}</td>
-                <td>{device.token}</td>
-                <td>{device.maxCount}</td>
-                <td>{device.maxAge}</td>
-                <td>{dateFormat.format(device.createdAt)}</td>
-                <td>
-                  <Button>
-                    <FontAwesomeIcon icon="close" />
-                  </Button>
-                </td>
-              </tr>
-            ))}
+            {devices.map(device => <Device key={device.id} device={device} />)}
           </tbody>
         </Table>
       </Modal.Body>
@@ -69,14 +56,12 @@ TrackingModal.propTypes = {
   onOpen: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired,
   devices: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 };
 
 export default connect(
   state => ({
     devices: state.tracking.devices,
-    language: state.l10n.language,
   }),
   dispatch => ({
     onOpen() {
@@ -86,7 +71,7 @@ export default connect(
       dispatch(setActiveModal(null));
     },
     onAdd() {
-      dispatch(setActiveModal('tracking-add'));
+      dispatch(trackingModifyDevice(null));
     },
   }),
 )(TrackingModal);

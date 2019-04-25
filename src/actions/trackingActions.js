@@ -8,6 +8,10 @@ export function trackingSetTrackedDevices(devices) {
   return { type: at.TRACKING_SET_TRACKED_DEVICES, payload: devices };
 }
 
+export function trackingModifyDevice(id) {
+  return { type: at.TRACKING_MODIFY_DEVICE, payload: id };
+}
+
 export function trackingDeleteDevice(id) {
   return { type: at.TRACKING_DELETE_DEVICE, payload: id };
 }
