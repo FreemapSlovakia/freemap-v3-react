@@ -55,9 +55,11 @@ function DeviceForm({ onSave, onCancel, device }) {
           <ControlLabel>Keep positions not older than (seconds)</ControlLabel>
           <FormControl type="number" min="0" step="1" value={maxAge} onChange={setMaxAge} />
         </FormGroup>
-        <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
-          Regenerate token
-        </Checkbox>
+        {!!device && (
+          <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
+            Regenerate token
+          </Checkbox>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button type="submit">
