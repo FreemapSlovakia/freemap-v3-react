@@ -10,19 +10,19 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingSaveDevice, trackingModifyDevice } from 'fm3/actions/trackingActions';
 
-function useInputState(init) {
+// TODO to hook file
+function useInputState(init, type = 'text') {
   const [value, setValue] = useState(init);
-  return [value, e => setValue(e && e.target ? 'checked' in e.target ? e.target.checked : e.target.value : e)];
+  return [value, e => setValue(type === 'checkbox' ? e.target.checked : e.target.value)];
 }
 
-function TrackingModal({ onSave, onClose, onCancel, device }) {
+function DeviceForm({ onSave, onCancel, device }) {
   const [name, setName] = useInputState(device ? device.name : '');
   const [maxCount, setMaxCount] = useInputState(device && device.maxCount !== null ? device.maxCount.toString() : '');
   const [maxAge, setMaxAge] = useInputState(device && device.maxAge !== null ? device.maxAge.toString() : '');
-  const [regenerateToken, setTegenerateToken] = useInputState(false);
+  const [regenerateToken, setRegenerateToken] = useInputState(false, 'checkbox');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -55,7 +55,7 @@ function TrackingModal({ onSave, onClose, onCancel, device }) {
           <ControlLabel>Keep positions not older than (seconds)</ControlLabel>
           <FormControl type="number" min="0" step="1" value={maxAge} onChange={setMaxAge} />
         </FormGroup>
-        <Checkbox onChange={setTegenerateToken} checked={regenerateToken}>
+        <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
           Regenerate token
         </Checkbox>
       </Modal.Body>
@@ -66,16 +66,12 @@ function TrackingModal({ onSave, onClose, onCancel, device }) {
         <Button type="button" onClick={onCancel}>
           Cancel
         </Button>
-        <Button type="button" onClick={onClose}>
-          Close
-        </Button>
       </Modal.Footer>
     </form>
   );
 }
 
-TrackingModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
+DeviceForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   device: PropTypes.shape({}).isRequired, // TODO
@@ -87,9 +83,6 @@ export default connect(
       && state.tracking.devices.find(device => device.id === state.tracking.modifiedDeviceId),
   }),
   dispatch => ({
-    onClose() {
-      dispatch(setActiveModal(null));
-    },
     onCancel() {
       dispatch(trackingModifyDevice(undefined));
     },
@@ -97,4 +90,4 @@ export default connect(
       dispatch(trackingSaveDevice(device));
     },
   }),
-)(TrackingModal);
+)(DeviceForm);

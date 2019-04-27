@@ -1,14 +1,17 @@
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { createLogicMiddleware } from 'redux-logic';
 import { createLogger } from 'redux-logger';
-
-import reducer from 'fm3/reducers';
-import logics from 'fm3/logic';
 
 import * as at from 'fm3/actionTypes';
 import { sendError } from 'fm3/globalErrorHandler';
 
 export default function createReduxStore() {
+  const reducersCtx = require.context('fm3/reducers', false, /Reducer\.js$/);
+  const reducers = Object.fromEntries(reducersCtx.keys().map(k => [k.replace(/^\.\/(.*)Reducer\.js/, '$1'), reducersCtx(k).default]));
+
+  const logicsCtx = require.context('fm3/logic', false, /Logic\.js$/);
+  const logics = logicsCtx.keys().map(k => logicsCtx(k).default);
+
   const logicMiddleware = createLogicMiddleware(logics);
 
   const errorHandlingMiddleware = () => next => (action) => {
@@ -33,7 +36,7 @@ export default function createReduxStore() {
 
   middlewares.push(errorHandlingMiddleware);
 
-  const store = createStore(reducer, applyMiddleware(...middlewares));
+  const store = createStore(combineReducers(reducers), applyMiddleware(...middlewares));
 
   logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 

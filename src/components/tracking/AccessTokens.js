@@ -7,11 +7,10 @@ import Table from 'react-bootstrap/lib/Table';
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingLoadDevices, trackingModifyDevice } from 'fm3/actions/trackingActions';
-import Device from './Device';
+import { trackingLoadAccessTokens, trackingModifyAccessToken, trackingShowAccessTokens } from 'fm3/actions/trackingActions';
+import AccessToken from './AccessToken';
 
-function Devices({ onClose, onOpen, onAdd, devices }) {
+function AccessTokens({ onClose, onOpen, onAdd, accessTokens }) {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
@@ -20,23 +19,24 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> Tracking Devices
+          <FontAwesomeIcon icon="bullseye" /> Tracking Devices | Access Tokens
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Name</th>
               <th>Token</th>
-              <th>Keep points</th>
-              <th>Keep duration</th>
               <th>Created at</th>
+              <th>From</th>
+              <th>To</th>
+              <th>Access</th>
+              <th>Note</th>
               <th />
             </tr>
           </thead>
           <tbody>
-            {devices.map(device => <Device key={device.id} device={device} />)}
+            {accessTokens.map(accessToken => <AccessToken key={accessToken.id} accessToken={accessToken} />)}
           </tbody>
         </Table>
       </Modal.Body>
@@ -52,26 +52,26 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
   );
 }
 
-Devices.propTypes = {
+AccessTokens.propTypes = {
   onOpen: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
-  devices: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
+  accessTokens: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 };
 
 export default connect(
   state => ({
-    devices: state.tracking.devices,
+    accessTokens: state.tracking.accessTokens,
   }),
   dispatch => ({
     onOpen() {
-      dispatch(trackingLoadDevices());
+      dispatch(trackingLoadAccessTokens());
     },
     onClose() {
-      dispatch(setActiveModal(null));
+      dispatch(trackingShowAccessTokens(undefined));
     },
     onAdd() {
-      dispatch(trackingModifyDevice(null));
+      dispatch(trackingModifyAccessToken(null));
     },
   }),
-)(Devices);
+)(AccessTokens);

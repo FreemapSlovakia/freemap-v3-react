@@ -43,3 +43,7 @@ export function trackingSaveAccessToken(accessToken) {
 export function trackingLoadAccessTokens() {
   return { type: at.TRACKING_LOAD_ACCESS_TOKENS };
 }
+
+export function trackingShowAccessTokens(deviceId) {
+  return { type: at.TRACKING_SHOW_ACCESS_TOKENS, payload: deviceId };
+}
