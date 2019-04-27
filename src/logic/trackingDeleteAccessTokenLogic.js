@@ -12,7 +12,7 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
     getAuthAxios(getState, 204)
-      .delete(`/tracking/accessTokens/${encodeURIComponent(action.payload)}`)
+      .delete(`/tracking/access-tokens/${encodeURIComponent(action.payload)}`)
       .then(() => {
         dispatch(trackingLoadAccessTokens());
       })
