@@ -43,7 +43,7 @@ module.exports = {
         },
       },
       { // babelify some very modern libraries
-        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string)\/.*\.js$/,
+        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
@@ -62,6 +62,7 @@ module.exports = {
         options: {
           presets: [
             ['@babel/preset-env', {
+              corejs: '3.0.0',
               targets: {
                 browsers: ['> 1%'],
               },
