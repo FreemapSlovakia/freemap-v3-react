@@ -13,7 +13,7 @@ import { createFilter } from 'fm3/galleryUtils';
 export const gpxExportLogic = createLogic({
   type: at.EXPORT_GPX,
   process({ getState, action, cancelled$, storeDispatch }, dispatch, done) {
-    const doc = document.implementation.createDocument(GPX_NS, 'gpx');
+    const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
     addAttribute(doc.documentElement, 'version', '1.1');
     addAttribute(doc.documentElement, 'creator', 'https://www.freemap.sk/');

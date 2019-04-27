@@ -43,7 +43,7 @@ module.exports = {
         },
       },
       { // babelify some very modern libraries
-        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string)\/.*\.js$/,
+        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
