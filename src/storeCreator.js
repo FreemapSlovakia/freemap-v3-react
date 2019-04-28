@@ -4,6 +4,7 @@ import { createLogger } from 'redux-logger';
 
 import * as at from 'fm3/actionTypes';
 import { sendError } from 'fm3/globalErrorHandler';
+import websocketMiddleware from 'fm3/websocketMiddleware';
 
 export default function createReduxStore() {
   const reducersCtx = require.context('fm3/reducers', false, /Reducer\.js$/);
@@ -28,7 +29,7 @@ export default function createReduxStore() {
     }
   };
 
-  const middlewares = [errorHandlingMiddleware, logicMiddleware];
+  const middlewares = [errorHandlingMiddleware, websocketMiddleware, logicMiddleware];
 
   if (process.env.NODE_ENV !== 'production') {
     middlewares.push(createLogger());

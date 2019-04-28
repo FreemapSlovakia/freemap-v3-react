@@ -278,7 +278,7 @@ function handleGallery(getState, dispatch, query) {
 
   if (query.show === 'gallery-upload') {
     if (!getState().gallery.showUploadModal) {
-      // timeout to validate authentication first (ugly)
+      // TODO fix: timeout to validate authentication first (ugly)
       setTimeout(() => {
         dispatch(galleryShowUploadModal());
       }, 1000);
