@@ -348,7 +348,7 @@ class Main extends React.Component {
         </div>
 
         {activeModal === 'settings' && <Settings />}
-        {['tracking', 'tracking-add'].includes(activeModal) && <TrackingModal />}
+        {['tracking-my', 'tracking-tracked'].includes(activeModal) && <TrackingModal />}
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {activeModal === 'export-gpx' && <ExportGpxModal />}

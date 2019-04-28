@@ -9,8 +9,10 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 
+import DateTime from 'fm3/components/DateTime';
+
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingSaveDevice, trackingModifyDevice } from 'fm3/actions/trackingActions';
+import { trackingModifyTrackedDevice, trackingSaveTrackedDevice } from 'fm3/actions/trackingActions';
 
 // TODO to hook file
 function useInputState(init, type = 'text') {
@@ -18,19 +20,23 @@ function useInputState(init, type = 'text') {
   return [value, e => setValue(type === 'checkbox' ? e.target.checked : e.target.value)];
 }
 
-function DeviceForm({ onSave, onCancel, device }) {
-  const [name, setName] = useInputState(device && device.name || '');
+function TrackedDeviceForm({ onSave, onCancel, device }) {
+  const [id, setId] = useInputState(device && device.id || '');
+  const [label, setLabel] = useInputState(device && device.label || '');
+  const [follow, setFollow] = useInputState(device ? device.follow : false, 'checkbox');
+  const [fromTime, setFromTime] = useState(device && device.fromTime);
   const [maxCount, setMaxCount] = useInputState(device && device.maxCount !== null ? device.maxCount.toString() : '');
   const [maxAge, setMaxAge] = useInputState(device && device.maxAge !== null ? device.maxAge.toString() : '');
-  const [regenerateToken, setRegenerateToken] = useInputState(false, 'checkbox');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
-      name: name.trim() || null,
-      maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+      id: id.trim(),
+      label: label.trim() || null,
+      follow,
+      fromTime,
       maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
-      regenerateToken,
+      maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
     });
   };
 
@@ -39,31 +45,37 @@ function DeviceForm({ onSave, onCancel, device }) {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />
-          {device ? <> Modify Tracking Device <i>{device.name}</i></> : ' Add Tracking Device'}
+          {device ? <> Modify Tracked Device <i>{device.label || device.id}</i></> : ' Add Tracked Device'}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup>
-          <ControlLabel>Name</ControlLabel>
-          <FormControl value={name} onChange={setName} required pattern=".*\w.*" />
+          <ControlLabel>ID or Access Token</ControlLabel>
+          <FormControl value={id} onChange={setId} required />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Keep # of last positions</ControlLabel>
-          <FormControl type="number" min="0" step="1" value={maxCount} onChange={setMaxCount} />
+          <ControlLabel>Label</ControlLabel>
+          <FormControl value={label} onChange={setLabel} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Keep positions not older than (seconds)</ControlLabel>
+          <ControlLabel>Show positions since</ControlLabel>
+          <DateTime value={fromTime} onChange={setFromTime} />
+        </FormGroup>
+        <FormGroup>
+          <ControlLabel>Show positions not older than (seconds)</ControlLabel>
           <FormControl type="number" min="0" step="1" value={maxAge} onChange={setMaxAge} />
         </FormGroup>
-        {!!device && (
-          <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
-            Regenerate token
-          </Checkbox>
-        )}
+        <FormGroup>
+          <ControlLabel>Show max # positions</ControlLabel>
+          <FormControl type="number" min="0" step="1" value={maxCount} onChange={setMaxCount} />
+        </FormGroup>
+        <Checkbox onChange={setFollow} checked={follow}>
+          Follow
+        </Checkbox>
       </Modal.Body>
       <Modal.Footer>
         <Button type="submit">
-          Save
+          OK
         </Button>
         <Button type="button" onClick={onCancel}>
           Cancel
@@ -73,23 +85,23 @@ function DeviceForm({ onSave, onCancel, device }) {
   );
 }
 
-DeviceForm.propTypes = {
+TrackedDeviceForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  device: PropTypes.shape({}).isRequired, // TODO
+  device: PropTypes.shape({}), // TODO
 };
 
 export default connect(
   state => ({
-    device: state.tracking.modifiedDeviceId
-      && state.tracking.devices.find(device => device.id === state.tracking.modifiedDeviceId),
+    device: state.tracking.modifiedTrackedDeviceId
+      && state.tracking.trackedDevices.find(device => device.id === state.tracking.modifiedTrackedDeviceId),
   }),
   dispatch => ({
     onCancel() {
-      dispatch(trackingModifyDevice(undefined));
+      dispatch(trackingModifyTrackedDevice(undefined));
     },
     onSave(device) {
-      dispatch(trackingSaveDevice(device));
+      dispatch(trackingSaveTrackedDevice(device));
     },
   }),
-)(DeviceForm);
+)(TrackedDeviceForm);

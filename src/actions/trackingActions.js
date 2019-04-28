@@ -4,6 +4,19 @@ export function trackingSetTrackedDevices(devices) {
   return { type: at.TRACKING_SET_TRACKED_DEVICES, payload: devices };
 }
 
+
+export function trackingModifyTrackedDevice(id) {
+  return { type: at.TRACKING_MODIFY_TRACKED_DEVICE, payload: id };
+}
+
+export function trackingDeleteTrackedDevice(id) {
+  return { type: at.TRACKING_DELETE_TRACKED_DEVICE, payload: id };
+}
+
+export function trackingSaveTrackedDevice(device) {
+  return { type: at.TRACKING_SAVE_TRACKED_DEVICE, payload: device };
+}
+
 export function trackingSetDevices(devices) {
   return { type: at.TRACKING_SET_DEVICES, payload: devices };
 }

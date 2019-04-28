@@ -335,7 +335,7 @@ export default compose(
         dispatch(setActiveModal('settings'));
       },
       onTrackingShow() {
-        dispatch(setActiveModal('tracking'));
+        dispatch(setActiveModal('tracking-tracked'));
       },
       onGpxExport() {
         dispatch(setActiveModal('export-gpx'));

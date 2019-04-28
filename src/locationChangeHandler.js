@@ -18,6 +18,7 @@ import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
+import { trackingSetTrackedDevices } from './actions/trackingActions';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -206,6 +207,11 @@ export default function handleLocationChange(store, location) {
   if ((query.embed || '') !== getState().main.embedFeatures.join(',')) {
     dispatch(setEmbedFeatures(!query.embed || query.embed === '' ? [] : query.embed.split(',')));
   }
+
+  // // token/deviceId(?), label, min-time, max-count, follow
+  // if (query['tracked-device']) {
+  //   dispatch(trackingSetTrackedDevices(query['tracked-device']));
+  // }
 }
 
 function handleGallery(getState, dispatch, query) {

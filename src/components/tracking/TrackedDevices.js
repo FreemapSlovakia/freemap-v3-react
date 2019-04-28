@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import React, { useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 
 import Modal from 'react-bootstrap/lib/Modal';
@@ -8,41 +8,38 @@ import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingLoadDevices, trackingModifyDevice } from 'fm3/actions/trackingActions';
-import Device from './Device';
+import { trackingModifyTrackedDevice } from 'fm3/actions/trackingActions';
+import TrackedDevice from './TrackedDevice';
 
-function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
-  useEffect(() => {
-    onOpen();
-  }, [onOpen]);
-
+function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
   return (
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> My Tracking Devices
+          <FontAwesomeIcon icon="bullseye" /> Tracked Devices
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Token</th>
-              <th>Keep points</th>
-              <th>Keep duration</th>
-              <th>Created at</th>
+              <th>Token or ID</th>
+              <th>Label</th>
+              <th>Since</th>
+              <th>Max Age</th>
+              <th>Max Count</th>
+              <th>Follow</th>
               <th />
             </tr>
           </thead>
           <tbody>
-            {devices.map(device => <Device key={device.id} device={device} />)}
+            {devices.map(device => <TrackedDevice key={device.id} device={device} />)}
           </tbody>
         </Table>
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" onClick={onShowTrackedDevices}>
-          Show tracked devices
+          Show my devices
         </Button>
         <Button type="button" onClick={onAdd}>
           Add
@@ -55,8 +52,7 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
   );
 }
 
-Devices.propTypes = {
-  onOpen: PropTypes.func.isRequired,
+TrackedDevices.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
   onShowTrackedDevices: PropTypes.func.isRequired,
@@ -65,20 +61,17 @@ Devices.propTypes = {
 
 export default connect(
   state => ({
-    devices: state.tracking.devices,
+    devices: state.tracking.trackedDevices,
   }),
   dispatch => ({
-    onOpen() {
-      dispatch(trackingLoadDevices());
-    },
     onClose() {
       dispatch(setActiveModal(null));
     },
     onShowTrackedDevices() {
-      dispatch(setActiveModal('tracking-tracked'));
+      dispatch(setActiveModal('tracking-my'));
     },
     onAdd() {
-      dispatch(trackingModifyDevice(null));
+      dispatch(trackingModifyTrackedDevice(null));
     },
   }),
-)(Devices);
+)(TrackedDevices);

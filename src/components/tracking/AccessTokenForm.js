@@ -7,11 +7,10 @@ import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingSaveAccessToken, trackingModifyAccessToken } from 'fm3/actions/trackingActions';
-import DateTime from '../DateTime';
+import DateTime from 'fm3/components/DateTime';
 
 // TODO to hook file
 function useInputState(init, type = 'text') {
@@ -19,19 +18,20 @@ function useInputState(init, type = 'text') {
   return [value, e => setValue(type === 'checkbox' ? e.target.checked : e.target.value)];
 }
 
-function AccessTokenForm({ onSave, onCancel, accessToken }) {
-  const [note, setNote] = useInputState(accessToken ? accessToken.note : '');
+
+function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
+  const [note, setNote] = useInputState(accessToken && accessToken.note || '');
   const [timeFrom, setTimeFrom] = useState(accessToken && accessToken.timeFrom);
   const [timeTo, setTimeTo] = useState(accessToken && accessToken.timeTo);
-  const [listed, setListed] = useInputState(accessToken ? accessToken.listed : false, 'checkbox');
+  const [listingLabel, setListingLabel] = useInputState(accessToken && accessToken.listingLabel);
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
-      note: note.trim(),
+      note: note.trim() || null,
       timeFrom,
       timeTo,
-      listed,
+      listingLabel: listingLabel.trim() || null,
     });
   };
 
@@ -40,7 +40,8 @@ function AccessTokenForm({ onSave, onCancel, accessToken }) {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />
-          {accessToken ? <> Modify Access Token <i>{accessToken.name}</i></> : ' Add Access Token'}
+          {accessToken ? <> Modify Access Token <i>{accessToken.token}</i></> : ' Add Access Token'}
+          {' for'} <i>{deviceName}</i>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -52,9 +53,10 @@ function AccessTokenForm({ onSave, onCancel, accessToken }) {
           <ControlLabel>Share to</ControlLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
-        <Checkbox onChange={setListed} checked={listed}>
-          Listed
-        </Checkbox>
+        <FormGroup>
+          <ControlLabel>Listing label (leave empty for unlisted)</ControlLabel>
+          <FormControl value={listingLabel} onChange={setListingLabel} />
+        </FormGroup>
         <FormGroup>
           <ControlLabel>Note</ControlLabel>
           <FormControl value={note} onChange={setNote} />
@@ -76,12 +78,14 @@ AccessTokenForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
   accessToken: PropTypes.shape({}).isRequired, // TODO
+  deviceName: PropTypes.string,
 };
 
 export default connect(
   state => ({
     accessToken: state.tracking.modifiedAccessTokenId
       && state.tracking.accessTokens.find(accessToken => accessToken.id === state.tracking.modifiedAccessTokenId),
+    deviceName: state.tracking.devices.find(device => device.id === state.tracking.accessTokensDeviceId).name,
   }),
   dispatch => ({
     onCancel() {

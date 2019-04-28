@@ -10,7 +10,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingLoadAccessTokens, trackingModifyAccessToken, trackingShowAccessTokens } from 'fm3/actions/trackingActions';
 import AccessToken from './AccessToken';
 
-function AccessTokens({ onClose, onOpen, onAdd, accessTokens }) {
+function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
   useEffect(() => {
     onOpen();
   }, [onOpen]);
@@ -19,7 +19,7 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens }) {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> Tracking Devices | Access Tokens
+          <FontAwesomeIcon icon="bullseye" /> Access Tokens for <i>{deviceName}</i>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -30,7 +30,7 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens }) {
               <th>Created at</th>
               <th>From</th>
               <th>To</th>
-              <th>Access</th>
+              <th>Listing label</th>
               <th>Note</th>
               <th />
             </tr>
@@ -56,12 +56,14 @@ AccessTokens.propTypes = {
   onOpen: PropTypes.func.isRequired,
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
+  deviceName: PropTypes.string,
   accessTokens: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 };
 
 export default connect(
   state => ({
     accessTokens: state.tracking.accessTokens,
+    deviceName: state.tracking.devices.find(device => device.id === state.tracking.accessTokensDeviceId).name,
   }),
   dispatch => ({
     onOpen() {

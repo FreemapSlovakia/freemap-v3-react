@@ -5,29 +5,29 @@ import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingDeleteAccessToken, trackingModifyAccessToken } from 'fm3/actions/trackingActions';
+import { trackingDeleteTrackedDevice, trackingModifyTrackedDevice } from 'fm3/actions/trackingActions';
 
-function AccessToken({ onDelete, onModify, accessToken, language }) {
+function TrackedDevice({ onDelete, onModify, device, language }) {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
   });
 
   const handleModify = useCallback(() => {
-    onModify(accessToken.id);
-  }, [accessToken.id, onModify]);
+    onModify(device.id);
+  }, [device.id, onModify]);
 
   const handleDelete = useCallback(() => {
-    onDelete(accessToken.id);
-  }, [accessToken.id, onDelete]);
+    onDelete(device.id);
+  }, [device.id, onDelete]);
 
   return (
     <tr>
-      <td>{accessToken.token}</td>
-      <td>{dateFormat.format(accessToken.createdAt)}</td>
-      <td>{accessToken.timeFrom && dateFormat.format(accessToken.timeFrom)}</td>
-      <td>{accessToken.timeTo && dateFormat.format(accessToken.timeTo)}</td>
-      <td>{accessToken.listingLabel}</td>
-      <td>{accessToken.note}</td>
+      <td>{device.id}</td>
+      <td>{device.label}</td>
+      <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
+      <td>{device.maxAge}</td>
+      <td>{device.maxCount}</td>
+      <td>{device.follow ? 'Yes' : 'No'}</td>
       <td>
         <Button bsSize="small" type="button" onClick={handleModify}>
           <FontAwesomeIcon icon="edit" />
@@ -41,11 +41,11 @@ function AccessToken({ onDelete, onModify, accessToken, language }) {
   );
 }
 
-AccessToken.propTypes = {
+TrackedDevice.propTypes = {
   onDelete: PropTypes.func.isRequired,
   onModify: PropTypes.func.isRequired,
   language: PropTypes.string.isRequired,
-  accessToken: PropTypes.shape({}).isRequired,
+  device: PropTypes.shape({}).isRequired,
 };
 
 export default connect(
@@ -54,10 +54,10 @@ export default connect(
   }),
   dispatch => ({
     onModify(id) {
-      dispatch(trackingModifyAccessToken(id));
+      dispatch(trackingModifyTrackedDevice(id));
     },
     onDelete(id) {
-      dispatch(trackingDeleteAccessToken(id));
+      dispatch(trackingDeleteTrackedDevice(id));
     },
   }),
-)(AccessToken);
+)(TrackedDevice);
