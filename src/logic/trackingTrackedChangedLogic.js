@@ -14,26 +14,18 @@ export default createLogic({
         const oldIds = oldValue.map(d => d.id);
 
         for (const id of oldIds.filter(oldId => !currIds.includes(oldId))) {
-          dispatch(wsSend({
-            // TODO id
-            jsonrpc: '2.0',
-            method: 'tracking.unsubscribe',
+          dispatch(wsSend('tracking.unsubscribe', {
             [/^\d+$/.test(id) ? 'deviceId' : 'token']: id,
           }));
         }
 
         for (const { id, fromTime, maxCount, maxAge } of getState().tracking.trackedDevices) {
           if (!oldIds.includes(id)) {
-            dispatch(wsSend({
-              // TODO id
-              jsonrpc: '2.0',
-              method: 'tracking.subscribe',
+            dispatch(wsSend('tracking.subscribe', {
               [/^\d+$/.test(id) ? 'deviceId' : 'token']: id,
-              params: {
-                fromTime,
-                maxCount,
-                maxAge,
-              },
+              fromTime,
+              maxCount,
+              maxAge,
             }));
           }
         }

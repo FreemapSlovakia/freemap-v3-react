@@ -1,7 +1,10 @@
 import * as at from 'fm3/actionTypes';
-import { wsAlreadyOpenedOrOpening, wsOpened, wsErrored, wsClosed, wsReceived, wsNotOpened } from 'fm3/actions/websocketActions';
+import { wsAlreadyOpenedOrOpening, wsOpened, wsErrored, wsClosed, wsNotOpened } from 'fm3/actions/websocketActions';
 
 let ws = null;
+
+let counter = 1;
+const responseMap = new Map();
 
 export default ({ dispatch }) => next => (action) => {
   switch (action.type) {
@@ -42,9 +45,37 @@ export default ({ dispatch }) => next => (action) => {
 
       ws.addEventListener('message', ({ target, data }) => {
         const dataObj = JSON.parse(data);
-        if (dataObj.type !== 'pong') {
-          dispatch(wsReceived(dataObj)); // TODO handle parsing error
+        const rsp = responseMap.get(dataObj.id);
+        if (rsp) {
+          responseMap.delete(dataObj.id);
+          const {
+            errorAction = { type: at.WS_RPC_ERROR },
+            successAction = { type: at.WS_RPC_SUCCESS },
+            resultKey,
+            errorKey,
+          } = rsp;
+
+          let action;
+
+          if (dataObj.error) {
+            dispatch({
+              ...errorAction,
+              payload: errorKey ? {
+                ...(errorAction.payload || {}),
+                [errorKey]: dataObj.error,
+              } : dataObj.error,
+            });
+          } else {
+            dispatch({
+              ...successAction,
+              payload: resultKey ? {
+                ...(successAction.payload || {}),
+                [resultKey]: dataObj.result,
+              } : dataObj.result,
+            });
+          }
         }
+
         if (ws !== target) { // oops
           target.close();
         }
@@ -53,7 +84,20 @@ export default ({ dispatch }) => next => (action) => {
       break;
     case at.WS_SEND:
       if (ws && ws.readyState === 1) {
-        ws.send(JSON.stringify(action.payload));
+        const id = counter;
+        counter += 1;
+        ws.send(JSON.stringify({
+          jsonrpc: '2.0',
+          id,
+          method: action.payload.method,
+          params: action.payload.params,
+        }));
+        responseMap.set(id, {
+          successAction: action.payload.successAction,
+          errorAction: action.payload.errorAction,
+          resultKey: action.payload.resultKey,
+          errorKey: action.payload.errorKey,
+        });
       } else {
         dispatch(wsNotOpened());
         return;

@@ -16,10 +16,6 @@ export function wsClosed(code) {
   return { type: at.WS_CLOSED, payload: code };
 }
 
-export function wsReceived(message) {
-  return { type: at.WS_RECEIVED, payload: message };
-}
-
 export function wsNotOpened() {
   return { type: at.WS_NOT_OPENED };
 }
@@ -28,8 +24,12 @@ export function wsClose() {
   return { type: at.WS_CLOSE };
 }
 
-export function wsSend(message) {
-  return { type: at.WS_SEND, payload: message };
+export function wsRpcError(payload) {
+  return { type: at.WS_RPC_ERROR, payload };
+}
+
+export function wsSend(method, params, successAction, errorAction, successKey, errorKey) {
+  return { type: at.WS_SEND, payload: { method, params, successAction, errorAction, successKey, errorKey } };
 }
 
 export function wsAlreadyOpenedOrOpening() {
