@@ -33,6 +33,19 @@ const NLC_ATTR = {
 };
 
 export const baseLayers = [
+  {
+    type: 'X',
+    icon: 'tree',
+    url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      SRTM_ATTR,
+    ].filter(a => a),
+    minZoom: 6,
+    maxNativeZoom: 19,
+    key: 'x',
+  },
   ...[
     ['A', 'car'],
     ['T', '!icon-hiking'],
@@ -147,19 +160,6 @@ export const baseLayers = [
     showOnlyInExpertMode: true,
     attribution: [],
     key: 'h',
-  },
-  {
-    type: 'X',
-    icon: 'tree',
-    url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ].filter(a => a),
-    minZoom: 6,
-    maxNativeZoom: 19,
-    key: 'x',
   },
   !process.env.NODE_ENV && (
     {
