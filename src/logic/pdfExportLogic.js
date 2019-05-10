@@ -29,8 +29,7 @@ export const pdfExportLogic = createLogic({
       });
     }
 
-    // localhost:4000
-    window.open(`http://tiles-ng.freemap.sk/pdf?zoom=${getState().map.zoom}`
+    window.open(`https://outdoor.tiles.freemap.sk/pdf?zoom=${getState().map.zoom}`
       + `&bbox=${w},${s},${e},${n}&scale=${scale}`
       + `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&shading=${shadedRelief}&contours=${contours}`);
     dispatch(setActiveModal(null));

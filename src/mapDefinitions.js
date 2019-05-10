@@ -150,8 +150,8 @@ export const baseLayers = [
   },
   {
     type: 'X',
-    icon: 'flask',
-    url: scaleUrl([1, 2, 3], 'https://tiles-ng.freemap.sk/{z}/{x}/{y}'),
+    icon: 'tree',
+    url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
     attribution: [
       FM_ATTR,
       OSM_DATA_ATTR,

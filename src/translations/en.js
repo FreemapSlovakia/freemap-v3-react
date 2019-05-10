@@ -794,7 +794,7 @@ export default {
       p: 'OpenTopoMap',
       d: 'Public transport (ÖPNV)',
       h: 'Historic',
-      X: 'Experimental Outdoor',
+      X: 'New Outdoor',
     },
     overlay: {
       I: 'Photos',
