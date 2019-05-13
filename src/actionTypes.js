@@ -157,13 +157,13 @@ export const TRACKING_SAVE_ACCESS_TOKEN = 'TRACKING_SAVE_ACCESS_TOKEN';
 export const TRACKING_MODIFY_ACCESS_TOKEN = 'TRACKING_MODIFY_ACCESS_TOKEN';
 export const TRACKING_SHOW_ACCESS_TOKENS = 'TRACKING_SHOW_ACCESS_TOKENS';
 
-export const WS_OPEN = 'WS_OPEN';
-export const WS_OPENED = 'WS_OPENED';
-export const WS_ERRORED = 'WS_ERRORED';
-export const WS_CLOSED = 'WS_CLOSED';
-export const WS_NOT_OPENED = 'WS_NOT_OPENED';
 export const WS_SEND = 'WS_SEND';
+export const WS_OPEN = 'WS_OPEN';
 export const WS_CLOSE = 'WS_CLOSE';
-export const WS_ALREADY_OPENED_OR_OPENING = 'WS_ALREADY_OPENED_OR_OPENING';
-export const WS_RPC_ERROR = 'WS_RPC_ERROR';
-export const WS_RPC_SUCCESS = 'WS_RPC_SUCCESS';
+
+export const WS_RECEIVED = 'WS_RECEIVED';
+export const WS_STATE_CHANGED = 'WS_STATE_CHANGED';
+export const WS_CLOSED = 'WS_CLOSED';
+export const WS_INVALID_STATE = 'WS_INVALID_STATE';
+
+export const RPC_CALL = 'RPC_CALL';
