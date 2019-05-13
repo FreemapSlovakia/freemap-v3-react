@@ -33,6 +33,19 @@ const NLC_ATTR = {
 };
 
 export const baseLayers = [
+  {
+    type: 'X',
+    icon: 'tree',
+    url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      SRTM_ATTR,
+    ].filter(a => a),
+    minZoom: 6,
+    maxNativeZoom: 19,
+    key: 'x',
+  },
   ...[
     ['A', 'car'],
     ['T', '!icon-hiking'],
@@ -148,24 +161,11 @@ export const baseLayers = [
     attribution: [],
     key: 'h',
   },
-  {
-    type: 'X',
-    icon: 'flask',
-    url: `https://tiles-ng.freemap.sk/{z}/{x}/{y}${window.devicePixelRatio === 1 ? '' : `@${window.devicePixelRatio}x`}`,
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ].filter(a => a),
-    minZoom: 6,
-    maxNativeZoom: 19,
-    key: 'x',
-  },
   !process.env.NODE_ENV && (
     {
       type: 'Y',
       icon: 'flask',
-      url: `http://localhost:4000/{z}/{x}/{y}${window.devicePixelRatio === 1 ? '' : `@${window.devicePixelRatio}x`}`,
+      url: scaleUrl([1, 2, 3], 'http://localhost:4000/{z}/{x}/{y}'),
       attribution: [
         FM_ATTR,
         OSM_DATA_ATTR,
@@ -177,6 +177,26 @@ export const baseLayers = [
     }
   ),
 ].filter(x => x);
+
+function findNearestScale(scales, ratio = window.devicePixelRatio || 1) {
+  let dif = Number.POSITIVE_INFINITY;
+  let prevScale = scales[0];
+  for (const scale of scales) {
+    const newDif = Math.abs(ratio - scale);
+    if (newDif >= dif) {
+      return prevScale;
+    }
+    prevScale = scale;
+    dif = newDif;
+  }
+
+  return prevScale;
+}
+
+function scaleUrl(scales, url) {
+  const scale = findNearestScale(scales);
+  return scale === 1 ? url : `${url}@${scale}x`;
+}
 
 export const overlayLayers = [
   {

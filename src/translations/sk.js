@@ -794,7 +794,7 @@ export default {
       p: 'OpenTopoMap',
       d: 'Verejná doprava (ÖPNV)',
       h: 'Historická',
-      X: 'Experimentálna Outdoor',
+      X: 'Nová Outdoorová',
     },
     overlay: {
       I: 'Fotografie',
