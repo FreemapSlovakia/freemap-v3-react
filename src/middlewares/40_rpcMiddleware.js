@@ -1,5 +1,5 @@
 import * as at from 'fm3/actionTypes';
-import { wsSend } from 'fm3/actions/websocketActions';
+import { wsSend, rpcResponse, rpcEvent } from 'fm3/actions/websocketActions';
 
 const callMap = new Map();
 let id = 0;
@@ -11,10 +11,9 @@ export default ({ dispatch }) => next => (action) => {
     id += 1;
 
     callMap.put(id, {
-      successAction: action.payload.successAction,
-      errorAction: action.payload.errorAction,
-      resultKey: action.payload.resultKey,
-      errorKey: action.payload.errorKey,
+      method: action.payload.method,
+      params: action.payload.params,
+      tag: action.payload.tag,
     });
 
     dispatch(wsSend({
@@ -24,49 +23,23 @@ export default ({ dispatch }) => next => (action) => {
       params: action.payload.params,
     }));
   } else if (action.type === at.WS_RECEIVED) {
-    let response;
+    let object;
 
     try {
-      response = JSON.parse(action.payload);
+      object = JSON.parse(action.payload);
     } catch {
       // ignore
     }
 
-    if (response && response.jsonrpc === '2.0') {
-      if (response.id && !response.method) {
+    if (object && object.jsonrpc === '2.0') {
+      if (object.method && object.id === undefined) {
+        dispatch(rpcEvent(object.method, object.params));
+      } else if (object.id !== undefined && !object.method) {
         const call = callMap.get(id);
-        callMap.delete(id);
 
-        if (!call) {
-          // ignore
-        } else if (response.error) {
-          if (call.errorAction) {
-            const a = { ...call.errorAction };
-            if (call.errorKey) {
-              if (!a.payload) {
-                a.payload = {};
-              }
-              a.payload[call.errorKey] = response.error; // { code, message, data }
-            } else {
-              a.payload = response.error;
-            }
-
-            dispatch(a);
-          }
-        } else if (call.successAction) {
-          const a = { ...call.successAction };
-          if (!response.result) {
-            // nothing
-          } else if (call.resultKey) {
-            if (!a.payload) {
-              a.payload = {};
-            }
-            a.payload[call.resultKey] = response.result;
-          } else {
-            a.payload = response.result;
-          }
-
-          dispatch(a);
+        if (call) {
+          callMap.delete(id);
+          dispatch(rpcResponse(call.method, call.params, object.result, object.error, call.tag));
         }
       }
     }

@@ -23,7 +23,6 @@ function useInputState(init, type = 'text') {
 function TrackedDeviceForm({ onSave, onCancel, device }) {
   const [id, setId] = useInputState(device && device.id || '');
   const [label, setLabel] = useInputState(device && device.label || '');
-  const [follow, setFollow] = useInputState(device ? device.follow : false, 'checkbox');
   const [fromTime, setFromTime] = useState(device && device.fromTime);
   const [maxCount, setMaxCount] = useInputState(device && device.maxCount !== null ? device.maxCount.toString() : '');
   const [maxAge, setMaxAge] = useInputState(device && device.maxAge !== null ? device.maxAge.toString() : '');
@@ -33,7 +32,6 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
     onSave({
       id: id.trim(),
       label: label.trim() || null,
-      follow,
       fromTime,
       maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
@@ -69,9 +67,6 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
           <ControlLabel>Show max # positions</ControlLabel>
           <FormControl type="number" min="0" step="1" value={maxCount} onChange={setMaxCount} />
         </FormGroup>
-        <Checkbox onChange={setFollow} checked={follow}>
-          Follow
-        </Checkbox>
       </Modal.Body>
       <Modal.Footer>
         <Button type="submit">

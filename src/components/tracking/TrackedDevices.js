@@ -23,12 +23,11 @@ function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Token or ID</th>
+              <th>Token or Device</th>
               <th>Label</th>
               <th>Since</th>
               <th>Max Age</th>
               <th>Max Count</th>
-              <th>Follow</th>
               <th />
             </tr>
           </thead>

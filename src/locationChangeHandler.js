@@ -208,7 +208,7 @@ export default function handleLocationChange(store, location) {
     dispatch(setEmbedFeatures(!query.embed || query.embed === '' ? [] : query.embed.split(',')));
   }
 
-  // // token/deviceId(?), label, min-time, max-count, follow
+  // // token/deviceId(?), label, min-time, max-count
   // if (query['tracked-device']) {
   //   dispatch(trackingSetTrackedDevices(query['tracked-device']));
   // }

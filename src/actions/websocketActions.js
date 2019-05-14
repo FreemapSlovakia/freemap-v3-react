@@ -29,6 +29,14 @@ export function wsInvalidState(tag) {
 }
 
 // TODO to separate file
-export function rpcCall(method, params, successAction, errorAction, resultKey, errorKey) {
-  return { type: at.RPC_CALL, payload: { method, params, successAction, errorAction, resultKey, errorKey } };
+export function rpcCall(method, params, tag) {
+  return { type: at.RPC_CALL, payload: { method, params, tag } };
+}
+
+export function rpcResponse(method, params, result, error, tag) {
+  return { type: at.RPC_RESPONSE, payload: { method, params, result, error, tag } };
+}
+
+export function rpcEvent(method, params) {
+  return { type: at.RPC_EVENT, payload: { method, params } };
 }

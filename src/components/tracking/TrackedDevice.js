@@ -27,7 +27,6 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
       <td>{device.maxAge}</td>
       <td>{device.maxCount}</td>
-      <td>{device.follow ? 'Yes' : 'No'}</td>
       <td>
         <Button bsSize="small" type="button" onClick={handleModify}>
           <FontAwesomeIcon icon="edit" />

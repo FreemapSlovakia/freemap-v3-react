@@ -167,3 +167,5 @@ export const WS_CLOSED = 'WS_CLOSED';
 export const WS_INVALID_STATE = 'WS_INVALID_STATE';
 
 export const RPC_CALL = 'RPC_CALL';
+export const RPC_RESPONSE = 'RPC_RESPONSE';
+export const RPC_EVENT = 'RPC_EVENT';

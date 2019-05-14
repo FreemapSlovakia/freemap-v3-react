@@ -1,4 +1,5 @@
 import * as at from 'fm3/actionTypes';
+import produce from 'immer';
 
 const initialState = {
   devices: [],
@@ -8,6 +9,7 @@ const initialState = {
   modifiedDeviceId: undefined,
   modifiedAccessTokenId: undefined,
   modifiedTrackedDeviceId: undefined,
+  tracks: [],
 };
 
 export default function tracking(state = initialState, action) {
@@ -44,6 +46,45 @@ export default function tracking(state = initialState, action) {
         ...state,
         trackedDevices: state.trackedDevices.filter(d => d.id !== action.payload),
       };
+    case at.RPC_RESPONSE: {
+      if (action.payload.method === 'tracking.subscribe' && action.payload.result) {
+        return {
+          ...state,
+          tracks: [
+            ...state.tracks,
+            {
+              id: action.payload.params.token || action.payload.params.deviceId,
+              trackPoints: action.payload.result,
+            },
+          ],
+        };
+      }
+
+      if (action.payload.method === 'tracking.unsubscribe' && !action.payload.error) {
+        return {
+          ...state,
+          tracks: state.tracks.filter(track => track.id !== action.payload.params.token || action.payload.params.deviceId),
+        };
+      }
+
+      return state;
+    }
+    case at.RPC_EVENT: {
+      if (action.payload.method === 'tracking.addPoint') {
+        // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
+        const { token, deviceId, ...rest } = action.payload.params;
+        return produce(state, (draft) => {
+          let track = draft.tracks.find(t => t.id === token || deviceId);
+          if (!track) {
+            track = { id: token || deviceId, trackPoints: [] };
+            draft.tracks.push(track);
+          }
+          track.trackPoints.push(rest);
+        });
+      }
+
+      return state;
+    }
     default:
       return state;
   }
