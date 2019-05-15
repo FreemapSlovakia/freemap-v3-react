@@ -19,6 +19,7 @@ export const urlLogic = createLogic({
     at.GALLERY_SET_FILTER, at.SET_ACTIVE_MODAL, /^TIPS_.*/,
     at.AUTH_CHOOSE_LOGIN_METHOD, at.AUTH_LOGIN_CLOSE, /^AUTH_LOGIN_WITH_.*/,
     /^OSM_LOAD_.*/, at.ENABLE_UPDATING_URL,
+    at.TRACKING_SET_TRACKED_DEVICES, at.TRACKING_SAVE_TRACKED_DEVICE, at.TRACKING_DELETE_TRACKED_DEVICE,
   ],
   process({ getState, action }, dispatch, done) {
     const {
@@ -35,6 +36,7 @@ export const urlLogic = createLogic({
       main,
       tips,
       auth,
+      tracking,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -171,6 +173,23 @@ export const urlLogic = createLogic({
 
     if (main.embedFeatures.length) {
       queryParts.push(`embed=${main.embedFeatures.join(',')}`);
+    }
+
+    for (const { id, label, fromTime, maxCount, maxAge } of tracking.trackedDevices) {
+      const parts = [`track=${encodeURIComponent(id)}`];
+      if (fromTime) {
+        parts.push(`f:${fromTime.toISOString()}`);
+      }
+      if (typeof maxCount === 'number') {
+        parts.push(`n:${maxCount}`);
+      }
+      if (typeof maxAge === 'number') {
+        parts.push(`a:${maxAge}`);
+      }
+      if (label) {
+        parts.push(`l:${encodeURIComponent(label.replace(/\//g, '_'))}`);
+      }
+      queryParts.push(parts.join('/'));
     }
 
     const search = `?${queryParts.join('&')}`;

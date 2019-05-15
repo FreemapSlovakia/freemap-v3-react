@@ -23,8 +23,6 @@ export default function tracking(state = initialState, action) {
       };
     case at.TRACKING_SET_DEVICES:
       return { ...state, devices: action.payload, accessTokens: [] };
-    case at.TRACKING_SET_TRACKED_DEVICES:
-      return { ...state, trackedDevices: action.payload };
     case at.TRACKING_MODIFY_DEVICE:
       return { ...state, modifiedDeviceId: action.payload };
     case at.TRACKING_SET_ACCESS_TOKENS:
@@ -33,6 +31,9 @@ export default function tracking(state = initialState, action) {
       return { ...state, modifiedAccessTokenId: action.payload };
     case at.TRACKING_SHOW_ACCESS_TOKENS:
       return { ...state, accessTokensDeviceId: action.payload };
+
+    case at.TRACKING_SET_TRACKED_DEVICES:
+      return { ...state, trackedDevices: action.payload };
     case at.TRACKING_MODIFY_TRACKED_DEVICE:
       return { ...state, modifiedTrackedDeviceId: action.payload };
     case at.TRACKING_SAVE_TRACKED_DEVICE:
@@ -46,6 +47,7 @@ export default function tracking(state = initialState, action) {
         ...state,
         trackedDevices: state.trackedDevices.filter(d => d.id !== action.payload),
       };
+
     case at.RPC_RESPONSE: {
       if (action.payload.method === 'tracking.subscribe' && action.payload.result) {
         return {

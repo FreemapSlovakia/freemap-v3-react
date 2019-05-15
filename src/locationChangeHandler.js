@@ -208,10 +208,65 @@ export default function handleLocationChange(store, location) {
     dispatch(setEmbedFeatures(!query.embed || query.embed === '' ? [] : query.embed.split(',')));
   }
 
-  // // token/deviceId(?), label, min-time, max-count
-  // if (query['tracked-device']) {
-  //   dispatch(trackingSetTrackedDevices(query['tracked-device']));
-  // }
+  const { track } = query;
+  const trackings = (!track ? [] : Array.isArray(track) ? track : [track]);
+  const parsed = [];
+
+  for (const tracking of trackings) {
+    const [id, ...parts] = tracking.split('/');
+    let fromTime = null;
+    let maxAge = null;
+    let maxCount = null;
+    let label = null;
+
+    for (const part of parts) {
+      if (part[1] !== ':') {
+        continue;
+      }
+
+      switch (part[0]) {
+        case 'f':
+          fromTime = new Date(part.slice(2));
+          break;
+        case 'a':
+          maxAge = Number.parseInt(part.slice(2), 10);
+          break;
+        case 'n':
+          maxCount = Number.parseInt(part.slice(2), 10);
+          break;
+        case 'l':
+          label = part.slice(2);
+          break;
+        default:
+          break;
+      }
+    }
+
+    parsed.push({ id, fromTime, maxAge, maxCount, label });
+  }
+
+  const { trackedDevices } = getState().tracking;
+  const newTrackedDevices = [];
+  outer: for (const newTd of parsed) {
+    for (const trackedDevice of trackedDevices) {
+      if (trackedDevicesEquals(trackedDevice, newTd)) {
+        newTrackedDevices.push(trackedDevice);
+        continue outer;
+      }
+    }
+    newTrackedDevices.push(newTd);
+  }
+
+  dispatch(trackingSetTrackedDevices(newTrackedDevices));
+}
+
+// TODO use some generic deep compare fn
+function trackedDevicesEquals(td1, td2) {
+  return td1.id === td2.id
+    && td1.fromTime === td2.fromTime
+    && td1.maxAge === td2.maxAge
+    && td1.maxCount === td2.maxCount
+    && td1.label === td2.label;
 }
 
 function handleGallery(getState, dispatch, query) {

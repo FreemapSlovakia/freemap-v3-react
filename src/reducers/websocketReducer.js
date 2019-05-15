@@ -1,7 +1,7 @@
 import * as at from 'fm3/actionTypes';
 
 const initialState = {
-  state: 0,
+  state: 3,
 };
 
 export default function tracking(state = initialState, action) {

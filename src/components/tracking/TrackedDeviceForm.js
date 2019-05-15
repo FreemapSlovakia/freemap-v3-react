@@ -23,8 +23,8 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
   const [id, setId] = useInputState(device && device.id || '');
   const [label, setLabel] = useInputState(device && device.label || '');
   const [fromTime, setFromTime] = useState(device && device.fromTime);
-  const [maxCount, setMaxCount] = useInputState(device && device.maxCount !== null ? device.maxCount.toString() : '');
-  const [maxAge, setMaxAge] = useInputState(device && device.maxAge !== null ? device.maxAge.toString() : '');
+  const [maxCount, setMaxCount] = useInputState(device && typeof device.maxCount === 'number' ? device.maxCount.toString() : '');
+  const [maxAge, setMaxAge] = useInputState(device && typeof device.maxAge === 'number' ? device.maxAge.toString() : '');
 
   const handleSubmit = (e) => {
     e.preventDefault();

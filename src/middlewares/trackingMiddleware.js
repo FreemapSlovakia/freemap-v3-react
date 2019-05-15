@@ -23,6 +23,7 @@ export default ({ dispatch, getState }) => next => (action) => {
     }
   } else if (state === 1 && prevTrackedDevices !== trackedDevices) {
     // TODO prevent concurrent subscribe/unsubscribe of the same id and keep their order
+    // TODO ignore if only label changed
     for (const td of prevTrackedDevices) {
       if (!trackedDevices.includes(td)) {
         const { token, deviceId } = mangle(td);
@@ -39,5 +40,5 @@ export default ({ dispatch, getState }) => next => (action) => {
 
 function mangle(td) {
   const { id, ...rest } = td;
-  return { [Number.isNaN(Number.parseInt(id, 10)) ? 'token' : 'deviceId']: id, ...rest };
+  return { [/^\d+$/.test(id) ? 'deviceId' : 'token']: id, ...rest };
 }

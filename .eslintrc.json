@@ -36,7 +36,6 @@
     "no-use-before-define": 0,
     "max-len": 0,
     "default-case": 1,
-    "no-param-reassign": 1,
     "no-underscore-dangle": 1,
     "react/jsx-no-bind": 1,
     "no-shadow": 1,
@@ -58,7 +57,9 @@
     "react-hooks/rules-of-hooks": "error",
     "react-hooks/exhaustive-deps": "warn",
     "no-restricted-syntax": 0,
-    "no-param-reassign": 0
+    "no-param-reassign": 0,
+    "no-continue": 0,
+    "no-labels": 0
   },
   "globals": {
     "L": true,
