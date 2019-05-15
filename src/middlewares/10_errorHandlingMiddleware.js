@@ -10,6 +10,9 @@ export default () => next => (action) => {
 
     return next(action);
   } catch (error) {
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(error);
+    }
     sendError({ kind: 'reducer', error, action });
     return null;
   }

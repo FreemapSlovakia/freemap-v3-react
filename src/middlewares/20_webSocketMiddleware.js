@@ -1,5 +1,5 @@
 import * as at from 'fm3/actionTypes';
-import { wsInvalidState, wsSetState, wsReceived } from 'fm3/actions/websocketActions';
+import { wsInvalidState, wsStateChanged, wsReceived } from 'fm3/actions/websocketActions';
 
 let ws = { readyState: 3 };
 
@@ -12,17 +12,17 @@ export default ({ dispatch }) => next => (action) => {
       }
 
       ws = new WebSocket(`${process.env.API_URL.replace(/^http/, 'ws')}/ws`);
-      dispatch(wsSetState(ws.readyState));
+      dispatch(wsStateChanged(ws.readyState));
 
       ws.addEventListener('open', ({ target }) => {
         if (ws === target) {
-          dispatch(wsSetState(target.readyState));
+          dispatch(wsStateChanged(target.readyState));
         }
       });
 
       ws.addEventListener('close', ({ target, code }) => {
         if (ws === target) {
-          dispatch(wsSetState(target.readyState, code));
+          dispatch(wsStateChanged(target.readyState, code));
         }
       });
 
@@ -34,7 +34,7 @@ export default ({ dispatch }) => next => (action) => {
       break;
     case at.WS_SEND:
       if (ws.readyState === 1) {
-        ws.send(action.payload.message);
+        ws.send(JSON.stringify(action.payload.message));
       } else {
         dispatch(wsInvalidState(action.payload.tag));
         return;

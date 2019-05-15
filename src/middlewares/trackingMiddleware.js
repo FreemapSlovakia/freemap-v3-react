@@ -7,16 +7,21 @@ export default ({ dispatch, getState }) => next => (action) => {
   next(action);
 
   const { trackedDevices } = getState().tracking;
+  const { state } = getState().websocket;
 
-  if (trackedDevices.length === 0 && getState().websocket.state < 2) {
+  if (prevState === state && prevTrackedDevices === trackedDevices) {
+    return;
+  }
+
+  if (trackedDevices.length === 0 && state < 2) {
     dispatch(wsClose());
-  } else if (trackedDevices.length > 0 && getState().websocket.state === 3) {
+  } else if (trackedDevices.length > 0 && state === 3) {
     dispatch(wsOpen());
-  } else if (prevState !== 1 && getState().websocket.state === 1 && trackedDevices.length > 0) {
+  } else if (prevState !== 1 && state === 1 && trackedDevices.length > 0) {
     for (const td of trackedDevices) {
       dispatch(rpcCall('tracking.subscribe', td));
     }
-  } else if (getState().websocket.state === 1 && prevTrackedDevices !== trackedDevices) {
+  } else if (state === 1 && prevTrackedDevices !== trackedDevices) {
     // TODO prevent concurrent subscribe/unsubscribe of the same id and keep their order
     for (const td of prevTrackedDevices) {
       if (!trackedDevices.includes(td)) {

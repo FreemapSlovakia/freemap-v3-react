@@ -1,5 +1,5 @@
 import { createStore, applyMiddleware, combineReducers } from 'redux';
-import { logicMiddleware } from 'fm3/middlewares/30_logicMiddleware';
+import logicMiddleware from 'fm3/middlewares/30_logicMiddleware';
 
 export default function createReduxStore() {
   const reducersCtx = require.context('fm3/reducers', false, /Reducer\.js$/);

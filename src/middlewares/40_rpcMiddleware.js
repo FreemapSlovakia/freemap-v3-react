@@ -1,7 +1,7 @@
 import * as at from 'fm3/actionTypes';
 import { wsSend, rpcResponse, rpcEvent } from 'fm3/actions/websocketActions';
 
- // TODO implement timeout
+// TODO implement timeout
 
 const callMap = new Map();
 let id = 0;
@@ -23,7 +23,7 @@ export default ({ dispatch, getState }) => next => (action) => {
   } else if (action.type === at.RPC_CALL) {
     id += 1;
 
-    callMap.put(id, {
+    callMap.set(id, {
       method: action.payload.method,
       params: action.payload.params,
       tag: action.payload.tag,

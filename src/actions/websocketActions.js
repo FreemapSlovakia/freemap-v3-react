@@ -12,8 +12,8 @@ export function wsSend(message, tag) {
   return { type: at.WS_SEND, payload: { message, tag } };
 }
 
-export function wsStateChanged() {
-  return { type: at.WS_STATE_CHANGED };
+export function wsStateChanged(state) {
+  return { type: at.WS_STATE_CHANGED, payload: state };
 }
 
 export function wsClosed(code) {
@@ -21,7 +21,7 @@ export function wsClosed(code) {
 }
 
 export function wsReceived(message) {
-  return { type: at.WS_RECEICED, payload: message };
+  return { type: at.WS_RECEIVED, payload: message };
 }
 
 export function wsInvalidState(tag) {

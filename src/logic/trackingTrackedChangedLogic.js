@@ -1,6 +1,5 @@
 import { createLogic } from 'redux-logic';
-import { wsSend } from 'fm3/actions/websocketActions';
-import { wsOpen } from 'fm3/websocketActions';
+import { wsOpen, wsSend } from 'fm3/actions/websocketActions';
 
 let oldValue = [];
 
