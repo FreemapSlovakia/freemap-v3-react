@@ -38,7 +38,7 @@ export default function tracking(state = initialState, action) {
     case at.TRACKING_SAVE_TRACKED_DEVICE:
       return {
         ...state,
-        trackedDevices: [...state.trackedDevices.filter(d => d.id !== action.payload.id), action.payload],
+        trackedDevices: [...state.trackedDevices.filter(d => d.id !== state.modifiedTrackedDeviceId), action.payload],
         modifiedTrackedDeviceId: undefined,
       };
     case at.TRACKING_DELETE_TRACKED_DEVICE:

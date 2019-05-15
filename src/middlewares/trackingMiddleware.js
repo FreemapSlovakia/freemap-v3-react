@@ -19,20 +19,25 @@ export default ({ dispatch, getState }) => next => (action) => {
     dispatch(wsOpen());
   } else if (prevState !== 1 && state === 1 && trackedDevices.length > 0) {
     for (const td of trackedDevices) {
-      dispatch(rpcCall('tracking.subscribe', td));
+      dispatch(rpcCall('tracking.subscribe', mangle(td)));
     }
   } else if (state === 1 && prevTrackedDevices !== trackedDevices) {
     // TODO prevent concurrent subscribe/unsubscribe of the same id and keep their order
     for (const td of prevTrackedDevices) {
       if (!trackedDevices.includes(td)) {
-        const { token, deviceId } = td;
+        const { token, deviceId } = mangle(td);
         dispatch(rpcCall('tracking.unsubscribe', { token, deviceId }));
       }
     }
     for (const td of trackedDevices) {
       if (!prevTrackedDevices.includes(td)) {
-        dispatch(rpcCall('tracking.subscribe', td));
+        dispatch(rpcCall('tracking.subscribe', mangle(td)));
       }
     }
   }
 };
+
+function mangle(td) {
+  const { id, ...rest } = td;
+  return { [Number.isNaN(Number.parseInt(id, 10)) ? 'token' : 'deviceId']: id, ...rest };
+}
