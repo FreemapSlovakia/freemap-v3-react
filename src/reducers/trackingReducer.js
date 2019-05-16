@@ -4,11 +4,11 @@ import produce from 'immer';
 const initialState = {
   devices: [],
   accessTokens: [],
-  trackedDevices: [],
   accessTokensDeviceId: undefined,
   modifiedDeviceId: undefined,
   modifiedAccessTokenId: undefined,
   modifiedTrackedDeviceId: undefined,
+  trackedDevices: [],
   tracks: [],
 };
 
@@ -20,6 +20,7 @@ export default function tracking(state = initialState, action) {
       return {
         ...initialState,
         trackedDevices: state.trackedDevices,
+        tracks: state.tracks,
       };
     case at.TRACKING_SET_DEVICES:
       return { ...state, devices: action.payload, accessTokens: [] };
@@ -47,6 +48,9 @@ export default function tracking(state = initialState, action) {
         ...state,
         trackedDevices: state.trackedDevices.filter(d => d.id !== action.payload),
       };
+
+    case at.WS_STATE_CHANGED:
+      return action.payload.state === 1 ? state : { ...state, tracks: [] };
 
     case at.RPC_RESPONSE: {
       if (action.payload.method === 'tracking.subscribe' && action.payload.result) {
@@ -82,6 +86,7 @@ export default function tracking(state = initialState, action) {
             draft.tracks.push(track);
           }
           track.trackPoints.push(rest);
+          // TODO apply limits from trackedDevices
         });
       }
 

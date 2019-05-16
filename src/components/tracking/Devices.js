@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
 import Button from 'react-bootstrap/lib/Button';
+import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -20,6 +21,10 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
+          <Alert bsStyle="warning">
+            <FontAwesomeIcon icon="flask" />
+            <b>Warning!</b> This is experimental feature under development.
+          </Alert>
           <FontAwesomeIcon icon="bullseye" /> My Tracking Devices
         </Modal.Title>
       </Modal.Header>

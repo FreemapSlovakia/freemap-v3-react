@@ -1,5 +1,7 @@
 import { wsClose, wsOpen, rpcCall } from 'fm3/actions/websocketActions';
 
+let reopenTs;
+
 export default ({ dispatch, getState }) => next => (action) => {
   const prevState = getState().websocket.state;
   const prevTrackedDevices = getState().tracking.trackedDevices;
@@ -7,16 +9,28 @@ export default ({ dispatch, getState }) => next => (action) => {
   next(action);
 
   const { trackedDevices } = getState().tracking;
-  const { state } = getState().websocket;
+  const { state, timestamp } = getState().websocket;
 
   if (prevState === state && prevTrackedDevices === trackedDevices) {
     return;
   }
 
+  if (trackedDevices.length === 0 && reopenTs) {
+    clearTimeout(reopenTs);
+    reopenTs = null;
+  }
+
   if (trackedDevices.length === 0 && state < 2) {
     dispatch(wsClose());
   } else if (trackedDevices.length > 0 && state === 3) {
-    dispatch(wsOpen());
+    const diff = Date.now() - timestamp;
+    if (diff > 1000) { // TODO scale this value
+      dispatch(wsOpen());
+    } else {
+      reopenTs = setTimeout(() => {
+        dispatch(wsOpen());
+      }, diff);
+    }
   } else if (prevState !== 1 && state === 1 && trackedDevices.length > 0) {
     for (const td of trackedDevices) {
       dispatch(rpcCall('tracking.subscribe', mangle(td)));

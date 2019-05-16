@@ -12,8 +12,8 @@ export function wsSend(message, tag) {
   return { type: at.WS_SEND, payload: { message, tag } };
 }
 
-export function wsStateChanged(state) {
-  return { type: at.WS_STATE_CHANGED, payload: state };
+export function wsStateChanged(state, code) {
+  return { type: at.WS_STATE_CHANGED, payload: { state, code, timestamp: Date.now() } };
 }
 
 export function wsClosed(code) {
