@@ -243,7 +243,6 @@ function addTracking(doc, { tracks, trackedDevices }) {
       }
     }
   }
-
 }
 
 export default gpxExportLogic;

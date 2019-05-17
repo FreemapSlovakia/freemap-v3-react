@@ -76,7 +76,7 @@ function DeviceForm({ onSave, onCancel, device }) {
 DeviceForm.propTypes = {
   onCancel: PropTypes.func.isRequired,
   onSave: PropTypes.func.isRequired,
-  device: PropTypes.shape({}).isRequired, // TODO
+  device: PropTypes.shape({}), // TODO
 };
 
 export default connect(

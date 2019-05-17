@@ -47,7 +47,8 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
       </Modal.Header>
       <Modal.Body>
         <FormGroup>
-          <ControlLabel>ID or Access Token</ControlLabel>
+          {/* TODD: or ID */}
+          <ControlLabel>Access Token of existing shared device</ControlLabel>
           <FormControl value={id} onChange={setId} required />
         </FormGroup>
         <FormGroup>

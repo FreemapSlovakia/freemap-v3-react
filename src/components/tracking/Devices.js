@@ -29,6 +29,27 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <Alert bsStyle="info">
+          <p>
+            Enter following URL to your tracker (eg. <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">Locus</a>):
+            <code>{process.env.API_URL}/tracking/track/<i>token</i></code> where <i>token</i> is listed in the table below.
+          </p>
+          <p>
+            Entpoint supports HTTP <code>GET</code> or <code>POST</code> with URL-encoded parameters:
+          </p>
+          <ul>
+            <li><code>lat</code> - latitude in degrees</li>
+            <li><code>lon</code> - longitude in degrees</li>
+            <li><code>alt</code> - altitude in meters</li>
+            <li><code>speed</code> - speed in m/s</li>
+            <li><code>acc</code> - accuracy in meters</li>
+            <li><code>bearing</code> - bearing in degrees</li>
+            <li><code>battery</code> - battery in percents</li>
+            <li><code>gsm_signal</code> - GSM signal in percents</li>
+            <li><code>message</code> - message (note) to be displayed</li>
+          </ul>
+        </Alert>
+
         <Table striped bordered>
           <thead>
             <tr>

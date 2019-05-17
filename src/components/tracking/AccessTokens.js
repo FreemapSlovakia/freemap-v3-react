@@ -45,7 +45,7 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
           Add
         </Button>
         <Button type="button" onClick={onClose}>
-          Close
+          Back
         </Button>
       </Modal.Footer>
     </>
