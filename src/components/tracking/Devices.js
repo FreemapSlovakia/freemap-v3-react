@@ -35,7 +35,7 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
             <code>{process.env.API_URL}/tracking/track/<i>token</i></code> where <i>token</i> is listed in the table below.
           </p>
           <p>
-            Entpoint supports HTTP <code>GET</code> or <code>POST</code> with URL-encoded parameters:
+            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with URL-encoded parameters:
           </p>
           <ul>
             <li><code>lat</code> - latitude in degrees</li>
