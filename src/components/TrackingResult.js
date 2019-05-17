@@ -17,9 +17,11 @@ function TrackingResult({ tracks }) {
           position={track.trackPoints[track.trackPoints.length - 1]}
           color="#7239a8"
         >
-          <Tooltip direction="top" offset={[0, -36]} permanent>
-            {track.label}
-          </Tooltip>
+          {track.label && (
+            <Tooltip direction="top" offset={[0, -36]} permanent>
+              {track.label}
+            </Tooltip>
+          )}
         </RichMarker>
       )}
     </Fragment>

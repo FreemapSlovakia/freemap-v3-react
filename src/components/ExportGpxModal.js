@@ -22,6 +22,7 @@ const exportableDefinitions = [
   { type: 'areaMeasurement', icon: 'square' },
   { type: 'elevationMeasurement', icon: 'long-arrow-up' },
   { type: 'infoPoint', icon: 'thumb-tack' },
+  { type: 'tracking', icon: 'bullseye' },
   // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ];
@@ -127,6 +128,9 @@ export default compose(
       }
       if (state.infoPoint.points.length) {
         exportables.push('infoPoint');
+      }
+      if (state.tracking.tracks.length) {
+        exportables.push('tracking');
       }
       if (state.changesets.changesets.length) {
         // exportables.push('changesets');

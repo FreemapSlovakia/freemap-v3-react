@@ -757,6 +757,7 @@ export default {
       areaMeasurement: 'area measurement',
       elevationMeasurement: 'elevation and position measurement',
       infoPoint: 'pins',
+      tracking: 'live tracking',
     },
     disabledAlert: 'Only checkboxes having anything in the map to export are enabled.',
   },
