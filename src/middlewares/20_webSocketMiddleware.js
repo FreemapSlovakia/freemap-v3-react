@@ -3,15 +3,16 @@ import { wsInvalidState, wsStateChanged, wsReceived } from 'fm3/actions/websocke
 
 let ws = { readyState: 3 };
 
-export default ({ dispatch }) => next => (action) => {
+export default ({ dispatch, getState }) => next => (action) => {
   switch (action.type) {
-    case at.WS_OPEN:
+    case at.WS_OPEN: {
       if (ws.readyState < 3) {
         dispatch(wsInvalidState(action.payload));
         return;
       }
 
-      ws = new WebSocket(`${process.env.API_URL.replace(/^http/, 'ws')}/ws`);
+      const { user } = getState().auth;
+      ws = new WebSocket(`${process.env.API_URL.replace(/^http/, 'ws')}/ws${user ? `?authToken=${user.authToken}` : ''}`);
       dispatch(wsStateChanged(ws.readyState));
 
       ws.addEventListener('open', ({ target }) => {
@@ -32,6 +33,7 @@ export default ({ dispatch }) => next => (action) => {
         }
       });
       break;
+    }
     case at.WS_SEND:
       if (ws.readyState === 1) {
         ws.send(JSON.stringify(action.payload.message));
