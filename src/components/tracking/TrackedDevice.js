@@ -22,7 +22,18 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
 
   return (
     <tr>
-      <td>{device.id}</td>
+      <td>
+        <div
+          style={{
+            display: 'inline-block',
+            backgroundColor: device.color || '#7239a8',
+            width: `${device.width}px`,
+            height: '15px',
+            marginRight: `${14 - (device.width || 4)}px`,
+          }}
+        />
+        {device.id}
+      </td>
       <td>{device.label}</td>
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
       <td>{device.maxAge}</td>

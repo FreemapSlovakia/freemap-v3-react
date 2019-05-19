@@ -218,6 +218,8 @@ export default function handleLocationChange(store, location) {
     let maxAge = null;
     let maxCount = null;
     let label = null;
+    let color = null;
+    let width = null;
 
     for (const part of parts) {
       if (part[1] !== ':') {
@@ -231,6 +233,12 @@ export default function handleLocationChange(store, location) {
         case 'a':
           maxAge = Number.parseInt(part.slice(2), 10);
           break;
+        case 'w':
+          width = Number.parseFloat(part.slice(2));
+          break;
+        case 'c':
+          color = part.slice(2);
+          break;
         case 'n':
           maxCount = Number.parseInt(part.slice(2), 10);
           break;
@@ -242,7 +250,7 @@ export default function handleLocationChange(store, location) {
       }
     }
 
-    parsed.push({ id, fromTime, maxAge, maxCount, label });
+    parsed.push({ id, fromTime, maxAge, maxCount, label, width, color });
   }
 
   const { trackedDevices } = getState().tracking;

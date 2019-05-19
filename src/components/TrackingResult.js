@@ -9,13 +9,13 @@ function TrackingResult({ tracks }) {
     <Fragment key={track.id}>
       <Polyline
         positions={track.trackPoints}
-        weight={4}
-        color="#7239a8"
+        weight={track.width || 4}
+        color={track.color || '#7239a8'}
       />
       {track.trackPoints.length && (
         <RichMarker
           position={track.trackPoints[track.trackPoints.length - 1]}
-          color="#7239a8"
+          color={track.color || '#7239a8'}
         >
           {track.label && (
             <Tooltip direction="top" offset={[0, -36]} permanent>

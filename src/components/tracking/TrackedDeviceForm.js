@@ -22,6 +22,8 @@ function useInputState(init, type = 'text') {
 function TrackedDeviceForm({ onSave, onCancel, device }) {
   const [id, setId] = useInputState(device && device.id || '');
   const [label, setLabel] = useInputState(device && device.label || '');
+  const [color, setColor] = useInputState(device && device.color || '');
+  const [width, setWidth] = useInputState(device && typeof device.width === 'number' ? device.width.toString() : '');
   const [fromTime, setFromTime] = useState(device && device.fromTime);
   const [maxCount, setMaxCount] = useInputState(device && typeof device.maxCount === 'number' ? device.maxCount.toString() : '');
   const [maxAge, setMaxAge] = useInputState(device && typeof device.maxAge === 'number' ? device.maxAge.toString() : '');
@@ -31,9 +33,11 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
     onSave({
       id: id.trim(),
       label: label.trim() || null,
+      color: color.trim() || null,
       fromTime,
       maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+      width: width === '' ? null : Number.parseInt(width, 10),
     });
   };
 
@@ -54,6 +58,14 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
         <FormGroup>
           <ControlLabel>Label</ControlLabel>
           <FormControl value={label} onChange={setLabel} />
+        </FormGroup>
+        <FormGroup>
+          <ControlLabel>Color (HTML)</ControlLabel>
+          <FormControl value={color} onChange={setColor} />
+        </FormGroup>
+        <FormGroup>
+          <ControlLabel>Width (px)</ControlLabel>
+          <FormControl value={width} onChange={setWidth} type="number" min="1" />
         </FormGroup>
         <FormGroup>
           <ControlLabel>Show positions since</ControlLabel>
