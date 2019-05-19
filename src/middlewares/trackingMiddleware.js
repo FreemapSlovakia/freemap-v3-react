@@ -29,7 +29,7 @@ export default ({ dispatch, getState }) => next => (action) => {
     } else {
       reopenTs = setTimeout(() => {
         dispatch(wsOpen());
-      }, diff);
+      }, 1000 - diff);
     }
   } else if (prevState !== 1 && state === 1 && trackedDevices.length > 0) {
     for (const td of trackedDevices) {
