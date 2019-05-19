@@ -2,6 +2,16 @@ import * as at from 'fm3/actionTypes';
 import { wsInvalidState, wsStateChanged, wsReceived } from 'fm3/actions/websocketActions';
 
 let ws = { readyState: 3 };
+let restarter;
+
+function resetRestarter() {
+  if (restarter) {
+    clearTimeout(restarter);
+  }
+  restarter = setTimeout(() => {
+    ws.close();
+  }, 45000);
+}
 
 export default ({ dispatch, getState }) => next => (action) => {
   switch (action.type) {
@@ -12,24 +22,30 @@ export default ({ dispatch, getState }) => next => (action) => {
       }
 
       const { user } = getState().auth;
-      ws = new WebSocket(`${process.env.API_URL.replace(/^http/, 'ws')}/ws${user ? `?authToken=${user.authToken}` : ''}`);
+      ws = new WebSocket(`${process.env.API_URL.replace(/^http/, 'ws')}/ws?pingInterval=30000${user ? `&authToken=${user.authToken}` : ''}`);
       dispatch(wsStateChanged(ws.readyState));
 
       ws.addEventListener('open', ({ target }) => {
         if (ws === target) {
+          resetRestarter();
           dispatch(wsStateChanged(target.readyState));
         }
       });
 
       ws.addEventListener('close', ({ target, code }) => {
         if (ws === target) {
+          clearTimeout(restarter);
+          restarter = null;
           dispatch(wsStateChanged(target.readyState, code));
         }
       });
 
       ws.addEventListener('message', ({ target, data }) => {
         if (ws === target) {
-          dispatch(wsReceived(data));
+          resetRestarter();
+          if (data !== 'ping') {
+            dispatch(wsReceived(data));
+          }
         }
       });
       break;
@@ -54,5 +70,11 @@ export default ({ dispatch, getState }) => next => (action) => {
       break;
   }
 
+  const user = getState().auth;
+
   next(action);
+
+  if (user !== getState().auth && ws) {
+    ws.close();
+  }
 };
