@@ -31,6 +31,9 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
       <Modal.Body>
         <Alert bsStyle="info">
           <p>
+            Manage your devices so that others can watch your position if you give them access token <FontAwesomeIcon icon="key" /> you create.
+          </p>
+          <p>
             Enter following URL to your tracker (eg. <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">Locus</a>):
             <code>{process.env.API_URL}/tracking/track/<i>token</i></code> where <i>token</i> is listed in the table below.
           </p>
@@ -38,8 +41,8 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
             Endpoint supports HTTP <code>GET</code> or <code>POST</code> with URL-encoded parameters:
           </p>
           <ul>
-            <li><code>lat</code> - latitude in degrees</li>
-            <li><code>lon</code> - longitude in degrees</li>
+            <li><code>lat</code> - latitude in degrees (mandatory)</li>
+            <li><code>lon</code> - longitude in degrees (mandatory)</li>
             <li><code>alt</code> - altitude in meters</li>
             <li><code>speed</code> - speed in m/s</li>
             <li><code>acc</code> - accuracy in meters</li>
@@ -67,11 +70,11 @@ function Devices({ onClose, onOpen, onAdd, devices, onShowTrackedDevices }) {
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" onClick={onShowTrackedDevices}>
-          Show tracked devices
+        <Button type="button" bsStyle="primary" onClick={onShowTrackedDevices}>
+          Manage devices you watch
         </Button>
         <Button type="button" onClick={onAdd}>
-          Add
+          Add new
         </Button>
         <Button type="button" onClick={onClose}>
           Close

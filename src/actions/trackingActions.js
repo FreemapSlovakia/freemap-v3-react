@@ -60,3 +60,7 @@ export function trackingLoadAccessTokens() {
 export function trackingShowAccessTokens(deviceId) {
   return { type: at.TRACKING_SHOW_ACCESS_TOKENS, payload: deviceId };
 }
+
+export function trackingView(deviceId) {
+  return { type: at.TRACKING_VIEW, payload: deviceId };
+}

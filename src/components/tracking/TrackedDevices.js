@@ -21,10 +21,15 @@ function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
             <FontAwesomeIcon icon="flask" />
             <b>Warning!</b> This is experimental feature under development.
           </Alert>
-          <FontAwesomeIcon icon="bullseye" /> Tracked Devices
+          <FontAwesomeIcon icon="bullseye" /> Devices you watch
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
+        <Alert bsStyle="info">
+          <p>
+            Manage tracked devices to see the position of your friends.
+          </p>
+        </Alert>
         <Table striped bordered>
           <thead>
             <tr>
@@ -42,11 +47,11 @@ function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" onClick={onShowTrackedDevices}>
-          Show my devices
+        <Button type="button" bsStyle="primary" onClick={onShowTrackedDevices}>
+          Manage my devices
         </Button>
         <Button type="button" onClick={onAdd}>
-          Add
+          Add new
         </Button>
         <Button type="button" onClick={onClose}>
           Close

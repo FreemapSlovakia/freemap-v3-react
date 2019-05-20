@@ -48,7 +48,14 @@ export default function tracking(state = initialState, action) {
         ...state,
         trackedDevices: state.trackedDevices.filter(d => d.id !== action.payload),
       };
-
+    case at.TRACKING_VIEW:
+      return produce(state, (draft) => {
+        if (!draft.trackedDevices.find(d => d.id !== action.payload)) {
+          draft.trackedDevices.push({
+            id: action.payload,
+          });
+        }
+      });
     case at.WS_STATE_CHANGED:
       return action.payload.state === 1 ? state : { ...state, tracks: [] };
 

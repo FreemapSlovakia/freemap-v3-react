@@ -39,11 +39,11 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
       <td>{device.maxAge}</td>
       <td>{device.maxCount}</td>
       <td>
-        <Button bsSize="small" type="button" onClick={handleModify}>
+        <Button bsSize="small" type="button" onClick={handleModify} title="modify">
           <FontAwesomeIcon icon="edit" />
         </Button>
         {' '}
-        <Button bsStyle="danger" bsSize="small" type="button" onClick={handleDelete}>
+        <Button bsStyle="danger" bsSize="small" type="button" onClick={handleDelete} title="delete">
           <FontAwesomeIcon icon="close" />
         </Button>
       </td>
