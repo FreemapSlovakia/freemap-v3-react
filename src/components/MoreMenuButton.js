@@ -18,6 +18,7 @@ import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 class MoreMenuButton extends React.Component {
   static propTypes = {
     onSettingsShow: PropTypes.func.isRequired,
+    onTrackingShow: PropTypes.func.isRequired,
     onGpxExport: PropTypes.func.isRequired,
     onPdfExport: PropTypes.func.isRequired,
     onShare: PropTypes.func.isRequired,
@@ -75,6 +76,11 @@ class MoreMenuButton extends React.Component {
   handleSettingsShowClick = () => {
     this.close();
     this.props.onSettingsShow();
+  }
+
+  handleTrackingShowClick = () => {
+    this.close();
+    this.props.onTrackingShow();
   }
 
   handleGpxExportClick = () => {
@@ -186,6 +192,9 @@ class MoreMenuButton extends React.Component {
                   )}
                   <MenuItem onClick={this.handleSettingsShowClick}>
                     <FontAwesomeIcon icon="cog" /> {t('more.settings')}
+                  </MenuItem>
+                  <MenuItem onClick={this.handleTrackingShowClick}>
+                    <FontAwesomeIcon icon="bullseye" /> Tracking
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem onClick={this.handlePdfExportClick}>
@@ -324,6 +333,9 @@ export default compose(
     dispatch => ({
       onSettingsShow() {
         dispatch(setActiveModal('settings'));
+      },
+      onTrackingShow() {
+        dispatch(setActiveModal('tracking-tracked'));
       },
       onGpxExport() {
         dispatch(setActiveModal('export-gpx'));

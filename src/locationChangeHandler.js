@@ -18,6 +18,7 @@ import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
+import { trackingSetTrackedDevices } from './actions/trackingActions';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -206,6 +207,74 @@ export default function handleLocationChange(store, location) {
   if ((query.embed || '') !== getState().main.embedFeatures.join(',')) {
     dispatch(setEmbedFeatures(!query.embed || query.embed === '' ? [] : query.embed.split(',')));
   }
+
+  const { track } = query;
+  const trackings = (!track ? [] : Array.isArray(track) ? track : [track]);
+  const parsed = [];
+
+  for (const tracking of trackings) {
+    const [id, ...parts] = tracking.split('/');
+    let fromTime = null;
+    let maxAge = null;
+    let maxCount = null;
+    let label = null;
+    let color = null;
+    let width = null;
+
+    for (const part of parts) {
+      if (part[1] !== ':') {
+        continue;
+      }
+
+      switch (part[0]) {
+        case 'f':
+          fromTime = new Date(part.slice(2));
+          break;
+        case 'a':
+          maxAge = Number.parseInt(part.slice(2), 10);
+          break;
+        case 'w':
+          width = Number.parseFloat(part.slice(2));
+          break;
+        case 'c':
+          color = part.slice(2);
+          break;
+        case 'n':
+          maxCount = Number.parseInt(part.slice(2), 10);
+          break;
+        case 'l':
+          label = part.slice(2);
+          break;
+        default:
+          break;
+      }
+    }
+
+    parsed.push({ id, fromTime, maxAge, maxCount, label, width, color });
+  }
+
+  const { trackedDevices } = getState().tracking;
+  const newTrackedDevices = [];
+  outer: for (const newTd of parsed) {
+    for (const trackedDevice of trackedDevices) {
+      if (trackedDevicesEquals(trackedDevice, newTd)) {
+        newTrackedDevices.push(trackedDevice);
+        continue outer;
+      }
+    }
+    newTrackedDevices.push(newTd);
+  }
+
+  dispatch(trackingSetTrackedDevices(newTrackedDevices));
+}
+
+// TODO use some generic deep compare fn
+function trackedDevicesEquals(td1, td2) {
+  return td1.id === td2.id
+    && td1.fromTime === td2.fromTime
+    && td1.maxAge === td2.maxAge
+    && td1.maxCount === td2.maxCount
+    && td1.label === td2.label;
 }
 
 function handleGallery(getState, dispatch, query) {
@@ -272,7 +341,7 @@ function handleGallery(getState, dispatch, query) {
 
   if (query.show === 'gallery-upload') {
     if (!getState().gallery.showUploadModal) {
-      // timeout to validate authentication first (ugly)
+      // TODO fix: timeout to validate authentication first (ugly)
       setTimeout(() => {
         dispatch(galleryShowUploadModal());
       }, 1000);

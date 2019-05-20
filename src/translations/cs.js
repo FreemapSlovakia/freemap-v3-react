@@ -758,6 +758,7 @@ export default {
       areaMeasurement: 'měření plochy',
       elevationMeasurement: 'měření výšky a polohy',
       infoPoint: 'body v mapě',
+      tracking: 'sledování',
     },
     disabledAlert: 'Aktivní jsou pouze volby jejichž objekty se nacházejí na mapě.',
   },

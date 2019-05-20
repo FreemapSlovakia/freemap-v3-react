@@ -30,7 +30,7 @@ export const gpxExportLogic = createLogic({
     createElement(meta, 'time', new Date().toISOString());
     createElement(meta, 'keywords', action.payload.join(' '));
 
-    const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner } = getState();
+    const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner, tracking } = getState();
 
     const set = new Set(action.payload);
 
@@ -84,6 +84,9 @@ export const gpxExportLogic = createLogic({
     }
     if (set.has('plannedRoute')) {
       addPlannedRoute(doc, routePlanner);
+    }
+    if (set.has('tracking')) {
+      addTracking(doc, tracking);
     }
 
     Promise.all(promises)
@@ -188,6 +191,58 @@ function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
       });
     });
   });
+}
+
+export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
+
+function addTracking(doc, { tracks, trackedDevices }) {
+  const tdMap = new Map(trackedDevices.map(td => [td.id, td]));
+  const tracks1 = tracks.map(track => ({ ...track, ...(tdMap.get(track.id) || {}) }));
+
+  for (const track of tracks1) {
+    const trkEle = createElement(doc.documentElement, 'trk');
+    if (track.label) {
+      createElement(trkEle, 'name', track.label);
+    }
+    const trksegEle = createElement(trkEle, 'trkseg');
+    for (const { ts, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message } of track.trackPoints) {
+      const ptEle = createElement(trksegEle, 'trkpt', undefined, { lat, lon });
+      createElement(ptEle, 'time', ts);
+      if (typeof altitude === 'number') {
+        createElement(ptEle, 'ele', altitude);
+      }
+      if (typeof accuracy === 'number') {
+        createElement(ptEle, 'hdop', accuracy);
+      }
+      if (typeof bearing === 'number') {
+        createElement(ptEle, 'magvar', bearing); // maybe not the most suitable tag
+      }
+      if (message) {
+        createElement(ptEle, 'cmt', accuracy);
+      }
+      if (typeof speed === 'number' || typeof battery === 'number' || typeof gsmSignal === 'number') {
+        const extEl = createElement(ptEle, 'extensions');
+
+        if (typeof speed === 'number') {
+          const elem = document.createElementNS(FM_NS, 'speed');
+          elem.textContent = speed;
+          extEl.appendChild(elem);
+        }
+
+        if (typeof battery === 'number') {
+          const elem = document.createElementNS(FM_NS, 'battery');
+          elem.textContent = battery;
+          extEl.appendChild(elem);
+        }
+
+        if (typeof gsmSignal === 'number') {
+          const elem = document.createElementNS(FM_NS, 'gsm_signal');
+          elem.textContent = gsmSignal;
+          extEl.appendChild(elem);
+        }
+      }
+    }
+  }
 }
 
 export default gpxExportLogic;

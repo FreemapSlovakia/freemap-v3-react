@@ -36,3 +36,20 @@
     display: inline-block;
   }
 }
+
+// https://stackoverflow.com/a/28331791/289827
+.input-group-addon {
+  border-left-width: 0;
+  border-right-width: 0;
+}
+.input-group-addon:first-child {
+  border-left-width: 1px;
+}
+.input-group-addon:last-child {
+  border-right-width: 1px;
+}
+
+// fixes displacement in FF
+input[type=date], input[type=time] {
+  padding-top: 0;
+}

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ReactTags from 'react-tag-autocomplete';
@@ -12,176 +12,104 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
+import DateTime from './DateTime';
 
-function checkDatetimeLocalInput() {
-  const input = document.createElement('input');
-  input.setAttribute('type', 'datetime-local');
+GalleryEditForm.propTypes = {
+  model: FmPropTypes.galleryPictureModel.isRequired,
+  allTags: FmPropTypes.allTags.isRequired,
+  error: PropTypes.string,
+  onPositionPick: PropTypes.func,
+  onModelChange: PropTypes.func.isRequired,
+  t: PropTypes.func.isRequired,
+  language: PropTypes.string.isRequired,
+};
 
-  const notADateValue = 'not-a-date';
-  input.setAttribute('value', notADateValue);
+export default function GalleryEditForm({ model, allTags, error, onPositionPick, t, language, onModelChange }) {
+  const changeModel = useCallback((key, value) => {
+    onModelChange({ ...model, [key]: value });
+  }, [model, onModelChange]);
 
-  return input.value !== notADateValue;
-}
+  const handleTitleChange = useCallback((e) => {
+    changeModel('title', e.target.value || null);
+  }, [changeModel]);
 
-const supportsDatetimeLocal = checkDatetimeLocalInput();
+  const handleDescriptionChange = useCallback((e) => {
+    changeModel('description', e.target.value || null);
+  }, [changeModel]);
 
-export default class GalleryEditForm extends React.Component {
-  static propTypes = {
-    model: FmPropTypes.galleryPictureModel.isRequired,
-    allTags: FmPropTypes.allTags.isRequired,
-    error: PropTypes.string,
-    onPositionPick: PropTypes.func,
-    onModelChange: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-    language: PropTypes.string.isRequired,
-  }
+  const handleTakenAtChange = useCallback((value) => {
+    changeModel('takenAt', value);
+  }, [changeModel]);
 
-  handleTitleChange = (e) => {
-    this.changeModel('title', e.target.value || null);
-  }
-
-  handleDescriptionChange = (e) => {
-    this.changeModel('description', e.target.value || null);
-  }
-
-  handleTakenAtChange = (e) => {
-    this.changeModel('takenAt', e.target.value ? new Date(e.target.value) : null);
-  }
-
-  handleTakenAtDateChange = (e) => {
-    if (e.target.value) {
-      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(e.target.value);
-      if (m) {
-        const { takenAt } = this.props.model;
-        if (takenAt && e.target.value) {
-          const d = new Date(takenAt.getTime());
-          d.setFullYear(parseInt(m[1], 10));
-          d.setMonth(parseInt(m[2], 10), parseInt(m[3], 10));
-          this.changeModel('takenAt', d);
-        } else {
-          this.changeModel('takenAt', new Date(e.target.value));
-        }
-      }
-    } else {
-      this.changeModel('takenAt', null);
-    }
-  }
-
-  handleTakenAtTimeChange = (e) => {
-    const m = e.target.value ? /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(e.target.value) : ['00', '00', '00'];
-    const { takenAt } = this.props.model;
-    if (m && takenAt) {
-      const d = new Date(takenAt.getTime());
-      d.setHours(parseInt(m[1], 10));
-      d.setMinutes(parseInt(m[2], 10));
-      d.setSeconds(parseInt(m[3], 10) || 0);
-      d.setMilliseconds(0);
-      this.changeModel('takenAt', d);
-    }
-  }
-
-  handleTagAdded = ({ name }) => {
+  const handleTagAdded = useCallback(({ name }) => {
     const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
-    if (!this.props.model.tags.includes(fixed)) {
-      this.changeModel('tags', [...this.props.model.tags, fixed]);
+    if (!model.tags.includes(fixed)) {
+      changeModel('tags', [...model.tags, fixed]);
     }
-  }
+  }, [changeModel, model.tags]);
 
-  handleTagDeleted = (i) => {
-    const tags = [...this.props.model.tags];
+  const handleTagDeleted = useCallback((i) => {
+    const tags = [...model.tags];
     tags.splice(i, 1);
-    this.changeModel('tags', tags);
-  }
+    changeModel('tags', tags);
+  }, [changeModel, model.tags]);
 
-  changeModel(key, value) {
-    this.props.onModelChange({ ...this.props.model, [key]: value });
-  }
-
-  render() {
-    const { model, allTags, error, onPositionPick, t, language } = this.props;
-
-    return (
-      <div>
-        {error && <Alert bsStyle="danger">{error}</Alert>}
-        <FormGroup>
+  return (
+    <div>
+      {error && <Alert bsStyle="danger">{error}</Alert>}
+      <FormGroup>
+        <FormControl
+          placeholder={t('gallery.editForm.name')}
+          type="text"
+          value={model.title}
+          onChange={handleTitleChange}
+        />
+      </FormGroup>
+      <FormGroup>
+        <FormControl
+          placeholder={t('gallery.editForm.description')}
+          componentClass="textarea"
+          value={model.description}
+          onChange={handleDescriptionChange}
+        />
+      </FormGroup>
+      <FormGroup>
+        <DateTime
+          value={model.takenAt}
+          onChange={handleTakenAtChange}
+          placeholders={{
+            date: t('gallery.editForm.takenAt.date'),
+            time: t('gallery.editForm.takenAt.time'),
+            datetime: t('gallery.editForm.takenAt.datetime'),
+          }}
+        />
+      </FormGroup>
+      <FormGroup>
+        <InputGroup>
           <FormControl
-            placeholder={t('gallery.editForm.name')}
             type="text"
-            value={model.title}
-            onChange={this.handleTitleChange}
+            placeholder={t('gallery.editForm.location')}
+            value={model.position ? `${formatGpsCoord(model.position.lat, 'SN', 'DMS', language)}, ${formatGpsCoord(model.position.lon, 'WE', 'DMS', language)}` : ''}
+            onClick={onPositionPick}
+            readOnly
           />
-        </FormGroup>
-        <FormGroup>
-          <FormControl
-            placeholder={t('gallery.editForm.description')}
-            componentClass="textarea"
-            value={model.description}
-            onChange={this.handleDescriptionChange}
-          />
-        </FormGroup>
-        {
-          supportsDatetimeLocal ? (
-            <FormGroup>
-              <FormControl
-                type="datetime-local"
-                placeholder={t('gallery.editForm.takenAt.datetime')}
-                value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}T${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
-                onChange={this.handleTakenAtChange}
-              />
-            </FormGroup>
-          ) : (
-            <>
-              <FormGroup>
-                <FormControl
-                  type="date"
-                  placeholder={t('gallery.editForm.takenAt.date')}
-                  value={model.takenAt ? `${zeropad(model.takenAt.getFullYear(), 4)}-${zeropad(model.takenAt.getMonth() + 1)}-${zeropad(model.takenAt.getDate())}` : ''}
-                  onChange={this.handleTakenAtDateChange}
-                />
-              </FormGroup>
-              <FormGroup>
-                <FormControl
-                  type="time"
-                  placeholder={t('gallery.editForm.takenAt.time')}
-                  value={model.takenAt ? `${zeropad(model.takenAt.getHours())}:${zeropad(model.takenAt.getMinutes())}:${zeropad(model.takenAt.getSeconds())}` : ''}
-                  onChange={this.handleTakenAtTimeChange}
-                />
-              </FormGroup>
-            </>
-          )
-        }
-        <FormGroup>
-          <InputGroup>
-            <FormControl
-              type="text"
-              placeholder={t('gallery.editForm.location')}
-              value={model.position ? `${formatGpsCoord(model.position.lat, 'SN', 'DMS', language)}, ${formatGpsCoord(model.position.lon, 'WE', 'DMS', language)}` : ''}
-              onClick={onPositionPick}
-              readOnly
-            />
-            <InputGroup.Button>
-              <Button onClick={onPositionPick}>
-                <FontAwesomeIcon icon="dot-circle-o" />{t('gallery.editForm.setLocation')}
-              </Button>
-            </InputGroup.Button>
-          </InputGroup>
-        </FormGroup>
-        <FormGroup>
-          <ReactTags
-            placeholder={t('gallery.editForm.tags')}
-            tags={model.tags.map(tag => ({ id: tag, name: tag }))}
-            suggestions={allTags.map(({ name }) => ({ id: name, name }))}
-            handleAddition={this.handleTagAdded}
-            handleDelete={this.handleTagDeleted}
-            allowNew
-          />
-        </FormGroup>
-      </div>
-    );
-  }
-}
-
-function zeropad(v, n = 2) {
-  const raw = `0000${v}`;
-  return raw.substring(raw.length - n, raw.length);
+          <InputGroup.Button>
+            <Button onClick={onPositionPick}>
+              <FontAwesomeIcon icon="dot-circle-o" />{t('gallery.editForm.setLocation')}
+            </Button>
+          </InputGroup.Button>
+        </InputGroup>
+      </FormGroup>
+      <FormGroup>
+        <ReactTags
+          placeholder={t('gallery.editForm.tags')}
+          tags={model.tags.map(tag => ({ id: tag, name: tag }))}
+          suggestions={allTags.map(({ name }) => ({ id: name, name }))}
+          handleAddition={handleTagAdded}
+          handleDelete={handleTagDeleted}
+          allowNew
+        />
+      </FormGroup>
+    </div>
+  );
 }
