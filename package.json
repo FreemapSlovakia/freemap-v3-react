@@ -11,10 +11,9 @@
     "@turf/invariant": "6.1.2",
     "@turf/length": "6.0.2",
     "@turf/line-slice": "5.1.5",
-    "async": "2.6.2",
     "axios": "0.18.0",
     "chart.js": "2.8.0",
-    "core-js": "3.0.1",
+    "core-js": "3.1.0",
     "enzyme": "3.9.0",
     "eventemitter3": "3.1.2",
     "exifreader": "2.8.2",
@@ -85,7 +84,7 @@
     "webpack": "4.31.0",
     "webpack-cleanup-plugin": "0.5.1",
     "webpack-cli": "3.3.2",
-    "webpack-dev-server": "3.3.1",
+    "webpack-dev-server": "3.4.1",
     "webpack-pwa-manifest": "4.0.0"
   },
   "repository": {

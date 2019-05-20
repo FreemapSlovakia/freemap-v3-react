@@ -3,7 +3,6 @@ import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import PropTypes from 'prop-types';
-import each from 'async/each';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -55,11 +54,13 @@ class GalleryUploadModal extends React.Component {
   }
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
-    each(acceptedFiles, this.processFile, (err) => {
-      if (err) {
-        // TODO
-      }
-    });
+    for (const accpetedFile of acceptedFiles) {
+      this.processFile(accpetedFile, (err) => {
+        if (err) {
+          // TODO
+        }
+      });
+    }
   }
 
   processFile = (file, cb) => {
