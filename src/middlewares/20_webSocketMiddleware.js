@@ -1,5 +1,5 @@
+import { wsInvalidState, wsReceived, wsStateChanged } from 'fm3/actions/websocketActions';
 import * as at from 'fm3/actionTypes';
-import { wsInvalidState, wsStateChanged, wsReceived } from 'fm3/actions/websocketActions';
 
 let ws = { readyState: 3 };
 let restarter;
@@ -74,7 +74,7 @@ export default ({ dispatch, getState }) => next => (action) => {
 
   next(action);
 
-  if (user !== getState().auth && ws) {
+  if (user !== getState().auth && ws.readyState < 2) {
     ws.close();
   }
 };
