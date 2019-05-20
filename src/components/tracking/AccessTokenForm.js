@@ -23,7 +23,7 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
   const [note, setNote] = useInputState(accessToken && accessToken.note || '');
   const [timeFrom, setTimeFrom] = useState(accessToken && accessToken.timeFrom);
   const [timeTo, setTimeTo] = useState(accessToken && accessToken.timeTo);
-  const [listingLabel, setListingLabel] = useInputState(accessToken && accessToken.listingLabel);
+  const [listingLabel, setListingLabel] = useInputState(accessToken && accessToken.listingLabel || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
