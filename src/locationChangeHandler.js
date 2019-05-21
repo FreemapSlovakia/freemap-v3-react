@@ -254,18 +254,15 @@ export default function handleLocationChange(store, location) {
   }
 
   const { trackedDevices } = getState().tracking;
-  const newTrackedDevices = [];
   outer: for (const newTd of parsed) {
     for (const trackedDevice of trackedDevices) {
       if (trackedDevicesEquals(trackedDevice, newTd)) {
-        newTrackedDevices.push(trackedDevice);
         continue outer;
       }
     }
-    newTrackedDevices.push(newTd);
+    dispatch(trackingSetTrackedDevices(parsed));
+    break;
   }
-
-  dispatch(trackingSetTrackedDevices(newTrackedDevices));
 }
 
 // TODO use some generic deep compare fn

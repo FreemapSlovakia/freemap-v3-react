@@ -10,6 +10,8 @@ const initialState = {
   modifiedTrackedDeviceId: undefined,
   trackedDevices: [],
   tracks: [],
+  showLine: true,
+  showPoints: true,
 };
 
 export default function tracking(state = initialState, action) {
@@ -67,7 +69,7 @@ export default function tracking(state = initialState, action) {
             ...state.tracks,
             {
               id: action.payload.params.token || action.payload.params.deviceId,
-              trackPoints: action.payload.result,
+              trackPoints: action.payload.result.map(tp => ({ ...tp, ts: new Date(tp.ts) })),
             },
           ],
         };
@@ -85,14 +87,14 @@ export default function tracking(state = initialState, action) {
     case at.RPC_EVENT: {
       if (action.payload.method === 'tracking.addPoint') {
         // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
-        const { token, deviceId, ...rest } = action.payload.params;
+        const { token, deviceId, ts, ...rest } = action.payload.params;
         return produce(state, (draft) => {
           let track = draft.tracks.find(t => t.id === token || deviceId);
           if (!track) {
             track = { id: token || deviceId, trackPoints: [] };
             draft.tracks.push(track);
           }
-          track.trackPoints.push(rest);
+          track.trackPoints.push({ ts: new Date(ts), ...rest });
           // TODO apply limits from trackedDevices
         });
       }

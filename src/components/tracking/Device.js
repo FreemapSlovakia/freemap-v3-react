@@ -41,7 +41,7 @@ function Device({ onDelete, onModify, device, language, onShowAccessTokens, onVi
           placement="right"
           overlay={<Tooltip id={device.token}>{process.env.API_URL}/tracking/track/{device.token}</Tooltip>}
         >
-          <FontAwesomeIcon icon="question" />
+          <FontAwesomeIcon icon="question-circle-o" />
         </OverlayTrigger>
       </td>
       <td>{device.maxCount}</td>
