@@ -8,7 +8,7 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
-import DateTime from 'fm3/components/DateTime';
+import DateTime, { toDatetimeLocal } from 'fm3/components/DateTime';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingModifyTrackedDevice, trackingSaveTrackedDevice } from 'fm3/actions/trackingActions';
@@ -24,7 +24,7 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
   const [label, setLabel] = useInputState(device && device.label || '');
   const [color, setColor] = useInputState(device && device.color || '');
   const [width, setWidth] = useInputState(device && typeof device.width === 'number' ? device.width.toString() : '');
-  const [fromTime, setFromTime] = useState(device && device.fromTime);
+  const [fromTime, setFromTime] = useState(device && device.fromTime ? toDatetimeLocal(device.fromTime) : '');
   const [maxCount, setMaxCount] = useInputState(device && typeof device.maxCount === 'number' ? device.maxCount.toString() : '');
   const [maxAge, setMaxAge] = useInputState(device && typeof device.maxAge === 'number' ? device.maxAge.toString() : '');
   const [splitDistance, setSplitDistance] = useInputState(device && typeof device.splitDistance === 'number' ? device.splitDistance.toString() : '');
@@ -36,7 +36,7 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
       id: id.trim(),
       label: label.trim() || null,
       color: color.trim() || null,
-      fromTime,
+      fromTime: fromTime === '' ? null : new Date(fromTime),
       maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
       width: width === '' ? null : Number.parseInt(width, 10),

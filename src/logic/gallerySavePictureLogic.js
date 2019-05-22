@@ -24,6 +24,8 @@ export default createLogic({
 
     const { id } = image;
 
+    editModel.takenAt = editModel.takenAt ? new Date(editModel.takenAt) : null;
+
     axios.put(`${process.env.API_URL}/gallery/pictures/${id}`, editModel, {
       headers: {
         Authorization: `Bearer ${getState().auth.user.authToken}`,

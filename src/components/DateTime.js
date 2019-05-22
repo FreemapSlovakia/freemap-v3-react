@@ -14,54 +14,29 @@ function checkDatetimeLocalInput() {
   return input.value !== notADateValue;
 }
 
-function zeropad(v, n = 2) {
-  const raw = `0000${v}`;
-  return raw.substring(raw.length - n, raw.length);
-}
-
 const supportsDatetimeLocal = checkDatetimeLocalInput();
 
 export default function DateTime({ value, onChange, placeholders }) {
-  const handleTakenAtChange = useCallback((e) => {
-    onChange(e.target.value ? new Date(e.target.value) : null);
+  const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
+
+  const propagateChange = useCallback((date, time) => {
+    onChange(date || time ? `${date}T${time}` : '');
   }, [onChange]);
 
-  const handleTakenAtDateChange = useCallback((e) => {
-    if (e.target.value) {
-      const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(e.target.value);
-      if (m) {
-        if (value && e.target.value) {
-          const d = new Date(value.getTime());
-          d.setFullYear(parseInt(m[1], 10));
-          d.setMonth(parseInt(m[2], 10), parseInt(m[3], 10));
-          onChange(d);
-        } else {
-          onChange(new Date(e.target.value));
-        }
-      }
-    } else {
-      onChange(null);
-    }
-  }, [value, onChange]);
+  const handleDateChange = useCallback((e) => {
+    propagateChange(e.target.value, timePart);
+  }, [timePart, propagateChange]);
 
-  const handleTakenAtTimeChange = useCallback((e) => {
-    const m = e.target.value ? /^(\d{2}):(\d{2})(?::(\d{2}))?$/.exec(e.target.value) : ['00', '00', '00'];
-    if (m && value) {
-      const d = new Date(value.getTime());
-      d.setHours(parseInt(m[1], 10));
-      d.setMinutes(parseInt(m[2], 10));
-      d.setSeconds(parseInt(m[3], 10) || 0);
-      d.setMilliseconds(0);
-      onChange(d);
-    }
-  }, [value, onChange]);
+  const handleTimeChange = useCallback((e) => {
+    propagateChange(datePart, e.target.value);
+  }, [datePart, propagateChange]);
 
   return supportsDatetimeLocal ? (
     <FormControl
       type="datetime-local"
       placeholder={placeholders && placeholders.datetime}
-      value={value ? `${zeropad(value.getFullYear(), 4)}-${zeropad(value.getMonth() + 1)}-${zeropad(value.getDate())}T${zeropad(value.getHours())}:${zeropad(value.getMinutes())}:${zeropad(value.getSeconds())}` : ''}
-      onChange={handleTakenAtChange}
+      value={value}
+      onChange={onChange}
     />
   ) : (
     <InputGroup>
@@ -70,25 +45,29 @@ export default function DateTime({ value, onChange, placeholders }) {
       </InputGroup.Addon>
       <FormControl
         type="date"
-        placeholder={placeholders && placeholders.date}
-        value={value ? `${zeropad(value.getFullYear(), 4)}-${zeropad(value.getMonth() + 1)}-${zeropad(value.getDate())}` : ''}
-        onChange={handleTakenAtDateChange}
+        placeholder={placeholders && placeholders.date || 'YYY-MM-DD'}
+        value={datePart}
+        onChange={handleDateChange}
+        pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
+        required={!!timePart}
       />
       <InputGroup.Addon>
         <FontAwesomeIcon icon="clock-o" />
       </InputGroup.Addon>
       <FormControl
         type="time"
-        placeholder={placeholders && placeholders.time}
-        value={value ? `${zeropad(value.getHours())}:${zeropad(value.getMinutes())}:${zeropad(value.getSeconds())}` : ''}
-        onChange={handleTakenAtTimeChange}
+        placeholder={placeholders && placeholders.time || 'HH:MM[:SS]'}
+        value={timePart}
+        onChange={handleTimeChange}
+        pattern="[0-9]{2}:[0-9]{2}(:[0-9]{2})?"
+        required={!!datePart}
       />
     </InputGroup>
   );
 }
 
 DateTime.propTypes = {
-  value: PropTypes.instanceOf(Date),
+  value: PropTypes.string,
   onChange: PropTypes.func.isRequired,
   placeholders: PropTypes.shape({
     date: PropTypes.string,
@@ -96,3 +75,14 @@ DateTime.propTypes = {
     datetime: PropTypes.string,
   }),
 };
+
+export function toDatetimeLocal(date) {
+  const ten = i => (i < 10 ? '0' : '') + i;
+  const YYYY = date.getFullYear();
+  const MM = ten(date.getMonth() + 1);
+  const DD = ten(date.getDate());
+  const HH = ten(date.getHours());
+  const II = ten(date.getMinutes());
+  const SS = ten(date.getSeconds());
+  return `${YYYY}-${MM}-${DD}T${HH}:${II}:${SS}`;
+}

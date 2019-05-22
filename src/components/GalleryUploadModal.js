@@ -19,6 +19,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import injectL10n from 'fm3/l10nInjector';
+import { toDatetimeLocal } from 'fm3/components/DateTime';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
@@ -186,7 +187,7 @@ class GalleryUploadModal extends React.Component {
   handleModelChange = (id, model) => {
     const item = this.props.items.find(itm => itm.id === id);
     if (item) {
-      this.props.onItemChange(id, { ...item, ...model });
+      this.props.onItemChange(id, { ...item, ...model, takenAt: model.takenAt ? new Date(model.takenAt) : null });
     }
   }
 
@@ -212,7 +213,7 @@ class GalleryUploadModal extends React.Component {
                 language={language}
                 filename={file.name}
                 url={url}
-                model={{ position, title, description, takenAt, tags }}
+                model={{ position, title, description, takenAt: takenAt ? toDatetimeLocal(takenAt) : '', tags }}
                 allTags={allTags}
                 error={error}
                 onRemove={this.handleRemove}

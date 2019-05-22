@@ -10,7 +10,7 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingSaveAccessToken, trackingModifyAccessToken } from 'fm3/actions/trackingActions';
-import DateTime from 'fm3/components/DateTime';
+import DateTime, { toDatetimeLocal } from 'fm3/components/DateTime';
 
 // TODO to hook file
 function useInputState(init, type = 'text') {
@@ -21,16 +21,16 @@ function useInputState(init, type = 'text') {
 
 function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
   const [note, setNote] = useInputState(accessToken && accessToken.note || '');
-  const [timeFrom, setTimeFrom] = useState(accessToken && accessToken.timeFrom);
-  const [timeTo, setTimeTo] = useState(accessToken && accessToken.timeTo);
+  const [timeFrom, setTimeFrom] = useState(accessToken && accessToken.timeFrom ? toDatetimeLocal(accessToken.timeFrom) : '');
+  const [timeTo, setTimeTo] = useState(accessToken && accessToken.timeTo ? toDatetimeLocal(accessToken.timeTo) : '');
   const [listingLabel, setListingLabel] = useInputState(accessToken && accessToken.listingLabel || '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
     onSave({
       note: note.trim() || null,
-      timeFrom,
-      timeTo,
+      timeFrom: timeFrom === '' ? null : new Date(timeFrom),
+      timeTo: timeTo === '' ? null : new Date(timeTo),
       listingLabel: listingLabel.trim() || null,
     });
   };

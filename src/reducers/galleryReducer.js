@@ -1,4 +1,5 @@
 import * as at from 'fm3/actionTypes';
+import { toDatetimeLocal } from 'fm3/components/DateTime';
 
 const initialState = {
   imageIds: null,
@@ -148,7 +149,7 @@ export default function gallery(state = initialState, action) {
         editModel: state.editModel ? null : {
           title: state.image.title,
           description: state.image.description,
-          takenAt: state.image.takenAt,
+          takenAt: state.image.takenAt ? toDatetimeLocal(state.image.takenAt) : '',
           tags: [...state.image.tags],
           position: { lat: state.image.lat, lon: state.image.lon },
         },
