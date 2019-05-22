@@ -10,7 +10,8 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingSaveAccessToken, trackingModifyAccessToken } from 'fm3/actions/trackingActions';
-import DateTime, { toDatetimeLocal } from 'fm3/components/DateTime';
+import DateTime from 'fm3/components/DateTime';
+import { toDatetimeLocal } from 'fm3/dateUtils';
 
 // TODO to hook file
 function useInputState(init, type = 'text') {

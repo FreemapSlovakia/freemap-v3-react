@@ -1,5 +1,5 @@
 import * as at from 'fm3/actionTypes';
-import { toDatetimeLocal } from 'fm3/components/DateTime';
+import { toDatetimeLocal } from 'fm3/dateUtils';
 
 const initialState = {
   imageIds: null,

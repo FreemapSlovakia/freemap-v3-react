@@ -19,7 +19,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import GalleryUploadItem from 'fm3/components/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import injectL10n from 'fm3/l10nInjector';
-import { toDatetimeLocal } from 'fm3/components/DateTime';
+import { toDatetimeLocal } from 'fm3/dateUtils';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers

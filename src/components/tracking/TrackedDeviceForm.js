@@ -8,7 +8,8 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
-import DateTime, { toDatetimeLocal } from 'fm3/components/DateTime';
+import DateTime from 'fm3/components/DateTime';
+import { toDatetimeLocal } from 'fm3/dateUtils';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingModifyTrackedDevice, trackingSaveTrackedDevice } from 'fm3/actions/trackingActions';
