@@ -27,6 +27,8 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
   const [fromTime, setFromTime] = useState(device && device.fromTime);
   const [maxCount, setMaxCount] = useInputState(device && typeof device.maxCount === 'number' ? device.maxCount.toString() : '');
   const [maxAge, setMaxAge] = useInputState(device && typeof device.maxAge === 'number' ? device.maxAge.toString() : '');
+  const [splitDistance, setSplitDistance] = useInputState(device && typeof device.splitDistance === 'number' ? device.splitDistance.toString() : '');
+  const [splitDuration, setSplitDuration] = useInputState(device && typeof device.splitDuration === 'number' ? device.splitDuration.toString() : '');
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -38,6 +40,8 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
       maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
       width: width === '' ? null : Number.parseInt(width, 10),
+      splitDistance: splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
+      splitDuration: splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
     });
   };
 
@@ -78,6 +82,14 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
         <FormGroup>
           <ControlLabel>Show max # positions</ControlLabel>
           <FormControl type="number" min="0" step="1" value={maxCount} onChange={setMaxCount} />
+        </FormGroup>
+        <FormGroup>
+          <ControlLabel>Split track if longer than (m)</ControlLabel>
+          <FormControl type="number" min="0" step="1" value={splitDistance} onChange={setSplitDistance} />
+        </FormGroup>
+        <FormGroup>
+          <ControlLabel>Split track after (minutes)</ControlLabel>
+          <FormControl type="number" min="0" step="1" value={splitDuration} onChange={setSplitDuration} />
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>

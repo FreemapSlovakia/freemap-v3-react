@@ -38,6 +38,8 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
       <td>{device.maxAge}</td>
       <td>{device.maxCount}</td>
+      <td>{device.splitDistance}</td>
+      <td>{device.splitDuration}</td>
       <td>
         <Button bsSize="small" type="button" onClick={handleModify} title="modify">
           <FontAwesomeIcon icon="edit" />

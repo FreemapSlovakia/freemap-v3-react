@@ -175,7 +175,7 @@ export const urlLogic = createLogic({
       queryParts.push(`embed=${main.embedFeatures.join(',')}`);
     }
 
-    for (const { id, label, color, width, fromTime, maxCount, maxAge } of tracking.trackedDevices) {
+    for (const { id, label, color, width, fromTime, maxCount, maxAge, splitDistance, splitDuration } of tracking.trackedDevices) {
       const parts = [`track=${encodeURIComponent(id)}`];
       if (fromTime) {
         parts.push(`f:${fromTime.toISOString()}`);
@@ -188,6 +188,12 @@ export const urlLogic = createLogic({
       }
       if (typeof width === 'number') {
         parts.push(`w:${width}`);
+      }
+      if (typeof splitDistance === 'number') {
+        parts.push(`sd:${splitDistance}`);
+      }
+      if (typeof splitDuration === 'number') {
+        parts.push(`st:${splitDuration}`);
       }
       if (color) {
         parts.push(`c:${encodeURIComponent(color.replace(/\//g, '_'))}`);

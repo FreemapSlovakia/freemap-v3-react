@@ -4,9 +4,13 @@ import { connect } from 'react-redux';
 import { Polyline, Tooltip, CircleMarker, Circle } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { trackingSetActive } from 'fm3/actions/trackingActions';
+import { distance } from 'fm3/geoutils';
 
 // TODO functional component with hooks was causing massive re-rendering
 class TrackingResult extends React.Component {
+  clickHandlerMemo = {};
+
   state = {
     activePoint: null,
   };
@@ -24,6 +28,40 @@ class TrackingResult extends React.Component {
     return tracks.map((track) => {
       const color = track.color || '#7239a8';
       const width = track.width || 4;
+
+      let handleClick = this.clickHandlerMemo[track.id];
+      if (!handleClick) {
+        handleClick = () => {
+          this.props.onFocus(track.id);
+        };
+        this.clickHandlerMemo[track.id] = handleClick;
+      }
+
+      const segments = [];
+      let curSegment;
+      let prevTp;
+      const splitByDistance = typeof track.splitDistance === 'number';
+      const splitByDuration = typeof track.splitDuration === 'number';
+      for (const tp of track.trackPoints) {
+        if (
+          prevTp
+            && (splitByDistance || splitByDuration)
+            && (
+              splitByDistance && distance(tp.lat, tp.lon, prevTp.lat, prevTp.lon, track.splitDistance) > track.splitDistance
+                || splitByDuration && tp.ts.getTime() - prevTp.ts.getTime() > track.splitDuration * 60000
+            )
+        ) {
+          curSegment = null;
+        }
+
+        if (!curSegment) {
+          curSegment = [];
+          segments.push(curSegment);
+        }
+
+        curSegment.push(tp);
+        prevTp = tp;
+      }
 
       return (
         <Fragment key={track.id}>
@@ -45,13 +83,15 @@ class TrackingResult extends React.Component {
             />
           )}
 
-          {showLine && (
+          {showLine && segments.map((segment, i) => (
             <Polyline
-              positions={track.trackPoints}
+              key={`seg-${i}`}
+              positions={segment}
               weight={width}
               color={color}
+              onClick={handleClick}
             />
-          )}
+          ))}
 
           {showPoints && track.trackPoints.map((tp, i) => (
             i === track.trackPoints.length - 1 ? (
@@ -59,6 +99,7 @@ class TrackingResult extends React.Component {
                 key={tp.id}
                 position={track.trackPoints[track.trackPoints.length - 1]}
                 color={color}
+                onClick={handleClick}
               >
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   {tooltipText(df, tp, track.label)}
@@ -72,6 +113,7 @@ class TrackingResult extends React.Component {
                 color={color}
                 language={language}
                 onActivePointSet={this.handleActivePointSet}
+                onClick={handleClick}
               />
             )
           ))}
@@ -83,7 +125,7 @@ class TrackingResult extends React.Component {
 
 // TODO to separate file
 // eslint-disable-next-line
-const TrackingPoint = React.memo(({ tp, width, color, language, onActivePointSet }) => {
+const TrackingPoint = React.memo(({ tp, width, color, language, onActivePointSet, onClick }) => {
   const df = new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
   const handleMouseOver = useCallback(() => {
@@ -107,6 +149,7 @@ const TrackingPoint = React.memo(({ tp, width, color, language, onActivePointSet
       fillOpacity={1}
       onMouseOver={handleMouseOver}
       onMouseOut={handleMouseOut}
+      onClick={onClick}
     >
       <Tooltip direction="top" offset={[0, -1.5 * width]}>
         {tooltipText(df, tp)}
@@ -169,14 +212,22 @@ TrackingResult.propTypes = {
   showLine: PropTypes.bool,
   showPoints: PropTypes.bool,
   language: PropTypes.string,
+  onFocus: PropTypes.func.isRequired,
 };
 
-export default connect((state) => {
-  const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
-  return {
-    tracks: state.tracking.tracks.map(track => ({ ...track, ...(tdMap.get(track.id) || {}) })),
-    showLine: state.tracking.showLine,
-    showPoints: state.tracking.showPoints,
-    language: state.l10n.language,
-  };
-})(TrackingResult);
+export default connect(
+  (state) => {
+    const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
+    return {
+      tracks: state.tracking.tracks.map(track => ({ ...track, ...(tdMap.get(track.id) || {}) })),
+      showLine: state.tracking.showLine,
+      showPoints: state.tracking.showPoints,
+      language: state.l10n.language,
+    };
+  },
+  dispatch => ({
+    onFocus(id) {
+      dispatch(trackingSetActive(id));
+    },
+  }),
+)(TrackingResult);

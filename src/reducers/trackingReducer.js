@@ -12,6 +12,7 @@ const initialState = {
   tracks: [],
   showLine: true,
   showPoints: true,
+  activeTrackId: null,
 };
 
 export default function tracking(state = initialState, action) {
@@ -58,6 +59,8 @@ export default function tracking(state = initialState, action) {
           });
         }
       });
+    case at.TRACKING_SET_ACTIVE:
+      return { ...state, activeTrackId: action.payload };
     case at.WS_STATE_CHANGED:
       return action.payload.state === 1 ? state : { ...state, tracks: [] };
 

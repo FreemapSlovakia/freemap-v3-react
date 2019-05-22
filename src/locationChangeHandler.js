@@ -220,37 +220,48 @@ export default function handleLocationChange(store, location) {
     let label = null;
     let color = null;
     let width = null;
+    let splitDistance = null;
+    let splitDuration = null;
 
     for (const part of parts) {
-      if (part[1] !== ':') {
+      const m = /^([a-z]+):(.+)/.exec(part);
+      if (!m) {
         continue;
       }
 
-      switch (part[0]) {
+      const [, type, value] = m;
+
+      switch (type) {
         case 'f':
-          fromTime = new Date(part.slice(2));
+          fromTime = new Date(value);
           break;
         case 'a':
-          maxAge = Number.parseInt(part.slice(2), 10);
+          maxAge = Number.parseInt(value, 10);
           break;
         case 'w':
-          width = Number.parseFloat(part.slice(2));
+          width = Number.parseFloat(value);
           break;
         case 'c':
-          color = part.slice(2);
+          color = value;
           break;
         case 'n':
-          maxCount = Number.parseInt(part.slice(2), 10);
+          maxCount = Number.parseInt(value, 10);
           break;
         case 'l':
-          label = part.slice(2);
+          label = value;
+          break;
+        case 'sd':
+          splitDistance = Number.parseInt(value, 10);
+          break;
+        case 'st':
+          splitDuration = Number.parseInt(value, 10);
           break;
         default:
           break;
       }
     }
 
-    parsed.push({ id, fromTime, maxAge, maxCount, label, width, color });
+    parsed.push({ id, fromTime, maxAge, maxCount, label, width, color, splitDistance, splitDuration });
   }
 
   const { trackedDevices } = getState().tracking;

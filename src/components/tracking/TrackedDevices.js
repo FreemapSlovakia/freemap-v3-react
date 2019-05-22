@@ -38,6 +38,8 @@ function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
               <th>Since</th>
               <th>Max Age</th>
               <th>Max Count</th>
+              <th>Split Dist.</th>
+              <th>Split Dur.</th>
               <th />
             </tr>
           </thead>
