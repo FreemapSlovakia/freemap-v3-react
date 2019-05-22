@@ -22,7 +22,7 @@ class TrackingResult extends React.Component {
   }
 
   render() {
-    const { tracks, showLine, showPoints, language } = this.props;
+    const { tracks, showLine, showPoints, language, activeTrackId } = this.props;
     const df = new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
 
     return tracks.map((track) => {
@@ -100,6 +100,7 @@ class TrackingResult extends React.Component {
                 position={track.trackPoints[track.trackPoints.length - 1]}
                 color={color}
                 onClick={handleClick}
+                faIcon={track.id === activeTrackId ? 'user' : 'user-o'}
               >
                 <Tooltip direction="top" offset={[0, -36]} permanent>
                   {tooltipText(df, tp, track.label)}
@@ -212,6 +213,7 @@ TrackingResult.propTypes = {
   showLine: PropTypes.bool,
   showPoints: PropTypes.bool,
   language: PropTypes.string,
+  activeTrackId: PropTypes.string,
   onFocus: PropTypes.func.isRequired,
 };
 
@@ -222,6 +224,7 @@ export default connect(
       tracks: state.tracking.tracks.map(track => ({ ...track, ...(tdMap.get(track.id) || {}) })),
       showLine: state.tracking.showLine,
       showPoints: state.tracking.showPoints,
+      activeTrackId: state.tracking.activeTrackId,
       language: state.l10n.language,
     };
   },

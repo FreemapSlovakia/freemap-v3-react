@@ -18,7 +18,7 @@ import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
-import { trackingSetTrackedDevices } from './actions/trackingActions';
+import { trackingSetTrackedDevices, trackingSetActive } from './actions/trackingActions';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -264,7 +264,7 @@ export default function handleLocationChange(store, location) {
     parsed.push({ id, fromTime, maxAge, maxCount, label, width, color, splitDistance, splitDuration });
   }
 
-  const { trackedDevices } = getState().tracking;
+  const { trackedDevices, activeTrackId } = getState().tracking;
   outer: for (const newTd of parsed) {
     for (const trackedDevice of trackedDevices) {
       if (trackedDevicesEquals(trackedDevice, newTd)) {
@@ -273,6 +273,10 @@ export default function handleLocationChange(store, location) {
     }
     dispatch(trackingSetTrackedDevices(parsed));
     break;
+  }
+
+  if ((activeTrackId || '') !== (query.follow || '')) {
+    dispatch(trackingSetActive(query.follow));
   }
 }
 

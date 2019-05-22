@@ -19,9 +19,9 @@ export const urlLogic = createLogic({
     at.GALLERY_SET_FILTER, at.SET_ACTIVE_MODAL, /^TIPS_.*/,
     at.AUTH_CHOOSE_LOGIN_METHOD, at.AUTH_LOGIN_CLOSE, /^AUTH_LOGIN_WITH_.*/,
     /^OSM_LOAD_.*/, at.ENABLE_UPDATING_URL,
-    at.TRACKING_SET_TRACKED_DEVICES, at.TRACKING_SAVE_TRACKED_DEVICE, at.TRACKING_DELETE_TRACKED_DEVICE,
+    at.TRACKING_SET_TRACKED_DEVICES, at.TRACKING_SAVE_TRACKED_DEVICE, at.TRACKING_DELETE_TRACKED_DEVICE, at.TRACKING_SET_ACTIVE,
   ],
-  process({ getState, action }, dispatch, done) {
+  process({ getState, action }, _, done) {
     const {
       map,
       routePlanner,
@@ -202,6 +202,10 @@ export const urlLogic = createLogic({
         parts.push(`l:${encodeURIComponent(label.replace(/\//g, '_'))}`);
       }
       queryParts.push(parts.join('/'));
+    }
+
+    if (tracking.activeTrackId) {
+      queryParts.push(`follow=${encodeURIComponent(tracking.activeTrackId)}`);
     }
 
     const search = `?${queryParts.join('&')}`;

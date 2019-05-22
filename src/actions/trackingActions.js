@@ -4,7 +4,6 @@ export function trackingSetTrackedDevices(devices) {
   return { type: at.TRACKING_SET_TRACKED_DEVICES, payload: devices };
 }
 
-
 export function trackingModifyTrackedDevice(id) {
   return { type: at.TRACKING_MODIFY_TRACKED_DEVICE, payload: id };
 }
