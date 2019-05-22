@@ -84,11 +84,11 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
           <FormControl type="number" min="0" step="1" value={maxCount} onChange={setMaxCount} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Split track if longer than (m)</ControlLabel>
+          <ControlLabel>Split track at segments longer than (m)</ControlLabel>
           <FormControl type="number" min="0" step="1" value={splitDistance} onChange={setSplitDistance} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Split track after (minutes)</ControlLabel>
+          <ControlLabel>Split track on pauses longer than (minutes)</ControlLabel>
           <FormControl type="number" min="0" step="1" value={splitDuration} onChange={setSplitDuration} />
         </FormGroup>
       </Modal.Body>

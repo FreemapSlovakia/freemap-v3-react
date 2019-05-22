@@ -275,7 +275,8 @@ export default function handleLocationChange(store, location) {
     break;
   }
 
-  if ((activeTrackId || '') !== (query.follow || '')) {
+  // eslint-disable-next-line
+  if (activeTrackId != query.follow) {
     dispatch(trackingSetActive(query.follow));
   }
 }

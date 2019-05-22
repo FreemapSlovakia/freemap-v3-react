@@ -54,5 +54,6 @@ export default ({ dispatch, getState }) => next => (action) => {
 
 function mangle(td) {
   const { id, ...rest } = td;
-  return { [/^\d+$/.test(id) ? 'deviceId' : 'token']: id, ...rest };
+  const isDeviceId = /^\d+$/.test(id);
+  return { [isDeviceId ? 'deviceId' : 'token']: isDeviceId ? Number.parseInt(id, 10) : id, ...rest };
 }
