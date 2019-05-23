@@ -19,10 +19,7 @@ const supportsDatetimeLocal = checkDatetimeLocalInput();
 export default function DateTime({ value, onChange, placeholders }) {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
 
-  console.log('AAAAAAA', datePart, timePart);
-
   const propagateChange = useCallback((date, time) => {
-    console.log('DDDDDDDDDDDDDD', date || time ? `${date}T${time}` : '');
     onChange(date || time ? `${date}T${time}` : '');
   }, [onChange]);
 
