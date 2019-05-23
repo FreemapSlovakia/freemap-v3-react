@@ -56,11 +56,11 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
         </FormGroup>
         <FormGroup>
           <ControlLabel>Listing label (leave empty for unlisted)</ControlLabel>
-          <FormControl value={listingLabel} onChange={setListingLabel} maxlength={255} />
+          <FormControl value={listingLabel} onChange={setListingLabel} maxLength={255} />
         </FormGroup>
         <FormGroup>
           <ControlLabel>Note</ControlLabel>
-          <FormControl value={note} onChange={setNote} maxlength={255} />
+          <FormControl value={note} onChange={setNote} maxLength={255} />
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>

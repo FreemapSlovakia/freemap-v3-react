@@ -45,7 +45,7 @@ function DeviceForm({ onSave, onCancel, device }) {
       <Modal.Body>
         <FormGroup>
           <ControlLabel>Name</ControlLabel>
-          <FormControl value={name} onChange={setName} required pattern=".*\w.*" maxlength={255} />
+          <FormControl value={name} onChange={setName} required pattern=".*\w.*" maxLength={255} />
         </FormGroup>
         <FormGroup>
           <ControlLabel>Keep # of last positions</ControlLabel>

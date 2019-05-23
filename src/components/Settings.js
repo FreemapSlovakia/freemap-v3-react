@@ -294,11 +294,11 @@ class Settings extends React.Component {
                   <>
                     <FormGroup>
                       <ControlLabel>{t('settings.account.name')}</ControlLabel>
-                      <FormControl value={name} onChange={this.handleNameChange} required maxlength={255} />
+                      <FormControl value={name} onChange={this.handleNameChange} required maxLength={255} />
                     </FormGroup>
                     <FormGroup>
                       <ControlLabel>{t('settings.account.email')}</ControlLabel>
-                      <FormControl type="email" value={email} onChange={this.handleEmailChange} maxlength={255} />
+                      <FormControl type="email" value={email} onChange={this.handleEmailChange} maxLength={255} />
                     </FormGroup>
                   </>
                 ) : (
