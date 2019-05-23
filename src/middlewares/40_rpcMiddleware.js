@@ -48,10 +48,10 @@ export default ({ dispatch, getState }) => next => (action) => {
       if (object.method && object.id === undefined) {
         dispatch(rpcEvent(object.method, object.params));
       } else if (object.id !== undefined && !object.method) {
-        const call = callMap.get(id);
+        const call = callMap.get(object.id);
 
         if (call) {
-          callMap.delete(id);
+          callMap.delete(object.id);
           dispatch(rpcResponse(call.method, call.params, object.result, object.error, call.tag));
         }
       }
