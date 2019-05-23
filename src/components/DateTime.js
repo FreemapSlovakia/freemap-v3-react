@@ -19,7 +19,10 @@ const supportsDatetimeLocal = checkDatetimeLocalInput();
 export default function DateTime({ value, onChange, placeholders }) {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
 
+  console.log('AAAAAAA', datePart, timePart);
+
   const propagateChange = useCallback((date, time) => {
+    console.log('DDDDDDDDDDDDDD', date || time ? `${date}T${time}` : '');
     onChange(date || time ? `${date}T${time}` : '');
   }, [onChange]);
 
@@ -31,12 +34,16 @@ export default function DateTime({ value, onChange, placeholders }) {
     propagateChange(datePart, e.target.value);
   }, [datePart, propagateChange]);
 
+  const handleDatetimeChange = useCallback((e) => {
+    onChange(e.target.value);
+  }, [onChange]);
+
   return supportsDatetimeLocal ? (
     <FormControl
       type="datetime-local"
       placeholder={placeholders && placeholders.datetime}
       value={value}
-      onChange={onChange}
+      onChange={handleDatetimeChange}
     />
   ) : (
     <InputGroup>
