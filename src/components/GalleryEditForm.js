@@ -63,6 +63,7 @@ export default function GalleryEditForm({ model, allTags, error, onPositionPick,
           type="text"
           value={model.title}
           onChange={handleTitleChange}
+          maxlength={255}
         />
       </FormGroup>
       <FormGroup>
@@ -71,6 +72,7 @@ export default function GalleryEditForm({ model, allTags, error, onPositionPick,
           componentClass="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
+          maxlength={4096}
         />
       </FormGroup>
       <FormGroup>

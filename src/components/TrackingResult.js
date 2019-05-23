@@ -63,18 +63,20 @@ class TrackingResult extends React.Component {
         prevTp = tp;
       }
 
+      const lastPoint = track.trackPoints.length > 0 ? track.trackPoints[track.trackPoints.length - 1] : null;
+
       return (
         <Fragment key={track.id}>
-          {track.trackPoints.length > 0 && (
+          {lastPoint && lastPoint.accuracy === 'number' && (
             <Circle
               weight={2}
               interactive={false}
-              center={track.trackPoints[track.trackPoints.length - 1]}
-              radius={track.trackPoints[track.trackPoints.length - 1].accuracy}
+              center={lastPoint}
+              radius={lastPoint.accuracy}
             />
           )}
 
-          {this.state.activePoint && (
+          {this.state.activePoint && typeof this.state.activePoint.accuracy === 'number' && (
             <Circle
               weight={2}
               interactive={false}
