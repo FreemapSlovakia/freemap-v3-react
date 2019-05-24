@@ -11,8 +11,8 @@ import { setTool } from 'fm3/actions/mainActions';
 import injectL10n from 'fm3/l10nInjector';
 
 function ToolsMenuButton({ t, tool, expertMode, onToolSet }) {
-  const handleToolSelect = useCallback((tool1) => {
-    onToolSet(tool1);
+  const handleToolSelect = useCallback(({ target: { dataset } }) => {
+    onToolSet(dataset.tool);
   }, [onToolSet]);
 
   return (
@@ -35,7 +35,8 @@ function ToolsMenuButton({ t, tool, expertMode, onToolSet }) {
               ].filter(x => x).map(([newTool, icon, name]) => (
                 <MenuItem
                   key={newTool}
-                  onClick={() => handleToolSelect(newTool)}
+                  data-tool={newTool}
+                  onClick={handleToolSelect}
                   active={tool === newTool}
                 >
                   <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
