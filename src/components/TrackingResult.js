@@ -215,7 +215,7 @@ TrackingResult.propTypes = {
   showLine: PropTypes.bool,
   showPoints: PropTypes.bool,
   language: PropTypes.string,
-  activeTrackId: PropTypes.oneOf(PropTypes.string, PropTypes.number),
+  activeTrackId: PropTypes.oneOf([PropTypes.string, PropTypes.number]),
   onFocus: PropTypes.func.isRequired,
 };
 

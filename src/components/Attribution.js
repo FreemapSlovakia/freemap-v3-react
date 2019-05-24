@@ -13,7 +13,7 @@ export default function Attribution({ t, mapType, overlays, imhd }) {
             ...overlayLayers.filter(({ type }) => overlays.includes(type)),
           ].reduce((a, b) => [...a, ...b.attribution], []),
         ).map(({ type, attributions }) => (
-          <li>
+          <li key={type}>
             {t(`mapLayers.type.${type}`)}
             {' '}
             {attributions.map((a, j) => [
