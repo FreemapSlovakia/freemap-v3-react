@@ -15,6 +15,7 @@ class ToolsMenuButton extends React.Component {
     t: PropTypes.func.isRequired,
     onToolSet: PropTypes.func.isRequired,
     tool: PropTypes.string,
+    expertMode: PropTypes.bool,
   };
 
   state = {
@@ -39,7 +40,7 @@ class ToolsMenuButton extends React.Component {
   }
 
   render() {
-    const { t, tool } = this.props;
+    const { t, tool, expertMode } = this.props;
 
     return (
       <>
@@ -63,9 +64,9 @@ class ToolsMenuButton extends React.Component {
                   ['measure-dist', '!icon-ruler', 'measurement'],
                   ['track-viewer', 'road', 'trackViewer'],
                   ['info-point', 'thumb-tack', 'infoPoint'],
-                  ['changesets', 'pencil', 'changesets'],
                   ['map-details', 'info', 'mapDetails'],
-                ].map(([newTool, icon, name]) => (
+                  expertMode && ['changesets', 'pencil', 'changesets'],
+                ].filter(x => x).map(([newTool, icon, name]) => (
                   <MenuItem
                     key={newTool}
                     onClick={() => this.handleToolSelect(newTool)}
@@ -88,6 +89,7 @@ export default compose(
   connect(
     state => ({
       tool: state.main.tool,
+      expertMode: state.main.expertMode,
     }),
     dispatch => ({
       onToolSet(tool) {
