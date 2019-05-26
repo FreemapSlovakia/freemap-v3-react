@@ -1,80 +1,16 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TileLayer } from 'react-leaflet';
-import GalleryLayer from 'fm3/components/GalleryLayer';
+import GalleryLayer from 'fm3/components/gallery/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 import { BingLayer } from 'react-leaflet-bing';
 
-class Layers extends React.Component {
-  static propTypes = {
-    onMapTypeChange: PropTypes.func.isRequired,
-    onOverlaysChange: PropTypes.func.isRequired,
-    tileFormat: FmPropTypes.tileFormat.isRequired,
-    overlays: FmPropTypes.overlays,
-    mapType: FmPropTypes.mapType.isRequired,
-    overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
-    disableKeyboard: PropTypes.bool,
-    galleryDirtySeq: PropTypes.number.isRequired,
-    galleryFilter: FmPropTypes.galleryFilter.isRequired,
-    isAdmin: PropTypes.bool,
-    embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
-  };
-
-  componentDidMount() {
-    document.addEventListener('keydown', this.handleKeydown);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeydown);
-  }
-
-  getTileLayer({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains = 'abc' }) {
-    if (type === 'S') {
-      return (
-        <BingLayer
-          key="S"
-          bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-          maxNativeZoom={maxNativeZoom}
-          maxZoom={20}
-          zIndex={zIndex}
-        />
-      );
-    }
-
-    if (type === 'I') {
-      const { galleryFilter, galleryDirtySeq } = this.props;
-      return (
-        <GalleryLayer
-          key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
-          filter={galleryFilter}
-          opacity={this.props.overlayOpacity[type] || 1}
-          zIndex={zIndex}
-        />
-      );
-    }
-
-    return (
-      <TileLayer
-        key={type}
-        url={url.replace('{tileFormat}', this.props.tileFormat)}
-        minZoom={minZoom}
-        maxZoom={20}
-        maxNativeZoom={maxNativeZoom}
-        opacity={this.props.overlayOpacity[type] || 1}
-        zIndex={zIndex}
-        subdomains={subdomains}
-        errorTileUrl={require('../images/missing-tile-256x256.png')}
-      />
-    );
-  }
-
-  handleKeydown = (event) => {
-    const { disableKeyboard, onMapTypeChange, isAdmin, overlays, onOverlaysChange, embedFeatures } = this.props;
-
+function Layers({ mapType, overlays, isAdmin, galleryFilter, galleryDirtySeq, overlayOpacity, tileFormat, disableKeyboard, onMapTypeChange, onOverlaysChange, embedFeatures }) {
+  const handleKeydown = useCallback((event) => {
     const embed = window.self !== window.top;
 
     if (disableKeyboard || event.ctrlKey || event.altKey || event.metaKey || event.isComposing
@@ -100,23 +36,80 @@ class Layers extends React.Component {
       }
       onOverlaysChange([...next]);
     }
-  }
+  }, [disableKeyboard, embedFeatures, isAdmin, onMapTypeChange, onOverlaysChange, overlays]);
 
-  render() {
-    const { mapType, overlays, isAdmin } = this.props;
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeydown);
+    return () => {
+      document.removeEventListener('keydown', handleKeydown);
+    };
+  }, [handleKeydown]);
 
-    return [
-      ...baseLayers
-        .filter(({ type }) => type === mapType)
-        .filter(({ adminOnly }) => isAdmin || !adminOnly)
-        .map(item => this.getTileLayer(item)),
-      ...overlayLayers
-        .filter(({ type }) => overlays.includes(type))
-        .filter(({ adminOnly }) => isAdmin || !adminOnly)
-        .map(item => this.getTileLayer(item)),
-    ];
-  }
+  // eslint-disable-next-line
+  const getTileLayer = ({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains = 'abc' }) => {
+    if (type === 'S') {
+      return (
+        <BingLayer
+          key="S"
+          bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
+          maxNativeZoom={maxNativeZoom}
+          maxZoom={20}
+          zIndex={zIndex}
+        />
+      );
+    }
+
+    if (type === 'I') {
+      return (
+        <GalleryLayer
+          key={`I-${galleryDirtySeq}-${JSON.stringify(galleryFilter)}`}
+          filter={galleryFilter}
+          opacity={overlayOpacity[type] || 1}
+          zIndex={zIndex}
+        />
+      );
+    }
+
+    return (
+      <TileLayer
+        key={type}
+        url={url.replace('{tileFormat}', tileFormat)}
+        minZoom={minZoom}
+        maxZoom={20}
+        maxNativeZoom={maxNativeZoom}
+        opacity={overlayOpacity[type] || 1}
+        zIndex={zIndex}
+        subdomains={subdomains}
+        errorTileUrl={require('../images/missing-tile-256x256.png')}
+      />
+    );
+  };
+
+  return [
+    ...baseLayers
+      .filter(({ type }) => type === mapType)
+      .filter(({ adminOnly }) => isAdmin || !adminOnly)
+      .map(item => getTileLayer(item)),
+    ...overlayLayers
+      .filter(({ type }) => overlays.includes(type))
+      .filter(({ adminOnly }) => isAdmin || !adminOnly)
+      .map(item => getTileLayer(item)),
+  ];
 }
+
+Layers.propTypes = {
+  onMapTypeChange: PropTypes.func.isRequired,
+  onOverlaysChange: PropTypes.func.isRequired,
+  tileFormat: FmPropTypes.tileFormat.isRequired,
+  overlays: FmPropTypes.overlays,
+  mapType: FmPropTypes.mapType.isRequired,
+  overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
+  disableKeyboard: PropTypes.bool,
+  galleryDirtySeq: PropTypes.number.isRequired,
+  galleryFilter: FmPropTypes.galleryFilter.isRequired,
+  isAdmin: PropTypes.bool,
+  embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
+};
 
 export default connect(
   state => ({

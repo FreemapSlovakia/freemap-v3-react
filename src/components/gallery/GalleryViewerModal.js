@@ -11,7 +11,7 @@ import * as FmPropTypes from 'fm3/propTypes';
 import injectL10n from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import GalleryEditForm from 'fm3/components/GalleryEditForm';
+import GalleryEditForm from 'fm3/components/gallery/GalleryEditForm';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';

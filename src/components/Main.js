@@ -41,11 +41,11 @@ import TrackViewerResult from 'fm3/components/TrackViewerResult';
 import TrackViewerUploadModal from 'fm3/components/TrackViewerUploadModal';
 import TrackViewerShareModal from 'fm3/components/TrackViewerShareModal';
 
-import GalleryMenu from 'fm3/components/GalleryMenu';
-import GalleryResult from 'fm3/components/GalleryResult';
-import GalleryPicker from 'fm3/components/GalleryPicker';
-import GalleryPositionPickingMenu from 'fm3/components/GalleryPositionPickingMenu';
-import GalleryShowPositionMenu from 'fm3/components/GalleryShowPositionMenu';
+import GalleryMenu from 'fm3/components/gallery/GalleryMenu';
+import GalleryResult from 'fm3/components/gallery/GalleryResult';
+import GalleryPicker from 'fm3/components/gallery/GalleryPicker';
+import GalleryPositionPickingMenu from 'fm3/components/gallery/GalleryPositionPickingMenu';
+import GalleryShowPositionMenu from 'fm3/components/gallery/GalleryShowPositionMenu';
 
 import Settings from 'fm3/components/Settings';
 import HomeLocationPickingMenu from 'fm3/components/HomeLocationPickingMenu';
@@ -89,7 +89,7 @@ import Attribution from 'fm3/components/Attribution';
 import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
 import TrackingModal from './tracking/TrackingModal';
-import TrackingResult from './TrackingResult';
+import TrackingResult from './tracking/TrackingResult';
 
 class Main extends React.Component {
   static propTypes = {

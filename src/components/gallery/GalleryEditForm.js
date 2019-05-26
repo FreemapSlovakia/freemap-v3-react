@@ -12,7 +12,7 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import { formatGpsCoord } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
-import DateTime from './DateTime';
+import DateTime from '../DateTime';
 
 GalleryEditForm.propTypes = {
   model: FmPropTypes.galleryPictureModel.isRequired,

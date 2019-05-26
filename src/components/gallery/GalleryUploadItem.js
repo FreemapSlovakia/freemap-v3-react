@@ -5,7 +5,7 @@ import 'fm3/styles/react-tag-autocomplete.css';
 
 import Button from 'react-bootstrap/lib/Button';
 import * as FmPropTypes from 'fm3/propTypes';
-import GalleryEditForm from 'fm3/components/GalleryEditForm';
+import GalleryEditForm from 'fm3/components/gallery/GalleryEditForm';
 
 export default class GalleryUploadItem extends React.Component {
   static propTypes = {

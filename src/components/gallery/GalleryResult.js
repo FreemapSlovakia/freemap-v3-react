@@ -6,9 +6,9 @@ import * as FmPropTypes from 'fm3/propTypes';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import GalleryViewerModal from 'fm3/components/GalleryViewerModal';
-import GalleryFilterModal from 'fm3/components/GalleryFilterModal';
-import AsyncGalleryUploadModal from 'fm3/components/AsyncGalleryUploadModal';
+import GalleryViewerModal from 'fm3/components/gallery/GalleryViewerModal';
+import GalleryFilterModal from 'fm3/components/gallery/GalleryFilterModal';
+import AsyncGalleryUploadModal from 'fm3/components/gallery/AsyncGalleryUploadModal';
 import RichMarker from 'fm3/components/RichMarker';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
