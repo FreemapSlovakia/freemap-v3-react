@@ -45,6 +45,7 @@ export default {
     infoPoint: 'Body v mape',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
+    tracking: 'Sledovanie',
   },
 
   routePlanner: {

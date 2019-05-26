@@ -12,7 +12,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingModifyTrackedDevice } from 'fm3/actions/trackingActions';
 import TrackedDevice from './TrackedDevice';
 
-function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
+function TrackedDevices({ onClose, onAdd, devices }) {
   return (
     <>
       <Modal.Header closeButton>
@@ -49,9 +49,6 @@ function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" bsStyle="primary" onClick={onShowTrackedDevices}>
-          Manage my devices
-        </Button>
         <Button type="button" onClick={onAdd}>
           Add new
         </Button>
@@ -66,7 +63,6 @@ function TrackedDevices({ onClose, onAdd, devices, onShowTrackedDevices }) {
 TrackedDevices.propTypes = {
   onClose: PropTypes.func.isRequired,
   onAdd: PropTypes.func.isRequired,
-  onShowTrackedDevices: PropTypes.func.isRequired,
   devices: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 };
 
@@ -77,9 +73,6 @@ export default connect(
   dispatch => ({
     onClose() {
       dispatch(setActiveModal(null));
-    },
-    onShowTrackedDevices() {
-      dispatch(setActiveModal('tracking-my'));
     },
     onAdd() {
       dispatch(trackingModifyTrackedDevice(null));

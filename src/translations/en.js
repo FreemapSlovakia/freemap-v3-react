@@ -46,6 +46,7 @@ export default {
     infoPoint: 'Pins',
     changesets: 'Map changes',
     mapDetails: 'Map details',
+    tracking: 'Tracking',
   },
 
   routePlanner: {

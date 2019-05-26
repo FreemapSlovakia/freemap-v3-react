@@ -90,6 +90,7 @@ import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
 import TrackingModal from './tracking/TrackingModal';
 import TrackingResult from './tracking/TrackingResult';
+import TrackingMenu from './TrackingMenu';
 
 class Main extends React.Component {
   static propTypes = {
@@ -281,6 +282,7 @@ class Main extends React.Component {
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'gallery' && <GalleryMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
+                {tool === 'tracking' && <TrackingMenu />}
                 {!embed && (
                   <>
                     {' '}

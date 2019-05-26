@@ -31,6 +31,7 @@ function ToolsMenuButton({ t, tool, expertMode, onToolSet }) {
                 ['track-viewer', 'road', 'trackViewer'],
                 ['info-point', 'thumb-tack', 'infoPoint'],
                 ['map-details', 'info', 'mapDetails'],
+                ['tracking', 'bullseye', 'tracking'],
                 expertMode && ['changesets', 'pencil', 'changesets'],
               ].filter(x => x).map(([newTool, icon, name]) => (
                 <MenuItem
