@@ -1,5 +1,4 @@
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 
@@ -14,13 +13,20 @@ import {
   trackingSetShowLine,
 } from 'fm3/actions/trackingActions';
 
-function TrackingMenu({
+interface ITrackingMenuProps {
+  onTrackedDevicesClick: () => void;
+  onMyDevicesClick: () => void;
+  onVisualChange: (visual: 'line+points' | 'line' | 'points') => void;
+  visual: string;
+}
+
+const TrackingMenu: React.SFC<ITrackingMenuProps> = ({
   onTrackedDevicesClick,
   onMyDevicesClick,
   onVisualChange,
   visual,
-}) {
-  const handleVisualSelect = useCallback(
+}) => {
+  const handleVisualSelect = React.useCallback(
     ({ target: { dataset } }) => {
       onVisualChange(dataset.visual);
     },
@@ -61,13 +67,6 @@ function TrackingMenu({
       </DropdownButton>
     </>
   );
-}
-
-TrackingMenu.propTypes = {
-  onTrackedDevicesClick: PropTypes.func.isRequired,
-  onMyDevicesClick: PropTypes.func.isRequired,
-  onVisualChange: PropTypes.func.isRequired,
-  visual: PropTypes.string.isRequired,
 };
 
 export default compose(

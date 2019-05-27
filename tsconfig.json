@@ -1,16 +1,24 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",        // path to output directory
-    "sourceMap": true,          // allow sourcemap support
-    "strictNullChecks": true,   // enable strict null checks as a best practice
-    "module": "es6",            // specify module code generation
-    "jsx": "react",             // use typescript to transpile jsx to js
-    "target": "es5",            // specify ECMAScript target version
-    "allowJs": true,             // allow a partial TypeScript and JavaScript codebase
+    "outDir": "./dist/", // path to output directory
+    "sourceMap": true, // allow sourcemap support
+    "strictNullChecks": true, // enable strict null checks as a best practice
+    "module": "es6", // specify module code generation
+    "jsx": "react", // use typescript to transpile jsx to js
+    "target": "es5", // specify ECMAScript target version
+    "allowJs": true, // allow a partial TypeScript and JavaScript codebase
     "moduleResolution": "node",
     "lib": ["es2018", "dom"],
+    // was in jsconfig: "target": "es2015",
+    // was in jsconfig: "module": "commonjs",
+    "allowSyntheticDefaultImports": true,
+    "baseUrl": "./src",
+    "paths": {
+      "fm3/*": ["./*"]
+    },
+    "noUnusedLocals": true,
+    "noUnusedParameters": true
+    // "strict": true
   },
-  "include": [
-    "./src/"
-  ]
+  "include": ["./src/"]
 }
