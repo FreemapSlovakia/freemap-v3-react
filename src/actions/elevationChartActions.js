@@ -1,7 +1,10 @@
 import * as at from 'fm3/actionTypes';
 
 export function elevationChartSetTrackGeojson(trackGeojson) {
-  return { type: at.ELEVATION_CHART_SET_TRACK_GEOJSON, payload: { trackGeojson } };
+  return {
+    type: at.ELEVATION_CHART_SET_TRACK_GEOJSON,
+    payload: { trackGeojson },
+  };
 }
 
 export function elevationChartClose() {
@@ -9,11 +12,17 @@ export function elevationChartClose() {
 }
 
 export function elevationChartSetActivePoint(activePoint) {
-  return { type: at.ELEVATION_CHART_SET_ACTIVE_POINT, payload: { activePoint } };
+  return {
+    type: at.ELEVATION_CHART_SET_ACTIVE_POINT,
+    payload: { activePoint },
+  };
 }
 
 export function elevationChartSetElevationProfile(elevationProfilePoints) {
-  return { type: at.ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS, payload: { elevationProfilePoints } };
+  return {
+    type: at.ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS,
+    payload: { elevationProfilePoints },
+  };
 }
 
 export function elevationChartRemoveActivePoint() {

@@ -1,11 +1,17 @@
 import * as at from 'fm3/actionTypes';
 
 export function distanceMeasurementAddPoint(point, position) {
-  return { type: at.DISTANCE_MEASUREMENT_ADD_POINT, payload: { point, position } };
+  return {
+    type: at.DISTANCE_MEASUREMENT_ADD_POINT,
+    payload: { point, position },
+  };
 }
 
 export function distanceMeasurementUpdatePoint(index, point) {
-  return { type: at.DISTANCE_MEASUREMENT_UPDATE_POINT, payload: { index, point } };
+  return {
+    type: at.DISTANCE_MEASUREMENT_UPDATE_POINT,
+    payload: { index, point },
+  };
 }
 
 export function distanceMeasurementRemovePoint(id) {

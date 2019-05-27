@@ -6,7 +6,10 @@ import { compose } from 'redux';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
 
-import { mapDetailsSetSubtool, mapDetailsSetUserSelectedPosition } from 'fm3/actions/mapDetailsActions';
+import {
+  mapDetailsSetSubtool,
+  mapDetailsSetUserSelectedPosition,
+} from 'fm3/actions/mapDetailsActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import injectL10n from 'fm3/l10nInjector';
@@ -31,7 +34,7 @@ class MapDetailsMenu extends React.Component {
     if (this.props.subtool !== null) {
       this.props.onSetUserSelectedPosition(lat, lon);
     }
-  }
+  };
 
   render() {
     const { subtool, onSubtoolChange, t } = this.props;
@@ -40,8 +43,7 @@ class MapDetailsMenu extends React.Component {
         <span className="fm-label">
           <FontAwesomeIcon icon="info" />
           <span className="hidden-xs"> {t('tools.mapDetails')}</span>
-        </span>
-        {' '}
+        </span>{' '}
         <Button
           onClick={() => onSubtoolChange('track-info')}
           active={subtool === 'track-info'}

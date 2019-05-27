@@ -19,20 +19,21 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    axios.patch(
-      `${process.env.API_URL}/auth/settings`,
-      {
-        preventTips: getState().tips.preventTips,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${getState().auth.user.authToken}`,
+    axios
+      .patch(
+        `${process.env.API_URL}/auth/settings`,
+        {
+          preventTips: getState().tips.preventTips,
         },
-        validateStatus: status => status === 204,
-        // cancelToken: source.token,
-      },
-    )
-      .catch((err) => {
+        {
+          headers: {
+            Authorization: `Bearer ${getState().auth.user.authToken}`,
+          },
+          validateStatus: status => status === 204,
+          // cancelToken: source.token,
+        },
+      )
+      .catch(err => {
         dispatch(toastsAddError('settings.savingError', err));
       })
       .then(() => {

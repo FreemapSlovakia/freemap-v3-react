@@ -12,7 +12,12 @@ export default createLogic({
 
     const track = activeTrackId && tracks.find(t => t.id === activeTrackId);
 
-    if (track && action.type !== at.TRACKING_SET_ACTIVE && prevTrack !== track && track.trackPoints.length) {
+    if (
+      track &&
+      action.type !== at.TRACKING_SET_ACTIVE &&
+      prevTrack !== track &&
+      track.trackPoints.length
+    ) {
       const { lat, lon } = track.trackPoints[track.trackPoints.length - 1];
       dispatch(mapRefocus({ lat, lon }));
     }

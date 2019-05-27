@@ -11,14 +11,15 @@ export default createLogic({
   process({ getState }, dispatch, done) {
     const pid = Math.random();
     dispatch(startProgress(pid));
-    getAuthAxios(getState).get('/tracking/devices')
+    getAuthAxios(getState)
+      .get('/tracking/devices')
       .then(({ data }) => {
         for (const device of data) {
           device.createdAt = new Date(device.createdAt);
         }
         dispatch(trackingSetDevices(data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('settings.savingError', err)); // TODO
       })
       .then(() => {

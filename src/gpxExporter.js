@@ -6,7 +6,9 @@ export function createElement(parent, name, text, attributes = {}) {
     elem.textContent = text;
   }
 
-  Object.keys(attributes).forEach(key => addAttribute(elem, key, attributes[key]));
+  Object.keys(attributes).forEach(key =>
+    addAttribute(elem, key, attributes[key]),
+  );
 
   parent.appendChild(elem);
   return elem;

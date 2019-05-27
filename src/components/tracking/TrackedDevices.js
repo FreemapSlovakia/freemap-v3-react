@@ -26,9 +26,7 @@ function TrackedDevices({ onClose, onAdd, devices }) {
       </Modal.Header>
       <Modal.Body>
         <Alert bsStyle="info">
-          <p>
-            Manage tracked devices to see the position of your friends.
-          </p>
+          <p>Manage tracked devices to see the position of your friends.</p>
         </Alert>
         <Table striped bordered>
           <thead>
@@ -44,7 +42,9 @@ function TrackedDevices({ onClose, onAdd, devices }) {
             </tr>
           </thead>
           <tbody>
-            {devices.map(device => <TrackedDevice key={device.id} device={device} />)}
+            {devices.map(device => (
+              <TrackedDevice key={device.id} device={device} />
+            ))}
           </tbody>
         </Table>
       </Modal.Body>

@@ -37,11 +37,7 @@ export const baseLayers = [
     type: 'X',
     icon: 'tree',
     url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-      SRTM_ATTR,
-    ].filter(a => a),
+    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR].filter(a => a),
     minZoom: 6,
     maxNativeZoom: 19,
     key: 'x',
@@ -56,11 +52,9 @@ export const baseLayers = [
     icon,
     url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
     subdomains: 'abcd',
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-      type !== 'A' && SRTM_ATTR,
-    ].filter(a => a),
+    attribution: [FM_ATTR, OSM_DATA_ATTR, type !== 'A' && SRTM_ATTR].filter(
+      a => a,
+    ),
     minZoom: 8,
     maxNativeZoom: 16,
     key: type.toLowerCase(),
@@ -92,10 +86,7 @@ export const baseLayers = [
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 19,
-    attribution: [
-      OSM_MAP_ATTR,
-      OSM_DATA_ATTR,
-    ],
+    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     key: 'o',
   },
   {
@@ -161,21 +152,15 @@ export const baseLayers = [
     attribution: [],
     key: 'h',
   },
-  !process.env.NODE_ENV && (
-    {
-      type: 'Y',
-      icon: 'flask',
-      url: scaleUrl([1, 2, 3], 'http://localhost:4000/{z}/{x}/{y}'),
-      attribution: [
-        FM_ATTR,
-        OSM_DATA_ATTR,
-        SRTM_ATTR,
-      ].filter(a => a),
-      minZoom: 6,
-      maxNativeZoom: 19,
-      key: 'y',
-    }
-  ),
+  !process.env.NODE_ENV && {
+    type: 'Y',
+    icon: 'flask',
+    url: scaleUrl([1, 2, 3], 'http://localhost:4000/{z}/{x}/{y}'),
+    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR].filter(a => a),
+    minZoom: 6,
+    maxNativeZoom: 19,
+    key: 'y',
+  },
 ].filter(x => x);
 
 function findNearestScale(scales, ratio = window.devicePixelRatio || 1) {
@@ -239,10 +224,7 @@ export const overlayLayers = [
     type: 'g',
     icon: '!icon-gps-device',
     url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
-    attribution: [
-      OSM_MAP_ATTR,
-      OSM_DATA_ATTR,
-    ],
+    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     minZoom: 0,
     maxNativeZoom: 20,
     key: 'G',
@@ -253,10 +235,7 @@ export const overlayLayers = [
     type: 't',
     icon: '!icon-hiking',
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-    ],
+    attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
     key: 'T',
@@ -267,10 +246,7 @@ export const overlayLayers = [
     type: 'c',
     icon: 'bicycle',
     url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-    ],
+    attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
     key: 'C',
@@ -294,20 +270,19 @@ export const overlayLayers = [
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
-  ...[['1', '1', ''], ['2', '2', 'h'], ['3', '3', 'c']].map(([type, key, suffix]) => ({
-    type,
-    icon: 'font',
-    url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
-    attribution: [
-      FM_ATTR,
-      OSM_DATA_ATTR,
-    ],
-    minZoom: 8,
-    maxNativeZoom: 16,
-    key,
-    showOnlyInExpertMode: true,
-    zIndex: 2,
-  })),
+  ...[['1', '1', ''], ['2', '2', 'h'], ['3', '3', 'c']].map(
+    ([type, key, suffix]) => ({
+      type,
+      icon: 'font',
+      url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
+      attribution: [FM_ATTR, OSM_DATA_ATTR],
+      minZoom: 8,
+      maxNativeZoom: 16,
+      key,
+      showOnlyInExpertMode: true,
+      zIndex: 2,
+    }),
+  ),
   {
     type: 'r',
     icon: 'pencil-square-o',
@@ -317,8 +292,6 @@ export const overlayLayers = [
     key: 'R',
     showOnlyInExpertMode: true,
     zIndex: 4,
-    attribution: [
-      FM_ATTR,
-    ],
+    attribution: [FM_ATTR],
   },
 ];

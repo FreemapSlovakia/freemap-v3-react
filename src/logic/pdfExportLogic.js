@@ -7,7 +7,15 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 export const pdfExportLogic = createLogic({
   type: at.EXPORT_PDF,
   process({ getState, action }, dispatch, done) {
-    const { scale, area, shadedRelief, contours, hikingTrails, bicycleTrails, skiTrails } = action.payload;
+    const {
+      scale,
+      area,
+      shadedRelief,
+      contours,
+      hikingTrails,
+      bicycleTrails,
+      skiTrails,
+    } = action.payload;
 
     let w;
     let n;
@@ -20,7 +28,8 @@ export const pdfExportLogic = createLogic({
       n = bounds.getNorth();
       e = bounds.getEast();
       s = bounds.getSouth();
-    } else { // infopoints
+    } else {
+      // infopoints
       getState().infoPoint.points.forEach(({ lat, lon }) => {
         w = Math.min(w === undefined ? 1000 : w, lon);
         n = Math.max(n === undefined ? -1000 : n, lat);
@@ -29,9 +38,11 @@ export const pdfExportLogic = createLogic({
       });
     }
 
-    window.open(`https://outdoor.tiles.freemap.sk/pdf?zoom=${getState().map.zoom}`
-      + `&bbox=${w},${s},${e},${n}&scale=${scale}`
-      + `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&shading=${shadedRelief}&contours=${contours}`);
+    window.open(
+      `https://outdoor.tiles.freemap.sk/pdf?zoom=${getState().map.zoom}` +
+        `&bbox=${w},${s},${e},${n}&scale=${scale}` +
+        `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&shading=${shadedRelief}&contours=${contours}`,
+    );
     dispatch(setActiveModal(null));
     done();
   },

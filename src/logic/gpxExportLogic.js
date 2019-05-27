@@ -5,7 +5,11 @@ import qs from 'query-string';
 
 import * as at from 'fm3/actionTypes';
 import { createElement, addAttribute, GPX_NS } from 'fm3/gpxExporter';
-import { startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
+import {
+  startProgress,
+  stopProgress,
+  setActiveModal,
+} from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { createFilter } from 'fm3/galleryUtils';
@@ -21,16 +25,35 @@ export const gpxExportLogic = createLogic({
     createElement(meta, 'desc', 'Exported from https://www.freemap.sk/');
     const author = createElement(meta, 'author');
     createElement(author, 'name', 'Freemap Slovakia');
-    createElement(author, 'email', undefined, { id: 'freemap', domain: 'freemap.sk' });
-    const link = createElement(author, 'link', undefined, { href: 'https://www.freemap.sk/' });
+    createElement(author, 'email', undefined, {
+      id: 'freemap',
+      domain: 'freemap.sk',
+    });
+    const link = createElement(author, 'link', undefined, {
+      href: 'https://www.freemap.sk/',
+    });
     createElement(link, 'text', 'Freemap Slovakia');
     createElement(link, 'type', 'text/html');
-    const copyright = createElement(meta, 'copyright', undefined, { author: 'OpenStreetMap contributors' });
-    createElement(copyright, 'license', 'http://www.openstreetmap.org/copyright');
+    const copyright = createElement(meta, 'copyright', undefined, {
+      author: 'OpenStreetMap contributors',
+    });
+    createElement(
+      copyright,
+      'license',
+      'http://www.openstreetmap.org/copyright',
+    );
     createElement(meta, 'time', new Date().toISOString());
     createElement(meta, 'keywords', action.payload.join(' '));
 
-    const { distanceMeasurement, areaMeasurement, elevationMeasurement, infoPoint, objects, routePlanner, tracking } = getState();
+    const {
+      distanceMeasurement,
+      areaMeasurement,
+      elevationMeasurement,
+      infoPoint,
+      objects,
+      routePlanner,
+      tracking,
+    } = getState();
 
     const set = new Set(action.payload);
 
@@ -47,21 +70,22 @@ export const gpxExportLogic = createLogic({
 
       const b = getMapLeafletElement().getBounds();
 
-      const p = axios.get(`${process.env.API_URL}/gallery/pictures`, {
-        params: {
-          by: 'bbox',
-          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-          ...createFilter(getState().gallery.filter),
-          fields: ['id', 'title', 'description', 'takenAt'],
-        },
-        paramsSerializer: qs.stringify,
-        validateStatus: status => status === 200,
-        cancelToken: source.token,
-      })
+      const p = axios
+        .get(`${process.env.API_URL}/gallery/pictures`, {
+          params: {
+            by: 'bbox',
+            bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+            ...createFilter(getState().gallery.filter),
+            fields: ['id', 'title', 'description', 'takenAt'],
+          },
+          paramsSerializer: qs.stringify,
+          validateStatus: status => status === 200,
+          cancelToken: source.token,
+        })
         .then(({ data }) => {
           addPictures(doc, data);
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('gallery.picturesFetchingError', err));
         });
 
@@ -89,26 +113,31 @@ export const gpxExportLogic = createLogic({
       addTracking(doc, tracking);
     }
 
-    Promise.all(promises)
-      .then(() => {
-        storeDispatch(stopProgress(pid));
-        const serializer = new XMLSerializer();
+    Promise.all(promises).then(() => {
+      storeDispatch(stopProgress(pid));
+      const serializer = new XMLSerializer();
 
-        // eslint-disable-next-line
-        //console.log(serializer.serializeToString(doc));
+      // eslint-disable-next-line
+      //console.log(serializer.serializeToString(doc));
 
-        FileSaver.saveAs(new Blob([serializer.serializeToString(doc)], { type: 'application/json' }), 'export.gpx');
-        dispatch(setActiveModal(null));
-        done();
-      });
+      FileSaver.saveAs(
+        new Blob([serializer.serializeToString(doc)], {
+          type: 'application/json',
+        }),
+        'export.gpx',
+      );
+      dispatch(setActiveModal(null));
+      done();
+    });
   },
 });
 
 function addPictures(doc, pictures) {
-  pictures.forEach(({
-    lat, lon, id, takenAt, title, description,
-  }) => {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
+  pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
+      lat,
+      lon,
+    });
     if (takenAt) {
       createElement(wptEle, 'time', takenAt);
     }
@@ -118,7 +147,9 @@ function addPictures(doc, pictures) {
     if (description) {
       createElement(wptEle, 'description', description);
     }
-    const link = createElement(wptEle, 'link', undefined, { href: `${process.env.API_URL}/gallery/pictures/${id}/image` });
+    const link = createElement(wptEle, 'link', undefined, {
+      href: `${process.env.API_URL}/gallery/pictures/${id}/image`,
+    });
     createElement(link, 'type', 'image/jpeg');
 
     // TODO add tags and author to cmt
@@ -138,14 +169,20 @@ function addADMeasurement(doc, { points }) {
 
 function addElevationMeasurement(doc, { point, elevation }) {
   if (point) {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat: point.lat, lon: point.lon });
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
+      lat: point.lat,
+      lon: point.lon,
+    });
     createElement(wptEle, 'ele', elevation);
   }
 }
 
 function addInfoPoint(doc, { points }) {
   points.forEach(({ lat, lon, label }) => {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
+      lat,
+      lon,
+    });
     if (label) {
       createElement(wptEle, 'name', label);
     }
@@ -154,7 +191,10 @@ function addInfoPoint(doc, { points }) {
 
 function addObjects(doc, { objects }) {
   objects.forEach(({ lat, lon, tags }) => {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, { lat, lon });
+    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
+      lat,
+      lon,
+    });
 
     if (!Number.isNaN(tags.ele)) {
       createElement(wptEle, 'ele', tags.ele);
@@ -170,14 +210,29 @@ function addPlannedRoute(doc, { alternatives, start, finish, midpoints }) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
-  const startWptEle = createElement(doc.documentElement, 'wpt', undefined, start);
+  const startWptEle = createElement(
+    doc.documentElement,
+    'wpt',
+    undefined,
+    start,
+  );
   createElement(startWptEle, 'name', 'Štart');
 
-  const finishWptEle = createElement(doc.documentElement, 'wpt', undefined, finish);
+  const finishWptEle = createElement(
+    doc.documentElement,
+    'wpt',
+    undefined,
+    finish,
+  );
   createElement(finishWptEle, 'name', 'Cieľ');
 
   midpoints.forEach((midpoint, i) => {
-    const midpointWptEle = createElement(doc.documentElement, 'wpt', undefined, midpoint);
+    const midpointWptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      midpoint,
+    );
     createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
   });
 
@@ -197,7 +252,10 @@ export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
 function addTracking(doc, { tracks, trackedDevices }) {
   const tdMap = new Map(trackedDevices.map(td => [td.id, td]));
-  const tracks1 = tracks.map(track => ({ ...track, ...(tdMap.get(track.id) || {}) }));
+  const tracks1 = tracks.map(track => ({
+    ...track,
+    ...(tdMap.get(track.id) || {}),
+  }));
 
   for (const track of tracks1) {
     const trkEle = createElement(doc.documentElement, 'trk');
@@ -205,7 +263,18 @@ function addTracking(doc, { tracks, trackedDevices }) {
       createElement(trkEle, 'name', track.label);
     }
     const trksegEle = createElement(trkEle, 'trkseg');
-    for (const { ts, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message } of track.trackPoints) {
+    for (const {
+      ts,
+      lat,
+      lon,
+      altitude,
+      speed,
+      accuracy,
+      bearing,
+      battery,
+      gsmSignal,
+      message,
+    } of track.trackPoints) {
       const ptEle = createElement(trksegEle, 'trkpt', undefined, { lat, lon });
       createElement(ptEle, 'time', ts);
       if (typeof altitude === 'number') {
@@ -220,7 +289,11 @@ function addTracking(doc, { tracks, trackedDevices }) {
       if (message) {
         createElement(ptEle, 'cmt', accuracy);
       }
-      if (typeof speed === 'number' || typeof battery === 'number' || typeof gsmSignal === 'number') {
+      if (
+        typeof speed === 'number' ||
+        typeof battery === 'number' ||
+        typeof gsmSignal === 'number'
+      ) {
         const extEl = createElement(ptEle, 'extensions');
 
         if (typeof speed === 'number') {

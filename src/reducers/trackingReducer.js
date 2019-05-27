@@ -43,16 +43,23 @@ export default function tracking(state = initialState, action) {
     case at.TRACKING_SAVE_TRACKED_DEVICE:
       return {
         ...state,
-        trackedDevices: [...state.trackedDevices.filter(d => d.id !== state.modifiedTrackedDeviceId), action.payload],
+        trackedDevices: [
+          ...state.trackedDevices.filter(
+            d => d.id !== state.modifiedTrackedDeviceId,
+          ),
+          action.payload,
+        ],
         modifiedTrackedDeviceId: undefined,
       };
     case at.TRACKING_DELETE_TRACKED_DEVICE:
       return {
         ...state,
-        trackedDevices: state.trackedDevices.filter(d => d.id !== action.payload),
+        trackedDevices: state.trackedDevices.filter(
+          d => d.id !== action.payload,
+        ),
       };
     case at.TRACKING_VIEW:
-      return produce(state, (draft) => {
+      return produce(state, draft => {
         if (!draft.trackedDevices.find(d => d.id !== action.payload)) {
           draft.trackedDevices.push({
             id: action.payload,
@@ -60,28 +67,45 @@ export default function tracking(state = initialState, action) {
         }
       });
     case at.TRACKING_SET_ACTIVE:
-      return { ...state, activeTrackId: state.activeTrackId === action.payload ? null : action.payload };
+      return {
+        ...state,
+        activeTrackId:
+          state.activeTrackId === action.payload ? null : action.payload,
+      };
     case at.WS_STATE_CHANGED:
       return action.payload.state === 1 ? state : { ...state, tracks: [] };
 
     case at.RPC_RESPONSE: {
-      if (action.payload.method === 'tracking.subscribe' && action.payload.result) {
+      if (
+        action.payload.method === 'tracking.subscribe' &&
+        action.payload.result
+      ) {
         return {
           ...state,
           tracks: [
             ...state.tracks,
             {
               id: action.payload.params.token || action.payload.params.deviceId,
-              trackPoints: action.payload.result.map(tp => ({ ...tp, ts: new Date(tp.ts) })),
+              trackPoints: action.payload.result.map(tp => ({
+                ...tp,
+                ts: new Date(tp.ts),
+              })),
             },
           ],
         };
       }
 
-      if (action.payload.method === 'tracking.unsubscribe' && !action.payload.error) {
+      if (
+        action.payload.method === 'tracking.unsubscribe' &&
+        !action.payload.error
+      ) {
         return {
           ...state,
-          tracks: state.tracks.filter(track => track.id !== action.payload.params.token || action.payload.params.deviceId),
+          tracks: state.tracks.filter(
+            track =>
+              track.id !== action.payload.params.token ||
+              action.payload.params.deviceId,
+          ),
         };
       }
 
@@ -91,7 +115,7 @@ export default function tracking(state = initialState, action) {
       if (action.payload.method === 'tracking.addPoint') {
         // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
         const { token, deviceId, ts, ...rest } = action.payload.params;
-        return produce(state, (draft) => {
+        return produce(state, draft => {
           let track = draft.tracks.find(t => t.id === token || deviceId);
           if (!track) {
             track = { id: token || deviceId, trackPoints: [] };

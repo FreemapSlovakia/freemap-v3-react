@@ -23,7 +23,10 @@ export default function elevationChart(state = initialState, action) {
     case at.ELEVATION_CHART_REMOVE_ACTIVE_POINT:
       return { ...state, activePoint: initialState.activePoint };
     case at.ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS:
-      return { ...state, elevationProfilePoints: action.payload.elevationProfilePoints };
+      return {
+        ...state,
+        elevationProfilePoints: action.payload.elevationProfilePoints,
+      };
     case at.SET_TOOL:
     case at.ROUTE_PLANNER_SET_RESULT:
     case at.DISTANCE_MEASUREMENT_ADD_POINT:

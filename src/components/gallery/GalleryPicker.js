@@ -11,7 +11,7 @@ class GalleryPicker extends React.Component {
   static propTypes = {
     onImageRequest: PropTypes.func.isRequired,
     zoom: PropTypes.number.isRequired,
-  }
+  };
 
   state = {};
 
@@ -29,7 +29,7 @@ class GalleryPicker extends React.Component {
 
   handleMapClick = (lat, lon) => {
     this.props.onImageRequest(lat, lon);
-  }
+  };
 
   handleMouseMove = (lat, lon, originalEvent) => {
     if (originalEvent.target.classList.contains('leaflet-container')) {
@@ -37,11 +37,11 @@ class GalleryPicker extends React.Component {
     } else {
       this.setState({ lat: undefined, lon: undefined });
     }
-  }
+  };
 
   handleMouseOut = () => {
     this.setState({ lat: undefined, lon: undefined });
-  }
+  };
 
   render() {
     const { zoom } = this.props;
@@ -51,7 +51,7 @@ class GalleryPicker extends React.Component {
       <Circle
         interactive={false}
         center={[lat, lon]}
-        radius={5000 / 2 ** zoom * 1000}
+        radius={(5000 / 2 ** zoom) * 1000}
         stroke={false}
       />
     ) : null;

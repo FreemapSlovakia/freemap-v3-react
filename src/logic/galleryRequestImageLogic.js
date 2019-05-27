@@ -9,9 +9,16 @@ import { gallerySetImage } from 'fm3/actions/galleryActions';
 export default createLogic({
   type: at.GALLERY_REQUEST_IMAGE,
   cancelType: at.CLEAR_MAP,
-  process({
-    action: { payload: id }, getState, cancelled$, storeDispatch,
-  }, dispatch, done) {
+  process(
+    {
+      action: { payload: id },
+      getState,
+      cancelled$,
+      storeDispatch,
+    },
+    dispatch,
+    done,
+  ) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     const source = axios.CancelToken.source();
@@ -19,22 +26,30 @@ export default createLogic({
       source.cancel();
     });
 
-    axios.get(`${process.env.API_URL}/gallery/pictures/${id}`, {
-      headers: getState().auth.user ? {
-        Authorization: `Bearer ${getState().auth.user.authToken}`,
-      } : {},
-      validateStatus: status => status === 200,
-      cancelToken: source.token,
-    })
-      .then(({ data }) => {
-        dispatch(gallerySetImage({
-          ...data,
-          createdAt: new Date(data.createdAt),
-          takenAt: data.takenAt && new Date(data.takenAt),
-          comments: data.comments.map(comment => ({ ...comment, createdAt: new Date(comment.createdAt) })),
-        }));
+    axios
+      .get(`${process.env.API_URL}/gallery/pictures/${id}`, {
+        headers: getState().auth.user
+          ? {
+              Authorization: `Bearer ${getState().auth.user.authToken}`,
+            }
+          : {},
+        validateStatus: status => status === 200,
+        cancelToken: source.token,
       })
-      .catch((err) => {
+      .then(({ data }) => {
+        dispatch(
+          gallerySetImage({
+            ...data,
+            createdAt: new Date(data.createdAt),
+            takenAt: data.takenAt && new Date(data.takenAt),
+            comments: data.comments.map(comment => ({
+              ...comment,
+              createdAt: new Date(comment.createdAt),
+            })),
+          }),
+        );
+      })
+      .catch(err => {
         dispatch(toastsAddError('gallery.pictureFetchingError', err));
       })
       .then(() => {

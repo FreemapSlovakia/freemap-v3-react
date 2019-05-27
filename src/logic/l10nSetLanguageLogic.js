@@ -11,23 +11,35 @@ export default createLogic({
     dispatch(startProgress(pid));
 
     const { chosenLanguage } = getState().l10n;
-    const language = chosenLanguage
-      || navigator.languages && navigator.languages.map(lang => simplify(lang)).find(lang => ['en', 'sk', 'cs'].includes(lang))
-      || simplify(navigator.language)
-      || 'en';
+    const language =
+      chosenLanguage ||
+      (navigator.languages &&
+        navigator.languages
+          .map(lang => simplify(lang))
+          .find(lang => ['en', 'sk', 'cs'].includes(lang))) ||
+      simplify(navigator.language) ||
+      'en';
 
     Promise.all([
-      import(/* webpackChunkName: "translations-[request]" */`fm3/translations/${language}.js`),
-      !global.hasNoNativeIntl ? null : import(/* webpackChunkName: "localeData-[request]" */`intl/locale-data/jsonp/${language}.js`),
-    ]).then(([translations]) => {
-      global.translations = translations.default;
-      dispatch(l10nSetLanguage(language));
-      dispatch(stopProgress(pid));
-      done();
-    }).catch((err) => {
-      dispatch(err);
-      done();
-    });
+      import(
+        /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.js`
+      ),
+      !global.hasNoNativeIntl
+        ? null
+        : import(
+            /* webpackChunkName: "localeData-[request]" */ `intl/locale-data/jsonp/${language}.js`
+          ),
+    ])
+      .then(([translations]) => {
+        global.translations = translations.default;
+        dispatch(l10nSetLanguage(language));
+        dispatch(stopProgress(pid));
+        done();
+      })
+      .catch(err => {
+        dispatch(err);
+        done();
+      });
   },
 });
 

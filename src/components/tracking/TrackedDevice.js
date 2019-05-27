@@ -5,11 +5,18 @@ import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingDeleteTrackedDevice, trackingModifyTrackedDevice } from 'fm3/actions/trackingActions';
+import {
+  trackingDeleteTrackedDevice,
+  trackingModifyTrackedDevice,
+} from 'fm3/actions/trackingActions';
 
 function TrackedDevice({ onDelete, onModify, device, language }) {
   const dateFormat = new Intl.DateTimeFormat(language, {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   const handleModify = useCallback(() => {
@@ -41,11 +48,21 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
       <td>{device.splitDistance}</td>
       <td>{device.splitDuration}</td>
       <td>
-        <Button bsSize="small" type="button" onClick={handleModify} title="modify">
+        <Button
+          bsSize="small"
+          type="button"
+          onClick={handleModify}
+          title="modify"
+        >
           <FontAwesomeIcon icon="edit" />
-        </Button>
-        {' '}
-        <Button bsStyle="danger" bsSize="small" type="button" onClick={handleDelete} title="delete">
+        </Button>{' '}
+        <Button
+          bsStyle="danger"
+          bsSize="small"
+          type="button"
+          onClick={handleDelete}
+          title="delete"
+        >
           <FontAwesomeIcon icon="close" />
         </Button>
       </td>

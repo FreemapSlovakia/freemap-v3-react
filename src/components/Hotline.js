@@ -14,7 +14,7 @@ class Hotline extends Path {
     palette: PropTypes.shape({}), // TODO
     min: PropTypes.number,
     max: PropTypes.number,
-  }
+  };
 
   createLeafletElement(props) {
     return new L.Hotline(props.positions, this.getOptions(props));

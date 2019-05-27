@@ -9,11 +9,23 @@ const galleryLayer = L.GridLayer.extend({
     const size = this.getTileSize();
     // eslint-disable-next-line
     const map = this._map;
-    const pointAa = map.unproject([(coords.x) * size.x - 6, (coords.y) * size.y - 6], coords.z);
-    const pointBa = map.unproject([(coords.x + 1) * size.x + 6, (coords.y + 1) * size.y + 6], coords.z);
+    const pointAa = map.unproject(
+      [coords.x * size.x - 6, coords.y * size.y - 6],
+      coords.z,
+    );
+    const pointBa = map.unproject(
+      [(coords.x + 1) * size.x + 6, (coords.y + 1) * size.y + 6],
+      coords.z,
+    );
 
-    const pointA = map.unproject([coords.x * size.x, coords.y * size.y], coords.z);
-    const pointB = map.unproject([(coords.x + 1) * size.x, (coords.y + 1) * size.y], coords.z);
+    const pointA = map.unproject(
+      [coords.x * size.x, coords.y * size.y],
+      coords.z,
+    );
+    const pointB = map.unproject(
+      [(coords.x + 1) * size.x, (coords.y + 1) * size.y],
+      coords.z,
+    );
 
     // create a <canvas> element for drawing
     const tile = L.DomUtil.create('canvas', 'leaflet-tile');
@@ -28,17 +40,15 @@ const galleryLayer = L.GridLayer.extend({
 
     const k = 2 ** coords.z;
 
-    axios.get(
-      `${process.env.API_URL}/gallery/pictures`,
-      {
+    axios
+      .get(`${process.env.API_URL}/gallery/pictures`, {
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...createFilter(this.options.filter),
         },
         validateStatus: status => status === 200,
-      },
-    )
+      })
       .then(({ data }) => {
         const s = new Set();
         const mangled = data
@@ -60,8 +70,9 @@ const galleryLayer = L.GridLayer.extend({
         // console.log('xxxxxxxxxxx', data.length, mangled.length);
 
         mangled.forEach(({ lat, lon }) => {
-          const y = size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat) * size.y);
-          const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng) * size.x);
+          const y =
+            size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
+          const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
           ctx.beginPath();
           ctx.arc(x, y, 4, 0, 2 * Math.PI);
@@ -70,7 +81,8 @@ const galleryLayer = L.GridLayer.extend({
         });
 
         done(null, tile);
-      }).catch((err) => {
+      })
+      .catch(err => {
         done(err);
       });
 

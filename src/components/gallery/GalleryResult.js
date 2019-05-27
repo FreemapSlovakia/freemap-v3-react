@@ -13,7 +13,6 @@ import RichMarker from 'fm3/components/RichMarker';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
-
 import 'fm3/styles/gallery.scss';
 
 class GalleryResult extends React.Component {
@@ -29,7 +28,7 @@ class GalleryResult extends React.Component {
       lat: PropTypes.number.isRequired,
       lon: PropTypes.number.isRequired,
     }),
-  }
+  };
 
   state = {};
 
@@ -46,15 +45,23 @@ class GalleryResult extends React.Component {
     if (this.props.isPickingPosition) {
       this.props.onPositionPick(lat, lon);
     }
-  }
+  };
 
-  handlePositionMarkerDragEnd = (e) => {
+  handlePositionMarkerDragEnd = e => {
     const coords = e.target.getLatLng();
     this.props.onPositionPick(coords.lat, coords.lng);
-  }
+  };
 
   render() {
-    const { activeImageId, isPickingPosition, pickingPosition, showFilter, showUploadModal, showPosition, image } = this.props;
+    const {
+      activeImageId,
+      isPickingPosition,
+      pickingPosition,
+      showFilter,
+      showUploadModal,
+      showPosition,
+      image,
+    } = this.props;
 
     return (
       <>
@@ -65,8 +72,12 @@ class GalleryResult extends React.Component {
             onDragend={this.handlePositionMarkerDragEnd}
           />
         )}
-        {showPosition && image && <RichMarker position={L.latLng(image.lat, image.lon)} />}
-        {!isPickingPosition && activeImageId && !showPosition && <GalleryViewerModal />}
+        {showPosition && image && (
+          <RichMarker position={L.latLng(image.lat, image.lon)} />
+        )}
+        {!isPickingPosition && activeImageId && !showPosition && (
+          <GalleryViewerModal />
+        )}
         {showFilter && <GalleryFilterModal />}
         {showUploadModal && <AsyncGalleryUploadModal />}
       </>

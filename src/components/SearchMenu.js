@@ -6,9 +6,16 @@ import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import { searchSetQuery, searchHighlightResult, searchSelectResult } from 'fm3/actions/searchActions';
+import {
+  searchSetQuery,
+  searchHighlightResult,
+  searchSelectResult,
+} from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
-import { routePlannerSetStart, routePlannerSetFinish } from 'fm3/actions/routePlannerActions';
+import {
+  routePlannerSetStart,
+  routePlannerSetFinish,
+} from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import * as FmPropTypes from 'fm3/propTypes';
 import injectL10n from 'fm3/l10nInjector';
@@ -28,7 +35,7 @@ class SearchMenu extends React.Component {
     onRoutePlannerWithFinishInit: PropTypes.func.isRequired,
     inProgress: PropTypes.bool.isRequired,
     t: PropTypes.func.isRequired,
-  }
+  };
 
   onSuggestionHighlightChange(result) {
     // TODO to logic
@@ -45,13 +52,20 @@ class SearchMenu extends React.Component {
     this.props.onResultHiglight(result);
   }
 
-  handleSelectionChange = (resultsSelectedByUser) => {
+  handleSelectionChange = resultsSelectedByUser => {
     this.props.onResultSelect(resultsSelectedByUser[0], this.props.tool);
-  }
+  };
 
   render() {
-    const { onRoutePlannerWithStartInit, onRoutePlannerWithFinishInit, selectedResult,
-      onDoSearch, results, inProgress, t } = this.props;
+    const {
+      onRoutePlannerWithStartInit,
+      onRoutePlannerWithFinishInit,
+      selectedResult,
+      onDoSearch,
+      results,
+      inProgress,
+      t,
+    } = this.props;
 
     const embed = window.self !== window.top;
 
@@ -79,12 +93,10 @@ class SearchMenu extends React.Component {
               onMouseEnter={() => this.onSuggestionHighlightChange(result)}
               onMouseLeave={() => this.onSuggestionHighlightChange(null)}
             >
-              {result.tags.name} <br />
-              ({result.geojson.type})
+              {result.tags.name} <br />({result.geojson.type})
             </div>
           )}
-        />
-        {' '}
+        />{' '}
         {selectedResult && !embed && (
           <ButtonGroup>
             <Button

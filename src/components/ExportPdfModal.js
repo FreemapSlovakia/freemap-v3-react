@@ -34,49 +34,52 @@ export class ExportPdfModal extends React.Component {
     skiTrails: true,
     scale: 1,
     area: 'visible',
-  }
+  };
 
   handleExportClick = () => {
     this.props.onExport(this.state);
-  }
+  };
 
   handleContoursChange = () => {
     this.setState(s => ({
       contours: !s.contours,
     }));
-  }
+  };
 
   handleShadedReliefChange = () => {
     this.setState(s => ({
       shadedRelief: !s.shadedRelief,
     }));
-  }
+  };
 
   handleHikingTrailsChange = () => {
     this.setState(s => ({
       hikingTrails: !s.hikingTrails,
     }));
-  }
+  };
 
   handleBicycleTrailsChange = () => {
     this.setState(s => ({
       bicycleTrails: !s.bicycleTrails,
     }));
-  }
+  };
 
   handleSkiTrailsChange = () => {
     this.setState(s => ({
       skiTrails: !s.skiTrails,
     }));
-  }
+  };
 
-  handleScaleChange = (scale) => {
+  handleScaleChange = scale => {
     this.setState({ scale });
-  }
+  };
 
   render() {
     const { onModalClose, t, language, hasInfopoints } = this.props;
-    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
 
     return (
       <Modal show onHide={onModalClose}>
@@ -93,16 +96,30 @@ export class ExportPdfModal extends React.Component {
                 Toto je experimentálna funkcia <FontAwesomeIcon icon="flask" />.
               </li>
               <li>
-                Exportuje sa experimentálna outdoorova mapa bez možných dodatočných prvkov.
+                Exportuje sa experimentálna outdoorova mapa bez možných
+                dodatočných prvkov.
               </li>
+              <li>Export mapy do PDF môže trvať aj desiatky sekúnd.</li>
               <li>
-                Export mapy do PDF môže trvať aj desiatky sekúnd.
-              </li>
-              <li>
-                Do publikovanej mapy je nutné uviesť jej licenciu:<br />
-                mapa © <a href="https://www.freemap.sk/" target="_blank" rel="noopener noreferrer">Freemap Slovakia</a>,
-                dáta <a href="https://osm.org/copyright" target="_blank" rel="noopener noreferrer">© prispievatelia OpenStreetMap</a>,
-                © SRTM
+                Do publikovanej mapy je nutné uviesť jej licenciu:
+                <br />
+                mapa ©{' '}
+                <a
+                  href="https://www.freemap.sk/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Freemap Slovakia
+                </a>
+                , dáta{' '}
+                <a
+                  href="https://osm.org/copyright"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  © prispievatelia OpenStreetMap
+                </a>
+                , © SRTM
               </li>
             </ul>
           </Alert>
@@ -119,7 +136,8 @@ export class ExportPdfModal extends React.Component {
               onClick={() => this.setState({ area: 'infopoints' })}
               disabled={!hasInfopoints}
             >
-              Plochu ohraničenú bodmi v mape <FontAwesomeIcon icon="thumb-tack" />
+              Plochu ohraničenú bodmi v mape{' '}
+              <FontAwesomeIcon icon="thumb-tack" />
             </Button>
           </ButtonGroup>
           <hr />
@@ -168,8 +186,7 @@ export class ExportPdfModal extends React.Component {
         <Modal.Footer>
           <Button onClick={this.handleExportClick}>
             <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
-          </Button>
-          {' '}
+          </Button>{' '}
           <Button onClick={onModalClose}>
             <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>

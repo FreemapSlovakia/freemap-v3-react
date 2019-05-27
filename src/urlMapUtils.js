@@ -1,14 +1,19 @@
 import queryString from 'query-string';
 
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import { getTrasformedParamsIfIsOldFreemapUrl, getTrasformedParamsIfIsOldEmbeddedFreemapUrl } from 'fm3/oldFreemapUtils';
+import {
+  getTrasformedParamsIfIsOldFreemapUrl,
+  getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
+} from 'fm3/oldFreemapUtils';
 
 const baseLetters = baseLayers.map(({ type }) => type);
 const overlayLetters = overlayLayers.map(({ type }) => type);
 
 export function getMapStateFromUrl(location) {
   {
-    const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+    const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
+      location,
+    );
     if (transformedParams) {
       return transformedParams;
     }

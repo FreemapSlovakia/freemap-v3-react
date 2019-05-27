@@ -10,8 +10,12 @@ export default createLogic({
   type: at.TRACK_VIEWER_UPLOAD_TRACK,
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGpx } = getState().trackViewer;
-    if (trackGpx.length > (process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000)) {
-      dispatch(toastsAddError('trackViewer.tooBigError', null, { maxSize: process.env.MAX_GPX_TRACK_SIZE_IN_MB }));
+    if (trackGpx.length > process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000) {
+      dispatch(
+        toastsAddError('trackViewer.tooBigError', null, {
+          maxSize: process.env.MAX_GPX_TRACK_SIZE_IN_MB,
+        }),
+      );
       done();
       return;
     }
@@ -23,17 +27,22 @@ export default createLogic({
       source.cancel();
     });
 
-    axios.post(`${process.env.API_URL}/tracklogs`, {
-      data: btoa(unescape(encodeURIComponent(trackGpx))),
-      mediaType: 'application/gpx+xml',
-    }, {
-      validateStatus: status => status === 201,
-      cancelToken: source.token,
-    })
+    axios
+      .post(
+        `${process.env.API_URL}/tracklogs`,
+        {
+          data: btoa(unescape(encodeURIComponent(trackGpx))),
+          mediaType: 'application/gpx+xml',
+        },
+        {
+          validateStatus: status => status === 201,
+          cancelToken: source.token,
+        },
+      )
       .then(({ data }) => {
         dispatch(trackViewerSetTrackUID(data.uid));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('trackViewer.savingError', err));
       })
       .then(() => {

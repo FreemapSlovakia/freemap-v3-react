@@ -26,11 +26,11 @@ class GalleryShowPositionMenu extends React.Component {
     document.removeEventListener('keyup', this.handleKeyUp);
   }
 
-  handleKeyUp = (event) => {
+  handleKeyUp = event => {
     if (event.keyCode === 27 /* escape key */) {
       this.props.onClose();
     }
-  }
+  };
 
   render() {
     const { onClose, showPosition, t } = this.props;

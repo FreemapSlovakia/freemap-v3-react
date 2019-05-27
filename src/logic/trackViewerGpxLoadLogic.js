@@ -17,7 +17,7 @@ export default createLogic({
       .then(({ data }) => {
         dispatch(trackViewerSetData({ trackGpx: data }));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('trackViewer.fetchingError', err));
       })
       .then(() => {

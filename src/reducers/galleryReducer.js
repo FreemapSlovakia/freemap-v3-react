@@ -77,12 +77,18 @@ export default function gallery(state = initialState, action) {
     case at.GALLERY_SET_ITEM:
       return {
         ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? action.payload.value : item)),
+        items: state.items.map(item =>
+          item.id === action.payload.id ? action.payload.value : item,
+        ),
       };
     case at.GALLERY_SET_ITEM_ERROR:
       return {
         ...state,
-        items: state.items.map(item => (item.id === action.payload.id ? { ...item, error: action.payload.error } : item)),
+        items: state.items.map(item =>
+          item.id === action.payload.id
+            ? { ...item, error: action.payload.error }
+            : item,
+        ),
       };
     case at.GALLERY_SET_PICKING_POSITION:
       return {
@@ -98,7 +104,11 @@ export default function gallery(state = initialState, action) {
       if (state.pickingPositionForId === -1) {
         s.editModel = { ...state.editModel, position: state.pickingPosition };
       } else {
-        s.items = state.items.map(item => (item.id === state.pickingPositionForId ? { ...item, position: state.pickingPosition } : item));
+        s.items = state.items.map(item =>
+          item.id === state.pickingPositionForId
+            ? { ...item, position: state.pickingPosition }
+            : item,
+        );
       }
       return s;
     }
@@ -106,12 +116,18 @@ export default function gallery(state = initialState, action) {
       return {
         ...state,
         pickingPositionForId: action.payload,
-        pickingPosition: action.payload === -1 ? state.editModel.position
-          : typeof action.payload === 'number' ? state.items.find(({ id }) => id === action.payload).position : null,
+        pickingPosition:
+          action.payload === -1
+            ? state.editModel.position
+            : typeof action.payload === 'number'
+            ? state.items.find(({ id }) => id === action.payload).position
+            : null,
       };
-    case at.GALLERY_UPLOAD:
-    {
-      const items = state.uploadingId === null ? state.items.map(item => ({ ...item, error: getError(item) })) : state.items;
+    case at.GALLERY_UPLOAD: {
+      const items =
+        state.uploadingId === null
+          ? state.items.map(item => ({ ...item, error: getError(item) }))
+          : state.items;
       const next = items.find(item => !item.error);
 
       return {
@@ -146,13 +162,17 @@ export default function gallery(state = initialState, action) {
     case at.GALLERY_EDIT_PICTURE:
       return {
         ...state,
-        editModel: state.editModel ? null : {
-          title: state.image.title,
-          description: state.image.description,
-          takenAt: state.image.takenAt ? toDatetimeLocal(state.image.takenAt) : '',
-          tags: [...state.image.tags],
-          position: { lat: state.image.lat, lon: state.image.lon },
-        },
+        editModel: state.editModel
+          ? null
+          : {
+              title: state.image.title,
+              description: state.image.description,
+              takenAt: state.image.takenAt
+                ? toDatetimeLocal(state.image.takenAt)
+                : '',
+              tags: [...state.image.tags],
+              position: { lat: state.image.lat, lon: state.image.lon },
+            },
       };
     case at.GALLERY_SET_EDIT_MODEL:
       return { ...state, editModel: action.payload };

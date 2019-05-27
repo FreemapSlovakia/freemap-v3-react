@@ -13,11 +13,14 @@ import 'fm3/styles/changesets.scss';
 const timeFormat = new Intl.DateTimeFormat(
   'sk', // TODO language
   {
-    day: '2-digit', month: '2-digit', hour: 'numeric', minute: '2-digit',
+    day: '2-digit',
+    month: '2-digit',
+    hour: 'numeric',
+    minute: '2-digit',
   },
 );
 
-const ONE_DAY = (1000 * 60 * 60 * 24);
+const ONE_DAY = 1000 * 60 * 60 * 24;
 
 class Changesets extends React.Component {
   opacityOf = (changeset, now) => {
@@ -26,15 +29,15 @@ class Changesets extends React.Component {
       return 1;
     }
     const changesetAgeInDays = (now - changeset.closedAt) / ONE_DAY;
-    const freshness = ((days - changesetAgeInDays) / days); // <0.0, 1.0>
+    const freshness = (days - changesetAgeInDays) / days; // <0.0, 1.0>
     const opacity = freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
     return opacity;
-  }
+  };
 
   render() {
     const { changesets, onShowChangesetDetail } = this.props;
     const now = new Date();
-    return changesets.map((changeset) => {
+    return changesets.map(changeset => {
       const opacity = this.opacityOf(changeset, now);
       return (
         <RichMarker
@@ -66,16 +69,17 @@ class Changesets extends React.Component {
   }
 }
 
-
 Changesets.propTypes = {
-  changesets: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    centerLat: PropTypes.number.isRequired,
-    centerLon: PropTypes.number.isRequired,
-    userName: PropTypes.string.isRequired,
-    description: PropTypes.string,
-    closedAt: PropTypes.instanceOf(Date).isRequired,
-  })),
+  changesets: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      centerLat: PropTypes.number.isRequired,
+      centerLon: PropTypes.number.isRequired,
+      userName: PropTypes.string.isRequired,
+      description: PropTypes.string,
+      closedAt: PropTypes.instanceOf(Date).isRequired,
+    }),
+  ),
   days: PropTypes.number,
   onShowChangesetDetail: PropTypes.func.isRequired,
 };
@@ -96,7 +100,9 @@ export default connect(
                 role="link"
                 tabIndex={0}
                 style={{ cursor: 'pointer' }}
-                onClick={() => { dispatch(changesetsSetAuthorName(changeset.userName)); }}
+                onClick={() => {
+                  dispatch(changesetsSetAuthorName(changeset.userName));
+                }}
               >
                 {changeset.userName}
               </a>
@@ -107,8 +113,7 @@ export default connect(
             <dd>{timeFormat.format(changeset.closedAt)}</dd>
           </dl>
           <p>
-            Viac detailov na
-            {' '}
+            Viac detailov na{' '}
             <a
               href={`https://www.openstreetmap.org/changeset/${changeset.id}`}
               target="_blank"
@@ -129,12 +134,14 @@ export default connect(
         </div>
       );
 
-      dispatch(toastsAdd({
-        collapseKey: 'changeset.detail',
-        message,
-        cancelType: at.CHANGESETS_SET_AUTHOR_NAME,
-        style: 'info',
-      }));
+      dispatch(
+        toastsAdd({
+          collapseKey: 'changeset.detail',
+          message,
+          cancelType: at.CHANGESETS_SET_AUTHOR_NAME,
+          style: 'info',
+        }),
+      );
     },
   }),
 )(Changesets);

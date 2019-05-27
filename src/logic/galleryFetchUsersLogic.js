@@ -12,11 +12,14 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    axios.get(`${process.env.API_URL}/gallery/picture-users`, { validateStatus: status => status === 200 })
+    axios
+      .get(`${process.env.API_URL}/gallery/picture-users`, {
+        validateStatus: status => status === 200,
+      })
       .then(({ data }) => {
         dispatch(gallerySetUsers(data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('gallery.tagsFetchingError', err));
       })
       .then(() => {

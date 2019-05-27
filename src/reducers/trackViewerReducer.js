@@ -42,7 +42,7 @@ export default function trackViewer(state = initialState, action) {
     case at.TRACK_VIEWER_GPX_LOAD:
       return { ...state, gpxUrl: action.payload };
 
-      // ----------
+    // ----------
 
     case at.OSM_CLEAR:
       return initialState;

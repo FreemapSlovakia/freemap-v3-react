@@ -8,12 +8,14 @@ import TrackViewerDetails from 'fm3/components/TrackViewerDetails';
 export default createLogic({
   type: at.TRACK_VIEWER_SHOW_INFO,
   process(_, dispatch, done) {
-    dispatch(toastsAdd({
-      collapseKey: 'trackViewer.trackInfo',
-      message: <TrackViewerDetails />, // TODO only string
-      cancelType: [at.CLEAR_MAP, at.TRACK_VIEWER_SET_TRACK_DATA],
-      style: 'info',
-    }));
+    dispatch(
+      toastsAdd({
+        collapseKey: 'trackViewer.trackInfo',
+        message: <TrackViewerDetails />, // TODO only string
+        cancelType: [at.CLEAR_MAP, at.TRACK_VIEWER_SET_TRACK_DATA],
+        style: 'info',
+      }),
+    );
 
     done();
   },

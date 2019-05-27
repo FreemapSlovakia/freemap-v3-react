@@ -22,7 +22,7 @@ Error.prototype.toJSON = function toJSON() {
   };
 };
 
-window.addEventListener('error', (evt) => {
+window.addEventListener('error', evt => {
   sendError({
     kind: 'global',
     message: evt.message,
@@ -41,34 +41,39 @@ export function sendError(errDetails) {
 
   window.ga('send', 'event', 'Error', 'error', errDetails.kind);
 
-  axios.post(
-    `${process.env.API_URL}/logger`,
-    {
-      level: 'error',
-      message: 'Webapp error.',
-      details: {
-        error: errDetails,
-        url: window.location.href,
-        userAgent: navigator.userAgent,
-        storage,
-        state,
+  axios
+    .post(
+      `${process.env.API_URL}/logger`,
+      {
+        level: 'error',
+        message: 'Webapp error.',
+        details: {
+          error: errDetails,
+          url: window.location.href,
+          userAgent: navigator.userAgent,
+          storage,
+          state,
+        },
       },
-    },
-    {
-      validateStatus: status => status === 200,
-    },
-  ).then(
-    ({ data }) => {
-      if (errDetails.message === 'Script error.' || errDetails.filename === '') {
-        // don't show to user
-      } else {
-        handle(data.id);
-      }
-    },
-    () => {
-      handle('???');
-    },
-  );
+      {
+        validateStatus: status => status === 200,
+      },
+    )
+    .then(
+      ({ data }) => {
+        if (
+          errDetails.message === 'Script error.' ||
+          errDetails.filename === ''
+        ) {
+          // don't show to user
+        } else {
+          handle(data.id);
+        }
+      },
+      () => {
+        handle('???');
+      },
+    );
 }
 
 function handle(id) {

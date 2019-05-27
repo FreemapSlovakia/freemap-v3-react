@@ -11,8 +11,15 @@ import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import * as FmPropTypes from 'fm3/propTypes';
 
-import { galleryAddItem, galleryRemoveItem, gallerySetItem, gallerySetItemForPositionPicking,
-  galleryUpload, galleryHideUploadModal, galleryToggleShowPreview } from 'fm3/actions/galleryActions';
+import {
+  galleryAddItem,
+  galleryRemoveItem,
+  gallerySetItem,
+  gallerySetItemForPositionPicking,
+  galleryUpload,
+  galleryHideUploadModal,
+  galleryToggleShowPreview,
+} from 'fm3/actions/galleryActions';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -28,17 +35,19 @@ let nextId = 1;
 
 class GalleryUploadModal extends React.Component {
   static propTypes = {
-    items: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      file: PropTypes.object.isRequired,
-      url: PropTypes.string,
-      position: FmPropTypes.point,
-      title: PropTypes.string,
-      description: PropTypes.string,
-      tags: PropTypes.arrayOf(PropTypes.string),
-      takenAt: PropTypes.date,
-      error: PropTypes.string,
-    }).isRequired).isRequired,
+    items: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        file: PropTypes.object.isRequired,
+        url: PropTypes.string,
+        position: FmPropTypes.point,
+        title: PropTypes.string,
+        description: PropTypes.string,
+        tags: PropTypes.arrayOf(PropTypes.string),
+        takenAt: PropTypes.date,
+        error: PropTypes.string,
+      }).isRequired,
+    ).isRequired,
     allTags: FmPropTypes.allTags.isRequired,
     onItemAdd: PropTypes.func.isRequired,
     onItemRemove: PropTypes.func.isRequired,
@@ -52,21 +61,21 @@ class GalleryUploadModal extends React.Component {
     t: PropTypes.func.isRequired,
     language: PropTypes.string.isRequired,
     showPreview: PropTypes.bool,
-  }
+  };
 
   handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
     for (const accpetedFile of acceptedFiles) {
-      this.processFile(accpetedFile, (err) => {
+      this.processFile(accpetedFile, err => {
         if (err) {
           // TODO
         }
       });
     }
-  }
+  };
 
   processFile = (file, cb) => {
     const reader = new FileReader();
-    reader.onerror = (err) => {
+    reader.onerror = err => {
       cb(err);
     };
     reader.onload = () => {
@@ -96,21 +105,49 @@ class GalleryUploadModal extends React.Component {
       const NS = { S: -1, N: 1 };
       const EW = { W: -1, E: 1 };
 
-      const description = tags.description ? tags.description.description : tags.ImageDescription ? tags.ImageDescription.description : '';
+      const description = tags.description
+        ? tags.description.description
+        : tags.ImageDescription
+        ? tags.ImageDescription.description
+        : '';
       const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
       const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
       const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
 
-      const lat = rawLat * (NS[(latRef || (tags.GPSLatitudeRef || { value: [] }).value[0] || '').toUpperCase()] || Number.NaN);
-      const lon = rawLon * (EW[(lonRef || (tags.GPSLongitudeRef || { value: [] }).value[0] || '').toUpperCase()] || Number.NaN);
+      const lat =
+        rawLat *
+        (NS[
+          (
+            latRef ||
+            (tags.GPSLatitudeRef || { value: [] }).value[0] ||
+            ''
+          ).toUpperCase()
+        ] || Number.NaN);
+      const lon =
+        rawLon *
+        (EW[
+          (
+            lonRef ||
+            (tags.GPSLongitudeRef || { value: [] }).value[0] ||
+            ''
+          ).toUpperCase()
+        ] || Number.NaN);
 
       this.props.onItemAdd({
         id,
         file,
         position: Number.isNaN(lat) || Number.isNaN(lon) ? null : { lat, lon },
-        title: tags.title ? tags.title.description : tags.DocumentName ? tags.DocumentName.description : '',
+        title: tags.title
+          ? tags.title.description
+          : tags.DocumentName
+          ? tags.DocumentName.description
+          : '',
         description: /CAMERA|^DCIM/.test(description) ? '' : description,
-        takenAt: takenAtRaw ? new Date(takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3')) : null,
+        takenAt: takenAtRaw
+          ? new Date(
+              takenAtRaw.description.replace(/^(\d+):(\d+):(\d+)/, '$1-$2-$3'),
+            )
+          : null,
         tags: keywords,
       });
 
@@ -121,7 +158,7 @@ class GalleryUploadModal extends React.Component {
 
       const img = new Image();
       const url = URL.createObjectURL(file);
-      img.onerror = (err) => {
+      img.onerror = err => {
         URL.revokeObjectURL(url);
         cb(err);
       };
@@ -132,7 +169,7 @@ class GalleryUploadModal extends React.Component {
         const ratio = 618 / img.naturalWidth;
         const width = img.naturalWidth * ratio;
         const height = img.naturalHeight * ratio;
-        const o = tags.Orientation && tags.Orientation.value || 1;
+        const o = (tags.Orientation && tags.Orientation.value) || 1;
         canvas.width = width;
         canvas.height = height;
 
@@ -147,56 +184,77 @@ class GalleryUploadModal extends React.Component {
           [0, -1, 1, 0, 0, width],
         ];
 
-        pica.resize(img, canvas).then(() => {
-          let canvas2;
-          if (o === 1) {
-            canvas2 = canvas;
-          } else {
-            canvas2 = document.createElement('canvas');
-            const ctx = canvas2.getContext('2d');
-            canvas2.width = o > 4 ? height : width;
-            canvas2.height = o > 4 ? width : height;
-            ctx.transform(...transformations[o - 1]);
-            ctx.drawImage(canvas, 0, 0);
-          }
+        pica
+          .resize(img, canvas)
+          .then(() => {
+            let canvas2;
+            if (o === 1) {
+              canvas2 = canvas;
+            } else {
+              canvas2 = document.createElement('canvas');
+              const ctx = canvas2.getContext('2d');
+              canvas2.width = o > 4 ? height : width;
+              canvas2.height = o > 4 ? width : height;
+              ctx.transform(...transformations[o - 1]);
+              ctx.drawImage(canvas, 0, 0);
+            }
 
-          // canvas2.toBlob((blob) => {
-          //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
-          //   cb();
-          // });
-          const item = this.props.items.find(itm => itm.id === id);
-          if (item) {
-            this.props.onItemChange(id, { ...item, url: canvas2.toDataURL() }); // TODO play with toBlob (not supported in safari)
-          }
-          cb();
-        }).catch((err) => {
-          cb(err);
-        });
+            // canvas2.toBlob((blob) => {
+            //   this.props.onItemUrlSet(id, URL.createObjectURL(blob));
+            //   cb();
+            // });
+            const item = this.props.items.find(itm => itm.id === id);
+            if (item) {
+              this.props.onItemChange(id, {
+                ...item,
+                url: canvas2.toDataURL(),
+              }); // TODO play with toBlob (not supported in safari)
+            }
+            cb();
+          })
+          .catch(err => {
+            cb(err);
+          });
       };
 
       img.src = url;
     };
 
     reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
-  }
+  };
 
-  handleRemove = (id) => {
+  handleRemove = id => {
     this.props.onItemRemove(id);
-  }
+  };
 
   handleModelChange = (id, model) => {
     const item = this.props.items.find(itm => itm.id === id);
     if (item) {
-      this.props.onItemChange(id, { ...item, ...model, takenAt: model.takenAt ? new Date(model.takenAt) : null });
+      this.props.onItemChange(id, {
+        ...item,
+        ...model,
+        takenAt: model.takenAt ? new Date(model.takenAt) : null,
+      });
     }
-  }
+  };
 
   handleClose = () => {
     this.props.onClose(!!this.props.items.length);
-  }
+  };
 
   render() {
-    const { items, onPositionPick, visible, onUpload, uploading, allTags, t, language, showPreview, onShowPreviewToggle } = this.props;
+    const {
+      items,
+      onPositionPick,
+      visible,
+      onUpload,
+      uploading,
+      allTags,
+      t,
+      language,
+      showPreview,
+      onShowPreviewToggle,
+    } = this.props;
 
     return (
       <Modal show={visible} onHide={this.handleClose}>
@@ -204,8 +262,18 @@ class GalleryUploadModal extends React.Component {
           <Modal.Title>{t('gallery.uploadModal.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          {
-            items.map(({ id, file, url, position, title, description, takenAt, tags, error }) => (
+          {items.map(
+            ({
+              id,
+              file,
+              url,
+              position,
+              title,
+              description,
+              takenAt,
+              tags,
+              error,
+            }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
@@ -213,7 +281,13 @@ class GalleryUploadModal extends React.Component {
                 language={language}
                 filename={file.name}
                 url={url}
-                model={{ position, title, description, takenAt: takenAt ? toDatetimeLocal(takenAt) : '', tags }}
+                model={{
+                  position,
+                  title,
+                  description,
+                  takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
+                  tags,
+                }}
                 allTags={allTags}
                 error={error}
                 onRemove={this.handleRemove}
@@ -222,11 +296,15 @@ class GalleryUploadModal extends React.Component {
                 disabled={uploading}
                 showPreview={showPreview}
               />
-            ))
-          }
+            ),
+          )}
           {!uploading && (
             <>
-              <Checkbox onChange={onShowPreviewToggle} checked={showPreview} disabled={!!items.length}>
+              <Checkbox
+                onChange={onShowPreviewToggle}
+                checked={showPreview}
+                disabled={!!items.length}
+              >
                 {t('gallery.uploadModal.showPreview')}
               </Checkbox>
 
@@ -239,7 +317,11 @@ class GalleryUploadModal extends React.Component {
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()} className="dropzone">
                     <input {...getInputProps()} />
-                    <div dangerouslySetInnerHTML={{ __html: t('gallery.uploadModal.rules') }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: t('gallery.uploadModal.rules'),
+                      }}
+                    />
                   </div>
                 )}
               </Dropzone>
@@ -248,9 +330,10 @@ class GalleryUploadModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onUpload} disabled={uploading}>
-            <FontAwesomeIcon icon="upload" />
-            {' '}
-            {uploading ? t('gallery.uploadModal.uploading', { n: items.length }) : t('gallery.uploadModal.upload') }
+            <FontAwesomeIcon icon="upload" />{' '}
+            {uploading
+              ? t('gallery.uploadModal.uploading', { n: items.length })
+              : t('gallery.uploadModal.upload')}
           </Button>
           <Button onClick={this.handleClose} bsStyle="danger">
             <Glyphicon glyph="remove" /> {t('general.cancel')}
@@ -283,7 +366,12 @@ function adaptGpsCoordinate(x) {
 }
 
 function parse2(m) {
-  return [m[1] === undefined ? parseFloat(m[2]) : (parseInt(m[1], 10) + parseFloat(m[2]) / 60), m[3] || null];
+  return [
+    m[1] === undefined
+      ? parseFloat(m[2])
+      : parseInt(m[1], 10) + parseFloat(m[2]) / 60,
+    m[3] || null,
+  ];
 }
 
 export default compose(
@@ -309,15 +397,21 @@ export default compose(
       },
       onClose(ask) {
         if (ask) {
-          dispatch(toastsAdd({
-            collapseKey: 'galleryUploadModal.close',
-            messageKey: 'general.closeWithoutSaving',
-            style: 'warning',
-            actions: [
-              { nameKey: 'general.yes', action: galleryHideUploadModal(), style: 'danger' },
-              { nameKey: 'general.no' },
-            ],
-          }));
+          dispatch(
+            toastsAdd({
+              collapseKey: 'galleryUploadModal.close',
+              messageKey: 'general.closeWithoutSaving',
+              style: 'warning',
+              actions: [
+                {
+                  nameKey: 'general.yes',
+                  action: galleryHideUploadModal(),
+                  style: 'danger',
+                },
+                { nameKey: 'general.no' },
+              ],
+            }),
+          );
         } else {
           dispatch(galleryHideUploadModal());
         }

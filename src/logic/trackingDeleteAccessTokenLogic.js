@@ -16,7 +16,7 @@ export default createLogic({
       .then(() => {
         dispatch(trackingLoadAccessTokens());
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('settings.savingError', err)); // TODO
       })
       .then(() => {

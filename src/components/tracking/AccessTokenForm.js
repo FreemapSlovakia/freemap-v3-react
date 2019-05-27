@@ -9,24 +9,41 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingSaveAccessToken, trackingModifyAccessToken } from 'fm3/actions/trackingActions';
+import {
+  trackingSaveAccessToken,
+  trackingModifyAccessToken,
+} from 'fm3/actions/trackingActions';
 import DateTime from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 
 // TODO to hook file
 function useInputState(init, type = 'text') {
   const [value, setValue] = useState(init);
-  return [value, e => setValue(type === 'checkbox' ? e.target.checked : e.target.value)];
+  return [
+    value,
+    e => setValue(type === 'checkbox' ? e.target.checked : e.target.value),
+  ];
 }
 
-
 function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
-  const [note, setNote] = useInputState(accessToken && accessToken.note || '');
-  const [timeFrom, setTimeFrom] = useState(accessToken && accessToken.timeFrom ? toDatetimeLocal(accessToken.timeFrom) : '');
-  const [timeTo, setTimeTo] = useState(accessToken && accessToken.timeTo ? toDatetimeLocal(accessToken.timeTo) : '');
-  const [listingLabel, setListingLabel] = useInputState(accessToken && accessToken.listingLabel || '');
+  const [note, setNote] = useInputState(
+    (accessToken && accessToken.note) || '',
+  );
+  const [timeFrom, setTimeFrom] = useState(
+    accessToken && accessToken.timeFrom
+      ? toDatetimeLocal(accessToken.timeFrom)
+      : '',
+  );
+  const [timeTo, setTimeTo] = useState(
+    accessToken && accessToken.timeTo
+      ? toDatetimeLocal(accessToken.timeTo)
+      : '',
+  );
+  const [listingLabel, setListingLabel] = useInputState(
+    (accessToken && accessToken.listingLabel) || '',
+  );
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     onSave({
       note: note.trim() || null,
@@ -41,7 +58,14 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />
-          {accessToken ? <> Modify Access Token <i>{accessToken.token}</i></> : ' Add Access Token'}
+          {accessToken ? (
+            <>
+              {' '}
+              Modify Access Token <i>{accessToken.token}</i>
+            </>
+          ) : (
+            ' Add Access Token'
+          )}
           {' for'} <i>{deviceName}</i>
         </Modal.Title>
       </Modal.Header>
@@ -56,7 +80,11 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
         </FormGroup>
         <FormGroup>
           <ControlLabel>Listing label (leave empty for unlisted)</ControlLabel>
-          <FormControl value={listingLabel} onChange={setListingLabel} maxLength={255} />
+          <FormControl
+            value={listingLabel}
+            onChange={setListingLabel}
+            maxLength={255}
+          />
         </FormGroup>
         <FormGroup>
           <ControlLabel>Note</ControlLabel>
@@ -64,9 +92,7 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">
-          Save
-        </Button>
+        <Button type="submit">Save</Button>
         <Button type="button" onClick={onCancel}>
           Cancel
         </Button>
@@ -84,9 +110,14 @@ AccessTokenForm.propTypes = {
 
 export default connect(
   state => ({
-    accessToken: state.tracking.modifiedAccessTokenId
-      && state.tracking.accessTokens.find(accessToken => accessToken.id === state.tracking.modifiedAccessTokenId),
-    deviceName: state.tracking.devices.find(device => device.id === state.tracking.accessTokensDeviceId).name,
+    accessToken:
+      state.tracking.modifiedAccessTokenId &&
+      state.tracking.accessTokens.find(
+        accessToken => accessToken.id === state.tracking.modifiedAccessTokenId,
+      ),
+    deviceName: state.tracking.devices.find(
+      device => device.id === state.tracking.accessTokensDeviceId,
+    ).name,
   }),
   dispatch => ({
     onCancel() {

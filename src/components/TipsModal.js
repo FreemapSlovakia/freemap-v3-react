@@ -14,7 +14,11 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsNext, tipsPrevious, tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import {
+  tipsNext,
+  tipsPrevious,
+  tipsPreventNextTime,
+} from 'fm3/actions/tipsActions';
 import injectL10n from 'fm3/l10nInjector';
 
 export class TipsModal extends React.Component {
@@ -31,7 +35,7 @@ export class TipsModal extends React.Component {
   state = {
     loading: true,
     tip: null,
-  }
+  };
 
   componentDidMount() {
     this.loadTip();
@@ -48,21 +52,23 @@ export class TipsModal extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  handleKeydown = (evt) => {
+  handleKeydown = evt => {
     if (evt.keyCode === 37 /* left key */) {
       this.props.onPrevious();
     } else if (evt.keyCode === 39 /* right key */) {
       this.props.onNext();
     }
-  }
+  };
 
-  handleNextTimePrevent = (e) => {
+  handleNextTimePrevent = e => {
     this.props.onNextTimePrevent(e.target.checked);
-  }
+  };
 
   loadTip() {
     this.setState({ loading: true });
-    import(/* webpackChunkName: "tip-[request]" */`fm3/tips/${this.props.tip}.md`)
+    import(
+      /* webpackChunkName: "tip-[request]" */ `fm3/tips/${this.props.tip}.md`
+    )
       .then(({ default: tip }) => {
         this.setState({
           tip,
@@ -84,7 +90,7 @@ export class TipsModal extends React.Component {
     let title;
     let icon;
     if (tipKey) {
-      ([, title, icon] = tips.find(([key]) => key === tipKey));
+      [, title, icon] = tips.find(([key]) => key === tipKey);
     }
 
     return (
@@ -94,7 +100,13 @@ export class TipsModal extends React.Component {
             <FontAwesomeIcon icon="lightbulb-o" />
             {t('more.tips')}
             {'\u00A0 | \u00A0'}
-            {tipKey ? <><FontAwesomeIcon icon={icon} /> {title}</> : t('general.loading')}
+            {tipKey ? (
+              <>
+                <FontAwesomeIcon icon={icon} /> {title}
+              </>
+            ) : (
+              t('general.loading')
+            )}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -114,10 +126,10 @@ export class TipsModal extends React.Component {
             </Button>
             <Button onClick={onNext}>
               <Glyphicon glyph="chevron-right" /> {t('tips.next')}
-            </Button>
-            {' '}
-            <Checkbox inline onChange={this.handleNextTimePrevent}>{t('tips.prevent')}</Checkbox>
-            {' '}
+            </Button>{' '}
+            <Checkbox inline onChange={this.handleNextTimePrevent}>
+              {t('tips.prevent')}
+            </Checkbox>{' '}
             <Button onClick={onModalClose}>
               <Glyphicon glyph="remove" /> {t('general.close')}
             </Button>

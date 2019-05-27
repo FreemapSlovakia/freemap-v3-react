@@ -9,31 +9,49 @@ import * as FmPropTypes from 'fm3/propTypes';
 import injectL10n from 'fm3/l10nInjector';
 
 function ElevationChartActivePoint({ elevationChartActivePoint, language, t }) {
-  const nf0 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+  const nf0 = Intl.NumberFormat(language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+  const nf1 = Intl.NumberFormat(language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
-  return elevationChartActivePoint.lat && (
-    <RichMarker
-      faIcon="info"
-      faIconLeftPadding="2px"
-      color="grey"
-      interactive={false}
-      position={L.latLng(elevationChartActivePoint.lat, elevationChartActivePoint.lon)}
-    >
-      <Tooltip className="compact" offset={new L.Point(9, -25)} direction="right" permanent>
-        <span>
-          → {nf1.format(elevationChartActivePoint.distance / 1000)} km
-          {' ▴ '}{nf0.format(elevationChartActivePoint.ele)} {t('general.masl')}
-          {typeof elevationChartActivePoint.climbUp === 'number' && (
-            <>
-              <br />
-              {' ↑ '}{nf0.format(elevationChartActivePoint.climbUp)} m
-              {' ↓ '}{nf0.format(elevationChartActivePoint.climbDown)} m
-            </>
-          )}
-        </span>
-      </Tooltip>
-    </RichMarker>
+  return (
+    elevationChartActivePoint.lat && (
+      <RichMarker
+        faIcon="info"
+        faIconLeftPadding="2px"
+        color="grey"
+        interactive={false}
+        position={L.latLng(
+          elevationChartActivePoint.lat,
+          elevationChartActivePoint.lon,
+        )}
+      >
+        <Tooltip
+          className="compact"
+          offset={new L.Point(9, -25)}
+          direction="right"
+          permanent
+        >
+          <span>
+            → {nf1.format(elevationChartActivePoint.distance / 1000)} km
+            {' ▴ '}
+            {nf0.format(elevationChartActivePoint.ele)} {t('general.masl')}
+            {typeof elevationChartActivePoint.climbUp === 'number' && (
+              <>
+                <br />
+                {' ↑ '}
+                {nf0.format(elevationChartActivePoint.climbUp)} m{' ↓ '}
+                {nf0.format(elevationChartActivePoint.climbDown)} m
+              </>
+            )}
+          </span>
+        </Tooltip>
+      </RichMarker>
+    )
   );
 }
 

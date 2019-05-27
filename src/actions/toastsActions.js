@@ -1,11 +1,28 @@
 import * as at from 'fm3/actionTypes';
 
-export function toastsAdd({ message, messageKey, messageParams, actions = [], timeout, style, collapseKey, cancelType }) {
+export function toastsAdd({
+  message,
+  messageKey,
+  messageParams,
+  actions = [],
+  timeout,
+  style,
+  collapseKey,
+  cancelType,
+}) {
   const id = Math.random();
   return {
     type: at.TOASTS_ADD,
     payload: {
-      id, message, messageKey, actions, timeout, style, collapseKey, cancelType, messageParams,
+      id,
+      message,
+      messageKey,
+      actions,
+      timeout,
+      style,
+      collapseKey,
+      cancelType,
+      messageParams,
     },
   };
 }

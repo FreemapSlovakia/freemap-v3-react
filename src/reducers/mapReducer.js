@@ -19,7 +19,16 @@ export default function map(state = initialState, action) {
     // TODO improve validation
     case at.MAP_LOAD_STATE: {
       const s = { ...state };
-      const { mapType, lat, lon, zoom, overlays, overlayOpacity, tileFormat, overlayPaneOpacity } = action.payload;
+      const {
+        mapType,
+        lat,
+        lon,
+        zoom,
+        overlays,
+        overlayOpacity,
+        tileFormat,
+        overlayPaneOpacity,
+      } = action.payload;
       if (mapType) {
         s.mapType = mapType;
       }
@@ -36,7 +45,10 @@ export default function map(state = initialState, action) {
         s.overlays = [...overlays];
       }
       if (overlayOpacity) {
-        s.overlayOpacity = { ...initialState.overlayOpacity, ...overlayOpacity };
+        s.overlayOpacity = {
+          ...initialState.overlayOpacity,
+          ...overlayOpacity,
+        };
       }
       if (overlayPaneOpacity) {
         s.overlayPaneOpacity = overlayPaneOpacity;
@@ -61,7 +73,7 @@ export default function map(state = initialState, action) {
       return { ...state, overlayPaneOpacity: action.payload };
     case at.MAP_REFOCUS: {
       const newState = { ...state };
-      ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach((prop) => {
+      ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach(prop => {
         if (prop in action.payload) {
           newState[prop] = action.payload[prop];
         }
@@ -71,12 +83,20 @@ export default function map(state = initialState, action) {
     }
     case at.AUTH_SET_USER: {
       const settings = action.payload && action.payload.settings;
-      return settings ? {
-        ...state,
-        tileFormat: settings.tileFormat || state.tileFormat,
-        overlayOpacity: settings.overlayOpacity === undefined ? state.overlayOpacity : settings.overlayOpacity,
-        overlayPaneOpacity: typeof settings.overlayPaneOpacity === 'number' ? settings.overlayPaneOpacity : state.overlayPaneOpacity,
-      } : state;
+      return settings
+        ? {
+            ...state,
+            tileFormat: settings.tileFormat || state.tileFormat,
+            overlayOpacity:
+              settings.overlayOpacity === undefined
+                ? state.overlayOpacity
+                : settings.overlayOpacity,
+            overlayPaneOpacity:
+              typeof settings.overlayPaneOpacity === 'number'
+                ? settings.overlayPaneOpacity
+                : state.overlayPaneOpacity,
+          }
+        : state;
     }
     case at.MAP_SET_STRAVA_AUTH:
       return { ...state, stravaAuth: action.payload };
@@ -88,10 +108,19 @@ export default function map(state = initialState, action) {
       if (nextTool === 'gallery' && !overlays.includes('I')) {
         overlays.push('I');
         removeGalleryOverlayOnGalleryToolQuit = true;
-      } else if (currentTool === 'gallery' && nextTool !== 'gallery' && state.removeGalleryOverlayOnGalleryToolQuit) {
+      } else if (
+        currentTool === 'gallery' &&
+        nextTool !== 'gallery' &&
+        state.removeGalleryOverlayOnGalleryToolQuit
+      ) {
         overlays = overlays.filter(o => o !== 'I');
       }
-      return { ...state, overlays, tool: nextTool, removeGalleryOverlayOnGalleryToolQuit };
+      return {
+        ...state,
+        overlays,
+        tool: nextTool,
+        removeGalleryOverlayOnGalleryToolQuit,
+      };
     }
     default:
       return state;

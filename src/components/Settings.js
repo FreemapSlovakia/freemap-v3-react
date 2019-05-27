@@ -22,7 +22,11 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
-import { setActiveModal, setSelectingHomeLocation, saveSettings } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  setSelectingHomeLocation,
+  saveSettings,
+} from 'fm3/actions/mainActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
@@ -66,8 +70,8 @@ class Settings extends React.Component {
       overlayPaneOpacity: props.overlayPaneOpacity,
       expertMode: props.expertMode,
       eleSmoothingFactor: props.eleSmoothingFactor,
-      name: props.user && props.user.name || '',
-      email: props.user && props.user.email || '',
+      name: (props.user && props.user.name) || '',
+      email: (props.user && props.user.email) || '',
       preventTips: props.preventTips,
       selectedOverlay: 't',
     };
@@ -84,9 +88,9 @@ class Settings extends React.Component {
   onHomeLocationSelected = (lat, lon) => {
     this.setState({ homeLocation: { lat, lon } });
     this.props.onHomeLocationSelectionFinish();
-  }
+  };
 
-  handleSave = (e) => {
+  handleSave = e => {
     e.preventDefault();
 
     this.props.onSave(
@@ -96,61 +100,97 @@ class Settings extends React.Component {
       this.state.overlayPaneOpacity,
       this.state.expertMode,
       this.state.eleSmoothingFactor,
-      this.props.user ? { name: this.state.name.trim() || null, email: this.state.email.trim() || null } : null,
+      this.props.user
+        ? {
+            name: this.state.name.trim() || null,
+            email: this.state.email.trim() || null,
+          }
+        : null,
       this.state.preventTips,
     );
-  }
+  };
 
-  handleNameChange = (e) => {
+  handleNameChange = e => {
     this.setState({ name: e.target.value });
-  }
+  };
 
-  handleEmailChange = (e) => {
+  handleEmailChange = e => {
     this.setState({ email: e.target.value });
-  }
+  };
 
-  handleShowTipsChange = (e) => {
+  handleShowTipsChange = e => {
     this.setState({
       preventTips: !e.target.checked,
     });
-  }
+  };
 
-  handleOverlaySelect = (o) => {
+  handleOverlaySelect = o => {
     this.setState({
       selectedOverlay: o,
     });
-  }
+  };
 
-  handleOverlayOpacityChange = (newOpacity) => {
+  handleOverlayOpacityChange = newOpacity => {
     this.setState(state => ({
       overlayOpacity: {
         ...state.overlayOpacity,
         [state.selectedOverlay]: newOpacity,
       },
     }));
-  }
+  };
 
-  handleExpertModeChange = (e) => {
+  handleExpertModeChange = e => {
     this.setState({
       expertMode: e.target.checked,
     });
-  }
+  };
 
   render() {
-    const { onClose, onHomeLocationSelect, selectingHomeLocation, user, language, t } = this.props;
-    const { homeLocation, tileFormat, expertMode,
-      overlayOpacity, overlayPaneOpacity, eleSmoothingFactor,
-      name, email, preventTips, selectedOverlay } = this.state;
+    const {
+      onClose,
+      onHomeLocationSelect,
+      selectingHomeLocation,
+      user,
+      language,
+      t,
+    } = this.props;
+    const {
+      homeLocation,
+      tileFormat,
+      expertMode,
+      overlayOpacity,
+      overlayPaneOpacity,
+      eleSmoothingFactor,
+      name,
+      email,
+      preventTips,
+      selectedOverlay,
+    } = this.state;
 
-    const userMadeChanges = ['tileFormat', 'homeLocation', 'expertMode',
-      'eleSmoothingFactor', 'preventTips', 'overlayPaneOpacity']
-      .some(prop => this.state[prop] !== this.props[prop])
-      || user && (name !== (user.name || '') || email !== (user.email || ''))
-      || overlayLayers.some(({ type }) => (overlayOpacity[type] || 1) !== (this.props.overlayOpacity[type] || 1));
+    const userMadeChanges =
+      [
+        'tileFormat',
+        'homeLocation',
+        'expertMode',
+        'eleSmoothingFactor',
+        'preventTips',
+        'overlayPaneOpacity',
+      ].some(prop => this.state[prop] !== this.props[prop]) ||
+      (user && (name !== (user.name || '') || email !== (user.email || ''))) ||
+      overlayLayers.some(
+        ({ type }) =>
+          (overlayOpacity[type] || 1) !==
+          (this.props.overlayOpacity[type] || 1),
+      );
 
-    const selectedOverlayDetails = overlayLayers.find(({ type }) => type === selectedOverlay);
+    const selectedOverlayDetails = overlayLayers.find(
+      ({ type }) => type === selectedOverlay,
+    );
 
-    const nf0 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
+    const nf0 = Intl.NumberFormat(language, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 0,
+    });
 
     return (
       <Modal show={!selectingHomeLocation} onHide={onClose}>
@@ -161,16 +201,22 @@ class Settings extends React.Component {
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Checkbox onChange={this.handleExpertModeChange} checked={expertMode}>
-              {t('settings.expert.switch')}
-              {' '}
+            <Checkbox
+              onChange={this.handleExpertModeChange}
+              checked={expertMode}
+            >
+              {t('settings.expert.switch')}{' '}
               <OverlayTrigger
                 placement="right"
-                overlay={(
+                overlay={
                   <Tooltip id="tooltip">
-                    <div dangerouslySetInnerHTML={{ __html: t('settings.expertInfo') }} />
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: t('settings.expertInfo'),
+                      }}
+                    />
                   </Tooltip>
-                )}
+                }
               >
                 <FontAwesomeIcon icon="question-circle-o" />
               </OverlayTrigger>
@@ -198,8 +244,7 @@ class Settings extends React.Component {
                 <hr />
                 <div>
                   <p>
-                    {t('settings.map.overlayPaneOpacity')}
-                    {' '}
+                    {t('settings.map.overlayPaneOpacity')}{' '}
                     {nf0.format(overlayPaneOpacity * 100)}
                     {' %'}
                   </p>
@@ -209,7 +254,9 @@ class Settings extends React.Component {
                     max={1}
                     step={0.05}
                     tooltip={false}
-                    onChange={newValue => this.setState({ overlayPaneOpacity: newValue })}
+                    onChange={newValue =>
+                      this.setState({ overlayPaneOpacity: newValue })
+                    }
                   />
                 </div>
                 {expertMode && (
@@ -220,27 +267,30 @@ class Settings extends React.Component {
                       <DropdownButton
                         id="overlayOpacity"
                         onSelect={this.handleOverlaySelect}
-                        title={(
+                        title={
                           <>
-                            <FontAwesomeIcon icon={selectedOverlayDetails.icon} />
-                            {' '}
-                            {t(`mapLayers.overlay.${selectedOverlayDetails.type}`)}
-                            {' '}
-                            {nf0.format((overlayOpacity[selectedOverlay] || 1) * 100)} %
+                            <FontAwesomeIcon
+                              icon={selectedOverlayDetails.icon}
+                            />{' '}
+                            {t(
+                              `mapLayers.overlay.${
+                                selectedOverlayDetails.type
+                              }`,
+                            )}{' '}
+                            {nf0.format(
+                              (overlayOpacity[selectedOverlay] || 1) * 100,
+                            )}{' '}
+                            %
                           </>
-                        )}
-                      >
-                        {
-                          overlayLayers.map(({ type, icon }) => (
-                            <MenuItem key={type} eventKey={type}>
-                              {icon && <FontAwesomeIcon icon={icon} />}
-                              {' '}
-                              {t(`mapLayers.overlay.${type}`)}
-                              {' '}
-                              {nf0.format((overlayOpacity[type] || 1) * 100)} %
-                            </MenuItem>
-                          ))
                         }
+                      >
+                        {overlayLayers.map(({ type, icon }) => (
+                          <MenuItem key={type} eventKey={type}>
+                            {icon && <FontAwesomeIcon icon={icon} />}{' '}
+                            {t(`mapLayers.overlay.${type}`)}{' '}
+                            {nf0.format((overlayOpacity[type] || 1) * 100)} %
+                          </MenuItem>
+                        ))}
                       </DropdownButton>
                       <Slider
                         value={overlayOpacity[selectedOverlay] || 1}
@@ -258,7 +308,9 @@ class Settings extends React.Component {
                     <hr />
                     <div>
                       <p>
-                        {t('settings.expert.trackViewerEleSmoothing.label', { value: eleSmoothingFactor })}
+                        {t('settings.expert.trackViewerEleSmoothing.label', {
+                          value: eleSmoothingFactor,
+                        })}
                       </p>
                       <Slider
                         value={eleSmoothingFactor}
@@ -266,7 +318,9 @@ class Settings extends React.Component {
                         max={10}
                         step={1}
                         tooltip={false}
-                        onChange={newValue => this.setState({ eleSmoothingFactor: newValue })}
+                        onChange={newValue =>
+                          this.setState({ eleSmoothingFactor: newValue })
+                        }
                       />
                     </div>
                     <Alert>
@@ -276,16 +330,23 @@ class Settings extends React.Component {
                 )}
                 <hr />
                 <p>
-                  {t('settings.map.homeLocation.label')}
-                  {' '}
+                  {t('settings.map.homeLocation.label')}{' '}
                   {homeLocation
-                    ? `${formatGpsCoord(homeLocation.lat, 'SN', 'DMS', language)} ${formatGpsCoord(homeLocation.lon, 'WE', 'DMS', language)}`
-                    : t('settings.map.homeLocation.undefined')
-                  }
+                    ? `${formatGpsCoord(
+                        homeLocation.lat,
+                        'SN',
+                        'DMS',
+                        language,
+                      )} ${formatGpsCoord(
+                        homeLocation.lon,
+                        'WE',
+                        'DMS',
+                        language,
+                      )}`
+                    : t('settings.map.homeLocation.undefined')}
                 </p>
                 <Button onClick={() => onHomeLocationSelect()}>
-                  <FontAwesomeIcon icon="crosshairs" />
-                  {' '}
+                  <FontAwesomeIcon icon="crosshairs" />{' '}
                   {t('settings.map.homeLocation.select')}
                 </Button>
               </Tab>
@@ -294,11 +355,21 @@ class Settings extends React.Component {
                   <>
                     <FormGroup>
                       <ControlLabel>{t('settings.account.name')}</ControlLabel>
-                      <FormControl value={name} onChange={this.handleNameChange} required maxLength={255} />
+                      <FormControl
+                        value={name}
+                        onChange={this.handleNameChange}
+                        required
+                        maxLength={255}
+                      />
                     </FormGroup>
                     <FormGroup>
                       <ControlLabel>{t('settings.account.email')}</ControlLabel>
-                      <FormControl type="email" value={email} onChange={this.handleEmailChange} maxLength={255} />
+                      <FormControl
+                        type="email"
+                        value={email}
+                        onChange={this.handleEmailChange}
+                        maxLength={255}
+                      />
                     </FormGroup>
                   </>
                 ) : (
@@ -306,7 +377,10 @@ class Settings extends React.Component {
                 )}
               </Tab>
               <Tab title={t('settings.tab.general')} eventKey={3}>
-                <Checkbox onChange={this.handleShowTipsChange} checked={!preventTips}>
+                <Checkbox
+                  onChange={this.handleShowTipsChange}
+                  checked={!preventTips}
+                >
                   {t('settings.general.tips')}
                 </Checkbox>
               </Tab>
@@ -342,10 +416,28 @@ export default compose(
       language: state.l10n.language,
     }),
     dispatch => ({
-      onSave(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode,
-        eleSmoothingFactor, user, preventTips) {
-        dispatch(saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode,
-          eleSmoothingFactor, user, preventTips));
+      onSave(
+        tileFormat,
+        homeLocation,
+        overlayOpacity,
+        overlayPaneOpacity,
+        expertMode,
+        eleSmoothingFactor,
+        user,
+        preventTips,
+      ) {
+        dispatch(
+          saveSettings(
+            tileFormat,
+            homeLocation,
+            overlayOpacity,
+            overlayPaneOpacity,
+            expertMode,
+            eleSmoothingFactor,
+            user,
+            preventTips,
+          ),
+        );
       },
       onClose() {
         dispatch(setActiveModal(null));

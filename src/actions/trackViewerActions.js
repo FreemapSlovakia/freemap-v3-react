@@ -17,7 +17,10 @@ export function trackViewerUploadTrack() {
 }
 
 export function trackViewerSetEleSmoothingFactor(eleSmoothingFactor) {
-  return { type: at.TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR, payload: eleSmoothingFactor };
+  return {
+    type: at.TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR,
+    payload: eleSmoothingFactor,
+  };
 }
 
 export function trackViewerLoadState(payload) {

@@ -11,7 +11,10 @@ import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import injectL10n from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackViewerSetData, trackViewerSetTrackUID } from 'fm3/actions/trackViewerActions';
+import {
+  trackViewerSetData,
+  trackViewerSetTrackUID,
+} from 'fm3/actions/trackViewerActions';
 import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -23,7 +26,7 @@ class TrackViewerUploadModal extends React.Component {
     onLoadError: PropTypes.func.isRequired,
     onUpload: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
-  }
+  };
 
   handleFileDrop = (acceptedFiles, rejectedFiles) => {
     const { onUpload, onLoadError } = this.props;
@@ -31,19 +34,21 @@ class TrackViewerUploadModal extends React.Component {
     if (acceptedFiles.length) {
       const reader = new FileReader();
       reader.readAsText(acceptedFiles[0], 'UTF-8');
-      reader.onload = (event) => {
+      reader.onload = event => {
         onUpload(event.target.result);
       };
 
-      reader.onerror = (e) => {
+      reader.onerror = e => {
         onLoadError(`Nepodarilo sa spracovať súbor: ${e && e.message}`);
       };
     }
 
     if (rejectedFiles.length) {
-      onLoadError('Nesprávny formát súboru: Nahraný súbor musí mať príponu .gpx');
+      onLoadError(
+        'Nesprávny formát súboru: Nahraný súbor musí mať príponu .gpx',
+      );
     }
-  }
+  };
 
   render() {
     const { onClose, t } = this.props;
@@ -72,9 +77,7 @@ class TrackViewerUploadModal extends React.Component {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={onClose}>
-            <Glyphicon glyph="remove" />
-            {' '}
-            {t('general.cancel')}
+            <Glyphicon glyph="remove" /> {t('general.cancel')}
           </Button>
         </Modal.Footer>
       </Modal>
@@ -85,8 +88,7 @@ class TrackViewerUploadModal extends React.Component {
 export default compose(
   injectL10n(),
   connect(
-    () => ({
-    }),
+    () => ({}),
     dispatch => ({
       onClose() {
         dispatch(setActiveModal(null));
@@ -98,12 +100,14 @@ export default compose(
         dispatch(elevationChartClose());
       },
       onLoadError(message) {
-        dispatch(toastsAdd({
-          collapseKey: 'trackViewer.loadError',
-          message,
-          style: 'danger',
-          timeout: 5000,
-        }));
+        dispatch(
+          toastsAdd({
+            collapseKey: 'trackViewer.loadError',
+            message,
+            style: 'danger',
+            timeout: 5000,
+          }),
+        );
       },
     }),
   ),

@@ -12,19 +12,22 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    window.FB.getLoginStatus((response) => {
+    window.FB.getLoginStatus(response => {
       if (response.status === 'connected') {
         login(response);
       } else {
-        window.FB.login((response2) => {
-          if (response2.status === 'connected') {
-            login(response2);
-          } else {
-            dispatch(toastsAddError('logIn.logInError2'));
-            dispatch(stopProgress(pid));
-            done();
-          }
-        }, { scope: 'email' });
+        window.FB.login(
+          response2 => {
+            if (response2.status === 'connected') {
+              login(response2);
+            } else {
+              dispatch(toastsAddError('logIn.logInError2'));
+              dispatch(stopProgress(pid));
+              done();
+            }
+          },
+          { scope: 'email' },
+        );
       }
     });
 
@@ -35,15 +38,17 @@ export default createLogic({
         data: { accessToken: response.authResponse.accessToken },
       })
         .then(({ data }) => {
-          dispatch(toastsAdd({
-            collapseKey: 'login',
-            messageKey: 'logIn.success',
-            style: 'info',
-            timeout: 5000,
-          }));
+          dispatch(
+            toastsAdd({
+              collapseKey: 'login',
+              messageKey: 'logIn.success',
+              style: 'info',
+              timeout: 5000,
+            }),
+          );
           dispatch(authSetUser(data));
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('logIn.logInError', err));
         })
         .then(() => {

@@ -19,21 +19,33 @@ const supportsDatetimeLocal = checkDatetimeLocalInput();
 export default function DateTime({ value, onChange, placeholders }) {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
 
-  const propagateChange = useCallback((date, time) => {
-    onChange(date || time ? `${date}T${time}` : '');
-  }, [onChange]);
+  const propagateChange = useCallback(
+    (date, time) => {
+      onChange(date || time ? `${date}T${time}` : '');
+    },
+    [onChange],
+  );
 
-  const handleDateChange = useCallback((e) => {
-    propagateChange(e.target.value, timePart);
-  }, [timePart, propagateChange]);
+  const handleDateChange = useCallback(
+    e => {
+      propagateChange(e.target.value, timePart);
+    },
+    [timePart, propagateChange],
+  );
 
-  const handleTimeChange = useCallback((e) => {
-    propagateChange(datePart, e.target.value);
-  }, [datePart, propagateChange]);
+  const handleTimeChange = useCallback(
+    e => {
+      propagateChange(datePart, e.target.value);
+    },
+    [datePart, propagateChange],
+  );
 
-  const handleDatetimeChange = useCallback((e) => {
-    onChange(e.target.value);
-  }, [onChange]);
+  const handleDatetimeChange = useCallback(
+    e => {
+      onChange(e.target.value);
+    },
+    [onChange],
+  );
 
   return supportsDatetimeLocal ? (
     <FormControl
@@ -49,7 +61,7 @@ export default function DateTime({ value, onChange, placeholders }) {
       </InputGroup.Addon>
       <FormControl
         type="date"
-        placeholder={placeholders && placeholders.date || 'YYY-MM-DD'}
+        placeholder={(placeholders && placeholders.date) || 'YYY-MM-DD'}
         value={datePart}
         onChange={handleDateChange}
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
@@ -60,7 +72,7 @@ export default function DateTime({ value, onChange, placeholders }) {
       </InputGroup.Addon>
       <FormControl
         type="time"
-        placeholder={placeholders && placeholders.time || 'HH:MM[:SS]'}
+        placeholder={(placeholders && placeholders.time) || 'HH:MM[:SS]'}
         value={timePart}
         onChange={handleTimeChange}
         pattern="[0-9]{2}:[0-9]{2}(:[0-9]{2})?"

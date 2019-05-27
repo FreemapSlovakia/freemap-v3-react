@@ -4,13 +4,18 @@ import { connect } from 'react-redux';
 import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 
-import { areaMeasurementAddPoint, areaMeasurementUpdatePoint, areaMeasurementRemovePoint } from 'fm3/actions/areaMeasurementActions';
+import {
+  areaMeasurementAddPoint,
+  areaMeasurementUpdatePoint,
+  areaMeasurementRemovePoint,
+} from 'fm3/actions/areaMeasurementActions';
 
 import { area } from 'fm3/geoutils';
 import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-const circularIcon = new L.divIcon({ // CircleMarker is not draggable
+const circularIcon = new L.divIcon({
+  // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
@@ -27,8 +32,7 @@ class AreaMeasurementResult extends React.Component {
     language: PropTypes.string,
   };
 
-  state = {
-  };
+  state = {};
 
   componentDidMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
@@ -55,21 +59,30 @@ class AreaMeasurementResult extends React.Component {
       id = (points[pos - 1].id + points[pos].id) / 2;
     }
     this.props.onPointAdd({ lat, lon, id }, pos);
-  }
+  };
 
   handleMouseMove = (lat, lon, originalEvent) => {
-    if (this.props.active && originalEvent.target.classList.contains('leaflet-container')) {
+    if (
+      this.props.active &&
+      originalEvent.target.classList.contains('leaflet-container')
+    ) {
       this.setState({ lat, lon });
     } else {
       this.setState({ lat: undefined, lon: undefined });
     }
-  }
+  };
 
   handleMouseOut = () => {
     this.setState({ lat: undefined, lon: undefined });
-  }
+  };
 
-  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }, id) {
+  handleMeasureMarkerDrag(
+    i,
+    {
+      latlng: { lat, lng: lon },
+    },
+    id,
+  ) {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
@@ -87,17 +100,24 @@ class AreaMeasurementResult extends React.Component {
       const p2 = points[(i + 1) % points.length];
       const lat = (p1.lat + p2.lat) / 2;
       const lon = (p1.lon + p2.lon) / 2;
-      ps.push({ lat, lon, id: (i + 1) === points.length ? p1.id + 1 : (p1.id + p2.id) / 2 });
+      ps.push({
+        lat,
+        lon,
+        id: i + 1 === points.length ? p1.id + 1 : (p1.id + p2.id) / 2,
+      });
     }
     const areaSize = points.length >= 3 ? area(points) : NaN;
     let northmostPoint = points[0];
-    points.forEach((p) => {
+    points.forEach(p => {
       if (northmostPoint.lat < p.lat) {
         northmostPoint = p;
       }
     });
 
-    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
+    });
 
     return (
       <>
@@ -110,29 +130,42 @@ class AreaMeasurementResult extends React.Component {
           >
             <Popup closeButton={false} autoClose={false} autoPan={false}>
               <span>
-                <div>{nf.format(areaSize)} m<sup>2</sup></div>
+                <div>
+                  {nf.format(areaSize)} m<sup>2</sup>
+                </div>
                 <div>{nf.format(areaSize / 100)} a</div>
                 <div>{nf.format(areaSize / 10000)} ha</div>
-                <div>{nf.format(areaSize / 1000000)} km<sup>2</sup></div>
+                <div>
+                  {nf.format(areaSize / 1000000)} km<sup>2</sup>
+                </div>
               </span>
             </Popup>
           </RichMarker>
         )}
 
         {ps.map((p, i) => {
-          const props = i % 2 ? {
-            icon: circularIcon,
-            opacity: 0.5,
-            onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
-          } : {
-            // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-            icon: circularIcon,
-            opacity: 1,
-            onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-            onClick: () => this.handleMarkerClick(p.id),
-            onDragstart: handleDragStart,
-            onDragend: handleDragEnd,
-          };
+          const props =
+            i % 2
+              ? {
+                  icon: circularIcon,
+                  opacity: 0.5,
+                  onDragstart: e =>
+                    this.handlePoiAdd(
+                      e.target.getLatLng().lat,
+                      e.target.getLatLng().lng,
+                      i,
+                      p.id,
+                    ),
+                }
+              : {
+                  // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+                  icon: circularIcon,
+                  opacity: 1,
+                  onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
+                  onClick: () => this.handleMarkerClick(p.id),
+                  onDragstart: handleDragStart,
+                  onDragend: handleDragEnd,
+                };
 
           return (
             <Marker
@@ -154,7 +187,9 @@ class AreaMeasurementResult extends React.Component {
           <Polygon
             weight={4}
             interactive={false}
-            positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
+            positions={ps
+              .filter((_, i) => i % 2 === 0)
+              .map(({ lat, lon }) => [lat, lon])}
           />
         )}
 
@@ -166,7 +201,9 @@ class AreaMeasurementResult extends React.Component {
             positions={[
               [ps[0].lat, ps[0].lon],
               [this.state.lat, this.state.lon],
-              ...(ps.length < 3 ? [] : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
+              ...(ps.length < 3
+                ? []
+                : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
             ]}
           />
         )}

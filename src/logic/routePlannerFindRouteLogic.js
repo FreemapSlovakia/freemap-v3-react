@@ -2,7 +2,10 @@ import axios from 'axios';
 import { createLogic } from 'redux-logic';
 
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
-import { routePlannerSetResult, routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
+import {
+  routePlannerSetResult,
+  routePlannerPreventHint,
+} from 'fm3/actions/routePlannerActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 import * as at from 'fm3/actionTypes';
 import storage from 'fm3/storage';
@@ -23,7 +26,13 @@ export default createLogic({
   type: updateRouteTypes,
   cancelType: [...updateRouteTypes],
   process({ getState, cancelled$, storeDispatch, action }, dispatch, done) {
-    const { start, finish, midpoints, transportType, mode } = getState().routePlanner;
+    const {
+      start,
+      finish,
+      midpoints,
+      transportType,
+      mode,
+    } = getState().routePlanner;
     if (!start || !finish) {
       done();
       return;
@@ -46,7 +55,8 @@ export default createLogic({
       alternatives: mode === 'route' || undefined,
       steps: true,
       geometries: 'geojson',
-      roundtrip: mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
+      roundtrip:
+        mode === 'roundtrip' ? true : mode === 'trip' ? false : undefined,
       source: mode === 'route' ? undefined : 'first',
       destination: mode === 'trip' ? 'last' : undefined,
       // continue_straight: true,
@@ -60,54 +70,91 @@ export default createLogic({
       params.exclude = 'stroller';
     }
 
-    axios.get(`https://routing.epsilon.sk/${mode === 'route' ? 'route' : 'trip'}/v1/${transportType.replace(/-.*/, '')}/${allPoints}`, {
-      params,
-      validateStatus: status => [200, 400].includes(status),
-      cancelToken: source.token,
-    })
+    axios
+      .get(
+        `https://routing.epsilon.sk/${
+          mode === 'route' ? 'route' : 'trip'
+        }/v1/${transportType.replace(/-.*/, '')}/${allPoints}`,
+        {
+          params,
+          validateStatus: status => [200, 400].includes(status),
+          cancelToken: source.token,
+        },
+      )
       .then(({ data: { code, trips, routes } }) => {
         if (code === 'Ok') {
-          const showHint = true
-            && !getState().routePlanner.shapePoints
-            && !storage.getItem('routePlannerPreventHint')
-            && !midpoints.lenght
-            && ['ROUTE_PLANNER_SET_START', 'ROUTE_PLANNER_SET_FINISH'].includes(action.type);
+          const showHint =
+            true &&
+            !getState().routePlanner.shapePoints &&
+            !storage.getItem('routePlannerPreventHint') &&
+            !midpoints.lenght &&
+            ['ROUTE_PLANNER_SET_START', 'ROUTE_PLANNER_SET_FINISH'].includes(
+              action.type,
+            );
 
           if (showHint) {
-            dispatch(toastsAdd({
-              collapseKey: 'routePlanner.showMidpointHint',
-              messageKey: 'routePlanner.showMidpointHint',
-              style: 'info',
-              actions: [
-                { nameKey: 'general.ok' },
-                { nameKey: 'general.preventShowingAgain', action: routePlannerPreventHint() },
-              ],
-            }));
+            dispatch(
+              toastsAdd({
+                collapseKey: 'routePlanner.showMidpointHint',
+                messageKey: 'routePlanner.showMidpointHint',
+                style: 'info',
+                actions: [
+                  { nameKey: 'general.ok' },
+                  {
+                    nameKey: 'general.preventShowingAgain',
+                    action: routePlannerPreventHint(),
+                  },
+                ],
+              }),
+            );
           }
 
-          const alts = (routes || trips).map((route) => {
-            const { legs, distance: totalDistance, duration: totalDuration, extra: totalExtra } = route;
-            const itinerary = [].concat(...legs.map((leg, legIndex) => leg.steps.map(({
-              name, distance, duration, mode: m, geometry, extra, maneuver: { type, modifier, location: [lon, lat] },
-            }) => ({
-              maneuver: {
-                location: {
-                  lat,
-                  lon,
-                },
-                type,
-                modifier,
-              },
-              distance,
-              duration,
-              name,
-              type,
-              modifier,
-              mode: m,
-              shapePoints: geometry.coordinates.map(lonlat => lonlat.reverse()),
-              legIndex,
-              extra,
-            }))));
+          const alts = (routes || trips).map(route => {
+            const {
+              legs,
+              distance: totalDistance,
+              duration: totalDuration,
+              extra: totalExtra,
+            } = route;
+            const itinerary = [].concat(
+              ...legs.map((leg, legIndex) =>
+                leg.steps.map(
+                  ({
+                    name,
+                    distance,
+                    duration,
+                    mode: m,
+                    geometry,
+                    extra,
+                    maneuver: {
+                      type,
+                      modifier,
+                      location: [lon, lat],
+                    },
+                  }) => ({
+                    maneuver: {
+                      location: {
+                        lat,
+                        lon,
+                      },
+                      type,
+                      modifier,
+                    },
+                    distance,
+                    duration,
+                    name,
+                    type,
+                    modifier,
+                    mode: m,
+                    shapePoints: geometry.coordinates.map(lonlat =>
+                      lonlat.reverse(),
+                    ),
+                    legIndex,
+                    extra,
+                  }),
+                ),
+              ),
+            );
 
             return {
               itinerary,
@@ -117,21 +164,44 @@ export default createLogic({
             };
           });
 
-          const alternatives = transportType === 'imhd' ? alts.map(alt => addMissingSegments(alt)) : alts;
+          const alternatives =
+            transportType === 'imhd'
+              ? alts.map(alt => addMissingSegments(alt))
+              : alts;
 
-          dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives }));
+          dispatch(
+            routePlannerSetResult({
+              timestamp: Date.now(),
+              transportType,
+              alternatives,
+            }),
+          );
         } else {
-          dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
-          dispatch(toastsAdd({
-            collapseKey: 'routePlanner.routeNotFound',
-            messageKey: 'routePlanner.routeNotFound',
-            style: 'warning',
-            timeout: 5000,
-          }));
+          dispatch(
+            routePlannerSetResult({
+              timestamp: Date.now(),
+              transportType,
+              alternatives: [],
+            }),
+          );
+          dispatch(
+            toastsAdd({
+              collapseKey: 'routePlanner.routeNotFound',
+              messageKey: 'routePlanner.routeNotFound',
+              style: 'warning',
+              timeout: 5000,
+            }),
+          );
         }
       })
-      .catch((err) => {
-        dispatch(routePlannerSetResult({ timestamp: Date.now(), transportType, alternatives: [] }));
+      .catch(err => {
+        dispatch(
+          routePlannerSetResult({
+            timestamp: Date.now(),
+            transportType,
+            alternatives: [],
+          }),
+        );
         dispatch(toastsAddError('routePlanner.fetchingError', err));
       })
       .then(() => {
@@ -148,23 +218,33 @@ function addMissingSegments(alt) {
     const prevSlice = alt.itinerary[i - 1];
     const nextSlice = alt.itinerary[i + 1];
 
-    const prevSliceLastShapePoint = prevSlice ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1] : null;
+    const prevSliceLastShapePoint = prevSlice
+      ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1]
+      : null;
     const firstShapePoint = slice.shapePoints[0];
 
     const lastShapePoint = slice.shapePoints[slice.shapePoints.length - 1];
-    const nextSliceFirstShapePoint = nextSlice ? nextSlice.shapePoints[0] : null;
+    const nextSliceFirstShapePoint = nextSlice
+      ? nextSlice.shapePoints[0]
+      : null;
 
     const shapePoints = [...slice.shapePoints];
 
     if (slice.mode === 'foot') {
-      if (prevSliceLastShapePoint
-        && (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) > 0.0000001 || Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
+      if (
+        prevSliceLastShapePoint &&
+        (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) >
+          0.0000001 ||
+          Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
       ) {
         shapePoints.unshift(prevSliceLastShapePoint);
       }
 
-      if (nextSliceFirstShapePoint
-        && (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) > 0.0000001 || Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
+      if (
+        nextSliceFirstShapePoint &&
+        (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) >
+          0.0000001 ||
+          Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
       ) {
         shapePoints.push(nextSliceFirstShapePoint);
       }

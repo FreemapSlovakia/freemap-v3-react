@@ -15,7 +15,9 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import 'fm3/styles/trackViewer.scss';
 
 function TrackViewerShareModal({ onClose, trackUID, t }) {
-  const shareURL = trackUID ? `${window.location.origin}/?track-uid=${trackUID}` : '';
+  const shareURL = trackUID
+    ? `${window.location.origin}/?track-uid=${trackUID}`
+    : '';
 
   return (
     <Modal show onHide={onClose}>

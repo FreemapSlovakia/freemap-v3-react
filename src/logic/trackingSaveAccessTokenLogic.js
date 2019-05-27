@@ -20,7 +20,7 @@ export default createLogic({
         .then(() => {
           dispatch(trackingModifyAccessToken(undefined));
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('settings.savingError', err)); // TODO
         })
         .then(() => {
@@ -29,11 +29,16 @@ export default createLogic({
         });
     } else {
       getAuthAxios(getState)
-        .post(`/tracking/devices/${getState().tracking.accessTokensDeviceId}/access-tokens`, action.payload)
+        .post(
+          `/tracking/devices/${
+            getState().tracking.accessTokensDeviceId
+          }/access-tokens`,
+          action.payload,
+        )
         .then(() => {
           dispatch(trackingModifyAccessToken(undefined));
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('settings.savingError', err)); // TODO
         })
         .then(() => {

@@ -9,7 +9,10 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingLoadDevices, trackingModifyDevice } from 'fm3/actions/trackingActions';
+import {
+  trackingLoadDevices,
+  trackingModifyDevice,
+} from 'fm3/actions/trackingActions';
 import Device from './Device';
 
 function Devices({ onClose, onOpen, onAdd, devices }) {
@@ -31,26 +34,56 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
       <Modal.Body>
         <Alert bsStyle="info">
           <p>
-            Manage your devices so that others can watch your position if you give them access token <FontAwesomeIcon icon="key" /> you create.
+            Manage your devices so that others can watch your position if you
+            give them access token <FontAwesomeIcon icon="key" /> you create.
           </p>
           <p>
-            Enter following URL to your tracker (eg. <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">Locus</a>):
-            <code>{process.env.API_URL}/tracking/track/<i>token</i></code> where <i>token</i> is listed in the table below.
+            Enter following URL to your tracker (eg.{' '}
+            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
+              Locus
+            </a>
+            ):
+            <code>
+              {process.env.API_URL}/tracking/track/<i>token</i>
+            </code>{' '}
+            where <i>token</i> is listed in the table below.
           </p>
           <p>
-            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with URL-encoded parameters:
+            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with
+            URL-encoded parameters:
           </p>
           <ul>
-            <li><code>lat</code> - latitude in degrees (mandatory)</li>
-            <li><code>lon</code> - longitude in degrees (mandatory)</li>
-            <li><code>time</code> - JavaScript parsable datetime or Unix time in s or ms</li>
-            <li><code>alt</code> - altitude in meters</li>
-            <li><code>speed</code> - speed in m/s</li>
-            <li><code>acc</code> - accuracy in meters</li>
-            <li><code>bearing</code> - bearing in degrees</li>
-            <li><code>battery</code> - battery in percents</li>
-            <li><code>gsm_signal</code> - GSM signal in percents</li>
-            <li><code>message</code> - message (note) to be displayed</li>
+            <li>
+              <code>lat</code> - latitude in degrees (mandatory)
+            </li>
+            <li>
+              <code>lon</code> - longitude in degrees (mandatory)
+            </li>
+            <li>
+              <code>time</code> - JavaScript parsable datetime or Unix time in s
+              or ms
+            </li>
+            <li>
+              <code>alt</code> - altitude in meters
+            </li>
+            <li>
+              <code>speed</code> - speed in m/s
+            </li>
+            <li>
+              <code>acc</code> - accuracy in meters
+            </li>
+            <li>
+              <code>bearing</code> - bearing in degrees
+            </li>
+            <li>
+              <code>battery</code> - battery in percents
+            </li>
+            <li>
+              <code>gsm_signal</code> - GSM signal in percents
+            </li>
+            <li>
+              <code>message</code> - message (note) to be displayed
+            </li>
           </ul>
         </Alert>
 
@@ -66,7 +99,9 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
             </tr>
           </thead>
           <tbody>
-            {devices.map(device => <Device key={device.id} device={device} />)}
+            {devices.map(device => (
+              <Device key={device.id} device={device} />
+            ))}
           </tbody>
         </Table>
       </Modal.Body>

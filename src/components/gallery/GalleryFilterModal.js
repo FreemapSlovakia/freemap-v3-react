@@ -14,86 +14,124 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { galleryFilter } from 'fm3/propTypes';
 
-import { gallerySetFilter, galleryHideFilter } from 'fm3/actions/galleryActions';
+import {
+  gallerySetFilter,
+  galleryHideFilter,
+} from 'fm3/actions/galleryActions';
 
 class GalleryViewerModal extends React.Component {
   static propTypes = {
     onOk: PropTypes.func.isRequired,
     filter: galleryFilter.isRequired,
     onClose: PropTypes.func.isRequired,
-    tags: PropTypes.arrayOf(PropTypes.shape({
-      name: PropTypes.string.isRequired,
-      count: PropTypes.number.isRequired,
-    }).isRequired).isRequired,
-    users: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      count: PropTypes.number.isRequired,
-    }).isRequired).isRequired,
-  }
+    tags: PropTypes.arrayOf(
+      PropTypes.shape({
+        name: PropTypes.string.isRequired,
+        count: PropTypes.number.isRequired,
+      }).isRequired,
+    ).isRequired,
+    users: PropTypes.arrayOf(
+      PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        count: PropTypes.number.isRequired,
+      }).isRequired,
+    ).isRequired,
+  };
 
   constructor(props) {
     super(props);
     const {
-      tag, userId, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo, ratingFrom, ratingTo,
+      tag,
+      userId,
+      takenAtFrom,
+      takenAtTo,
+      createdAtFrom,
+      createdAtTo,
+      ratingFrom,
+      ratingTo,
     } = props.filter;
     this.state = {
       tag: tag || '',
       userId: typeof userId === 'number' ? userId.toString() : '',
-      takenAtFrom: takenAtFrom instanceof Date ? takenAtFrom.toISOString().replace(/T.*/, '') : '',
-      takenAtTo: takenAtTo instanceof Date ? takenAtTo.toISOString().replace(/T.*/, '') : '',
-      createdAtFrom: createdAtFrom instanceof Date ? createdAtFrom.toISOString().replace(/T.*/, '') : '',
-      createdAtTo: createdAtTo instanceof Date ? createdAtTo.toISOString().replace(/T.*/, '') : '',
+      takenAtFrom:
+        takenAtFrom instanceof Date
+          ? takenAtFrom.toISOString().replace(/T.*/, '')
+          : '',
+      takenAtTo:
+        takenAtTo instanceof Date
+          ? takenAtTo.toISOString().replace(/T.*/, '')
+          : '',
+      createdAtFrom:
+        createdAtFrom instanceof Date
+          ? createdAtFrom.toISOString().replace(/T.*/, '')
+          : '',
+      createdAtTo:
+        createdAtTo instanceof Date
+          ? createdAtTo.toISOString().replace(/T.*/, '')
+          : '',
       ratingFrom: typeof ratingFrom === 'number' ? ratingFrom.toString() : '',
       ratingTo: typeof ratingTo === 'number' ? ratingTo.toString() : '',
     };
   }
 
-  handleTagChange = (e) => {
+  handleTagChange = e => {
     this.setState({ tag: e.target.value });
-  }
+  };
 
-  handleUserIdChange = (e) => {
+  handleUserIdChange = e => {
     this.setState({ userId: e.target.value });
-  }
+  };
 
-  handleTakenAtFromChange = (e) => {
+  handleTakenAtFromChange = e => {
     this.setState({ takenAtFrom: e.target.value });
-  }
+  };
 
-  handleTakenAtToChange = (e) => {
+  handleTakenAtToChange = e => {
     this.setState({ takenAtTo: e.target.value });
-  }
+  };
 
-  handleCreatedAtFromChange = (e) => {
+  handleCreatedAtFromChange = e => {
     this.setState({ createdAtFrom: e.target.value });
-  }
+  };
 
-  handleCreatedAtToChange = (e) => {
+  handleCreatedAtToChange = e => {
     this.setState({ createdAtTo: e.target.value });
-  }
+  };
 
-  handleRatingFromChange = (e) => {
+  handleRatingFromChange = e => {
     this.setState({ ratingFrom: e.target.value });
-  }
+  };
 
-  handleRatingToChange = (e) => {
+  handleRatingToChange = e => {
     this.setState({ ratingTo: e.target.value });
-  }
+  };
 
-  handleFormSubmit = (e) => {
+  handleFormSubmit = e => {
     e.preventDefault();
     this.props.onOk({
       tag: this.state.tag ? this.state.tag : null,
       userId: nn(this.state.userId ? parseInt(this.state.userId, 10) : null),
-      takenAtFrom: nt(this.state.takenAtFrom ? new Date(this.state.takenAtFrom) : null),
-      takenAtTo: nt(this.state.takenAtTo ? new Date(this.state.takenAtTo) : null),
-      createdAtFrom: nt(this.state.createdAtFrom ? new Date(this.state.createdAtFrom) : null),
-      createdAtTo: nt(this.state.createdAtTo ? new Date(this.state.createdAtTo) : null),
-      ratingFrom: nn(this.state.ratingFrom ? parseFloat(this.state.ratingFrom, 10) : null),
-      ratingTo: nn(this.state.ratingTo ? parseFloat(this.state.ratingTo, 10) : null),
+      takenAtFrom: nt(
+        this.state.takenAtFrom ? new Date(this.state.takenAtFrom) : null,
+      ),
+      takenAtTo: nt(
+        this.state.takenAtTo ? new Date(this.state.takenAtTo) : null,
+      ),
+      createdAtFrom: nt(
+        this.state.createdAtFrom ? new Date(this.state.createdAtFrom) : null,
+      ),
+      createdAtTo: nt(
+        this.state.createdAtTo ? new Date(this.state.createdAtTo) : null,
+      ),
+      ratingFrom: nn(
+        this.state.ratingFrom ? parseFloat(this.state.ratingFrom, 10) : null,
+      ),
+      ratingTo: nn(
+        this.state.ratingTo ? parseFloat(this.state.ratingTo, 10) : null,
+      ),
     });
-  }
+  };
 
   handleEraseClick = () => {
     this.setState({
@@ -106,7 +144,7 @@ class GalleryViewerModal extends React.Component {
       ratingFrom: '',
       ratingTo: '',
     });
-  }
+  };
 
   render() {
     const { onClose, tags, users } = this.props;
@@ -126,7 +164,11 @@ class GalleryViewerModal extends React.Component {
                 onChange={this.handleTagChange}
               >
                 <option value={null} />
-                {tags.map(({ name, count }) => <option key={name} value={name}>{name} ({count})</option>)}
+                {tags.map(({ name, count }) => (
+                  <option key={name} value={name}>
+                    {name} ({count})
+                  </option>
+                ))}
               </FormControl>
             </FormGroup>
             <FormGroup>
@@ -137,7 +179,11 @@ class GalleryViewerModal extends React.Component {
                 onChange={this.handleUserIdChange}
               >
                 <option value={null} />
-                {users.map(({ id, name, count }) => <option key={id} value={id}>{name} ({count})</option>)}
+                {users.map(({ id, name, count }) => (
+                  <option key={id} value={id}>
+                    {name} ({count})
+                  </option>
+                ))}
               </FormControl>
             </FormGroup>
             <FormGroup>

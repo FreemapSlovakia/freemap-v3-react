@@ -1,4 +1,13 @@
-export function createFilter({ tag, userId, ratingFrom, ratingTo, takenAtFrom, takenAtTo, createdAtFrom, createdAtTo }) {
+export function createFilter({
+  tag,
+  userId,
+  ratingFrom,
+  ratingTo,
+  takenAtFrom,
+  takenAtTo,
+  createdAtFrom,
+  createdAtTo,
+}) {
   return {
     tag,
     userId,

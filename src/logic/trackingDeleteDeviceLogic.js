@@ -12,11 +12,15 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
     getAuthAxios(getState, 204)
-      .delete(`${process.env.API_URL}/tracking/devices/${encodeURIComponent(action.payload)}`)
+      .delete(
+        `${process.env.API_URL}/tracking/devices/${encodeURIComponent(
+          action.payload,
+        )}`,
+      )
       .then(() => {
         dispatch(trackingLoadDevices());
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('settings.savingError', err)); // TODO
       })
       .then(() => {

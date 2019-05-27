@@ -2,27 +2,32 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
-import { infoPointChangePosition, infoPointSetActiveIndex } from 'fm3/actions/infoPointActions';
+import {
+  infoPointChangePosition,
+  infoPointSetActiveIndex,
+} from 'fm3/actions/infoPointActions';
 import RichMarker from 'fm3/components/RichMarker';
 import PropTypes from 'prop-types';
 
 class InfoPointResult extends React.Component {
   static propTypes = {
-    points: PropTypes.arrayOf(PropTypes.shape({
-      lat: PropTypes.number,
-      lon: PropTypes.number,
-      label: PropTypes.string,
-    }).isRequired).isRequired,
+    points: PropTypes.arrayOf(
+      PropTypes.shape({
+        lat: PropTypes.number,
+        lon: PropTypes.number,
+        label: PropTypes.string,
+      }).isRequired,
+    ).isRequired,
     onInfoPointPositionChange: PropTypes.func.isRequired,
     onSelect: PropTypes.func.isRequired,
     change: PropTypes.number.isRequired,
     activeIndex: PropTypes.number,
   };
 
-  handleDragEnd = (e) => {
+  handleDragEnd = e => {
     const coords = e.target.getLatLng();
     this.props.onInfoPointPositionChange(coords.lat, coords.lng);
-  }
+  };
 
   render() {
     const { points, change, onSelect, activeIndex } = this.props;

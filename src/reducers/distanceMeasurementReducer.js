@@ -12,15 +12,24 @@ export default function distanceMeasurement(state = initialState, action) {
     case at.DISTANCE_MEASUREMENT_SET_POINTS:
       return { ...state, points: action.payload };
     case at.DISTANCE_MEASUREMENT_ADD_POINT:
-      return produce(state, (draft) => {
-        draft.points.splice(action.payload.position === undefined ? state.points.length : action.payload.position, 0, action.payload.point);
+      return produce(state, draft => {
+        draft.points.splice(
+          action.payload.position === undefined
+            ? state.points.length
+            : action.payload.position,
+          0,
+          action.payload.point,
+        );
       });
     case at.DISTANCE_MEASUREMENT_UPDATE_POINT:
-      return produce(state, (draft) => {
+      return produce(state, draft => {
         draft.points[action.payload.index] = action.payload.point;
       });
     case at.DISTANCE_MEASUREMENT_REMOVE_POINT:
-      return { ...state, points: state.points.filter(({ id }) => id !== action.payload) };
+      return {
+        ...state,
+        points: state.points.filter(({ id }) => id !== action.payload),
+      };
     default:
       return state;
   }

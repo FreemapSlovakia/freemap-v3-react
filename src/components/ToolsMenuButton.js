@@ -12,29 +12,33 @@ import { setTool } from 'fm3/actions/mainActions';
 import injectL10n from 'fm3/l10nInjector';
 
 function ToolsMenuButton({ t, tool, expertMode, onToolSet }) {
-  const handleToolSelect = useCallback(({ target: { dataset } }) => {
-    onToolSet(dataset.tool);
-  }, [onToolSet]);
+  const handleToolSelect = useCallback(
+    ({ target: { dataset } }) => {
+      onToolSet(dataset.tool);
+    },
+    [onToolSet],
+  );
 
   return (
     <OverlayTrigger
       placement="bottom"
       trigger="focus"
-      overlay={(
+      overlay={
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
-            {
-              [
-                ['route-planner', 'map-signs', 'routePlanner'],
-                ['objects', 'map-marker', 'objects'],
-                ['gallery', 'picture-o', 'gallery'],
-                ['measure-dist', '!icon-ruler', 'measurement'],
-                ['track-viewer', 'road', 'trackViewer'],
-                ['info-point', 'thumb-tack', 'infoPoint'],
-                ['map-details', 'info', 'mapDetails'],
-                ['tracking', 'bullseye', 'tracking'],
-                expertMode && ['changesets', 'pencil', 'changesets'],
-              ].filter(x => x).map(([newTool, icon, name]) => (
+            {[
+              ['route-planner', 'map-signs', 'routePlanner'],
+              ['objects', 'map-marker', 'objects'],
+              ['gallery', 'picture-o', 'gallery'],
+              ['measure-dist', '!icon-ruler', 'measurement'],
+              ['track-viewer', 'road', 'trackViewer'],
+              ['info-point', 'thumb-tack', 'infoPoint'],
+              ['map-details', 'info', 'mapDetails'],
+              ['tracking', 'bullseye', 'tracking'],
+              expertMode && ['changesets', 'pencil', 'changesets'],
+            ]
+              .filter(x => x)
+              .map(([newTool, icon, name]) => (
                 <MenuItem
                   key={newTool}
                   data-tool={newTool}
@@ -43,11 +47,10 @@ function ToolsMenuButton({ t, tool, expertMode, onToolSet }) {
                 >
                   <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
                 </MenuItem>
-              ))
-            }
+              ))}
           </ul>
         </Popover>
-      )}
+      }
     >
       <Button title={t('tools.tools')} id="tools-button">
         <FontAwesomeIcon icon="briefcase" />

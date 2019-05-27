@@ -75,15 +75,35 @@ export default {
     },
     alternative: 'Alternatíva',
     // eslint-disable-next-line
-    distance: ({ value }) => <Fragment>Vzdialenosť: <b>{value} km</b></Fragment>,
+    distance: ({ value }) => (
+      <Fragment>
+        Vzdialenosť: <b>{value} km</b>
+      </Fragment>
+    ),
     // eslint-disable-next-line
-    duration: ({ h, m }) => <Fragment>Trvanie: <b>{h} h {m} m</b></Fragment>,
+    duration: ({ h, m }) => (
+      <Fragment>
+        Trvanie:{' '}
+        <b>
+          {h} h {m} m
+        </b>
+      </Fragment>
+    ),
     // eslint-disable-next-line
-    summary: ({ distance, h, m }) => <Fragment>Vzdialenosť: <b>{distance} km</b> | Trvanie: <b>{h} h {m} m</b></Fragment>,
+    summary: ({ distance, h, m }) => (
+      <Fragment>
+        Vzdialenosť: <b>{distance} km</b> | Trvanie:{' '}
+        <b>
+          {h} h {m} m
+        </b>
+      </Fragment>
+    ),
     noHomeAlert: 'Najprv si musíte nastaviť domovskú polohu.',
-    showMidpointHint: 'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
+    showMidpointHint:
+      'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
-    routeNotFound: 'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
+    routeNotFound:
+      'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
     fetchingError: 'Nastala chyba pri hľadaní trasy: {err}',
     maneuverWithName: '{type} {modifier} na {name}',
     maneuverWithoutName: '{type} {modifier}',
@@ -127,13 +147,35 @@ export default {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <Fragment>
-            Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}
+            Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
+            {numbers.map((n, i) => (
+              <Fragment key={n}>
+                {i > 0 ? ', ' : ''}
+                <b>{n}</b>
+              </Fragment>
+            ))}
           </Fragment>
         ),
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <Fragment>
-            Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Trvanie <b>{total} {numberize(total, ['minút', 'minúta', 'minúty'])}</b><br />Do odchodu: <b>{home}</b>, pešo: <b>{foot}</b>, MHD: <b>{bus}</b>, čakanie: <b>{wait} {numberize(wait, ['minút', 'minúta', 'minúty'])}</b>
+            Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
+            {numbers.map((n, i) => (
+              <Fragment key={n}>
+                {i > 0 ? ', ' : ''}
+                <b>{n}</b>
+              </Fragment>
+            ))}{' '}
+            | Trvanie{' '}
+            <b>
+              {total} {numberize(total, ['minút', 'minúta', 'minúty'])}
+            </b>
+            <br />
+            Do odchodu: <b>{home}</b>, pešo: <b>{foot}</b>, MHD: <b>{bus}</b>,
+            čakanie:{' '}
+            <b>
+              {wait} {numberize(wait, ['minút', 'minúta', 'minúty'])}
+            </b>
           </Fragment>
         ),
       },
@@ -141,7 +183,17 @@ export default {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <Fragment>
-            o <b>{departure}</b> pešo <b>{duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}</b> {destination === 'TARGET' ? <b>do cieľa</b> : <Fragment>na <b>{destination}</b></Fragment>}
+            o <b>{departure}</b> pešo{' '}
+            <b>
+              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+            </b>{' '}
+            {destination === 'TARGET' ? (
+              <b>do cieľa</b>
+            ) : (
+              <Fragment>
+                na <b>{destination}</b>
+              </Fragment>
+            )}
           </Fragment>
         ),
         // eslint-disable-next-line
@@ -163,13 +215,27 @@ export default {
         // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <Fragment>
-            pešo <b>{duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}</b> {destination === 'TARGET' ? <b>do cieľa</b> : <Fragment>na <b>{destination}</b></Fragment>}
+            pešo{' '}
+            <b>
+              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+            </b>{' '}
+            {destination === 'TARGET' ? (
+              <b>do cieľa</b>
+            ) : (
+              <Fragment>
+                na <b>{destination}</b>
+              </Fragment>
+            )}
           </Fragment>
         ),
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <Fragment>
-            bicyklom <b>{duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}</b> na <b>{destination}</b>
+            bicyklom{' '}
+            <b>
+              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+            </b>{' '}
+            na <b>{destination}</b>
           </Fragment>
         ),
       },
@@ -208,7 +274,12 @@ export default {
     locateMe: 'Kde som?',
     zoomIn: 'Priblížiť mapu',
     zoomOut: 'Oddialiť mapu',
-    devInfo: () => <div>Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.</div>,
+    devInfo: () => (
+      <div>
+        Toto je testovacia verzia portálu Freemap Slovakia. Pre ostrú verziu
+        prejdite na <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+      </div>
+    ),
     copyright: 'Licencia',
   },
 
@@ -270,7 +341,8 @@ export default {
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
     },
-    layerHint: 'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
+    layerHint:
+      'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
     deletingError: 'Nastala chyba pri mazaní obrázka: {err}',
     tagsFetchingError: 'Nastala chyba pri načítavaní tagov: {err}',
     pictureFetchingError: 'Nastala chyba pri načítavaní fotky: {err}',
@@ -278,7 +350,8 @@ export default {
     savingError: 'Nastala chyba pri ukladaní fotky: {err}',
     commentAddingError: 'Nastala chyba pri pridávaní komentára: {err}',
     ratingError: 'Nastala chyba pri hodnotení: {err}',
-    unauthenticatedError: 'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
+    unauthenticatedError:
+      'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
   },
 
   measurement: {
@@ -343,8 +416,9 @@ export default {
     map: {
       imgFormat: {
         label: 'Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:',
-        hint: 'Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. '
-          + 'Pri pomalom internete preto odporúčame zvoliť JPEG.',
+        hint:
+          'Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. ' +
+          'Pri pomalom internete preto odporúčame zvoliť JPEG.',
       },
       overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
       homeLocation: {
@@ -375,8 +449,10 @@ export default {
       switch: 'Expertný mód',
       overlayOpacity: 'Viditeľnosť vrstvy:',
       trackViewerEleSmoothing: {
-        label: 'Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}',
-        info: 'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
+        label:
+          'Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}',
+        info:
+          'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
@@ -387,7 +463,8 @@ export default {
     allAuthors: 'Všetci autori',
     download: 'Stiahnuť zmeny',
     olderThan: ({ days }) => `${days} dn${days === 3 ? 'i' : 'í'}`,
-    olderThanFull: ({ days }) => `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`,
+    olderThanFull: ({ days }) =>
+      `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`,
     notFound: 'Neboli nájdené žiadne zmeny.',
     fetchError: 'Nastala chyba pri získavaní zmien: {err}',
   },
@@ -741,7 +818,8 @@ export default {
   },
 
   supportUs: {
-    explanation: 'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardware a služby komerčných spoločností.',
+    explanation:
+      'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardware a služby komerčných spoločností.',
     account: 'Bankové spojenie:',
     paypal: 'Prispieť cez PayPal',
     thanks: 'Za každý príspevok vám budeme veľmi vďační.',
@@ -760,7 +838,8 @@ export default {
       infoPoint: 'body v mape',
       tracking: 'sledovanie',
     },
-    disabledAlert: 'Aktívne sú iba voľby ktorých objekty sa nachádzajú na mape.',
+    disabledAlert:
+      'Aktívne sú iba voľby ktorých objekty sa nachádzajú na mape.',
   },
 
   logIn: {
@@ -781,7 +860,8 @@ export default {
   },
 
   mapLayers: {
-    missingStravaAuth: 'Prosím prihláste sa najprv na strava.com/heatmap a následne obnovte túto stránku.',
+    missingStravaAuth:
+      'Prosím prihláste sa najprv na strava.com/heatmap a následne obnovte túto stránku.',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
     minZoomWarning: 'Dostupné až od priblíženia {minZoom}',

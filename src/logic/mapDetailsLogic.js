@@ -11,16 +11,22 @@ import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { lineString, point, featureCollection } from '@turf/helpers';
 
 const mappings = {
-  way: element => lineString(element.geometry.map(({ lat, lon }) => [lon, lat])),
+  way: element =>
+    lineString(element.geometry.map(({ lat, lon }) => [lon, lat])),
   node: element => point([element.lon, element.lat]),
   relation: element => ({
     type: 'Feature',
     geometry: {
       type: 'GeometryCollection',
       geometries: element.members
-        .filter(({ type }) => ['way', 'node'/* TODO , 'relation' */].includes(type))
-        .map(member => (
-          member.type === 'way' ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat])) : point([member.lon, member.lat]))),
+        .filter(({ type }) =>
+          ['way', 'node' /* TODO , 'relation' */].includes(type),
+        )
+        .map(member =>
+          member.type === 'way'
+            ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat]))
+            : point([member.lon, member.lat]),
+        ),
     },
   }),
 };
@@ -42,11 +48,11 @@ export default createLogic({
       Promise.all([
         axios.post(
           '//overpass-api.de/api/interpreter',
-          '[out:json];('
+          '[out:json];(' +
             // + `node(around:33,${userSelectedLat},${userSelectedLon});`
-            + `way(around:33,${userSelectedLat},${userSelectedLon})[highway];`
+            `way(around:33,${userSelectedLat},${userSelectedLon})[highway];` +
             // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
-            + ');out geom meta;',
+            ');out geom meta;',
           {
             validateStatus: status => status === 200,
             cancelToken: source.token,
@@ -69,38 +75,49 @@ export default createLogic({
         // ),
       ])
         .then(([{ data }, { data: data1 }]) => {
-          const elements = [...(data.elements || []), ...(data1.elements || [])];
+          const elements = [
+            ...(data.elements || []),
+            ...(data1.elements || []),
+          ];
           if (elements.length > 0) {
-            const geojson = featureCollection(elements.map(element => mappings[element.type](element)));
+            const geojson = featureCollection(
+              elements.map(element => mappings[element.type](element)),
+            );
 
-            data.elements.forEach((element) => {
-              dispatch(toastsAdd({
-                // collapseKey: 'mapDetails.trackInfo.detail',
-                message: <RoadDetails way={element} />,
-                cancelType: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
-                style: 'info',
-              }));
+            data.elements.forEach(element => {
+              dispatch(
+                toastsAdd({
+                  // collapseKey: 'mapDetails.trackInfo.detail',
+                  message: <RoadDetails way={element} />,
+                  cancelType: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
+                  style: 'info',
+                }),
+              );
             });
 
             // dispatch(mapDetailsSetTrackInfoPoints(geojson));
 
-            dispatch(trackViewerSetData({
-              trackGeojson: geojson,
-              startPoints: [],
-              finishPoints: [],
-            }));
+            dispatch(
+              trackViewerSetData({
+                trackGeojson: geojson,
+                startPoints: [],
+                finishPoints: [],
+              }),
+            );
           } else {
-            dispatch(toastsAdd({
-              collapseKey: 'mapDetails.trackInfo.detail',
-              messageKey: 'mapDetails.notFound',
-              cancelType: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
-              timeout: 5000,
-              style: 'info',
-            }));
+            dispatch(
+              toastsAdd({
+                collapseKey: 'mapDetails.trackInfo.detail',
+                messageKey: 'mapDetails.notFound',
+                cancelType: at.MAP_DETAILS_SET_USER_SELECTED_POSITION,
+                timeout: 5000,
+                style: 'info',
+              }),
+            );
             dispatch(mapDetailsSetTrackInfoPoints(null));
           }
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('mapDetails.fetchingError', err));
         })
         .then(() => {

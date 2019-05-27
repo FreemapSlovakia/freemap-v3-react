@@ -30,11 +30,11 @@ class InfoPointLabelModal extends React.Component {
     };
   }
 
-  saveLabel = (e) => {
+  saveLabel = e => {
     e.preventDefault();
     this.props.onInfoPointChangeLabel(this.state.editedLabel);
     this.props.onModalClose();
-  }
+  };
 
   handleLocalLabelChange(editedLabel) {
     this.setState({ editedLabel });

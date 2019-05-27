@@ -11,13 +11,22 @@ export default function toasts(state = initialState, action) {
       if (collapseKey) {
         const toast = state.toasts.find(t => t.collapseKey === collapseKey);
         if (toast) {
-          return { ...state, toasts: [...state.toasts.filter(t => t.id !== toast.id), action.payload] };
+          return {
+            ...state,
+            toasts: [
+              ...state.toasts.filter(t => t.id !== toast.id),
+              action.payload,
+            ],
+          };
         }
       }
       return { ...state, toasts: [...state.toasts, action.payload] };
     }
     case at.TOASTS_REMOVE:
-      return { ...state, toasts: state.toasts.filter(({ id }) => id !== action.payload) };
+      return {
+        ...state,
+        toasts: state.toasts.filter(({ id }) => id !== action.payload),
+      };
     default:
       return state;
   }

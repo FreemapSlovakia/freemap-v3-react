@@ -19,7 +19,11 @@ export default function search(state = initialState, action) {
     case at.SEARCH_HIGHLIGHT_RESULT:
       return { ...state, highlightedResult: action.payload };
     case at.SEARCH_SELECT_RESULT:
-      return { ...state, selectedResult: action.payload, highlightedResult: null };
+      return {
+        ...state,
+        selectedResult: action.payload,
+        highlightedResult: null,
+      };
     default:
       return state;
   }

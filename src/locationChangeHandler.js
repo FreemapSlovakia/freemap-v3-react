@@ -1,63 +1,146 @@
 import queryString from 'query-string';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
-import { getTrasformedParamsIfIsOldEmbeddedFreemapUrl, getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2 } from 'fm3/oldFreemapUtils';
+import {
+  getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
+  getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
+} from 'fm3/oldFreemapUtils';
 import refModals from 'fm3/refModals';
 import tips from 'fm3/tips/index.json';
 
-import { setActiveModal, setTool, setEmbedFeatures } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  setTool,
+  setEmbedFeatures,
+} from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
-import { trackViewerDownloadTrack, trackViewerColorizeTrackBy, trackViewerGpxLoad } from 'fm3/actions/trackViewerActions';
-import { osmLoadNode, osmLoadWay, osmLoadRelation, osmClear } from 'fm3/actions/osmActions';
-import { infoPointAdd, infoPointChangeLabel, infoPointSetAll } from 'fm3/actions/infoPointActions';
-import { galleryRequestImage, gallerySetFilter, galleryShowFilter, galleryShowUploadModal, galleryClear, galleryHideFilter, galleryHideUploadModal } from 'fm3/actions/galleryActions';
-import { changesetsSetDays, changesetsSetAuthorName, changesetsSet } from 'fm3/actions/changesetsActions';
+import {
+  trackViewerDownloadTrack,
+  trackViewerColorizeTrackBy,
+  trackViewerGpxLoad,
+} from 'fm3/actions/trackViewerActions';
+import {
+  osmLoadNode,
+  osmLoadWay,
+  osmLoadRelation,
+  osmClear,
+} from 'fm3/actions/osmActions';
+import {
+  infoPointAdd,
+  infoPointChangeLabel,
+  infoPointSetAll,
+} from 'fm3/actions/infoPointActions';
+import {
+  galleryRequestImage,
+  gallerySetFilter,
+  galleryShowFilter,
+  galleryShowUploadModal,
+  galleryClear,
+  galleryHideFilter,
+  galleryHideUploadModal,
+} from 'fm3/actions/galleryActions';
+import {
+  changesetsSetDays,
+  changesetsSetAuthorName,
+  changesetsSet,
+} from 'fm3/actions/changesetsActions';
 import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
 import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
-import { trackingSetTrackedDevices, trackingSetActive } from './actions/trackingActions';
+import {
+  trackingSetTrackedDevices,
+  trackingSetActive,
+} from './actions/trackingActions';
 
 const tipKeys = tips.map(([key]) => key);
 
 export default function handleLocationChange(store, location) {
   const { getState, dispatch: dispatch0 } = store;
 
-  const dispatch = (action) => {
-    dispatch0({ ...action, meta: { ...(action.meta || {}), isLocationChange: true } });
+  const dispatch = action => {
+    dispatch0({
+      ...action,
+      meta: { ...(action.meta || {}), isLocationChange: true },
+    });
   };
 
   const query = queryString.parse(location.search);
 
   {
-    const points = query.points ? query.points.split(',').map(point => (point ? point.split('/').map(coord => parseFloat(coord)) : null)) : [];
-    const pointsOk = points.length && points.every((point, i) => (
-      point !== null || (i === 0 || i === points.length - 1)
-    ));
+    const points = query.points
+      ? query.points
+          .split(',')
+          .map(point =>
+            point ? point.split('/').map(coord => parseFloat(coord)) : null,
+          )
+      : [];
+    const pointsOk =
+      points.length &&
+      points.every(
+        (point, i) => point !== null || (i === 0 || i === points.length - 1),
+      );
     // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
-    if (/^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(query.transport) && pointsOk) {
-      const { start, finish, midpoints, transportType, mode } = getState().routePlanner;
+    if (
+      /^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(
+        query.transport,
+      ) &&
+      pointsOk
+    ) {
+      const {
+        start,
+        finish,
+        midpoints,
+        transportType,
+        mode,
+      } = getState().routePlanner;
 
-      const latLons = points.map(point => (point ? { lat: point[0], lon: point[1] } : null));
+      const latLons = points.map(point =>
+        point ? { lat: point[0], lon: point[1] } : null,
+      );
       const nextStart = latLons[0];
       const nextMidpoints = latLons.slice(1, latLons.length - 1);
-      const nextFinish = latLons.length > 1 ? latLons[latLons.length - 1] : null;
+      const nextFinish =
+        latLons.length > 1 ? latLons[latLons.length - 1] : null;
 
-      if (query.transport !== transportType
-        || serializePoint(start) !== serializePoint(nextStart)
-        || serializePoint(finish) !== serializePoint(nextFinish)
-        || midpoints.length !== nextMidpoints.length
-        || midpoints.some((midpoint, i) => serializePoint(midpoint) !== serializePoint(nextMidpoints[i]))
-        || (mode === 'route' ? undefined : mode) !== query['route-mode']
+      if (
+        query.transport !== transportType ||
+        serializePoint(start) !== serializePoint(nextStart) ||
+        serializePoint(finish) !== serializePoint(nextFinish) ||
+        midpoints.length !== nextMidpoints.length ||
+        midpoints.some(
+          (midpoint, i) =>
+            serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
+        ) ||
+        (mode === 'route' ? undefined : mode) !== query['route-mode']
       ) {
-        dispatch(routePlannerSetParams(nextStart, nextFinish, nextMidpoints, query.transport,
-          ['trip', 'roundtrip'].includes(query['route-mode']) ? query['route-mode'] : 'route'));
+        dispatch(
+          routePlannerSetParams(
+            nextStart,
+            nextFinish,
+            nextMidpoints,
+            query.transport,
+            ['trip', 'roundtrip'].includes(query['route-mode'])
+              ? query['route-mode']
+              : 'route',
+          ),
+        );
       }
-    } else if (getState().routePlanner.start || getState().routePlanner.finish) {
-      dispatch(routePlannerSetParams(null, null, [], getState().routePlanner.transportType));
+    } else if (
+      getState().routePlanner.start ||
+      getState().routePlanner.finish
+    ) {
+      dispatch(
+        routePlannerSetParams(
+          null,
+          null,
+          [],
+          getState().routePlanner.transportType,
+        ),
+      );
     }
   }
 
@@ -102,26 +185,47 @@ export default function handleLocationChange(store, location) {
     dispatch(changesetsSet([]));
   }
 
-  ['distance', 'area'].forEach((type) => {
+  ['distance', 'area'].forEach(type => {
     const pq = query[`${type}-measurement-points`];
     if (pq) {
-      const measurePoints = pq.split(',')
+      const measurePoints = pq
+        .split(',')
         .map(point => point.split('/').map(coord => parseFloat(coord)))
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
-      if (serializePoints(measurePoints) !== serializePoints(getState()[`${type}Measurement`].points)) {
-        dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)(
-          measurePoints.some(({ lat, lon }) => Number.isNaN(lat) || Number.isNaN(lon)) ? [] : measurePoints,
-        ));
+      if (
+        serializePoints(measurePoints) !==
+        serializePoints(getState()[`${type}Measurement`].points)
+      ) {
+        dispatch(
+          (type === 'distance'
+            ? distanceMeasurementSetPoints
+            : areaMeasurementSetPoints)(
+            measurePoints.some(
+              ({ lat, lon }) => Number.isNaN(lat) || Number.isNaN(lon),
+            )
+              ? []
+              : measurePoints,
+          ),
+        );
       }
     } else if (getState()[`${type}Measurement`].points.length) {
-      dispatch((type === 'distance' ? distanceMeasurementSetPoints : areaMeasurementSetPoints)([]));
+      dispatch(
+        (type === 'distance'
+          ? distanceMeasurementSetPoints
+          : areaMeasurementSetPoints)([]),
+      );
     }
   });
 
-  const emMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(query['elevation-measurement-point'] || '');
+  const emMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(
+    query['elevation-measurement-point'] || '',
+  );
   if (emMatch) {
     const point = { lat: parseFloat(emMatch[1]), lon: parseFloat(emMatch[2]) };
-    if (serializePoint(point) !== serializePoint(getState().elevationMeasurement.point)) {
+    if (
+      serializePoint(point) !==
+      serializePoint(getState().elevationMeasurement.point)
+    ) {
       dispatch(elevationMeasurementSetPoint(point));
     }
   } else if (getState().elevationMeasurement.point) {
@@ -134,14 +238,18 @@ export default function handleLocationChange(store, location) {
   }
 
   if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
-    const { lat, lon, label } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
+    const {
+      lat,
+      lon,
+      label,
+    } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
     dispatch(infoPointAdd(lat, lon));
     if (label) {
       dispatch(infoPointChangeLabel(label));
     }
   }
 
-  const gpxUrl = query['gpx-url'] || query.load/* backward compatibility */;
+  const gpxUrl = query['gpx-url'] || query.load; /* backward compatibility */
   if (gpxUrl && gpxUrl !== getState().trackViewer.gpxUrl) {
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
@@ -175,7 +283,10 @@ export default function handleLocationChange(store, location) {
 
   handleGallery(getState, dispatch, query);
 
-  const diff = getMapStateDiffFromUrl(getMapStateFromUrl(location), getState().map);
+  const diff = getMapStateDiffFromUrl(
+    getMapStateFromUrl(location),
+    getState().map,
+  );
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));
   }
@@ -189,7 +300,10 @@ export default function handleLocationChange(store, location) {
   }
 
   if (tipKeys.includes(query.tip)) {
-    if (getState().main.activeModal !== 'tips' || getState().tips.tip !== query.tip) {
+    if (
+      getState().main.activeModal !== 'tips' ||
+      getState().tips.tip !== query.tip
+    ) {
       dispatch(tipsShow(query.tip));
     }
   } else if (getState().main.activeModal === 'tips') {
@@ -205,11 +319,15 @@ export default function handleLocationChange(store, location) {
   }
 
   if ((query.embed || '') !== getState().main.embedFeatures.join(',')) {
-    dispatch(setEmbedFeatures(!query.embed || query.embed === '' ? [] : query.embed.split(',')));
+    dispatch(
+      setEmbedFeatures(
+        !query.embed || query.embed === '' ? [] : query.embed.split(','),
+      ),
+    );
   }
 
   const { track } = query;
-  const trackings = (!track ? [] : Array.isArray(track) ? track : [track]);
+  const trackings = !track ? [] : Array.isArray(track) ? track : [track];
   const parsed = [];
 
   for (const tracking of trackings) {
@@ -261,7 +379,17 @@ export default function handleLocationChange(store, location) {
       }
     }
 
-    parsed.push({ id, fromTime, maxAge, maxCount, label, width, color, splitDistance, splitDuration });
+    parsed.push({
+      id,
+      fromTime,
+      maxAge,
+      maxCount,
+      label,
+      width,
+      color,
+      splitDistance,
+      splitDuration,
+    });
   }
 
   const { trackedDevices, activeTrackId } = getState().tracking;
@@ -283,11 +411,13 @@ export default function handleLocationChange(store, location) {
 
 // TODO use some generic deep compare fn
 function trackedDevicesEquals(td1, td2) {
-  return td1.id === td2.id
-    && td1.fromTime === td2.fromTime
-    && td1.maxAge === td2.maxAge
-    && td1.maxCount === td2.maxCount
-    && td1.label === td2.label;
+  return (
+    td1.id === td2.id &&
+    td1.fromTime === td2.fromTime &&
+    td1.maxAge === td2.maxAge &&
+    td1.maxCount === td2.maxCount &&
+    td1.label === td2.label
+  );
 }
 
 function handleGallery(getState, dispatch, query) {
@@ -300,9 +430,15 @@ function handleGallery(getState, dispatch, query) {
   const qCreatedAtFrom = new Date(query['gallery-created-at-from']);
   const qCreatedAtTo = new Date(query['gallery-created-at-to']);
 
-  if (qUserId || qGalleryTag || qRatingFrom || qRatingTo
-      || !Number.isNaN(qTakenAtFrom.getTime()) || !Number.isNaN(qTakenAtTo.getTime())
-      || !Number.isNaN(qCreatedAtFrom.getTime()) || !Number.isNaN(qCreatedAtTo.getTime())
+  if (
+    qUserId ||
+    qGalleryTag ||
+    qRatingFrom ||
+    qRatingTo ||
+    !Number.isNaN(qTakenAtFrom.getTime()) ||
+    !Number.isNaN(qTakenAtTo.getTime()) ||
+    !Number.isNaN(qCreatedAtFrom.getTime()) ||
+    !Number.isNaN(qCreatedAtTo.getTime())
   ) {
     const { filter } = getState().gallery;
     const newFilter = {};
@@ -318,16 +454,32 @@ function handleGallery(getState, dispatch, query) {
     if (qRatingTo && filter.ratingTo !== qRatingTo) {
       newFilter.ratingTo = qRatingTo;
     }
-    if (!Number.isNaN(qTakenAtFrom.getTime()) && (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !== qTakenAtFrom.getTime()) {
+    if (
+      !Number.isNaN(qTakenAtFrom.getTime()) &&
+      (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !==
+        qTakenAtFrom.getTime()
+    ) {
       newFilter.takenAtFrom = qTakenAtFrom;
     }
-    if (!Number.isNaN(qTakenAtTo.getTime()) && (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !== qTakenAtTo.getTime()) {
+    if (
+      !Number.isNaN(qTakenAtTo.getTime()) &&
+      (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !==
+        qTakenAtTo.getTime()
+    ) {
       newFilter.takenAtTo = qTakenAtTo;
     }
-    if (!Number.isNaN(qCreatedAtFrom.getTime()) && (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !== qCreatedAtFrom.getTime()) {
+    if (
+      !Number.isNaN(qCreatedAtFrom.getTime()) &&
+      (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !==
+        qCreatedAtFrom.getTime()
+    ) {
       newFilter.createdAtFrom = qCreatedAtFrom;
     }
-    if (!Number.isNaN(qCreatedAtTo.getTime()) && (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !== qCreatedAtTo.getTime()) {
+    if (
+      !Number.isNaN(qCreatedAtTo.getTime()) &&
+      (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !==
+        qCreatedAtTo.getTime()
+    ) {
       newFilter.createdAtTo = qCreatedAtTo;
     }
     if (Object.keys(newFilter).length !== 0) {
@@ -366,10 +518,19 @@ function handleGallery(getState, dispatch, query) {
 
 function handleInfoPoint(getState, dispatch, query) {
   const infoPoint = query['info-point'];
-  const ips = (!infoPoint ? [] : Array.isArray(infoPoint) ? infoPoint : [infoPoint])
+  const ips = (!infoPoint
+    ? []
+    : Array.isArray(infoPoint)
+    ? infoPoint
+    : [infoPoint]
+  )
     .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?),?(.*)$/.exec(ip))
     .filter(ipMatch => ipMatch)
-    .map(ipMatch => ({ lat: parseFloat(ipMatch[1]), lon: parseFloat(ipMatch[2]), label: ipMatch[3] ? decodeURIComponent(ipMatch[3]) : '' }));
+    .map(ipMatch => ({
+      lat: parseFloat(ipMatch[1]),
+      lon: parseFloat(ipMatch[2]),
+      label: ipMatch[3] ? decodeURIComponent(ipMatch[3]) : '',
+    }));
 
   // backward compatibility
   if (query['info-point-label'] && ips.length) {
@@ -378,8 +539,17 @@ function handleInfoPoint(getState, dispatch, query) {
 
   // compare
   if (
-    ips.map(({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`).sort().join('\n')
-      !== getState().infoPoint.points.map(({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`).sort().join('\n')) {
+    ips
+      .map(({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`)
+      .sort()
+      .join('\n') !==
+    getState()
+      .infoPoint.points.map(
+        ({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`,
+      )
+      .sort()
+      .join('\n')
+  ) {
     dispatch(infoPointSetAll(ips));
   }
 }
@@ -390,5 +560,6 @@ function serializePoints(points) {
 
 function serializePoint(point) {
   return point && typeof point.lat === 'number' && typeof point.lon === 'number'
-    ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}` : '';
+    ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}`
+    : '';
 }

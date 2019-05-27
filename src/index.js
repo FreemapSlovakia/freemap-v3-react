@@ -10,7 +10,11 @@ import * as OfflinePluginRuntime from 'offline-plugin/runtime';
 import Main from 'fm3/components/Main';
 import ErrorCatcher from 'fm3/components/ErrorCatcher';
 
-import { mainLoadState, enableUpdatingUrl, reloadApp } from 'fm3/actions/mainActions';
+import {
+  mainLoadState,
+  enableUpdatingUrl,
+  reloadApp,
+} from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { mapLoadState, mapSetStravaAuth } from 'fm3/actions/mapActions';
 import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
@@ -52,13 +56,11 @@ store.dispatch(enableUpdatingUrl());
 checkStravaAuth();
 
 render(
-  (
-    <Provider store={store}>
-      <ErrorCatcher>
-        <Main />
-      </ErrorCatcher>
-    </Provider>
-  ),
+  <Provider store={store}>
+    <ErrorCatcher>
+      <Main />
+    </ErrorCatcher>
+  </Provider>,
   document.getElementById('app'),
 );
 
@@ -70,15 +72,17 @@ if (process.env.NODE_ENV) {
       OfflinePluginRuntime.applyUpdate();
     },
     onUpdated() {
-      store.dispatch(toastsAdd({
-        collapseKey: 'app.update',
-        messageKey: 'general.appUpdated',
-        style: 'info',
-        actions: [
-          { nameKey: 'general.yes', action: reloadApp() },
-          { nameKey: 'general.no' },
-        ],
-      }));
+      store.dispatch(
+        toastsAdd({
+          collapseKey: 'app.update',
+          messageKey: 'general.appUpdated',
+          style: 'info',
+          actions: [
+            { nameKey: 'general.yes', action: reloadApp() },
+            { nameKey: 'general.no' },
+          ],
+        }),
+      );
     },
     // TODO
     // onUpdateFailed() {
@@ -106,7 +110,13 @@ function loadAppState() {
     }
   }
 
-  store.dispatch(l10nSetChosenLanguage(appState && [null, 'en', 'sk', 'cs'].includes(appState.language) ? appState.language : null));
+  store.dispatch(
+    l10nSetChosenLanguage(
+      appState && [null, 'en', 'sk', 'cs'].includes(appState.language)
+        ? appState.language
+        : null,
+    ),
+  );
 }
 
 function checkStravaAuth() {
@@ -114,5 +124,6 @@ function checkStravaAuth() {
   img.onload = () => {
     store.dispatch(mapSetStravaAuth(true));
   };
-  img.src = 'https://heatmap-external-a.strava.com/tiles-auth/both/bluered/16/36718/22612.png';
+  img.src =
+    'https://heatmap-external-a.strava.com/tiles-auth/both/bluered/16/36718/22612.png';
 }

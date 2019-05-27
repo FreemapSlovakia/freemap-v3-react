@@ -15,15 +15,17 @@ export function getAxios(expectedStatus) {
 export function getAuthAxios(getState, expectedStatus) {
   const instance = getAxios(expectedStatus);
 
-  instance.interceptors.request.use((cfg) => {
+  instance.interceptors.request.use(cfg => {
     const { user } = getState().auth;
-    return !user ? cfg : {
-      ...cfg,
-      headers: {
-        ...(cfg.headers || {}),
-        Authorization: `Bearer ${user.authToken}`,
-      },
-    };
+    return !user
+      ? cfg
+      : {
+          ...cfg,
+          headers: {
+            ...(cfg.headers || {}),
+            Authorization: `Bearer ${user.authToken}`,
+          },
+        };
   });
 
   return instance;

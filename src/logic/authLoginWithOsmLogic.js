@@ -12,8 +12,10 @@ export default createLogic({
     dispatch(startProgress(pid));
 
     const w = window.open(
-      'about:blank', 'osm-login',
-      `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${window.screen.height / 2 - 550 / 2}`,
+      'about:blank',
+      'osm-login',
+      `width=600,height=550,left=${window.screen.width / 2 -
+        600 / 2},top=${window.screen.height / 2 - 550 / 2}`,
     );
 
     axios(`${process.env.API_URL}/auth/login`, {
@@ -25,7 +27,7 @@ export default createLogic({
           w.location = data.redirect;
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('logIn.logInError', err));
       })
       .then(() => {

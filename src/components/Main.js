@@ -80,7 +80,12 @@ import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
-import { setTool, setLocation, clearMap, toggleLocate } from 'fm3/actions/mainActions';
+import {
+  setTool,
+  setLocation,
+  clearMap,
+  toggleLocate,
+} from 'fm3/actions/mainActions';
 import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -125,15 +130,19 @@ class Main extends React.Component {
 
   state = {
     showInfoBar: true,
-  }
+  };
 
   componentDidMount() {
     this.props.onCheckLogin();
 
     setMapLeafletElement(this.map.leafletElement);
-    document.addEventListener('keydown', (event) => {
+    document.addEventListener('keydown', event => {
       const embed = window.self !== window.top;
-      if (!embed && event.keyCode === 27 /* escape key */ && !this.props.ignoreEscape) {
+      if (
+        !embed &&
+        event.keyCode === 27 /* escape key */ &&
+        !this.props.ignoreEscape
+      ) {
         this.props.onToolSet(null);
       }
     });
@@ -142,13 +151,16 @@ class Main extends React.Component {
   }
 
   componentWillUnmount() {
-    document.removeEventListener('fullscreenchange', this.handleFullscreenChange);
+    document.removeEventListener(
+      'fullscreenchange',
+      this.handleFullscreenChange,
+    );
     setMapLeafletElement(null);
   }
 
   handleFullscreenChange = () => {
     this.forceUpdate();
-  }
+  };
 
   handleMapMoveEnd = () => {
     // TODO analyze why this can be null
@@ -160,22 +172,26 @@ class Main extends React.Component {
     const { lat, lng: lon } = map.getCenter();
     const zoom = map.getZoom();
 
-    if (this.props.lat !== lat || this.props.lon !== lon || this.props.zoom !== zoom) {
+    if (
+      this.props.lat !== lat ||
+      this.props.lon !== lon ||
+      this.props.zoom !== zoom
+    ) {
       this.props.onMapRefocus({ lat, lon, zoom });
     }
-  }
+  };
 
-  handleLocationFound = (e) => {
+  handleLocationFound = e => {
     this.props.onLocationSet(e.latitude, e.longitude, e.accuracy);
-  }
+  };
 
   handleEmbedLogoClick = () => {
     window.open(window.location.href, '_blank');
-  }
+  };
 
   handleToolCloseClick = () => {
     this.props.onToolSet(null);
-  }
+  };
 
   handleFullscreenClick = () => {
     if (!document.exitFullscreen) {
@@ -185,29 +201,46 @@ class Main extends React.Component {
     } else {
       document.body.requestFullscreen();
     }
-  }
+  };
 
   handleZoomInClick = () => {
     const zoom = this.map.leafletElement.getZoom() + 1;
     this.props.onMapRefocus({ zoom });
-  }
+  };
 
   handleZoomOutClick = () => {
     const zoom = this.map.leafletElement.getZoom() - 1;
     this.props.onMapRefocus({ zoom });
-  }
+  };
 
   handleInfoBarCloseClick = () => {
     this.setState({
       showInfoBar: false,
     });
-  }
+  };
 
   render() {
     const {
-      lat, lon, zoom, mapType,
-      tool, activeModal, progress, mouseCursor, showElevationChart, showGalleryPicker, onMapClear,
-      showLoginModal, onMapReset, showMenu, expertMode, t, overlayPaneOpacity, embedFeatures, overlays, imhd,
+      lat,
+      lon,
+      zoom,
+      mapType,
+      tool,
+      activeModal,
+      progress,
+      mouseCursor,
+      showElevationChart,
+      showGalleryPicker,
+      onMapClear,
+      showLoginModal,
+      onMapReset,
+      showMenu,
+      expertMode,
+      t,
+      overlayPaneOpacity,
+      embedFeatures,
+      overlays,
+      imhd,
     } = this.props;
 
     const embed = window.self !== window.top;
@@ -219,7 +252,14 @@ class Main extends React.Component {
         </style>
 
         {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
-        <img id="freemap-logo-print" src={require('../images/freemap-logo-print.png')} width="150" height="54" alt="freemap logo" style={{ display: 'none' }} />
+        <img
+          id="freemap-logo-print"
+          src={require('../images/freemap-logo-print.png')}
+          width="150"
+          height="54"
+          alt="freemap logo"
+          style={{ display: 'none' }}
+        />
 
         <Toasts />
 
@@ -234,8 +274,14 @@ class Main extends React.Component {
             {embed ? (
               <>
                 <Panel className="fm-toolbar">
-                  <Button id="freemap-logo" className={progress ? 'in-progress' : 'idle'} onClick={this.handleEmbedLogoClick} />
-                  {showMenu && embedFeatures.includes('search') && <SearchMenu />}
+                  <Button
+                    id="freemap-logo"
+                    className={progress ? 'in-progress' : 'idle'}
+                    onClick={this.handleEmbedLogoClick}
+                  />
+                  {showMenu && embedFeatures.includes('search') && (
+                    <SearchMenu />
+                  )}
                 </Panel>
               </>
             ) : (
@@ -259,12 +305,28 @@ class Main extends React.Component {
                         {document.exitFullscreen && (
                           <Button
                             onClick={this.handleFullscreenClick}
-                            title={document.fullscreenElement ? t('general.exitFullscreen') : t('general.fullscreen')}
+                            title={
+                              document.fullscreenElement
+                                ? t('general.exitFullscreen')
+                                : t('general.fullscreen')
+                            }
                           >
-                            <FontAwesomeIcon icon={document.fullscreenElement ? 'compress' : 'expand'} />
+                            <FontAwesomeIcon
+                              icon={
+                                document.fullscreenElement
+                                  ? 'compress'
+                                  : 'expand'
+                              }
+                            />
                           </Button>
                         )}
-                        <OpenInExternalAppMenuButton lat={lat} lon={lon} zoom={zoom} mapType={mapType} expertMode={expertMode} />
+                        <OpenInExternalAppMenuButton
+                          lat={lat}
+                          lon={lon}
+                          zoom={zoom}
+                          mapType={mapType}
+                          expertMode={expertMode}
+                        />
                         <MoreMenuButton />
                       </ButtonGroup>
                     </ButtonToolbar>
@@ -276,7 +338,9 @@ class Main extends React.Component {
               <Panel className="fm-toolbar">
                 {tool === 'objects' && <ObjectsMenu />}
                 {tool === 'route-planner' && <RoutePlannerMenu />}
-                {['measure-dist', 'measure-ele', 'measure-area'].includes(tool) && <MeasurementMenu />}
+                {['measure-dist', 'measure-ele', 'measure-area'].includes(
+                  tool,
+                ) && <MeasurementMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'info-point' && <InfoPointMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
@@ -286,8 +350,12 @@ class Main extends React.Component {
                 {!embed && (
                   <>
                     {' '}
-                    <Button onClick={this.handleToolCloseClick} title={t('main.closeTool')}>
-                      <FontAwesomeIcon icon="close" /><span className="hidden-xs"> {t('main.close')}</span>
+                    <Button
+                      onClick={this.handleToolCloseClick}
+                      title={t('main.closeTool')}
+                    >
+                      <FontAwesomeIcon icon="close" />
+                      <span className="hidden-xs"> {t('main.close')}</span>
                     </Button>
                   </>
                 )}
@@ -300,17 +368,28 @@ class Main extends React.Component {
         </div>
 
         <div className="fm-type-zoom-control">
-          <Panel className="fm-toolbar" style={{ float: 'right', marginRight: '10px' }}>
+          <Panel
+            className="fm-toolbar"
+            style={{ float: 'right', marginRight: '10px' }}
+          >
             <ButtonToolbar>
               <OverlayTrigger
                 trigger="click"
                 rootClose
                 placement="top"
-                overlay={(
-                  <Popover id="popover-positioned-right" className="fm-attr-popover">
-                    <Attribution t={t} mapType={mapType} overlays={overlays} imhd={imhd} />
+                overlay={
+                  <Popover
+                    id="popover-positioned-right"
+                    className="fm-attr-popover"
+                  >
+                    <Attribution
+                      t={t}
+                      mapType={mapType}
+                      overlays={overlays}
+                      imhd={imhd}
+                    />
                   </Popover>
-                )}
+                }
               >
                 <Button title={t('main.copyright')}>
                   <FontAwesomeIcon icon="copyright" />
@@ -320,19 +399,27 @@ class Main extends React.Component {
           </Panel>
           <Panel className="fm-toolbar">
             <ButtonToolbar>
-              {(!embed || !embedFeatures.includes('noMapSwitch')) && <MapSwitchButton />}
+              {(!embed || !embedFeatures.includes('noMapSwitch')) && (
+                <MapSwitchButton />
+              )}
               <ButtonGroup>
                 <Button
                   onClick={this.handleZoomInClick}
                   title={t('main.zoomIn')}
-                  disabled={this.map && this.props.zoom >= this.map.leafletElement.getMaxZoom()}
+                  disabled={
+                    this.map &&
+                    this.props.zoom >= this.map.leafletElement.getMaxZoom()
+                  }
                 >
                   <FontAwesomeIcon icon="plus" />
                 </Button>
                 <Button
                   onClick={this.handleZoomOutClick}
                   title={t('main.zoomOut')}
-                  disabled={this.map && this.props.zoom <= this.map.leafletElement.getMinZoom()}
+                  disabled={
+                    this.map &&
+                    this.props.zoom <= this.map.leafletElement.getMinZoom()
+                  }
                 >
                   <FontAwesomeIcon icon="minus" />
                 </Button>
@@ -351,7 +438,9 @@ class Main extends React.Component {
         </div>
 
         {activeModal === 'settings' && <Settings />}
-        {['tracking-my', 'tracking-tracked'].includes(activeModal) && <TrackingModal />}
+        {['tracking-my', 'tracking-tracked'].includes(activeModal) && (
+          <TrackingModal />
+        )}
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {activeModal === 'export-gpx' && <ExportGpxModal />}
@@ -369,7 +458,9 @@ class Main extends React.Component {
           zoomControl={false}
           attributionControl={false}
           maxZoom={20}
-          ref={(map) => { this.map = map; }}
+          ref={map => {
+            this.map = map;
+          }}
           center={L.latLng(lat, lon)}
           zoom={zoom}
           onMoveend={this.handleMapMoveEnd}
@@ -400,7 +491,8 @@ class Main extends React.Component {
               {showGalleryPicker && <GalleryPicker />}
             </>
           )}
-          <GalleryResult />{/* TODO should not be extra just because for position picking */}
+          <GalleryResult />
+          {/* TODO should not be extra just because for position picking */}
         </Map>
       </>
     );
@@ -421,13 +513,19 @@ export default compose(
       progress: !!state.main.progress.length,
       mouseCursor: selectMouseCursor(state),
       user: state.auth.user,
-      ignoreEscape: !!(state.main.activeModal && state.main.activeModal !== 'settings' // TODO settings dialog gets also closed
-        || state.gallery.activeImageId || state.gallery.showPosition),
+      ignoreEscape: !!(
+        (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
+        state.gallery.activeImageId ||
+        state.gallery.showPosition
+      ),
       showElevationChart: !!state.elevationChart.elevationProfilePoints,
       showGalleryPicker: isShowGalleryPicker(state),
       locate: state.main.locate,
       showLoginModal: state.auth.chooseLoginMethod,
-      showMenu: !state.main.selectingHomeLocation && !state.gallery.pickingPositionForId && !state.gallery.showPosition,
+      showMenu:
+        !state.main.selectingHomeLocation &&
+        !state.gallery.pickingPositionForId &&
+        !state.gallery.showPosition,
       expertMode: state.main.expertMode,
       overlayPaneOpacity: state.map.overlayPaneOpacity,
       overlays: state.map.overlays, // for attribution
@@ -496,9 +594,14 @@ function selectMouseCursor(state) {
 }
 
 function isShowGalleryPicker(state) {
-  return (state.main.tool === null || ['gallery', 'track-viewer', 'objects', 'changesets'].includes(state.main.tool))
-    && state.map.overlays.includes('I')
-    && state.gallery.pickingPositionForId === null
-    && !state.gallery.showPosition
-    && !state.main.selectingHomeLocation;
+  return (
+    (state.main.tool === null ||
+      ['gallery', 'track-viewer', 'objects', 'changesets'].includes(
+        state.main.tool,
+      )) &&
+    state.map.overlays.includes('I') &&
+    state.gallery.pickingPositionForId === null &&
+    !state.gallery.showPosition &&
+    !state.main.selectingHomeLocation
+  );
 }

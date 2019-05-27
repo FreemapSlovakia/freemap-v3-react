@@ -14,24 +14,26 @@ export default class Toast extends React.Component {
     onAction: PropTypes.func.isRequired,
     onTimeoutStop: PropTypes.func.isRequired,
     onTimeoutRestart: PropTypes.func.isRequired,
-  }
+  };
 
   handleMouseEnter = () => {
     this.props.onTimeoutStop(this.props.id);
-  }
+  };
 
   handleMouseLeave = () => {
     this.props.onTimeoutRestart(this.props.id);
-  }
+  };
 
   handleAlertDismiss = () => {
     this.props.onAction(this.props.id);
-  }
+  };
 
   render() {
     const { message, actions, onAction, id, style } = this.props;
     const defaultAction = actions.find(({ name }) => !name);
-    const clickHandler = defaultAction ? () => onAction(id, defaultAction.action) : undefined;
+    const clickHandler = defaultAction
+      ? () => onAction(id, defaultAction.action)
+      : undefined;
     const buttonActions = actions.filter(({ name }) => name);
 
     return (
@@ -43,20 +45,27 @@ export default class Toast extends React.Component {
         onMouseLeave={this.handleMouseLeave}
         onDismiss={this.handleAlertDismiss}
       >
-        {
-          typeof message === 'string' && message.startsWith('!HTML!')
-            ? <div className="toast-message" dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
-            : <div className="toast-message">{message}</div>
-        }
+        {typeof message === 'string' && message.startsWith('!HTML!') ? (
+          <div
+            className="toast-message"
+            dangerouslySetInnerHTML={{ __html: message.substring(6) }}
+          />
+        ) : (
+          <div className="toast-message">{message}</div>
+        )}
         {buttonActions.length > 0 && (
           <>
             <br />
             <ButtonToolbar>
-              {
-                buttonActions.map(({ name, action, style: buttonStyle }) => (
-                  <Button key={name} bsStyle={buttonStyle} onClick={() => onAction(id, action)}>{name}</Button>
-                ))
-              }
+              {buttonActions.map(({ name, action, style: buttonStyle }) => (
+                <Button
+                  key={name}
+                  bsStyle={buttonStyle}
+                  onClick={() => onAction(id, action)}
+                >
+                  {name}
+                </Button>
+              ))}
             </ButtonToolbar>
           </>
         )}

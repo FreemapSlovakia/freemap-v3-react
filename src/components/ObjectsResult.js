@@ -15,23 +15,26 @@ function ObjectsResult({ objects, t, language }) {
     const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
     const { name, ele } = tags;
-    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 0,
+      maximumFractionDigits: 1,
+    });
 
     return (
       <RichMarker key={`poi-${id}`} position={L.latLng(lat, lon)} image={img}>
         <Popup autoPan={false}>
           <span>
-            {
-              pt ? (
-                <>
-                  {t(`objects.subcategories.${pt.id}`)}
-                  {name && <br />}
-                  {name}
-                  {ele && <br />}
-                  {ele && `${nf.format(ele)} m n. m.`}
-                </>
-              ) : name
-            }
+            {pt ? (
+              <>
+                {t(`objects.subcategories.${pt.id}`)}
+                {name && <br />}
+                {name}
+                {ele && <br />}
+                {ele && `${nf.format(ele)} m n. m.`}
+              </>
+            ) : (
+              name
+            )}
           </span>
         </Popup>
       </RichMarker>

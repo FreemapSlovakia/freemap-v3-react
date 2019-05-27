@@ -7,7 +7,11 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 import { gallerySetTags } from 'fm3/actions/galleryActions';
 
 export default createLogic({
-  type: [at.GALLERY_SHOW_UPLOAD_MODAL, at.GALLERY_SHOW_FILTER, at.GALLERY_EDIT_PICTURE],
+  type: [
+    at.GALLERY_SHOW_UPLOAD_MODAL,
+    at.GALLERY_SHOW_FILTER,
+    at.GALLERY_EDIT_PICTURE,
+  ],
   transform({ getState, action }, next) {
     if (action.type === at.GALLERY_SHOW_UPLOAD_MODAL && !getState().auth.user) {
       next(toastsAddError('gallery.unauthenticatedError'));
@@ -17,7 +21,10 @@ export default createLogic({
   },
   process({ action, getState }, dispatch, done) {
     // don't load tags when canceling editing
-    if (action.type === at.GALLERY_EDIT_PICTURE && !getState().gallery.editModel) {
+    if (
+      action.type === at.GALLERY_EDIT_PICTURE &&
+      !getState().gallery.editModel
+    ) {
       done();
       return;
     }
@@ -25,11 +32,14 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    axios.get(`${process.env.API_URL}/gallery/picture-tags`, { validateStatus: status => status === 200 })
+    axios
+      .get(`${process.env.API_URL}/gallery/picture-tags`, {
+        validateStatus: status => status === 200,
+      })
       .then(({ data }) => {
         dispatch(gallerySetTags(data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('gallery.tagsFetchingError', err));
       })
       .then(() => {

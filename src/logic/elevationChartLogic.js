@@ -13,14 +13,24 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: at.ELEVATION_CHART_SET_TRACK_GEOJSON,
-  cancelType: [at.ELEVATION_CHART_SET_TRACK_GEOJSON, at.SET_TOOL, at.ELEVATION_CHART_CLOSE],
+  cancelType: [
+    at.ELEVATION_CHART_SET_TRACK_GEOJSON,
+    at.SET_TOOL,
+    at.ELEVATION_CHART_CLOSE,
+  ],
   process({ getState, cancelled$, storeDispatch }, dispatch, done) {
     const { trackGeojson } = getState().elevationChart;
 
     if (containsElevations(trackGeojson)) {
       resolveElevationProfilePointsLocally(trackGeojson, dispatch, done);
     } else {
-      resolveElevationProfilePointsViaApi(trackGeojson, dispatch, cancelled$, storeDispatch, done);
+      resolveElevationProfilePointsViaApi(
+        trackGeojson,
+        dispatch,
+        cancelled$,
+        storeDispatch,
+        done,
+      );
     }
   },
 });
@@ -34,7 +44,10 @@ function resolveElevationProfilePointsLocally(trackGeojson, dispatch, done) {
       const [prevLon, prevLat] = prevLonlatEle;
       dist += distance(lat, lon, prevLat, prevLon);
       elevationProfilePoints.push({
-        lat, lon, ele, distance: dist,
+        lat,
+        lon,
+        ele,
+        distance: dist,
       });
     }
     prevLonlatEle = [lon, lat, ele];
@@ -44,7 +57,13 @@ function resolveElevationProfilePointsLocally(trackGeojson, dispatch, done) {
   done();
 }
 
-function resolveElevationProfilePointsViaApi(trackGeojson, dispatch, cancelled$, storeDispatch, done) {
+function resolveElevationProfilePointsViaApi(
+  trackGeojson,
+  dispatch,
+  cancelled$,
+  storeDispatch,
+  done,
+) {
   const totalDistanceInKm = turfLength(trackGeojson);
   const delta = Math.min(0.1, totalDistanceInKm / (window.innerWidth / 2));
   const elevationProfilePoints = [];
@@ -59,14 +78,15 @@ function resolveElevationProfilePointsViaApi(trackGeojson, dispatch, cancelled$,
   cancelled$.subscribe(() => {
     source.cancel();
   });
-  axios.post(
-    `${process.env.API_URL}/geotools/elevation`,
-    elevationProfilePoints.map(({ lat, lon }) => ([lat, lon])),
-    {
-      validateStatus: status => status === 200,
-      cancelToken: source.token,
-    },
-  )
+  axios
+    .post(
+      `${process.env.API_URL}/geotools/elevation`,
+      elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
+      {
+        validateStatus: status => status === 200,
+        cancelToken: source.token,
+      },
+    )
     .then(({ data }) => {
       let climbUp = 0;
       let climbDown = 0;
@@ -86,7 +106,8 @@ function resolveElevationProfilePointsViaApi(trackGeojson, dispatch, cancelled$,
         prevEle = ele;
       });
       dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
-    }).catch((err) => {
+    })
+    .catch(err => {
       dispatch(toastsAddError('elevationChart.fetchError', err));
     })
     .then(() => {

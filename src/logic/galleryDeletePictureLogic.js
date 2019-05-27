@@ -4,7 +4,12 @@ import { createLogic } from 'redux-logic';
 import * as at from 'fm3/actionTypes';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { gallerySetImageIds, galleryRequestImage, gallerySetLayerDirty, galleryClear } from 'fm3/actions/galleryActions';
+import {
+  gallerySetImageIds,
+  galleryRequestImage,
+  gallerySetLayerDirty,
+  galleryClear,
+} from 'fm3/actions/galleryActions';
 
 export default createLogic({
   type: at.GALLERY_DELETE_PICTURE,
@@ -25,13 +30,14 @@ export default createLogic({
 
     const { id } = image;
 
-    axios.delete(`${process.env.API_URL}/gallery/pictures/${id}`, {
-      headers: {
-        Authorization: `Bearer ${getState().auth.user.authToken}`,
-      },
-      validateStatus: status => status === 204,
-      cancelToken: source.token,
-    })
+    axios
+      .delete(`${process.env.API_URL}/gallery/pictures/${id}`, {
+        headers: {
+          Authorization: `Bearer ${getState().auth.user.authToken}`,
+        },
+        validateStatus: status => status === 204,
+        cancelToken: source.token,
+      })
       .then(() => {
         dispatch(gallerySetLayerDirty());
 
@@ -39,12 +45,17 @@ export default createLogic({
         if (imageIds && activeImageId) {
           const idx = imageIds.findIndex(imgId => imgId === activeImageId);
           if (idx !== -1) {
-            const newImageIds = imageIds.filter(imgId => imgId !== activeImageId);
+            const newImageIds = imageIds.filter(
+              imgId => imgId !== activeImageId,
+            );
             dispatch(gallerySetImageIds(newImageIds));
             if (!newImageIds.length) {
               dispatch(galleryClear());
             } else {
-              const newActiveImageId = newImageIds.length > idx ? newImageIds[idx] : newImageIds[newImageIds.length - 1];
+              const newActiveImageId =
+                newImageIds.length > idx
+                  ? newImageIds[idx]
+                  : newImageIds[newImageIds.length - 1];
               dispatch(galleryRequestImage(newActiveImageId));
             }
           }
@@ -52,7 +63,7 @@ export default createLogic({
           dispatch(galleryClear());
         }
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('gallery.deletingError', err));
       })
       .then(() => {

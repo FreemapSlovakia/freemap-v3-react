@@ -6,23 +6,26 @@ import * as FmPropTypes from 'fm3/propTypes';
 export default function Attribution({ t, mapType, overlays, imhd }) {
   return (
     <ul style={{ padding: '10px 0 0 20px' }}>
-      {
-        categorize(
-          [
-            ...baseLayers.filter(({ type }) => mapType === type),
-            ...overlayLayers.filter(({ type }) => overlays.includes(type)),
-          ].reduce((a, b) => [...a, ...b.attribution], []),
-        ).map(({ type, attributions }) => (
-          <li key={type}>
-            {t(`mapLayers.type.${type}`)}
-            {' '}
-            {attributions.map((a, j) => [
-              j > 0 ? ', ' : '',
-              a.url ? <a key={a} href={a.url} target="_blank" rel="noopener noreferrer">{a.name || t(a.nameKey)}</a> : a.name || t(a.nameKey),
-            ])}
-          </li>
-        ))
-      }
+      {categorize(
+        [
+          ...baseLayers.filter(({ type }) => mapType === type),
+          ...overlayLayers.filter(({ type }) => overlays.includes(type)),
+        ].reduce((a, b) => [...a, ...b.attribution], []),
+      ).map(({ type, attributions }) => (
+        <li key={type}>
+          {t(`mapLayers.type.${type}`)}{' '}
+          {attributions.map((a, j) => [
+            j > 0 ? ', ' : '',
+            a.url ? (
+              <a key={a} href={a.url} target="_blank" rel="noopener noreferrer">
+                {a.name || t(a.nameKey)}
+              </a>
+            ) : (
+              a.name || t(a.nameKey)
+            ),
+          ])}
+        </li>
+      ))}
       {imhd && (
         <li>
           {'; '}
@@ -46,7 +49,7 @@ Attribution.propTypes = {
 
 function categorize(attributions) {
   const res = {};
-  attributions.forEach((attribution) => {
+  attributions.forEach(attribution => {
     let x = res[attribution.type];
     if (!x) {
       x = [];

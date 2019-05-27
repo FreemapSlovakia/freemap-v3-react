@@ -15,9 +15,7 @@ export function AboutModal({ onModalClose }) {
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" />
-          {' '}
-          Kontakty
+          <FontAwesomeIcon icon="address-card-o" /> Kontakty
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -30,12 +28,16 @@ export function AboutModal({ onModalClose }) {
           972 32 Chrenovec-Brusno
           <br />
         </address>
-        <p>
-          Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009
-        </p>
+        <p>Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009</p>
         <p>
           {'IČO: '}
-          <a href="http://ives.minv.sk/rez/registre/pages/detailoz.aspx?id=196796" target="_blank" rel="noopener noreferrer">42173639</a>
+          <a
+            href="http://ives.minv.sk/rez/registre/pages/detailoz.aspx?id=196796"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            42173639
+          </a>
           <br />
           DIČ: 2022912870
         </p>
@@ -61,7 +63,9 @@ export function AboutModal({ onModalClose }) {
         <ul>
           <li>
             {'Predseda: Michal Bellovič (Prievidza) - '}
-            <a href="mailto:michal.bellovic@freemap.sk">michal.bellovic@freemap.sk</a>
+            <a href="mailto:michal.bellovic@freemap.sk">
+              michal.bellovic@freemap.sk
+            </a>
           </li>
           <li>
             {'Tajomník: Ing. Martin Ždila (Košice) - '}
@@ -69,16 +73,16 @@ export function AboutModal({ onModalClose }) {
           </li>
           <li>
             {'Podpredseda: Mgr. Ing. Michal Páleník, PhD. (Bratislava) - '}
-            <a href="mailto:michal.palenik@freemap.sk">michal.palenik@freemap.sk</a>
+            <a href="mailto:michal.palenik@freemap.sk">
+              michal.palenik@freemap.sk
+            </a>
           </li>
         </ul>
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" />
-            {' '}
-            Zavrieť
+            <Glyphicon glyph="remove" /> Zavrieť
           </Button>
         </FormGroup>
       </Modal.Footer>

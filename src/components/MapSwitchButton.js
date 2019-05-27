@@ -27,26 +27,26 @@ class MapSwitchButton extends React.Component {
 
   state = {
     show: false,
-  }
+  };
 
-  setButton = (button) => {
+  setButton = button => {
     this.button = button;
   };
 
   handleButtonClick = () => {
     this.setState({ show: true });
-  }
+  };
 
   handleHide = () => {
     this.setState({ show: false });
-  }
+  };
 
-  handleMapSelect = (mapType) => {
+  handleMapSelect = mapType => {
     this.setState({ show: false });
     if (this.props.mapType !== mapType) {
       this.props.onMapRefocus({ mapType });
     }
-  }
+  };
 
   handleOverlaySelect = (e, overlay) => {
     if (e.target.dataset && e.target.dataset.strava) {
@@ -60,64 +60,104 @@ class MapSwitchButton extends React.Component {
       s.add(overlay);
     }
     this.props.onMapRefocus({ overlays: [...s] });
-  }
+  };
 
   render() {
-    const { isAdmin, t, mapType, overlays, expertMode, zoom, pictureFilterIsActive, stravaAuth } = this.props;
+    const {
+      isAdmin,
+      t,
+      mapType,
+      overlays,
+      expertMode,
+      zoom,
+      pictureFilterIsActive,
+      stravaAuth,
+    } = this.props;
 
     return (
       <>
-        <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('mapLayers.layers')}>
+        <Button
+          ref={this.setButton}
+          onClick={this.handleButtonClick}
+          title={t('mapLayers.layers')}
+        >
           <FontAwesomeIcon icon="map-o" />
         </Button>
-        <Overlay rootClose placement="top" show={this.state.show} onHide={this.handleHide} target={() => this.button}>
+        <Overlay
+          rootClose
+          placement="top"
+          show={this.state.show}
+          onHide={this.handleHide}
+          target={() => this.button}
+        >
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
-              { // TODO base and overlay layers have too much duplicate code
-                baseLayers
-                  .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
-                  .filter(({ adminOnly }) => isAdmin || !adminOnly)
-                  .map(({ type, icon, minZoom, key }) => (
-                    <MenuItem
-                      key={type}
-                      onClick={() => this.handleMapSelect(type)}
+              {// TODO base and overlay layers have too much duplicate code
+              baseLayers
+                .filter(
+                  ({ showOnlyInExpertMode }) =>
+                    !showOnlyInExpertMode || expertMode,
+                )
+                .filter(({ adminOnly }) => isAdmin || !adminOnly)
+                .map(({ type, icon, minZoom, key }) => (
+                  <MenuItem
+                    key={type}
+                    onClick={() => this.handleMapSelect(type)}
+                  >
+                    <FontAwesomeIcon
+                      icon={mapType === type ? 'check-circle-o' : 'circle-o'}
+                    />{' '}
+                    <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                    <span
+                      style={{
+                        textDecoration:
+                          zoom < minZoom ? 'line-through' : 'none',
+                      }}
                     >
-                      <FontAwesomeIcon icon={mapType === type ? 'check-circle-o' : 'circle-o'} />
-                      {' '}
-                      <FontAwesomeIcon icon={icon || 'map-o'} />
-                      {' '}
-                      <span style={{ textDecoration: zoom < minZoom ? 'line-through' : 'none' }}>
-                        {t(`mapLayers.base.${type}`)}
-                      </span>
-                      {key && ' '}
-                      {key && <kbd>{key}</kbd>}
-                      {zoom < minZoom && (
-                        <>
-                          {' '}
-                          <FontAwesomeIcon
-                            icon="exclamation-triangle"
-                            title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
-                            className="text-warning"
-                          />
-                        </>
-                      )}
-                    </MenuItem>
-                  ))
-              }
+                      {t(`mapLayers.base.${type}`)}
+                    </span>
+                    {key && ' '}
+                    {key && <kbd>{key}</kbd>}
+                    {zoom < minZoom && (
+                      <>
+                        {' '}
+                        <FontAwesomeIcon
+                          icon="exclamation-triangle"
+                          title={t('mapLayers.minZoomWarning', {
+                            minZoom: minZoom.toString(),
+                          })}
+                          className="text-warning"
+                        />
+                      </>
+                    )}
+                  </MenuItem>
+                ))}
               <MenuItem divider />
               {overlayLayers
-                .filter(({ showOnlyInExpertMode }) => !showOnlyInExpertMode || expertMode)
+                .filter(
+                  ({ showOnlyInExpertMode }) =>
+                    !showOnlyInExpertMode || expertMode,
+                )
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key, strava }) => (
                   <MenuItem
                     key={type}
                     onClick={e => this.handleOverlaySelect(e, type)}
                   >
-                    <FontAwesomeIcon icon={overlays.includes(type) ? 'check-square-o' : 'square-o'} />
-                    {' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />
-                    {' '}
-                    <span style={{ textDecoration: zoom < minZoom || strava && !stravaAuth ? 'line-through' : 'none' }}>
+                    <FontAwesomeIcon
+                      icon={
+                        overlays.includes(type) ? 'check-square-o' : 'square-o'
+                      }
+                    />{' '}
+                    <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                    <span
+                      style={{
+                        textDecoration:
+                          zoom < minZoom || (strava && !stravaAuth)
+                            ? 'line-through'
+                            : 'none',
+                      }}
+                    >
                       {t(`mapLayers.overlay.${type}`)}
                     </span>
                     {key && ' '}
@@ -127,7 +167,9 @@ class MapSwitchButton extends React.Component {
                         {' '}
                         <FontAwesomeIcon
                           icon="exclamation-triangle"
-                          title={t('mapLayers.minZoomWarning', { minZoom: minZoom.toString() })}
+                          title={t('mapLayers.minZoomWarning', {
+                            minZoom: minZoom.toString(),
+                          })}
                           className="text-warning"
                         />
                       </>
@@ -154,8 +196,7 @@ class MapSwitchButton extends React.Component {
                       </>
                     )}
                   </MenuItem>
-                ))
-              }
+                ))}
             </ul>
           </Popover>
         </Overlay>
@@ -172,7 +213,9 @@ export default compose(
       mapType: state.map.mapType,
       overlays: state.map.overlays,
       expertMode: state.main.expertMode,
-      pictureFilterIsActive: Object.keys(state.gallery.filter).some(key => state.gallery.filter[key]),
+      pictureFilterIsActive: Object.keys(state.gallery.filter).some(
+        key => state.gallery.filter[key],
+      ),
       isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
       stravaAuth: state.map.stravaAuth,
     }),

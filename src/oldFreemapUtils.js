@@ -2,8 +2,11 @@
 
 // either freemap.sk/#m=T,p=48.21836|17.4166|16|T or freemap.sk/?m=A&p=48.1855|17.4029|14
 export function getTrasformedParamsIfIsOldFreemapUrl(location) {
-  const isFromOldFreemapUrlFormat1 = location.hash && (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
-  const isFromOldFreemapUrlFormat2 = location.search && /[?&]m=/.test(location.search); // "?m=A&p=48.1855|17.4029|14"
+  const isFromOldFreemapUrlFormat1 =
+    location.hash &&
+    (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
+  const isFromOldFreemapUrlFormat2 =
+    location.search && /[?&]m=/.test(location.search); // "?m=A&p=48.1855|17.4029|14"
   if (!isFromOldFreemapUrlFormat1 && !isFromOldFreemapUrlFormat2) {
     return false;
   }
@@ -12,7 +15,12 @@ export function getTrasformedParamsIfIsOldFreemapUrl(location) {
     ? rawUrlParamsToHash(location.hash, ',') // #m=T,p=48.21836|17.4166|16|T -> {'m': 'T', 'p' : '48.21836|17.4166|16|T'}
     : rawUrlParamsToHash(location.search, '&'); // ?m=A&p=48.1855|17.4029|14
 
-  const [latFrag, lonFrag, zoomFrag, anotherMapTypeParam] = oldFreemapUrlParams.p.split(/\||%7C/);
+  const [
+    latFrag,
+    lonFrag,
+    zoomFrag,
+    anotherMapTypeParam,
+  ] = oldFreemapUrlParams.p.split(/\||%7C/);
   const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'T';
   return {
     lat: parseFloat(latFrag),
@@ -26,7 +34,11 @@ export function getTrasformedParamsIfIsOldFreemapUrl(location) {
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location) {
-  if (location.search && (location.search.indexOf('marker=1') >= 0 || location.search.indexOf('markerLat') >= 0)) {
+  if (
+    location.search &&
+    (location.search.indexOf('marker=1') >= 0 ||
+      location.search.indexOf('markerLat') >= 0)
+  ) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
     const out = {
       lat: parseFloat(oldFreemapUrlParams.lat),
@@ -56,7 +68,7 @@ export function getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location) {
 function rawUrlParamsToHash(rawParams, separator) {
   const oldFreemapRawUrlParams = rawParams.substring(1).split(separator);
   const oldFreemapUrlParams = {};
-  oldFreemapRawUrlParams.forEach((s) => {
+  oldFreemapRawUrlParams.forEach(s => {
     const [key, value] = s.split('=');
     oldFreemapUrlParams[key] = value;
   });

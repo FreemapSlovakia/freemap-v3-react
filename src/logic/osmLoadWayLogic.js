@@ -14,26 +14,31 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
 
-    axios.get(
-      `//api.openstreetmap.org/api/0.6/way/${getState().trackViewer.osmWayId}/full`,
-      {
-        responseType: 'document',
-        validateStatus: status => status === 200,
-      },
-    )
+    axios
+      .get(
+        `//api.openstreetmap.org/api/0.6/way/${
+          getState().trackViewer.osmWayId
+        }/full`,
+        {
+          responseType: 'document',
+          validateStatus: status => status === 200,
+        },
+      )
       .then(({ data }) => {
         const ways = toWays(data, toNodes(data));
 
-        dispatch(trackViewerSetData({
-          trackGeojson: {
-            type: 'FeatureCollection',
-            features: Object.keys(ways).map(id => lineString(ways[id])),
-          },
-          startPoints: [],
-          finishPoints: [],
-        }));
+        dispatch(
+          trackViewerSetData({
+            trackGeojson: {
+              type: 'FeatureCollection',
+              features: Object.keys(ways).map(id => lineString(ways[id])),
+            },
+            startPoints: [],
+            finishPoints: [],
+          }),
+        );
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('osm.fetchingError', err));
       })
       .then(() => {

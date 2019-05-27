@@ -11,7 +11,10 @@ import tips from 'fm3/tips/index.json';
 import injectL10n from 'fm3/l10nInjector';
 
 import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
-import { authStartLogout, authChooseLoginMethod } from 'fm3/actions/authActions';
+import {
+  authStartLogout,
+  authChooseLoginMethod,
+} from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
@@ -39,117 +42,117 @@ class MoreMenuButton extends React.Component {
   state = {
     show: false,
     submenu: null,
-  }
+  };
 
-  setButton = (button) => {
+  setButton = button => {
     this.button = button;
   };
 
   handleButtonClick = () => {
     this.setState({ show: true });
-  }
+  };
 
   handleHide = () => {
     this.close();
-  }
+  };
 
   handleItemClick = () => {
     this.close();
-  }
+  };
 
   handleLoginClick = () => {
     this.close();
     this.props.onLogin();
-  }
+  };
 
   handleLogoutClick = () => {
     this.close();
     this.props.onLogout();
-  }
+  };
 
   handleShareClick = () => {
     this.close();
     this.props.onShare();
-  }
+  };
 
   handleSettingsShowClick = () => {
     this.close();
     this.props.onSettingsShow();
-  }
+  };
 
   handleGpxExportClick = () => {
     this.close();
     this.props.onGpxExport();
-  }
+  };
 
   handlePdfExportClick = () => {
     this.close();
     this.props.onPdfExport();
-  }
+  };
 
   handleEmbedClick = () => {
     this.close();
     this.props.onEmbed();
-  }
+  };
 
   handleSupportUsClick = () => {
     this.close();
     this.props.onSupportUs();
-  }
+  };
 
   handleAboutClick = () => {
     this.close();
     this.props.onAbout();
-  }
+  };
 
   handleLegendClick = () => {
     this.close();
     this.props.onLegend();
-  }
+  };
 
   handleAutoLanguageClick = () => {
     this.close();
     this.props.onLanguageChange(null);
-  }
+  };
 
   handleEnglishClick = () => {
     this.close();
     this.props.onLanguageChange('en');
-  }
+  };
 
   handleSlovakClick = () => {
     this.close();
     this.props.onLanguageChange('sk');
-  }
+  };
 
   handleCzechClick = () => {
     this.close();
     this.props.onLanguageChange('cs');
-  }
+  };
 
   handleLanguageClick = () => {
     this.setState({ submenu: 'language' });
-  }
+  };
 
   handleHelpClick = () => {
     this.setState({ submenu: 'help' });
-  }
+  };
 
   handleBackClick = () => {
     this.setState({ submenu: null });
-  }
+  };
 
   close = () => {
     this.setState({
       show: false,
       submenu: null,
     });
-  }
+  };
 
-  handleTipSelect = (tip) => {
+  handleTipSelect = tip => {
     this.props.onTip(tip);
     this.close();
-  }
+  };
 
   render() {
     const { user, t, chosenLanguage } = this.props;
@@ -157,7 +160,11 @@ class MoreMenuButton extends React.Component {
 
     return (
       <>
-        <Button ref={this.setButton} onClick={this.handleButtonClick} title={t('more.more')}>
+        <Button
+          ref={this.setButton}
+          onClick={this.handleButtonClick}
+          title={t('more.more')}
+        >
           <FontAwesomeIcon icon="ellipsis-v" />
         </Button>
         <Overlay
@@ -173,11 +180,13 @@ class MoreMenuButton extends React.Component {
               {submenu === null ? (
                 <>
                   <MenuItem onClick={this.handleLanguageClick}>
-                    <FontAwesomeIcon icon="language" /> Language / Jazyk <FontAwesomeIcon icon="chevron-right" />
+                    <FontAwesomeIcon icon="language" /> Language / Jazyk{' '}
+                    <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
                   {user ? (
                     <MenuItem onClick={this.handleLogoutClick}>
-                      <FontAwesomeIcon icon="sign-out" /> {t('more.logOut', { name: user.name })}
+                      <FontAwesomeIcon icon="sign-out" />{' '}
+                      {t('more.logOut', { name: user.name })}
                     </MenuItem>
                   ) : (
                     <MenuItem onClick={this.handleLoginClick}>
@@ -194,8 +203,13 @@ class MoreMenuButton extends React.Component {
                   <MenuItem onClick={this.handleGpxExportClick}>
                     <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
                   </MenuItem>
-                  <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/FileDownload" target="_blank">
-                    <FontAwesomeIcon icon="!icon-gps-device" /> {t('more.mapExports')}
+                  <MenuItem
+                    onClick={this.handleItemClick}
+                    href="http://wiki.freemap.sk/FileDownload"
+                    target="_blank"
+                  >
+                    <FontAwesomeIcon icon="!icon-gps-device" />{' '}
+                    {t('more.mapExports')}
                   </MenuItem>
                   <MenuItem onClick={this.handleShareClick}>
                     <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
@@ -204,18 +218,31 @@ class MoreMenuButton extends React.Component {
                     <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
                   </MenuItem>
                   <MenuItem divider />
-                  <MenuItem onClick={this.handleItemClick} href="http://wiki.freemap.sk/NahlasenieChyby" target="_blank">
-                    <FontAwesomeIcon icon="exclamation-triangle" /> {t('more.reportMapError')}
+                  <MenuItem
+                    onClick={this.handleItemClick}
+                    href="http://wiki.freemap.sk/NahlasenieChyby"
+                    target="_blank"
+                  >
+                    <FontAwesomeIcon icon="exclamation-triangle" />{' '}
+                    {t('more.reportMapError')}
                   </MenuItem>
-                  <MenuItem onClick={this.handleItemClick} href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank">
-                    <FontAwesomeIcon icon="!icon-bug" /> {t('more.reportAppError')}
+                  <MenuItem
+                    onClick={this.handleItemClick}
+                    href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
+                    target="_blank"
+                  >
+                    <FontAwesomeIcon icon="!icon-bug" />{' '}
+                    {t('more.reportAppError')}
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem onClick={this.handleHelpClick}>
-                    <FontAwesomeIcon icon="book" /> {t('more.help')} <FontAwesomeIcon icon="chevron-right" />
+                    <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
+                    <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
                   <MenuItem onClick={this.handleSupportUsClick}>
-                    <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> {t('more.supportUs')} <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
+                    <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
+                    {t('more.supportUs')}{' '}
+                    <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
                   </MenuItem>
                 </>
               ) : submenu === 'help' ? (
@@ -231,19 +258,22 @@ class MoreMenuButton extends React.Component {
                     <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
                   </MenuItem>
                   <MenuItem onClick={this.handleAboutClick}>
-                    <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
+                    <FontAwesomeIcon icon="address-card-o" />{' '}
+                    {t('more.contacts')}
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem header>
                     <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
                   </MenuItem>
-                  {
-                    tips.map(([key, name, icon]) => (
-                      <MenuItem key={key} onSelect={this.handleTipSelect} eventKey={key}>
-                        <FontAwesomeIcon icon={icon} /> {name}
-                      </MenuItem>
-                    ))
-                  }
+                  {tips.map(([key, name, icon]) => (
+                    <MenuItem
+                      key={key}
+                      onSelect={this.handleTipSelect}
+                      eventKey={key}
+                    >
+                      <FontAwesomeIcon icon={icon} /> {name}
+                    </MenuItem>
+                  ))}
                 </>
               ) : submenu === 'language' ? (
                 <>
@@ -254,22 +284,32 @@ class MoreMenuButton extends React.Component {
                     <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
                   </MenuItem>
                   <MenuItem divider />
-                  <MenuItem onClick={this.handleAutoLanguageClick} active={chosenLanguage === null}>
+                  <MenuItem
+                    onClick={this.handleAutoLanguageClick}
+                    active={chosenLanguage === null}
+                  >
                     {t('more.automaticLanguage')}
                   </MenuItem>
-                  <MenuItem onClick={this.handleEnglishClick} active={chosenLanguage === 'en'}>
+                  <MenuItem
+                    onClick={this.handleEnglishClick}
+                    active={chosenLanguage === 'en'}
+                  >
                     English
                   </MenuItem>
-                  <MenuItem onClick={this.handleSlovakClick} active={chosenLanguage === 'sk'}>
+                  <MenuItem
+                    onClick={this.handleSlovakClick}
+                    active={chosenLanguage === 'sk'}
+                  >
                     Slovensky
                   </MenuItem>
-                  <MenuItem onClick={this.handleCzechClick} active={chosenLanguage === 'cs'}>
+                  <MenuItem
+                    onClick={this.handleCzechClick}
+                    active={chosenLanguage === 'cs'}
+                  >
                     Česky
                   </MenuItem>
                 </>
-              ) : (
-                null
-              )}
+              ) : null}
             </ul>
             {submenu === null && (
               <div style={{ margin: '4px 18px', fontSize: '18px' }}>
@@ -282,8 +322,7 @@ class MoreMenuButton extends React.Component {
                   title={t('more.facebook')}
                 >
                   <FontAwesomeIcon icon="facebook-official" />
-                </a>
-                {' '}
+                </a>{' '}
                 <a
                   onClick={this.handleItemClick}
                   href="https://twitter.com/FreemapSlovakia"
@@ -293,8 +332,7 @@ class MoreMenuButton extends React.Component {
                   title={t('more.twitter')}
                 >
                   <FontAwesomeIcon icon="twitter" />
-                </a>
-                {' '}
+                </a>{' '}
                 <a
                   onClick={this.handleItemClick}
                   href="https://github.com/FreemapSlovakia"

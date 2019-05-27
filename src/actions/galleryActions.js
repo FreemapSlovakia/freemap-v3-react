@@ -21,7 +21,9 @@ export function galleryClear() {
 }
 
 export function galleryShowOnTheMap(show) {
-  return { type: show ? at.GALLERY_SHOW_ON_THE_MAP : at.GALLERY_CANCEL_SHOW_ON_THE_MAP };
+  return {
+    type: show ? at.GALLERY_SHOW_ON_THE_MAP : at.GALLERY_CANCEL_SHOW_ON_THE_MAP,
+  };
 }
 
 export function galleryAddItem(item) {

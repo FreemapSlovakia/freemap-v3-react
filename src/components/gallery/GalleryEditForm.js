@@ -24,35 +24,64 @@ GalleryEditForm.propTypes = {
   language: PropTypes.string.isRequired,
 };
 
-export default function GalleryEditForm({ model, allTags, error, onPositionPick, t, language, onModelChange }) {
-  const changeModel = useCallback((key, value) => {
-    onModelChange({ ...model, [key]: value });
-  }, [model, onModelChange]);
+export default function GalleryEditForm({
+  model,
+  allTags,
+  error,
+  onPositionPick,
+  t,
+  language,
+  onModelChange,
+}) {
+  const changeModel = useCallback(
+    (key, value) => {
+      onModelChange({ ...model, [key]: value });
+    },
+    [model, onModelChange],
+  );
 
-  const handleTitleChange = useCallback((e) => {
-    changeModel('title', e.target.value || null);
-  }, [changeModel]);
+  const handleTitleChange = useCallback(
+    e => {
+      changeModel('title', e.target.value || null);
+    },
+    [changeModel],
+  );
 
-  const handleDescriptionChange = useCallback((e) => {
-    changeModel('description', e.target.value || null);
-  }, [changeModel]);
+  const handleDescriptionChange = useCallback(
+    e => {
+      changeModel('description', e.target.value || null);
+    },
+    [changeModel],
+  );
 
-  const handleTakenAtChange = useCallback((value) => {
-    changeModel('takenAt', value);
-  }, [changeModel]);
+  const handleTakenAtChange = useCallback(
+    value => {
+      changeModel('takenAt', value);
+    },
+    [changeModel],
+  );
 
-  const handleTagAdded = useCallback(({ name }) => {
-    const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
-    if (!model.tags.includes(fixed)) {
-      changeModel('tags', [...model.tags, fixed]);
-    }
-  }, [changeModel, model.tags]);
+  const handleTagAdded = useCallback(
+    ({ name }) => {
+      const fixed = name
+        .toLowerCase()
+        .trim()
+        .replace(/ {2,}/g, ' ');
+      if (!model.tags.includes(fixed)) {
+        changeModel('tags', [...model.tags, fixed]);
+      }
+    },
+    [changeModel, model.tags],
+  );
 
-  const handleTagDeleted = useCallback((i) => {
-    const tags = [...model.tags];
-    tags.splice(i, 1);
-    changeModel('tags', tags);
-  }, [changeModel, model.tags]);
+  const handleTagDeleted = useCallback(
+    i => {
+      const tags = [...model.tags];
+      tags.splice(i, 1);
+      changeModel('tags', tags);
+    },
+    [changeModel, model.tags],
+  );
 
   return (
     <div>
@@ -91,13 +120,28 @@ export default function GalleryEditForm({ model, allTags, error, onPositionPick,
           <FormControl
             type="text"
             placeholder={t('gallery.editForm.location')}
-            value={model.position ? `${formatGpsCoord(model.position.lat, 'SN', 'DMS', language)}, ${formatGpsCoord(model.position.lon, 'WE', 'DMS', language)}` : ''}
+            value={
+              model.position
+                ? `${formatGpsCoord(
+                    model.position.lat,
+                    'SN',
+                    'DMS',
+                    language,
+                  )}, ${formatGpsCoord(
+                    model.position.lon,
+                    'WE',
+                    'DMS',
+                    language,
+                  )}`
+                : ''
+            }
             onClick={onPositionPick}
             readOnly
           />
           <InputGroup.Button>
             <Button onClick={onPositionPick}>
-              <FontAwesomeIcon icon="dot-circle-o" />{t('gallery.editForm.setLocation')}
+              <FontAwesomeIcon icon="dot-circle-o" />
+              {t('gallery.editForm.setLocation')}
             </Button>
           </InputGroup.Button>
         </InputGroup>

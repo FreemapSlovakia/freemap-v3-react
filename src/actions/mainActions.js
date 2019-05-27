@@ -56,8 +56,29 @@ export function enableUpdatingUrl() {
   return { type: at.ENABLE_UPDATING_URL };
 }
 
-export function saveSettings(tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips) {
-  return { type: at.SAVE_SETTINGS, payload: { tileFormat, homeLocation, overlayOpacity, overlayPaneOpacity, expertMode, trackViewerEleSmoothingFactor, user, preventTips } };
+export function saveSettings(
+  tileFormat,
+  homeLocation,
+  overlayOpacity,
+  overlayPaneOpacity,
+  expertMode,
+  trackViewerEleSmoothingFactor,
+  user,
+  preventTips,
+) {
+  return {
+    type: at.SAVE_SETTINGS,
+    payload: {
+      tileFormat,
+      homeLocation,
+      overlayOpacity,
+      overlayPaneOpacity,
+      expertMode,
+      trackViewerEleSmoothingFactor,
+      user,
+      preventTips,
+    },
+  };
 }
 
 export function setErrorTicketId(id) {

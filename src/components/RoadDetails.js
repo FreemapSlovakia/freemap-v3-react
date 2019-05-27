@@ -4,10 +4,18 @@ import { connect } from 'react-redux';
 import injectL10n from 'fm3/l10nInjector';
 import PropTypes from 'prop-types';
 import * as FmPropTypes from 'fm3/propTypes';
-import { resolveTrackSurface, resolveTrackClass, resolveBicycleTypeSuitableForTrack } from 'fm3/osmOntologyTools';
+import {
+  resolveTrackSurface,
+  resolveTrackClass,
+  resolveBicycleTypeSuitableForTrack,
+} from 'fm3/osmOntologyTools';
 
 function RoadDetails({ way, mapType, language, t }) {
-  const dateFormat = new Intl.DateTimeFormat(language, { day: '2-digit', month: '2-digit', year: 'numeric' });
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric',
+  });
 
   const trackClass = resolveTrackClass(way.tags);
   const surface = resolveTrackSurface(way.tags);
@@ -22,7 +30,11 @@ function RoadDetails({ way, mapType, language, t }) {
         <dt>{t('roadDetails.surface')}</dt>
         <dd>{t(`roadDetails.surfaces.${surface}`) || surface}</dd>
         {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}
-        {isBicycleMap && <dd style={{ whiteSpace: 'nowrap' }}>{t(`roadDetails.bicycleTypes.${bicycleType}`)}</dd>}
+        {isBicycleMap && (
+          <dd style={{ whiteSpace: 'nowrap' }}>
+            {t(`roadDetails.bicycleTypes.${bicycleType}`)}
+          </dd>
+        )}
         <dt>{t('roadDetails.lastChange')}</dt>
         <dd>{lastEditAt}</dd>
       </dl>
@@ -55,10 +67,8 @@ RoadDetails.propTypes = {
 
 export default compose(
   injectL10n(),
-  connect(
-    state => ({
-      mapType: state.map.mapType,
-      language: state.l10n.language,
-    }),
-  ),
+  connect(state => ({
+    mapType: state.map.mapType,
+    language: state.l10n.language,
+  })),
 )(RoadDetails);

@@ -19,17 +19,18 @@ export default createLogic({
         source.cancel();
       });
 
-      axios.get(`${process.env.API_URL}/geotools/elevation`, {
-        params: {
-          coordinates: `${point.lat},${point.lon}`,
-        },
-        validateStatus: status => status === 200,
-        cancelToken: source.token,
-      })
+      axios
+        .get(`${process.env.API_URL}/geotools/elevation`, {
+          params: {
+            coordinates: `${point.lat},${point.lon}`,
+          },
+          validateStatus: status => status === 200,
+          cancelToken: source.token,
+        })
         .then(({ data }) => {
           dispatch(elevationMeasurementSetElevation(parseFloat(data[0])));
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('measurement.elevationFetchError', err));
         })
         .then(() => {

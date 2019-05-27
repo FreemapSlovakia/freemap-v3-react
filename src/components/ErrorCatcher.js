@@ -10,7 +10,7 @@ class ErrorCatcher extends React.Component {
     children: PropTypes.node,
     t: PropTypes.func.isRequired,
     errorTicketId: PropTypes.string,
-  }
+  };
 
   state = {};
 
@@ -30,7 +30,9 @@ class ErrorCatcher extends React.Component {
     return (
       <div
         style={{ padding: '10px' }}
-        dangerouslySetInnerHTML={{ __html: t('errorCatcher.html', { ticketId: errorTicketId || '...' }) }}
+        dangerouslySetInnerHTML={{
+          __html: t('errorCatcher.html', { ticketId: errorTicketId || '...' }),
+        }}
       />
     );
   }
@@ -38,9 +40,7 @@ class ErrorCatcher extends React.Component {
 
 export default compose(
   injectL10n(),
-  connect(
-    state => ({
-      errorTicketId: state.main.errorTicketId,
-    }),
-  ),
+  connect(state => ({
+    errorTicketId: state.main.errorTicketId,
+  })),
 )(ErrorCatcher);

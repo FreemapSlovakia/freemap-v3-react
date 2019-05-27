@@ -3,7 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
-import { distanceMeasurementAddPoint, distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint } from 'fm3/actions/distanceMeasurementActions';
+import {
+  distanceMeasurementAddPoint,
+  distanceMeasurementUpdatePoint,
+  distanceMeasurementRemovePoint,
+} from 'fm3/actions/distanceMeasurementActions';
 
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 
@@ -13,7 +17,8 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 // const defaultIcon = new L.Icon.Default();
 
-const circularIcon = new L.divIcon({ // CircleMarker is not draggable
+const circularIcon = new L.divIcon({
+  // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
@@ -30,8 +35,7 @@ class DistanceMeasurementResult extends React.Component {
     language: PropTypes.string,
   };
 
-  state = {
-  };
+  state = {};
 
   componentDidMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
@@ -58,21 +62,30 @@ class DistanceMeasurementResult extends React.Component {
       id = (points[pos - 1].id + points[pos].id) / 2;
     }
     this.props.onPointAdd({ lat, lon, id }, pos);
-  }
+  };
 
   handleMouseMove = (lat, lon, originalEvent) => {
-    if (this.props.active && originalEvent.target.classList.contains('leaflet-container')) {
+    if (
+      this.props.active &&
+      originalEvent.target.classList.contains('leaflet-container')
+    ) {
       this.setState({ lat, lon });
     } else {
       this.setState({ lat: undefined, lon: undefined });
     }
-  }
+  };
 
   handleMouseOut = () => {
     this.setState({ lat: undefined, lon: undefined });
-  }
+  };
 
-  handleMeasureMarkerDrag(i, { latlng: { lat, lng: lon } }, id) {
+  handleMeasureMarkerDrag(
+    i,
+    {
+      latlng: { lat, lng: lon },
+    },
+    id,
+  ) {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
@@ -98,7 +111,10 @@ class DistanceMeasurementResult extends React.Component {
       }
     }
 
-    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 });
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 3,
+      maximumFractionDigits: 3,
+    });
 
     return (
       <>
@@ -106,7 +122,9 @@ class DistanceMeasurementResult extends React.Component {
           <Polyline
             weight={4}
             interactive={false}
-            positions={ps.filter((_, i) => i % 2 === 0).map(({ lat, lon }) => [lat, lon])}
+            positions={ps
+              .filter((_, i) => i % 2 === 0)
+              .map(({ lat, lon }) => [lat, lon])}
           />
         )}
         {!!(ps.length && this.state.lat) && (
@@ -114,7 +132,10 @@ class DistanceMeasurementResult extends React.Component {
             weight={4}
             interactive={false}
             dashArray="6,8"
-            positions={[[ps[ps.length - 1].lat, ps[ps.length - 1].lon], [this.state.lat, this.state.lon]]}
+            positions={[
+              [ps[ps.length - 1].lat, ps[ps.length - 1].lon],
+              [this.state.lat, this.state.lon],
+            ]}
           />
         )}
         {ps.map((p, i) => {
@@ -125,19 +146,28 @@ class DistanceMeasurementResult extends React.Component {
             prev = p;
           }
 
-          const props = i % 2 ? {
-            icon: circularIcon,
-            opacity: 0.5,
-            onDragstart: e => this.handlePoiAdd(e.target.getLatLng().lat, e.target.getLatLng().lng, i, p.id),
-          } : {
-            // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-            icon: circularIcon,
-            opacity: 1,
-            onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-            onClick: () => this.handleMarkerClick(p.id),
-            onDragstart: handleDragStart,
-            onDragend: handleDragEnd,
-          };
+          const props =
+            i % 2
+              ? {
+                  icon: circularIcon,
+                  opacity: 0.5,
+                  onDragstart: e =>
+                    this.handlePoiAdd(
+                      e.target.getLatLng().lat,
+                      e.target.getLatLng().lng,
+                      i,
+                      p.id,
+                    ),
+                }
+              : {
+                  // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+                  icon: circularIcon,
+                  opacity: 1,
+                  onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
+                  onClick: () => this.handleMarkerClick(p.id),
+                  onDragstart: handleDragStart,
+                  onDragend: handleDragEnd,
+                };
 
           return (
             <Marker
@@ -147,7 +177,13 @@ class DistanceMeasurementResult extends React.Component {
               {...props}
             >
               {i % 2 === 0 && (
-                <Tooltip key={`${p.id}-${ps.length}`} className="compact" offset={[-4, 0]} direction="right" permanent={i === ps.length - 1}>
+                <Tooltip
+                  key={`${p.id}-${ps.length}`}
+                  className="compact"
+                  offset={[-4, 0]}
+                  direction="right"
+                  permanent={i === ps.length - 1}
+                >
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
               )}

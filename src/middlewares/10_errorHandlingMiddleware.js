@@ -1,7 +1,7 @@
 import * as at from 'fm3/actionTypes';
 import { sendError } from 'fm3/globalErrorHandler';
 
-export default () => next => (action) => {
+export default () => next => action => {
   try {
     if (action.type === at.UNHANDLED_LOGIC_ERROR) {
       sendError({ kind: 'unhandledLogic', error: action.payload });

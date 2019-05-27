@@ -2,7 +2,7 @@ import { wsClose, wsOpen, rpcCall } from 'fm3/actions/websocketActions';
 
 let reopenTs;
 
-export default ({ dispatch, getState }) => next => (action) => {
+export default ({ dispatch, getState }) => next => action => {
   const prevState = getState().websocket.state;
   const prevTrackedDevices = getState().tracking.trackedDevices;
 
@@ -24,7 +24,8 @@ export default ({ dispatch, getState }) => next => (action) => {
     dispatch(wsClose());
   } else if (trackedDevices.length > 0 && state === 3) {
     const diff = Date.now() - timestamp;
-    if (diff > 1000) { // TODO scale this value
+    if (diff > 1000) {
+      // TODO scale this value
       dispatch(wsOpen());
     } else {
       reopenTs = setTimeout(() => {
@@ -55,5 +56,10 @@ export default ({ dispatch, getState }) => next => (action) => {
 function mangle(td) {
   const { id, ...rest } = td;
   const isDeviceId = /^\d+$/.test(id);
-  return { [isDeviceId ? 'deviceId' : 'token']: isDeviceId ? Number.parseInt(id, 10) : id, ...rest };
+  return {
+    [isDeviceId ? 'deviceId' : 'token']: isDeviceId
+      ? Number.parseInt(id, 10)
+      : id,
+    ...rest,
+  };
 }

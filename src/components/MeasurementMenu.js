@@ -11,7 +11,10 @@ import { distanceMeasurementAddPoint } from 'fm3/actions/distanceMeasurementActi
 import { areaMeasurementAddPoint } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 
-import { elevationChartSetTrackGeojson, elevationChartClose } from 'fm3/actions/elevationChartActions';
+import {
+  elevationChartSetTrackGeojson,
+  elevationChartClose,
+} from 'fm3/actions/elevationChartActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -49,7 +52,10 @@ class MeasurementMenu extends React.Component {
       return;
     }
 
-    const points = this.props.tool === 'measure-area' ? this.props.areaPoints : this.props.distancePoints;
+    const points =
+      this.props.tool === 'measure-area'
+        ? this.props.areaPoints
+        : this.props.distancePoints;
     const pos = position ? Math.ceil(position / 2) : points.length;
     let id;
     if (id0) {
@@ -69,7 +75,7 @@ class MeasurementMenu extends React.Component {
     if (this.props.tool === 'measure-area') {
       this.props.onAreaPointAdd({ lat, lon, id }, pos);
     }
-  }
+  };
 
   toggleElevationChart = () => {
     // TODO to logic
@@ -78,37 +84,59 @@ class MeasurementMenu extends React.Component {
     if (isActive) {
       this.props.onElevationChartClose();
     } else {
-      this.props.onElevationChartTrackGeojsonSet(lineString(this.props.distancePoints.map(p => [p.lon, p.lat])));
+      this.props.onElevationChartTrackGeojsonSet(
+        lineString(this.props.distancePoints.map(p => [p.lon, p.lat])),
+      );
     }
-  }
+  };
 
   render() {
-    const { onToolSet, tool, routeDefined, elevationChartTrackGeojson, t } = this.props;
+    const {
+      onToolSet,
+      tool,
+      routeDefined,
+      elevationChartTrackGeojson,
+      t,
+    } = this.props;
 
     return (
       <>
         <span className="fm-label">
           <FontAwesomeIcon icon="!icon-ruler" />
           <span className="hidden-xs"> {t('tools.measurement')}</span>
-        </span>
-        {' '}
+        </span>{' '}
         <ButtonGroup>
-          <Button onClick={() => onToolSet('measure-dist')} active={tool === 'measure-dist'} title={t('measurement.distance')}>
+          <Button
+            onClick={() => onToolSet('measure-dist')}
+            active={tool === 'measure-dist'}
+            title={t('measurement.distance')}
+          >
             <FontAwesomeIcon icon="arrows-h" />
             <span className="hidden-xs"> {t('measurement.distance')}</span>
           </Button>
-          <Button onClick={() => onToolSet('measure-ele')} active={tool === 'measure-ele'} title={t('measurement.elevation')}>
+          <Button
+            onClick={() => onToolSet('measure-ele')}
+            active={tool === 'measure-ele'}
+            title={t('measurement.elevation')}
+          >
             <FontAwesomeIcon icon="long-arrow-up" />
             <span className="hidden-xs"> {t('measurement.elevation')}</span>
           </Button>
-          <Button onClick={() => onToolSet('measure-area')} active={tool === 'measure-area'} title={t('measurement.area')}>
+          <Button
+            onClick={() => onToolSet('measure-area')}
+            active={tool === 'measure-area'}
+            title={t('measurement.area')}
+          >
             <FontAwesomeIcon icon="square" />
             <span className="hidden-xs"> {t('measurement.area')}</span>
           </Button>
-        </ButtonGroup>
-        {' '}
+        </ButtonGroup>{' '}
         {tool === 'measure-dist' && (
-          <Button active={elevationChartTrackGeojson !== null} onClick={this.toggleElevationChart} disabled={!routeDefined}>
+          <Button
+            active={elevationChartTrackGeojson !== null}
+            onClick={this.toggleElevationChart}
+            disabled={!routeDefined}
+          >
             <FontAwesomeIcon icon="bar-chart" />
             <span className="hidden-xs"> {t('general.elevationProfile')}</span>
           </Button>

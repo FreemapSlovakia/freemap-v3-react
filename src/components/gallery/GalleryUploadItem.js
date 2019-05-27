@@ -22,26 +22,41 @@ export default class GalleryUploadItem extends React.Component {
     t: PropTypes.func.isRequired,
     language: PropTypes.string.isRequired,
     showPreview: PropTypes.bool,
-  }
+  };
 
   handleRemove = () => {
     this.props.onRemove(this.props.id);
-  }
+  };
 
   handlePositionPick = () => {
     this.props.onPositionPick(this.props.id);
-  }
+  };
 
-  handleModelChange = (model) => {
+  handleModelChange = model => {
     this.props.onModelChange(this.props.id, model);
-  }
+  };
 
   render() {
-    const { id, filename, url, disabled, model, allTags, error, t, language, showPreview } = this.props;
+    const {
+      id,
+      filename,
+      url,
+      disabled,
+      model,
+      allTags,
+      error,
+      t,
+      language,
+      showPreview,
+    } = this.props;
     return (
       <React.Fragment key={id}>
         {showPreview ? (
-          <img className="gallery-image gallery-image-upload" src={url || require('fm3/images/spinnerbar.gif')} alt={filename} />
+          <img
+            className="gallery-image gallery-image-upload"
+            src={url || require('fm3/images/spinnerbar.gif')}
+            alt={filename}
+          />
         ) : (
           <h4>{filename}</h4>
         )}
@@ -52,8 +67,7 @@ export default class GalleryUploadItem extends React.Component {
             language={language}
             onPositionPick={disabled ? null : this.handlePositionPick}
             onModelChange={this.handleModelChange}
-          />
-          {' '}
+          />{' '}
           <Button onClick={this.handleRemove} bsStyle="danger">
             <FontAwesomeIcon icon="times" /> {t('general.remove')}
           </Button>

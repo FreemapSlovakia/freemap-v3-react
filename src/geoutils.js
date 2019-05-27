@@ -2,7 +2,6 @@ import geojsonArea from '@mapbox/geojson-area';
 
 const PI2 = 2 * Math.PI;
 
-
 export function formatGpsCoord(angle, cardinals, style = 'DMS', language) {
   let cardinal = '';
   let a = angle;
@@ -15,18 +14,25 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS', language) {
     case 'DMS': {
       const degrees = Math.floor(a);
       const minutes = Math.floor((a - degrees) * 60);
-      const seconds = Intl.NumberFormat(language, { minimumFractionDigits: 3, maximumFractionDigits: 3 })
-        .format((a - degrees - minutes / 60) * 3600);
+      const seconds = Intl.NumberFormat(language, {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3,
+      }).format((a - degrees - minutes / 60) * 3600);
       return `${cardinal}${degrees}° ${minutes}' ${seconds}"`;
     }
     case 'DM': {
       const degrees = Math.floor(a);
-      const minutes = Intl.NumberFormat(language, { minimumFractionDigits: 4, maximumFractionDigits: 4 })
-        .format((a - degrees) * 60);
+      const minutes = Intl.NumberFormat(language, {
+        minimumFractionDigits: 4,
+        maximumFractionDigits: 4,
+      }).format((a - degrees) * 60);
       return `${cardinal}${degrees}° ${minutes}'`;
     }
     case 'D': {
-      return `${cardinal}${Intl.NumberFormat(language, { minimumFractionDigits: 6, maximumFractionDigits: 6 }).format(a)}°`;
+      return `${cardinal}${Intl.NumberFormat(language, {
+        minimumFractionDigits: 6,
+        maximumFractionDigits: 6,
+      }).format(a)}°`;
     }
     default: {
       throw new Error('unknown GPS coords style');
@@ -36,19 +42,27 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS', language) {
 
 // distance in meters
 export function distance(lat1, lon1, lat2, lon2) {
-  const a = 0.5 - Math.cos(toRad(lat2 - lat1)) / 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * (1 - Math.cos(toRad(lon2 - lon1))) / 2;
+  const a =
+    0.5 -
+    Math.cos(toRad(lat2 - lat1)) / 2 +
+    (Math.cos(toRad(lat1)) *
+      Math.cos(toRad(lat2)) *
+      (1 - Math.cos(toRad(lon2 - lon1)))) /
+      2;
   return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 
 export function bearing(lat1, lon1, lat2, lon2) {
   const dLon = lon2 - lon1;
   const y = Math.sin(dLon) * Math.cos(lat2);
-  const x = Math.cos(lat1) * Math.sin(lat2) - Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+  const x =
+    Math.cos(lat1) * Math.sin(lat2) -
+    Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
   return PI2 - ((Math.atan2(y, x) + PI2) % PI2);
 }
 
 export function toRad(deg) {
-  return deg * Math.PI / 180;
+  return (deg * Math.PI) / 180;
 }
 
 export function getCurrentPosition() {
@@ -60,11 +74,11 @@ export function getCurrentPosition() {
 
   return new Promise((resolve, reject) => {
     // resolve({ lat: 48.786170, lon: 19.496098 });
-    const onSuccess = (pos) => {
+    const onSuccess = pos => {
       resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
     };
 
-    const onError = (error) => {
+    const onError = error => {
       reject(error);
     };
 
@@ -87,14 +101,21 @@ export function containsElevations(geojson) {
 export function smoothElevations(coords, eleSmoothingFactor) {
   let prevFloatingWindowEle = 0;
   return coords.map((lonLatEle, i) => {
-    const floatingWindow = coords.slice(i, i + eleSmoothingFactor).filter(e => e).sort();
+    const floatingWindow = coords
+      .slice(i, i + eleSmoothingFactor)
+      .filter(e => e)
+      .sort();
     let floatingWindowWithoutExtremes = floatingWindow;
-    if (eleSmoothingFactor >= 5) { // ignore highest and smallest value
-      floatingWindowWithoutExtremes = floatingWindow.splice(1, floatingWindow.length - 2);
+    if (eleSmoothingFactor >= 5) {
+      // ignore highest and smallest value
+      floatingWindowWithoutExtremes = floatingWindow.splice(
+        1,
+        floatingWindow.length - 2,
+      );
     }
 
     let eleSum = 0;
-    floatingWindowWithoutExtremes.forEach((lle) => {
+    floatingWindowWithoutExtremes.forEach(lle => {
       eleSum += lle[2];
     });
 

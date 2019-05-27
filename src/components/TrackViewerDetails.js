@@ -6,15 +6,31 @@ import injectL10n from 'fm3/l10nInjector';
 import PropTypes from 'prop-types';
 import * as FmPropTypes from 'fm3/propTypes';
 
-function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmoothingFactor, language, t }) {
+function TrackViewerDetails({
+  startPoints,
+  finishPoints,
+  trackGeojson,
+  eleSmoothingFactor,
+  language,
+  t,
+}) {
   // const {
   //   trackViewer: { startPoints, finishPoints, trackGeojson, eleSmoothingFactor },
   //   l10n: { language },
   // } = getState().trackViewer;
 
-  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
-  const noDecimalDigitsNumberFormat = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const timeFormat = new Intl.DateTimeFormat(language, { hour: 'numeric', minute: '2-digit' });
+  const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  const noDecimalDigitsNumberFormat = Intl.NumberFormat(language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+  const timeFormat = new Intl.DateTimeFormat(language, {
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 
   const tableData = [];
 
@@ -39,16 +55,25 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
     duration = (new Date(finishTime) - new Date(startTime)) / 1000;
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration - hours * 3600) / 60);
-    tableData.push(['duration', t('trackViewer.details.durationValue', { h: hours, m: minutes })]);
+    tableData.push([
+      'duration',
+      t('trackViewer.details.durationValue', { h: hours, m: minutes }),
+    ]);
   }
 
   if (finishPoints.length) {
     const [{ lengthInKm }] = finishPoints;
-    tableData.push(['distance', `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`]);
+    tableData.push([
+      'distance',
+      `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`,
+    ]);
 
     if (duration) {
-      const avgSpeed = lengthInKm / duration * 3600;
-      tableData.push(['avgSpeed', `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`]);
+      const avgSpeed = (lengthInKm / duration) * 3600;
+      tableData.push([
+        'avgSpeed',
+        `${oneDecimalDigitNumberFormat.format(avgSpeed)} km/h`,
+      ]);
     }
   }
 
@@ -57,12 +82,21 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
   let maxEle = -Infinity;
   let uphillEleSum = 0;
   let downhillEleSum = 0;
-  const smoothed = smoothElevations(firstRealFeature.geometry.coordinates, eleSmoothingFactor);
+  const smoothed = smoothElevations(
+    firstRealFeature.geometry.coordinates,
+    eleSmoothingFactor,
+  );
   let [prevCoord] = smoothed;
 
-  smoothed.forEach((coord) => {
-    const distanceFromPrevPointInMeters = distance(coord[1], coord[0], prevCoord[1], prevCoord[0]);
-    if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) { // otherwise the ele sums are very high
+  smoothed.forEach(coord => {
+    const distanceFromPrevPointInMeters = distance(
+      coord[1],
+      coord[0],
+      prevCoord[1],
+      prevCoord[0],
+    );
+    if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
+      // otherwise the ele sums are very high
       const ele = coord[2];
       if (ele < minEle) {
         minEle = ele;
@@ -81,29 +115,42 @@ function TrackViewerDetails({ startPoints, finishPoints, trackGeojson, eleSmooth
     }
   });
   if (minEle !== Infinity) {
-    tableData.push(['minEle', `${noDecimalDigitsNumberFormat.format(minEle)} ${t('general.masl')}`]);
+    tableData.push([
+      'minEle',
+      `${noDecimalDigitsNumberFormat.format(minEle)} ${t('general.masl')}`,
+    ]);
   }
   if (maxEle !== -Infinity) {
-    tableData.push(['maxEle', `${noDecimalDigitsNumberFormat.format(maxEle)} ${t('general.masl')}`]);
+    tableData.push([
+      'maxEle',
+      `${noDecimalDigitsNumberFormat.format(maxEle)} ${t('general.masl')}`,
+    ]);
   }
-  tableData.push(['uphill', `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`]);
-  tableData.push(['downhill', `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`]);
+  tableData.push([
+    'uphill',
+    `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`,
+  ]);
+  tableData.push([
+    'downhill',
+    `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`,
+  ]);
 
   return (
     <dl className="trackInfo dl-horizontal">
-      {
-        tableData.map(([key, value]) => ([
-          <dt key={`${key}-dt`}>{t(`trackViewer.details.${key}`)}:</dt>,
-          <dd key={`${key}-dd`} className="infoValue">{value}</dd>,
-        ]))
-      }
+      {tableData.map(([key, value]) => [
+        <dt key={`${key}-dt`}>{t(`trackViewer.details.${key}`)}:</dt>,
+        <dd key={`${key}-dd`} className="infoValue">
+          {value}
+        </dd>,
+      ])}
     </dl>
   );
 }
 
 TrackViewerDetails.propTypes = {
   startPoints: PropTypes.arrayOf(FmPropTypes.startPoint.isRequired).isRequired,
-  finishPoints: PropTypes.arrayOf(FmPropTypes.finishPoint.isRequired).isRequired,
+  finishPoints: PropTypes.arrayOf(FmPropTypes.finishPoint.isRequired)
+    .isRequired,
   trackGeojson: PropTypes.shape({
     features: PropTypes.array,
   }),
@@ -114,13 +161,11 @@ TrackViewerDetails.propTypes = {
 
 export default compose(
   injectL10n(),
-  connect(
-    state => ({
-      startPoints: state.trackViewer.startPoints,
-      finishPoints: state.trackViewer.finishPoints,
-      trackGeojson: state.trackViewer.trackGeojson,
-      eleSmoothingFactor: state.main.eleSmoothingFactor,
-      language: state.l10n.language,
-    }),
-  ),
+  connect(state => ({
+    startPoints: state.trackViewer.startPoints,
+    finishPoints: state.trackViewer.finishPoints,
+    trackGeojson: state.trackViewer.trackGeojson,
+    eleSmoothingFactor: state.main.eleSmoothingFactor,
+    language: state.l10n.language,
+  })),
 )(TrackViewerDetails);

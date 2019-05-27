@@ -13,7 +13,10 @@ import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import injectL10n from 'fm3/l10nInjector';
 
-import { changesetsSetDays, changesetsSetAuthorName } from 'fm3/actions/changesetsActions';
+import {
+  changesetsSetDays,
+  changesetsSetAuthorName,
+} from 'fm3/actions/changesetsActions';
 
 class ChangesetsMenu extends React.Component {
   static propTypes = {
@@ -43,47 +46,60 @@ class ChangesetsMenu extends React.Component {
     return null;
   }
 
-  canSearchWithThisAmountOfDays = (amountOfDays) => {
+  canSearchWithThisAmountOfDays = amountOfDays => {
     if (this.state.authorName) {
       return true;
     }
     const { zoom } = this.props;
-    return (amountOfDays === 3 && zoom >= 9) || (amountOfDays === 7 && zoom >= 10) || (amountOfDays === 14 && zoom >= 11);
-  }
+    return (
+      (amountOfDays === 3 && zoom >= 9) ||
+      (amountOfDays === 7 && zoom >= 10) ||
+      (amountOfDays === 14 && zoom >= 11)
+    );
+  };
 
-  handleAuthorNameChange = (e) => {
-    this.setState({ authorName: e.target.value === '' ? null : e.target.value });
-  }
+  handleAuthorNameChange = e => {
+    this.setState({
+      authorName: e.target.value === '' ? null : e.target.value,
+    });
+  };
 
   render() {
-    const { days, onChangesetsSetDays, onChangesetsSetAuthorNameAndRefresh, t } = this.props;
+    const {
+      days,
+      onChangesetsSetDays,
+      onChangesetsSetAuthorNameAndRefresh,
+      t,
+    } = this.props;
     const { authorName } = this.state;
 
     return (
       <>
         <span className="fm-label">
           <FontAwesomeIcon icon="pencil" />
-          <span className="hidden-xs">
-            {' '}
-            {t('tools.changesets')}
-          </span>
-        </span>
-        {' '}
+          <span className="hidden-xs"> {t('tools.changesets')}</span>
+        </span>{' '}
         <Form inline>
           <ButtonGroup>
-            <DropdownButton id="days" title={t('changesets.olderThanFull', { days }, () => '')}>
+            <DropdownButton
+              id="days"
+              title={t('changesets.olderThanFull', { days }, () => '')}
+            >
               {[3, 7, 14, 30].map(d => (
                 <MenuItem
                   key={d}
                   disabled={!this.canSearchWithThisAmountOfDays(d)}
-                  onClick={() => (this.canSearchWithThisAmountOfDays(d) ? onChangesetsSetDays(d) : false)}
+                  onClick={() =>
+                    this.canSearchWithThisAmountOfDays(d)
+                      ? onChangesetsSetDays(d)
+                      : false
+                  }
                 >
                   {t('changesets.olderThan', { days: d }, () => {})}
                 </MenuItem>
               ))}
             </DropdownButton>
-          </ButtonGroup>
-          {' '}
+          </ButtonGroup>{' '}
           <FormGroup>
             <InputGroup>
               <FormControl
@@ -101,18 +117,16 @@ class ChangesetsMenu extends React.Component {
                 </Button>
               </InputGroup.Button>
             </InputGroup>
-          </FormGroup>
-          {' '}
+          </FormGroup>{' '}
           <Button
             disabled={!this.canSearchWithThisAmountOfDays(days)}
-            onClick={() => onChangesetsSetAuthorNameAndRefresh(days, authorName)}
+            onClick={() =>
+              onChangesetsSetAuthorNameAndRefresh(days, authorName)
+            }
             title={t('changesets.download')}
           >
             <FontAwesomeIcon icon="refresh" />
-            <span className="hidden-xs">
-              {' '}
-              {t('changesets.download')}
-            </span>
+            <span className="hidden-xs"> {t('changesets.download')}</span>
           </Button>
         </Form>
       </>

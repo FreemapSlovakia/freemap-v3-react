@@ -17,21 +17,25 @@ export default createLogic({
     getAuth2()
       .then(([auth2]) => auth2.signIn())
       .then(googleUser => googleUser.getAuthResponse().id_token)
-      .then(idToken => axios(`${process.env.API_URL}/auth/login-google`, {
-        method: 'post',
-        validateStatus: status => status === 200,
-        data: { idToken },
-      }))
+      .then(idToken =>
+        axios(`${process.env.API_URL}/auth/login-google`, {
+          method: 'post',
+          validateStatus: status => status === 200,
+          data: { idToken },
+        }),
+      )
       .then(({ data }) => {
-        dispatch(toastsAdd({
-          collapseKey: 'login',
-          messageKey: 'logIn.success',
-          style: 'info',
-          timeout: 5000,
-        }));
+        dispatch(
+          toastsAdd({
+            collapseKey: 'login',
+            messageKey: 'logIn.success',
+            style: 'info',
+            timeout: 5000,
+          }),
+        );
         dispatch(authSetUser(data));
       })
-      .catch((err) => {
+      .catch(err => {
         if (!['popup_closed_by_user', 'access_denied'].includes(err.error)) {
           dispatch(toastsAddError('logIn.logInError', err));
         }

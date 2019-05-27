@@ -5,9 +5,20 @@ import { setupTimeout, removeTimeout } from 'fm3/logic/toasts';
 
 export default createLogic({
   type: at.TOASTS_ADD,
-  process({ getState, action: { payload: { timeout, id, collapseKey } } }, dispatch, done) {
+  process(
+    {
+      getState,
+      action: {
+        payload: { timeout, id, collapseKey },
+      },
+    },
+    dispatch,
+    done,
+  ) {
     if (collapseKey) {
-      const toast = getState().toasts.toasts.find(t => t.collapseKey === collapseKey);
+      const toast = getState().toasts.toasts.find(
+        t => t.collapseKey === collapseKey,
+      );
       if (toast) {
         removeTimeout(toast.id);
       }

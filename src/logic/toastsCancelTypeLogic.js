@@ -3,10 +3,19 @@ import { toastsRemove } from 'fm3/actions/toastsActions';
 
 export default createLogic({
   type: '*',
-  process({ getState, action: { type } }, dispatch, done) {
-    getState().toasts.toasts.filter(({ cancelType }) => matches(type, cancelType)).forEach(({ id }) => {
-      dispatch(toastsRemove(id));
-    });
+  process(
+    {
+      getState,
+      action: { type },
+    },
+    dispatch,
+    done,
+  ) {
+    getState()
+      .toasts.toasts.filter(({ cancelType }) => matches(type, cancelType))
+      .forEach(({ id }) => {
+        dispatch(toastsRemove(id));
+      });
     done();
   },
 });

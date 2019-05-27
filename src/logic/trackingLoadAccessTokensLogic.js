@@ -12,16 +12,21 @@ export default createLogic({
     const pid = Math.random();
     dispatch(startProgress(pid));
     getAuthAxios(getState)
-      .get(`/tracking/devices/${getState().tracking.accessTokensDeviceId}/access-tokens`)
+      .get(
+        `/tracking/devices/${
+          getState().tracking.accessTokensDeviceId
+        }/access-tokens`,
+      )
       .then(({ data }) => {
         for (const accessToken of data) {
           for (const field of ['createdAt', 'timeFrom', 'timeTo']) {
-            accessToken[field] = accessToken[field] && new Date(accessToken[field]);
+            accessToken[field] =
+              accessToken[field] && new Date(accessToken[field]);
           }
         }
         dispatch(trackingSetAccessTokens(data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('settings.savingError', err)); // TODO
       })
       .then(() => {

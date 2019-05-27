@@ -2,7 +2,18 @@ export function resolveTrackSurface(tags) {
   if (tags.surface) {
     return tags.surface;
   }
-  if (['motorway', 'trunk', 'primary', 'secondary', 'tertiary', 'service', 'unclassified', 'residential'].indexOf(tags.highway) >= 0) {
+  if (
+    [
+      'motorway',
+      'trunk',
+      'primary',
+      'secondary',
+      'tertiary',
+      'service',
+      'unclassified',
+      'residential',
+    ].indexOf(tags.highway) >= 0
+  ) {
     return 'asphalt';
   }
   return 'unknown';

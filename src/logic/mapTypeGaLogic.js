@@ -6,9 +6,11 @@ let prevMapType;
 let prevOverlays = [];
 
 export default createLogic({
-  type: [at.MAP_REFOCUS, at.ENABLE_UPDATING_URL/* any initial action */],
+  type: [at.MAP_REFOCUS, at.ENABLE_UPDATING_URL /* any initial action */],
   process({ getState }, dispatch, done) {
-    const { map: { mapType, overlays } } = getState();
+    const {
+      map: { mapType, overlays },
+    } = getState();
     if (prevMapType !== mapType) {
       window.ga('set', 'dimension1', mapType);
       window.ga('send', 'event', 'Map', 'setMapType', mapType);

@@ -20,7 +20,7 @@ export default createLogic({
         .then(() => {
           dispatch(trackingModifyDevice(undefined));
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('settings.savingError', err)); // TODO
         })
         .then(() => {
@@ -33,7 +33,7 @@ export default createLogic({
         .then(() => {
           dispatch(trackingModifyDevice(undefined));
         })
-        .catch((err) => {
+        .catch(err => {
           dispatch(toastsAddError('settings.savingError', err)); // TODO
         })
         .then(() => {

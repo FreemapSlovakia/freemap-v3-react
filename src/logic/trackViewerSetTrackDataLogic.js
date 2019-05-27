@@ -12,12 +12,15 @@ export default createLogic({
     }
 
     // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
-    const gpxAsXml = new DOMParser().parseFromString(action.payload.trackGpx, 'text/xml');
+    const gpxAsXml = new DOMParser().parseFromString(
+      action.payload.trackGpx,
+      'text/xml',
+    );
     const trackGeojson = toGeoJSON.gpx(gpxAsXml);
 
     const startPoints = [];
     const finishPoints = [];
-    trackGeojson.features.forEach((feature) => {
+    trackGeojson.features.forEach(feature => {
       if (feature.geometry.type === 'LineString') {
         const lengthInKm = turfLength(feature);
         const coords = feature.geometry.coordinates;
@@ -29,18 +32,28 @@ export default createLogic({
           [startTime] = times;
           finishTime = times[times.length - 1];
         }
-        startPoints.push({ lat: startLonlat[1], lon: startLonlat[0], startTime });
+        startPoints.push({
+          lat: startLonlat[1],
+          lon: startLonlat[0],
+          startTime,
+        });
 
         const finishLonLat = coords[coords.length - 1];
         finishPoints.push({
-          lat: finishLonLat[1], lon: finishLonLat[0], lengthInKm, finishTime,
+          lat: finishLonLat[1],
+          lon: finishLonLat[0],
+          lengthInKm,
+          finishTime,
         });
       }
     });
     next({
       ...action,
       payload: {
-        ...action.payload, trackGeojson, startPoints, finishPoints,
+        ...action.payload,
+        trackGeojson,
+        startPoints,
+        finishPoints,
       },
     });
   },

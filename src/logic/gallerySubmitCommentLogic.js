@@ -26,23 +26,24 @@ export default createLogic({
 
     window.ga('send', 'event', 'Gallery', 'submitComment');
 
-    axios.post(
-      `${process.env.API_URL}/gallery/pictures/${id}/comments`,
-      {
-        comment: getState().gallery.comment,
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${getState().auth.user.authToken}`,
+    axios
+      .post(
+        `${process.env.API_URL}/gallery/pictures/${id}/comments`,
+        {
+          comment: getState().gallery.comment,
         },
-        validateStatus: status => status === 200,
-        cancelToken: source.token,
-      },
-    )
+        {
+          headers: {
+            Authorization: `Bearer ${getState().auth.user.authToken}`,
+          },
+          validateStatus: status => status === 200,
+          cancelToken: source.token,
+        },
+      )
       .then(() => {
         dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('gallery.commentAddingError', err));
       })
       .then(() => {

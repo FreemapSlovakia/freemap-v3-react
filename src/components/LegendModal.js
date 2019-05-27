@@ -21,24 +21,20 @@ export function Legend({ onModalClose }) {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.
-        </p>
+        <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
         <PanelGroup accordion id="pg1">
-          {
-            require('fm3/legend/index.json').map((c, i) => (
-              <Panel key={`yyy${c.n}`} header={c.n} eventKey={i}>
-                {c.items.map(e => (
-                  <div key={`xxx${c.n}-${e.n}`}>
-                    <div className="legend-item">
-                      <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
-                    </div>
-                    {` ${e.n}`}
+          {require('fm3/legend/index.json').map((c, i) => (
+            <Panel key={`yyy${c.n}`} header={c.n} eventKey={i}>
+              {c.items.map(e => (
+                <div key={`xxx${c.n}-${e.n}`}>
+                  <div className="legend-item">
+                    <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
                   </div>
-                ))}
-              </Panel>
-            ))
-          }
+                  {` ${e.n}`}
+                </div>
+              ))}
+            </Panel>
+          ))}
         </PanelGroup>
       </Modal.Body>
       <Modal.Footer>

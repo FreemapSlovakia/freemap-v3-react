@@ -9,11 +9,17 @@ export function routePlannerSetFinish(finish, move) {
 }
 
 export function routePlannerAddMidpoint(midpoint, position) {
-  return { type: at.ROUTE_PLANNER_ADD_MIDPOINT, payload: { midpoint, position } };
+  return {
+    type: at.ROUTE_PLANNER_ADD_MIDPOINT,
+    payload: { midpoint, position },
+  };
 }
 
 export function routePlannerSetMidpoint(position, midpoint) {
-  return { type: at.ROUTE_PLANNER_SET_MIDPOINT, payload: { midpoint, position } };
+  return {
+    type: at.ROUTE_PLANNER_SET_MIDPOINT,
+    payload: { midpoint, position },
+  };
 }
 
 export function routePlannerRemoveMidpoint(position) {
@@ -40,11 +46,21 @@ export function routePlannerToggleItineraryVisibility() {
   return { type: at.ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY };
 }
 
-export function routePlannerSetParams(start, finish, midpoints, transportType, mode) {
+export function routePlannerSetParams(
+  start,
+  finish,
+  midpoints,
+  transportType,
+  mode,
+) {
   return {
     type: at.ROUTE_PLANNER_SET_PARAMS,
     payload: {
-      start, finish, midpoints, transportType, mode,
+      start,
+      finish,
+      midpoints,
+      transportType,
+      mode,
     },
   };
 }
@@ -54,7 +70,10 @@ export function routePlannerPreventHint() {
 }
 
 export function routePlannerSetActiveAlternativeIndex(index) {
-  return { type: at.ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX, payload: index };
+  return {
+    type: at.ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX,
+    payload: index,
+  };
 }
 
 export function routePlannerToggleElevationChart() {

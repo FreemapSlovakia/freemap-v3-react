@@ -2,7 +2,12 @@ import qs from 'query-string';
 import axios from 'axios';
 import history from 'fm3/history';
 
-import { setHomeLocation, startProgress, stopProgress, setActiveModal } from 'fm3/actions/mainActions';
+import {
+  setHomeLocation,
+  startProgress,
+  stopProgress,
+  setActiveModal,
+} from 'fm3/actions/mainActions';
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
@@ -31,39 +36,49 @@ export default function initAuthHelper(store) {
 }
 
 function setupOsmLoginStep2Listener(store) {
-  window.addEventListener('message', (e) => {
+  window.addEventListener('message', e => {
     /* eslint-disable no-underscore-dangle */
 
-    if (e.origin !== window.location.origin || typeof e.data !== 'object' || !e.data.__freemap || !e.data.__freemap.oauthParams) {
+    if (
+      e.origin !== window.location.origin ||
+      typeof e.data !== 'object' ||
+      !e.data.__freemap ||
+      !e.data.__freemap.oauthParams
+    ) {
       return;
     }
 
-    const { oauth_token: token, oauth_verifier: verifier } = qs.parse(e.data.__freemap.oauthParams);
+    const { oauth_token: token, oauth_verifier: verifier } = qs.parse(
+      e.data.__freemap.oauthParams,
+    );
 
     const pid = Math.random();
     store.dispatch(startProgress(pid));
-    axios.post(
-      `${process.env.API_URL}/auth/login2`,
-      { token, verifier },
-      {
-        validateStatus: status => status === 200,
-      },
-    )
+    axios
+      .post(
+        `${process.env.API_URL}/auth/login2`,
+        { token, verifier },
+        {
+          validateStatus: status => status === 200,
+        },
+      )
       .then(({ data }) => {
         if (!store.getState().main.homeLocation) {
           store.dispatch(setHomeLocation({ lat: data.lat, lon: data.lon }));
         }
 
-        store.dispatch(toastsAdd({
-          collapseKey: 'login',
-          messageKey: 'logIn.success',
-          style: 'info',
-          timeout: 5000,
-        }));
+        store.dispatch(
+          toastsAdd({
+            collapseKey: 'login',
+            messageKey: 'logIn.success',
+            style: 'info',
+            timeout: 5000,
+          }),
+        );
 
         store.dispatch(authSetUser(data));
       })
-      .catch((err) => {
+      .catch(err => {
         store.dispatch(toastsAddError('logIn.logInError', err));
       })
       .then(() => {
@@ -83,10 +98,10 @@ function verifyUser(store, user) {
     },
     validateStatus: status => status === 200 || status === 401,
   })
-    .then((res) => {
+    .then(res => {
       store.dispatch(authSetUser(res.status === 200 ? res.data : null));
     })
-    .catch((err) => {
+    .catch(err => {
       store.dispatch(toastsAddError('logIn.verifyError', err));
     })
     .then(() => {
@@ -100,9 +115,17 @@ function handleTips(store) {
   const embedded = window.self !== window.top;
 
   // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
-  if (!embedded && history.location.search.substring(1).split('&').every(x => /^(map|layers)=|^$/.test(x))) {
+  if (
+    !embedded &&
+    history.location.search
+      .substring(1)
+      .split('&')
+      .every(x => /^(map|layers)=|^$/.test(x))
+  ) {
     if (!store.getState().auth.user) {
-      store.dispatch(tipsPreventNextTime(storage.getItem('preventTips') === 'true'));
+      store.dispatch(
+        tipsPreventNextTime(storage.getItem('preventTips') === 'true'),
+      );
     }
     if (!store.getState().tips.preventTips) {
       store.dispatch(tipsNext(storage.getItem('tip') || null));

@@ -4,7 +4,13 @@ import 'fm3/font/styles.css';
 
 export default function FontAwesomeIcon({ icon, ...props }) {
   return (
-    <i {...props} className={`fa-fw fa ${icon.startsWith('!') ? icon.slice(1) : `fa-${icon}`} ${props.className || ''}`} aria-hidden="true" />
+    <i
+      {...props}
+      className={`fa-fw fa ${
+        icon.startsWith('!') ? icon.slice(1) : `fa-${icon}`
+      } ${props.className || ''}`}
+      aria-hidden="true"
+    />
   );
 }
 

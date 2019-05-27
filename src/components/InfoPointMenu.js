@@ -11,10 +11,19 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import injectL10n from 'fm3/l10nInjector';
 
-function InfoPointMenu({ onInfoPointAdd, onLabelModify, isActive, onDelete, t }) {
-  const handleInfoPointAdd = useCallback((lat, lon) => {
-    onInfoPointAdd(lat, lon);
-  }, [onInfoPointAdd]);
+function InfoPointMenu({
+  onInfoPointAdd,
+  onLabelModify,
+  isActive,
+  onDelete,
+  t,
+}) {
+  const handleInfoPointAdd = useCallback(
+    (lat, lon) => {
+      onInfoPointAdd(lat, lon);
+    },
+    [onInfoPointAdd],
+  );
 
   useEffect(() => {
     mapEventEmitter.on('mapClick', handleInfoPointAdd);
@@ -28,13 +37,11 @@ function InfoPointMenu({ onInfoPointAdd, onLabelModify, isActive, onDelete, t })
       <span className="fm-label">
         <FontAwesomeIcon icon="thumb-tack" />
         <span className="hidden-xs"> {t('tools.infoPoint')}</span>
-      </span>
-      {' '}
+      </span>{' '}
       <Button onClick={onLabelModify} disabled={!isActive}>
         <FontAwesomeIcon icon="tag" />
         <span className="hidden-xs"> {t('infoPoint.modify')}</span>
-      </Button>
-      {' '}
+      </Button>{' '}
       <Button onClick={onDelete} disabled={!isActive}>
         <FontAwesomeIcon icon="trash-o" />
         <span className="hidden-xs"> {t('general.delete')}</span>

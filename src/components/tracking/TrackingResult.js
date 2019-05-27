@@ -15,17 +15,29 @@ class TrackingResult extends React.Component {
     activePoint: null,
   };
 
-  handleActivePointSet = (activePoint) => {
+  handleActivePointSet = activePoint => {
     this.setState({
       activePoint,
     });
-  }
+  };
 
   render() {
-    const { tracks, showLine, showPoints, language, activeTrackId } = this.props;
-    const df = new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const {
+      tracks,
+      showLine,
+      showPoints,
+      language,
+      activeTrackId,
+    } = this.props;
+    const df = new Intl.DateTimeFormat(language, {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
 
-    return tracks.map((track) => {
+    return tracks.map(track => {
       const color = track.color || '#7239a8';
       const width = track.width || 4;
 
@@ -44,12 +56,19 @@ class TrackingResult extends React.Component {
       const splitByDuration = typeof track.splitDuration === 'number';
       for (const tp of track.trackPoints) {
         if (
-          prevTp
-            && (splitByDistance || splitByDuration)
-            && (
-              splitByDistance && distance(tp.lat, tp.lon, prevTp.lat, prevTp.lon, track.splitDistance) > track.splitDistance
-                || splitByDuration && tp.ts.getTime() - prevTp.ts.getTime() > track.splitDuration * 60000
-            )
+          prevTp &&
+          (splitByDistance || splitByDuration) &&
+          ((splitByDistance &&
+            distance(
+              tp.lat,
+              tp.lon,
+              prevTp.lat,
+              prevTp.lon,
+              track.splitDistance,
+            ) > track.splitDistance) ||
+            (splitByDuration &&
+              tp.ts.getTime() - prevTp.ts.getTime() >
+                track.splitDuration * 60000))
         ) {
           curSegment = null;
         }
@@ -63,7 +82,10 @@ class TrackingResult extends React.Component {
         prevTp = tp;
       }
 
-      const lastPoint = track.trackPoints.length > 0 ? track.trackPoints[track.trackPoints.length - 1] : null;
+      const lastPoint =
+        track.trackPoints.length > 0
+          ? track.trackPoints[track.trackPoints.length - 1]
+          : null;
 
       return (
         <Fragment key={track.id}>
@@ -76,26 +98,32 @@ class TrackingResult extends React.Component {
             />
           )}
 
-          {this.state.activePoint && typeof this.state.activePoint.accuracy === 'number' && (
-            <Circle
-              weight={2}
-              interactive={false}
-              center={this.state.activePoint}
-              radius={this.state.activePoint.accuracy}
-            />
-          )}
+          {this.state.activePoint &&
+            typeof this.state.activePoint.accuracy === 'number' && (
+              <Circle
+                weight={2}
+                interactive={false}
+                center={this.state.activePoint}
+                radius={this.state.activePoint.accuracy}
+              />
+            )}
 
-          {showLine && track.trackPoints.length > 1 && segments.map((segment, i) => (
-            <Polyline
-              key={`seg-${i}`}
-              positions={segment}
-              weight={width}
-              color={color}
-              onClick={handleClick}
-            />
-          ))}
+          {showLine &&
+            track.trackPoints.length > 1 &&
+            segments.map((segment, i) => (
+              <Polyline
+                key={`seg-${i}`}
+                positions={segment}
+                weight={width}
+                color={color}
+                onClick={handleClick}
+              />
+            ))}
 
-          {(showPoints || track.trackPoints.length === 0 ? track.trackPoints : [track.trackPoints[track.trackPoints.length - 1]]).map((tp, i) => (
+          {(showPoints || track.trackPoints.length === 0
+            ? track.trackPoints
+            : [track.trackPoints[track.trackPoints.length - 1]]
+          ).map((tp, i) =>
             !showPoints || i === track.trackPoints.length - 1 ? (
               <RichMarker
                 key={tp.id}
@@ -118,8 +146,8 @@ class TrackingResult extends React.Component {
                 onActivePointSet={this.handleActivePointSet}
                 onClick={handleClick}
               />
-            )
-          ))}
+            ),
+          )}
         </Fragment>
       );
     });
@@ -128,41 +156,53 @@ class TrackingResult extends React.Component {
 
 // TODO to separate file
 // eslint-disable-next-line
-const TrackingPoint = React.memo(({ tp, width, color, language, onActivePointSet, onClick }) => {
-  const df = new Intl.DateTimeFormat(language, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+const TrackingPoint = React.memo(
+  ({ tp, width, color, language, onActivePointSet, onClick }) => {
+    const df = new Intl.DateTimeFormat(language, {
+      month: 'short',
+      day: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+    });
 
-  const handleMouseOver = useCallback(() => {
-    if (onActivePointSet) {
-      onActivePointSet(tp);
-    }
-  }, [tp, onActivePointSet]);
+    const handleMouseOver = useCallback(() => {
+      if (onActivePointSet) {
+        onActivePointSet(tp);
+      }
+    }, [tp, onActivePointSet]);
 
-  const handleMouseOut = useCallback(() => {
-    if (onActivePointSet) {
-      onActivePointSet(null);
-    }
-  }, [onActivePointSet]);
+    const handleMouseOut = useCallback(() => {
+      if (onActivePointSet) {
+        onActivePointSet(null);
+      }
+    }, [onActivePointSet]);
 
-  return (
-    <CircleMarker
-      stroke={false}
-      center={tp}
-      radius={width}
-      color={color}
-      fillOpacity={1}
-      onMouseOver={handleMouseOver}
-      onMouseOut={handleMouseOut}
-      onClick={onClick}
-    >
-      <Tooltip direction="top" offset={[0, -1.5 * width]}>
-        {tooltipText(df, tp)}
-      </Tooltip>
-    </CircleMarker>
-  );
-});
+    return (
+      <CircleMarker
+        stroke={false}
+        center={tp}
+        radius={width}
+        color={color}
+        fillOpacity={1}
+        onMouseOver={handleMouseOver}
+        onMouseOut={handleMouseOut}
+        onClick={onClick}
+      >
+        <Tooltip direction="top" offset={[0, -1.5 * width]}>
+          {tooltipText(df, tp)}
+        </Tooltip>
+      </CircleMarker>
+    );
+  },
+);
 
 // eslint-disable-next-line
-function tooltipText(df, { battery, ts, gsmSignal, speed, message, altitude }, label) {
+function tooltipText(
+  df,
+  { battery, ts, gsmSignal, speed, message, altitude },
+  label,
+) {
   // TODO bearing
 
   const items = [];
@@ -181,15 +221,31 @@ function tooltipText(df, { battery, ts, gsmSignal, speed, message, altitude }, l
 
   if (typeof battery === 'number') {
     items.push([
-      `battery-${battery < 12.5 ? 0 : battery < 25 + 12.5 ? 1 : battery < 50 + 12.5 ? 2 : battery < 75 + 12.5 ? 3 : 4}`,
+      `battery-${
+        battery < 12.5
+          ? 0
+          : battery < 25 + 12.5
+          ? 1
+          : battery < 50 + 12.5
+          ? 2
+          : battery < 75 + 12.5
+          ? 3
+          : 4
+      }`,
       `${battery} %`,
     ]);
   }
 
   return (
     <div>
-      {label && <div><b>{label}</b></div>}
-      <div><FontAwesomeIcon icon="clock-o" /> {df.format(ts)}</div>
+      {label && (
+        <div>
+          <b>{label}</b>
+        </div>
+      )}
+      <div>
+        <FontAwesomeIcon icon="clock-o" /> {df.format(ts)}
+      </div>
       <div>
         {items.map(([icon, text], i) => (
           <Fragment key={icon}>
@@ -198,20 +254,28 @@ function tooltipText(df, { battery, ts, gsmSignal, speed, message, altitude }, l
           </Fragment>
         ))}
       </div>
-      {message && <div><FontAwesomeIcon icon="bubble-o" /> {message}</div>}
+      {message && (
+        <div>
+          <FontAwesomeIcon icon="bubble-o" /> {message}
+        </div>
+      )}
     </div>
   );
 }
 
 TrackingResult.propTypes = {
-  tracks: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.oneOf([PropTypes.string, PropTypes.number]).isRequired,
-    trackPoints: PropTypes.arrayOf(PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-    }).isRequired).isRequired,
-    // TODO other
-  }).isRequired).isRequired,
+  tracks: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.oneOf([PropTypes.string, PropTypes.number]).isRequired,
+      trackPoints: PropTypes.arrayOf(
+        PropTypes.shape({
+          lat: PropTypes.number.isRequired,
+          lon: PropTypes.number.isRequired,
+        }).isRequired,
+      ).isRequired,
+      // TODO other
+    }).isRequired,
+  ).isRequired,
   showLine: PropTypes.bool,
   showPoints: PropTypes.bool,
   language: PropTypes.string,
@@ -220,10 +284,13 @@ TrackingResult.propTypes = {
 };
 
 export default connect(
-  (state) => {
+  state => {
     const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
     return {
-      tracks: state.tracking.tracks.map(track => ({ ...track, ...(tdMap.get(track.id) || {}) })),
+      tracks: state.tracking.tracks.map(track => ({
+        ...track,
+        ...(tdMap.get(track.id) || {}),
+      })),
       showLine: state.tracking.showLine,
       showPoints: state.tracking.showPoints,
       activeTrackId: state.tracking.activeTrackId,

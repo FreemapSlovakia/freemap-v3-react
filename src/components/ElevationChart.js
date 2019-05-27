@@ -4,17 +4,34 @@ import { compose } from 'redux';
 import { Line } from 'react-chartjs-2';
 import PropTypes from 'prop-types';
 
-import { elevationChartSetActivePoint, elevationChartRemoveActivePoint } from 'fm3/actions/elevationChartActions';
+import {
+  elevationChartSetActivePoint,
+  elevationChartRemoveActivePoint,
+} from 'fm3/actions/elevationChartActions';
 import { elevationChartProfilePoint } from 'fm3/propTypes';
 import injectL10n from 'fm3/l10nInjector';
 
 import 'fm3/styles/elevationChart.scss';
 
-function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePoint, t, language }) {
-  const nf0 = Intl.NumberFormat(language, { minimumFractionDigits: 0, maximumFractionDigits: 0 });
-  const nf1 = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+function ElevationChart({
+  elevationProfilePoints,
+  setActivePoint,
+  removeActivePoint,
+  t,
+  language,
+}) {
+  const nf0 = Intl.NumberFormat(language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+  const nf1 = Intl.NumberFormat(language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
-  const { climbUp, climbDown, distance } = elevationProfilePoints[elevationProfilePoints.length - 1];
+  const { climbUp, climbDown, distance } = elevationProfilePoints[
+    elevationProfilePoints.length - 1
+  ];
 
   return (
     <div className="elevationChart">
@@ -26,7 +43,9 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
             intersect: false,
             custom(tooltip) {
               if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
-                setActivePoint(elevationProfilePoints[tooltip.dataPoints[0].index]);
+                setActivePoint(
+                  elevationProfilePoints[tooltip.dataPoints[0].index],
+                );
               } else {
                 removeActivePoint();
               }
@@ -36,30 +55,36 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
             display: false,
           },
           scales: {
-            xAxes: [{
-              type: 'linear',
-              ticks: {
-                userCallback: label => nf1.format(label / 1000),
-                max: distance,
+            xAxes: [
+              {
+                type: 'linear',
+                ticks: {
+                  userCallback: label => nf1.format(label / 1000),
+                  max: distance,
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: t('elevationChart.distance'),
+                },
               },
-              scaleLabel: {
-                display: true,
-                labelString: t('elevationChart.distance'),
+            ],
+            yAxes: [
+              {
+                ticks: {
+                  userCallback: label => nf0.format(label),
+                },
+                scaleLabel: {
+                  display: true,
+                  labelString: t('elevationChart.ele'),
+                },
               },
-            }],
-            yAxes: [{
-              ticks: {
-                userCallback: label => nf0.format(label),
-              },
-              scaleLabel: {
-                display: true,
-                labelString: t('elevationChart.ele'),
-              },
-            }],
+            ],
           },
         }}
         data={{
-          xLabels: elevationProfilePoints.map(p => nf1.format(p.distance / 1000)),
+          xLabels: elevationProfilePoints.map(p =>
+            nf1.format(p.distance / 1000),
+          ),
           datasets: [
             {
               fill: true,
@@ -69,15 +94,17 @@ function ElevationChart({ elevationProfilePoints, setActivePoint, removeActivePo
               pointBorderWidth: 0,
               pointHoverRadius: 0,
               pointRadius: 0,
-              data: elevationProfilePoints.map(p => ({ x: p.distance, y: p.ele })),
+              data: elevationProfilePoints.map(p => ({
+                x: p.distance,
+                y: p.ele,
+              })),
             },
           ],
         }}
       />
       {typeof climbUp === 'number' && (
         <p style={{ marginLeft: '4px' }}>
-          {t('trackViewer.details.uphill')}: {nf0.format(climbUp)} m,
-          {' '}
+          {t('trackViewer.details.uphill')}: {nf0.format(climbUp)} m,{' '}
           {t('trackViewer.details.downhill')}: {nf0.format(climbDown)} m
         </p>
       )}

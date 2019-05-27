@@ -76,15 +76,34 @@ export default {
     },
     alternative: 'Alternative',
     // eslint-disable-next-line
-    distance: ({ value }) => <Fragment>Distance: <b>{value} km</b></Fragment>,
+    distance: ({ value }) => (
+      <Fragment>
+        Distance: <b>{value} km</b>
+      </Fragment>
+    ),
     // eslint-disable-next-line
-    duration: ({ h, m }) => <Fragment>Duration: <b>{h} h {m} m</b></Fragment>,
+    duration: ({ h, m }) => (
+      <Fragment>
+        Duration:{' '}
+        <b>
+          {h} h {m} m
+        </b>
+      </Fragment>
+    ),
     // eslint-disable-next-line
-    summary: ({ distance, h, m }) => <Fragment>Distance: <b>{distance} km</b> | Duration: <b>{h} h {m} m</b></Fragment>,
+    summary: ({ distance, h, m }) => (
+      <Fragment>
+        Distance: <b>{distance} km</b> | Duration:{' '}
+        <b>
+          {h} h {m} m
+        </b>
+      </Fragment>
+    ),
     noHomeAlert: 'You need to set your home position in settings first.',
     showMidpointHint: 'To add a midpoint, drag a route segment.',
     gpsError: 'Error getting your current location.',
-    routeNotFound: 'No route found. Try to change parameters or move the route points.',
+    routeNotFound:
+      'No route found. Try to change parameters or move the route points.',
     fetchingError: 'Error finding the route: {err}',
     maneuverWithName: '{type} {modifier} on {name}',
     maneuverWithoutName: '{type} {modifier}',
@@ -127,13 +146,35 @@ export default {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <Fragment>
-            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)}
+            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
+            {numbers.map((n, i) => (
+              <Fragment key={n}>
+                {i > 0 ? ', ' : ''}
+                <b>{n}</b>
+              </Fragment>
+            ))}
           </Fragment>
         ),
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <Fragment>
-            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines: {numbers.map((n, i) => <Fragment key={n}>{i > 0 ? ', ' : ''}<b>{n}</b></Fragment>)} | Duration <b>{total} {numberize(total, ['minutes', 'minute'])}</b><br />To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.: <b>{bus}</b>, waiting: <b>{wait} {numberize(wait, ['minutes', 'minute'])}</b>
+            Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
+            {numbers.map((n, i) => (
+              <Fragment key={n}>
+                {i > 0 ? ', ' : ''}
+                <b>{n}</b>
+              </Fragment>
+            ))}{' '}
+            | Duration{' '}
+            <b>
+              {total} {numberize(total, ['minutes', 'minute'])}
+            </b>
+            <br />
+            To leave: <b>{home}</b>, walking: <b>{foot}</b>, pub. trans.:{' '}
+            <b>{bus}</b>, waiting:{' '}
+            <b>
+              {wait} {numberize(wait, ['minutes', 'minute'])}
+            </b>
           </Fragment>
         ),
       },
@@ -141,7 +182,17 @@ export default {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <Fragment>
-            at <b>{departure}</b> walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}
+            at <b>{departure}</b> walk{' '}
+            <b>
+              {duration} {numberize(duration, ['minutes', 'minute'])}
+            </b>{' '}
+            {destination === 'TARGET' ? (
+              <b>to destination</b>
+            ) : (
+              <Fragment>
+                to <b>{destination}</b>
+              </Fragment>
+            )}
           </Fragment>
         ),
         // eslint-disable-next-line
@@ -163,13 +214,27 @@ export default {
         // eslint-disable-next-line
         foot: ({ duration, destination }) => (
           <Fragment>
-            walk <b>{duration} {numberize(duration, ['minutes', 'minute'])}</b> {destination === 'TARGET' ? <b>to destination</b> : <Fragment>to <b>{destination}</b></Fragment>}
+            walk{' '}
+            <b>
+              {duration} {numberize(duration, ['minutes', 'minute'])}
+            </b>{' '}
+            {destination === 'TARGET' ? (
+              <b>to destination</b>
+            ) : (
+              <Fragment>
+                to <b>{destination}</b>
+              </Fragment>
+            )}
           </Fragment>
         ),
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <Fragment>
-            bicycle <b>{duration} {numberize(duration, ['minutes', 'minte'])}</b> to <b>{destination}</b>
+            bicycle{' '}
+            <b>
+              {duration} {numberize(duration, ['minutes', 'minte'])}
+            </b>{' '}
+            to <b>{destination}</b>
           </Fragment>
         ),
       },
@@ -208,7 +273,12 @@ export default {
     locateMe: 'Locate me',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
-    devInfo: () => <div>This is a testing version of Freemap Slovakia. For production version navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.</div>,
+    devInfo: () => (
+      <div>
+        This is a testing version of Freemap Slovakia. For production version
+        navigate to <a href="https://www.freemap.sk/">www.freemap.sk</a>.
+      </div>
+    ),
     copyright: 'Copyright',
   },
 
@@ -270,7 +340,8 @@ export default {
     locationPicking: {
       title: 'Select photo location',
     },
-    layerHint: 'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
+    layerHint:
+      'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
     deletingError: 'Error deleting photo: {err}',
     tagsFetchingError: 'Error fetching tags: {err}',
     pictureFetchingError: 'Error fetching photo: {err}',
@@ -278,7 +349,8 @@ export default {
     savingError: 'Error saving photo: {err}',
     commentAddingError: 'Error adding comment: {err}',
     ratingError: 'Error rating photo: {err}',
-    unauthenticatedError: 'You must be logged in to upload the photos to the gallery.',
+    unauthenticatedError:
+      'You must be logged in to upload the photos to the gallery.',
   },
 
   measurement: {
@@ -320,7 +392,8 @@ export default {
     },
     fetchingError: 'Error fetching track data: {err}',
     savingError: 'Error saving the track: {err}',
-    tooBigError: 'Size of the uploaded track is bigger than the limit {maxSize} MB.',
+    tooBigError:
+      'Size of the uploaded track is bigger than the limit {maxSize} MB.',
   },
 
   infoPoint: {
@@ -343,8 +416,9 @@ export default {
     map: {
       imgFormat: {
         label: 'Tile format for car, hiking and bicycle map:',
-        hint: 'Map looks better if PNG format is used but it requires to download app. 4x more data than for JPEG. '
-          + 'On slow internet connection we recommend to select JPEG.',
+        hint:
+          'Map looks better if PNG format is used but it requires to download app. 4x more data than for JPEG. ' +
+          'On slow internet connection we recommend to select JPEG.',
       },
       overlayPaneOpacity: 'Map line features opacity:',
       homeLocation: {
@@ -375,8 +449,10 @@ export default {
       switch: 'Expert mode',
       overlayOpacity: 'Layer opacity:',
       trackViewerEleSmoothing: {
-        label: 'Smoothing level for computing total climb/descend in Track viewer: {value}',
-        info: 'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
+        label:
+          'Smoothing level for computing total climb/descend in Track viewer: {value}',
+        info:
+          'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
       },
     },
     saveSuccess: 'Settings have been saved.',
@@ -401,7 +477,8 @@ export default {
   objects: {
     type: 'Type',
     lowZoomAlert: {
-      message: 'To see objects by their type, you need to zoom in to at least level 12.',
+      message:
+        'To see objects by their type, you need to zoom in to at least level 12.',
       zoom: 'Zoom-in',
     },
     fetchingError: 'Error fetching objects (POIs): {err}',
@@ -741,7 +818,8 @@ export default {
   },
 
   supportUs: {
-    explanation: 'Map portal Freemap is created by volunteers for free in their spare time. For the operation it still needs a hardware and services of commercial companies which costs us money.',
+    explanation:
+      'Map portal Freemap is created by volunteers for free in their spare time. For the operation it still needs a hardware and services of commercial companies which costs us money.',
     account: 'Bank account:',
     paypal: 'Donate with PayPal',
     thanks: "We'll appreciate every donation. Thank you!",
@@ -760,7 +838,8 @@ export default {
       infoPoint: 'pins',
       tracking: 'live tracking',
     },
-    disabledAlert: 'Only checkboxes having anything in the map to export are enabled.',
+    disabledAlert:
+      'Only checkboxes having anything in the map to export are enabled.',
   },
 
   logIn: {
@@ -781,7 +860,8 @@ export default {
   },
 
   mapLayers: {
-    missingStravaAuth: 'Please log-in on strava.com/heatmap first and then reload this page.',
+    missingStravaAuth:
+      'Please log-in on strava.com/heatmap first and then reload this page.',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
     minZoomWarning: 'Accessible from zoom {minZoom}',
@@ -882,10 +962,13 @@ export default {
       unclassified: 'unclassified',
       residential: 'residential',
       grade1: 'paved or heavily compacted hardcore surface, 1st grade',
-      grade2: 'unpaved track with surface of gravel mixed with a varying amount of sand, silt, and clay, 2nd grade',
+      grade2:
+        'unpaved track with surface of gravel mixed with a varying amount of sand, silt, and clay, 2nd grade',
       grade3: 'almost always an unpaved track, 3rd grade',
-      grade4: 'almost always an unpaved track prominently with soil/sand/grass, 4th grade',
-      grade5: 'almost always an unpaved track lacking hard materials, 5th grade',
+      grade4:
+        'almost always an unpaved track prominently with soil/sand/grass, 4th grade',
+      grade5:
+        'almost always an unpaved track lacking hard materials, 5th grade',
       path: 'path',
       footway: 'footway',
       pedestrian: 'pedestrian',

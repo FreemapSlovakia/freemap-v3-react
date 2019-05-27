@@ -9,34 +9,63 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 import { BingLayer } from 'react-leaflet-bing';
 
-function Layers({ mapType, overlays, isAdmin, galleryFilter, galleryDirtySeq, overlayOpacity, tileFormat, disableKeyboard, onMapTypeChange, onOverlaysChange, embedFeatures }) {
-  const handleKeydown = useCallback((event) => {
-    const embed = window.self !== window.top;
+function Layers({
+  mapType,
+  overlays,
+  isAdmin,
+  galleryFilter,
+  galleryDirtySeq,
+  overlayOpacity,
+  tileFormat,
+  disableKeyboard,
+  onMapTypeChange,
+  onOverlaysChange,
+  embedFeatures,
+}) {
+  const handleKeydown = useCallback(
+    event => {
+      const embed = window.self !== window.top;
 
-    if (disableKeyboard || event.ctrlKey || event.altKey || event.metaKey || event.isComposing
-      || ['input', 'select', 'textarea'].includes(event.target.tagName.toLowerCase())
-      || embed && embedFeatures.includes('noMapSwitch')
-    ) {
-      return;
-    }
-
-    const baseLayer = baseLayers.find(l => l.key === event.key);
-    if (baseLayer) {
-      onMapTypeChange(baseLayer.type);
-    }
-
-    const overlayLayer = overlayLayers.find(l => l.key === event.key);
-    if (overlayLayer && (!overlayLayer.adminOnly || isAdmin)) {
-      const { type } = overlayLayer;
-      const next = new Set(overlays);
-      if (next.has(type)) {
-        next.delete(type);
-      } else {
-        next.add(type);
+      if (
+        disableKeyboard ||
+        event.ctrlKey ||
+        event.altKey ||
+        event.metaKey ||
+        event.isComposing ||
+        ['input', 'select', 'textarea'].includes(
+          event.target.tagName.toLowerCase(),
+        ) ||
+        (embed && embedFeatures.includes('noMapSwitch'))
+      ) {
+        return;
       }
-      onOverlaysChange([...next]);
-    }
-  }, [disableKeyboard, embedFeatures, isAdmin, onMapTypeChange, onOverlaysChange, overlays]);
+
+      const baseLayer = baseLayers.find(l => l.key === event.key);
+      if (baseLayer) {
+        onMapTypeChange(baseLayer.type);
+      }
+
+      const overlayLayer = overlayLayers.find(l => l.key === event.key);
+      if (overlayLayer && (!overlayLayer.adminOnly || isAdmin)) {
+        const { type } = overlayLayer;
+        const next = new Set(overlays);
+        if (next.has(type)) {
+          next.delete(type);
+        } else {
+          next.add(type);
+        }
+        onOverlaysChange([...next]);
+      }
+    },
+    [
+      disableKeyboard,
+      embedFeatures,
+      isAdmin,
+      onMapTypeChange,
+      onOverlaysChange,
+      overlays,
+    ],
+  );
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeydown);
@@ -46,7 +75,14 @@ function Layers({ mapType, overlays, isAdmin, galleryFilter, galleryDirtySeq, ov
   }, [handleKeydown]);
 
   // eslint-disable-next-line
-  const getTileLayer = ({ type, url, minZoom, maxNativeZoom, zIndex = 1, subdomains = 'abc' }) => {
+  const getTileLayer = ({
+    type,
+    url,
+    minZoom,
+    maxNativeZoom,
+    zIndex = 1,
+    subdomains = 'abc',
+  }) => {
     if (type === 'S') {
       return (
         <BingLayer
@@ -117,8 +153,12 @@ export default connect(
     overlays: state.map.overlays,
     mapType: state.map.mapType,
     overlayOpacity: state.map.overlayOpacity,
-    disableKeyboard: !!(state.main.activeModal
-      || state.gallery.activeImageId && !state.gallery.showPosition && !state.gallery.pickingPositionForId), // NOTE there can be lot more things
+    disableKeyboard: !!(
+      state.main.activeModal ||
+      (state.gallery.activeImageId &&
+        !state.gallery.showPosition &&
+        !state.gallery.pickingPositionForId)
+    ), // NOTE there can be lot more things
     galleryFilter: state.gallery.filter,
     galleryDirtySeq: state.gallery.dirtySeq,
     isAdmin: !!(state.auth.user && state.auth.user.isAdmin),

@@ -12,13 +12,24 @@ import { toastsAddError } from 'fm3/actions/toastsActions';
 export default createLogic({
   type: at.OBJECTS_SET_FILTER,
   cancelType: [at.OBJECTS_SET_FILTER, at.CLEAR_MAP],
-  process({ action: { payload }, cancelled$, storeDispatch }, dispatch, done) {
+  process(
+    {
+      action: { payload },
+      cancelled$,
+      storeDispatch,
+    },
+    dispatch,
+    done,
+  ) {
     const b = getMapLeafletElement().getBounds();
     const bbox = `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`;
 
     const poiType = getPoiType(payload);
 
-    const query = `[out:json][timeout:60]; ${poiType.overpassFilter.replace(/\{\{bbox\}\}/g, bbox)}; out center;`;
+    const query = `[out:json][timeout:60]; ${poiType.overpassFilter.replace(
+      /\{\{bbox\}\}/g,
+      bbox,
+    )}; out center;`;
 
     const pid = Math.random();
     dispatch(startProgress(pid));
@@ -27,23 +38,26 @@ export default createLogic({
       source.cancel();
     });
 
-    axios.post('//overpass-api.de/api/interpreter', `data=${encodeURIComponent(query)}`, {
-      validateStatus: status => status === 200,
-      cancelToken: source.token,
-    })
+    axios
+      .post(
+        '//overpass-api.de/api/interpreter',
+        `data=${encodeURIComponent(query)}`,
+        {
+          validateStatus: status => status === 200,
+          cancelToken: source.token,
+        },
+      )
       .then(({ data }) => {
-        const result = data.elements.map(({
-          id, center, tags, lat, lon,
-        }) => ({
+        const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
           id,
-          lat: center && center.lat || lat,
-          lon: center && center.lon || lon,
+          lat: (center && center.lat) || lat,
+          lon: (center && center.lon) || lon,
           tags,
           typeId: payload,
         }));
         dispatch(objectsSetResult(result));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('objects.fetchingError', err));
       })
       .then(() => {

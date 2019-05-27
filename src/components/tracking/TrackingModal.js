@@ -27,17 +27,31 @@ function TrackingModal({ onClose, view }) {
 
 TrackingModal.propTypes = {
   onClose: PropTypes.func.isRequired,
-  view: PropTypes.oneOf(['devices', 'deviceForm', 'accessTokens', 'accessTokenForm', 'trackedDevices', 'trackedDeviceForm']).isRequired,
+  view: PropTypes.oneOf([
+    'devices',
+    'deviceForm',
+    'accessTokens',
+    'accessTokenForm',
+    'trackedDevices',
+    'trackedDeviceForm',
+  ]).isRequired,
 };
 
 export default connect(
   state => ({
     devices: state.tracking.devices,
-    view: state.main.activeModal === 'tracking-my' ? (
-      state.tracking.modifiedDeviceId !== undefined ? 'deviceForm'
-        : state.tracking.accessTokensDeviceId ? (state.tracking.modifiedAccessTokenId !== undefined ? 'accessTokenForm' : 'accessTokens')
-          : 'devices') : (
-      state.tracking.modifiedTrackedDeviceId !== undefined ? 'trackedDeviceForm' : 'trackedDevices'),
+    view:
+      state.main.activeModal === 'tracking-my'
+        ? state.tracking.modifiedDeviceId !== undefined
+          ? 'deviceForm'
+          : state.tracking.accessTokensDeviceId
+          ? state.tracking.modifiedAccessTokenId !== undefined
+            ? 'accessTokenForm'
+            : 'accessTokens'
+          : 'devices'
+        : state.tracking.modifiedTrackedDeviceId !== undefined
+        ? 'trackedDeviceForm'
+        : 'trackedDevices',
   }),
   dispatch => ({
     onClose() {

@@ -4,7 +4,9 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 
 export const tileFormat = PropTypes.oneOf(['jpeg', 'png']);
 export const mapType = PropTypes.oneOf(baseLayers.map(({ type }) => type));
-export const overlays = PropTypes.arrayOf(PropTypes.oneOf(['I', ...overlayLayers.map(({ type }) => type)]));
+export const overlays = PropTypes.arrayOf(
+  PropTypes.oneOf(['I', ...overlayLayers.map(({ type }) => type)]),
+);
 
 export const object = PropTypes.shape({
   id: PropTypes.number.isRequired,
@@ -41,10 +43,20 @@ export const elevationChartProfilePoint = PropTypes.shape({
 
 export const points = PropTypes.arrayOf(point);
 
-export const tool = PropTypes.oneOf(['objects', 'route-planner',
-  'measure-dist', 'measure-ele', 'measure-area',
-  'route-planner', 'track-viewer', 'info-point', 'changesets',
-  'gallery', 'map-details', 'tracking']);
+export const tool = PropTypes.oneOf([
+  'objects',
+  'route-planner',
+  'measure-dist',
+  'measure-ele',
+  'measure-area',
+  'route-planner',
+  'track-viewer',
+  'info-point',
+  'changesets',
+  'gallery',
+  'map-details',
+  'tracking',
+]);
 
 export const galleryFilter = PropTypes.shape({
   tag: PropTypes.string,
@@ -65,27 +77,33 @@ export const galleryPictureModel = PropTypes.shape({
   tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 });
 
-export const allTags = PropTypes.arrayOf(PropTypes.shape({
-  name: PropTypes.string.isRequired,
-  count: PropTypes.number.isRequired,
-}).isRequired);
+export const allTags = PropTypes.arrayOf(
+  PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    count: PropTypes.number.isRequired,
+  }).isRequired,
+);
 
 export const routeAlternative = PropTypes.shape({
   duration: PropTypes.number,
   distance: PropTypes.number,
-  itinerary: PropTypes.arrayOf(PropTypes.shape({
-    maneuver: PropTypes.shape({
-      location: PropTypes.shape({
-        lat: PropTypes.number.isRequired,
-        lon: PropTypes.number.isRequired,
+  itinerary: PropTypes.arrayOf(
+    PropTypes.shape({
+      maneuver: PropTypes.shape({
+        location: PropTypes.shape({
+          lat: PropTypes.number.isRequired,
+          lon: PropTypes.number.isRequired,
+        }).isRequired,
+        type: PropTypes.string.isRequired,
+        modifier: PropTypes.string,
       }).isRequired,
-      type: PropTypes.string.isRequired,
-      modifier: PropTypes.string,
+      distance: PropTypes.number.isRequired,
+      mode: PropTypes.string.isRequired,
+      shapePoints: PropTypes.arrayOf(
+        PropTypes.arrayOf(PropTypes.number.isRequired).isRequired,
+      ).isRequired,
     }).isRequired,
-    distance: PropTypes.number.isRequired,
-    mode: PropTypes.string.isRequired,
-    shapePoints: PropTypes.arrayOf(PropTypes.arrayOf(PropTypes.number.isRequired).isRequired).isRequired,
-  }).isRequired).isRequired,
+  ).isRequired,
 });
 
 export const toastDef = {
@@ -94,12 +112,17 @@ export const toastDef = {
   messageKey: PropTypes.string,
   messageParams: PropTypes.object,
   style: PropTypes.string,
-  actions: PropTypes.arrayOf(PropTypes.shape({
-    name: PropTypes.string,
-    nameKey: PropTypes.string,
-    action: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
-    style: PropTypes.string,
-  }).isRequired).isRequired,
+  actions: PropTypes.arrayOf(
+    PropTypes.shape({
+      name: PropTypes.string,
+      nameKey: PropTypes.string,
+      action: PropTypes.oneOfType([
+        PropTypes.object,
+        PropTypes.arrayOf(PropTypes.object),
+      ]),
+      style: PropTypes.string,
+    }).isRequired,
+  ).isRequired,
 };
 
 export const toast = PropTypes.shape(toastDef);

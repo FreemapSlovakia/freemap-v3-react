@@ -13,7 +13,10 @@ export function wsSend(message, tag) {
 }
 
 export function wsStateChanged(state, code) {
-  return { type: at.WS_STATE_CHANGED, payload: { state, code, timestamp: Date.now() } };
+  return {
+    type: at.WS_STATE_CHANGED,
+    payload: { state, code, timestamp: Date.now() },
+  };
 }
 
 export function wsClosed(code) {
@@ -34,7 +37,10 @@ export function rpcCall(method, params, tag) {
 }
 
 export function rpcResponse(method, params, result, error, tag) {
-  return { type: at.RPC_RESPONSE, payload: { method, params, result, error, tag } };
+  return {
+    type: at.RPC_RESPONSE,
+    payload: { method, params, result, error, tag },
+  };
 }
 
 export function rpcEvent(method, params) {

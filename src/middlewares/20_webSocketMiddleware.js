@@ -1,4 +1,8 @@
-import { wsInvalidState, wsReceived, wsStateChanged } from 'fm3/actions/websocketActions';
+import {
+  wsInvalidState,
+  wsReceived,
+  wsStateChanged,
+} from 'fm3/actions/websocketActions';
 import * as at from 'fm3/actionTypes';
 
 let ws = { readyState: 3 };
@@ -13,7 +17,7 @@ function resetRestarter() {
   }, 45000);
 }
 
-export default ({ dispatch, getState }) => next => (action) => {
+export default ({ dispatch, getState }) => next => action => {
   switch (action.type) {
     case at.WS_OPEN: {
       if (ws.readyState < 3) {
@@ -22,7 +26,11 @@ export default ({ dispatch, getState }) => next => (action) => {
       }
 
       const { user } = getState().auth;
-      ws = new WebSocket(`${process.env.API_URL.replace(/^http/, 'ws')}/ws?pingInterval=30000${user ? `&authToken=${user.authToken}` : ''}`);
+      ws = new WebSocket(
+        `${process.env.API_URL.replace(/^http/, 'ws')}/ws?pingInterval=30000${
+          user ? `&authToken=${user.authToken}` : ''
+        }`,
+      );
       dispatch(wsStateChanged(ws.readyState));
 
       ws.addEventListener('open', ({ target }) => {

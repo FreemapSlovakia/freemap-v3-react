@@ -5,11 +5,18 @@ import PropTypes from 'prop-types';
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingDeleteAccessToken, trackingModifyAccessToken } from 'fm3/actions/trackingActions';
+import {
+  trackingDeleteAccessToken,
+  trackingModifyAccessToken,
+} from 'fm3/actions/trackingActions';
 
 function AccessToken({ onDelete, onModify, accessToken, language }) {
   const dateFormat = new Intl.DateTimeFormat(language, {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   const handleModify = useCallback(() => {
@@ -22,18 +29,36 @@ function AccessToken({ onDelete, onModify, accessToken, language }) {
 
   return (
     <tr>
-      <td><a href={`/?track=${accessToken.token}`} target="_blank" rel="noopener noreferrer">{accessToken.token}</a></td>
+      <td>
+        <a
+          href={`/?track=${accessToken.token}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {accessToken.token}
+        </a>
+      </td>
       <td>{dateFormat.format(accessToken.createdAt)}</td>
       <td>{accessToken.timeFrom && dateFormat.format(accessToken.timeFrom)}</td>
       <td>{accessToken.timeTo && dateFormat.format(accessToken.timeTo)}</td>
       <td>{accessToken.listingLabel}</td>
       <td>{accessToken.note}</td>
       <td>
-        <Button bsSize="small" type="button" onClick={handleModify} title="modify">
+        <Button
+          bsSize="small"
+          type="button"
+          onClick={handleModify}
+          title="modify"
+        >
           <FontAwesomeIcon icon="edit" />
-        </Button>
-        {' '}
-        <Button bsStyle="danger" bsSize="small" type="button" onClick={handleDelete} title="delete">
+        </Button>{' '}
+        <Button
+          bsStyle="danger"
+          bsSize="small"
+          type="button"
+          onClick={handleDelete}
+          title="delete"
+        >
           <FontAwesomeIcon icon="close" />
         </Button>
       </td>

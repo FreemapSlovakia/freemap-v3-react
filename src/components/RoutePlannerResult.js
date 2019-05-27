@@ -6,8 +6,14 @@ import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import { routePlannerSetStart, routePlannerSetFinish, routePlannerAddMidpoint, routePlannerSetMidpoint, routePlannerRemoveMidpoint, routePlannerSetActiveAlternativeIndex }
-  from 'fm3/actions/routePlannerActions';
+import {
+  routePlannerSetStart,
+  routePlannerSetFinish,
+  routePlannerAddMidpoint,
+  routePlannerSetMidpoint,
+  routePlannerRemoveMidpoint,
+  routePlannerSetActiveAlternativeIndex,
+} from 'fm3/actions/routePlannerActions';
 import injectL10n from 'fm3/l10nInjector';
 
 import * as FmPropTypes from 'fm3/propTypes';
@@ -31,10 +37,24 @@ RoutePlannerResult.propTypes = {
   language: PropTypes.string,
 };
 
-function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex, alternatives,
-  mode, onFinishSet, onAddMidpoint, onAlternativeChange,
-  onStartSet, onMidpointSet, onRemoveMidpoint, start, midpoints, finish, timestamp },
-) {
+function RoutePlannerResult({
+  transportType,
+  t,
+  language,
+  activeAlternativeIndex,
+  alternatives,
+  mode,
+  onFinishSet,
+  onAddMidpoint,
+  onAlternativeChange,
+  onStartSet,
+  onMidpointSet,
+  onRemoveMidpoint,
+  start,
+  midpoints,
+  finish,
+  timestamp,
+}) {
   const tRef = useRef();
   const draggingRef = useRef();
 
@@ -43,48 +63,65 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
   const [dragSegment, setDragSegment] = useState(null);
   const [dragAlt, setDragAlt] = useState(null);
 
-  useEffect(() => () => {
-    clearTimeout(tRef.current);
-  }, []);
+  useEffect(
+    () => () => {
+      clearTimeout(tRef.current);
+    },
+    [],
+  );
 
   function getSummary() {
-    const { distance, duration, extra } = alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
-    const nf = Intl.NumberFormat(language, { minimumFractionDigits: 1, maximumFractionDigits: 1 });
+    const { distance, duration, extra } =
+      alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
 
     return isSpecial(transportType) && extra && extra.numbers ? (
       <Tooltip direction="top" offset={[0, -36]} permanent>
-        <div>
-          {imhdSummary(t, language, extra)}
-        </div>
+        <div>{imhdSummary(t, language, extra)}</div>
       </Tooltip>
     ) : distance ? (
       <Tooltip direction="top" offset={[0, -36]} permanent>
         <div>
-          <div>{t('routePlanner.distance', { value: nf.format(distance) })}</div>
-          <div>{t('routePlanner.duration', { h: Math.floor(duration / 60), m: Math.round(duration % 60) })}</div>
+          <div>
+            {t('routePlanner.distance', { value: nf.format(distance) })}
+          </div>
+          <div>
+            {t('routePlanner.duration', {
+              h: Math.floor(duration / 60),
+              m: Math.round(duration % 60),
+            })}
+          </div>
         </div>
       </Tooltip>
-    ) : (
-      null
-    );
+    ) : null;
   }
 
-  const bringToFront = useCallback((ele) => {
+  const bringToFront = useCallback(ele => {
     if (ele) {
       ele.leafletElement.bringToFront();
     }
   }, []);
 
-  const maneuverToText = useCallback((name, { type, modifier }, extra) => {
-    const p = 'routePlanner.maneuver';
-    return transportType === 'imhd' ? imhdStep(t, language, extra)
-      : transportType === 'bikesharing' ? bikesharingStep(t, extra)
+  const maneuverToText = useCallback(
+    (name, { type, modifier }, extra) => {
+      const p = 'routePlanner.maneuver';
+      return transportType === 'imhd'
+        ? imhdStep(t, language, extra)
+        : transportType === 'bikesharing'
+        ? bikesharingStep(t, extra)
         : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
-          type: t(`${p}.types.${type}`, {}, type),
-          modifier: modifier ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}` : '',
-          name,
-        });
-  }, [t, transportType, language]);
+            type: t(`${p}.types.${type}`, {}, type),
+            modifier: modifier
+              ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}`
+              : '',
+            name,
+          });
+    },
+    [t, transportType, language],
+  );
 
   const handleStartPointClick = useCallback(() => {
     // prevent default
@@ -137,44 +174,53 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
     draggingRef.current = true;
   }, []);
 
-  const handleFutureDragEnd = useCallback((e) => {
-    draggingRef.current = false;
-    setDragLat(null);
-    setDragLon(null);
+  const handleFutureDragEnd = useCallback(
+    e => {
+      draggingRef.current = false;
+      setDragLat(null);
+      setDragLon(null);
 
-    onAddMidpoint(dragSegment, {
-      lat: e.target.getLatLng().lat,
-      lon: e.target.getLatLng().lng,
-    });
-  }, [onAddMidpoint, dragSegment]);
+      onAddMidpoint(dragSegment, {
+        lat: e.target.getLatLng().lat,
+        lon: e.target.getLatLng().lng,
+      });
+    },
+    [onAddMidpoint, dragSegment],
+  );
 
   const handleFutureClick = useCallback(() => {
     onAlternativeChange(dragAlt);
   }, [onAlternativeChange, dragAlt]);
 
-  const handleRouteMarkerDragEnd = useCallback((movedPointType, position, event) => {
-    draggingRef.current = false;
+  const handleRouteMarkerDragEnd = useCallback(
+    (movedPointType, position, event) => {
+      draggingRef.current = false;
 
-    const { lat, lng: lon } = event.target.getLatLng();
+      const { lat, lng: lon } = event.target.getLatLng();
 
-    switch (movedPointType) {
-      case 'start':
-        onStartSet({ lat, lon });
-        break;
-      case 'finish':
-        onFinishSet({ lat, lon });
-        break;
-      case 'midpoint':
-        onMidpointSet(position, { lat, lon });
-        break;
-      default:
-        throw new Error('unknown pointType');
-    }
-  }, [onStartSet, onFinishSet, onMidpointSet]);
+      switch (movedPointType) {
+        case 'start':
+          onStartSet({ lat, lon });
+          break;
+        case 'finish':
+          onFinishSet({ lat, lon });
+          break;
+        case 'midpoint':
+          onMidpointSet(position, { lat, lon });
+          break;
+        default:
+          throw new Error('unknown pointType');
+      }
+    },
+    [onStartSet, onFinishSet, onMidpointSet],
+  );
 
-  const handleMidpointClick = useCallback((position) => {
-    onRemoveMidpoint(position);
-  }, [onRemoveMidpoint]);
+  const handleMidpointClick = useCallback(
+    position => {
+      onRemoveMidpoint(position);
+    },
+    [onRemoveMidpoint],
+  );
 
   const resetOnTimeout = useCallback(() => {
     if (tRef.current) {
@@ -189,7 +235,8 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
   const special = isSpecial(transportType);
 
   const Icon = L.divIcon;
-  const circularIcon = new Icon({ // CircleMarker is not draggable
+  const circularIcon = new Icon({
+    // CircleMarker is not draggable
     iconSize: [14, 14],
     iconAnchor: [7, 7],
     html: '<div class="circular-leaflet-marker-icon"></div>',
@@ -254,61 +301,67 @@ function RoutePlannerResult({ transportType, t, language, activeAlternativeIndex
         </RichMarker>
       )}
       {(!special ? alternatives : alternatives.map(addMissingSegments))
-        .map((x, index) => ({ ...x, alt: index, index: index === activeAlternativeIndex ? -1000 : index }))
-        .sort((a, b) => b.index - a.index).map(({ itinerary, alt }) => (
+        .map((x, index) => ({
+          ...x,
+          alt: index,
+          index: index === activeAlternativeIndex ? -1000 : index,
+        }))
+        .sort((a, b) => b.index - a.index)
+        .map(({ itinerary, alt }) => (
           <React.Fragment key={`alt-${timestamp}-${alt}`}>
-            {
-              alt === activeAlternativeIndex && special && itinerary.map(({ shapePoints, name, maneuver, extra: extra1 }, i) => (
-                <Marker
-                  key={i}
-                  icon={circularIcon}
-                  position={shapePoints[0]}
-                >
-                  <Tooltip direction="right" permanent>
-                    <div>
-                      {maneuverToText(name, maneuver, extra1)}
-                    </div>
-                  </Tooltip>
-                </Marker>
-              ))
-            }
-            {
-              itinerary.map((routeSlice, i) => (
-                <Polyline
-                  key={`slice-${i}`}
-                  ref={bringToFront}
-                  positions={routeSlice.shapePoints}
-                  weight={10}
-                  color="#fff"
-                  bubblingMouseEvents={false}
-                  onClick={() => onAlternativeChange(alt)}
-                  onMouseMove={special ? undefined : e => handlePolyMouseMove(e, routeSlice.legIndex, alt)}
-                  onMouseOut={handlePolyMouseOut}
-                />
-              ))
-            }
-            {
-              itinerary.map((routeSlice, i) => (
-                <Polyline
-                  key={`slice-${timestamp}-${alt}-${i}`}
-                  ref={bringToFront}
-                  positions={routeSlice.shapePoints}
-                  weight={6}
-                  color={
-                    alt !== activeAlternativeIndex ? '#868e96'
-                      : !special && routeSlice.legIndex % 2 ? 'hsl(211, 100%, 66%)'
-                        : 'hsl(211, 100%, 50%)'
-                  }
-                  opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                  dashArray={['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode) ? '0, 10' : undefined}
-                  interactive={false}
-                  bubblingMouseEvents={false}
-                />
-              ))
-            }
+            {alt === activeAlternativeIndex &&
+              special &&
+              itinerary.map(
+                ({ shapePoints, name, maneuver, extra: extra1 }, i) => (
+                  <Marker key={i} icon={circularIcon} position={shapePoints[0]}>
+                    <Tooltip direction="right" permanent>
+                      <div>{maneuverToText(name, maneuver, extra1)}</div>
+                    </Tooltip>
+                  </Marker>
+                ),
+              )}
+            {itinerary.map((routeSlice, i) => (
+              <Polyline
+                key={`slice-${i}`}
+                ref={bringToFront}
+                positions={routeSlice.shapePoints}
+                weight={10}
+                color="#fff"
+                bubblingMouseEvents={false}
+                onClick={() => onAlternativeChange(alt)}
+                onMouseMove={
+                  special
+                    ? undefined
+                    : e => handlePolyMouseMove(e, routeSlice.legIndex, alt)
+                }
+                onMouseOut={handlePolyMouseOut}
+              />
+            ))}
+            {itinerary.map((routeSlice, i) => (
+              <Polyline
+                key={`slice-${timestamp}-${alt}-${i}`}
+                ref={bringToFront}
+                positions={routeSlice.shapePoints}
+                weight={6}
+                color={
+                  alt !== activeAlternativeIndex
+                    ? '#868e96'
+                    : !special && routeSlice.legIndex % 2
+                    ? 'hsl(211, 100%, 66%)'
+                    : 'hsl(211, 100%, 50%)'
+                }
+                opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                dashArray={
+                  ['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode)
+                    ? '0, 10'
+                    : undefined
+                }
+                interactive={false}
+                bubblingMouseEvents={false}
+              />
+            ))}
           </React.Fragment>
-        ))
-      }
+        ))}
       <ElevationChartActivePoint />
     </>
   );
@@ -360,23 +413,33 @@ function addMissingSegments(alt) {
     const prevSlice = alt.itinerary[i - 1];
     const nextSlice = alt.itinerary[i + 1];
 
-    const prevSliceLastShapePoint = prevSlice ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1] : null;
+    const prevSliceLastShapePoint = prevSlice
+      ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1]
+      : null;
     const firstShapePoint = slice.shapePoints[0];
 
     const lastShapePoint = slice.shapePoints[slice.shapePoints.length - 1];
-    const nextSliceFirstShapePoint = nextSlice ? nextSlice.shapePoints[0] : null;
+    const nextSliceFirstShapePoint = nextSlice
+      ? nextSlice.shapePoints[0]
+      : null;
 
     const shapePoints = [...slice.shapePoints];
 
     if (slice.mode === 'foot') {
-      if (prevSliceLastShapePoint
-        && (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) > 0.0000001 || Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
+      if (
+        prevSliceLastShapePoint &&
+        (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) >
+          0.0000001 ||
+          Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
       ) {
         shapePoints.unshift(prevSliceLastShapePoint);
       }
 
-      if (nextSliceFirstShapePoint
-        && (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) > 0.0000001 || Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
+      if (
+        nextSliceFirstShapePoint &&
+        (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) >
+          0.0000001 ||
+          Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
       ) {
         shapePoints.push(nextSliceFirstShapePoint);
       }
@@ -393,10 +456,16 @@ function addMissingSegments(alt) {
 
 function imhdSummary(t, language, extra) {
   const dateFormat = new Intl.DateTimeFormat(language, {
-    hour: '2-digit', minute: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
-  const { duration: { foot, bus, home, wait }, price, arrival, numbers } = extra;
+  const {
+    duration: { foot, bus, home, wait },
+    price,
+    arrival,
+    numbers,
+  } = extra;
 
   return t('routePlanner.imhd.total.full', {
     total: Math.round((foot + bus + home + wait) / 60),
@@ -405,15 +474,23 @@ function imhdSummary(t, language, extra) {
     home: Math.round(home / 60),
     walk: Math.round(foot / 60),
     wait: Math.round(wait / 60),
-    price: Intl.NumberFormat(language, { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(price),
+    price: Intl.NumberFormat(language, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(price),
     arrival: dateFormat.format(arrival * 1000),
     numbers,
   });
 }
 
-function imhdStep(t, language, { type, destination, departure, duration, number }) {
+function imhdStep(
+  t,
+  language,
+  { type, destination, departure, duration, number },
+) {
   const dateFormat = new Intl.DateTimeFormat(language, {
-    hour: '2-digit', minute: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   return t(`routePlanner.imhd.step.${type === 'foot' ? 'foot' : 'bus'}`, {

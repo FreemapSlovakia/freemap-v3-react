@@ -11,18 +11,42 @@ import * as FmPropTypes from 'fm3/propTypes';
 function SearchResults({ highlightedResult, selectedResult }) {
   return (
     <>
-      {displayAsPoint(highlightedResult) && <Point searchResult={highlightedResult} />}
-      {displayAsMultiPoint(highlightedResult) && <MultiPoint searchResult={highlightedResult} />}
-      {displayAsPolyline(highlightedResult) && <Polyline searchResult={highlightedResult} />}
-      {displayAsMultiLineString(highlightedResult) && <MultiLineString searchResult={highlightedResult} />}
-      {displayAsPolygon(highlightedResult) && <Polygon searchResult={highlightedResult} />}
-      {displayAsMultiPolygon(highlightedResult) && <MultiPolygon searchResult={highlightedResult} />}
-      {displayAsPoint(selectedResult) && <Point searchResult={selectedResult} />}
-      {displayAsMultiPoint(selectedResult) && <MultiPoint searchResult={selectedResult} />}
-      {displayAsPolyline(selectedResult) && <Polyline searchResult={selectedResult} />}
-      {displayAsMultiLineString(selectedResult) && <MultiLineString searchResult={selectedResult} />}
-      {displayAsPolygon(selectedResult) && <Polygon searchResult={selectedResult} />}
-      {displayAsMultiPolygon(selectedResult) && <MultiPolygon searchResult={selectedResult} />}
+      {displayAsPoint(highlightedResult) && (
+        <Point searchResult={highlightedResult} />
+      )}
+      {displayAsMultiPoint(highlightedResult) && (
+        <MultiPoint searchResult={highlightedResult} />
+      )}
+      {displayAsPolyline(highlightedResult) && (
+        <Polyline searchResult={highlightedResult} />
+      )}
+      {displayAsMultiLineString(highlightedResult) && (
+        <MultiLineString searchResult={highlightedResult} />
+      )}
+      {displayAsPolygon(highlightedResult) && (
+        <Polygon searchResult={highlightedResult} />
+      )}
+      {displayAsMultiPolygon(highlightedResult) && (
+        <MultiPolygon searchResult={highlightedResult} />
+      )}
+      {displayAsPoint(selectedResult) && (
+        <Point searchResult={selectedResult} />
+      )}
+      {displayAsMultiPoint(selectedResult) && (
+        <MultiPoint searchResult={selectedResult} />
+      )}
+      {displayAsPolyline(selectedResult) && (
+        <Polyline searchResult={selectedResult} />
+      )}
+      {displayAsMultiLineString(selectedResult) && (
+        <MultiLineString searchResult={selectedResult} />
+      )}
+      {displayAsPolygon(selectedResult) && (
+        <Polygon searchResult={selectedResult} />
+      )}
+      {displayAsMultiPolygon(selectedResult) && (
+        <MultiPolygon searchResult={selectedResult} />
+      )}
     </>
   );
 }
@@ -41,19 +65,19 @@ function displayAsMultiPoint(result) {
 }
 
 function displayAsPolyline(result) {
-  return result && (result.geojson.type === 'LineString');
+  return result && result.geojson.type === 'LineString';
 }
 
 function displayAsPolygon(result) {
-  return result && (result.geojson.type === 'Polygon');
+  return result && result.geojson.type === 'Polygon';
 }
 
 function displayAsMultiPolygon(result) {
-  return result && (result.geojson.type === 'MultiPolygon');
+  return result && result.geojson.type === 'MultiPolygon';
 }
 
 function displayAsMultiLineString(result) {
-  return result && (result.geojson.type === 'MultiLineString');
+  return result && result.geojson.type === 'MultiLineString';
 }
 
 export default connect(state => ({

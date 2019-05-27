@@ -12,7 +12,12 @@ import injectL10n from 'fm3/l10nInjector';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackViewerUploadTrack, trackViewerColorizeTrackBy, trackViewerShowInfo, trackViewerToggleElevationChart } from 'fm3/actions/trackViewerActions';
+import {
+  trackViewerUploadTrack,
+  trackViewerColorizeTrackBy,
+  trackViewerShowInfo,
+  trackViewerToggleElevationChart,
+} from 'fm3/actions/trackViewerActions';
 
 import 'fm3/styles/trackViewer.scss';
 
@@ -30,7 +35,7 @@ class TrackViewerMenu extends React.Component {
     onShowTrackInfo: PropTypes.func.isRequired,
     onToggleElevationChart: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
-  }
+  };
 
   componentDidUpdate(prevProps) {
     if (prevProps.trackUID === null && this.props.trackUID !== null) {
@@ -45,24 +50,31 @@ class TrackViewerMenu extends React.Component {
     } else {
       this.props.onServerUpload();
     }
-  }
+  };
 
   render() {
-    const { onUpload, hasTrack, elevationChartActive, colorizeTrackBy, onColorizeTrackBy,
-      onShowTrackInfo, trackGeojsonIsSuitableForElevationChart, onToggleElevationChart, t } = this.props;
+    const {
+      onUpload,
+      hasTrack,
+      elevationChartActive,
+      colorizeTrackBy,
+      onColorizeTrackBy,
+      onShowTrackInfo,
+      trackGeojsonIsSuitableForElevationChart,
+      onToggleElevationChart,
+      t,
+    } = this.props;
 
     return (
       <>
         <span className="fm-label">
           <FontAwesomeIcon icon="road" />
           <span className="hidden-xs"> {t('tools.trackViewer')}</span>
-        </span>
-        {' '}
+        </span>{' '}
         <Button onClick={() => onUpload()}>
           <FontAwesomeIcon icon="upload" />
           <span className="hidden-xs"> {t('trackViewer.upload')}</span>
-        </Button>
-        {' '}
+        </Button>{' '}
         <Button
           active={elevationChartActive}
           onClick={onToggleElevationChart}
@@ -70,38 +82,34 @@ class TrackViewerMenu extends React.Component {
         >
           <FontAwesomeIcon icon="bar-chart" />
           <span className="hidden-xs"> {t('general.elevationProfile')}</span>
-        </Button>
-        {' '}
+        </Button>{' '}
         <DropdownButton
           id="colorizing_mode"
-          title={(
+          title={
             <>
-              <FontAwesomeIcon icon="paint-brush" /> {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
+              <FontAwesomeIcon icon="paint-brush" />{' '}
+              {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
             </>
-          )}
-        >
-          {
-            [null, 'elevation', 'steepness'].map(mode => (
-              <MenuItem
-                eventKey={mode}
-                key={mode || 'none'}
-                active={mode === colorizeTrackBy}
-                onClick={() => onColorizeTrackBy(mode)}
-              >
-                {t(`trackViewer.colorizingMode.${mode || 'none'}`)}
-              </MenuItem>
-            ))
           }
-        </DropdownButton>
-        {' '}
+        >
+          {[null, 'elevation', 'steepness'].map(mode => (
+            <MenuItem
+              eventKey={mode}
+              key={mode || 'none'}
+              active={mode === colorizeTrackBy}
+              onClick={() => onColorizeTrackBy(mode)}
+            >
+              {t(`trackViewer.colorizingMode.${mode || 'none'}`)}
+            </MenuItem>
+          ))}
+        </DropdownButton>{' '}
         <Button
           onClick={onShowTrackInfo}
           disabled={!trackGeojsonIsSuitableForElevationChart}
         >
           <FontAwesomeIcon icon="info-circle" />
           <span className="hidden-xs"> {t('trackViewer.moreInfo')}</span>
-        </Button>
-        {' '}
+        </Button>{' '}
         <Button onClick={this.shareTrack} disabled={!hasTrack}>
           <FontAwesomeIcon icon="share-alt" />
           <span className="hidden-xs"> {t('trackViewer.share')}</span>
@@ -119,7 +127,9 @@ export default compose(
       trackUID: state.trackViewer.trackUID,
       elevationChartActive: !!state.elevationChart.trackGeojson,
       colorizeTrackBy: state.trackViewer.colorizeTrackBy,
-      trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(state),
+      trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(
+        state,
+      ),
     }),
     dispatch => ({
       onUpload() {
@@ -148,7 +158,9 @@ function isSuitableForElevationChart(state) {
   const { trackGeojson } = state.trackViewer;
   if (trackGeojson && trackGeojson.features) {
     const firstGeojsonFeature = trackGeojson.features[0];
-    return firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString';
+    return (
+      firstGeojsonFeature && firstGeojsonFeature.geometry.type === 'LineString'
+    );
   }
 
   return false;

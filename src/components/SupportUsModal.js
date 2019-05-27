@@ -17,20 +17,24 @@ export function SupportUsModal({ onModalClose, t }) {
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="heart" style={{ color: 'red' }} /> {t('more.supportUs')} <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
+          <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
+          {t('more.supportUs')}{' '}
+          <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>
-          {t('supportUs.explanation')}
-        </p>
+        <p>{t('supportUs.explanation')}</p>
         <hr />
         <p>
           {t('supportUs.account')} VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
-        <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_blank">
+        <form
+          action="https://www.paypal.com/cgi-bin/webscr"
+          method="post"
+          target="_blank"
+        >
           <input name="cmd" value="_s-xclick" type="hidden" />
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
           <Button type="submit">
@@ -38,26 +42,43 @@ export function SupportUsModal({ onModalClose, t }) {
           </Button>
         </form>
         <br />
-        <p>
-          {t('supportUs.thanks')}
-        </p>
+        <p>{t('supportUs.thanks')}</p>
         <hr />
         <p>2% z dane</p>
         <p>
-           Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie informácie a tlačivá potrebné k poukázaniu 2% z dane nájdete na <a href="http://wiki.freemap.sk/dvepercenta">wiki.freemap.sk/dvepercenta</a>.
+          Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie
+          informácie a tlačivá potrebné k poukázaniu 2% z dane nájdete na{' '}
+          <a href="http://wiki.freemap.sk/dvepercenta">
+            wiki.freemap.sk/dvepercenta
+          </a>
+          .
         </p>
         <hr />
         <address>
-          Občianske združenie<br />
+          Občianske združenie
           <br />
-          Freemap Slovakia<br />
-          Chrenovec-Brusno 351<br />
-          972 32 Chrenovec-Brusno<br />
           <br />
-          {t('supportUs.registration')}<br />
+          Freemap Slovakia
           <br />
-          IČO: <a href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796" target="_blank" rel="noopener noreferrer">42173639</a><br />
-          DIČ: 2022912870<br />
+          Chrenovec-Brusno 351
+          <br />
+          972 32 Chrenovec-Brusno
+          <br />
+          <br />
+          {t('supportUs.registration')}
+          <br />
+          <br />
+          IČO:{' '}
+          <a
+            href="http://www.ives.sk/registre/detailOZ.do?action=aktualny&id=196796"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            42173639
+          </a>
+          <br />
+          DIČ: 2022912870
+          <br />
           <br />
           E-mail: <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </address>

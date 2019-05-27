@@ -7,12 +7,28 @@ import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import Tooltip from 'react-bootstrap/lib/Tooltip';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingModifyDevice, trackingDeleteDevice, trackingShowAccessTokens, trackingView } from 'fm3/actions/trackingActions';
+import {
+  trackingModifyDevice,
+  trackingDeleteDevice,
+  trackingShowAccessTokens,
+  trackingView,
+} from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
-function Device({ onDelete, onModify, device, language, onShowAccessTokens, onView }) {
+function Device({
+  onDelete,
+  onModify,
+  device,
+  language,
+  onShowAccessTokens,
+  onView,
+}) {
   const dateFormat = new Intl.DateTimeFormat(language, {
-    year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
   });
 
   const handleModify = useCallback(() => {
@@ -39,7 +55,11 @@ function Device({ onDelete, onModify, device, language, onShowAccessTokens, onVi
         <OverlayTrigger
           trigger={['hover', 'focus']}
           placement="right"
-          overlay={<Tooltip id={device.token}>{process.env.API_URL}/tracking/track/{device.token}</Tooltip>}
+          overlay={
+            <Tooltip id={device.token}>
+              {process.env.API_URL}/tracking/track/{device.token}
+            </Tooltip>
+          }
         >
           <FontAwesomeIcon icon="question-circle-o" />
         </OverlayTrigger>
@@ -48,19 +68,38 @@ function Device({ onDelete, onModify, device, language, onShowAccessTokens, onVi
       <td>{device.maxAge}</td>
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>
-        <Button bsSize="small" type="button" onClick={handleModify} title="edit">
+        <Button
+          bsSize="small"
+          type="button"
+          onClick={handleModify}
+          title="edit"
+        >
           <FontAwesomeIcon icon="edit" />
-        </Button>
-        {' '}
-        <Button bsSize="small" type="button" bsStyle="primary" onClick={handleShowAccessTokens} title="access tokens">
+        </Button>{' '}
+        <Button
+          bsSize="small"
+          type="button"
+          bsStyle="primary"
+          onClick={handleShowAccessTokens}
+          title="access tokens"
+        >
           <FontAwesomeIcon icon="key" />
-        </Button>
-        {' '}
-        <Button bsSize="small" type="button" onClick={handleView} title="watch privately">
+        </Button>{' '}
+        <Button
+          bsSize="small"
+          type="button"
+          onClick={handleView}
+          title="watch privately"
+        >
           <FontAwesomeIcon icon="eye" />
-        </Button>
-        {' '}
-        <Button bsStyle="danger" bsSize="small" type="button" onClick={handleDelete} title="delete">
+        </Button>{' '}
+        <Button
+          bsStyle="danger"
+          bsSize="small"
+          type="button"
+          onClick={handleDelete}
+          title="delete"
+        >
           <FontAwesomeIcon icon="close" />
         </Button>
       </td>

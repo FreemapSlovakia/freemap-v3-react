@@ -15,8 +15,7 @@ function HomeLocationPickingMenu({ selectingHomeLocation, onCancel }) {
 
   return (
     <Panel className="fm-toolbar">
-      <span>Zvoľte domovskú pozíciu</span>
-      {' '}
+      <span>Zvoľte domovskú pozíciu</span>{' '}
       <Button onClick={onCancel}>
         <FontAwesomeIcon icon="times" />
         <span className="hidden-xs"> Zrušiť</span>

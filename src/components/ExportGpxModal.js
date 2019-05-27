@@ -29,7 +29,9 @@ const exportableDefinitions = [
 
 export class ExportGpxModal extends React.Component {
   static propTypes = {
-    exportables: PropTypes.arrayOf(PropTypes.oneOf(exportableDefinitions.map(({ type }) => type)).isRequired).isRequired,
+    exportables: PropTypes.arrayOf(
+      PropTypes.oneOf(exportableDefinitions.map(({ type }) => type)).isRequired,
+    ).isRequired,
     onExport: PropTypes.func.isRequired,
     onModalClose: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
@@ -37,19 +39,21 @@ export class ExportGpxModal extends React.Component {
 
   state = {
     exportables: null,
-  }
+  };
 
   static getDerivedStateFromProps(props, state) {
-    return state.exportables ? null : {
-      exportables: props.exportables,
-    };
+    return state.exportables
+      ? null
+      : {
+          exportables: props.exportables,
+        };
   }
 
   handleExportClick = () => {
     this.props.onExport(this.state.exportables);
-  }
+  };
 
-  handleCheckboxChange = (type) => {
+  handleCheckboxChange = type => {
     const set = new Set(this.state.exportables);
     if (this.state.exportables.includes(type)) {
       set.delete(type);
@@ -57,7 +61,7 @@ export class ExportGpxModal extends React.Component {
       set.add(type);
     }
     this.setState({ exportables: [...set] });
-  }
+  };
 
   render() {
     const { onModalClose, exportables, t } = this.props;
@@ -70,27 +74,26 @@ export class ExportGpxModal extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Alert bsStyle="warning">
-            {t('gpxExport.disabledAlert')}
-          </Alert>
-          {
-            exportableDefinitions.map(({ type, icon }) => (
-              <Checkbox
-                key={type}
-                checked={this.state.exportables.includes(type)}
-                disabled={!exportables.includes(type)}
-                onChange={() => this.handleCheckboxChange(type)}
-              >
-                {t('gpxExport.export')} <FontAwesomeIcon icon={icon} /> {t(`gpxExport.what.${type}`)}
-              </Checkbox>
-            ))
-          }
+          <Alert bsStyle="warning">{t('gpxExport.disabledAlert')}</Alert>
+          {exportableDefinitions.map(({ type, icon }) => (
+            <Checkbox
+              key={type}
+              checked={this.state.exportables.includes(type)}
+              disabled={!exportables.includes(type)}
+              onChange={() => this.handleCheckboxChange(type)}
+            >
+              {t('gpxExport.export')} <FontAwesomeIcon icon={icon} />{' '}
+              {t(`gpxExport.what.${type}`)}
+            </Checkbox>
+          ))}
         </Modal.Body>
         <Modal.Footer>
-          <Button onClick={this.handleExportClick} disabled={!this.state.exportables.length}>
+          <Button
+            onClick={this.handleExportClick}
+            disabled={!this.state.exportables.length}
+          >
             <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
-          </Button>
-          {' '}
+          </Button>{' '}
           <Button onClick={onModalClose}>
             <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
@@ -103,7 +106,7 @@ export class ExportGpxModal extends React.Component {
 export default compose(
   injectL10n(),
   connect(
-    (state) => {
+    state => {
       const exportables = [];
       if (state.search.selectedResult) {
         // exportables.push('search');

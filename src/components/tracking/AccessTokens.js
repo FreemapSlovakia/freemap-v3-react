@@ -8,7 +8,11 @@ import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { trackingLoadAccessTokens, trackingModifyAccessToken, trackingShowAccessTokens } from 'fm3/actions/trackingActions';
+import {
+  trackingLoadAccessTokens,
+  trackingModifyAccessToken,
+  trackingShowAccessTokens,
+} from 'fm3/actions/trackingActions';
 import AccessToken from './AccessToken';
 
 function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
@@ -20,13 +24,15 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> Access Tokens for <i>{deviceName}</i>
+          <FontAwesomeIcon icon="bullseye" /> Access Tokens for{' '}
+          <i>{deviceName}</i>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Alert bsStyle="info">
           <p>
-            Define access tokens to share position of your device <i>{deviceName}</i> with your friends.
+            Define access tokens to share position of your device{' '}
+            <i>{deviceName}</i> with your friends.
           </p>
         </Alert>
         <Table striped bordered>
@@ -42,7 +48,9 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
             </tr>
           </thead>
           <tbody>
-            {accessTokens.map(accessToken => <AccessToken key={accessToken.id} accessToken={accessToken} />)}
+            {accessTokens.map(accessToken => (
+              <AccessToken key={accessToken.id} accessToken={accessToken} />
+            ))}
           </tbody>
         </Table>
       </Modal.Body>
@@ -69,7 +77,9 @@ AccessTokens.propTypes = {
 export default connect(
   state => ({
     accessTokens: state.tracking.accessTokens,
-    deviceName: state.tracking.devices.find(device => device.id === state.tracking.accessTokensDeviceId).name,
+    deviceName: state.tracking.devices.find(
+      device => device.id === state.tracking.accessTokensDeviceId,
+    ).name,
   }),
   dispatch => ({
     onOpen() {

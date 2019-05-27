@@ -31,58 +31,66 @@ export class EmbedMapModal extends React.Component {
     enableLocateMe: true,
   };
 
-  setFormControl = (textarea) => {
+  setFormControl = textarea => {
     this.textarea = textarea;
     if (textarea) {
       textarea.select();
     }
-  }
+  };
 
   handleCopyClick = () => {
     this.textarea.select();
     document.execCommand('copy');
-  }
+  };
 
-  handleWidthChange = (e) => {
+  handleWidthChange = e => {
     this.setState({
       width: e.target.value,
     });
-  }
+  };
 
-  handleHeightChange = (e) => {
+  handleHeightChange = e => {
     this.setState({
       height: e.target.value,
     });
-  }
+  };
 
-  handleEnableSearchChange = (e) => {
+  handleEnableSearchChange = e => {
     this.setState({
       enableSearch: e.target.checked,
     });
-  }
+  };
 
-  handleEnableMapSwitchChange = (e) => {
+  handleEnableMapSwitchChange = e => {
     this.setState({
       enableMapSwitch: e.target.checked,
     });
-  }
+  };
 
-  handleEnableLocateMeChange = (e) => {
+  handleEnableLocateMeChange = e => {
     this.setState({
       enableLocateMe: e.target.checked,
     });
-  }
+  };
 
   render() {
     const { onModalClose, t } = this.props;
-    const { width, height, enableSearch, enableMapSwitch, enableLocateMe } = this.state;
+    const {
+      width,
+      height,
+      enableSearch,
+      enableMapSwitch,
+      enableLocateMe,
+    } = this.state;
 
     const embedFeatures = [
       enableSearch && 'search',
       !enableMapSwitch && 'noMapSwitch',
       !enableLocateMe && 'noLocateMe',
     ].filter(x => x);
-    const shareURL = `${window.location.href.replace(/&show=[^&]*/, '')}${embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''}`;
+    const shareURL = `${window.location.href.replace(/&show=[^&]*/, '')}${
+      embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''
+    }`;
 
     return (
       <Modal show onHide={onModalClose} className="dynamic">
@@ -96,26 +104,49 @@ export class EmbedMapModal extends React.Component {
             <ControlLabel>{t('embed.dimensions')}</ControlLabel>
             <InputGroup>
               <InputGroup.Addon>{t('embed.width')}</InputGroup.Addon>
-              <FormControl type="number" value={width} min={100} max={1600} step={10} required onChange={this.handleWidthChange} />
+              <FormControl
+                type="number"
+                value={width}
+                min={100}
+                max={1600}
+                step={10}
+                required
+                onChange={this.handleWidthChange}
+              />
               <InputGroup.Addon>{t('embed.height')}</InputGroup.Addon>
-              <FormControl type="number" value={height} min={100} max={1200} step={10} required onChange={this.handleHeightChange} />
+              <FormControl
+                type="number"
+                value={height}
+                min={100}
+                max={1200}
+                step={10}
+                required
+                onChange={this.handleHeightChange}
+              />
             </InputGroup>
           </FormGroup>
 
           <strong>{t('embed.enableFeatures')}</strong>
-          <Checkbox onChange={this.handleEnableSearchChange} checked={enableSearch}>
+          <Checkbox
+            onChange={this.handleEnableSearchChange}
+            checked={enableSearch}
+          >
             {t('embed.enableSearch')}
           </Checkbox>
-          <Checkbox onChange={this.handleEnableMapSwitchChange} checked={enableMapSwitch}>
+          <Checkbox
+            onChange={this.handleEnableMapSwitchChange}
+            checked={enableMapSwitch}
+          >
             {t('embed.enableMapSwitch')}
           </Checkbox>
-          <Checkbox onChange={this.handleEnableLocateMeChange} checked={enableLocateMe}>
+          <Checkbox
+            onChange={this.handleEnableLocateMeChange}
+            checked={enableLocateMe}
+          >
             {t('embed.enableLocateMe')}
           </Checkbox>
           <hr />
-          <p>
-            {t('embed.code')}
-          </p>
+          <p>{t('embed.code')}</p>
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
@@ -124,9 +155,7 @@ export class EmbedMapModal extends React.Component {
             rows={3}
           />
           <br />
-          <p>
-            {t('embed.example')}
-          </p>
+          <p>{t('embed.example')}</p>
           <iframe
             title="Freemap.sk"
             style={{ width: `${width}px`, height: `${height}px`, border: '0' }}
@@ -137,8 +166,7 @@ export class EmbedMapModal extends React.Component {
         <Modal.Footer>
           <Button onClick={this.handleCopyClick}>
             <Glyphicon glyph="copy" /> {t('general.copyCode')}
-          </Button>
-          {' '}
+          </Button>{' '}
           <Button onClick={onModalClose}>
             <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>

@@ -6,7 +6,7 @@ import { wsSend, rpcResponse, rpcEvent } from 'fm3/actions/websocketActions';
 const callMap = new Map();
 let id = 0;
 
-export default ({ dispatch, getState }) => next => (action) => {
+export default ({ dispatch, getState }) => next => action => {
   const oldState = getState().websocket.state;
 
   next(action);
@@ -17,7 +17,15 @@ export default ({ dispatch, getState }) => next => (action) => {
       const values = callMap.values();
       callMap.clear();
       for (const call of values) {
-        dispatch(rpcResponse(call.method, call.params, undefined, { code: -31000, message: 'connection closed' }, call.tag));
+        dispatch(
+          rpcResponse(
+            call.method,
+            call.params,
+            undefined,
+            { code: -31000, message: 'connection closed' },
+            call.tag,
+          ),
+        );
       }
     }
   } else if (action.type === at.RPC_CALL) {
@@ -29,12 +37,14 @@ export default ({ dispatch, getState }) => next => (action) => {
       tag: action.payload.tag,
     });
 
-    dispatch(wsSend({
-      jsonrpc: '2.0',
-      id,
-      method: action.payload.method,
-      params: action.payload.params,
-    }));
+    dispatch(
+      wsSend({
+        jsonrpc: '2.0',
+        id,
+        method: action.payload.method,
+        params: action.payload.params,
+      }),
+    );
   } else if (action.type === at.WS_RECEIVED) {
     let object;
 
@@ -52,7 +62,15 @@ export default ({ dispatch, getState }) => next => (action) => {
 
         if (call) {
           callMap.delete(object.id);
-          dispatch(rpcResponse(call.method, call.params, object.result, object.error, call.tag));
+          dispatch(
+            rpcResponse(
+              call.method,
+              call.params,
+              object.result,
+              object.error,
+              call.tag,
+            ),
+          );
         }
       }
     }

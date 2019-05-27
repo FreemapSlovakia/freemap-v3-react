@@ -11,11 +11,21 @@ export default function infoPoint(state = initialState, action) {
     case at.CLEAR_MAP:
       return initialState;
     case at.SET_TOOL:
-      return { ...state, activeIndex: action.payload === 'info-point' ? state.activeIndex : null };
+      return {
+        ...state,
+        activeIndex: action.payload === 'info-point' ? state.activeIndex : null,
+      };
     case at.INFO_POINT_ADD:
       return {
         ...state,
-        points: [...state.points, { lat: action.payload.lat, lon: action.payload.lon, label: action.payload.label }],
+        points: [
+          ...state.points,
+          {
+            lat: action.payload.lat,
+            lon: action.payload.lon,
+            label: action.payload.label,
+          },
+        ],
         change: state.change + 1,
         activeIndex: state.points.length,
       };
@@ -29,17 +39,24 @@ export default function infoPoint(state = initialState, action) {
     case at.INFO_POINT_CHANGE_POSITION:
       return {
         ...state,
-        points: state.points.map((point, i) => (i === state.activeIndex ? { ...point, lat: action.payload.lat, lon: action.payload.lon } : point)),
+        points: state.points.map((point, i) =>
+          i === state.activeIndex
+            ? { ...point, lat: action.payload.lat, lon: action.payload.lon }
+            : point,
+        ),
       };
     case at.INFO_POINT_CHANGE_LABEL:
       return {
         ...state,
-        points: state.points.map((point, i) => (i === state.activeIndex ? { ...point, label: action.payload } : point)),
+        points: state.points.map((point, i) =>
+          i === state.activeIndex ? { ...point, label: action.payload } : point,
+        ),
       };
     case at.INFO_POINT_SET_ACTIVE_INDEX:
       return {
         ...state,
-        activeIndex: state.activeIndex === action.payload ? null : action.payload,
+        activeIndex:
+          state.activeIndex === action.payload ? null : action.payload,
       };
     case at.INFO_POINT_SET_ALL:
       return {

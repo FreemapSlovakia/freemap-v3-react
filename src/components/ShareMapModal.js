@@ -19,17 +19,17 @@ export class ShareMapModal extends React.Component {
     t: PropTypes.func.isRequired,
   };
 
-  setFormControl = (textarea) => {
+  setFormControl = textarea => {
     this.textarea = textarea;
     if (textarea) {
       textarea.select();
     }
-  }
+  };
 
   handleCopyClick = () => {
     this.textarea.select();
     document.execCommand('copy');
-  }
+  };
 
   render() {
     const { onModalClose, t } = this.props;
@@ -41,9 +41,7 @@ export class ShareMapModal extends React.Component {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <p>
-            {t('shareMap.label')}
-          </p>
+          <p>{t('shareMap.label')}</p>
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
@@ -55,8 +53,7 @@ export class ShareMapModal extends React.Component {
         <Modal.Footer>
           <Button onClick={this.handleCopyClick}>
             <Glyphicon glyph="copy" /> {t('general.copyCode')}
-          </Button>
-          {' '}
+          </Button>{' '}
           <Button onClick={onModalClose}>
             <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>

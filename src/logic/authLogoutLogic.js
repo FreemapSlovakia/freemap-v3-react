@@ -21,14 +21,16 @@ export default createLogic({
     })
       .then(() => {
         dispatch(authLogout());
-        dispatch(toastsAdd({
-          collapseKey: 'login',
-          messageKey: 'logOut.success',
-          style: 'info',
-          timeout: 5000,
-        }));
+        dispatch(
+          toastsAdd({
+            collapseKey: 'login',
+            messageKey: 'logOut.success',
+            style: 'info',
+            timeout: 5000,
+          }),
+        );
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(toastsAddError('logIn.logInError', err));
       })
       .then(() => {

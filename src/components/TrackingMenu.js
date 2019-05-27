@@ -9,33 +9,45 @@ import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingSetShowPoints, trackingSetShowLine } from 'fm3/actions/trackingActions';
+import {
+  trackingSetShowPoints,
+  trackingSetShowLine,
+} from 'fm3/actions/trackingActions';
 
-function TrackingMenu({ onTrackedDevicesClick, onMyDevicesClick, onVisualChange, visual }) {
-  const handleVisualSelect = useCallback(({ target: { dataset } }) => {
-    onVisualChange(dataset.visual);
-  }, [onVisualChange]);
+function TrackingMenu({
+  onTrackedDevicesClick,
+  onMyDevicesClick,
+  onVisualChange,
+  visual,
+}) {
+  const handleVisualSelect = useCallback(
+    ({ target: { dataset } }) => {
+      onVisualChange(dataset.visual);
+    },
+    [onVisualChange],
+  );
 
   return (
     <>
       <span className="fm-label">
         <FontAwesomeIcon icon="bullseye" />
         <span className="hidden-xs"> Device Tracking</span>
-      </span>
-      {' '}
+      </span>{' '}
       <Button onClick={onTrackedDevicesClick}>
         <FontAwesomeIcon icon="eye" />
         <span className="hidden-xs"> Tracked</span>
-      </Button>
-      {' '}
+      </Button>{' '}
       <Button onClick={onMyDevicesClick}>
         <FontAwesomeIcon icon="mobile" />
         <span className="hidden-xs"> My Devices</span>
-      </Button>
-      {' '}
+      </Button>{' '}
       <DropdownButton
         id="tracking-visual-dropdown"
-        title={{ 'line+points': 'Line + Points', line: 'Line', points: 'Points' }[visual] || '???'}
+        title={
+          { 'line+points': 'Line + Points', line: 'Line', points: 'Points' }[
+            visual
+          ] || '???'
+        }
       >
         <MenuItem data-visual="points" onClick={handleVisualSelect}>
           Points
@@ -62,10 +74,14 @@ export default compose(
   connect(
     state => ({
       isActive: state.infoPoint.activeIndex !== null,
-      visual: state.tracking.showLine && state.tracking.showPoints ? 'line+points'
-        : state.tracking.showLine ? 'line'
-          : state.tracking.showPoints ? 'points'
-            : '???',
+      visual:
+        state.tracking.showLine && state.tracking.showPoints
+          ? 'line+points'
+          : state.tracking.showLine
+          ? 'line'
+          : state.tracking.showPoints
+          ? 'points'
+          : '???',
     }),
     dispatch => ({
       onMyDevicesClick() {
