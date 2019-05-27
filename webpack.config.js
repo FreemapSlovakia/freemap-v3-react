@@ -55,31 +55,37 @@ module.exports = {
           ],
         },
       },
-      {
-        test: /\.js$/,
-        loader: 'babel-loader',
-        exclude: /\bnode_modules\b/,
-        options: {
-          presets: [
-            ['@babel/preset-env', {
-              corejs: '3.0.0',
-              targets: {
-                browsers: ['> 1%'],
-              },
-              useBuiltIns: 'usage',
-              shippedProposals: true,
-              modules: false,
-            }],
-            ['@babel/preset-react', {
-              development: !prod,
-            }],
-          ],
-          plugins: [
-            '@babel/plugin-syntax-dynamic-import',
-            '@babel/plugin-proposal-class-properties',
-          ],
-        },
-      },
+      // changed from { test: /\.jsx?$/, use: { loader: 'babel-loader' } },
+      { test: /\.(t|j)sx?$/, exclude: /node_modules/, use: { loader: 'awesome-typescript-loader' } },
+      // addition - add source-map support
+      { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
+
+      // {
+      //   test: /\.js$/,
+      //   loader: 'babel-loader',
+      //   exclude: /\bnode_modules\b/,
+      //   options: {
+      //     presets: [
+      //       ['@babel/preset-env', {
+      //         corejs: '3.0.0',
+      //         targets: {
+      //           browsers: ['> 1%'],
+      //         },
+      //         useBuiltIns: 'usage',
+      //         shippedProposals: true,
+      //         modules: false,
+      //       }],
+      //       ['@babel/preset-react', {
+      //         development: !prod,
+      //       }],
+      //     ],
+      //     plugins: [
+      //       '@babel/plugin-syntax-dynamic-import',
+      //       '@babel/plugin-proposal-class-properties',
+      //     ],
+      //   },
+      // },
+
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         loader: 'url-loader',
