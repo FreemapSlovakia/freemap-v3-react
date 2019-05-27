@@ -61,10 +61,10 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
           {accessToken ? (
             <>
               {' '}
-              Modify Access Token <i>{accessToken.token}</i>
+              Modify Watch Token <i>{accessToken.token}</i>
             </>
           ) : (
-            ' Add Access Token'
+            ' Add Watch Token'
           )}
           {' for'} <i>{deviceName}</i>
         </Modal.Title>

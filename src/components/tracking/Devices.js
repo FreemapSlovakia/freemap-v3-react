@@ -35,14 +35,15 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
         <Alert bsStyle="info">
           <p>
             Manage your devices so that others can watch your position if you
-            give them access token <FontAwesomeIcon icon="key" /> you create.
+            give them watch token (you can create it through{' '}
+            <FontAwesomeIcon icon="key" /> icon).
           </p>
           <p>
             Enter following URL to your tracker (eg.{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
               Locus
-            </a>
-            ):
+            </a>{' '}
+            or OsmAnd ):{' '}
             <code>
               {process.env.API_URL}/tracking/track/<i>token</i>
             </code>{' '}
@@ -91,7 +92,7 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
           <thead>
             <tr>
               <th>Name</th>
-              <th>Token</th>
+              <th>Track Token</th>
               <th>Keep points</th>
               <th>Keep duration</th>
               <th>Created at</th>

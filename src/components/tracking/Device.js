@@ -81,7 +81,7 @@ function Device({
           type="button"
           bsStyle="primary"
           onClick={handleShowAccessTokens}
-          title="access tokens"
+          title="watch tokens"
         >
           <FontAwesomeIcon icon="key" />
         </Button>{' '}

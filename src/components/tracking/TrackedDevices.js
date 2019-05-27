@@ -31,7 +31,7 @@ function TrackedDevices({ onClose, onAdd, devices }) {
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Token or Device</th>
+              <th>Watch Token</th>
               <th>Label</th>
               <th>Since</th>
               <th>Max Age</th>

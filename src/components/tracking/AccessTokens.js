@@ -24,7 +24,7 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> Access Tokens for{' '}
+          <FontAwesomeIcon icon="bullseye" /> Watch Tokens for{' '}
           <i>{deviceName}</i>
         </Modal.Title>
       </Modal.Header>
@@ -38,7 +38,7 @@ function AccessTokens({ onClose, onOpen, onAdd, accessTokens, deviceName }) {
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Token</th>
+              <th>Watch Token</th>
               <th>Created at</th>
               <th>From</th>
               <th>To</th>
