@@ -44,7 +44,7 @@ export const points = PropTypes.arrayOf(point);
 export const tool = PropTypes.oneOf(['objects', 'route-planner',
   'measure-dist', 'measure-ele', 'measure-area',
   'route-planner', 'track-viewer', 'info-point', 'changesets',
-  'gallery', 'map-details']);
+  'gallery', 'map-details', 'tracking']);
 
 export const galleryFilter = PropTypes.shape({
   tag: PropTypes.string,

@@ -104,6 +104,10 @@ export default function tracking(state = initialState, action) {
 
       return state;
     }
+    case at.TRACKING_SET_SHOW_POINTS:
+      return { ...state, showPoints: action.payload };
+    case at.TRACKING_SET_SHOW_LINE:
+      return { ...state, showLine: action.payload };
     default:
       return state;
   }

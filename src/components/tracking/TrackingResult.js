@@ -85,7 +85,7 @@ class TrackingResult extends React.Component {
             />
           )}
 
-          {showLine && segments.map((segment, i) => (
+          {showLine && track.trackPoints.length > 1 && segments.map((segment, i) => (
             <Polyline
               key={`seg-${i}`}
               positions={segment}
@@ -95,8 +95,8 @@ class TrackingResult extends React.Component {
             />
           ))}
 
-          {showPoints && track.trackPoints.map((tp, i) => (
-            i === track.trackPoints.length - 1 ? (
+          {(showPoints || track.trackPoints.length === 0 ? track.trackPoints : [track.trackPoints[track.trackPoints.length - 1]]).map((tp, i) => (
+            !showPoints || i === track.trackPoints.length - 1 ? (
               <RichMarker
                 key={tp.id}
                 position={track.trackPoints[track.trackPoints.length - 1]}
@@ -205,7 +205,7 @@ function tooltipText(df, { battery, ts, gsmSignal, speed, message, altitude }, l
 
 TrackingResult.propTypes = {
   tracks: PropTypes.arrayOf(PropTypes.shape({
-    id: PropTypes.string.isRequired,
+    id: PropTypes.oneOf([PropTypes.string, PropTypes.number]).isRequired,
     trackPoints: PropTypes.arrayOf(PropTypes.shape({
       lat: PropTypes.number.isRequired,
       lon: PropTypes.number.isRequired,

@@ -67,3 +67,11 @@ export function trackingView(deviceId) {
 export function trackingSetActive(id) {
   return { type: at.TRACKING_SET_ACTIVE, payload: id };
 }
+
+export function trackingSetShowPoints(showPoints) {
+  return { type: at.TRACKING_SET_SHOW_POINTS, payload: showPoints };
+}
+
+export function trackingSetShowLine(showLine) {
+  return { type: at.TRACKING_SET_SHOW_LINE, payload: showLine };
+}

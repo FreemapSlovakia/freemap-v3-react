@@ -2,6 +2,7 @@ import { compose } from 'redux';
 import { connect } from 'react-redux';
 import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
+import * as FmPropTypes from 'fm3/propTypes';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
@@ -58,7 +59,7 @@ function ToolsMenuButton({ t, tool, expertMode, onToolSet }) {
 ToolsMenuButton.propTypes = {
   t: PropTypes.func.isRequired,
   onToolSet: PropTypes.func.isRequired,
-  tool: PropTypes.string,
+  tool: FmPropTypes.tool,
   expertMode: PropTypes.bool,
 };
 
