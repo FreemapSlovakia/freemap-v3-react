@@ -1,4 +1,4 @@
-import update from 'immutability-helper';
+import produce from 'immer';
 import * as at from 'fm3/actionTypes';
 
 const clearResult = {
@@ -64,11 +64,17 @@ export default function routePlanner(state = initialState, action) {
     case at.ROUTE_PLANNER_SWAP_ENDS:
       return { ...state, start: state.finish, finish: state.start, midpoints: [...state.midpoints].reverse() };
     case at.ROUTE_PLANNER_ADD_MIDPOINT:
-      return update(state, { midpoints: { $splice: [[action.payload.position, 0, action.payload.midpoint]] } });
+      return produce(state, (draft) => {
+        draft.midpoints.splice(action.payload.position, 0, action.payload.midpoint);
+      });
     case at.ROUTE_PLANNER_SET_MIDPOINT:
-      return update(state, { midpoints: { [action.payload.position]: { $set: action.payload.midpoint } } });
+      return produce(state, (draft) => {
+        draft.midpoints[action.payload.position] = action.payload.midpoint;
+      });
     case at.ROUTE_PLANNER_REMOVE_MIDPOINT:
-      return update(state, { midpoints: { $splice: [[action.payload, 1]] } });
+      return produce(state, (draft) => {
+        draft.midpoints.splice(action.payload, 1);
+      });
     case at.ROUTE_PLANNER_SET_TRANSPORT_TYPE:
       return {
         ...state,
