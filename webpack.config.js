@@ -13,7 +13,8 @@ const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
 const renderer = new marked.Renderer();
 
-renderer.link = (href, title, text) => `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
+renderer.link = (href, title, text) =>
+  `<a href="${href}" target="_blank" title="${title}">${text}</a>`;
 
 module.exports = {
   mode: prod ? 'production' : 'development',
@@ -42,21 +43,29 @@ module.exports = {
           fix: false,
         },
       },
-      { // babelify some very modern libraries
+      {
+        // babelify some very modern libraries
         test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
-            ['@babel/preset-env', {
-              targets: {
-                browsers: ['> 1%'],
+            [
+              '@babel/preset-env',
+              {
+                targets: {
+                  browsers: ['> 1%'],
+                },
               },
-            }],
+            ],
           ],
         },
       },
       // changed from { test: /\.jsx?$/, use: { loader: 'babel-loader' } },
-      { test: /\.(t|j)sx?$/, exclude: /node_modules/, use: { loader: 'awesome-typescript-loader' } },
+      {
+        test: /\.(t|j)sx?$/,
+        exclude: /node_modules/,
+        use: { loader: 'awesome-typescript-loader' },
+      },
       // addition - add source-map support
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
 
@@ -137,11 +146,17 @@ module.exports = {
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
-        API_URL: JSON.stringify({
-          www: 'https://backend.freemap.sk',
-          next: 'http://backend.freemap.sk:3001',
-        }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000'),
-        GA_TRACKING_CODE: JSON.stringify({ www: 'UA-89861822-3', next: 'UA-89861822-4' }[process.env.DEPLOYMENT] || null),
+        API_URL: JSON.stringify(
+          {
+            www: 'https://backend.freemap.sk',
+            next: 'http://backend.freemap.sk:3001',
+          }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
+        ),
+        GA_TRACKING_CODE: JSON.stringify(
+          { www: 'UA-89861822-3', next: 'UA-89861822-4' }[
+            process.env.DEPLOYMENT
+          ] || null,
+        ),
       },
     }),
     new WebpackCleanupPlugin({
@@ -169,20 +184,25 @@ module.exports = {
     new CopyWebpackPlugin([
       { from: { glob: 'static', dot: true }, flatten: true },
     ]),
-    prod && new MiniCssExtractPlugin({
-      // Options similar to the same options in webpackOptions.output
-      // both options are optional
-      filename: '[name].[chunkhash].css',
-      chunkFilename: '[name].[chunkhash].css',
-    }),
-    prod && new OptimizeCssAssetsPlugin({
-      cssProcessor: require('cssnano'),
-      cssProcessorPluginOptions: {
-        preset: ['default', { discardComments: { removeAll: true } }],
-      },
-    }),
+    prod &&
+      new MiniCssExtractPlugin({
+        // Options similar to the same options in webpackOptions.output
+        // both options are optional
+        filename: '[name].[chunkhash].css',
+        chunkFilename: '[name].[chunkhash].css',
+      }),
+    prod &&
+      new OptimizeCssAssetsPlugin({
+        cssProcessor: require('cssnano'),
+        cssProcessorPluginOptions: {
+          preset: ['default', { discardComments: { removeAll: true } }],
+        },
+      }),
     new webpack.HashedModuleIdsPlugin(),
-    new webpack.ContextReplacementPlugin(/intl\/locale-data\/jsonp$/, /(sk|cs|en)\.js/),
+    new webpack.ContextReplacementPlugin(
+      /intl\/locale-data\/jsonp$/,
+      /(sk|cs|en)\.js/,
+    ),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     new OfflinePlugin({
       autoUpdate: true,
