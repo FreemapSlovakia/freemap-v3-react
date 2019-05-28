@@ -4,15 +4,16 @@ import {
   wsStateChanged,
 } from 'fm3/actions/websocketActions';
 import * as at from 'fm3/actionTypes';
+import { Middleware } from 'redux';
 
 let ws: WebSocket | null = null;
-let restarter;
+let restarter: number | null = null;
 
 function resetRestarter() {
   if (restarter) {
     clearTimeout(restarter);
   }
-  restarter = setTimeout(() => {
+  restarter = window.setTimeout(() => {
     if (ws) {
       ws.close();
     }
@@ -26,10 +27,10 @@ declare var process: {
   };
 };
 
-export default ({ dispatch, getState }) => next => action => {
+const mw: Middleware = ({ dispatch, getState }) => next => action => {
   switch (action.type) {
     case at.WS_OPEN: {
-      if (ws && ws.readyState < 3) {
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
         dispatch(wsInvalidState(action.payload));
         return;
       }
@@ -56,7 +57,9 @@ export default ({ dispatch, getState }) => next => action => {
 
       ws.addEventListener('close', ({ target, code }) => {
         if (ws === target) {
-          clearTimeout(restarter);
+          if (restarter !== null) {
+            window.clearTimeout(restarter);
+          }
           restarter = null;
           dispatch(
             wsStateChanged({
@@ -79,7 +82,7 @@ export default ({ dispatch, getState }) => next => action => {
       break;
     }
     case at.WS_SEND:
-      if (ws && ws.readyState === 1) {
+      if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(action.payload.message));
       } else {
         dispatch(wsInvalidState(action.payload.tag));
@@ -87,7 +90,7 @@ export default ({ dispatch, getState }) => next => action => {
       }
       break;
     case at.WS_CLOSE:
-      if (ws && ws.readyState < 3) {
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
       } else {
         dispatch(wsInvalidState(action.payload));
@@ -102,7 +105,9 @@ export default ({ dispatch, getState }) => next => action => {
 
   next(action);
 
-  if (user !== getState().auth && ws && ws.readyState < 2) {
+  if (user !== getState().auth && ws && ws.readyState !== WebSocket.CLOSED) {
     ws.close();
   }
 };
+
+export default mw;
