@@ -539,7 +539,7 @@ export default compose(
         dispatch(mapRefocus(changes));
       },
       onLocationSet(lat, lon, accuracy) {
-        dispatch(setLocation(lat, lon, accuracy));
+        dispatch(setLocation({ lat, lon, accuracy }));
       },
       onCheckLogin() {
         dispatch(authCheckLogin());

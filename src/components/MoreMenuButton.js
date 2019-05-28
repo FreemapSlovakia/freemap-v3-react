@@ -385,7 +385,7 @@ export default compose(
         dispatch(setActiveModal('legend'));
       },
       onLocationSet(lat, lon, accuracy) {
-        dispatch(setLocation(lat, lon, accuracy));
+        dispatch(setLocation({ lat, lon, accuracy }));
       },
       onLogin() {
         dispatch(authChooseLoginMethod());

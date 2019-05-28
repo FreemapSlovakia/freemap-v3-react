@@ -1,94 +1,65 @@
-import * as at from 'fm3/actionTypes';
+import { createStandardAction, createAction } from 'typesafe-actions';
 
-export function setActiveModal(activeModal) {
-  return { type: at.SET_ACTIVE_MODAL, payload: activeModal };
-}
+export const setActiveModal = createStandardAction('SET_ACTIVE_MODAL')<
+  string | null
+>();
 
-export function setTool(tool) {
-  return { type: at.SET_TOOL, payload: tool };
-}
+export const setTool = createStandardAction('SET_TOOL')<string | null>();
 
-export function setHomeLocation(homeLocation) {
-  return { type: at.SET_HOME_LOCATION, payload: homeLocation };
-}
+export const setHomeLocation = createStandardAction('SET_HOME_LOCATION')<{
+  lat: number;
+  lon: number;
+}>();
 
-export function startProgress(pid) {
-  return { type: at.START_PROGRESS, payload: pid };
-}
+export const startProgress = createStandardAction('START_PROGRESS')<
+  string | number
+>();
 
-export function stopProgress(pid) {
-  return { type: at.STOP_PROGRESS, payload: pid };
-}
+export const stopProgress = createStandardAction('STOP_PROGRESS')<
+  string | number
+>();
 
-export function setLocation(lat, lon, accuracy) {
-  return { type: at.SET_LOCATION, payload: { lat, lon, accuracy } };
-}
+export const setLocation = createStandardAction('SET_LOCATION')<{
+  lat: number;
+  lon: number;
+  accuracy: number;
+}>();
 
-export function setExpertMode(value) {
-  return { type: at.SET_EXPERT_MODE, payload: value };
-}
+export const setExpertMode = createStandardAction('SET_EXPERT_MODE')<boolean>();
 
-export function mainLoadState(payload) {
-  return { type: at.MAIN_LOAD_STATE, payload };
-}
+export const mainLoadState = createStandardAction('MAIN_LOAD_STATE')<any>();
 
-export function exportGpx(exportables) {
-  return { type: at.EXPORT_GPX, payload: exportables };
-}
+export const exportGpx = createStandardAction('EXPORT_GPX')<any>();
 
-export function exportPdf(settings) {
-  return { type: at.EXPORT_PDF, payload: settings };
-}
+export const exportPdf = createStandardAction('EXPORT_PDF')<any>();
 
-export function clearMap() {
-  return { type: at.CLEAR_MAP };
-}
+export const clearMap = createAction('CLEAR_MAP');
 
-export function toggleLocate() {
-  return { type: at.LOCATE };
-}
+export const toggleLocate = createAction('LOCATE');
 
-export function setSelectingHomeLocation(value) {
-  return { type: at.SET_SELECTING_HOME_LOCATION, payload: value };
-}
+export const setSelectingHomeLocation = createStandardAction(
+  'SET_SELECTING_HOME_LOCATION',
+)<any>();
 
-export function enableUpdatingUrl() {
-  return { type: at.ENABLE_UPDATING_URL };
-}
+export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 
-export function saveSettings(
-  tileFormat,
-  homeLocation,
-  overlayOpacity,
-  overlayPaneOpacity,
-  expertMode,
-  trackViewerEleSmoothingFactor,
-  user,
-  preventTips,
-) {
-  return {
-    type: at.SAVE_SETTINGS,
-    payload: {
-      tileFormat,
-      homeLocation,
-      overlayOpacity,
-      overlayPaneOpacity,
-      expertMode,
-      trackViewerEleSmoothingFactor,
-      user,
-      preventTips,
-    },
-  };
-}
+export const saveSettings = createStandardAction('SAVE_SETTINGS')<{
+  tileFormat: any;
+  homeLocation: any;
+  overlayOpacity: number;
+  overlayPaneOpacity: number;
+  expertMode: boolean;
+  trackViewerEleSmoothingFactor: number;
+  user: any;
+  preventTips: boolean;
+}>();
 
-export function setErrorTicketId(id) {
-  return { type: at.SET_ERROR_TICKET_ID, payload: id };
-}
+export const setErrorTicketId = createStandardAction('SET_ERROR_TICKET_ID')<
+  string
+>();
 
-export function setEmbedFeatures(features) {
-  return { type: at.SET_EMBED_FEATURES, payload: features };
-}
+export const setEmbedFeatures = createStandardAction('SET_EMBED_FEATURES')<
+  any
+>();
 
-export function reloadApp() {
-  return { type: at.RELOAD_APP };
-}
+export const reloadApp = createAction('RELOAD_APP');

@@ -422,7 +422,7 @@ export default compose(
         overlayOpacity,
         overlayPaneOpacity,
         expertMode,
-        eleSmoothingFactor,
+        trackViewerEleSmoothingFactor,
         user,
         preventTips,
       ) {
@@ -433,7 +433,7 @@ export default compose(
             overlayOpacity,
             overlayPaneOpacity,
             expertMode,
-            eleSmoothingFactor,
+            trackViewerEleSmoothingFactor,
             user,
             preventTips,
           ),
