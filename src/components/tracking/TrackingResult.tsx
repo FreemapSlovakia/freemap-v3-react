@@ -45,6 +45,7 @@ class TrackingResult extends React.Component<Props, State> {
       language,
       activeTrackId,
     } = this.props;
+
     const df = new Intl.DateTimeFormat(language, {
       month: 'short',
       day: 'numeric',
@@ -68,6 +69,7 @@ class TrackingResult extends React.Component<Props, State> {
       const segments: ITrackPoint[][] = [];
       let curSegment: ITrackPoint[] | null = null;
       let prevTp;
+
       for (const tp of track.trackPoints) {
         if (
           prevTp &&
@@ -107,6 +109,7 @@ class TrackingResult extends React.Component<Props, State> {
           )}
 
           {this.state.activePoint &&
+            lastPoint !== this.state.activePoint &&
             typeof this.state.activePoint.accuracy === 'number' && (
               <Circle
                 weight={2}

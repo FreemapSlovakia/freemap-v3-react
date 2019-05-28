@@ -21,7 +21,7 @@ interface IState {
   accessTokensDeviceId: number | null | undefined;
   modifiedDeviceId: number | null | undefined;
   modifiedAccessTokenId: number | null | undefined;
-  modifiedTrackedDeviceId: undefined | null | number;
+  modifiedTrackedDeviceId: undefined | null | number | string;
   trackedDevices: ITrackedDevice[];
   tracks: ITrack[];
   showLine: boolean;
@@ -74,6 +74,10 @@ export default createReducer<IState, RootAction>(initialState)
   .handleAction(trackingActions.setTrackedDevices, (state, action) => ({
     ...state,
     trackedDevices: action.payload,
+  }))
+  .handleAction(trackingActions.modifyTrackedDevice, (state, action) => ({
+    ...state,
+    modifiedTrackedDeviceId: action.payload,
   }))
   .handleAction(trackingActions.saveTrackedDevice, (state, action) => ({
     ...state,

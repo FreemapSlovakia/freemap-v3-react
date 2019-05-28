@@ -52,8 +52,9 @@ const TrackedDeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
 
   const handleSubmit = e => {
     e.preventDefault();
+    const id0 = id.trim();
     onSave({
-      id: id.trim(),
+      id: /^\d+$/.test(id0) ? Number.parseInt(id0) : id0,
       label: label.trim() || null,
       color: color.trim() || null,
       fromTime: fromTime === '' ? null : new Date(fromTime),

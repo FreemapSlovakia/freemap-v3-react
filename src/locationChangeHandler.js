@@ -328,7 +328,8 @@ export default function handleLocationChange(store, location) {
   const parsed = [];
 
   for (const tracking of trackings) {
-    const [id, ...parts] = tracking.split('/');
+    const [id0, ...parts] = tracking.split('/');
+    let id = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
     let fromTime = null;
     let maxAge = null;
     let maxCount = null;
