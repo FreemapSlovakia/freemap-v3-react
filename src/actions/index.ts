@@ -1,6 +1,6 @@
 import { ActionType } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
 import {
   rpcResponse,
   rpcEvent,
@@ -16,6 +16,7 @@ const actions = {
   rpcResponse,
   rpcEvent,
   wsStateChanged,
+  setActiveModal,
 };
 
 export type RootAction = ActionType<typeof actions>;

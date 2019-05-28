@@ -1,4 +1,3 @@
-import * as at from 'fm3/actionTypes';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
@@ -9,6 +8,12 @@ import {
   IAccessToken,
 } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
+import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
+import {
+  wsStateChanged,
+  rpcResponse,
+  rpcEvent,
+} from 'fm3/actions/websocketActions';
 
 interface IState {
   devices: IDevice[];
@@ -39,8 +44,8 @@ const initialState: IState = {
 };
 
 export default createReducer<IState, RootAction>(initialState)
-  .handleAction(at.CLEAR_MAP, () => initialState)
-  .handleAction(at.SET_ACTIVE_MODAL, state => ({
+  .handleAction(clearMap, () => initialState)
+  .handleAction(setActiveModal, state => ({
     ...initialState,
     trackedDevices: state.trackedDevices,
     tracks: state.tracks,
@@ -106,10 +111,10 @@ export default createReducer<IState, RootAction>(initialState)
     ...state,
     showLine: action.payload,
   }))
-  .handleAction(at.WS_STATE_CHANGED, (state, action) =>
+  .handleAction(wsStateChanged, (state, action) =>
     action.payload.state === 1 ? state : { ...state, tracks: [] },
   )
-  .handleAction(at.RPC_RESPONSE, (state, action) => {
+  .handleAction(rpcResponse, (state, action) => {
     if (
       action.payload.method === 'tracking.subscribe' &&
       action.payload.type === 'result'
@@ -145,7 +150,7 @@ export default createReducer<IState, RootAction>(initialState)
 
     return state;
   })
-  .handleAction(at.RPC_EVENT, (state, action) => {
+  .handleAction(rpcEvent, (state, action) => {
     if (action.payload.method === 'tracking.addPoint') {
       // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
       const { token, deviceId, ts, ...rest } = action.payload.params;

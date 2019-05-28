@@ -1,6 +1,6 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, createStandardAction } from 'typesafe-actions';
 
-export const authCheckLogin = createAction('AUTH_CHECK_LOGIN')<>();
+export const authCheckLogin = createAction('AUTH_CHECK_LOGIN');
 
 export const authLoginWithOsm = createAction('AUTH_LOGIN_WITH_OSM');
 
