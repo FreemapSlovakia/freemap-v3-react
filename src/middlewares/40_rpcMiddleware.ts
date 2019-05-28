@@ -3,7 +3,13 @@ import { wsSend, rpcResponse, rpcEvent } from 'fm3/actions/websocketActions';
 
 // TODO implement timeout
 
-const callMap = new Map();
+interface ICall {
+  method: string;
+  params: any;
+  tag?: any;
+}
+
+const callMap = new Map<number, ICall>();
 let id = 0;
 
 export default ({ dispatch, getState }) => next => action => {
@@ -64,15 +70,27 @@ export default ({ dispatch, getState }) => next => action => {
 
         if (call) {
           callMap.delete(object.id);
+          const base = {
+            method: call.method,
+            params: call.params,
+            tag: call.tag,
+          };
+
           dispatch(
-            rpcResponse({
-              type: 'result',
-              method: call.method,
-              params: call.params,
-              result: object.result,
-              error: object.error,
-              tag: call.tag,
-            }),
+            rpcResponse(
+              'error' in object
+                ? {
+                    type: 'error',
+                    ...base,
+                    error: object.error,
+                  }
+                : // TODO check 'result' in object
+                  {
+                    type: 'result',
+                    ...base,
+                    result: object.result,
+                  },
+            ),
           );
         }
       }

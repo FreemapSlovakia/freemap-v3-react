@@ -17,8 +17,9 @@
       "fm3/*": ["./*"]
     },
     "noUnusedLocals": true,
-    "noUnusedParameters": true
+    "noUnusedParameters": true,
     // "strict": true
+    "downlevelIteration": true
   },
   "include": ["./src/"]
 }

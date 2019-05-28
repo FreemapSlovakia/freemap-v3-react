@@ -9,8 +9,8 @@ export const wsOpen = createStandardAction('WS_OPEN')<any>();
 export const wsClose = createStandardAction('WS_CLOSE')<any>();
 
 export const wsSend = createStandardAction('WS_SEND')<{
-  message: string;
-  tag: any;
+  message: any;
+  tag?: any;
 }>();
 
 export const wsStateChanged = createStandardAction('WS_STATE_CHANGED')<{

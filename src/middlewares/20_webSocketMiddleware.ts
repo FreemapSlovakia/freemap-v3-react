@@ -5,7 +5,7 @@ import {
 } from 'fm3/actions/websocketActions';
 import * as at from 'fm3/actionTypes';
 
-let ws = { readyState: 3 };
+let ws: WebSocket | null = null;
 let restarter;
 
 function resetRestarter() {
@@ -13,14 +13,23 @@ function resetRestarter() {
     clearTimeout(restarter);
   }
   restarter = setTimeout(() => {
-    ws.close();
+    if (ws) {
+      ws.close();
+    }
   }, 45000);
 }
+
+// TODO move elsewhere
+declare var process: {
+  env: {
+    API_URL: string;
+  };
+};
 
 export default ({ dispatch, getState }) => next => action => {
   switch (action.type) {
     case at.WS_OPEN: {
-      if (ws.readyState < 3) {
+      if (ws && ws.readyState < 3) {
         dispatch(wsInvalidState(action.payload));
         return;
       }
@@ -37,7 +46,10 @@ export default ({ dispatch, getState }) => next => action => {
         if (ws === target) {
           resetRestarter();
           dispatch(
-            wsStateChanged({ timestamp: Date.now(), state: target.readyState }),
+            wsStateChanged({
+              timestamp: Date.now(),
+              state: (target as WebSocket).readyState,
+            }),
           );
         }
       });
@@ -49,7 +61,7 @@ export default ({ dispatch, getState }) => next => action => {
           dispatch(
             wsStateChanged({
               timestamp: Date.now(),
-              state: target.readyState,
+              state: (target as WebSocket).readyState,
               code,
             }),
           );
@@ -67,7 +79,7 @@ export default ({ dispatch, getState }) => next => action => {
       break;
     }
     case at.WS_SEND:
-      if (ws.readyState === 1) {
+      if (ws && ws.readyState === 1) {
         ws.send(JSON.stringify(action.payload.message));
       } else {
         dispatch(wsInvalidState(action.payload.tag));
@@ -75,7 +87,7 @@ export default ({ dispatch, getState }) => next => action => {
       }
       break;
     case at.WS_CLOSE:
-      if (ws.readyState < 3) {
+      if (ws && ws.readyState < 3) {
         ws.close();
       } else {
         dispatch(wsInvalidState(action.payload));
@@ -90,7 +102,7 @@ export default ({ dispatch, getState }) => next => action => {
 
   next(action);
 
-  if (user !== getState().auth && ws.readyState < 2) {
+  if (user !== getState().auth && ws && ws.readyState < 2) {
     ws.close();
   }
 };
