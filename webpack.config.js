@@ -26,6 +26,7 @@ module.exports = {
     path: path.resolve(__dirname, 'dist'),
   },
   resolve: {
+    extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
       fm3: path.resolve(__dirname, 'src'),
     },

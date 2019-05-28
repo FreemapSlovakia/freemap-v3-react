@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 
@@ -12,7 +11,18 @@ import AccessTokenForm from './AccessTokenForm';
 import TrackedDevices from './TrackedDevices';
 import TrackedDeviceForm from './TrackedDeviceForm';
 
-function TrackingModal({ onClose, view }) {
+interface Props {
+  onClose: () => void;
+  view:
+    | 'devices'
+    | 'deviceForm'
+    | 'accessTokens'
+    | 'accessTokenForm'
+    | 'trackedDevices'
+    | 'trackedDeviceForm';
+}
+
+const TrackingModal: React.FC<Props> = ({ onClose, view }) => {
   return (
     <Modal onHide={onClose} show bsSize="large">
       {view === 'devices' && <Devices />}
@@ -23,22 +33,10 @@ function TrackingModal({ onClose, view }) {
       {view === 'trackedDeviceForm' && <TrackedDeviceForm />}
     </Modal>
   );
-}
-
-TrackingModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  view: PropTypes.oneOf([
-    'devices',
-    'deviceForm',
-    'accessTokens',
-    'accessTokenForm',
-    'trackedDevices',
-    'trackedDeviceForm',
-  ]).isRequired,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     devices: state.tracking.devices,
     view:
       state.main.activeModal === 'tracking-my'

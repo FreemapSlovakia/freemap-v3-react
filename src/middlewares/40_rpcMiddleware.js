@@ -18,13 +18,13 @@ export default ({ dispatch, getState }) => next => action => {
       callMap.clear();
       for (const call of values) {
         dispatch(
-          rpcResponse(
-            call.method,
-            call.params,
-            undefined,
-            { code: -31000, message: 'connection closed' },
-            call.tag,
-          ),
+          rpcResponse({
+            type: 'error',
+            method: call.method,
+            params: call.params,
+            error: { code: -31000, message: 'connection closed' },
+            tag: call.tag,
+          }),
         );
       }
     }
@@ -39,10 +39,12 @@ export default ({ dispatch, getState }) => next => action => {
 
     dispatch(
       wsSend({
-        jsonrpc: '2.0',
-        id,
-        method: action.payload.method,
-        params: action.payload.params,
+        message: {
+          jsonrpc: '2.0',
+          id,
+          method: action.payload.method,
+          params: action.payload.params,
+        },
       }),
     );
   } else if (action.type === at.WS_RECEIVED) {
@@ -56,20 +58,21 @@ export default ({ dispatch, getState }) => next => action => {
 
     if (object && object.jsonrpc === '2.0') {
       if (object.method && object.id === undefined) {
-        dispatch(rpcEvent(object.method, object.params));
+        dispatch(rpcEvent({ method: object.method, params: object.params }));
       } else if (object.id !== undefined && !object.method) {
         const call = callMap.get(object.id);
 
         if (call) {
           callMap.delete(object.id);
           dispatch(
-            rpcResponse(
-              call.method,
-              call.params,
-              object.result,
-              object.error,
-              call.tag,
-            ),
+            rpcResponse({
+              type: 'result',
+              method: call.method,
+              params: call.params,
+              result: object.result,
+              error: object.error,
+              tag: call.tag,
+            }),
           );
         }
       }

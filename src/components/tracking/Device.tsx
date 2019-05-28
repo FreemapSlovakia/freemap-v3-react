@@ -1,28 +1,32 @@
 import { connect } from 'react-redux';
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import Tooltip from 'react-bootstrap/lib/Tooltip';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import {
-  trackingModifyDevice,
-  trackingDeleteDevice,
-  trackingShowAccessTokens,
-  trackingView,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { IDevice } from 'fm3/types/trackingTypes';
 
-function Device({
+interface Props {
+  onDelete: (id: number) => void;
+  onModify: (id: number) => void;
+  onShowAccessTokens: (id: number) => void;
+  onView: (id: number) => void;
+  language: string;
+  device: IDevice;
+}
+
+const Device: React.FC<Props> = ({
   onDelete,
   onModify,
   device,
   language,
   onShowAccessTokens,
   onView,
-}) {
+}) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
     month: 'short',
@@ -31,19 +35,19 @@ function Device({
     minute: '2-digit',
   });
 
-  const handleModify = useCallback(() => {
+  const handleModify = React.useCallback(() => {
     onModify(device.id);
   }, [device.id, onModify]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = React.useCallback(() => {
     onDelete(device.id);
   }, [device.id, onDelete]);
 
-  const handleShowAccessTokens = useCallback(() => {
+  const handleShowAccessTokens = React.useCallback(() => {
     onShowAccessTokens(device.id);
   }, [device.id, onShowAccessTokens]);
 
-  const handleView = useCallback(() => {
+  const handleView = React.useCallback(() => {
     onView(device.id);
   }, [device.id, onView]);
 
@@ -105,33 +109,24 @@ function Device({
       </td>
     </tr>
   );
-}
-
-Device.propTypes = {
-  onDelete: PropTypes.func.isRequired,
-  onModify: PropTypes.func.isRequired,
-  onShowAccessTokens: PropTypes.func.isRequired,
-  onView: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired,
-  device: PropTypes.shape({}).isRequired,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     language: state.l10n.language,
   }),
   dispatch => ({
     onModify(id) {
-      dispatch(trackingModifyDevice(id));
+      dispatch(trackingActions.modifyDevice(id));
     },
     onDelete(id) {
-      dispatch(trackingDeleteDevice(id));
+      dispatch(trackingActions.deleteDevice(id));
     },
     onShowAccessTokens(id) {
-      dispatch(trackingShowAccessTokens(id));
+      dispatch(trackingActions.showAccessTokens(id));
     },
     onView(id) {
-      dispatch(trackingView(id));
+      dispatch(trackingActions.view(id));
       dispatch(setActiveModal(null));
     },
   }),

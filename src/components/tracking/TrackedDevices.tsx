@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
@@ -9,10 +8,17 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { trackingModifyTrackedDevice } from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 import TrackedDevice from './TrackedDevice';
+import { ITrackedDevice } from 'fm3/types/trackingTypes';
 
-function TrackedDevices({ onClose, onAdd, devices }) {
+interface Props {
+  onClose: () => void;
+  onAdd: () => void;
+  devices: ITrackedDevice[];
+}
+
+const TrackedDevices: React.FC<Props> = ({ onClose, onAdd, devices }) => {
   return (
     <>
       <Modal.Header closeButton>
@@ -26,7 +32,7 @@ function TrackedDevices({ onClose, onAdd, devices }) {
       </Modal.Header>
       <Modal.Body>
         <Alert bsStyle="info">
-          <p>Manage tracked devices to see the position of your friends.</p>
+          <p>Manage watched devices to see the position of your friends.</p>
         </Alert>
         <Table striped bordered>
           <thead>
@@ -58,16 +64,10 @@ function TrackedDevices({ onClose, onAdd, devices }) {
       </Modal.Footer>
     </>
   );
-}
-
-TrackedDevices.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  devices: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     devices: state.tracking.trackedDevices,
   }),
   dispatch => ({
@@ -75,7 +75,7 @@ export default connect(
       dispatch(setActiveModal(null));
     },
     onAdd() {
-      dispatch(trackingModifyTrackedDevice(null));
+      dispatch(trackingActions.modifyTrackedDevice(null));
     },
   }),
 )(TrackedDevices);

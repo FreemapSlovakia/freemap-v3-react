@@ -3,7 +3,7 @@ import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 import * as at from 'fm3/actionTypes';
 import { toastsAddError } from 'fm3/actions/toastsActions';
-import { trackingModifyAccessToken } from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 import { getAuthAxios } from 'fm3/authAxios';
 
 export default createLogic({
@@ -18,7 +18,7 @@ export default createLogic({
       getAuthAxios(getState)
         .put(`/tracking/access-tokens/${modifiedAccessTokenId}`, action.payload)
         .then(() => {
-          dispatch(trackingModifyAccessToken(undefined));
+          dispatch(trackingActions.modifyAccessToken(undefined));
         })
         .catch(err => {
           dispatch(toastsAddError('settings.savingError', err)); // TODO

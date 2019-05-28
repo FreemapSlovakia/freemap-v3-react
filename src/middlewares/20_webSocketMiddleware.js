@@ -31,12 +31,14 @@ export default ({ dispatch, getState }) => next => action => {
           user ? `&authToken=${user.authToken}` : ''
         }`,
       );
-      dispatch(wsStateChanged(ws.readyState));
+      dispatch(wsStateChanged({ timestamp: Date.now(), state: ws.readyState }));
 
       ws.addEventListener('open', ({ target }) => {
         if (ws === target) {
           resetRestarter();
-          dispatch(wsStateChanged(target.readyState));
+          dispatch(
+            wsStateChanged({ timestamp: Date.now(), state: target.readyState }),
+          );
         }
       });
 
@@ -44,7 +46,13 @@ export default ({ dispatch, getState }) => next => action => {
         if (ws === target) {
           clearTimeout(restarter);
           restarter = null;
-          dispatch(wsStateChanged(target.readyState, code));
+          dispatch(
+            wsStateChanged({
+              timestamp: Date.now(),
+              state: target.readyState,
+              code,
+            }),
+          );
         }
       });
 

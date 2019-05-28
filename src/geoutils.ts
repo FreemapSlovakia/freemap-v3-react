@@ -1,8 +1,14 @@
 import geojsonArea from '@mapbox/geojson-area';
+import { LatLngLiteral } from 'leaflet';
 
 const PI2 = 2 * Math.PI;
 
-export function formatGpsCoord(angle, cardinals, style = 'DMS', language) {
+export function formatGpsCoord(
+  angle: number,
+  cardinals: string,
+  style: 'DMS' | 'DM' | 'D' = 'DMS',
+  language: string,
+): string {
   let cardinal = '';
   let a = angle;
   if (cardinals) {
@@ -41,7 +47,12 @@ export function formatGpsCoord(angle, cardinals, style = 'DMS', language) {
 }
 
 // distance in meters
-export function distance(lat1, lon1, lat2, lon2) {
+export function distance(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+): number {
   const a =
     0.5 -
     Math.cos(toRad(lat2 - lat1)) / 2 +
@@ -126,4 +137,17 @@ export function smoothElevations(coords, eleSmoothingFactor) {
     prevFloatingWindowEle = flotingWindowEle;
     return [lonLatEle[0], lonLatEle[1], flotingWindowEle];
   });
+}
+
+interface LatLon {
+  lat: number;
+  lon: number;
+}
+
+export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {
+  return { lat, lng: lon };
+}
+
+export function toLatLngArr(arr: LatLon[]): LatLngLiteral[] {
+  return arr.map(toLatLng);
 }

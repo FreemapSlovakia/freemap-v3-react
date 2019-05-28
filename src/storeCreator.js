@@ -2,12 +2,12 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import logicMiddleware from 'fm3/middlewares/30_logicMiddleware';
 
 export default function createReduxStore() {
-  const reducersCtx = require.context('fm3/reducers', false, /Reducer\.js$/);
+  const reducersCtx = require.context('fm3/reducers', false, /Reducer\.[tj]s$/);
   const reducers = Object.fromEntries(
     reducersCtx
       .keys()
       .map(k => [
-        k.replace(/^\.\/(.*)Reducer\.js/, '$1'),
+        k.replace(/^\.\/(.*)Reducer\.[tj]s/, '$1'),
         reducersCtx(k).default,
       ]),
   );
@@ -15,7 +15,7 @@ export default function createReduxStore() {
   const middlewaresCtx = require.context(
     'fm3/middlewares',
     false,
-    /Middleware\.js$/,
+    /Middleware\.[tj]s$/,
   );
   const middlewares = middlewaresCtx
     .keys()

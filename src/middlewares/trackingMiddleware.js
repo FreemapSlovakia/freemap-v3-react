@@ -34,7 +34,7 @@ export default ({ dispatch, getState }) => next => action => {
     }
   } else if (prevState !== 1 && state === 1 && trackedDevices.length > 0) {
     for (const td of trackedDevices) {
-      dispatch(rpcCall('tracking.subscribe', mangle(td)));
+      dispatch(rpcCall({ method: 'tracking.subscribe', params: mangle(td) }));
     }
   } else if (state === 1 && prevTrackedDevices !== trackedDevices) {
     // TODO prevent concurrent subscribe/unsubscribe of the same id and keep their order
@@ -42,12 +42,17 @@ export default ({ dispatch, getState }) => next => action => {
     for (const td of prevTrackedDevices) {
       if (!trackedDevices.includes(td)) {
         const { token, deviceId } = mangle(td);
-        dispatch(rpcCall('tracking.unsubscribe', { token, deviceId }));
+        dispatch(
+          rpcCall({
+            method: 'tracking.unsubscribe',
+            params: { token, deviceId },
+          }),
+        );
       }
     }
     for (const td of trackedDevices) {
       if (!prevTrackedDevices.includes(td)) {
-        dispatch(rpcCall('tracking.subscribe', mangle(td)));
+        dispatch(rpcCall({ method: 'tracking.subscribe', params: mangle(td) }));
       }
     }
   }

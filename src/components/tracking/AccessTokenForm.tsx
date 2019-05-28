@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
@@ -9,37 +8,39 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import {
-  trackingSaveAccessToken,
-  trackingModifyAccessToken,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 import DateTime from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { IAccessToken, IAccessTokenBase } from 'fm3/types/trackingTypes';
+import { useTextInputState } from 'fm3/hooks/inputHooks';
 
-// TODO to hook file
-function useInputState(init, type = 'text') {
-  const [value, setValue] = useState(init);
-  return [
-    value,
-    e => setValue(type === 'checkbox' ? e.target.checked : e.target.value),
-  ];
+interface Props {
+  onCancel: () => void;
+  onSave: (at: IAccessTokenBase) => void;
+  accessToken: IAccessToken;
+  deviceName: string;
 }
 
-function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
-  const [note, setNote] = useInputState(
+const AccessTokenForm: React.FC<Props> = ({
+  onSave,
+  onCancel,
+  accessToken,
+  deviceName,
+}) => {
+  const [note, setNote] = useTextInputState(
     (accessToken && accessToken.note) || '',
   );
-  const [timeFrom, setTimeFrom] = useState(
+  const [timeFrom, setTimeFrom] = React.useState(
     accessToken && accessToken.timeFrom
       ? toDatetimeLocal(accessToken.timeFrom)
       : '',
   );
-  const [timeTo, setTimeTo] = useState(
+  const [timeTo, setTimeTo] = React.useState(
     accessToken && accessToken.timeTo
       ? toDatetimeLocal(accessToken.timeTo)
       : '',
   );
-  const [listingLabel, setListingLabel] = useInputState(
+  const [listingLabel, setListingLabel] = useTextInputState(
     (accessToken && accessToken.listingLabel) || '',
   );
 
@@ -60,13 +61,14 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
           <FontAwesomeIcon icon="bullseye" />
           {accessToken ? (
             <>
-              {' '}
-              Modify Watch Token <i>{accessToken.token}</i>
+              {' Modify Watch Token '}
+              <i>{accessToken.token}</i>
             </>
           ) : (
             ' Add Watch Token'
           )}
-          {' for'} <i>{deviceName}</i>
+          {' for '}
+          <i>{deviceName}</i>
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -99,17 +101,10 @@ function AccessTokenForm({ onSave, onCancel, accessToken, deviceName }) {
       </Modal.Footer>
     </form>
   );
-}
-
-AccessTokenForm.propTypes = {
-  onCancel: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
-  accessToken: PropTypes.shape({}).isRequired, // TODO
-  deviceName: PropTypes.string,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     accessToken:
       state.tracking.modifiedAccessTokenId &&
       state.tracking.accessTokens.find(
@@ -121,10 +116,10 @@ export default connect(
   }),
   dispatch => ({
     onCancel() {
-      dispatch(trackingModifyAccessToken(undefined));
+      dispatch(trackingActions.modifyAccessToken(undefined));
     },
     onSave(accessToken) {
-      dispatch(trackingSaveAccessToken(accessToken));
+      dispatch(trackingActions.saveAccessToken(accessToken));
     },
   }),
 )(AccessTokenForm);

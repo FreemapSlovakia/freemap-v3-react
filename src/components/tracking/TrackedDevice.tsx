@@ -1,16 +1,25 @@
 import { connect } from 'react-redux';
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import {
-  trackingDeleteTrackedDevice,
-  trackingModifyTrackedDevice,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { ITrackedDevice } from 'fm3/types/trackingTypes';
 
-function TrackedDevice({ onDelete, onModify, device, language }) {
+interface Props {
+  onDelete: (id: string | number) => void;
+  onModify: (id: string | number) => void;
+  language: string;
+  device: ITrackedDevice;
+}
+
+const TrackedDevice: React.FC<Props> = ({
+  onDelete,
+  onModify,
+  device,
+  language,
+}) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
     month: 'short',
@@ -19,11 +28,11 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
     minute: '2-digit',
   });
 
-  const handleModify = useCallback(() => {
+  const handleModify = React.useCallback(() => {
     onModify(device.id);
   }, [device.id, onModify]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = React.useCallback(() => {
     onDelete(device.id);
   }, [device.id, onDelete]);
 
@@ -68,25 +77,18 @@ function TrackedDevice({ onDelete, onModify, device, language }) {
       </td>
     </tr>
   );
-}
-
-TrackedDevice.propTypes = {
-  onDelete: PropTypes.func.isRequired,
-  onModify: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired,
-  device: PropTypes.shape({}).isRequired,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     language: state.l10n.language,
   }),
   dispatch => ({
     onModify(id) {
-      dispatch(trackingModifyTrackedDevice(id));
+      dispatch(trackingActions.modifyTrackedDevice(id));
     },
     onDelete(id) {
-      dispatch(trackingDeleteTrackedDevice(id));
+      dispatch(trackingActions.deleteTrackedDevice(id));
     },
   }),
 )(TrackedDevice);

@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import React, { useEffect } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
@@ -9,14 +8,19 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import {
-  trackingLoadDevices,
-  trackingModifyDevice,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 import Device from './Device';
+import { IDevice } from 'fm3/types/trackingTypes';
 
-function Devices({ onClose, onOpen, onAdd, devices }) {
-  useEffect(() => {
+interface Props {
+  onOpen: () => void;
+  onClose: () => void;
+  onAdd: () => void;
+  devices: IDevice[];
+}
+
+const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices }) => {
+  React.useEffect(() => {
     onOpen();
   }, [onOpen]);
 
@@ -43,7 +47,7 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
               Locus
             </a>{' '}
-            or OsmAnd ):{' '}
+            or OsmAnd):{' '}
             <code>
               {process.env.API_URL}/tracking/track/<i>token</i>
             </code>{' '}
@@ -116,28 +120,21 @@ function Devices({ onClose, onOpen, onAdd, devices }) {
       </Modal.Footer>
     </>
   );
-}
-
-Devices.propTypes = {
-  onOpen: PropTypes.func.isRequired,
-  onClose: PropTypes.func.isRequired,
-  onAdd: PropTypes.func.isRequired,
-  devices: PropTypes.arrayOf(PropTypes.shape({}).isRequired).isRequired,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     devices: state.tracking.devices,
   }),
   dispatch => ({
     onOpen() {
-      dispatch(trackingLoadDevices());
+      dispatch(trackingActions.loadDevices());
     },
     onClose() {
       dispatch(setActiveModal(null));
     },
     onAdd() {
-      dispatch(trackingModifyDevice(null));
+      dispatch(trackingActions.modifyDevice(null));
     },
   }),
 )(Devices);

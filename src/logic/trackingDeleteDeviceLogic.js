@@ -2,7 +2,7 @@ import { createLogic } from 'redux-logic';
 import { startProgress, stopProgress } from 'fm3/actions/mainActions';
 
 import * as at from 'fm3/actionTypes';
-import { trackingLoadDevices } from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { getAuthAxios } from 'fm3/authAxios';
 
@@ -18,7 +18,7 @@ export default createLogic({
         )}`,
       )
       .then(() => {
-        dispatch(trackingLoadDevices());
+        dispatch(trackingActions.loadDevices());
       })
       .catch(err => {
         dispatch(toastsAddError('settings.savingError', err)); // TODO

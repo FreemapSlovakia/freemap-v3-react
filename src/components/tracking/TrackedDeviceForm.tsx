@@ -1,6 +1,5 @@
 import { connect } from 'react-redux';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
@@ -12,44 +11,40 @@ import DateTime from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import {
-  trackingModifyTrackedDevice,
-  trackingSaveTrackedDevice,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { useTextInputState } from 'fm3/hooks/inputHooks';
+import { ITrackedDevice } from 'fm3/types/trackingTypes';
 
-// TODO to hook file
-function useInputState(init, type = 'text') {
-  const [value, setValue] = useState(init);
-  return [
-    value,
-    e => setValue(type === 'checkbox' ? e.target.checked : e.target.value),
-  ];
+interface Props {
+  onCancel: () => void;
+  onSave: (device: ITrackedDevice) => void;
+  device: ITrackedDevice;
 }
 
-function TrackedDeviceForm({ onSave, onCancel, device }) {
-  const [id, setId] = useInputState((device && device.id) || '');
-  const [label, setLabel] = useInputState((device && device.label) || '');
-  const [color, setColor] = useInputState((device && device.color) || '');
-  const [width, setWidth] = useInputState(
+const TrackedDeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
+  const [id, setId] = useTextInputState((device && device.id.toString()) || '');
+  const [label, setLabel] = useTextInputState((device && device.label) || '');
+  const [color, setColor] = useTextInputState((device && device.color) || '');
+  const [width, setWidth] = useTextInputState(
     device && typeof device.width === 'number' ? device.width.toString() : '',
   );
-  const [fromTime, setFromTime] = useState(
+  const [fromTime, setFromTime] = React.useState(
     device && device.fromTime ? toDatetimeLocal(device.fromTime) : '',
   );
-  const [maxCount, setMaxCount] = useInputState(
+  const [maxCount, setMaxCount] = useTextInputState(
     device && typeof device.maxCount === 'number'
       ? device.maxCount.toString()
       : '',
   );
-  const [maxAge, setMaxAge] = useInputState(
+  const [maxAge, setMaxAge] = useTextInputState(
     device && typeof device.maxAge === 'number' ? device.maxAge.toString() : '',
   );
-  const [splitDistance, setSplitDistance] = useInputState(
+  const [splitDistance, setSplitDistance] = useTextInputState(
     device && typeof device.splitDistance === 'number'
       ? device.splitDistance.toString()
       : '',
   );
-  const [splitDuration, setSplitDuration] = useInputState(
+  const [splitDuration, setSplitDuration] = useTextInputState(
     device && typeof device.splitDuration === 'number'
       ? device.splitDuration.toString()
       : '',
@@ -80,10 +75,10 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
           {device ? (
             <>
               {' '}
-              Modify Tracked Device <i>{device.label || device.id}</i>
+              Modify Watched Device <i>{device.label || device.id}</i>
             </>
           ) : (
-            ' Add Tracked Device'
+            ' Add Watched Device'
           )}
         </Modal.Title>
       </Modal.Header>
@@ -165,16 +160,10 @@ function TrackedDeviceForm({ onSave, onCancel, device }) {
       </Modal.Footer>
     </form>
   );
-}
-
-TrackedDeviceForm.propTypes = {
-  onCancel: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
-  device: PropTypes.shape({}), // TODO
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     device:
       state.tracking.modifiedTrackedDeviceId &&
       state.tracking.trackedDevices.find(
@@ -183,10 +172,10 @@ export default connect(
   }),
   dispatch => ({
     onCancel() {
-      dispatch(trackingModifyTrackedDevice(undefined));
+      dispatch(trackingActions.modifyTrackedDevice(undefined));
     },
     onSave(device) {
-      dispatch(trackingSaveTrackedDevice(device));
+      dispatch(trackingActions.saveTrackedDevice(device));
     },
   }),
 )(TrackedDeviceForm);

@@ -1,6 +1,6 @@
 import { createLogicMiddleware } from 'redux-logic';
 
-const logicsCtx = require.context('fm3/logic', false, /Logic\.js$/);
+const logicsCtx = require.context('fm3/logic', false, /Logic\.[tj]s$/);
 const logics = logicsCtx
   .keys()
   .sort()

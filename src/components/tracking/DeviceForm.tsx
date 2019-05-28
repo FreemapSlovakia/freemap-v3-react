@@ -1,46 +1,37 @@
 import { connect } from 'react-redux';
-import React, { useState } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import {
-  trackingSaveDevice,
-  trackingModifyDevice,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { IEditedDevice } from 'fm3/types/trackingTypes';
+import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
 
-// TODO to hook file
-function useInputState(init, type = 'text') {
-  const [value, setValue] = useState(init);
-  return [
-    value,
-    e => setValue(type === 'checkbox' ? e.target.checked : e.target.value),
-  ];
+interface Props {
+  onCancel: () => void;
+  onSave: (device: IEditedDevice) => void;
+  device: IEditedDevice;
 }
 
-function DeviceForm({ onSave, onCancel, device }) {
-  const [name, setName] = useInputState((device && device.name) || '');
-  const [maxCount, setMaxCount] = useInputState(
+const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
+  const [name, setName] = useTextInputState((device && device.name) || '');
+  const [maxCount, setMaxCount] = useTextInputState(
     device && device.maxCount !== null ? device.maxCount.toString() : '',
   );
-  const [maxAge, setMaxAge] = useInputState(
+  const [maxAge, setMaxAge] = useTextInputState(
     device && device.maxAge !== null ? device.maxAge.toString() : '',
   );
-  const [regenerateToken, setRegenerateToken] = useInputState(
-    false,
-    'checkbox',
-  );
+  const [regenerateToken, setRegenerateToken] = useCheckboxInputState(false);
 
-  const handleSubmit = e => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
-      name: name.trim() || null,
+      name: name.trim(),
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
       maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
       regenerateToken,
@@ -54,8 +45,8 @@ function DeviceForm({ onSave, onCancel, device }) {
           <FontAwesomeIcon icon="bullseye" />
           {device ? (
             <>
-              {' '}
-              Modify Tracking Device <i>{device.name}</i>
+              {' Modify Tracking Device '}
+              <i>{device.name}</i>
             </>
           ) : (
             ' Add Tracking Device'
@@ -66,6 +57,7 @@ function DeviceForm({ onSave, onCancel, device }) {
         <FormGroup>
           <ControlLabel>Name</ControlLabel>
           <FormControl
+            type="text"
             value={name}
             onChange={setName}
             required
@@ -94,9 +86,13 @@ function DeviceForm({ onSave, onCancel, device }) {
           />
         </FormGroup>
         {!!device && (
-          <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
+          <FormControl
+            type="checkbox"
+            onChange={setRegenerateToken}
+            checked={regenerateToken}
+          >
             Regenerate token
-          </Checkbox>
+          </FormControl>
         )}
       </Modal.Body>
       <Modal.Footer>
@@ -107,16 +103,10 @@ function DeviceForm({ onSave, onCancel, device }) {
       </Modal.Footer>
     </form>
   );
-}
-
-DeviceForm.propTypes = {
-  onCancel: PropTypes.func.isRequired,
-  onSave: PropTypes.func.isRequired,
-  device: PropTypes.shape({}), // TODO
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     device:
       state.tracking.modifiedDeviceId &&
       state.tracking.devices.find(
@@ -125,10 +115,10 @@ export default connect(
   }),
   dispatch => ({
     onCancel() {
-      dispatch(trackingModifyDevice(undefined));
+      dispatch(trackingActions.modifyDevice(undefined));
     },
-    onSave(device) {
-      dispatch(trackingSaveDevice(device));
+    onSave(device: IEditedDevice) {
+      dispatch(trackingActions.saveDevice(device));
     },
   }),
 )(DeviceForm);

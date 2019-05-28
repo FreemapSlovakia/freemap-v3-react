@@ -1,6 +1,6 @@
 import { createLogic } from 'redux-logic';
 import history from 'fm3/history';
-import refModals from 'fm3/refModals';
+import refModals from 'fm3/refModals.json';
 import allTips from 'fm3/tips/index.json';
 import * as at from 'fm3/actionTypes';
 

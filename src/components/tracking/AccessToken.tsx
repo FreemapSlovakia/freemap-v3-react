@@ -1,16 +1,25 @@
 import { connect } from 'react-redux';
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import {
-  trackingDeleteAccessToken,
-  trackingModifyAccessToken,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { IAccessToken } from 'fm3/types/trackingTypes';
 
-function AccessToken({ onDelete, onModify, accessToken, language }) {
+interface Props {
+  onDelete: (id: number) => void;
+  onModify: (id: number) => void;
+  language: string;
+  accessToken: IAccessToken;
+}
+
+const AccessToken: React.FC<Props> = ({
+  onDelete,
+  onModify,
+  accessToken,
+  language,
+}) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
     month: 'short',
@@ -19,11 +28,11 @@ function AccessToken({ onDelete, onModify, accessToken, language }) {
     minute: '2-digit',
   });
 
-  const handleModify = useCallback(() => {
+  const handleModify = React.useCallback(() => {
     onModify(accessToken.id);
   }, [accessToken.id, onModify]);
 
-  const handleDelete = useCallback(() => {
+  const handleDelete = React.useCallback(() => {
     onDelete(accessToken.id);
   }, [accessToken.id, onDelete]);
 
@@ -64,25 +73,18 @@ function AccessToken({ onDelete, onModify, accessToken, language }) {
       </td>
     </tr>
   );
-}
-
-AccessToken.propTypes = {
-  onDelete: PropTypes.func.isRequired,
-  onModify: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired,
-  accessToken: PropTypes.shape({}).isRequired,
 };
 
 export default connect(
-  state => ({
+  (state: any) => ({
     language: state.l10n.language,
   }),
   dispatch => ({
     onModify(id) {
-      dispatch(trackingModifyAccessToken(id));
+      dispatch(trackingActions.modifyAccessToken(id));
     },
     onDelete(id) {
-      dispatch(trackingDeleteAccessToken(id));
+      dispatch(trackingActions.deleteAccessToken(id));
     },
   }),
 )(AccessToken);

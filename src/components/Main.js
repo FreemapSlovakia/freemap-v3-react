@@ -93,9 +93,9 @@ import Attribution from 'fm3/components/Attribution';
 
 import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
-import TrackingModal from './tracking/TrackingModal';
-import TrackingResult from './tracking/TrackingResult';
-import TrackingMenu from './TrackingMenu.tsx';
+import TrackingModal from 'fm3/components/tracking/TrackingModal';
+import TrackingResult from 'fm3/components/tracking/TrackingResult';
+import TrackingMenu from 'fm3/components/tracking/TrackingMenu.tsx';
 
 class Main extends React.Component {
   static propTypes = {

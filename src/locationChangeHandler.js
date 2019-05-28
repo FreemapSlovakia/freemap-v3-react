@@ -5,7 +5,7 @@ import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
   getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
 } from 'fm3/oldFreemapUtils';
-import refModals from 'fm3/refModals';
+import refModals from 'fm3/refModals.json';
 import tips from 'fm3/tips/index.json';
 
 import {
@@ -50,10 +50,7 @@ import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
-import {
-  trackingSetTrackedDevices,
-  trackingSetActive,
-} from './actions/trackingActions';
+import { trackingActions } from './actions/trackingActions';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -399,13 +396,13 @@ export default function handleLocationChange(store, location) {
         continue outer;
       }
     }
-    dispatch(trackingSetTrackedDevices(parsed));
+    dispatch(trackingActions.setTrackedDevices(parsed));
     break;
   }
 
   // eslint-disable-next-line
   if (activeTrackId != query.follow) {
-    dispatch(trackingSetActive(query.follow));
+    dispatch(trackingActions.setActive(query.follow));
   }
 }
 

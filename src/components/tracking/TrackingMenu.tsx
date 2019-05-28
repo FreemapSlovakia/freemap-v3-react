@@ -8,19 +8,16 @@ import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import {
-  trackingSetShowPoints,
-  trackingSetShowLine,
-} from 'fm3/actions/trackingActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
 
-interface ITrackingMenuProps {
+interface Props {
   onTrackedDevicesClick: () => void;
   onMyDevicesClick: () => void;
   onVisualChange: (visual: 'line+points' | 'line' | 'points') => void;
   visual: string;
 }
 
-const TrackingMenu: React.SFC<ITrackingMenuProps> = ({
+const TrackingMenu: React.FC<Props> = ({
   onTrackedDevicesClick,
   onMyDevicesClick,
   onVisualChange,
@@ -41,7 +38,7 @@ const TrackingMenu: React.SFC<ITrackingMenuProps> = ({
       </span>{' '}
       <Button onClick={onTrackedDevicesClick}>
         <FontAwesomeIcon icon="eye" />
-        <span className="hidden-xs"> Tracked</span>
+        <span className="hidden-xs"> Watched</span>
       </Button>{' '}
       <Button onClick={onMyDevicesClick}>
         <FontAwesomeIcon icon="mobile" />
@@ -71,7 +68,7 @@ const TrackingMenu: React.SFC<ITrackingMenuProps> = ({
 
 export default compose(
   connect(
-    state => ({
+    (state: any) => ({
       isActive: state.infoPoint.activeIndex !== null,
       visual:
         state.tracking.showLine && state.tracking.showPoints
@@ -92,16 +89,16 @@ export default compose(
       onVisualChange(visual) {
         switch (visual) {
           case 'line':
-            dispatch(trackingSetShowPoints(false));
-            dispatch(trackingSetShowLine(true));
+            dispatch(trackingActions.setShowPoints(false));
+            dispatch(trackingActions.setShowLine(true));
             break;
           case 'points':
-            dispatch(trackingSetShowPoints(true));
-            dispatch(trackingSetShowLine(false));
+            dispatch(trackingActions.setShowPoints(true));
+            dispatch(trackingActions.setShowLine(false));
             break;
           case 'line+points':
-            dispatch(trackingSetShowPoints(true));
-            dispatch(trackingSetShowLine(true));
+            dispatch(trackingActions.setShowPoints(true));
+            dispatch(trackingActions.setShowLine(true));
             break;
           default:
             break;
