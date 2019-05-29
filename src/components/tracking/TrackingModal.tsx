@@ -11,18 +11,26 @@ import AccessTokenForm from './AccessTokenForm';
 import TrackedDevices from './TrackedDevices';
 import TrackedDeviceForm from './TrackedDeviceForm';
 
-interface Props {
-  onClose: () => void;
-  view:
-    | 'devices'
-    | 'deviceForm'
-    | 'accessTokens'
-    | 'accessTokenForm'
-    | 'trackedDevices'
-    | 'trackedDeviceForm';
+type Views =
+  | 'devices'
+  | 'deviceForm'
+  | 'accessTokens'
+  | 'accessTokenForm'
+  | 'trackedDevices'
+  | 'trackedDeviceForm';
+
+interface StateProps {
+  view: Views;
 }
 
-const TrackingModal: React.FC<Props> = ({ onClose, view }) => {
+interface DispatchProps {
+  onClose: () => void;
+}
+
+const TrackingModal: React.FC<StateProps & DispatchProps> = ({
+  onClose,
+  view,
+}) => {
   return (
     <Modal onHide={onClose} show bsSize="large">
       {view === 'devices' && <Devices />}
@@ -35,8 +43,8 @@ const TrackingModal: React.FC<Props> = ({ onClose, view }) => {
   );
 };
 
-export default connect(
-  (state: any) => ({
+export default connect<StateProps, DispatchProps, {}, any>(
+  state => ({
     devices: state.tracking.devices,
     view:
       state.main.activeModal === 'tracking-my'
