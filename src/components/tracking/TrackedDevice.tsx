@@ -6,12 +6,15 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onDelete: (id: string | number) => void;
   onModify: (id: string | number) => void;
   language: string;
   device: ITrackedDevice;
+  t: Translator;
 }
 
 const TrackedDevice: React.FC<Props> = ({
@@ -19,6 +22,7 @@ const TrackedDevice: React.FC<Props> = ({
   onModify,
   device,
   language,
+  t,
 }) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
@@ -61,7 +65,7 @@ const TrackedDevice: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleModify}
-          title="modify"
+          title={t('general.modify')}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
@@ -70,7 +74,7 @@ const TrackedDevice: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleDelete}
-          title="delete"
+          title={t('general.delete')}
         >
           <FontAwesomeIcon icon="close" />
         </Button>
@@ -79,16 +83,19 @@ const TrackedDevice: React.FC<Props> = ({
   );
 };
 
-export default connect(
-  (state: any) => ({
-    language: state.l10n.language,
-  }),
-  dispatch => ({
-    onModify(id) {
-      dispatch(trackingActions.modifyTrackedDevice(id));
-    },
-    onDelete(id) {
-      dispatch(trackingActions.deleteTrackedDevice(id));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onModify(id) {
+        dispatch(trackingActions.modifyTrackedDevice(id));
+      },
+      onDelete(id) {
+        dispatch(trackingActions.deleteTrackedDevice(id));
+      },
+    }),
+  ),
 )(TrackedDevice);

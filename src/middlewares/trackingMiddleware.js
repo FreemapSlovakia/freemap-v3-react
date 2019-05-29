@@ -1,8 +1,19 @@
 import { wsClose, wsOpen, rpcCall } from 'fm3/actions/websocketActions';
+import * as at from 'fm3/actionTypes';
+import { toastsAddError } from 'fm3/actions/toastsActions';
 
 let reopenTs;
 
 export default ({ dispatch, getState }) => next => action => {
+  if (
+    action.type === at.SET_ACTIVE_MODAL &&
+    action.payload === 'tracking-my' &&
+    !getState().auth.user
+  ) {
+    next(toastsAddError('tracking.unauthenticatedError'));
+    return;
+  }
+
   const prevState = getState().websocket.state;
   const prevTrackedDevices = getState().tracking.trackedDevices;
 

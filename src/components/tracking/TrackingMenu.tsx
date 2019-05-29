@@ -9,12 +9,14 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 interface Props {
   onTrackedDevicesClick: () => void;
   onMyDevicesClick: () => void;
   onVisualChange: (visual: 'line+points' | 'line' | 'points') => void;
   visual: string;
+  t: Translator;
 }
 
 const TrackingMenu: React.FC<Props> = ({
@@ -22,6 +24,7 @@ const TrackingMenu: React.FC<Props> = ({
   onMyDevicesClick,
   onVisualChange,
   visual,
+  t,
 }) => {
   const handleVisualSelect = React.useCallback(
     ({ target: { dataset } }) => {
@@ -34,32 +37,34 @@ const TrackingMenu: React.FC<Props> = ({
     <>
       <span className="fm-label">
         <FontAwesomeIcon icon="bullseye" />
-        <span className="hidden-xs"> Device Tracking</span>
+        <span className="hidden-xs"> {t('tools.tracking')}</span>
       </span>{' '}
       <Button onClick={onTrackedDevicesClick}>
         <FontAwesomeIcon icon="eye" />
-        <span className="hidden-xs"> Watched</span>
+        <span className="hidden-md hidden-sm hidden-xs">
+          {' '}
+          {t('tracking.trackedDevices.button')}
+        </span>
       </Button>{' '}
       <Button onClick={onMyDevicesClick}>
         <FontAwesomeIcon icon="mobile" />
-        <span className="hidden-xs"> My Devices</span>
+        <span className="hidden-md hidden-sm hidden-xs">
+          {' '}
+          {t('tracking.devices.button')}
+        </span>
       </Button>{' '}
       <DropdownButton
         id="tracking-visual-dropdown"
-        title={
-          { 'line+points': 'Line + Points', line: 'Line', points: 'Points' }[
-            visual
-          ] || '???'
-        }
+        title={t(`tracking.visual.${visual}`)}
       >
         <MenuItem data-visual="points" onClick={handleVisualSelect}>
-          Points
+          {t('tracking.visual.points')}
         </MenuItem>
         <MenuItem data-visual="line" onClick={handleVisualSelect}>
-          Line
+          {t('tracking.visual.line')}
         </MenuItem>
         <MenuItem data-visual="line+points" onClick={handleVisualSelect}>
-          Line + Points
+          {t('tracking.visual.line+points')}
         </MenuItem>
       </DropdownButton>
     </>
@@ -67,6 +72,7 @@ const TrackingMenu: React.FC<Props> = ({
 };
 
 export default compose(
+  injectL10n(),
   connect(
     (state: any) => ({
       isActive: state.infoPoint.activeIndex !== null,
@@ -84,7 +90,7 @@ export default compose(
         dispatch(setActiveModal('tracking-my'));
       },
       onTrackedDevicesClick() {
-        dispatch(setActiveModal('tracking-tracked'));
+        dispatch(setActiveModal('tracking-watched'));
       },
       onVisualChange(visual) {
         switch (visual) {

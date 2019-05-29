@@ -1,7 +1,14 @@
-function splitByVars(input, special) {
+export type SplitItem =
+  | string
+  | {
+      variable: string;
+      token: string;
+    };
+
+function splitByVars(input: string, special: boolean): SplitItem[] {
   const re = /(\{([a-zA-Z][a-zA-Z0-9]*)\})/g;
   let last = 0;
-  const ret = [];
+  const ret: SplitItem[] = [];
 
   for (;;) {
     const result = re.exec(input);
@@ -24,15 +31,20 @@ function splitByVars(input, special) {
   return ret;
 }
 
-function exec(x) {
+function exec(x: any): any {
   return typeof x === 'function' ? x() : x;
 }
 
 // for 'foo {a} bar {b} baz' and { a: 'A', b: <Lol /> } returns ['foo A bar ', <Lol />, ' baz']
 // for 'foo {a} bar' and { a: 'A' } returns 'foo A bar'
-export function splitAndSubstitute(input, params = {}) {
+export function splitAndSubstitute(
+  input: string,
+  params: { [k: string]: any } = {},
+) {
   const x = splitByVars(input, true)
-    .map(part => (part.variable ? exec(params[part.variable]) : part))
+    .map(part =>
+      typeof part === 'string' ? part : exec(params[part.variable]),
+    )
     .reduce(
       (a, b) =>
         typeof b === 'string' && a.length && typeof a[a.length - 1] === 'string'
@@ -43,7 +55,11 @@ export function splitAndSubstitute(input, params = {}) {
   return x.length === 1 ? x[0] : x;
 }
 
-export function translate(translations, key, dflt = '') {
+export function translate(
+  translations: { [key: string]: any },
+  key: null | string,
+  dflt: string = '',
+) {
   if (!key) {
     throw new Error('missing key');
   }
@@ -60,7 +76,7 @@ export function translate(translations, key, dflt = '') {
 
 // console.log('XXXXXXXXXXXX', splitAndSubstitute('foo {a} bar {b} baz', { a: 'A', b: undefined }));
 
-export function escapeHtml(unsafe) {
+export function escapeHtml(unsafe: string): string {
   return unsafe
     .replace(/&/g, '&amp;')
     .replace(/</g, '&lt;')

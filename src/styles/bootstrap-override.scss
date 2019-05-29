@@ -1,5 +1,7 @@
 .popover-content {
-  max-height: calc(100vh - 120px); // hack to prevent popovers go outside view on mobiles
+  max-height: calc(
+    100vh - 120px
+  ); // hack to prevent popovers go outside view on mobiles
   overflow-y: auto;
 }
 
@@ -10,7 +12,6 @@
   border-bottom: 1px solid #ddd;
   padding: 10px;
 }
-
 
 .dropdown-menu {
   z-index: 10000;
@@ -50,6 +51,12 @@
 }
 
 // fixes displacement in FF
-input[type=date], input[type=time] {
+input[type='date'],
+input[type='time'] {
   padding-top: 0;
+}
+
+.form-group.required .control-label:after {
+  content: ' *';
+  color: red;
 }

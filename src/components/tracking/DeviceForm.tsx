@@ -11,14 +11,18 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { IEditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
+import { Checkbox } from 'react-bootstrap';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onCancel: () => void;
   onSave: (device: IEditedDevice) => void;
   device: IEditedDevice;
+  t: Translator;
 }
 
-const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
+const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   const [name, setName] = useTextInputState((device && device.name) || '');
   const [maxCount, setMaxCount] = useTextInputState(
     device && device.maxCount !== null ? device.maxCount.toString() : '',
@@ -42,20 +46,17 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />
-          {device ? (
-            <>
-              {' Modify Tracking Device '}
-              <i>{device.name}</i>
-            </>
-          ) : (
-            ' Add Tracking Device'
-          )}
+          <FontAwesomeIcon icon="bullseye" />{' '}
+          {device
+            ? t('tracking.devices.modifyTitle', {
+                name: device.name,
+              })
+            : t('tracking.devices.createTitle')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <FormGroup>
-          <ControlLabel>Name</ControlLabel>
+        <FormGroup className="required">
+          <ControlLabel>{t('tracking.device.name')}</ControlLabel>
           <FormControl
             type="text"
             value={name}
@@ -66,7 +67,7 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Keep # of last positions</ControlLabel>
+          <ControlLabel>{t('tracking.device.maxCount')}</ControlLabel>
           <FormControl
             type="number"
             min="0"
@@ -76,7 +77,7 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Keep positions not older than (seconds)</ControlLabel>
+          <ControlLabel>{t('tracking.device.maxAge')}</ControlLabel>
           <FormControl
             type="number"
             min="0"
@@ -86,39 +87,38 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
           />
         </FormGroup>
         {!!device && (
-          <FormControl
-            type="checkbox"
-            onChange={setRegenerateToken}
-            checked={regenerateToken}
-          >
-            Regenerate token
-          </FormControl>
+          <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
+            {t('tracking.device.regenerateToken')}
+          </Checkbox>
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">Save</Button>
+        <Button type="submit">{t('general.save')}</Button>
         <Button type="button" onClick={onCancel}>
-          Cancel
+          {t('general.cancel')}
         </Button>
       </Modal.Footer>
     </form>
   );
 };
 
-export default connect(
-  (state: any) => ({
-    device:
-      state.tracking.modifiedDeviceId &&
-      state.tracking.devices.find(
-        device => device.id === state.tracking.modifiedDeviceId,
-      ),
-  }),
-  dispatch => ({
-    onCancel() {
-      dispatch(trackingActions.modifyDevice(undefined));
-    },
-    onSave(device: IEditedDevice) {
-      dispatch(trackingActions.saveDevice(device));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      device:
+        state.tracking.modifiedDeviceId &&
+        state.tracking.devices.find(
+          device => device.id === state.tracking.modifiedDeviceId,
+        ),
+    }),
+    dispatch => ({
+      onCancel() {
+        dispatch(trackingActions.modifyDevice(undefined));
+      },
+      onSave(device: IEditedDevice) {
+        dispatch(trackingActions.saveDevice(device));
+      },
+    }),
+  ),
 )(DeviceForm);

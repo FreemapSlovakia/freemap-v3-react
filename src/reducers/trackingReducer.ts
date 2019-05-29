@@ -46,9 +46,13 @@ const initialState: IState = {
 export default createReducer<IState, RootAction>(initialState)
   .handleAction(clearMap, () => initialState)
   .handleAction(setActiveModal, state => ({
-    ...initialState,
-    trackedDevices: state.trackedDevices,
-    tracks: state.tracks,
+    ...state,
+    devices: [],
+    accessTokens: [],
+    accessTokensDeviceId: undefined,
+    modifiedDeviceId: undefined,
+    modifiedAccessTokenId: undefined,
+    modifiedTrackedDeviceId: undefined,
   }))
   .handleAction(trackingActions.setDevices, (state, action) => ({
     ...state,
@@ -95,7 +99,7 @@ export default createReducer<IState, RootAction>(initialState)
   }))
   .handleAction(trackingActions.view, (state, action) =>
     produce(state, draft => {
-      if (!draft.trackedDevices.find(d => d.id !== action.payload)) {
+      if (!draft.trackedDevices.find(d => d.id === action.payload)) {
         draft.trackedDevices.push({
           id: action.payload,
         });

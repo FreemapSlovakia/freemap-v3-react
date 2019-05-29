@@ -98,7 +98,7 @@ class TrackingResult extends React.Component<Props, State> {
           : null;
 
       return (
-        <React.Fragment key={track.id}>
+        <React.Fragment key={`trk-${track.id}`}>
           {lastPoint && typeof lastPoint.accuracy === 'number' && (
             <Circle
               weight={2}

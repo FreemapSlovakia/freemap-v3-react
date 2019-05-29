@@ -8,8 +8,10 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import AccessToken from './AccessToken';
+import AccessToken from 'fm3/components/tracking/AccessToken';
 import { IAccessToken } from 'fm3/types/trackingTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onOpen: () => void;
@@ -17,6 +19,7 @@ interface Props {
   onAdd: () => void;
   deviceName: string;
   accessTokens: IAccessToken[];
+  t: Translator;
 }
 
 const AccessTokens: React.FC<Props> = ({
@@ -25,6 +28,7 @@ const AccessTokens: React.FC<Props> = ({
   onAdd,
   accessTokens,
   deviceName,
+  t,
 }) => {
   React.useEffect(() => {
     onOpen();
@@ -34,27 +38,24 @@ const AccessTokens: React.FC<Props> = ({
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> Watch Tokens for{' '}
-          <i>{deviceName}</i>
+          <FontAwesomeIcon icon="bullseye" />{' '}
+          {t('tracking.accessTokens.modalTitle', { deviceName })}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Alert bsStyle="info">
-          <p>
-            Define access tokens to share position of your device{' '}
-            <i>{deviceName}</i> with your friends.
-          </p>
+          {t('tracking.accessTokens.desc', { deviceName })}
         </Alert>
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Watch Token</th>
-              <th>Created at</th>
-              <th>From</th>
-              <th>To</th>
-              <th>Listing label</th>
-              <th>Note</th>
-              <th />
+              <th>{t('tracking.accessToken.token')}</th>
+              <th>{t('general.createdAt')}</th>
+              <th>{t('tracking.accessToken.timeFrom')}</th>
+              <th>{t('tracking.accessToken.timeTo')}</th>
+              <th>{t('tracking.accessToken.listingLabel')}</th>
+              <th>{t('tracking.accessToken.note')}</th>
+              <th>{t('general.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -66,32 +67,35 @@ const AccessTokens: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" onClick={onAdd}>
-          Add new
+          {t('general.add')}
         </Button>
         <Button type="button" onClick={onClose}>
-          Back to the list
+          {t('general.back')}
         </Button>
       </Modal.Footer>
     </>
   );
 };
 
-export default connect(
-  (state: any) => ({
-    accessTokens: state.tracking.accessTokens,
-    deviceName: state.tracking.devices.find(
-      device => device.id === state.tracking.accessTokensDeviceId,
-    ).name,
-  }),
-  dispatch => ({
-    onOpen() {
-      dispatch(trackingActions.loadAccessTokens());
-    },
-    onClose() {
-      dispatch(trackingActions.showAccessTokens(undefined));
-    },
-    onAdd() {
-      dispatch(trackingActions.modifyAccessToken(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      accessTokens: state.tracking.accessTokens,
+      deviceName: state.tracking.devices.find(
+        device => device.id === state.tracking.accessTokensDeviceId,
+      ).name,
+    }),
+    dispatch => ({
+      onOpen() {
+        dispatch(trackingActions.loadAccessTokens());
+      },
+      onClose() {
+        dispatch(trackingActions.showAccessTokens(undefined));
+      },
+      onAdd() {
+        dispatch(trackingActions.modifyAccessToken(null));
+      },
+    }),
+  ),
 )(AccessTokens);

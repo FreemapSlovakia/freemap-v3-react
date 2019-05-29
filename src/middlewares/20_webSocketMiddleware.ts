@@ -20,13 +20,6 @@ function resetRestarter() {
   }, 45000);
 }
 
-// TODO move elsewhere
-declare var process: {
-  env: {
-    API_URL: string;
-  };
-};
-
 const mw: Middleware = ({ dispatch, getState }) => next => action => {
   switch (action.type) {
     case at.WS_OPEN: {
@@ -37,7 +30,7 @@ const mw: Middleware = ({ dispatch, getState }) => next => action => {
 
       const { user } = getState().auth;
       ws = new WebSocket(
-        `${process.env.API_URL.replace(/^http/, 'ws')}/ws?pingInterval=30000${
+        `${process.env.API_URL!.replace(/^http/, 'ws')}/ws?pingInterval=30000${
           user ? `&authToken=${user.authToken}` : ''
         }`,
       );

@@ -1,5 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { Fragment } from 'react';
+import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 const errorMarkup = `<h1>Chyba aplikácie</h1>
 <p>
@@ -33,6 +34,13 @@ export default {
     back: 'Späť',
     internalError: `!HTML!${errorMarkup}`,
     appUpdated: 'Je dostupná aktualizácia. Obnoviť stránku?',
+    seconds: 'sekundy',
+    minutes: 'minúty',
+    meters: 'metre',
+    createdAt: 'Vytvorené',
+    actions: 'Akcie',
+    add: 'Pridať nové',
+    back: 'Späť',
   },
 
   tools: {
@@ -977,6 +985,145 @@ export default {
       'mtb-bike': 'horský',
       'no-bike': 'vjazd na bicykli zakázaný',
       unknown: 'neznámy',
+    },
+  },
+
+  tracking: {
+    unauthenticatedError:
+      'Prosím, prihláste sa, aby ste mohli spravovať vaše zariadenia.',
+    trackedDevices: {
+      button: 'Sledované zariadenia',
+      modalTitle: 'Sledované zariadenia',
+      desc:
+        'Tu môžete spravovať sledované zariadenia, aby ste videli pozíciu svojich priateľov.',
+      modifyTitle: 'Upraviť sledované zariadenie',
+      addTitle: ({ name }) => (
+        <>
+          Sledovať zariadenie <i>{name}</i>
+        </>
+      ),
+    },
+    accessToken: {
+      token: 'Token sledovania',
+      timeFrom: 'Od',
+      timeTo: 'Do',
+      listingLabel: 'Popisok v zozname',
+      note: 'Poznámka',
+    },
+    accessTokens: {
+      modalTitle: ({ deviceName }) => (
+        <>
+          Tokeny sledovania pre <i>{deviceName}</i>
+        </>
+      ),
+      desc: ({ deviceName }) => (
+        <p>
+          Zadefinujte tokeny sledovania, aby ste mohli zdieľať pozíciu vášho
+          zariadenia <i>{deviceName}</i> s vašími priateľmi.
+        </p>
+      ),
+      createTitle: ({ token, deviceName }) => (
+        <>
+          Pridať token sledovania pre <i>{deviceName}</i>
+        </>
+      ),
+      modifyTitle: ({ token, deviceName }) => (
+        <>
+          Upraviť token sledovania <i>{token}</i> pre <i>{deviceName}</i>
+        </>
+      ),
+    },
+    trackedDevice: {
+      token: 'Token sledovania',
+      label: 'Popisok',
+      fromTime: 'Pozície od',
+      maxAge: 'Najstarišia pozícia',
+      maxCount: 'Maximálny počet pozícii',
+      splitDistance: 'Vzdialenosť na rozdelenie',
+      splitDuration: 'Pauza na rozdelenie',
+      color: 'Farba',
+      width: 'Šírka',
+    },
+    devices: {
+      button: 'Moje zariadenia',
+      modalTitle: 'Moje zariadenia',
+      modifyTitle: 'Upraviť zariadenie',
+      watchTokens: 'Sledovacie tokeny',
+      watchPrivately: 'Sledovať privátne',
+      addTitle: ({ name }) => (
+        <>
+          Upraviť zariadenie <i>{name}</i>
+        </>
+      ),
+      desc: () => (
+        <>
+          <p>
+            Tu môžete spravovať svoje zariadenia. Ostatní môžu sledovať ich
+            pozíciu, ak k ním vytvoríte sledovacie tokeny, pomocou tlačítka{' '}
+            <FontAwesomeIcon icon="key" />.
+          </p>
+          <p>
+            Do vášho trackera (napríklad.{' '}
+            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
+              Locus
+            </a>{' '}
+            alebo OsmAnd) vložte nasledujúcu URL:{' '}
+            <code>
+              {process.env.API_URL}/tracking/track/<i>token</i>
+            </code>{' '}
+            kde <i>token</i> je vypisaný v tabuľke nižšie.
+          </p>
+          <p>
+            Server podporuje HTTP <code>GET</code> alebo <code>POST</code> s URL
+            parametrami:
+          </p>
+          <ul>
+            <li>
+              <code>lat</code> - zemepisná dĺžka v stupňoch (povinné)
+            </li>
+            <li>
+              <code>lon</code> - zemepisná šírka v stupňoch (povinné)
+            </li>
+            <li>
+              <code>time</code> - dátum a čas parsovateľný JavaScript-om alebo
+              Unixový čas v sekundách alebo milisekundách
+            </li>
+            <li>
+              <code>alt</code> - nadmorská výška v metroch
+            </li>
+            <li>
+              <code>speed</code> - rýchlosť v ㎧
+            </li>
+            <li>
+              <code>acc</code> - presnosť v metroch
+            </li>
+            <li>
+              <code>bearing</code> - smer v stupňoch
+            </li>
+            <li>
+              <code>battery</code> - batéria v percentách
+            </li>
+            <li>
+              <code>gsm_signal</code> - GSM signál v percentách
+            </li>
+            <li>
+              <code>message</code> - správa (poznámka)
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    device: {
+      token: 'Token sledovania',
+      name: 'Názov',
+      maxAge: 'Najstarišia pozícia',
+      maxCount: 'Maximálny počet pozícii',
+      regenerateToken: 'Vygenerovať nový token',
+    },
+    visual: {
+      line: 'Spojnica',
+      points: 'Pozície',
+      'line+points': 'Spojnica + Pozície',
     },
   },
 };

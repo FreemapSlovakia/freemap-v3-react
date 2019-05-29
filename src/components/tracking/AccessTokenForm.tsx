@@ -13,12 +13,15 @@ import DateTime from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { IAccessToken, IAccessTokenBase } from 'fm3/types/trackingTypes';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onCancel: () => void;
   onSave: (at: IAccessTokenBase) => void;
   accessToken: IAccessToken;
   deviceName: string;
+  t: Translator;
 }
 
 const AccessTokenForm: React.FC<Props> = ({
@@ -26,6 +29,7 @@ const AccessTokenForm: React.FC<Props> = ({
   onCancel,
   accessToken,
   deviceName,
+  t,
 }) => {
   const [note, setNote] = useTextInputState(
     (accessToken && accessToken.note) || '',
@@ -58,30 +62,26 @@ const AccessTokenForm: React.FC<Props> = ({
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />
-          {accessToken ? (
-            <>
-              {' Modify Watch Token '}
-              <i>{accessToken.token}</i>
-            </>
-          ) : (
-            ' Add Watch Token'
-          )}
-          {' for '}
-          <i>{deviceName}</i>
+          <FontAwesomeIcon icon="bullseye" />{' '}
+          {accessToken
+            ? t('tracking.accessTokens.modifyTitle', {
+                token: accessToken.token,
+                deviceName,
+              })
+            : t('tracking.accessTokens.createTitle', { deviceName })}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup>
-          <ControlLabel>Share from</ControlLabel>
+          <ControlLabel>{t('tracking.accessToken.timeFrom')}</ControlLabel>
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Share to</ControlLabel>
+          <ControlLabel>{t('tracking.accessToken.timeTo')}</ControlLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Listing label (leave empty for unlisted)</ControlLabel>
+          <ControlLabel>{t('tracking.accessToken.listingLabel')}</ControlLabel>
           <FormControl
             value={listingLabel}
             onChange={setListingLabel}
@@ -94,32 +94,36 @@ const AccessTokenForm: React.FC<Props> = ({
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">Save</Button>
+        <Button type="submit">{t('general.save')}</Button>
         <Button type="button" onClick={onCancel}>
-          Cancel
+          {t('general.cancel')}
         </Button>
       </Modal.Footer>
     </form>
   );
 };
 
-export default connect(
-  (state: any) => ({
-    accessToken:
-      state.tracking.modifiedAccessTokenId &&
-      state.tracking.accessTokens.find(
-        accessToken => accessToken.id === state.tracking.modifiedAccessTokenId,
-      ),
-    deviceName: state.tracking.devices.find(
-      device => device.id === state.tracking.accessTokensDeviceId,
-    ).name,
-  }),
-  dispatch => ({
-    onCancel() {
-      dispatch(trackingActions.modifyAccessToken(undefined));
-    },
-    onSave(accessToken) {
-      dispatch(trackingActions.saveAccessToken(accessToken));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      accessToken:
+        state.tracking.modifiedAccessTokenId &&
+        state.tracking.accessTokens.find(
+          accessToken =>
+            accessToken.id === state.tracking.modifiedAccessTokenId,
+        ),
+      deviceName: state.tracking.devices.find(
+        device => device.id === state.tracking.accessTokensDeviceId,
+      ).name,
+    }),
+    dispatch => ({
+      onCancel() {
+        dispatch(trackingActions.modifyAccessToken(undefined));
+      },
+      onSave(accessToken) {
+        dispatch(trackingActions.saveAccessToken(accessToken));
+      },
+    }),
+  ),
 )(AccessTokenForm);

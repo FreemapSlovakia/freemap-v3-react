@@ -11,15 +11,18 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import Device from './Device';
 import { IDevice } from 'fm3/types/trackingTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onOpen: () => void;
   onClose: () => void;
   onAdd: () => void;
   devices: IDevice[];
+  t: Translator;
 }
 
-const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices }) => {
+const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices, t }) => {
   React.useEffect(() => {
     onOpen();
   }, [onOpen]);
@@ -28,79 +31,20 @@ const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices }) => {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <Alert bsStyle="warning">
-            <FontAwesomeIcon icon="flask" />
-            <b>Warning!</b> This is experimental feature under development.
-          </Alert>
-          <FontAwesomeIcon icon="bullseye" /> My Tracking Devices
+          <FontAwesomeIcon icon="bullseye" /> {t('tracking.devices.modalTitle')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="info">
-          <p>
-            Manage your devices so that others can watch your position if you
-            give them watch token (you can create it through{' '}
-            <FontAwesomeIcon icon="key" /> icon).
-          </p>
-          <p>
-            Enter following URL to your tracker (eg.{' '}
-            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
-              Locus
-            </a>{' '}
-            or OsmAnd):{' '}
-            <code>
-              {process.env.API_URL}/tracking/track/<i>token</i>
-            </code>{' '}
-            where <i>token</i> is listed in the table below.
-          </p>
-          <p>
-            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with
-            URL-encoded parameters:
-          </p>
-          <ul>
-            <li>
-              <code>lat</code> - latitude in degrees (mandatory)
-            </li>
-            <li>
-              <code>lon</code> - longitude in degrees (mandatory)
-            </li>
-            <li>
-              <code>time</code> - JavaScript parsable datetime or Unix time in s
-              or ms
-            </li>
-            <li>
-              <code>alt</code> - altitude in meters
-            </li>
-            <li>
-              <code>speed</code> - speed in m/s
-            </li>
-            <li>
-              <code>acc</code> - accuracy in meters
-            </li>
-            <li>
-              <code>bearing</code> - bearing in degrees
-            </li>
-            <li>
-              <code>battery</code> - battery in percents
-            </li>
-            <li>
-              <code>gsm_signal</code> - GSM signal in percents
-            </li>
-            <li>
-              <code>message</code> - message (note) to be displayed
-            </li>
-          </ul>
-        </Alert>
-
+        <Alert bsStyle="info">{t('tracking.devices.desc')}</Alert>
         <Table striped bordered>
           <thead>
             <tr>
-              <th>Name</th>
-              <th>Track Token</th>
-              <th>Keep points</th>
-              <th>Keep duration</th>
-              <th>Created at</th>
-              <th />
+              <th>{t('tracking.device.name')}</th>
+              <th>{t('tracking.device.token')}</th>
+              <th>{t('tracking.device.maxCount')}</th>
+              <th>{t('tracking.device.maxAge')}</th>
+              <th>{t('general.createdAt')}</th>
+              <th>{t('general.actions')}</th>
             </tr>
           </thead>
           <tbody>
@@ -112,29 +56,32 @@ const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button type="button" onClick={onAdd}>
-          Add new
+          {t('general.add')}
         </Button>
         <Button type="button" onClick={onClose}>
-          Close
+          {t('general.close')}
         </Button>
       </Modal.Footer>
     </>
   );
 };
 
-export default connect(
-  (state: any) => ({
-    devices: state.tracking.devices,
-  }),
-  dispatch => ({
-    onOpen() {
-      dispatch(trackingActions.loadDevices());
-    },
-    onClose() {
-      dispatch(setActiveModal(null));
-    },
-    onAdd() {
-      dispatch(trackingActions.modifyDevice(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      devices: state.tracking.devices,
+    }),
+    dispatch => ({
+      onOpen() {
+        dispatch(trackingActions.loadDevices());
+      },
+      onClose() {
+        dispatch(setActiveModal(null));
+      },
+      onAdd() {
+        dispatch(trackingActions.modifyDevice(null));
+      },
+    }),
+  ),
 )(Devices);

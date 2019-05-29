@@ -14,14 +14,23 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
+import { InputGroup } from 'react-bootstrap';
 
 interface Props {
   onCancel: () => void;
   onSave: (device: ITrackedDevice) => void;
   device: ITrackedDevice;
+  t: Translator;
 }
 
-const TrackedDeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
+const TrackedDeviceForm: React.FC<Props> = ({
+  onSave,
+  onCancel,
+  device,
+  t,
+}) => {
   const [id, setId] = useTextInputState((device && device.id.toString()) || '');
   const [label, setLabel] = useTextInputState((device && device.label) || '');
   const [color, setColor] = useTextInputState((device && device.color) || '');
@@ -72,56 +81,62 @@ const TrackedDeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />
-          {device ? (
-            <>
-              {' '}
-              Modify Watched Device <i>{device.label || device.id}</i>
-            </>
-          ) : (
-            ' Add Watched Device'
-          )}
+          <FontAwesomeIcon icon="bullseye" />{' '}
+          {device
+            ? t('tracking.trackedDevices.modifyTitle', {
+                name: device.label || device.id,
+              })
+            : t('tracking.trackedDevices.createTitle')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <FormGroup>
+        <FormGroup className="required">
           {/* TODD: or ID */}
-          <ControlLabel>Watch Token of existing shared device</ControlLabel>
+          <ControlLabel>{t('tracking.trackedDevice.token')}</ControlLabel>
           <FormControl value={id} onChange={setId} required />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Label</ControlLabel>
+          <ControlLabel>{t('tracking.trackedDevice.label')}</ControlLabel>
           <FormControl value={label} onChange={setLabel} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Color (HTML)</ControlLabel>
-          <FormControl value={color} onChange={setColor} />
+          <ControlLabel>{t('tracking.trackedDevice.color')}</ControlLabel>
+          <InputGroup>
+            <FormControl value={color} onChange={setColor} />
+            <InputGroup.Addon>HTML</InputGroup.Addon>
+          </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Width (px)</ControlLabel>
-          <FormControl
-            value={width}
-            onChange={setWidth}
-            type="number"
-            min="1"
-          />
+          <ControlLabel>{t('tracking.trackedDevice.width')}</ControlLabel>
+          <InputGroup>
+            <FormControl
+              value={width}
+              onChange={setWidth}
+              type="number"
+              min="1"
+            />
+            <InputGroup.Addon>px</InputGroup.Addon>
+          </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Show positions since</ControlLabel>
+          <ControlLabel>{t('tracking.trackedDevice.fromTime')}</ControlLabel>
           <DateTime value={fromTime} onChange={setFromTime} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Show positions not older than (seconds)</ControlLabel>
-          <FormControl
-            type="number"
-            min="0"
-            step="1"
-            value={maxAge}
-            onChange={setMaxAge}
-          />
+          <ControlLabel>{t('tracking.trackedDevice.maxAge')}</ControlLabel>
+          <InputGroup>
+            <FormControl
+              type="number"
+              min="0"
+              step="1"
+              value={maxAge}
+              onChange={setMaxAge}
+            />
+            <InputGroup.Addon>{t('general.seconds')}</InputGroup.Addon>
+          </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Show max # positions</ControlLabel>
+          <ControlLabel>{t('tracking.trackedDevice.maxCount')}</ControlLabel>
           <FormControl
             type="number"
             min="0"
@@ -131,26 +146,34 @@ const TrackedDeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Split track at segments longer than (m)</ControlLabel>
-          <FormControl
-            type="number"
-            min="0"
-            step="1"
-            value={splitDistance}
-            onChange={setSplitDistance}
-          />
+          <ControlLabel>
+            {t('tracking.trackedDevice.splitDistance')}
+          </ControlLabel>
+          <InputGroup>
+            <FormControl
+              type="number"
+              min="0"
+              step="1"
+              value={splitDistance}
+              onChange={setSplitDistance}
+            />
+            <InputGroup.Addon>{t('general.meters')}</InputGroup.Addon>
+          </InputGroup>
         </FormGroup>
         <FormGroup>
           <ControlLabel>
-            Split track on pauses longer than (minutes)
+            {t('tracking.trackedDevice.splitDuration')}
           </ControlLabel>
-          <FormControl
-            type="number"
-            min="0"
-            step="1"
-            value={splitDuration}
-            onChange={setSplitDuration}
-          />
+          <InputGroup>
+            <FormControl
+              type="number"
+              min="0"
+              step="1"
+              value={splitDuration}
+              onChange={setSplitDuration}
+            />
+            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
+          </InputGroup>
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
@@ -163,20 +186,23 @@ const TrackedDeviceForm: React.FC<Props> = ({ onSave, onCancel, device }) => {
   );
 };
 
-export default connect(
-  (state: any) => ({
-    device:
-      state.tracking.modifiedTrackedDeviceId &&
-      state.tracking.trackedDevices.find(
-        device => device.id === state.tracking.modifiedTrackedDeviceId,
-      ),
-  }),
-  dispatch => ({
-    onCancel() {
-      dispatch(trackingActions.modifyTrackedDevice(undefined));
-    },
-    onSave(device) {
-      dispatch(trackingActions.saveTrackedDevice(device));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      device:
+        state.tracking.modifiedTrackedDeviceId &&
+        state.tracking.trackedDevices.find(
+          device => device.id === state.tracking.modifiedTrackedDeviceId,
+        ),
+    }),
+    dispatch => ({
+      onCancel() {
+        dispatch(trackingActions.modifyTrackedDevice(undefined));
+      },
+      onSave(device) {
+        dispatch(trackingActions.saveTrackedDevice(device));
+      },
+    }),
+  ),
 )(TrackedDeviceForm);

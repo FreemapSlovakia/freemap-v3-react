@@ -438,7 +438,7 @@ class Main extends React.Component {
         </div>
 
         {activeModal === 'settings' && <Settings />}
-        {['tracking-my', 'tracking-tracked'].includes(activeModal) && (
+        {['tracking-my', 'tracking-watched'].includes(activeModal) && (
           <TrackingModal />
         )}
         {activeModal === 'share' && <ShareMapModal />}

@@ -979,6 +979,143 @@ export default {
       unknown: 'neznámý',
     },
   },
+
+  tracking: {
+    unauthenticatedError: 'Please log-in to manage your devices.',
+    trackedDevices: {
+      button: 'Watched',
+      modalTitle: 'Watched Devices',
+      desc: 'Manage watched devices to see the position of your friends.',
+      modifyTitle: 'Modify Watched Device',
+      addTitle: ({ name }) => (
+        <>
+          Watch Device <i>{name}</i>
+        </>
+      ),
+    },
+    accessToken: {
+      token: 'Watch Token',
+      timeFrom: 'From',
+      timeTo: 'To',
+      listingLabel: 'Listing Label',
+      note: 'Note',
+    },
+    accessTokens: {
+      modalTitle: ({ deviceName }) => (
+        <>
+          Watch Tokens for <i>{deviceName}</i>
+        </>
+      ),
+      desc: ({ deviceName }) => (
+        <p>
+          Define watch tokens to share position of your device{' '}
+          <i>{deviceName}</i> with your friends.
+        </p>
+      ),
+      createTitle: ({ token, deviceName }) => (
+        <>
+          Add Watch Token for <i>{deviceName}</i>
+        </>
+      ),
+      modifyTitle: ({ token, deviceName }) => (
+        <>
+          Modify Watch Token <i>{token}</i> for <i>{deviceName}</i>
+        </>
+      ),
+    },
+    trackedDevice: {
+      token: 'Watch Token',
+      label: 'Label',
+      fromTime: 'Since',
+      maxAge: 'Max Age',
+      maxCount: 'Max Count',
+      splitDistance: 'Split Distance',
+      splitDuration: 'Split Duration',
+      color: 'Color',
+      width: 'Width',
+    },
+    devices: {
+      button: 'My Devices',
+      modalTitle: 'My tracked devices',
+      modifyTitle: 'Modify Tracking Device',
+      watchTokens: 'Watch tokens',
+      watchPrivately: 'Watch privately',
+      addTitle: ({ name }) => (
+        <>
+          Modify Tracking Device <i>{name}</i>
+        </>
+      ),
+      desc: () => (
+        <>
+          <p>
+            Manage your devices so that others can watch your position if you
+            give them watch token (you can create it through{' '}
+            <FontAwesomeIcon icon="key" /> icon).
+          </p>
+          <p>
+            Enter following URL to your tracker (eg.{' '}
+            <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
+              Locus
+            </a>{' '}
+            or OsmAnd):{' '}
+            <code>
+              {process.env.API_URL}/tracking/track/<i>token</i>
+            </code>{' '}
+            where <i>token</i> is listed in the table below.
+          </p>
+          <p>
+            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with
+            URL-encoded parameters:
+          </p>
+          <ul>
+            <li>
+              <code>lat</code> - latitude in degrees (mandatory)
+            </li>
+            <li>
+              <code>lon</code> - longitude in degrees (mandatory)
+            </li>
+            <li>
+              <code>time</code> - JavaScript parsable datetime or Unix time in s
+              or ms
+            </li>
+            <li>
+              <code>alt</code> - altitude in meters
+            </li>
+            <li>
+              <code>speed</code> - speed in m/s
+            </li>
+            <li>
+              <code>acc</code> - accuracy in meters
+            </li>
+            <li>
+              <code>bearing</code> - bearing in degrees
+            </li>
+            <li>
+              <code>battery</code> - battery in percents
+            </li>
+            <li>
+              <code>gsm_signal</code> - GSM signal in percents
+            </li>
+            <li>
+              <code>message</code> - message (note)
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    device: {
+      token: 'Track Token',
+      name: 'Name',
+      maxAge: 'Max Age',
+      maxCount: 'Max Count',
+      regenerateToken: 'Regenerate track token',
+    },
+    visual: {
+      line: 'Line',
+      points: 'Points',
+      'line+points': 'Line + Points',
+    },
+  },
 };
 
 function numberize(n, words) {

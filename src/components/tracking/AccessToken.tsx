@@ -6,12 +6,15 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { IAccessToken } from 'fm3/types/trackingTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onDelete: (id: number) => void;
   onModify: (id: number) => void;
   language: string;
   accessToken: IAccessToken;
+  t: Translator;
 }
 
 const AccessToken: React.FC<Props> = ({
@@ -19,6 +22,7 @@ const AccessToken: React.FC<Props> = ({
   onModify,
   accessToken,
   language,
+  t,
 }) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
@@ -40,7 +44,9 @@ const AccessToken: React.FC<Props> = ({
     <tr>
       <td>
         <a
-          href={`/?track=${accessToken.token}`}
+          href={`/?track=${encodeURIComponent(
+            accessToken.token,
+          )}&follow=${encodeURIComponent(accessToken.token)}`}
           target="_blank"
           rel="noopener noreferrer"
         >
@@ -57,7 +63,7 @@ const AccessToken: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleModify}
-          title="modify"
+          title={t('general.modify')}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
@@ -66,7 +72,7 @@ const AccessToken: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleDelete}
-          title="delete"
+          title={t('general.delete')}
         >
           <FontAwesomeIcon icon="close" />
         </Button>
@@ -75,16 +81,19 @@ const AccessToken: React.FC<Props> = ({
   );
 };
 
-export default connect(
-  (state: any) => ({
-    language: state.l10n.language,
-  }),
-  dispatch => ({
-    onModify(id) {
-      dispatch(trackingActions.modifyAccessToken(id));
-    },
-    onDelete(id) {
-      dispatch(trackingActions.deleteAccessToken(id));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onModify(id) {
+        dispatch(trackingActions.modifyAccessToken(id));
+      },
+      onDelete(id) {
+        dispatch(trackingActions.deleteAccessToken(id));
+      },
+    }),
+  ),
 )(AccessToken);

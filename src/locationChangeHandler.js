@@ -402,8 +402,11 @@ export default function handleLocationChange(store, location) {
   }
 
   // eslint-disable-next-line
-  if (activeTrackId != query.follow) {
-    dispatch(trackingActions.setActive(query.follow));
+  const follow = /^\d+$/.test(query.follow)
+    ? Number.parseInt(query.follow)
+    : query.follow;
+  if (activeTrackId != follow) {
+    dispatch(trackingActions.setActive(follow));
   }
 }
 

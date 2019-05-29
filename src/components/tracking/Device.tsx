@@ -9,6 +9,8 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { IDevice } from 'fm3/types/trackingTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { compose } from 'redux';
 
 interface Props {
   onDelete: (id: number) => void;
@@ -17,6 +19,7 @@ interface Props {
   onView: (id: number) => void;
   language: string;
   device: IDevice;
+  t: Translator;
 }
 
 const Device: React.FC<Props> = ({
@@ -26,6 +29,7 @@ const Device: React.FC<Props> = ({
   language,
   onShowAccessTokens,
   onView,
+  t,
 }) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
@@ -76,7 +80,7 @@ const Device: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleModify}
-          title="edit"
+          title={t('general.modify')}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
@@ -85,7 +89,7 @@ const Device: React.FC<Props> = ({
           type="button"
           bsStyle="primary"
           onClick={handleShowAccessTokens}
-          title="watch tokens"
+          title={t('tracking.devices.watchTokens')}
         >
           <FontAwesomeIcon icon="key" />
         </Button>{' '}
@@ -93,7 +97,7 @@ const Device: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleView}
-          title="watch privately"
+          title={t('tracking.devices.watchPrivately')}
         >
           <FontAwesomeIcon icon="eye" />
         </Button>{' '}
@@ -102,7 +106,7 @@ const Device: React.FC<Props> = ({
           bsSize="small"
           type="button"
           onClick={handleDelete}
-          title="delete"
+          title={t('general.delete')}
         >
           <FontAwesomeIcon icon="close" />
         </Button>
@@ -111,23 +115,27 @@ const Device: React.FC<Props> = ({
   );
 };
 
-export default connect(
-  (state: any) => ({
-    language: state.l10n.language,
-  }),
-  dispatch => ({
-    onModify(id) {
-      dispatch(trackingActions.modifyDevice(id));
-    },
-    onDelete(id) {
-      dispatch(trackingActions.deleteDevice(id));
-    },
-    onShowAccessTokens(id) {
-      dispatch(trackingActions.showAccessTokens(id));
-    },
-    onView(id) {
-      dispatch(trackingActions.view(id));
-      dispatch(setActiveModal(null));
-    },
-  }),
+export default compose(
+  injectL10n(),
+  connect(
+    (state: any) => ({
+      language: state.l10n.language,
+    }),
+    dispatch => ({
+      onModify(id) {
+        dispatch(trackingActions.modifyDevice(id));
+      },
+      onDelete(id) {
+        dispatch(trackingActions.deleteDevice(id));
+      },
+      onShowAccessTokens(id) {
+        dispatch(trackingActions.showAccessTokens(id));
+      },
+      onView(id) {
+        dispatch(trackingActions.view(id));
+        dispatch(trackingActions.setActive(id));
+        dispatch(setActiveModal(null));
+      },
+    }),
+  ),
 )(Device);
