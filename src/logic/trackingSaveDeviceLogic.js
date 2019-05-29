@@ -21,7 +21,7 @@ export default createLogic({
           dispatch(trackingModifyDevice(undefined));
         })
         .catch(err => {
-          dispatch(toastsAddError('settings.savingError', err)); // TODO
+          dispatch(toastsAddError('tracking.savingError', err)); // TODO
         })
         .then(() => {
           dispatch(stopProgress(pid));
@@ -34,7 +34,7 @@ export default createLogic({
           dispatch(trackingActions.modifyDevice(undefined));
         })
         .catch(err => {
-          dispatch(toastsAddError('settings.savingError', err)); // TODO
+          dispatch(toastsAddError('tracking.savingError', err)); // TODO
         })
         .then(() => {
           dispatch(stopProgress(pid));

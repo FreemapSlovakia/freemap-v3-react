@@ -989,6 +989,10 @@ export default {
   },
 
   tracking: {
+    savingError: 'Chyba ukladania: {err}',
+    loadError: 'Chyba načítania: {err}',
+    deleteError: 'Chyba mazania: {err}',
+
     unauthenticatedError:
       'Prosím, prihláste sa, aby ste mohli spravovať vaše zariadenia.',
     trackedDevices: {

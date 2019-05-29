@@ -20,7 +20,7 @@ export default createLogic({
         dispatch(trackingActions.setDevices(data));
       })
       .catch(err => {
-        dispatch(toastsAddError('settings.savingError', err)); // TODO
+        dispatch(toastsAddError('tracking.loadError', err)); // TODO
       })
       .then(() => {
         dispatch(stopProgress(pid));

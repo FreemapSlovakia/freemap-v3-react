@@ -17,7 +17,7 @@ export default createLogic({
         dispatch(trackingActions.loadAccessTokens());
       })
       .catch(err => {
-        dispatch(toastsAddError('settings.savingError', err)); // TODO
+        dispatch(toastsAddError('tracking.deleteError', err)); // TODO
       })
       .then(() => {
         dispatch(stopProgress(pid));

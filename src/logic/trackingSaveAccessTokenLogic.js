@@ -21,7 +21,7 @@ export default createLogic({
           dispatch(trackingActions.modifyAccessToken(undefined));
         })
         .catch(err => {
-          dispatch(toastsAddError('settings.savingError', err)); // TODO
+          dispatch(toastsAddError('tracking.loadError', err)); // TODO
         })
         .then(() => {
           dispatch(stopProgress(pid));
@@ -36,10 +36,10 @@ export default createLogic({
           action.payload,
         )
         .then(() => {
-          dispatch(trackingModifyAccessToken(undefined));
+          dispatch(trackingActions.modifyAccessToken(undefined));
         })
         .catch(err => {
-          dispatch(toastsAddError('settings.savingError', err)); // TODO
+          dispatch(toastsAddError('tracking.loadError', err)); // TODO
         })
         .then(() => {
           dispatch(stopProgress(pid));

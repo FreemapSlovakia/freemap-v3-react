@@ -981,6 +981,9 @@ export default {
   },
 
   tracking: {
+    savingError: 'Save error: {err}',
+    loadError: 'Loading error: {err}',
+    deleteError: 'Deleting error: {err}',
     unauthenticatedError: 'Please log-in to manage your devices.',
     trackedDevices: {
       button: 'Watched',

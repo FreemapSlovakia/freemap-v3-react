@@ -27,7 +27,7 @@ export default createLogic({
         dispatch(trackingActions.setAccessTokens(data));
       })
       .catch(err => {
-        dispatch(toastsAddError('settings.savingError', err)); // TODO
+        dispatch(toastsAddError('tracking.loadError', err)); // TODO
       })
       .then(() => {
         dispatch(stopProgress(pid));
