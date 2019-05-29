@@ -990,7 +990,7 @@ export default {
       modalTitle: 'Watched Devices',
       desc: 'Manage watched devices to see the position of your friends.',
       modifyTitle: 'Modify Watched Device',
-      addTitle: ({ name }) => (
+      createTitle: ({ name }) => (
         <>
           Watch Device <i>{name}</i>
         </>
@@ -1040,10 +1040,10 @@ export default {
     devices: {
       button: 'My Devices',
       modalTitle: 'My tracked devices',
-      modifyTitle: 'Modify Tracking Device',
+      createTitle: 'Create Tracking Device',
       watchTokens: 'Watch tokens',
       watchPrivately: 'Watch privately',
-      addTitle: ({ name }) => (
+      modifyTitle: ({ name }) => (
         <>
           Modify Tracking Device <i>{name}</i>
         </>

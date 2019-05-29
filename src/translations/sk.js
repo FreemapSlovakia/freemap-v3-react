@@ -1001,7 +1001,7 @@ export default {
       desc:
         'Tu môžete spravovať sledované zariadenia, aby ste videli pozíciu svojich priateľov.',
       modifyTitle: 'Upraviť sledované zariadenie',
-      addTitle: ({ name }) => (
+      createTitle: ({ name }) => (
         <>
           Sledovať zariadenie <i>{name}</i>
         </>
@@ -1051,10 +1051,10 @@ export default {
     devices: {
       button: 'Moje zariadenia',
       modalTitle: 'Moje zariadenia',
-      modifyTitle: 'Upraviť zariadenie',
+      createTitle: 'Pridať zariadenie',
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
-      addTitle: ({ name }) => (
+      modifyTitle: ({ name }) => (
         <>
           Upraviť zariadenie <i>{name}</i>
         </>
