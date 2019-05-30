@@ -1,5 +1,6 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { Fragment } from 'react';
+import { Badge } from 'react-bootstrap';
 
 const errorMarkup = `<h1>Chyba aplikace</h1>
 <p>
@@ -46,7 +47,11 @@ export default {
     infoPoint: 'Body v mapě',
     changesets: 'Změny mapě',
     mapDetails: 'Detaily v mapě',
-    tracking: 'Sledování',
+    tracking: () => (
+      <>
+        Sledování <Badge>BETA</Badge>
+      </>
+    ),
   },
 
   routePlanner: {

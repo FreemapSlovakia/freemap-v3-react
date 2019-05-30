@@ -1,6 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { Fragment } from 'react';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { Badge } from 'react-bootstrap';
 
 const errorMarkup = `<h1>Chyba aplikácie</h1>
 <p>
@@ -53,7 +54,11 @@ export default {
     infoPoint: 'Body v mape',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
-    tracking: 'Sledovanie',
+    tracking: () => (
+      <>
+        Sledovanie <Badge>BETA</Badge>
+      </>
+    ),
   },
 
   routePlanner: {

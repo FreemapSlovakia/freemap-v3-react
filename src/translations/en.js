@@ -1,6 +1,7 @@
 /* eslint-disable no-template-curly-in-string */
 import React, { Fragment } from 'react';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { Badge } from 'react-bootstrap';
 
 const errorMarkup = `
 <h1>Application error!</h1>
@@ -54,7 +55,11 @@ export default {
     infoPoint: 'Pins',
     changesets: 'Map changes',
     mapDetails: 'Map details',
-    tracking: 'Live Tracking',
+    tracking: () => (
+      <>
+        Live tracking <Badge>BETA</Badge>
+      </>
+    ),
   },
 
   routePlanner: {
