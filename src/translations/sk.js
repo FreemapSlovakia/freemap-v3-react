@@ -1046,7 +1046,7 @@ export default {
       token: 'Token sledovania',
       label: 'Popisok',
       fromTime: 'Pozície od',
-      maxAge: 'Najstarišia pozícia',
+      maxAge: 'Najstaršia pozícia',
       maxCount: 'Maximálny počet pozícii',
       splitDistance: 'Vzdialenosť na rozdelenie',
       splitDuration: 'Pauza na rozdelenie',
@@ -1123,7 +1123,7 @@ export default {
       ),
     },
     device: {
-      token: 'Token sledovania',
+      token: 'Token zaznamenávania',
       name: 'Názov',
       maxAge: 'Najstarišia pozícia',
       maxCount: 'Maximálny počet pozícii',
