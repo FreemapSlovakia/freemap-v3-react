@@ -1,5 +1,5 @@
 import axios from 'axios';
-import React, { useCallback } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
@@ -8,6 +8,7 @@ import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import injectL10n from 'fm3/l10nInjector';
+import { Overlay } from 'react-bootstrap';
 
 function OpenInExternalAppMenuButton({
   lat,
@@ -17,8 +18,13 @@ function OpenInExternalAppMenuButton({
   t,
   expertMode,
 }) {
+  const buttonRef = useRef();
+  const [show, setShow] = useState(false);
+
   const handleMenuItemClick = useCallback(
     ({ target: { dataset } }) => {
+      setShow(false);
+
       switch (dataset.where) {
         case 'osm.org':
           window.open(
@@ -92,11 +98,33 @@ function OpenInExternalAppMenuButton({
     [lat, lon, mapType, zoom],
   );
 
+  const handleButtonClick = useCallback(() => {
+    setShow(true);
+  }, [setShow]);
+
+  const handleHide = useCallback(() => {
+    setShow(false);
+  }, [setShow]);
+
+  const getTarget = useCallback(() => buttonRef.current, [buttonRef.current]);
+
   return (
-    <OverlayTrigger
-      placement="bottom"
-      trigger="focus"
-      overlay={
+    <>
+      <Button
+        ref={buttonRef}
+        onClick={handleButtonClick}
+        title={t('external.openInExternal')}
+      >
+        <FontAwesomeIcon icon="external-link" />
+      </Button>
+      <Overlay
+        rootClose
+        placement="bottom"
+        trigger="focus"
+        show={show}
+        onHide={handleHide}
+        target={getTarget}
+      >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
             <MenuItem data-where="osm.org" onClick={handleMenuItemClick}>
@@ -137,12 +165,8 @@ function OpenInExternalAppMenuButton({
             )}
           </ul>
         </Popover>
-      }
-    >
-      <Button title={t('external.openInExternal')}>
-        <FontAwesomeIcon icon="external-link" />
-      </Button>
-    </OverlayTrigger>
+      </Overlay>
+    </>
   );
 }
 
