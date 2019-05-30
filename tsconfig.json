@@ -8,7 +8,7 @@
     "target": "es5", // specify ECMAScript target version
     "allowJs": true, // allow a partial TypeScript and JavaScript codebase
     "moduleResolution": "node",
-    "lib": ["es2018", "dom"],
+    "lib": ["es2015", "dom"],
     // was in jsconfig: "target": "es2015",
     // was in jsconfig: "module": "commonjs",
     "allowSyntheticDefaultImports": true,

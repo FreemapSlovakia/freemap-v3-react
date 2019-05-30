@@ -3,25 +3,25 @@ import logicMiddleware from 'fm3/middlewares/30_logicMiddleware';
 
 export default function createReduxStore() {
   const reducersCtx = require.context('fm3/reducers', false, /Reducer\.[tj]s$/);
-  const reducers = Object.fromEntries(
-    reducersCtx
-      .keys()
-      .map(k => [
-        k.replace(/^\.\/(.*)Reducer\.[tj]s/, '$1'),
-        reducersCtx(k).default,
-      ]),
-  );
+  const reducers = [];
+  reducersCtx.keys().forEach(k => {
+    reducers[k.replace(/^\.\/(.*)Reducer\.[tj]s/, '$1')] = reducersCtx(
+      k,
+    ).default;
+  });
 
   const middlewaresCtx = require.context(
     'fm3/middlewares',
     false,
     /Middleware\.[tj]s$/,
   );
-  const middlewares = middlewaresCtx
-    .keys()
-    .sort()
-    .map(k => middlewaresCtx(k).default)
-    .flat(Number.MAX_VALUE)
+  const middlewares = []
+    .concat(
+      ...middlewaresCtx
+        .keys()
+        .sort()
+        .map(k => middlewaresCtx(k).default),
+    )
     .filter(m => m);
 
   const store = createStore(
