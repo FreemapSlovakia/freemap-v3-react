@@ -1,17 +1,44 @@
-import { wsClose, wsOpen, rpcCall } from 'fm3/actions/websocketActions';
-import * as at from 'fm3/actionTypes';
-import { toastsAddError } from 'fm3/actions/toastsActions';
+import {
+  wsClose,
+  wsOpen,
+  rpcCall,
+  rpcResponse,
+} from 'fm3/actions/websocketActions';
+import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
+import { Middleware } from 'redux';
+import { getType } from 'typesafe-actions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 
 let reopenTs;
 
-export default ({ dispatch, getState }) => next => action => {
+const mw: Middleware = ({ dispatch, getState }) => next => action => {
   if (
-    action.type === at.SET_ACTIVE_MODAL &&
+    action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&
     !getState().auth.user
   ) {
     next(toastsAddError('tracking.unauthenticatedError'));
     return;
+  }
+
+  if (action.type === getType(rpcResponse)) {
+    if (
+      action.payload.method === 'tracking.subscribe' &&
+      action.payload.type === 'error'
+    ) {
+      dispatch(
+        toastsAdd({
+          messageKey:
+            action.payload.error.code === 404
+              ? 'tracking.subscribeNotFound'
+              : 'tracking.subscribeError',
+          messageParams: {
+            id: action.payload.params.token || action.payload.params.deviceId,
+          },
+          style: action.payload.error.code === 404 ? 'warning' : 'danger',
+        }),
+      );
+    }
   }
 
   const prevState = getState().websocket.state;
@@ -32,15 +59,15 @@ export default ({ dispatch, getState }) => next => action => {
   }
 
   if (trackedDevices.length === 0 && state < 2) {
-    dispatch(wsClose());
+    dispatch(wsClose(null));
   } else if (trackedDevices.length > 0 && state === 3) {
     const diff = Date.now() - timestamp;
     if (diff > 1000) {
       // TODO scale this value
-      dispatch(wsOpen());
+      dispatch(wsOpen(null));
     } else {
       reopenTs = setTimeout(() => {
-        dispatch(wsOpen());
+        dispatch(wsOpen(null));
       }, 1000 - diff);
     }
   } else if (prevState !== 1 && state === 1 && trackedDevices.length > 0) {
@@ -79,3 +106,5 @@ function mangle(td) {
     ...rest,
   };
 }
+
+export default mw;

@@ -1142,6 +1142,16 @@ export default {
       points: 'Pozície',
       'line+points': 'Spojnica + Pozície',
     },
+    subscribeNotFound: ({ id }) => (
+      <>
+        Token sledovania <i>{id}</i> neexistuje.
+      </>
+    ),
+    subscribeError: ({ id }) => (
+      <>
+        Chyba sledovania pomocou sledovacieho tokenu <i>{id}</i>.
+      </>
+    ),
   },
 };
 

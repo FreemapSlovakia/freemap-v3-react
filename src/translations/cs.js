@@ -1129,6 +1129,16 @@ export default {
       points: 'Points',
       'line+points': 'Line + Points',
     },
+    subscribeNotFound: ({ id }) => (
+      <>
+        Watch token <i>{id}</i> doesn't exist.
+      </>
+    ),
+    subscribeError: ({ id }) => (
+      <>
+        Error watching using token <i>{id}</i>.
+      </>
+    ),
   },
 };
 
