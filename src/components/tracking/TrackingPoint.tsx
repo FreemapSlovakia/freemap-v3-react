@@ -71,7 +71,7 @@ export function tooltipText(
   }
 
   if (typeof speed === 'number') {
-    items.push(['dashboard', `${speed} ㎧`]); // TODO format number
+    items.push(['dashboard', `${speed * 3.6} km/h`]); // TODO format number
   }
 
   if (typeof gsmSignal === 'number') {

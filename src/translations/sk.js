@@ -1094,17 +1094,25 @@ export default {
               <code>lon</code> - zemepisná šírka v stupňoch (povinné)
             </li>
             <li>
-              <code>time</code> - dátum a čas parsovateľný JavaScript-om alebo
-              Unixový čas v sekundách alebo milisekundách
+              <code>time</code>, <code>timestamp</code> - dátum a čas
+              parsovateľný JavaScript-om alebo Unixový čas v sekundách alebo
+              milisekundách
             </li>
             <li>
-              <code>alt</code> - nadmorská výška v metroch
+              <code>alt</code>, <code>altitude</code> - nadmorská výška v
+              metroch
             </li>
             <li>
               <code>speed</code> - rýchlosť v ㎧
             </li>
             <li>
+              <code>speedKmh</code> - rýchlosť v km/h
+            </li>
+            <li>
               <code>acc</code> - presnosť v metroch
+            </li>
+            <li>
+              <code>hdop</code> - horizontálna DOP
             </li>
             <li>
               <code>bearing</code> - smer v stupňoch

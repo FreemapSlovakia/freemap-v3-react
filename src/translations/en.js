@@ -1093,17 +1093,23 @@ export default {
               <code>lon</code> - longitude in degrees (mandatory)
             </li>
             <li>
-              <code>time</code> - JavaScript parsable datetime or Unix time in s
-              or ms
+              <code>time</code>, <code>timestamp</code> - JavaScript parsable
+              datetime or Unix time in s or ms
             </li>
             <li>
-              <code>alt</code> - altitude in meters
+              <code>alt</code>, <code>altitude</code> - altitude in meters
             </li>
             <li>
               <code>speed</code> - speed in m/s
             </li>
             <li>
+              <code>speedKmh</code> - speed in km/h
+            </li>
+            <li>
               <code>acc</code> - accuracy in meters
+            </li>
+            <li>
+              <code>hdop</code> - horizontal DOP
             </li>
             <li>
               <code>bearing</code> - bearing in degrees
