@@ -66,7 +66,7 @@ export default compose(
     }),
     dispatch => ({
       onInfoPointAdd(lat, lon) {
-        dispatch(infoPointAdd(lat, lon, ''));
+        dispatch(infoPointAdd({ lat, lon, label: '' }));
       },
       onLabelModify() {
         dispatch(setActiveModal('info-point-change-label'));

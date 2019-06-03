@@ -166,11 +166,11 @@ export default compose(
       onElevationChartClose() {
         dispatch(elevationChartClose());
       },
-      onAreaPointAdd(coordinates, position) {
-        dispatch(areaMeasurementAddPoint(coordinates, position));
+      onAreaPointAdd(point, position) {
+        dispatch(areaMeasurementAddPoint({ point, position }));
       },
-      onDistPointAdd(coordinates, position) {
-        dispatch(distanceMeasurementAddPoint(coordinates, position));
+      onDistPointAdd(point, position) {
+        dispatch(distanceMeasurementAddPoint(point, position));
       },
       onElePointSet(point) {
         dispatch(elevationMeasurementSetPoint(point));

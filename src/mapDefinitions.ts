@@ -1,43 +1,64 @@
-const OSM_MAP_ATTR = {
+const OSM_MAP_ATTR: IAttributionDef = {
   type: 'map',
   name: '©\xa0OpenStreetMap',
   url: 'https://osm.org/',
 };
 
-const OSM_DATA_ATTR = {
+const OSM_DATA_ATTR: IAttributionDef = {
   type: 'data',
   nameKey: 'mapLayers.attr.osmData',
   url: 'https://osm.org/copyright',
 };
 
-const FM_ATTR = {
+const FM_ATTR: IAttributionDef = {
   type: 'map',
   nameKey: 'mapLayers.attr.freemap',
 };
 
-const SRTM_ATTR = {
+const SRTM_ATTR: IAttributionDef = {
   type: 'data',
   nameKey: 'mapLayers.attr.srtm',
 };
 
-const STRAVA_ATTR = {
+const STRAVA_ATTR: IAttributionDef = {
   type: 'map',
   name: '©\xa0Strava',
   url: 'https://www.strava.com/',
 };
 
-const NLC_ATTR = {
+const NLC_ATTR: IAttributionDef = {
   type: 'map',
   name: '©\xa0NLC Zvolen',
   url: 'http://www.nlcsk.org/',
 };
 
-export const baseLayers = [
+export interface IAttributionDef {
+  type: string;
+  name?: string;
+  nameKey?: string;
+  url?: string;
+}
+
+interface ILayerDef {
+  type: string;
+  icon: string;
+  url?: string;
+  attribution: IAttributionDef[];
+  minZoom?: number;
+  minNativeZoom?: number;
+  maxNativeZoom?: number;
+  key: string | undefined; // TODO undefined only in overlays
+  showOnlyInExpertMode?: boolean;
+  adminOnly?: boolean;
+  zIndex?: number; // TODO only overlays
+}
+
+export const baseLayers: ILayerDef[] = [
   {
     type: 'X',
     icon: 'tree',
     url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR].filter(a => a),
+    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
     minZoom: 6,
     maxNativeZoom: 19,
     key: 'x',
@@ -52,9 +73,7 @@ export const baseLayers = [
     icon,
     url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
     subdomains: 'abcd',
-    attribution: [FM_ATTR, OSM_DATA_ATTR, type !== 'A' && SRTM_ATTR].filter(
-      a => a,
-    ),
+    attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
     key: type.toLowerCase(),
@@ -152,16 +171,19 @@ export const baseLayers = [
     attribution: [],
     key: 'h',
   },
-  !process.env.NODE_ENV && {
+];
+
+if (!process.env.NODE_ENV) {
+  baseLayers.push({
     type: 'Y',
     icon: 'flask',
     url: scaleUrl([1, 2, 3], 'http://localhost:4000/{z}/{x}/{y}'),
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR].filter(a => a),
+    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
     minZoom: 6,
     maxNativeZoom: 19,
     key: 'y',
-  },
-].filter(x => x);
+  });
+}
 
 function findNearestScale(scales, ratio = window.devicePixelRatio || 1) {
   let dif = Number.POSITIVE_INFINITY;
@@ -183,7 +205,7 @@ function scaleUrl(scales, url) {
   return scale === 1 ? url : `${url}@${scale}x`;
 }
 
-export const overlayLayers = [
+export const overlayLayers: ILayerDef[] = [
   {
     type: 'I',
     icon: 'picture-o',

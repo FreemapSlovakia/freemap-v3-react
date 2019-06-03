@@ -41,7 +41,7 @@ class ObjectsMenu extends React.Component {
             .indexOf(this.state.filter.toLowerCase()) !== -1,
       )
       .map(({ group, id, icon }) => (
-        <MenuItem key={id} eventKey={id} onSelect={this.select}>
+        <MenuItem key={id} eventKey={id} onSelect={this.handleSelect}>
           <img
             src={require(`../images/mapIcons/${icon}.png`)}
             alt={`${group}-${icon}`}
@@ -69,7 +69,7 @@ class ObjectsMenu extends React.Component {
     }));
   };
 
-  select = id => {
+  handleSelect = id => {
     if (this.props.zoom < 12) {
       this.props.onLowZoom(id);
     } else {

@@ -1,10 +1,9 @@
-import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 
-function checkDatetimeLocalInput() {
+function checkDatetimeLocalInput(): boolean {
   const input = document.createElement('input');
   input.setAttribute('type', 'datetime-local');
 
@@ -14,33 +13,43 @@ function checkDatetimeLocalInput() {
   return input.value !== notADateValue;
 }
 
-const supportsDatetimeLocal = checkDatetimeLocalInput();
+const supportsDatetimeLocal: boolean = checkDatetimeLocalInput();
 
-export default function DateTime({ value, onChange, placeholders }) {
+interface IProps {
+  value: string;
+  onChange: (value: string) => void;
+  placeholders?: {
+    date: string;
+    time: string;
+    datetime: string;
+  };
+}
+
+const DateTime: React.FC<IProps> = ({ value, onChange, placeholders }) => {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
 
-  const propagateChange = useCallback(
+  const propagateChange = React.useCallback(
     (date, time) => {
       onChange(date || time ? `${date}T${time}` : '');
     },
     [onChange],
   );
 
-  const handleDateChange = useCallback(
+  const handleDateChange = React.useCallback(
     e => {
       propagateChange(e.target.value, timePart);
     },
     [timePart, propagateChange],
   );
 
-  const handleTimeChange = useCallback(
+  const handleTimeChange = React.useCallback(
     e => {
       propagateChange(datePart, e.target.value);
     },
     [datePart, propagateChange],
   );
 
-  const handleDatetimeChange = useCallback(
+  const handleDatetimeChange = React.useCallback(
     e => {
       onChange(e.target.value);
     },
@@ -80,14 +89,6 @@ export default function DateTime({ value, onChange, placeholders }) {
       />
     </InputGroup>
   );
-}
-
-DateTime.propTypes = {
-  value: PropTypes.string,
-  onChange: PropTypes.func.isRequired,
-  placeholders: PropTypes.shape({
-    date: PropTypes.string,
-    time: PropTypes.string,
-    datetime: PropTypes.string,
-  }),
 };
+
+export default DateTime;

@@ -68,7 +68,7 @@ export default compose(
         dispatch(mapDetailsSetSubtool(subtool));
       },
       onSetUserSelectedPosition(lat, lon) {
-        dispatch(mapDetailsSetUserSelectedPosition(lat, lon));
+        dispatch(mapDetailsSetUserSelectedPosition({ lat, lon }));
       },
     }),
   ),

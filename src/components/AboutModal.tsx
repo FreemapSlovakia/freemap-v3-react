@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -10,7 +9,11 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
-export function AboutModal({ onModalClose }) {
+interface IProps {
+  onModalClose: () => void;
+}
+
+export const AboutModal: React.FC<IProps> = ({ onModalClose }) => {
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
@@ -88,10 +91,6 @@ export function AboutModal({ onModalClose }) {
       </Modal.Footer>
     </Modal>
   );
-}
-
-AboutModal.propTypes = {
-  onModalClose: PropTypes.func.isRequired,
 };
 
 export default connect(

@@ -231,11 +231,11 @@ export default connect(
     language: state.l10n.language,
   }),
   dispatch => ({
-    onPointAdd(coordinates, position) {
-      dispatch(areaMeasurementAddPoint(coordinates, position));
+    onPointAdd(point, position) {
+      dispatch(areaMeasurementAddPoint({ point, position }));
     },
-    onPointUpdate(i, coordinates) {
-      dispatch(areaMeasurementUpdatePoint(i, coordinates));
+    onPointUpdate(index, point) {
+      dispatch(areaMeasurementUpdatePoint({ index, point }));
     },
     onPointRemove(i) {
       dispatch(areaMeasurementRemovePoint(i));

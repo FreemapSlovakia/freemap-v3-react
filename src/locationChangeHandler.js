@@ -231,7 +231,7 @@ export default function handleLocationChange(store, location) {
 
   if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
     const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
-    dispatch(infoPointAdd(lat, lon));
+    dispatch(infoPointAdd({ lat, lon }));
   }
 
   if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
@@ -240,7 +240,7 @@ export default function handleLocationChange(store, location) {
       lon,
       label,
     } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
-    dispatch(infoPointAdd(lat, lon));
+    dispatch(infoPointAdd({ lat, lon }));
     if (label) {
       dispatch(infoPointChangeLabel(label));
     }

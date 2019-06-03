@@ -1,9 +1,15 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import * as FmPropTypes from 'fm3/propTypes';
+import * as React from 'react';
+import { baseLayers, overlayLayers, IAttributionDef } from 'fm3/mapDefinitions';
+import { Translator } from 'fm3/l10nInjector';
 
-export default function Attribution({ t, mapType, overlays, imhd }) {
+interface IProps {
+  t: Translator;
+  imhd: boolean;
+  mapType: string; // TODO enum
+  overlays: string[]; // TODO enum
+}
+
+const Attribution: React.FC<IProps> = ({ t, mapType, overlays, imhd }) => {
   return (
     <ul style={{ padding: '10px 0 0 20px' }}>
       {categorize(
@@ -17,11 +23,16 @@ export default function Attribution({ t, mapType, overlays, imhd }) {
           {attributions.map((a, j) => [
             j > 0 ? ', ' : '',
             a.url ? (
-              <a key={a} href={a.url} target="_blank" rel="noopener noreferrer">
-                {a.name || t(a.nameKey)}
+              <a
+                key={a.type}
+                href={a.url}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                {a.name || (a.nameKey && t(a.nameKey))}
               </a>
             ) : (
-              a.name || t(a.nameKey)
+              a.name || (a.nameKey && t(a.nameKey))
             ),
           ])}
         </li>
@@ -38,18 +49,14 @@ export default function Attribution({ t, mapType, overlays, imhd }) {
       )}
     </ul>
   );
-}
-
-Attribution.propTypes = {
-  overlays: FmPropTypes.overlays.isRequired,
-  mapType: FmPropTypes.mapType.isRequired,
-  t: PropTypes.func.isRequired,
-  imhd: PropTypes.bool,
 };
 
-function categorize(attributions) {
+function categorize(
+  attributions: IAttributionDef[],
+): Array<{ type: string; attributions: IAttributionDef[] }> {
   const res = {};
-  attributions.forEach(attribution => {
+
+  for (const attribution of attributions) {
     let x = res[attribution.type];
     if (!x) {
       x = [];
@@ -58,6 +65,9 @@ function categorize(attributions) {
     if (!x.includes(attribution)) {
       x.push(attribution);
     }
-  });
+  }
+
   return Object.keys(res).map(type => ({ type, attributions: res[type] }));
 }
+
+export default Attribution;
