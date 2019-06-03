@@ -54,6 +54,11 @@ class TrackingResult extends React.Component<Props, State> {
       second: '2-digit',
     });
 
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
     return tracks.map(track => {
       const color = track.color || '#7239a8';
       const width = track.width || 4;
@@ -144,7 +149,7 @@ class TrackingResult extends React.Component<Props, State> {
                 faIcon={track.id === activeTrackId ? 'user' : 'user-o'}
               >
                 <Tooltip direction="top" offset={[0, -36]} permanent>
-                  {tooltipText(df, tp, track.label)}
+                  {tooltipText(df, nf, tp, track.label)}
                 </Tooltip>
               </RichMarker>
             ) : (
