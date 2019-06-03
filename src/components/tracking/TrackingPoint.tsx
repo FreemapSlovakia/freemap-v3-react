@@ -25,6 +25,11 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
       second: '2-digit',
     });
 
+    const nf = Intl.NumberFormat(language, {
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    });
+
     const handleMouseOver = React.useCallback(() => {
       if (onActivePointSet) {
         onActivePointSet(tp);
@@ -49,7 +54,7 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
         onClick={onClick}
       >
         <Tooltip direction="top" offset={[0, -1.5 * width]}>
-          {tooltipText(df, tp)}
+          {tooltipText(df, nf, tp)}
         </Tooltip>
       </CircleMarker>
     );
@@ -59,6 +64,7 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
 // eslint-disable-next-line
 export function tooltipText(
   df: Intl.DateTimeFormat,
+  nf: Intl.NumberFormat,
   { battery, ts, gsmSignal, speed, message, altitude }: ITrackPoint,
   label?: String | null,
 ) {
@@ -67,11 +73,11 @@ export function tooltipText(
   const items: string[][] = [];
 
   if (typeof altitude === 'number') {
-    items.push(['long-arrow-up', `${altitude} m`]); // TODO format number
+    items.push(['long-arrow-up', `${nf.format(altitude)} m`]);
   }
 
   if (typeof speed === 'number') {
-    items.push(['dashboard', `${speed * 3.6} km/h`]); // TODO format number
+    items.push(['dashboard', `${nf.format(speed * 3.6)} km/h`]);
   }
 
   if (typeof gsmSignal === 'number') {
