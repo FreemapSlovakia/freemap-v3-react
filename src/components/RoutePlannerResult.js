@@ -383,16 +383,16 @@ export default compose(
     }),
     dispatch => ({
       onStartSet(start) {
-        dispatch(routePlannerSetStart(start, true));
+        dispatch(routePlannerSetStart({ start, move: true }));
       },
       onFinishSet(finish) {
-        dispatch(routePlannerSetFinish(finish, true));
+        dispatch(routePlannerSetFinish({ finish, move: true }));
       },
       onAddMidpoint(position, midpoint) {
-        dispatch(routePlannerAddMidpoint(midpoint, position));
+        dispatch(routePlannerAddMidpoint({ midpoint, position }));
       },
       onMidpointSet(position, midpoint) {
-        dispatch(routePlannerSetMidpoint(position, midpoint));
+        dispatch(routePlannerSetMidpoint({ position, midpoint }));
       },
       onRemoveMidpoint(position) {
         dispatch(routePlannerRemoveMidpoint(position));

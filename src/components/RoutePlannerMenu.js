@@ -377,10 +377,10 @@ export default compose(
     }),
     dispatch => ({
       onStartSet(start) {
-        dispatch(routePlannerSetStart(start));
+        dispatch(routePlannerSetStart({ start }));
       },
       onFinishSet(finish) {
-        dispatch(routePlannerSetFinish(finish));
+        dispatch(routePlannerSetFinish({ finish }));
       },
       onItineraryVisibilityToggle() {
         dispatch(routePlannerToggleItineraryVisibility());

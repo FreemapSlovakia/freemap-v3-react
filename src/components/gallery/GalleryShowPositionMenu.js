@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { compose } from 'redux';
 import Panel from 'react-bootstrap/lib/Panel';
 
-import { galleryShowOnTheMap } from 'fm3/actions/galleryActions';
+import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -58,7 +58,7 @@ export default compose(
     }),
     dispatch => ({
       onClose() {
-        dispatch(galleryShowOnTheMap(false));
+        dispatch(galleryCancelShowOnTheMap());
       },
     }),
   ),

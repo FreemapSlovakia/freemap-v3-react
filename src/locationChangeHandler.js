@@ -115,15 +115,15 @@ export default function handleLocationChange(store, location) {
         (mode === 'route' ? undefined : mode) !== query['route-mode']
       ) {
         dispatch(
-          routePlannerSetParams(
-            nextStart,
-            nextFinish,
-            nextMidpoints,
-            query.transport,
-            ['trip', 'roundtrip'].includes(query['route-mode'])
+          routePlannerSetParams({
+            start: nextStart,
+            finish: nextFinish,
+            midpoints: nextMidpoints,
+            transportType: query.transport,
+            mode: ['trip', 'roundtrip'].includes(query['route-mode'])
               ? query['route-mode']
               : 'route',
-          ),
+          }),
         );
       }
     } else if (

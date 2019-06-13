@@ -1,6 +1,20 @@
 import * as at from 'fm3/actionTypes';
 
-const initialState = {
+export interface IMapState {
+  mapType: string;
+  lat: number;
+  lon: number;
+  zoom: number;
+  overlays: string[];
+  overlayOpacity: { [type: string]: string };
+  overlayPaneOpacity: number;
+  tileFormat: 'jpeg' | 'png';
+  stravaAuth: boolean;
+  tool: string | null; // TODO enum
+  removeGalleryOverlayOnGalleryToolQuit: boolean;
+}
+
+const initialState: IMapState = {
   mapType: 'T',
   lat: 48.70714,
   lon: 19.4995,
@@ -13,6 +27,9 @@ const initialState = {
   tool: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
 };
+
+// export default createReducer<ITrackingState, RootAction>(initialState)
+//   .;
 
 export default function map(state = initialState, action) {
   switch (action.type) {

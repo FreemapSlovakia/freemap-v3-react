@@ -217,10 +217,10 @@ export default connect(
   }),
   dispatch => ({
     onPointAdd(point, position) {
-      dispatch(distanceMeasurementAddPoint(point, position));
+      dispatch(distanceMeasurementAddPoint({ point, position }));
     },
-    onPointUpdate(i, point) {
-      dispatch(distanceMeasurementUpdatePoint(i, point));
+    onPointUpdate(index, point) {
+      dispatch(distanceMeasurementUpdatePoint({ index, point }));
     },
     onPointRemove(id) {
       dispatch(distanceMeasurementRemovePoint(id));

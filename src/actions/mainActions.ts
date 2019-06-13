@@ -61,5 +61,3 @@ export const setErrorTicketId = createStandardAction('SET_ERROR_TICKET_ID')<
 export const setEmbedFeatures = createStandardAction('SET_EMBED_FEATURES')<
   any
 >();
-
-export const reloadApp = createAction('RELOAD_APP');
