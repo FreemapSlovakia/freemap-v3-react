@@ -427,7 +427,7 @@ export default compose(
         preventTips,
       ) {
         dispatch(
-          saveSettings(
+          saveSettings({
             tileFormat,
             homeLocation,
             overlayOpacity,
@@ -436,7 +436,7 @@ export default compose(
             trackViewerEleSmoothingFactor,
             user,
             preventTips,
-          ),
+          }),
         );
       },
       onClose() {
