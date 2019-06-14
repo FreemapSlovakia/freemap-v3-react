@@ -43,6 +43,8 @@ export const setSelectingHomeLocation = createStandardAction(
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 
+export const reloadApp = createAction('RELOAD_APP');
+
 export const saveSettings = createStandardAction('SAVE_SETTINGS')<{
   tileFormat: any;
   homeLocation: any;
