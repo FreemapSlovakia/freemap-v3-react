@@ -170,7 +170,7 @@ export default compose(
         dispatch(areaMeasurementAddPoint({ point, position }));
       },
       onDistPointAdd(point, position) {
-        dispatch(distanceMeasurementAddPoint(point, position));
+        dispatch(distanceMeasurementAddPoint({ point, position }));
       },
       onElePointSet(point) {
         dispatch(elevationMeasurementSetPoint(point));

@@ -43,6 +43,8 @@ export const setSelectingHomeLocation = createStandardAction(
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 
+export const reloadApp = createAction('RELOAD_APP');
+
 export const saveSettings = createStandardAction('SAVE_SETTINGS')<{
   tileFormat: any;
   homeLocation: any;
@@ -61,5 +63,3 @@ export const setErrorTicketId = createStandardAction('SET_ERROR_TICKET_ID')<
 export const setEmbedFeatures = createStandardAction('SET_EMBED_FEATURES')<
   any
 >();
-
-export const reloadApp = createAction('RELOAD_APP');

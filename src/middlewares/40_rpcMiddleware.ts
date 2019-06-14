@@ -1,6 +1,7 @@
 import * as at from 'fm3/actionTypes';
 import { wsSend, rpcResponse, rpcEvent } from 'fm3/actions/websocketActions';
-import { Middleware } from 'redux';
+import { Middleware, Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
 // TODO implement timeout
 
@@ -13,7 +14,10 @@ interface ICall {
 const callMap = new Map<number, ICall>();
 let id = 0;
 
-const mw: Middleware = ({ dispatch, getState }) => next => action => {
+const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
+  dispatch,
+  getState,
+}) => next => action => {
   const oldState = getState().websocket.state;
 
   next(action);

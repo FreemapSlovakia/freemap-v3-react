@@ -15,7 +15,7 @@ import {
   rpcEvent,
 } from 'fm3/actions/websocketActions';
 
-interface IState {
+export interface ITrackingState {
   devices: IDevice[];
   accessTokens: IAccessToken[];
   accessTokensDeviceId: number | null | undefined;
@@ -29,7 +29,7 @@ interface IState {
   activeTrackId: null | string | number;
 }
 
-const initialState: IState = {
+const initialState: ITrackingState = {
   devices: [],
   accessTokens: [],
   accessTokensDeviceId: undefined,
@@ -43,7 +43,7 @@ const initialState: IState = {
   activeTrackId: null,
 };
 
-export default createReducer<IState, RootAction>(initialState)
+export default createReducer<ITrackingState, RootAction>(initialState)
   .handleAction(clearMap, () => initialState)
   .handleAction(setActiveModal, state => ({
     ...state,

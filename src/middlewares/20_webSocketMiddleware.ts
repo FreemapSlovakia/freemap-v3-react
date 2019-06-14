@@ -4,7 +4,8 @@ import {
   wsStateChanged,
 } from 'fm3/actions/websocketActions';
 import * as at from 'fm3/actionTypes';
-import { Middleware } from 'redux';
+import { Middleware, Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
 let ws: WebSocket | null = null;
 let restarter: number | null = null;
@@ -20,7 +21,10 @@ function resetRestarter() {
   }, 45000);
 }
 
-const mw: Middleware = ({ dispatch, getState }) => next => action => {
+const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
+  dispatch,
+  getState,
+}) => next => action => {
   switch (action.type) {
     case at.WS_OPEN: {
       if (ws && ws.readyState !== WebSocket.CLOSED) {

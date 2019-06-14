@@ -531,7 +531,7 @@ export default compose(
         dispatch(galleryClear(null));
       },
       onShowOnTheMap() {
-        dispatch(galleryShowOnTheMap(true));
+        dispatch(galleryShowOnTheMap());
       },
       onImageSelect(id) {
         dispatch(galleryRequestImage(id));

@@ -1,9 +1,5 @@
 import { createStandardAction } from 'typesafe-actions';
 
-// createStandardAction('TRACKING_SET_TRACKED_DEVICES')<
-//     ITrackedDevice[]
-//   >()
-
 export const wsOpen = createStandardAction('WS_OPEN')<any>();
 
 export const wsClose = createStandardAction('WS_CLOSE')<any>();

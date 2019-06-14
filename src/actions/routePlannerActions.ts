@@ -1,0 +1,68 @@
+import { LatLon } from 'fm3/types/common';
+import { createStandardAction, createAction } from 'typesafe-actions';
+
+export const routePlannerSetStart = createStandardAction(
+  'ROUTE_PLANNER_SET_START',
+)<{ start: LatLon; move?: boolean }>();
+
+export const routePlannerSetFinish = createStandardAction(
+  'ROUTE_PLANNER_SET_FINISH',
+)<{ finish: LatLon; move?: boolean }>();
+
+export const routePlannerAddMidpoint = createStandardAction(
+  'ROUTE_PLANNER_ADD_MIDPOINT',
+)<{ midpoint: LatLon; position: number }>();
+
+export const routePlannerSetMidpoint = createStandardAction(
+  'ROUTE_PLANNER_SET_MIDPOINT',
+)<{ midpoint: LatLon; position: number }>();
+
+export const routePlannerRemoveMidpoint = createStandardAction(
+  'ROUTE_PLANNER_REMOVE_MIDPOINT',
+)<number>();
+
+export const routePlannerSetTransportType = createStandardAction(
+  'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
+)<string>(); // TODO enum
+
+export const routePlannerSetMode = createStandardAction(
+  'ROUTE_PLANNER_SET_MODE',
+)<'trip' | 'roundtrip'>();
+
+export const routePlannerSetPickMode = createStandardAction(
+  'ROUTE_PLANNER_SET_PICK_MODE',
+)<'start' | 'finish'>();
+
+export const routePlannerSetResult = createStandardAction(
+  'ROUTE_PLANNER_SET_RESULT',
+)<{
+  timestamp: number;
+  transportType: string; // TODO enum
+  alternatives: object[]; // TODO
+}>();
+
+export const routePlannerToggleItineraryVisibility = createAction(
+  'ROUTE_PLANNER_TOGGLE_ITINERARY_VISIBILITY',
+);
+
+export const routePlannerSetParams = createStandardAction(
+  'ROUTE_PLANNER_SET_PARAMS',
+)<{
+  start: LatLon;
+  finish: LatLon;
+  midpoints: LatLon[];
+  transportType: string; // TODO enum
+  mode: 'trip' | 'roundtrip';
+}>();
+
+export const routePlannerPreventHint = createAction(
+  'ROUTE_PLANNER_PREVENT_HINT',
+);
+export const routePlannerSetActiveAlternativeIndex = createStandardAction(
+  'ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX',
+)<number>();
+
+export const routePlannerToggleElevationChart = createAction(
+  'ROUTE_PLANNER_TOGGLE_ELEVATION_CHART',
+);
+export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');

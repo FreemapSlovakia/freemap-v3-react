@@ -140,12 +140,12 @@ export default compose(
       onRoutePlannerWithStartInit(result) {
         const start = { lat: result.lat, lon: result.lon };
         dispatch(setTool('route-planner'));
-        dispatch(routePlannerSetStart(start));
+        dispatch(routePlannerSetStart({ start }));
       },
       onRoutePlannerWithFinishInit(result) {
         const finish = { lat: result.lat, lon: result.lon };
         dispatch(setTool('route-planner'));
-        dispatch(routePlannerSetFinish(finish));
+        dispatch(routePlannerSetFinish({ finish }));
       },
     }),
   ),

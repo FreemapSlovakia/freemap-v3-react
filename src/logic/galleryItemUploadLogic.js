@@ -70,7 +70,7 @@ export default createLogic({
         dispatch(galleryUpload());
       })
       .catch(err => {
-        dispatch(gallerySetItemError(item.id, err.message));
+        dispatch(gallerySetItemError({ id: item.id, error: err.message }));
         dispatch(galleryUpload());
       })
       .then(() => {

@@ -5,13 +5,17 @@ import {
   rpcResponse,
 } from 'fm3/actions/websocketActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
-import { Middleware } from 'redux';
+import { Middleware, Dispatch } from 'redux';
 import { getType } from 'typesafe-actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { RootAction } from 'fm3/actions';
 
 let reopenTs;
 
-const mw: Middleware = ({ dispatch, getState }) => next => action => {
+const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
+  dispatch,
+  getState,
+}) => next => action => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

@@ -65,7 +65,7 @@ module.exports = {
       {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
-        use: { loader: 'awesome-typescript-loader' },
+        use: { loader: 'ts-loader' },
       },
       // addition - add source-map support
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
