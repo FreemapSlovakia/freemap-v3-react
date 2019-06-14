@@ -21,7 +21,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl(location) {
     zoomFrag,
     anotherMapTypeParam,
   ] = oldFreemapUrlParams.p.split(/\||%7C/);
-  const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'T';
+  const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'X';
   return {
     lat: parseFloat(latFrag),
     lon: parseFloat(lonFrag),

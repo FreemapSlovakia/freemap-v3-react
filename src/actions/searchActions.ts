@@ -17,6 +17,10 @@ export const searchSetResults = createStandardAction('SEARCH_SET_RESULTS')<
   SearchResult[]
 >();
 
-export const searchHighlightResult = createStandardAction('')<SearchResult>();
+export const searchHighlightResult = createStandardAction(
+  'SEARCH_HIGHLIGHT_RESULT',
+)<SearchResult>();
 
-export const searchSelectResult = createStandardAction('')<SearchResult>();
+export const searchSelectResult = createStandardAction('SEARCH_SELECT_RESULT')<
+  SearchResult
+>();

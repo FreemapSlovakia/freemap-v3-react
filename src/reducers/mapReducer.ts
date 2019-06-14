@@ -1,4 +1,4 @@
-import * as at from 'fm3/actionTypes';
+import * as at from "fm3/actionTypes";
 
 export interface IMapState {
   mapType: string;
@@ -8,24 +8,24 @@ export interface IMapState {
   overlays: string[];
   overlayOpacity: { [type: string]: string };
   overlayPaneOpacity: number;
-  tileFormat: 'jpeg' | 'png';
+  tileFormat: "jpeg" | "png";
   stravaAuth: boolean;
   tool: string | null; // TODO enum
   removeGalleryOverlayOnGalleryToolQuit: boolean;
 }
 
 const initialState: IMapState = {
-  mapType: 'T',
+  mapType: "X",
   lat: 48.70714,
   lon: 19.4995,
   zoom: 8,
   overlays: [],
   overlayOpacity: {},
   overlayPaneOpacity: 0.65,
-  tileFormat: 'png',
+  tileFormat: "png",
   stravaAuth: false,
   tool: null,
-  removeGalleryOverlayOnGalleryToolQuit: false,
+  removeGalleryOverlayOnGalleryToolQuit: false
 };
 
 // export default createReducer<ITrackingState, RootAction>(initialState)
@@ -44,18 +44,18 @@ export default function map(state = initialState, action) {
         overlays,
         overlayOpacity,
         tileFormat,
-        overlayPaneOpacity,
+        overlayPaneOpacity
       } = action.payload;
       if (mapType) {
         s.mapType = mapType;
       }
-      if (typeof lat === 'number') {
+      if (typeof lat === "number") {
         s.lat = lat;
       }
-      if (typeof lon === 'number') {
+      if (typeof lon === "number") {
         s.lon = lon;
       }
-      if (typeof zoom === 'number') {
+      if (typeof zoom === "number") {
         s.zoom = zoom;
       }
       if (Array.isArray(overlays)) {
@@ -64,7 +64,7 @@ export default function map(state = initialState, action) {
       if (overlayOpacity) {
         s.overlayOpacity = {
           ...initialState.overlayOpacity,
-          ...overlayOpacity,
+          ...overlayOpacity
         };
       }
       if (overlayPaneOpacity) {
@@ -80,7 +80,7 @@ export default function map(state = initialState, action) {
         ...state,
         zoom: initialState.zoom,
         lat: initialState.lat,
-        lon: initialState.lon,
+        lon: initialState.lon
       };
     case at.MAP_SET_TILE_FORMAT:
       return { ...state, tileFormat: action.payload };
@@ -90,7 +90,7 @@ export default function map(state = initialState, action) {
       return { ...state, overlayPaneOpacity: action.payload };
     case at.MAP_REFOCUS: {
       const newState = { ...state };
-      ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach(prop => {
+      ["zoom", "lat", "lon", "mapType", "overlays"].forEach(prop => {
         if (prop in action.payload) {
           newState[prop] = action.payload[prop];
         }
@@ -109,9 +109,9 @@ export default function map(state = initialState, action) {
                 ? state.overlayOpacity
                 : settings.overlayOpacity,
             overlayPaneOpacity:
-              typeof settings.overlayPaneOpacity === 'number'
+              typeof settings.overlayPaneOpacity === "number"
                 ? settings.overlayPaneOpacity
-                : state.overlayPaneOpacity,
+                : state.overlayPaneOpacity
           }
         : state;
     }
@@ -122,21 +122,21 @@ export default function map(state = initialState, action) {
       const nextTool = action.payload;
       let overlays = [...state.overlays];
       let removeGalleryOverlayOnGalleryToolQuit = false;
-      if (nextTool === 'gallery' && !overlays.includes('I')) {
-        overlays.push('I');
+      if (nextTool === "gallery" && !overlays.includes("I")) {
+        overlays.push("I");
         removeGalleryOverlayOnGalleryToolQuit = true;
       } else if (
-        currentTool === 'gallery' &&
-        nextTool !== 'gallery' &&
+        currentTool === "gallery" &&
+        nextTool !== "gallery" &&
         state.removeGalleryOverlayOnGalleryToolQuit
       ) {
-        overlays = overlays.filter(o => o !== 'I');
+        overlays = overlays.filter(o => o !== "I");
       }
       return {
         ...state,
         overlays,
         tool: nextTool,
-        removeGalleryOverlayOnGalleryToolQuit,
+        removeGalleryOverlayOnGalleryToolQuit
       };
     }
     default:
