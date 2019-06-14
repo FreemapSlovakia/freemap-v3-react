@@ -16,6 +16,17 @@ export const mapReset = createAction('MAP_RESET');
 //   return { type: at.MAP_REFOCUS, payload: { ...changes } };
 // }
 
+export interface IMapStateBase {
+  mapType: string;
+  lat: number;
+  lon: number;
+  zoom: number;
+  overlays: string[];
+  overlayOpacity: { [type: string]: number };
+  overlayPaneOpacity: number;
+  tileFormat: 'jpeg' | 'png';
+}
+
 export const mapRefocus = createStandardAction('MAP_REFOCUS')<{
   zoom?: number;
   lat?: number;
@@ -30,13 +41,15 @@ export const mapSetTileFormat = createStandardAction('MAP_SET_TILE_FORMAT')<
 
 export const mapSetOverlayOpacity = createStandardAction(
   'MAP_SET_OVERLAY_OPACITY',
-)<number>();
+)<{ [key: string]: number }>();
 
 export const mapSetOverlayPaneOpacity = createStandardAction(
   'MAP_SET_OVERLAY_PANE_OPACITY',
 )<number>();
 
-export const mapLoadState = createStandardAction('MAP_LOAD_STATE')<object>();
+export const mapLoadState = createStandardAction('MAP_LOAD_STATE')<
+  IMapStateBase
+>();
 
 export const mapSetStravaAuth = createStandardAction('MAP_SET_STRAVA_AUTH')<
   boolean
