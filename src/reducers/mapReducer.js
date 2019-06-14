@@ -1,7 +1,7 @@
 import * as at from 'fm3/actionTypes';
 
 const initialState = {
-  mapType: 'T',
+  mapType: 'X',
   lat: 48.70714,
   lon: 19.4995,
   zoom: 8,
