@@ -35,15 +35,15 @@ module.exports = {
   devtool: prod ? 'source-map' : 'cheap-module-eval-source-map',
   module: {
     rules: [
-      {
-        enforce: 'pre',
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          fix: false,
-        },
-      },
+      // {
+      //   enforce: 'pre',
+      //   test: /\.js$/,
+      //   exclude: /node_modules/,
+      //   loader: 'eslint-loader',
+      //   options: {
+      //     fix: false,
+      //   },
+      // },
       {
         // babelify some very modern libraries
         test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first)\/.*\.js$/,
