@@ -9,4 +9,5 @@ export interface IUser {
   id: number;
   authToken: string;
   isAdmin: boolean;
+  settings?: any;
 }
