@@ -64,7 +64,7 @@ export default connect(
   }),
   dispatch => ({
     onImageRequest(lat, lon) {
-      dispatch(galleryRequestImages(lat, lon));
+      dispatch(galleryRequestImages({ lat, lon }));
     },
   }),
 )(GalleryPicker);
