@@ -148,6 +148,16 @@ function RoutePlannerResult({
     setDragAlt(alt);
   }, []);
 
+  const resetOnTimeout = useCallback(() => {
+    if (tRef.current) {
+      clearTimeout(tRef.current);
+    }
+    tRef.current = setTimeout(() => {
+      setDragLat(null);
+      setDragLon(null);
+    }, 200);
+  }, []);
+
   const handlePolyMouseOut = useCallback(() => {
     if (!draggingRef.current) {
       resetOnTimeout();
@@ -221,16 +231,6 @@ function RoutePlannerResult({
     },
     [onRemoveMidpoint],
   );
-
-  const resetOnTimeout = useCallback(() => {
-    if (tRef.current) {
-      clearTimeout(tRef.current);
-    }
-    tRef.current = setTimeout(() => {
-      setDragLat(null);
-      setDragLon(null);
-    }, 200);
-  }, []);
 
   const special = isSpecial(transportType);
 
