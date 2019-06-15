@@ -64,10 +64,12 @@ export const gallerySetTags = createStandardAction('GALLERY_SET_TAGS')<
   string[]
 >();
 
-export const gallerySetUsers = createStandardAction('GALLERY_SET_USERS')<{
-  id: number;
-  name: string;
-}>();
+export const gallerySetUsers = createStandardAction('GALLERY_SET_USERS')<
+  Array<{
+    id: number;
+    name: string;
+  }>
+>();
 
 export const gallerySetComment = createStandardAction('GALLERY_SET_COMMENT')<
   string

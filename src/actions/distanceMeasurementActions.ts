@@ -1,6 +1,6 @@
 import { createStandardAction } from 'typesafe-actions';
 
-interface IPoint {
+export interface IPoint {
   lat: number;
   lon: number;
   id: number;
@@ -8,7 +8,7 @@ interface IPoint {
 
 export const distanceMeasurementAddPoint = createStandardAction(
   'DISTANCE_MEASUREMENT_ADD_POINT',
-)<{ point: IPoint; position: number }>();
+)<{ point: IPoint; position?: number }>();
 
 export const distanceMeasurementUpdatePoint = createStandardAction(
   'DISTANCE_MEASUREMENT_UPDATE_POINT',
