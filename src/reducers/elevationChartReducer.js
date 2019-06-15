@@ -14,18 +14,18 @@ const initialState = {
 export default function elevationChart(state = initialState, action) {
   switch (action.type) {
     case at.ELEVATION_CHART_SET_TRACK_GEOJSON:
-      return { ...state, trackGeojson: action.payload.trackGeojson };
+      return { ...state, trackGeojson: action.payload };
     case at.ELEVATION_CHART_SET_ACTIVE_POINT:
       return {
         ...state,
-        activePoint: action.payload.activePoint,
+        activePoint: action.payload,
       };
     case at.ELEVATION_CHART_REMOVE_ACTIVE_POINT:
       return { ...state, activePoint: initialState.activePoint };
     case at.ELEVATION_CHART_SET_ELEVATION_PROFILE_POINTS:
       return {
         ...state,
-        elevationProfilePoints: action.payload.elevationProfilePoints,
+        elevationProfilePoints: action.payload,
       };
     case at.SET_TOOL:
     case at.ROUTE_PLANNER_SET_RESULT:
