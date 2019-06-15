@@ -24,7 +24,7 @@ export const galleryClear = createAction('GALLERY_CLEAR');
 export const galleryShowOnTheMap = createAction('GALLERY_SHOW_ON_THE_MAP');
 
 export const galleryCancelShowOnTheMap = createAction(
-  'GALLERY_SHOW_ON_THE_MAP',
+  'GALLERY_CANCEL_SHOW_ON_THE_MAP',
 );
 
 export const galleryAddItem = createStandardAction('GALLERY_ADD_ITEM')<
