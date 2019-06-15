@@ -89,7 +89,7 @@ const AccessTokenForm: React.FC<Props> = ({
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>Note</ControlLabel>
+          <ControlLabel>{t('tracking.accessToken.note')}</ControlLabel>
           <FormControl value={note} onChange={setNote} maxLength={255} />
         </FormGroup>
       </Modal.Body>

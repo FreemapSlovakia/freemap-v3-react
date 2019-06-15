@@ -1028,7 +1028,7 @@ export default {
       desc: ({ deviceName }) => (
         <p>
           Zadefinujte tokeny sledovania, aby ste mohli zdieľať pozíciu vášho
-          zariadenia <i>{deviceName}</i> s vašími priateľmi.
+          zariadenia <i>{deviceName}</i> s vašimi priateľmi.
         </p>
       ),
       createTitle: ({ token, deviceName }) => (
@@ -1047,7 +1047,7 @@ export default {
       label: 'Popisok',
       fromTime: 'Pozície od',
       maxAge: 'Najstaršia pozícia',
-      maxCount: 'Maximálny počet pozícii',
+      maxCount: 'Maximálny počet pozícií',
       splitDistance: 'Vzdialenosť na rozdelenie',
       splitDuration: 'Pauza na rozdelenie',
       color: 'Farba',
@@ -1068,11 +1068,11 @@ export default {
         <>
           <p>
             Tu môžete spravovať svoje zariadenia. Ostatní môžu sledovať ich
-            pozíciu, ak k ním vytvoríte sledovacie tokeny, pomocou tlačítka{' '}
+            pozíciu, ak k nim vytvoríte sledovacie tokeny, pomocou tlačidla{' '}
             <FontAwesomeIcon icon="key" />.
           </p>
           <p>
-            Do vášho trackera (napríklad.{' '}
+            Do vášho trackera (napríklad{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
               Locus
             </a>{' '}
@@ -1080,7 +1080,7 @@ export default {
             <code>
               {process.env.API_URL}/tracking/track/<i>token</i>
             </code>{' '}
-            kde <i>token</i> je vypisaný v tabuľke nižšie.
+            kde <i>token</i> je vypísaný v tabuľke nižšie.
           </p>
           <p>
             Server podporuje HTTP <code>GET</code> alebo <code>POST</code> s URL
@@ -1133,8 +1133,8 @@ export default {
     device: {
       token: 'Token zaznamenávania',
       name: 'Názov',
-      maxAge: 'Najstarišia pozícia',
-      maxCount: 'Maximálny počet pozícii',
+      maxAge: 'Najstaršia pozícia',
+      maxCount: 'Maximálny počet pozícií',
       regenerateToken: 'Vygenerovať nový token',
     },
     visual: {

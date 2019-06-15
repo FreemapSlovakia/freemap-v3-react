@@ -65,7 +65,9 @@ const Device: React.FC<Props> = ({
           placement="right"
           overlay={
             <Tooltip id={device.token}>
-              {process.env.API_URL}/tracking/track/{device.token}
+              <span style={{ overflowWrap: 'break-word' }}>
+                {process.env.API_URL}/tracking/track/{device.token}
+              </span>
             </Tooltip>
           }
         >
