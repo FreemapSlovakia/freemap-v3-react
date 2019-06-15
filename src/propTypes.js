@@ -73,7 +73,7 @@ export const galleryPictureModel = PropTypes.shape({
   position: point,
   title: PropTypes.string,
   description: PropTypes.string,
-  takenAt: PropTypes.instanceOf(Date),
+  takenAt: PropTypes.string,
   tags: PropTypes.arrayOf(PropTypes.string.isRequired).isRequired,
 });
 
