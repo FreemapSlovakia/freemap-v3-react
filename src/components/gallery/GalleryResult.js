@@ -97,7 +97,7 @@ export default connect(
   }),
   dispatch => ({
     onPositionPick(lat, lon) {
-      dispatch(gallerySetPickingPosition(lat, lon));
+      dispatch(gallerySetPickingPosition({ lat, lon }));
     },
   }),
 )(GalleryResult);

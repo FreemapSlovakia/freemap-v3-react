@@ -78,7 +78,7 @@ export default function gallery(state = initialState, action) {
       return {
         ...state,
         items: state.items.map(item =>
-          item.id === action.payload.id ? action.payload.value : item,
+          item.id === action.payload.id ? action.payload.item : item,
         ),
       };
     case at.GALLERY_SET_ITEM_ERROR:

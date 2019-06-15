@@ -420,7 +420,7 @@ export default compose(
         dispatch(gallerySetItemForPositionPicking(id));
       },
       onItemChange(id, item) {
-        dispatch(gallerySetItem(id, item));
+        dispatch(gallerySetItem({ id, item }));
       },
       onShowPreviewToggle() {
         dispatch(galleryToggleShowPreview());
