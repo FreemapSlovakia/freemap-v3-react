@@ -1,6 +1,6 @@
 import { createStandardAction } from 'typesafe-actions';
 
-interface ObjectsResult {
+export interface ObjectsResult {
   id: string;
   lat: number;
   lon: number;
@@ -13,5 +13,5 @@ export const objectsSetFilter = createStandardAction('OBJECTS_SET_FILTER')<
 >();
 
 export const objectsSetResult = createStandardAction('OBJECTS_SET_RESULT')<
-  ObjectsResult
+  ObjectsResult[]
 >();

@@ -1,6 +1,6 @@
 import { createStandardAction } from 'typesafe-actions';
 
-interface SearchResult {
+export interface SearchResult {
   id: number;
   label: string;
   geojson: object;
