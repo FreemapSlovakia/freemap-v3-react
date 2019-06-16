@@ -1,8 +1,14 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
+import { LatLon } from 'fm3/types/common';
 
 export const trackViewerSetData = createStandardAction(
   'TRACK_VIEWER_SET_TRACK_DATA',
-)<any>();
+)<{
+  trackGpx: object;
+  trackGeojson: object;
+  startPoints: LatLon[];
+  finishPoints: LatLon[];
+}>();
 
 export const trackViewerSetTrackUID = createStandardAction(
   'TRACK_VIEWER_SET_TRACK_UID',
@@ -20,7 +26,9 @@ export const trackViewerSetEleSmoothingFactor = createStandardAction(
 
 export const trackViewerLoadState = createStandardAction(
   'TRACK_VIEWER_LOAD_STATE',
-)<object>();
+)<{
+  eleSmoothingFactor?: number;
+}>();
 
 export const trackViewerColorizeTrackBy = createStandardAction(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',

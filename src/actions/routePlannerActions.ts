@@ -1,5 +1,6 @@
 import { LatLon } from 'fm3/types/common';
 import { createStandardAction, createAction } from 'typesafe-actions';
+import { TransportType } from 'fm3/reducers/routePlannerReducer';
 
 export const routePlannerSetStart = createStandardAction(
   'ROUTE_PLANNER_SET_START',
@@ -23,7 +24,7 @@ export const routePlannerRemoveMidpoint = createStandardAction(
 
 export const routePlannerSetTransportType = createStandardAction(
   'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
-)<string>(); // TODO enum
+)<TransportType>();
 
 export const routePlannerSetMode = createStandardAction(
   'ROUTE_PLANNER_SET_MODE',
@@ -37,7 +38,7 @@ export const routePlannerSetResult = createStandardAction(
   'ROUTE_PLANNER_SET_RESULT',
 )<{
   timestamp: number;
-  transportType: string; // TODO enum
+  transportType: TransportType;
   alternatives: object[]; // TODO
 }>();
 
@@ -51,7 +52,7 @@ export const routePlannerSetParams = createStandardAction(
   start: LatLon;
   finish: LatLon;
   midpoints: LatLon[];
-  transportType: string; // TODO enum
+  transportType: TransportType;
   mode: 'trip' | 'roundtrip';
 }>();
 

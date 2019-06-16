@@ -11,4 +11,6 @@ export interface IUser {
   isAdmin: boolean;
   settings?: any;
   preventTips?: boolean;
+  lat: number | null;
+  lon: number | null;
 }

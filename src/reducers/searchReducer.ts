@@ -1,4 +1,3 @@
-import * as at from 'fm3/actionTypes';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
