@@ -1,6 +1,6 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
 
-interface IInfoPoint {
+export interface IInfoPoint {
   lat: number;
   lon: number;
   label: string;
