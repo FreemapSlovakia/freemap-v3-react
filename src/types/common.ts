@@ -10,4 +10,5 @@ export interface IUser {
   authToken: string;
   isAdmin: boolean;
   settings?: any;
+  preventTips?: boolean;
 }
