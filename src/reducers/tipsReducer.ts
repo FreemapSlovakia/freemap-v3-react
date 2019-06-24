@@ -19,7 +19,7 @@ const initialState: ITipsState = {
   preventTips: false,
 };
 
-export default createReducer<ITipsState, RootAction>(initialState)
+export const tipsReducer = createReducer<ITipsState, RootAction>(initialState)
   .handleAction(tipsShow, (state, action) => ({
     ...state,
     tip: action.payload,

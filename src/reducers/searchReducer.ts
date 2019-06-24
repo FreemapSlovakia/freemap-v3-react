@@ -25,7 +25,9 @@ const initialState = {
   inProgress: false,
 };
 
-export default createReducer<ISearchState, RootAction>(initialState)
+export const searchReducer = createReducer<ISearchState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(searchSetQuery, (state, action) => ({
     ...state,

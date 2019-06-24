@@ -19,7 +19,9 @@ const initialState: IChangesetsState = {
   authorName: null,
 };
 
-export default createReducer<IChangesetsState, RootAction>(initialState)
+export const changesetReducer = createReducer<IChangesetsState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(changesetsSet, (state, action) => ({
     ...state,

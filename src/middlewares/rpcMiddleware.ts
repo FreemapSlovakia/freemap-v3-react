@@ -14,7 +14,7 @@ interface ICall {
 const callMap = new Map<number, ICall>();
 let id = 0;
 
-const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
+export const rpcMiddleware: Middleware<{}, any, Dispatch<RootAction>> = ({
   dispatch,
   getState,
 }) => next => action => {
@@ -102,5 +102,3 @@ const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
     }
   }
 };
-
-export default mw;

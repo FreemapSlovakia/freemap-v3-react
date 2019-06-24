@@ -50,7 +50,7 @@ const initialState: IMainState = {
   embedFeatures: [],
 };
 
-export default createReducer<IMainState, RootAction>(initialState)
+export const mainReducer = createReducer<IMainState, RootAction>(initialState)
   .handleAction(mainLoadState, (state, action) => {
     const s = { ...state };
     const { homeLocation, expertMode } = action.payload;

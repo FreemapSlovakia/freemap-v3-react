@@ -23,7 +23,9 @@ const initialState: IInfoPointState = {
   change: 0,
 };
 
-export default createReducer<IInfoPointState, RootAction>(initialState)
+export const infoPointReducer = createReducer<IInfoPointState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(setTool, (state, action) => ({
     ...state,

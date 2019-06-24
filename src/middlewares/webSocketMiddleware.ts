@@ -21,7 +21,7 @@ function resetRestarter() {
   }, 45000);
 }
 
-const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
+export const webSocketMiddleware: Middleware<{}, any, Dispatch<RootAction>> = ({
   dispatch,
   getState,
 }) => next => action => {
@@ -106,5 +106,3 @@ const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
     ws.close();
   }
 };
-
-export default mw;

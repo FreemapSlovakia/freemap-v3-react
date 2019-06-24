@@ -43,7 +43,9 @@ const initialState: ITrackingState = {
   activeTrackId: null,
 };
 
-export default createReducer<ITrackingState, RootAction>(initialState)
+export const trackingReducer = createReducer<ITrackingState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(setActiveModal, state => ({
     ...state,

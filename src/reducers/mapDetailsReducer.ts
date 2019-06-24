@@ -21,7 +21,9 @@ const initialState: IMapDetailsState = {
   trackInfoPoints: null,
 };
 
-export default createReducer<IMapDetailsState, RootAction>(initialState)
+export const mapDetailsReducer = createReducer<IMapDetailsState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(mapDetailsSetSubtool, (state, action) => ({
     ...state,

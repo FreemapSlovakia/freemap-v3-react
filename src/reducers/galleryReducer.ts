@@ -32,7 +32,7 @@ import {
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 
-interface IGalleryState {
+export interface IGalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
   image: any;
@@ -51,14 +51,14 @@ interface IGalleryState {
   comment: string;
   showFilter: boolean;
   filter: {
-    tag: string | null;
-    userId: number | null;
-    takenAtFrom: string | null;
-    takenAtTo: string | null;
-    createdAtFrom: string | null;
-    createdAtTo: string | null;
-    ratingFrom: string | null;
-    ratingTo: string | null;
+    tag?: string;
+    userId?: number;
+    takenAtFrom?: Date;
+    takenAtTo?: Date;
+    createdAtFrom?: Date;
+    createdAtTo?: Date;
+    ratingFrom?: number;
+    ratingTo?: number;
   };
   editModel: any;
   showPosition: boolean;
@@ -84,21 +84,23 @@ const initialState: IGalleryState = {
   comment: '',
   showFilter: false,
   filter: {
-    tag: null,
-    userId: null,
-    takenAtFrom: null,
-    takenAtTo: null,
-    createdAtFrom: null,
-    createdAtTo: null,
-    ratingFrom: null,
-    ratingTo: null,
+    tag: undefined,
+    userId: undefined,
+    takenAtFrom: undefined,
+    takenAtTo: undefined,
+    createdAtFrom: undefined,
+    createdAtTo: undefined,
+    ratingFrom: undefined,
+    ratingTo: undefined,
   },
 
   editModel: null,
   showPosition: false,
 };
 
-export default createReducer<IGalleryState, RootAction>(initialState)
+export const galleryReducer = createReducer<IGalleryState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, state => ({
     ...initialState,
     dirtySeq: state.dirtySeq,
@@ -220,11 +222,6 @@ export default createReducer<IGalleryState, RootAction>(initialState)
     filter: action.payload,
     showFilter: false,
   }))
-  .handleAction(galleryShowUploadModal, (state, action) => ({
-    ...state,
-    filter: action.payload,
-    showFilter: false,
-  }))
   .handleAction(galleryShowUploadModal, state => ({
     ...state,
     showUploadModal: true,
@@ -269,10 +266,10 @@ export default createReducer<IGalleryState, RootAction>(initialState)
 function getError(item) {
   const errors: string[] = [];
   if (!item.position) {
-    errors.push('Chýba pozícia.');
+    errors.push('Chýba pozícia.'); // TODO translate
   }
   if (item.takenAt && Number.isNaN(item.takenAt.getTime())) {
-    errors.push('Nevalidný dátum a čas fotenia.');
+    errors.push('Nevalidný dátum a čas fotenia.'); // TODO translate
   }
   return errors.length ? errors.join('\n') : null;
 }

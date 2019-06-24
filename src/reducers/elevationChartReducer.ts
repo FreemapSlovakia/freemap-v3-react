@@ -38,7 +38,10 @@ const initialState: IElevationChartState = {
   elevationProfilePoints: null,
 };
 
-export default createReducer<IElevationChartState, RootAction>(initialState)
+export const elevationChartReducer = createReducer<
+  IElevationChartState,
+  RootAction
+>(initialState)
   .handleAction(elevationChartSetTrackGeojson, (state, action) => ({
     ...state,
     trackGeojson: action.payload,

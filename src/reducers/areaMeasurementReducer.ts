@@ -18,7 +18,10 @@ const initialState: IAreaMeasurementState = {
   points: [],
 };
 
-export default createReducer<IAreaMeasurementState, RootAction>(initialState)
+export const areaMeasurementReducer = createReducer<
+  IAreaMeasurementState,
+  RootAction
+>(initialState)
   .handleAction(clearMap, () => initialState)
   .handleAction(areaMeasurementAddPoint, (state, action) =>
     produce(state, draft => {

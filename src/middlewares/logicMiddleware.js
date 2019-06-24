@@ -10,4 +10,4 @@ const logics = []
   )
   .filter(m => m);
 
-export default createLogicMiddleware(logics);
+export const logicMiddleware = createLogicMiddleware(logics);

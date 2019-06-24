@@ -7,7 +7,7 @@ import {
   elevationMeasurementSetPoint,
 } from 'fm3/actions/elevationMeasurementActions';
 
-interface IElevationMeasurementState {
+export interface IElevationMeasurementState {
   elevation: number | null;
   point: LatLon | null;
 }
@@ -17,9 +17,10 @@ const initialState: IElevationMeasurementState = {
   point: null,
 };
 
-export default createReducer<IElevationMeasurementState, RootAction>(
-  initialState,
-)
+export const elevationMeasurementReducer = createReducer<
+  IElevationMeasurementState,
+  RootAction
+>(initialState)
   .handleAction(clearMap, () => initialState)
   .handleAction(elevationMeasurementSetElevation, (state, action) => ({
     ...state,

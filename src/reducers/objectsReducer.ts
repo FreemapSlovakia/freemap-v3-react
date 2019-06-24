@@ -1,4 +1,3 @@
-import * as at from 'fm3/actionTypes';
 import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
 import { clearMap } from 'fm3/actions/mainActions';
@@ -12,7 +11,9 @@ const initialState: IObjectsState = {
   objects: [],
 };
 
-export default createReducer<IObjectsState, RootAction>(initialState)
+export const objectsReducer = createReducer<IObjectsState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(objectsSetResult, (state, action) => ({
     ...state,

@@ -14,7 +14,7 @@ const initialState: IWebsocketState = {
   timestamp: 0,
 };
 
-export default createReducer<IWebsocketState, RootAction>(
+export const websocketReducer = createReducer<IWebsocketState, RootAction>(
   initialState,
 ).handleAction(wsStateChanged, (_, action) => ({
   state: action.payload.state,

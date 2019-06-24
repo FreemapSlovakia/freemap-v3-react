@@ -21,7 +21,7 @@ const initialState = {
   user: null,
 };
 
-export default createReducer<IAuthState, RootAction>(initialState)
+export const authReducer = createReducer<IAuthState, RootAction>(initialState)
   .handleAction(authSetUser, (state, action) => ({
     ...state,
     user: action.payload && {

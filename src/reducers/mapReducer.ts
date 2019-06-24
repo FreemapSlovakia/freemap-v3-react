@@ -33,7 +33,7 @@ const initialState: IMapState = {
   removeGalleryOverlayOnGalleryToolQuit: false,
 };
 
-export default createReducer<IMapState, RootAction>(initialState)
+export const mapReducer = createReducer<IMapState, RootAction>(initialState)
   .handleAction(mapLoadState, (state, action) => {
     // TODO improve validation
 

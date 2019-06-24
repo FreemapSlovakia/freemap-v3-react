@@ -12,7 +12,7 @@ import { RootAction } from 'fm3/actions';
 
 let reopenTs;
 
-const mw: Middleware<{}, any, Dispatch<RootAction>> = ({
+export const trackingMiddleware: Middleware<{}, any, Dispatch<RootAction>> = ({
   dispatch,
   getState,
 }) => next => action => {
@@ -110,5 +110,3 @@ function mangle(td) {
     ...rest,
   };
 }
-
-export default mw;

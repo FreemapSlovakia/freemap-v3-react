@@ -47,7 +47,9 @@ const initialState: ITrackViewerState = {
   eleSmoothingFactor: undefined,
 };
 
-export default createReducer<ITrackViewerState, RootAction>(initialState)
+export const trackViewerReducer = createReducer<ITrackViewerState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
   .handleAction(trackViewerLoadState, (state, action) => {
     const s = { ...state };

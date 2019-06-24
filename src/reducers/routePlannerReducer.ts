@@ -60,7 +60,10 @@ const initialState: IRoutePlannerState = {
   ...clearResult,
 };
 
-export default createReducer<IRoutePlannerState, RootAction>(initialState)
+export const routePlannerReducer = createReducer<
+  IRoutePlannerState,
+  RootAction
+>(initialState)
   .handleAction(setTool, state => ({
     ...state,
     pickMode: !state.start ? 'start' : 'finish',

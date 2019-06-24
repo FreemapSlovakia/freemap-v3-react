@@ -15,7 +15,7 @@ const initialState: IL10nState = {
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
 
-export default createReducer<IL10nState, RootAction>(initialState)
+export const l10nReducer = createReducer<IL10nState, RootAction>(initialState)
   .handleAction(l10nSetChosenLanguage, (state, action) => ({
     ...state,
     chosenLanguage: action.payload,

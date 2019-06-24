@@ -18,9 +18,10 @@ const initialState: IDistanceMeasurementState = {
   points: [],
 };
 
-export default createReducer<IDistanceMeasurementState, RootAction>(
-  initialState,
-)
+export const distanceMeasurementReducer = createReducer<
+  IDistanceMeasurementState,
+  RootAction
+>(initialState)
   .handleAction(clearMap, () => initialState)
   .handleAction(distanceMeasurementAddPoint, (state, action) =>
     produce(state, draft => {

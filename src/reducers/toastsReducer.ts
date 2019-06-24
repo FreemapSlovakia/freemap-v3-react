@@ -15,7 +15,9 @@ const initialState: IToastsState = {
   toasts: [],
 };
 
-export default createReducer<IToastsState, RootAction>(initialState)
+export const toastsReducer = createReducer<IToastsState, RootAction>(
+  initialState,
+)
   .handleAction(toastsAdd, (state, action) => {
     const { collapseKey } = action.payload;
     if (collapseKey) {
