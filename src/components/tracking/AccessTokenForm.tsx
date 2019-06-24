@@ -11,18 +11,17 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import DateTime from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
-import { IAccessToken, IAccessTokenBase } from 'fm3/types/trackingTypes';
+import { IAccessTokenBase } from 'fm3/types/trackingTypes';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-interface Props {
-  onCancel: () => void;
-  onSave: (at: IAccessTokenBase) => void;
-  accessToken: IAccessToken;
-  deviceName: string;
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const AccessTokenForm: React.FC<Props> = ({
   onSave,
@@ -48,7 +47,7 @@ const AccessTokenForm: React.FC<Props> = ({
     (accessToken && accessToken.listingLabel) || '',
   );
 
-  const handleSubmit = e => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onSave({
       note: note.trim() || null,
@@ -103,27 +102,32 @@ const AccessTokenForm: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  accessToken:
+    state.tracking.modifiedAccessTokenId &&
+    state.tracking.accessTokens.find(
+      accessToken => accessToken.id === state.tracking.modifiedAccessTokenId,
+    ),
+  deviceName: (
+    state.tracking.devices.find(
+      device => device.id === state.tracking.accessTokensDeviceId,
+    ) || { name: '???' }
+  ).name,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onCancel() {
+    dispatch(trackingActions.modifyAccessToken(undefined));
+  },
+  onSave(accessToken: IAccessTokenBase) {
+    dispatch(trackingActions.saveAccessToken(accessToken));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
-      accessToken:
-        state.tracking.modifiedAccessTokenId &&
-        state.tracking.accessTokens.find(
-          accessToken =>
-            accessToken.id === state.tracking.modifiedAccessTokenId,
-        ),
-      deviceName: state.tracking.devices.find(
-        device => device.id === state.tracking.accessTokensDeviceId,
-      ).name,
-    }),
-    dispatch => ({
-      onCancel() {
-        dispatch(trackingActions.modifyAccessToken(undefined));
-      },
-      onSave(accessToken) {
-        dispatch(trackingActions.saveAccessToken(accessToken));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(AccessTokenForm);

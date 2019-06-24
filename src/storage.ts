@@ -1,6 +1,6 @@
 import storage from 'local-storage-fallback';
 
-let s;
+let s: StorageFallback;
 
 try {
   if (!window.localStorage) {

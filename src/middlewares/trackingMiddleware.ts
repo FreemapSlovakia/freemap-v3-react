@@ -9,13 +9,15 @@ import { Middleware, Dispatch } from 'redux';
 import { getType } from 'typesafe-actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
 let reopenTs;
 
-export const trackingMiddleware: Middleware<{}, any, Dispatch<RootAction>> = ({
-  dispatch,
-  getState,
-}) => next => action => {
+export const trackingMiddleware: Middleware<
+  {},
+  RootState,
+  Dispatch<RootAction>
+> = ({ dispatch, getState }) => next => action => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

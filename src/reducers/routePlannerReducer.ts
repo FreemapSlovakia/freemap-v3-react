@@ -30,17 +30,21 @@ export type TransportType =
   | 'ski'
   | 'foot';
 
+export type RouteMode = 'trip' | 'roundtrip' | 'route';
+
+export type PickMode = 'start' | 'finish';
+
 export interface IRoutePlannerState {
   alternatives: any[];
   activeAlternativeIndex: number;
   timestamp: number | null;
   transportType: TransportType | null;
   start: LatLon | null;
-  midpoints: LatLon[];
+  midpoints: Array<LatLon | null>;
   finish: LatLon | null;
-  pickMode: 'start' | 'finish';
+  pickMode: PickMode;
   itineraryIsVisible: boolean;
-  mode: 'trip' | 'roundtrip' | 'route';
+  mode: RouteMode;
 }
 
 const clearResult = {

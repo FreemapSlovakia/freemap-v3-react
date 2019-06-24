@@ -1,6 +1,8 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
 
+export type ColorizingMode = 'elevation' | 'steepness';
+
 export const trackViewerSetData = createStandardAction(
   'TRACK_VIEWER_SET_TRACK_DATA',
 )<{
@@ -32,7 +34,7 @@ export const trackViewerLoadState = createStandardAction(
 
 export const trackViewerColorizeTrackBy = createStandardAction(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
-)<'elevation' | 'steepness'>();
+)<ColorizingMode | null>();
 
 export const trackViewerShowInfo = createAction('TRACK_VIEWER_SHOW_INFO');
 

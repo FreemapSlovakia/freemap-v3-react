@@ -3,7 +3,7 @@ import { createStandardAction, createAction } from 'typesafe-actions';
 export interface IInfoPoint {
   lat: number;
   lon: number;
-  label: string;
+  label?: string;
 }
 
 export const infoPointAdd = createStandardAction('INFO_POINT_ADD')<

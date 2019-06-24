@@ -1,7 +1,9 @@
+import { Location } from 'history';
+
 // it's amazing that old freemap is using at least three different url param formats
 
 // either freemap.sk/#m=T,p=48.21836|17.4166|16|T or freemap.sk/?m=A&p=48.1855|17.4029|14
-export function getTrasformedParamsIfIsOldFreemapUrl(location) {
+export function getTrasformedParamsIfIsOldFreemapUrl(location: Location) {
   const isFromOldFreemapUrlFormat1 =
     location.hash &&
     (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
@@ -33,7 +35,9 @@ export function getTrasformedParamsIfIsOldFreemapUrl(location) {
 
 // http://embedded.freemap.sk/?lon=19.35&lat=48.55&zoom=8&marker=1&layers=A
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
-export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location) {
+export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
+  location: Location,
+) {
   if (
     location.search &&
     (location.search.indexOf('marker=1') >= 0 ||
@@ -65,7 +69,10 @@ export function getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location) {
   return false;
 }
 
-function rawUrlParamsToHash(rawParams, separator) {
+function rawUrlParamsToHash(
+  rawParams: string,
+  separator: string,
+): { [key: string]: string } {
   const oldFreemapRawUrlParams = rawParams.substring(1).split(separator);
   const oldFreemapUrlParams = {};
   oldFreemapRawUrlParams.forEach(s => {

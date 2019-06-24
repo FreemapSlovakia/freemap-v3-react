@@ -1,7 +1,8 @@
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import { RootState } from './storeCreator';
 
-export function getAxios(expectedStatus) {
-  const cfg = {
+export function getAxios(expectedStatus?: number) {
+  const cfg: AxiosRequestConfig = {
     baseURL: process.env.API_URL,
   };
 
@@ -12,7 +13,10 @@ export function getAxios(expectedStatus) {
   return axios.create(cfg);
 }
 
-export function getAuthAxios(getState, expectedStatus) {
+export function getAuthAxios(
+  getState: () => RootState,
+  expectedStatus?: number,
+) {
   const instance = getAxios(expectedStatus);
 
   instance.interceptors.request.use(cfg => {
@@ -31,13 +35,13 @@ export function getAuthAxios(getState, expectedStatus) {
   return instance;
 }
 
-function createValidateStatus(expectedStatus = 200) {
+function createValidateStatus(expectedStatus: number | number[] = 200) {
   if (typeof expectedStatus === 'number') {
-    return status => status === expectedStatus;
+    return (status: number) => status === expectedStatus;
   }
 
   if (Array.isArray(expectedStatus)) {
-    return status => expectedStatus.includes(status);
+    return (status: number) => expectedStatus.includes(status);
   }
 
   if (typeof expectedStatus === 'function') {

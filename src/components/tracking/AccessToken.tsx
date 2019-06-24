@@ -7,15 +7,22 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { IAccessToken } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch, bindActionCreators } from 'redux';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-interface Props {
-  onDelete: (id: number) => void;
-  onModify: (id: number) => void;
-  language: string;
-  accessToken: IAccessToken;
-  t: Translator;
-}
+// interface Props {
+//   onDelete: (id: number) => void;
+//   onModify: (id: number) => void;
+//   accessToken: IAccessToken;
+// }
+
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    language: string;
+    t: Translator;
+    accessToken: IAccessToken;
+  };
 
 const AccessToken: React.FC<Props> = ({
   onDelete,
@@ -81,19 +88,23 @@ const AccessToken: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) =>
+  bindActionCreators(
+    {
+      onModify: trackingActions.modifyAccessToken,
+      onDelete: trackingActions.deleteAccessToken,
+    },
+    dispatch,
+  );
+
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onModify(id) {
-        dispatch(trackingActions.modifyAccessToken(id));
-      },
-      onDelete(id) {
-        dispatch(trackingActions.deleteAccessToken(id));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(AccessToken);

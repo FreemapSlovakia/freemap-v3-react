@@ -4,6 +4,7 @@ import {
   IDevice,
   IAccessToken,
   IEditedDevice,
+  IAccessTokenBase,
 } from 'fm3/types/trackingTypes';
 
 export const trackingActions = {
@@ -48,7 +49,7 @@ export const trackingActions = {
   >(),
 
   saveAccessToken: createStandardAction('TRACKING_SAVE_ACCESS_TOKEN')<
-    IAccessToken
+    IAccessTokenBase
   >(),
 
   loadAccessTokens: createStandardAction('TRACKING_LOAD_ACCESS_TOKENS')<void>(),

@@ -1,6 +1,6 @@
 import qs from 'query-string';
 import axios from 'axios';
-import history from 'fm3/history';
+import history from 'fm3/historyHolder';
 
 import {
   setHomeLocation,
@@ -12,14 +12,24 @@ import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import storage from 'fm3/storage';
+import { MyStore } from './storeCreator';
+import { IUser } from './types/common';
 
-export default function initAuthHelper(store) {
+export default function initAuthHelper(store: MyStore) {
   try {
-    store.dispatch(authSetUser(JSON.parse(storage.getItem('user'))));
+    store.dispatch(authSetUser(JSON.parse(storage.getItem('user') || '')));
   } catch (e) {
     const authToken = storage.getItem('authToken'); // for compatibility
     if (authToken) {
-      store.dispatch(authSetUser({ authToken, name: '...' }));
+      store.dispatch(
+        authSetUser({
+          authToken,
+          name: '...',
+          email: '...',
+          id: -1,
+          isAdmin: false,
+        }),
+      );
     }
   } finally {
     storage.removeItem('authToken'); // for compatibility
@@ -35,7 +45,7 @@ export default function initAuthHelper(store) {
   setupOsmLoginStep2Listener(store);
 }
 
-function setupOsmLoginStep2Listener(store) {
+function setupOsmLoginStep2Listener(store: MyStore) {
   window.addEventListener('message', e => {
     /* eslint-disable no-underscore-dangle */
 
@@ -87,7 +97,7 @@ function setupOsmLoginStep2Listener(store) {
   });
 }
 
-function verifyUser(store, user) {
+function verifyUser(store: MyStore, user: IUser) {
   const pid = Math.random();
   store.dispatch(startProgress(pid));
   axios({
@@ -111,7 +121,7 @@ function verifyUser(store, user) {
     });
 }
 
-function handleTips(store) {
+function handleTips(store: MyStore) {
   const embedded = window.self !== window.top;
 
   // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'
@@ -120,7 +130,7 @@ function handleTips(store) {
     history.location.search
       .substring(1)
       .split('&')
-      .every(x => /^(map|layers)=|^$/.test(x))
+      .every((x: string) => /^(map|layers)=|^$/.test(x))
   ) {
     if (!store.getState().auth.user) {
       store.dispatch(

@@ -3,6 +3,17 @@ import { LatLon } from 'fm3/types/common';
 
 interface IPicture {}
 
+export interface IGalleryFilter {
+  tag?: string;
+  userId?: number;
+  takenAtFrom?: Date;
+  takenAtTo?: Date;
+  createdAtFrom?: Date;
+  createdAtTo?: Date;
+  ratingFrom?: number;
+  ratingTo?: number;
+}
+
 export const galleryRequestImages = createStandardAction(
   'GALLERY_REQUEST_IMAGES',
 )<LatLon>();
@@ -97,16 +108,9 @@ export const galleryShowUploadModal = createAction('GALLERY_SHOW_UPLOAD_MODAL');
 
 export const galleryHideUploadModal = createAction('GALLERY_HIDE_UPLOAD_MODAL');
 
-export const gallerySetFilter = createStandardAction('GALLERY_SET_FILTER')<{
-  tag?: string;
-  userId?: number;
-  takenAtFrom?: Date;
-  takenAtTo?: Date;
-  createdAtFrom?: Date;
-  createdAtTo?: Date;
-  ratingFrom?: number;
-  ratingTo?: number;
-}>();
+export const gallerySetFilter = createStandardAction('GALLERY_SET_FILTER')<
+  IGalleryFilter
+>();
 
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE');
 

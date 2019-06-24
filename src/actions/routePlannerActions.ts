@@ -1,6 +1,6 @@
 import { LatLon } from 'fm3/types/common';
 import { createStandardAction, createAction } from 'typesafe-actions';
-import { TransportType } from 'fm3/reducers/routePlannerReducer';
+import { TransportType, RouteMode } from 'fm3/reducers/routePlannerReducer';
 
 export const routePlannerSetStart = createStandardAction(
   'ROUTE_PLANNER_SET_START',
@@ -49,11 +49,11 @@ export const routePlannerToggleItineraryVisibility = createAction(
 export const routePlannerSetParams = createStandardAction(
   'ROUTE_PLANNER_SET_PARAMS',
 )<{
-  start: LatLon;
-  finish: LatLon;
-  midpoints: LatLon[];
-  transportType: TransportType;
-  mode: 'trip' | 'roundtrip';
+  start: LatLon | null;
+  finish: LatLon | null;
+  midpoints: Array<LatLon | null>;
+  transportType: TransportType | null;
+  mode?: RouteMode | null;
 }>();
 
 export const routePlannerPreventHint = createAction(

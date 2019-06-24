@@ -1,4 +1,4 @@
-export function toDatetimeLocal(date) {
+export function toDatetimeLocal(date: Date): string {
   const ten = i => (i < 10 ? '0' : '') + i;
   const YYYY = date.getFullYear();
   const MM = ten(date.getMonth() + 1);

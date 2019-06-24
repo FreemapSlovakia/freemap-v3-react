@@ -1,4 +1,5 @@
 import { createStandardAction } from 'typesafe-actions';
+import { LatLon } from 'fm3/types/common';
 
 export const elevationMeasurementSetElevation = createStandardAction(
   'ELEVATION_MEASUREMENT_SET_ELEVATION',
@@ -6,4 +7,4 @@ export const elevationMeasurementSetElevation = createStandardAction(
 
 export const elevationMeasurementSetPoint = createStandardAction(
   'ELEVATION_MEASUREMENT_SET_POINT',
-)<{ lat: number; lon: number }>();
+)<LatLon | null>();

@@ -19,6 +19,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerColorizeTrackBy,
   trackViewerGpxLoad,
+  ColorizingMode,
 } from 'fm3/actions/trackViewerActions';
 import {
   osmLoadNode,
@@ -39,6 +40,7 @@ import {
   galleryClear,
   galleryHideFilter,
   galleryHideUploadModal,
+  IGalleryFilter,
 } from 'fm3/actions/galleryActions';
 import {
   changesetsSetDays,
@@ -51,13 +53,18 @@ import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementAc
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
+import { RootAction } from './actions';
+import { TransportType } from './reducers/routePlannerReducer';
+import { MyStore } from './storeCreator';
+import { Location } from 'history';
+import { ITrackedDevice } from './types/trackingTypes';
 
 const tipKeys = tips.map(([key]) => key);
 
-export default function handleLocationChange(store, location) {
+export const handleLocationChange = (store: MyStore, location: Location) => {
   const { getState, dispatch: dispatch0 } = store;
 
-  const dispatch = action => {
+  const dispatch = (action: RootAction & { meta?: any }) => {
     dispatch0({
       ...action,
       meta: { ...(action.meta || {}), isLocationChange: true },
@@ -67,21 +74,23 @@ export default function handleLocationChange(store, location) {
   const query = queryString.parse(location.search);
 
   {
-    const points = query.points
-      ? query.points
-          .split(',')
-          .map(point =>
-            point ? point.split('/').map(coord => parseFloat(coord)) : null,
-          )
-      : [];
+    const points =
+      typeof query.points === 'string'
+        ? query.points
+            .split(',')
+            .map(point =>
+              point ? point.split('/').map(coord => parseFloat(coord)) : null,
+            )
+        : [];
     const pointsOk =
-      points.length &&
+      points.length > 0 &&
       points.every(
         (point, i) => point !== null || (i === 0 || i === points.length - 1),
       );
     // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
     if (
+      typeof query.transport === 'string' &&
       /^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(
         query.transport,
       ) &&
@@ -114,15 +123,17 @@ export default function handleLocationChange(store, location) {
         ) ||
         (mode === 'route' ? undefined : mode) !== query['route-mode']
       ) {
+        const routeMode = query['route-mode'];
         dispatch(
           routePlannerSetParams({
             start: nextStart,
             finish: nextFinish,
             midpoints: nextMidpoints,
-            transportType: query.transport,
-            mode: ['trip', 'roundtrip'].includes(query['route-mode'])
-              ? query['route-mode']
-              : 'route',
+            transportType: query.transport as TransportType,
+            mode:
+              routeMode === 'trip' || routeMode === 'roundtrip'
+                ? routeMode
+                : 'route',
           }),
         );
       }
@@ -131,29 +142,33 @@ export default function handleLocationChange(store, location) {
       getState().routePlanner.finish
     ) {
       dispatch(
-        routePlannerSetParams(
-          null,
-          null,
-          [],
-          getState().routePlanner.transportType,
-        ),
+        routePlannerSetParams({
+          start: null,
+          finish: null,
+          midpoints: [],
+          transportType: getState().routePlanner.transportType,
+        }),
       );
     }
   }
 
-  if (getState().main.tool !== (query.tool || null)) {
-    dispatch(setTool(query.tool || null));
+  const tool = query.tool && typeof query.tool === 'string' ? query.tool : null;
+  if (getState().main.tool !== tool) {
+    dispatch(setTool(tool));
   }
 
   const trackUID = query['track-uid'];
-  if (trackUID && getState().trackViewer.trackUID !== trackUID) {
+  if (
+    typeof trackUID === 'string' &&
+    getState().trackViewer.trackUID !== trackUID
+  ) {
     dispatch(trackViewerDownloadTrack(trackUID));
   }
 
   const colorizeTrackBy = query['track-colorize-by'];
-  if (colorizeTrackBy) {
+  if (typeof colorizeTrackBy === 'string') {
     if (getState().trackViewer.colorizeTrackBy !== colorizeTrackBy) {
-      dispatch(trackViewerColorizeTrackBy(colorizeTrackBy));
+      dispatch(trackViewerColorizeTrackBy(colorizeTrackBy as ColorizingMode));
     }
   } else if (getState().trackViewer.colorizeTrackBy) {
     dispatch(trackViewerColorizeTrackBy(null));
@@ -161,8 +176,9 @@ export default function handleLocationChange(store, location) {
 
   handleInfoPoint(getState, dispatch, query);
 
-  if (query['changesets-days']) {
-    const urlDays = parseInt(query['changesets-days'], 10);
+  const changesetsDay = query['changesets-days'];
+  if (typeof changesetsDay === 'string') {
+    const urlDays = parseInt(changesetsDay, 10);
     const reduxDays = getState().changesets.days;
     if (reduxDays !== urlDays) {
       dispatch(changesetsSetDays(urlDays));
@@ -170,7 +186,7 @@ export default function handleLocationChange(store, location) {
 
     const reduxAuthor = getState().changesets.authorName;
     const urlAuthor = query['changesets-author'];
-    if (urlAuthor && reduxAuthor !== urlAuthor) {
+    if (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor) {
       // we need timeout otherwise map bounds can't be read
       setTimeout(() => {
         dispatch(changesetsSetAuthorName(urlAuthor));
@@ -184,7 +200,7 @@ export default function handleLocationChange(store, location) {
 
   ['distance', 'area'].forEach(type => {
     const pq = query[`${type}-measurement-points`];
-    if (pq) {
+    if (typeof pq === 'string') {
       const measurePoints = pq
         .split(',')
         .map(point => point.split('/').map(coord => parseFloat(coord)))
@@ -214,9 +230,10 @@ export default function handleLocationChange(store, location) {
     }
   });
 
-  const emMatch = /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(
-    query['elevation-measurement-point'] || '',
-  );
+  const elvMeasPoint = query['elevation-measurement-point'];
+  const emMatch =
+    typeof elvMeasPoint === 'string' &&
+    /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(elvMeasPoint);
   if (emMatch) {
     const point = { lat: parseFloat(emMatch[1]), lon: parseFloat(emMatch[2]) };
     if (
@@ -229,17 +246,15 @@ export default function handleLocationChange(store, location) {
     dispatch(elevationMeasurementSetPoint(null));
   }
 
-  if (getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location)) {
-    const { lat, lon } = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+  const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+  if (transformed) {
+    const { lat, lon } = transformed;
     dispatch(infoPointAdd({ lat, lon }));
   }
 
-  if (getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location)) {
-    const {
-      lat,
-      lon,
-      label,
-    } = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
+  const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
+  if (f2) {
+    const { lat, lon, label } = f2;
     dispatch(infoPointAdd({ lat, lon }));
     if (label) {
       dispatch(infoPointChangeLabel(label));
@@ -247,11 +262,12 @@ export default function handleLocationChange(store, location) {
   }
 
   const gpxUrl = query['gpx-url'] || query.load; /* backward compatibility */
-  if (gpxUrl && gpxUrl !== getState().trackViewer.gpxUrl) {
+  if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
 
-  const osmNodeId = parseInt(query['osm-node'], 10);
+  const osmNode = query['osm-node'];
+  const osmNodeId = typeof osmNode === 'string' && parseInt(osmNode, 10);
   if (osmNodeId) {
     if (osmNodeId !== getState().trackViewer.osmNodeId) {
       dispatch(osmLoadNode(osmNodeId));
@@ -260,7 +276,8 @@ export default function handleLocationChange(store, location) {
     dispatch(osmClear());
   }
 
-  const osmWayId = parseInt(query['osm-way'], 10);
+  const osmWay = query['osm-way'];
+  const osmWayId = typeof osmWay === 'string' && parseInt(osmWay, 10);
   if (osmWayId) {
     if (osmWayId !== getState().trackViewer.osmWayId) {
       dispatch(osmLoadWay(osmWayId));
@@ -269,7 +286,9 @@ export default function handleLocationChange(store, location) {
     dispatch(osmClear());
   }
 
-  const osmRelationId = parseInt(query['osm-relation'], 10);
+  const osmRelation = query['osm-relation'];
+  const osmRelationId =
+    typeof osmRelation === 'string' && parseInt(osmRelation, 10);
   if (osmRelationId) {
     if (osmRelationId !== getState().trackViewer.osmRelationId) {
       dispatch(osmLoadRelation(osmRelationId));
@@ -288,15 +307,19 @@ export default function handleLocationChange(store, location) {
     dispatch(mapRefocus(diff));
   }
 
-  if (refModals.includes(query.show)) {
-    if (query.show !== getState().main.activeModal) {
+  const activeModal = getState().main.activeModal;
+  if (typeof query.show === 'string' && refModals.includes(query.show)) {
+    if (query.show !== activeModal) {
       dispatch(setActiveModal(query.show));
     }
-  } else if (refModals.includes(getState().main.activeModal)) {
+  } else if (
+    typeof activeModal === 'string' &&
+    refModals.includes(activeModal)
+  ) {
     dispatch(setActiveModal(null));
   }
 
-  if (tipKeys.includes(query.tip)) {
+  if (typeof query.tip === 'string' && tipKeys.includes(query.tip)) {
     if (
       getState().main.activeModal !== 'tips' ||
       getState().tips.tip !== query.tip
@@ -318,26 +341,28 @@ export default function handleLocationChange(store, location) {
   if ((query.embed || '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
-        !query.embed || query.embed === '' ? [] : query.embed.split(','),
+        !query.embed || typeof query.embed !== 'string'
+          ? []
+          : query.embed.split(','),
       ),
     );
   }
 
   const { track } = query;
   const trackings = !track ? [] : Array.isArray(track) ? track : [track];
-  const parsed = [];
+  const parsed: ITrackedDevice[] = [];
 
   for (const tracking of trackings) {
     const [id0, ...parts] = tracking.split('/');
     let id = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
-    let fromTime = null;
-    let maxAge = null;
-    let maxCount = null;
-    let label = null;
-    let color = null;
-    let width = null;
-    let splitDistance = null;
-    let splitDuration = null;
+    let fromTime: Date | null = null;
+    let maxAge: number | null = null;
+    let maxCount: number | null = null;
+    let label: string | null = null;
+    let color: string | null = null;
+    let width: number | null = null;
+    let splitDistance: number | null = null;
+    let splitDuration: number | null = null;
 
     for (const part of parts) {
       const m = /^([a-z]+):(.+)/.exec(part);
@@ -402,13 +427,14 @@ export default function handleLocationChange(store, location) {
   }
 
   // eslint-disable-next-line
-  const follow = /^\d+$/.test(query.follow)
-    ? Number.parseInt(query.follow)
-    : query.follow;
-  if (activeTrackId != follow) {
-    dispatch(trackingActions.setActive(follow));
+  const fq = query.follow;
+  if (typeof fq === 'string') {
+    const follow = /^\d+$/.test(fq) ? Number.parseInt(fq) : fq;
+    if (activeTrackId != follow) {
+      dispatch(trackingActions.setActive(follow));
+    }
   }
-}
+};
 
 // TODO use some generic deep compare fn
 function trackedDevicesEquals(td1, td2) {
@@ -442,7 +468,7 @@ function handleGallery(getState, dispatch, query) {
     !Number.isNaN(qCreatedAtTo.getTime())
   ) {
     const { filter } = getState().gallery;
-    const newFilter = {};
+    const newFilter: IGalleryFilter = {};
     if (qUserId && filter.userId !== qUserId) {
       newFilter.userId = qUserId;
     }
@@ -528,9 +554,9 @@ function handleInfoPoint(getState, dispatch, query) {
     .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?),?(.*)$/.exec(ip))
     .filter(ipMatch => ipMatch)
     .map(ipMatch => ({
-      lat: parseFloat(ipMatch[1]),
-      lon: parseFloat(ipMatch[2]),
-      label: ipMatch[3] ? decodeURIComponent(ipMatch[3]) : '',
+      lat: parseFloat(ipMatch![1]),
+      lon: parseFloat(ipMatch![2]),
+      label: ipMatch![3] ? decodeURIComponent(ipMatch![3]) : '',
     }));
 
   // backward compatibility

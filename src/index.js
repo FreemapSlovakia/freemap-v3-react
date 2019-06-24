@@ -21,8 +21,8 @@ import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import history from 'fm3/history';
-import handleLocationChange from 'fm3/locationChangeHandler';
+import history from 'fm3/historyHolder';
+import { handleLocationChange } from 'fm3/locationChangeHandler';
 import initAuthHelper from 'fm3/authHelper';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';

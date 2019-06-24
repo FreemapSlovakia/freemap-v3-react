@@ -29,6 +29,7 @@ import {
   galleryShowOnTheMap,
   galleryCancelShowOnTheMap,
   galleryToggleShowPreview,
+  IGalleryFilter,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 
@@ -50,16 +51,7 @@ export interface IGalleryState {
   dirtySeq: number;
   comment: string;
   showFilter: boolean;
-  filter: {
-    tag?: string;
-    userId?: number;
-    takenAtFrom?: Date;
-    takenAtTo?: Date;
-    createdAtFrom?: Date;
-    createdAtTo?: Date;
-    ratingFrom?: number;
-    ratingTo?: number;
-  };
+  filter: IGalleryFilter;
   editModel: any;
   showPosition: boolean;
 }

@@ -1,4 +1,4 @@
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore, applyMiddleware, combineReducers, Store } from 'redux';
 import { logicMiddleware } from 'fm3/middlewares/logicMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
@@ -25,11 +25,13 @@ import { toastsReducer } from './reducers/toastsReducer';
 import { trackingReducer } from './reducers/trackingReducer';
 import { trackViewerReducer } from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
+import { StateType } from 'typesafe-actions';
+import { RootAction } from './actions';
 
-const rootReducer = combineReducers({
+const reducers = {
   areaMeasurement: areaMeasurementReducer,
   auth: authReducer,
-  changeset: changesetReducer,
+  changesets: changesetReducer,
   distanceMeasurement: distanceMeasurementReducer,
   elevationChart: elevationChartReducer,
   elevationMeasurement: elevationMeasurementReducer,
@@ -47,7 +49,11 @@ const rootReducer = combineReducers({
   tracking: trackingReducer,
   trackViewer: trackViewerReducer,
   websocket: websocketReducer,
-});
+};
+
+const rootReducer = combineReducers(reducers);
+
+export type RootState = StateType<typeof rootReducer>;
 
 export default function createReduxStore() {
   const store = createStore(
@@ -66,3 +72,5 @@ export default function createReduxStore() {
 
   return store;
 }
+
+export type MyStore = Store<RootState, RootAction>;
