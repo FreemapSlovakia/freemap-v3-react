@@ -97,11 +97,24 @@ export const mapReducer = createReducer<IMapState, RootAction>(initialState)
   }))
   .handleAction(mapRefocus, (state, action) => {
     const newState: IMapState = { ...state };
-    ['zoom', 'lat', 'lon', 'mapType', 'overlays'].forEach(prop => {
-      if (prop in action.payload) {
-        newState[prop] = action.payload[prop];
-      }
-    });
+    const { zoom, lat, lon, mapType, overlays } = action.payload;
+
+    if (zoom) {
+      newState.zoom = zoom;
+    }
+    if (lat) {
+      newState.lat = lat;
+    }
+    if (lon) {
+      newState.lon = lon;
+    }
+    if (mapType) {
+      newState.mapType = mapType;
+    }
+    if (overlays) {
+      newState.overlays = overlays;
+    }
+
     return newState;
   })
   .handleAction(authSetUser, (state, action) => {

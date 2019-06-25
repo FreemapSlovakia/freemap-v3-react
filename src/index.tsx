@@ -44,7 +44,7 @@ setStore(store);
 
 const { location } = history;
 
-loadAppState(store);
+loadAppState();
 
 history.listen(handleLocationChange.bind(undefined, store));
 handleLocationChange(store, location);
@@ -92,10 +92,13 @@ if (process.env.NODE_ENV) {
 
 function loadAppState() {
   let appState;
-  try {
-    appState = JSON.parse(storage.getItem('appState'));
-  } catch (e) {
-    // ignore
+  const as = storage.getItem('appState');
+  if (as) {
+    try {
+      appState = JSON.parse(as);
+    } catch (e) {
+      // ignore
+    }
   }
 
   if (appState) {

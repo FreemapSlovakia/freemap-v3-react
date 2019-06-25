@@ -5,11 +5,15 @@ import {
   getTrasformedParamsIfIsOldFreemapUrl,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
+import { Location } from 'history';
+import { IMapViewState } from './actions/mapActions';
 
 const baseLetters = baseLayers.map(({ type }) => type);
 const overlayLetters = overlayLayers.map(({ type }) => type);
 
-export function getMapStateFromUrl(location) {
+export function getMapStateFromUrl(
+  location: Location,
+): Partial<IMapViewState> & Pick<IMapViewState, 'overlays'> {
   {
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
       location,
@@ -28,13 +32,16 @@ export function getMapStateFromUrl(location) {
 
   const query = queryString.parse(location.search);
 
-  const [zoomFrag, latFrag, lonFrag] = (query.map || '').split('/');
+  const [zoomFrag, latFrag, lonFrag] = (typeof query.map === 'string'
+    ? query.map
+    : ''
+  ).split('/');
 
   const lat = undefineNaN(parseFloat(latFrag));
   const lon = undefineNaN(parseFloat(lonFrag));
   const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
-  const layers = query.layers || '';
+  const layers = typeof query.layers === 'string' ? query.layers : '';
 
   const base = layers.charAt(0);
   const mapType = baseLetters.includes(base) ? base : undefined;
@@ -44,17 +51,23 @@ export function getMapStateFromUrl(location) {
   return { lat, lon, zoom, mapType, overlays };
 }
 
-function undefineNaN(val) {
+function undefineNaN(val: number) {
   return Number.isNaN(val) ? undefined : val;
 }
 
-export function getMapStateDiffFromUrl(state1, state2) {
+export function getMapStateDiffFromUrl(
+  state1:
+    | Partial<IMapViewState> & Pick<IMapViewState, 'overlays'>
+    | null
+    | undefined,
+  state2: IMapViewState,
+) {
   if (!state1 || !state2) {
     return null;
   }
 
   const { lat, lon, zoom, mapType, overlays = [] } = state1;
-  const changes = {};
+  const changes: Partial<IMapViewState> = {};
 
   if (mapType && mapType !== state2.mapType) {
     changes.mapType = mapType;

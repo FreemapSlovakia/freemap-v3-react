@@ -16,12 +16,15 @@ export const mapReset = createAction('MAP_RESET');
 //   return { type: at.MAP_REFOCUS, payload: { ...changes } };
 // }
 
-export interface IMapStateBase {
+export interface IMapViewState {
   mapType: string;
   lat: number;
   lon: number;
   zoom: number;
   overlays: string[];
+}
+
+export interface IMapStateBase extends IMapViewState {
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
   tileFormat: 'jpeg' | 'png';
@@ -32,7 +35,7 @@ export const mapRefocus = createStandardAction('MAP_REFOCUS')<{
   lat?: number;
   lon?: number;
   mapType?: string;
-  overlays?: string;
+  overlays?: string[];
 }>();
 
 export const mapSetTileFormat = createStandardAction('MAP_SET_TILE_FORMAT')<

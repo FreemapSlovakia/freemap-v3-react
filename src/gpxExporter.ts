@@ -1,6 +1,11 @@
 export const GPX_NS = 'http://www.topografix.com/GPX/1/1';
 
-export function createElement(parent, name, text, attributes = {}) {
+export function createElement(
+  parent: Element,
+  name: string,
+  text: string | undefined | null,
+  attributes: { [key: string]: string } = {},
+) {
   const elem = document.createElementNS(GPX_NS, name);
   if (text !== undefined) {
     elem.textContent = text;
@@ -14,7 +19,7 @@ export function createElement(parent, name, text, attributes = {}) {
   return elem;
 }
 
-export function addAttribute(elem, name, value) {
+export function addAttribute(elem: Element, name: string, value: string) {
   const attr = document.createAttribute(name);
   attr.value = value;
   elem.setAttributeNode(attr);
