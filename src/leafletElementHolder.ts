@@ -1,11 +1,11 @@
-import { Evented } from 'leaflet';
+import { Map } from 'leaflet';
 
-let mapLeafletElement: Evented | null = null;
+let mapLeafletElement: Map | null = null;
 
-export function setMapLeafletElement(e: Evented | null) {
+export function setMapLeafletElement(e: Map | null) {
   mapLeafletElement = e;
 }
 
-export function getMapLeafletElement(): Evented | null {
+export function getMapLeafletElement(): Map | null {
   return mapLeafletElement;
 }

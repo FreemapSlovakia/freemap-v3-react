@@ -6,7 +6,7 @@ export type ColorizingMode = 'elevation' | 'steepness';
 export const trackViewerSetData = createStandardAction(
   'TRACK_VIEWER_SET_TRACK_DATA',
 )<{
-  trackGpx: object;
+  trackGpx?: object;
   trackGeojson: object;
   startPoints: LatLon[];
   finishPoints: LatLon[];

@@ -45,4 +45,4 @@ const actions = {
   trackViewer,
 };
 
-export type RootAction = ActionType<typeof actions>;
+export type RootAction = ActionType<typeof actions> & { meta?: any };
