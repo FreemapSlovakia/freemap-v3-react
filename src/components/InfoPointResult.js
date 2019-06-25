@@ -66,7 +66,7 @@ export default connect(
   }),
   dispatch => ({
     onInfoPointPositionChange(lat, lon) {
-      dispatch(infoPointChangePosition(lat, lon));
+      dispatch(infoPointChangePosition({ lat, lon }));
     },
     onSelect(index) {
       dispatch(infoPointSetActiveIndex(index));
