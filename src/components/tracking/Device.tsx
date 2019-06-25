@@ -10,17 +10,16 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { IDevice } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-interface Props {
-  onDelete: (id: number) => void;
-  onModify: (id: number) => void;
-  onShowAccessTokens: (id: number) => void;
-  onView: (id: number) => void;
-  language: string;
-  device: IDevice;
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    device: IDevice;
+    language: string;
+    t: Translator;
+  };
 
 const Device: React.FC<Props> = ({
   onDelete,
@@ -117,27 +116,31 @@ const Device: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onModify(id: number | null | undefined) {
+    dispatch(trackingActions.modifyDevice(id));
+  },
+  onDelete(id: number) {
+    dispatch(trackingActions.deleteDevice(id));
+  },
+  onShowAccessTokens(id: number | null | undefined) {
+    dispatch(trackingActions.showAccessTokens(id));
+  },
+  onView(id: number) {
+    dispatch(trackingActions.view(id));
+    dispatch(trackingActions.setActive(id));
+    dispatch(setActiveModal(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onModify(id) {
-        dispatch(trackingActions.modifyDevice(id));
-      },
-      onDelete(id) {
-        dispatch(trackingActions.deleteDevice(id));
-      },
-      onShowAccessTokens(id) {
-        dispatch(trackingActions.showAccessTokens(id));
-      },
-      onView(id) {
-        dispatch(trackingActions.view(id));
-        dispatch(trackingActions.setActive(id));
-        dispatch(setActiveModal(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Device);

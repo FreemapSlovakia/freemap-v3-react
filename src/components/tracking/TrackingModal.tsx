@@ -10,6 +10,9 @@ import AccessTokens from './AccessTokens';
 import AccessTokenForm from './AccessTokenForm';
 import TrackedDevices from './TrackedDevices';
 import TrackedDeviceForm from './TrackedDeviceForm';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
 type Views =
   | 'devices'
@@ -43,8 +46,8 @@ const TrackingModal: React.FC<StateProps & DispatchProps> = ({
   );
 };
 
-export default connect<StateProps, DispatchProps, {}, any>(
-  state => ({
+export default connect(
+  (state: RootState) => ({
     devices: state.tracking.devices,
     view:
       state.main.activeModal === 'tracking-my'
@@ -59,7 +62,7 @@ export default connect<StateProps, DispatchProps, {}, any>(
         ? 'trackedDeviceForm'
         : 'trackedDevices',
   }),
-  dispatch => ({
+  (dispatch: Dispatch<RootAction>) => ({
     onClose() {
       dispatch(setActiveModal(null));
     },

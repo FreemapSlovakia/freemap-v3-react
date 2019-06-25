@@ -8,6 +8,8 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
 interface IProps {
   onModalClose: () => void;
@@ -95,7 +97,7 @@ export const AboutModal: React.FC<IProps> = ({ onModalClose }) => {
 
 export default connect(
   null,
-  dispatch => ({
+  (dispatch: Dispatch<RootAction>) => ({
     onModalClose() {
       dispatch(setActiveModal(null));
     },

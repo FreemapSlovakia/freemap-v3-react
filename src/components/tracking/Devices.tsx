@@ -12,7 +12,9 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import Device from './Device';
 import { IDevice } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
 interface Props {
   onOpen: () => void;
@@ -69,10 +71,10 @@ const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices, t }) => {
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
+    (state: RootState) => ({
       devices: state.tracking.devices,
     }),
-    dispatch => ({
+    (dispatch: Dispatch<RootAction>) => ({
       onOpen() {
         dispatch(trackingActions.loadDevices());
       },

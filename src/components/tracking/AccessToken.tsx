@@ -11,12 +11,6 @@ import { compose, Dispatch, bindActionCreators } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
-// interface Props {
-//   onDelete: (id: number) => void;
-//   onModify: (id: number) => void;
-//   accessToken: IAccessToken;
-// }
-
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     language: string;

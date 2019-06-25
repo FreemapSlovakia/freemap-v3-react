@@ -7,7 +7,9 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
 interface Props {
   onDelete: (id: string | number) => void;
@@ -86,14 +88,14 @@ const TrackedDevice: React.FC<Props> = ({
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
+    (state: RootState) => ({
       language: state.l10n.language,
     }),
-    dispatch => ({
-      onModify(id) {
+    (dispatch: Dispatch<RootAction>) => ({
+      onModify(id: string | number) {
         dispatch(trackingActions.modifyTrackedDevice(id));
       },
-      onDelete(id) {
+      onDelete(id: string | number) {
         dispatch(trackingActions.deleteTrackedDevice(id));
       },
     }),

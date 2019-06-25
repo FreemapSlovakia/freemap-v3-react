@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
@@ -10,11 +10,15 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+
+type Visual = 'line+points' | 'line' | 'points';
 
 interface Props {
   onTrackedDevicesClick: () => void;
   onMyDevicesClick: () => void;
-  onVisualChange: (visual: 'line+points' | 'line' | 'points') => void;
+  onVisualChange: (visual: Visual) => void;
   visual: string;
   t: Translator;
 }
@@ -74,7 +78,7 @@ const TrackingMenu: React.FC<Props> = ({
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
+    (state: RootState) => ({
       isActive: state.infoPoint.activeIndex !== null,
       visual:
         state.tracking.showLine && state.tracking.showPoints
@@ -85,14 +89,14 @@ export default compose(
           ? 'points'
           : '???',
     }),
-    dispatch => ({
+    (dispatch: Dispatch<RootAction>) => ({
       onMyDevicesClick() {
         dispatch(setActiveModal('tracking-my'));
       },
       onTrackedDevicesClick() {
         dispatch(setActiveModal('tracking-watched'));
       },
-      onVisualChange(visual) {
+      onVisualChange(visual: Visual) {
         switch (visual) {
           case 'line':
             dispatch(trackingActions.setShowPoints(false));

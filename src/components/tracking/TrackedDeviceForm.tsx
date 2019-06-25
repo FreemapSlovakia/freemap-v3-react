@@ -15,8 +15,10 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import { InputGroup } from 'react-bootstrap';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
 interface Props {
   onCancel: () => void;
@@ -189,18 +191,18 @@ const TrackedDeviceForm: React.FC<Props> = ({
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
+    (state: RootState) => ({
       device:
         state.tracking.modifiedTrackedDeviceId &&
         state.tracking.trackedDevices.find(
           device => device.id === state.tracking.modifiedTrackedDeviceId,
         ),
     }),
-    dispatch => ({
+    (dispatch: Dispatch<RootAction>) => ({
       onCancel() {
         dispatch(trackingActions.modifyTrackedDevice(undefined));
       },
-      onSave(device) {
+      onSave(device: ITrackedDevice) {
         dispatch(trackingActions.saveTrackedDevice(device));
       },
     }),

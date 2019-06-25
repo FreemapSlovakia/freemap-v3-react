@@ -9,6 +9,9 @@ import {
   TrackingPoint,
   tooltipText,
 } from 'fm3/components/tracking/TrackingPoint';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
 
 interface Props {
   tracks: ITrack[];
@@ -171,7 +174,7 @@ class TrackingResult extends React.Component<Props, State> {
 }
 
 export default connect(
-  (state: any) => {
+  (state: RootState) => {
     const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
     return {
       tracks: state.tracking.tracks.map(track => ({
@@ -184,8 +187,8 @@ export default connect(
       language: state.l10n.language,
     };
   },
-  dispatch => ({
-    onFocus(id) {
+  (dispatch: Dispatch<RootAction>) => ({
+    onFocus(id: string | number) {
       dispatch(trackingActions.setActive(id));
     },
   }),

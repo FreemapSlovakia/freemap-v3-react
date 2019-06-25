@@ -9,18 +9,16 @@ import Alert from 'react-bootstrap/lib/Alert';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import AccessToken from 'fm3/components/tracking/AccessToken';
-import { IAccessToken } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-interface Props {
-  onOpen: () => void;
-  onClose: () => void;
-  onAdd: () => void;
-  deviceName: string;
-  accessTokens: IAccessToken[];
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    language: string;
+    t: Translator;
+  };
 
 const AccessTokens: React.FC<Props> = ({
   onClose,
@@ -77,25 +75,31 @@ const AccessTokens: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  accessTokens: state.tracking.accessTokens,
+  deviceName: (
+    state.tracking.devices.find(
+      device => device.id === state.tracking.accessTokensDeviceId,
+    ) || { name: '???' }
+  ).name,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onOpen() {
+    dispatch(trackingActions.loadAccessTokens());
+  },
+  onClose() {
+    dispatch(trackingActions.showAccessTokens(undefined));
+  },
+  onAdd() {
+    dispatch(trackingActions.modifyAccessToken(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
-      accessTokens: state.tracking.accessTokens,
-      deviceName: state.tracking.devices.find(
-        device => device.id === state.tracking.accessTokensDeviceId,
-      ).name,
-    }),
-    dispatch => ({
-      onOpen() {
-        dispatch(trackingActions.loadAccessTokens());
-      },
-      onClose() {
-        dispatch(trackingActions.showAccessTokens(undefined));
-      },
-      onAdd() {
-        dispatch(trackingActions.modifyAccessToken(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(AccessTokens);

@@ -13,14 +13,14 @@ import { IEditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
 import { Checkbox } from 'react-bootstrap';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-interface Props {
-  onCancel: () => void;
-  onSave: (device: IEditedDevice) => void;
-  device: IEditedDevice;
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   const [name, setName] = useTextInputState((device && device.name) || '');
@@ -102,23 +102,27 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  device:
+    state.tracking.modifiedDeviceId &&
+    state.tracking.devices.find(
+      device => device.id === state.tracking.modifiedDeviceId,
+    ),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onCancel() {
+    dispatch(trackingActions.modifyDevice(undefined));
+  },
+  onSave(device: IEditedDevice) {
+    dispatch(trackingActions.saveDevice(device));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: any) => ({
-      device:
-        state.tracking.modifiedDeviceId &&
-        state.tracking.devices.find(
-          device => device.id === state.tracking.modifiedDeviceId,
-        ),
-    }),
-    dispatch => ({
-      onCancel() {
-        dispatch(trackingActions.modifyDevice(undefined));
-      },
-      onSave(device: IEditedDevice) {
-        dispatch(trackingActions.saveDevice(device));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(DeviceForm);
