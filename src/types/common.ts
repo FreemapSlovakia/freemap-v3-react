@@ -14,3 +14,9 @@ export interface IUser {
   lat?: number | null;
   lon?: number | null;
 }
+
+declare global {
+  interface Window {
+    ga: UniversalAnalytics.ga;
+  }
+}
