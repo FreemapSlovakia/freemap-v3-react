@@ -2,11 +2,14 @@ import {
   wsInvalidState,
   wsReceived,
   wsStateChanged,
+  wsOpen,
+  wsSend,
+  wsClose,
 } from 'fm3/actions/websocketActions';
-import * as at from 'fm3/actionTypes';
 import { Middleware, Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import { getType } from 'typesafe-actions';
 
 let ws: WebSocket | null = null;
 let restarter: number | null = null;
@@ -26,9 +29,9 @@ export const webSocketMiddleware: Middleware<
   {},
   RootState,
   Dispatch<RootAction>
-> = ({ dispatch, getState }) => next => action => {
+> = ({ dispatch, getState }) => next => (action: RootAction) => {
   switch (action.type) {
-    case at.WS_OPEN: {
+    case getType(wsOpen): {
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         dispatch(wsInvalidState(action.payload));
         return;
@@ -80,7 +83,7 @@ export const webSocketMiddleware: Middleware<
       });
       break;
     }
-    case at.WS_SEND:
+    case getType(wsSend):
       if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(action.payload.message));
       } else {
@@ -88,7 +91,7 @@ export const webSocketMiddleware: Middleware<
         return;
       }
       break;
-    case at.WS_CLOSE:
+    case getType(wsClose):
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
       } else {

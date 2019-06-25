@@ -1,15 +1,16 @@
 import axios from 'axios';
 import { setErrorTicketId } from 'fm3/actions/mainActions';
 import storage from 'fm3/storage';
+import { MyStore } from './storeCreator';
 
-let store;
+let store: MyStore;
 
-export function setStore(s) {
+export function setStore(s: MyStore) {
   store = s;
 }
 
 // eslint-disable-next-line
-Error.prototype.toJSON = function toJSON() {
+(Error.prototype as any).toJSON = function toJSON() {
   return {
     name: this.name,
     message: this.message,
@@ -39,7 +40,7 @@ export function sendError(errDetails) {
 
   const state = store && store.getState();
 
-  window.ga('send', 'event', 'Error', 'error', errDetails.kind);
+  ga('send', 'event', 'Error', 'error', errDetails.kind);
 
   axios
     .post(
@@ -76,7 +77,7 @@ export function sendError(errDetails) {
     );
 }
 
-function handle(id) {
+function handle(id: string) {
   if (store) {
     store.dispatch(setErrorTicketId(id));
   } else {

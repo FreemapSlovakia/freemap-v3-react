@@ -17,7 +17,7 @@ export const trackingMiddleware: Middleware<
   {},
   RootState,
   Dispatch<RootAction>
-> = ({ dispatch, getState }) => next => action => {
+> = ({ dispatch, getState }) => next => (action: RootAction) => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

@@ -1,8 +1,14 @@
-import * as at from 'fm3/actionTypes';
-import { wsSend, rpcResponse, rpcEvent } from 'fm3/actions/websocketActions';
+import {
+  wsSend,
+  rpcResponse,
+  rpcEvent,
+  rpcCall,
+  wsReceived,
+} from 'fm3/actions/websocketActions';
 import { Middleware, Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import { isActionOf } from 'typesafe-actions';
 
 // TODO implement timeout
 
@@ -18,7 +24,7 @@ let id = 0;
 export const rpcMiddleware: Middleware<{}, RootState, Dispatch<RootAction>> = ({
   dispatch,
   getState,
-}) => next => action => {
+}) => next => (action: RootAction) => {
   const oldState = getState().websocket.state;
 
   next(action);
@@ -40,7 +46,7 @@ export const rpcMiddleware: Middleware<{}, RootState, Dispatch<RootAction>> = ({
         );
       }
     }
-  } else if (action.type === at.RPC_CALL) {
+  } else if (isActionOf(rpcCall, action)) {
     id += 1;
 
     callMap.set(id, {
@@ -59,7 +65,7 @@ export const rpcMiddleware: Middleware<{}, RootState, Dispatch<RootAction>> = ({
         },
       }),
     );
-  } else if (action.type === at.WS_RECEIVED) {
+  } else if (isActionOf(wsReceived, action)) {
     let object;
 
     try {
