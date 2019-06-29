@@ -27,6 +27,8 @@ import { trackViewerReducer } from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
 import { StateType } from 'typesafe-actions';
 import { RootAction } from './actions';
+import { trackingDeviceMiddleware } from './middlewares/trackingDeviceMiddleware';
+import { trackingFollowMiddleware } from './middlewares/trackingFollowMiddleware';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -65,6 +67,8 @@ export default function createReduxStore() {
       logicMiddleware,
       rpcMiddleware,
       trackingMiddleware,
+      trackingDeviceMiddleware,
+      trackingFollowMiddleware,
     ),
   );
 
