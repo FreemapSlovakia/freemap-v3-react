@@ -18,7 +18,7 @@ export default createLogic({
       getAuthAxios(getState)
         .put(`/tracking/devices/${modifiedDeviceId}`, action.payload)
         .then(() => {
-          dispatch(trackingModifyDevice(undefined));
+          dispatch(trackingActions.trackingModifyDevice(undefined));
         })
         .catch(err => {
           dispatch(toastsAddError('tracking.savingError', err)); // TODO
