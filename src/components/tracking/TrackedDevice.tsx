@@ -11,13 +11,11 @@ import { compose, Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 
-interface Props {
-  onDelete: (id: string | number) => void;
-  onModify: (id: string | number) => void;
-  language: string;
-  device: ITrackedDevice;
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    device: ITrackedDevice;
+    t: Translator;
+  };
 
 const TrackedDevice: React.FC<Props> = ({
   onDelete,
@@ -85,19 +83,23 @@ const TrackedDevice: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onModify(id: string | number) {
+    dispatch(trackingActions.modifyTrackedDevice(id));
+  },
+  onDelete(id: string | number) {
+    dispatch(trackingActions.deleteTrackedDevice(id));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: RootState) => ({
-      language: state.l10n.language,
-    }),
-    (dispatch: Dispatch<RootAction>) => ({
-      onModify(id: string | number) {
-        dispatch(trackingActions.modifyTrackedDevice(id));
-      },
-      onDelete(id: string | number) {
-        dispatch(trackingActions.deleteTrackedDevice(id));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TrackedDevice);

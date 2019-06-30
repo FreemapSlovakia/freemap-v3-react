@@ -10,18 +10,15 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import TrackedDevice from './TrackedDevice';
-import { ITrackedDevice } from 'fm3/types/trackingTypes';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { compose, Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
-interface Props {
-  onClose: () => void;
-  onAdd: () => void;
-  devices: ITrackedDevice[];
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const TrackedDevices: React.FC<Props> = ({ onClose, onAdd, devices, t }) => (
   <>
@@ -64,19 +61,23 @@ const TrackedDevices: React.FC<Props> = ({ onClose, onAdd, devices, t }) => (
   </>
 );
 
+const mapStateToProps = (state: RootState) => ({
+  devices: state.tracking.trackedDevices,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onClose() {
+    dispatch(setActiveModal(null));
+  },
+  onAdd() {
+    dispatch(trackingActions.modifyTrackedDevice(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: RootState) => ({
-      devices: state.tracking.trackedDevices,
-    }),
-    (dispatch: Dispatch<RootAction>) => ({
-      onClose() {
-        dispatch(setActiveModal(null));
-      },
-      onAdd() {
-        dispatch(trackingActions.modifyTrackedDevice(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TrackedDevices);

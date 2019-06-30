@@ -14,26 +14,18 @@ import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
-type Views =
-  | 'devices'
-  | 'deviceForm'
-  | 'accessTokens'
-  | 'accessTokenForm'
-  | 'trackedDevices'
-  | 'trackedDeviceForm';
+// type Views =
+//   | 'devices'
+//   | 'deviceForm'
+//   | 'accessTokens'
+//   | 'accessTokenForm'
+//   | 'trackedDevices'
+//   | 'trackedDeviceForm';
 
-interface StateProps {
-  view: Views;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-interface DispatchProps {
-  onClose: () => void;
-}
-
-const TrackingModal: React.FC<StateProps & DispatchProps> = ({
-  onClose,
-  view,
-}) => {
+const TrackingModal: React.FC<Props> = ({ onClose, view }) => {
   return (
     <Modal onHide={onClose} show bsSize="large">
       {view === 'devices' && <Devices />}
@@ -46,25 +38,29 @@ const TrackingModal: React.FC<StateProps & DispatchProps> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  devices: state.tracking.devices,
+  view:
+    state.main.activeModal === 'tracking-my'
+      ? state.tracking.modifiedDeviceId !== undefined
+        ? 'deviceForm'
+        : state.tracking.accessTokensDeviceId
+        ? state.tracking.modifiedAccessTokenId !== undefined
+          ? 'accessTokenForm'
+          : 'accessTokens'
+        : 'devices'
+      : state.tracking.modifiedTrackedDeviceId !== undefined
+      ? 'trackedDeviceForm'
+      : 'trackedDevices',
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onClose() {
+    dispatch(setActiveModal(null));
+  },
+});
+
 export default connect(
-  (state: RootState) => ({
-    devices: state.tracking.devices,
-    view:
-      state.main.activeModal === 'tracking-my'
-        ? state.tracking.modifiedDeviceId !== undefined
-          ? 'deviceForm'
-          : state.tracking.accessTokensDeviceId
-          ? state.tracking.modifiedAccessTokenId !== undefined
-            ? 'accessTokenForm'
-            : 'accessTokens'
-          : 'devices'
-        : state.tracking.modifiedTrackedDeviceId !== undefined
-        ? 'trackedDeviceForm'
-        : 'trackedDevices',
-  }),
-  (dispatch: Dispatch<RootAction>) => ({
-    onClose() {
-      dispatch(setActiveModal(null));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(TrackingModal);

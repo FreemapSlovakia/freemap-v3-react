@@ -4,7 +4,7 @@ import { Polyline, Tooltip, Circle } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
-import { ITrack, ITrackPoint } from 'fm3/types/trackingTypes';
+import { ITrackPoint } from 'fm3/types/trackingTypes';
 import {
   TrackingPoint,
   tooltipText,
@@ -13,14 +13,8 @@ import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
 
-interface Props {
-  tracks: ITrack[];
-  showLine: boolean;
-  showPoints: boolean;
-  language: string;
-  activeTrackId: string | number;
-  onFocus: (id: number | string) => void;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
 interface State {
   activePoint: ITrackPoint | null;
@@ -34,7 +28,7 @@ class TrackingResult extends React.Component<Props, State> {
     activePoint: null,
   };
 
-  handleActivePointSet = activePoint => {
+  handleActivePointSet = (activePoint: ITrackPoint | null) => {
     this.setState({
       activePoint,
     });
@@ -76,7 +70,7 @@ class TrackingResult extends React.Component<Props, State> {
 
       const segments: ITrackPoint[][] = [];
       let curSegment: ITrackPoint[] | null = null;
-      let prevTp;
+      let prevTp: ITrackPoint | undefined;
 
       for (const tp of track.trackPoints) {
         if (
@@ -173,23 +167,27 @@ class TrackingResult extends React.Component<Props, State> {
   }
 }
 
-export default connect(
-  (state: RootState) => {
-    const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
-    return {
-      tracks: state.tracking.tracks.map(track => ({
-        ...track,
-        ...(tdMap.get(track.id) || {}),
-      })),
-      showLine: state.tracking.showLine,
-      showPoints: state.tracking.showPoints,
-      activeTrackId: state.tracking.activeTrackId,
-      language: state.l10n.language,
-    };
+const mapStateToProps = (state: RootState) => {
+  const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
+  return {
+    tracks: state.tracking.tracks.map(track => ({
+      ...track,
+      ...(tdMap.get(track.id) || {}),
+    })),
+    showLine: state.tracking.showLine,
+    showPoints: state.tracking.showPoints,
+    activeTrackId: state.tracking.activeTrackId,
+    language: state.l10n.language,
+  };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onFocus(id: string | number) {
+    dispatch(trackingActions.setActive(id));
   },
-  (dispatch: Dispatch<RootAction>) => ({
-    onFocus(id: string | number) {
-      dispatch(trackingActions.setActive(id));
-    },
-  }),
+});
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
 )(TrackingResult);

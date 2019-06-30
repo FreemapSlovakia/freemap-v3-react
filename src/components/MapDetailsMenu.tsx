@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
@@ -12,9 +12,16 @@ import {
 } from 'fm3/actions/mapDetailsActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-class MapDetailsMenu extends React.Component {
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+class MapDetailsMenu extends React.Component<Props> {
   static propTypes = {
     subtool: PropTypes.oneOf(['track-info']),
     onSubtoolChange: PropTypes.func.isRequired,
@@ -30,7 +37,7 @@ class MapDetailsMenu extends React.Component {
     mapEventEmitter.removeListener('mapClick', this.setUserSelectedPosition);
   }
 
-  setUserSelectedPosition = (lat, lon) => {
+  setUserSelectedPosition = (lat: number, lon: number) => {
     if (this.props.subtool !== null) {
       this.props.onSetUserSelectedPosition(lat, lon);
     }
@@ -57,19 +64,23 @@ class MapDetailsMenu extends React.Component {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  subtool: state.mapDetails.subtool,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onSubtoolChange(subtool: string) {
+    dispatch(mapDetailsSetSubtool(subtool));
+  },
+  onSetUserSelectedPosition(lat: number, lon: number) {
+    dispatch(mapDetailsSetUserSelectedPosition({ lat, lon }));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      subtool: state.mapDetails.subtool,
-    }),
-    dispatch => ({
-      onSubtoolChange(subtool) {
-        dispatch(mapDetailsSetSubtool(subtool));
-      },
-      onSetUserSelectedPosition(lat, lon) {
-        dispatch(mapDetailsSetUserSelectedPosition({ lat, lon }));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(MapDetailsMenu);

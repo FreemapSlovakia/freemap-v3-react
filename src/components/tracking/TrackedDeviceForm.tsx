@@ -20,12 +20,10 @@ import { InputGroup } from 'react-bootstrap';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
-interface Props {
-  onCancel: () => void;
-  onSave: (device: ITrackedDevice) => void;
-  device: ITrackedDevice;
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const TrackedDeviceForm: React.FC<Props> = ({
   onSave,
@@ -188,23 +186,27 @@ const TrackedDeviceForm: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  device:
+    state.tracking.modifiedTrackedDeviceId &&
+    state.tracking.trackedDevices.find(
+      device => device.id === state.tracking.modifiedTrackedDeviceId,
+    ),
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onCancel() {
+    dispatch(trackingActions.modifyTrackedDevice(undefined));
+  },
+  onSave(device: ITrackedDevice) {
+    dispatch(trackingActions.saveTrackedDevice(device));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: RootState) => ({
-      device:
-        state.tracking.modifiedTrackedDeviceId &&
-        state.tracking.trackedDevices.find(
-          device => device.id === state.tracking.modifiedTrackedDeviceId,
-        ),
-    }),
-    (dispatch: Dispatch<RootAction>) => ({
-      onCancel() {
-        dispatch(trackingActions.modifyTrackedDevice(undefined));
-      },
-      onSave(device: ITrackedDevice) {
-        dispatch(trackingActions.saveTrackedDevice(device));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TrackedDeviceForm);

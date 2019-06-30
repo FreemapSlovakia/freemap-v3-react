@@ -15,13 +15,10 @@ import { RootAction } from 'fm3/actions';
 
 type Visual = 'line+points' | 'line' | 'points';
 
-interface Props {
-  onTrackedDevicesClick: () => void;
-  onMyDevicesClick: () => void;
-  onVisualChange: (visual: Visual) => void;
-  visual: string;
-  t: Translator;
-}
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const TrackingMenu: React.FC<Props> = ({
   onTrackedDevicesClick,
@@ -75,45 +72,49 @@ const TrackingMenu: React.FC<Props> = ({
   );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  isActive: state.infoPoint.activeIndex !== null,
+  visual:
+    state.tracking.showLine && state.tracking.showPoints
+      ? 'line+points'
+      : state.tracking.showLine
+      ? 'line'
+      : state.tracking.showPoints
+      ? 'points'
+      : '???',
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onMyDevicesClick() {
+    dispatch(setActiveModal('tracking-my'));
+  },
+  onTrackedDevicesClick() {
+    dispatch(setActiveModal('tracking-watched'));
+  },
+  onVisualChange(visual: Visual) {
+    switch (visual) {
+      case 'line':
+        dispatch(trackingActions.setShowPoints(false));
+        dispatch(trackingActions.setShowLine(true));
+        break;
+      case 'points':
+        dispatch(trackingActions.setShowPoints(true));
+        dispatch(trackingActions.setShowLine(false));
+        break;
+      case 'line+points':
+        dispatch(trackingActions.setShowPoints(true));
+        dispatch(trackingActions.setShowLine(true));
+        break;
+      default:
+        break;
+    }
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    (state: RootState) => ({
-      isActive: state.infoPoint.activeIndex !== null,
-      visual:
-        state.tracking.showLine && state.tracking.showPoints
-          ? 'line+points'
-          : state.tracking.showLine
-          ? 'line'
-          : state.tracking.showPoints
-          ? 'points'
-          : '???',
-    }),
-    (dispatch: Dispatch<RootAction>) => ({
-      onMyDevicesClick() {
-        dispatch(setActiveModal('tracking-my'));
-      },
-      onTrackedDevicesClick() {
-        dispatch(setActiveModal('tracking-watched'));
-      },
-      onVisualChange(visual: Visual) {
-        switch (visual) {
-          case 'line':
-            dispatch(trackingActions.setShowPoints(false));
-            dispatch(trackingActions.setShowLine(true));
-            break;
-          case 'points':
-            dispatch(trackingActions.setShowPoints(true));
-            dispatch(trackingActions.setShowLine(false));
-            break;
-          case 'line+points':
-            dispatch(trackingActions.setShowPoints(true));
-            dispatch(trackingActions.setShowLine(true));
-            break;
-          default:
-            break;
-        }
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TrackingMenu);
