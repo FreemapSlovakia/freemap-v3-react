@@ -29,6 +29,7 @@ import { StateType } from 'typesafe-actions';
 import { RootAction } from './actions';
 import { trackingDeviceMiddleware } from './middlewares/trackingDeviceMiddleware';
 import { trackingFollowMiddleware } from './middlewares/trackingFollowMiddleware';
+import { trackingAccessTokenMiddleware } from './middlewares/trackingAccessTokenMiddleware';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -68,6 +69,7 @@ export default function createReduxStore() {
       rpcMiddleware,
       trackingMiddleware,
       trackingDeviceMiddleware,
+      trackingAccessTokenMiddleware,
       trackingFollowMiddleware,
     ),
   );
