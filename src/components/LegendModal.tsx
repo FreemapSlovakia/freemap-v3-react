@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -11,8 +10,20 @@ import Panel from 'react-bootstrap/lib/Panel';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
-export function Legend({ onModalClose }) {
+type Props = ReturnType<typeof mapDispatchToProps>;
+
+interface ILegendItem {
+  n: string;
+  items: Array<{
+    i: string;
+    n: string;
+  }>;
+}
+
+const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
   return (
     <Modal show onHide={onModalClose} bsSize="small">
       <Modal.Header closeButton>
@@ -23,8 +34,8 @@ export function Legend({ onModalClose }) {
       <Modal.Body>
         <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
         <PanelGroup accordion id="pg1">
-          {require('fm3/legend/index.json').map((c, i) => (
-            <Panel key={`yyy${c.n}`} header={c.n} eventKey={i}>
+          {require('fm3/legend/index.json').map((c: ILegendItem, i: number) => (
+            <Panel key={`yyy${c.n}`} eventKey={i}>
               {c.items.map(e => (
                 <div key={`xxx${c.n}-${e.n}`}>
                   <div className="legend-item">
@@ -46,17 +57,15 @@ export function Legend({ onModalClose }) {
       </Modal.Footer>
     </Modal>
   );
-}
-
-Legend.propTypes = {
-  onModalClose: PropTypes.func.isRequired,
 };
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+});
 
 export default connect(
   null,
-  dispatch => ({
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-  }),
-)(Legend);
+  mapDispatchToProps,
+)(LegendModalInt);

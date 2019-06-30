@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
@@ -8,13 +7,17 @@ import {
   areaMeasurementAddPoint,
   areaMeasurementUpdatePoint,
   areaMeasurementRemovePoint,
+  IPoint,
 } from 'fm3/actions/areaMeasurementActions';
 
 import { area } from 'fm3/geoutils';
-import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { divIcon } from 'leaflet';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-const circularIcon = new L.divIcon({
+const circularIcon = divIcon({
   // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
@@ -22,17 +25,16 @@ const circularIcon = new L.divIcon({
   html: '<div class="circular-leaflet-marker-icon"></div>',
 });
 
-class AreaMeasurementResult extends React.Component {
-  static propTypes = {
-    points: FmPropTypes.points.isRequired,
-    onPointAdd: PropTypes.func.isRequired,
-    onPointUpdate: PropTypes.func.isRequired,
-    onPointRemove: PropTypes.func.isRequired,
-    active: PropTypes.bool,
-    language: PropTypes.string,
-  };
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-  state = {};
+interface IState {
+  lat?: number;
+  lon?: number;
+}
+
+class AreaMeasurementResult extends React.Component<Props, IState> {
+  state: IState = {};
 
   componentDidMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
@@ -44,7 +46,7 @@ class AreaMeasurementResult extends React.Component {
     mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
   }
 
-  handlePoiAdd = (lat, lon, position, id0) => {
+  handlePoiAdd = (lat: number, lon: number, position: number, id0: number) => {
     handleDragStart();
     const { points } = this.props;
     const pos = position ? Math.ceil(position / 2) : points.length;
@@ -61,7 +63,7 @@ class AreaMeasurementResult extends React.Component {
     this.props.onPointAdd({ lat, lon, id }, pos);
   };
 
-  handleMouseMove = (lat, lon, originalEvent) => {
+  handleMouseMove = (lat: number, lon: number, originalEvent) => {
     if (
       this.props.active &&
       originalEvent.target.classList.contains('leaflet-container')
@@ -77,23 +79,21 @@ class AreaMeasurementResult extends React.Component {
   };
 
   handleMeasureMarkerDrag(
-    i,
-    {
-      latlng: { lat, lng: lon },
-    },
-    id,
+    i: number,
+    { latlng: { lat, lng: lon } },
+    id: number,
   ) {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
-  handleMarkerClick(id) {
+  handleMarkerClick(id: number) {
     this.props.onPointRemove(id);
   }
 
   render() {
     const { points, language } = this.props;
 
-    const ps = [];
+    const ps: IPoint[] = [];
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
       const p1 = points[i];
@@ -126,7 +126,7 @@ class AreaMeasurementResult extends React.Component {
             autoOpenPopup
             interactive={false}
             opacity={0}
-            position={L.latLng(northmostPoint.lat, northmostPoint.lon)}
+            position={{ lat: northmostPoint.lat, lng: northmostPoint.lon }}
           >
             <Popup closeButton={false} autoClose={false} autoPan={false}>
               <span>
@@ -144,37 +144,36 @@ class AreaMeasurementResult extends React.Component {
         )}
 
         {ps.map((p, i) => {
-          const props =
-            i % 2
-              ? {
-                  icon: circularIcon,
-                  opacity: 0.5,
-                  onDragstart: e =>
-                    this.handlePoiAdd(
-                      e.target.getLatLng().lat,
-                      e.target.getLatLng().lng,
-                      i,
-                      p.id,
-                    ),
-                }
-              : {
-                  // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-                  icon: circularIcon,
-                  opacity: 1,
-                  onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-                  onClick: () => this.handleMarkerClick(p.id),
-                  onDragstart: handleDragStart,
-                  onDragend: handleDragEnd,
-                };
-
-          return (
+          return i % 2 ? (
             <Marker
               key={`point-${p.id}`}
               draggable
-              position={L.latLng(p.lat, p.lon)}
-              {...props}
+              position={{ lat: p.lat, lng: p.lon }}
+              icon={circularIcon}
+              opacity={0.5}
+              ondragstart={e =>
+                this.handlePoiAdd(
+                  e.target.getLatLng().lat,
+                  e.target.getLatLng().lng,
+                  i,
+                  p.id,
+                )
+              }
+            />
+          ) : (
+            <Marker
+              key={`point-${p.id}`}
+              draggable
+              position={{ lat: p.lat, lng: p.lon }}
+              // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+              icon={circularIcon}
+              opacity={1}
+              ondrag={e => this.handleMeasureMarkerDrag(i / 2, e as any, p.id)}
+              onclick={() => this.handleMarkerClick(p.id)}
+              ondragstart={handleDragStart}
+              ondragend={handleDragEnd}
             >
-              {/* i % 2 === 0 &&
+              {/*
                 <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
@@ -189,21 +188,21 @@ class AreaMeasurementResult extends React.Component {
             interactive={false}
             positions={ps
               .filter((_, i) => i % 2 === 0)
-              .map(({ lat, lon }) => [lat, lon])}
+              .map(({ lat, lon }) => ({ lat, lng: lon }))}
           />
         )}
 
-        {!!(ps.length && this.state.lat) && (
+        {!!(ps.length && this.state.lat && this.state.lon) && (
           <Polyline
             weight={4}
             interactive={false}
             dashArray="6,8"
             positions={[
-              [ps[0].lat, ps[0].lon],
-              [this.state.lat, this.state.lon],
+              { lat: ps[0].lat, lng: ps[0].lon },
+              { lat: this.state.lat, lng: this.state.lon },
               ...(ps.length < 3
                 ? []
-                : [[ps[ps.length - 2].lat, ps[ps.length - 2].lon]]),
+                : [{ lat: ps[ps.length - 2].lat, lng: ps[ps.length - 2].lon }]),
             ]}
           />
         )}
@@ -214,31 +213,35 @@ class AreaMeasurementResult extends React.Component {
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragStart() {
-  window.preventMapClick = true;
+  window['preventMapClick'] = true;
 }
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragEnd() {
   setTimeout(() => {
-    window.preventMapClick = false;
+    window['preventMapClick'] = false;
   });
 }
 
+const mapStateToProps = (state: RootState) => ({
+  points: state.areaMeasurement.points,
+  active: state.main.tool === 'measure-area',
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onPointAdd(point: IPoint, position: number) {
+    dispatch(areaMeasurementAddPoint({ point, position }));
+  },
+  onPointUpdate(index: number, point: IPoint) {
+    dispatch(areaMeasurementUpdatePoint({ index, point }));
+  },
+  onPointRemove(i: number) {
+    dispatch(areaMeasurementRemovePoint(i));
+  },
+});
+
 export default connect(
-  state => ({
-    points: state.areaMeasurement.points,
-    active: state.main.tool === 'measure-area',
-    language: state.l10n.language,
-  }),
-  dispatch => ({
-    onPointAdd(point, position) {
-      dispatch(areaMeasurementAddPoint({ point, position }));
-    },
-    onPointUpdate(index, point) {
-      dispatch(areaMeasurementUpdatePoint({ index, point }));
-    },
-    onPointRemove(i) {
-      dispatch(areaMeasurementRemovePoint(i));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(AreaMeasurementResult);
