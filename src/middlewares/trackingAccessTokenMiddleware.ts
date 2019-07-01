@@ -42,7 +42,7 @@ export const trackingAccessTokenMiddleware: Middleware<
     } finally {
       dispatch(stopProgress(pid));
     }
-  } else if (isActionOf(trackingActions.loadDevices, action)) {
+  } else if (isActionOf(trackingActions.loadAccessTokens, action)) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     try {
@@ -63,7 +63,7 @@ export const trackingAccessTokenMiddleware: Middleware<
     } finally {
       dispatch(stopProgress(pid));
     }
-  } else if (isActionOf(trackingActions.deleteDevice, action)) {
+  } else if (isActionOf(trackingActions.deleteAccessToken, action)) {
     const pid = Math.random();
     dispatch(startProgress(pid));
     try {

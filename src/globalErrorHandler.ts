@@ -40,7 +40,8 @@ export function sendError(errDetails) {
 
   const state = store && store.getState();
 
-  window.ga('send', 'event', 'Error', 'error', errDetails.kind);
+  // TODO window.ga was null
+  window.ga && window.ga('send', 'event', 'Error', 'error', errDetails.kind);
 
   axios
     .post(

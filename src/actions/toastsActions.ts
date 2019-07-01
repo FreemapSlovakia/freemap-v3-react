@@ -1,7 +1,7 @@
 import { createStandardAction } from 'typesafe-actions';
 
 interface ToastType {
-  message?: string;
+  message?: string | JSX.Element;
   messageKey?: string;
   messageParams?: { [key: string]: string };
   actions?: any[]; // TODO

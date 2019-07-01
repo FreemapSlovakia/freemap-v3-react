@@ -140,9 +140,11 @@ class TrackingResult extends React.Component<Props, State> {
             !showPoints || i === track.trackPoints.length - 1 ? (
               <RichMarker
                 key={tp.id}
-                position={track.trackPoints[track.trackPoints.length - 1]}
+                position={toLatLon(
+                  track.trackPoints[track.trackPoints.length - 1],
+                )}
                 color={color}
-                onClick={handleClick}
+                onclick={handleClick}
                 faIcon={track.id === activeTrackId ? 'user' : 'user-o'}
               >
                 <Tooltip direction="top" offset={[0, -36]} permanent>
@@ -165,6 +167,10 @@ class TrackingResult extends React.Component<Props, State> {
       );
     });
   }
+}
+
+function toLatLon(x: ITrackPoint) {
+  return { lat: x.lat, lng: x.lon };
 }
 
 const mapStateToProps = (state: RootState) => {

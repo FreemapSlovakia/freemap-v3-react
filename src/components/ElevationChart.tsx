@@ -1,25 +1,35 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import { Line } from 'react-chartjs-2';
-import PropTypes from 'prop-types';
 
 import {
   elevationChartSetActivePoint,
   elevationChartRemoveActivePoint,
 } from 'fm3/actions/elevationChartActions';
-import { elevationChartProfilePoint } from 'fm3/propTypes';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/elevationChart.scss';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { IElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 
-function ElevationChart({
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+const ElevationChart: React.FC<Props> = ({
   elevationProfilePoints,
   setActivePoint,
   removeActivePoint,
   t,
   language,
-}) {
+}) => {
+  if (!elevationProfilePoints) {
+    return null;
+  }
+
   const nf0 = Intl.NumberFormat(language, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -39,7 +49,7 @@ function ElevationChart({
         options={{
           tooltips: {
             enabled: false,
-            mode: 'x',
+            mode: 'x' as 'x',
             intersect: false,
             custom(tooltip) {
               if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
@@ -59,7 +69,7 @@ function ElevationChart({
               {
                 type: 'linear',
                 ticks: {
-                  userCallback: label => nf1.format(label / 1000),
+                  callback: label => nf1.format(label / 1000),
                   max: distance,
                 },
                 scaleLabel: {
@@ -71,7 +81,7 @@ function ElevationChart({
             yAxes: [
               {
                 ticks: {
-                  userCallback: label => nf0.format(label),
+                  callback: label => nf0.format(label),
                 },
                 scaleLabel: {
                   display: true,
@@ -82,7 +92,7 @@ function ElevationChart({
           },
         }}
         data={{
-          xLabels: elevationProfilePoints.map(p =>
+          labels: elevationProfilePoints.map(p =>
             nf1.format(p.distance / 1000),
           ),
           datasets: [
@@ -110,30 +120,26 @@ function ElevationChart({
       )}
     </div>
   );
-}
-
-ElevationChart.propTypes = {
-  elevationProfilePoints: PropTypes.arrayOf(elevationChartProfilePoint),
-  setActivePoint: PropTypes.func.isRequired,
-  removeActivePoint: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired,
 };
+
+const mapStateToProps = (state: RootState) => ({
+  elevationProfilePoints: state.elevationChart.elevationProfilePoints,
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  setActivePoint(activePoint: IElevationProfilePoint) {
+    dispatch(elevationChartSetActivePoint(activePoint));
+  },
+  removeActivePoint() {
+    dispatch(elevationChartRemoveActivePoint());
+  },
+});
 
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      elevationProfilePoints: state.elevationChart.elevationProfilePoints,
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      setActivePoint(activePoint) {
-        dispatch(elevationChartSetActivePoint(activePoint));
-      },
-      removeActivePoint() {
-        dispatch(elevationChartRemoveActivePoint());
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(ElevationChart);

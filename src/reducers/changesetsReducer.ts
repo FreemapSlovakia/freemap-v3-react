@@ -5,10 +5,11 @@ import {
   changesetsSetDays,
   changesetsSetAuthorName,
   changesetsSet,
+  IChangeset,
 } from 'fm3/actions/changesetsActions';
 
 export interface IChangesetsState {
-  changesets: any[];
+  changesets: IChangeset[];
   days: number | null;
   authorName: string | null;
 }

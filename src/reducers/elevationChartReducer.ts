@@ -16,6 +16,13 @@ import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
+export interface IElevationProfilePoint extends LatLon {
+  climbUp: number;
+  climbDown: number;
+  distance: number;
+  ele: number;
+}
+
 export interface IElevationChartState {
   trackGeojson: any;
   activePoint: {
@@ -24,7 +31,7 @@ export interface IElevationChartState {
     ele: number | null;
     distance: number | null;
   };
-  elevationProfilePoints: Array<LatLon> | null;
+  elevationProfilePoints: Array<IElevationProfilePoint> | null;
 }
 
 const initialState: IElevationChartState = {

@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
-import PropTypes from 'prop-types';
+import { compose, Dispatch } from 'redux';
 import Form from 'react-bootstrap/lib/Form';
 import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
@@ -11,31 +10,32 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import {
   changesetsSetDays,
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-class ChangesetsMenu extends React.Component {
-  static propTypes = {
-    days: PropTypes.number,
-    zoom: PropTypes.number.isRequired,
-    // eslint-disable-next-line
-    authorName: PropTypes.string,
-    onChangesetsSetDays: PropTypes.func.isRequired,
-    onChangesetsSetAuthorNameAndRefresh: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  authorName: string | null;
+  authorNameFromProps: string | null;
+}
+
+class ChangesetsMenu extends React.Component<Props> {
+  state: IState = {
     authorName: null,
-    // eslint-disable-next-line
     authorNameFromProps: null,
   };
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props: Props, state: IState) {
     if (props.authorName !== state.authorNameFromProps) {
       return {
         authorName: props.authorName,
@@ -46,7 +46,7 @@ class ChangesetsMenu extends React.Component {
     return null;
   }
 
-  canSearchWithThisAmountOfDays = amountOfDays => {
+  canSearchWithThisAmountOfDays = (amountOfDays: number) => {
     if (this.state.authorName) {
       return true;
     }
@@ -58,9 +58,10 @@ class ChangesetsMenu extends React.Component {
     );
   };
 
-  handleAuthorNameChange = e => {
+  handleAuthorNameChange = (e: React.FormEvent<FormControl>) => {
+    const input = e.target as HTMLInputElement;
     this.setState({
-      authorName: e.target.value === '' ? null : e.target.value,
+      authorName: input.value === '' ? null : input.value,
     });
   };
 
@@ -83,7 +84,7 @@ class ChangesetsMenu extends React.Component {
           <ButtonGroup>
             <DropdownButton
               id="days"
-              title={t('changesets.olderThanFull', { days }, () => '')}
+              title={t('changesets.olderThanFull', { days })}
             >
               {[3, 7, 14, 30].map(d => (
                 <MenuItem
@@ -95,7 +96,7 @@ class ChangesetsMenu extends React.Component {
                       : false
                   }
                 >
-                  {t('changesets.olderThan', { days: d }, () => {})}
+                  {t('changesets.olderThan', { days: d })}
                 </MenuItem>
               ))}
             </DropdownButton>
@@ -134,22 +135,29 @@ class ChangesetsMenu extends React.Component {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  days: state.changesets.days || 3,
+  authorName: state.changesets.authorName,
+  zoom: state.map.zoom,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onChangesetsSetDays(days: number | null) {
+    dispatch(changesetsSetDays(days));
+  },
+  onChangesetsSetAuthorNameAndRefresh(
+    days: number | null,
+    authorName: string | null,
+  ) {
+    dispatch(changesetsSetDays(days));
+    dispatch(changesetsSetAuthorName(authorName));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      days: state.changesets.days || 3,
-      authorName: state.changesets.authorName,
-      zoom: state.map.zoom,
-    }),
-    dispatch => ({
-      onChangesetsSetDays(days) {
-        dispatch(changesetsSetDays(days));
-      },
-      onChangesetsSetAuthorNameAndRefresh(days, authorName) {
-        dispatch(changesetsSetDays(days));
-        dispatch(changesetsSetAuthorName(authorName));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(ChangesetsMenu);

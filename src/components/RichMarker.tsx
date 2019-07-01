@@ -1,36 +1,27 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { Marker } from 'react-leaflet';
+import { Marker, MarkerProps } from 'react-leaflet';
+import { divIcon } from 'leaflet';
 
-export default class RichMarker extends React.Component {
-  static propTypes = {
-    // --- from Marker:
-    draggable: PropTypes.bool,
-    opacity: PropTypes.number,
-    position: PropTypes.oneOfType([
-      PropTypes.arrayOf(PropTypes.number), // [number, number]
-      PropTypes.shape({ lat: PropTypes.number, lng: PropTypes.number }),
-      PropTypes.shape({ lat: PropTypes.number, lon: PropTypes.number }),
-    ]).isRequired,
-    zIndexOffset: PropTypes.number,
+interface IProps extends MarkerProps {
+  label?: string | number;
+  color?: string;
+  image?: string;
+  faIcon?: string;
+  faIconLeftPadding?: string;
+  autoOpenPopup?: boolean;
+}
 
-    // --- own:
-    label: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
-    color: PropTypes.string,
-    image: PropTypes.string,
-    faIcon: PropTypes.string,
-    faIconLeftPadding: PropTypes.string,
-    autoOpenPopup: PropTypes.bool,
-  };
+export default class RichMarker extends React.Component<IProps> {
+  markerRef: Marker | null = null;
 
   componentDidMount() {
-    if (this.props.autoOpenPopup) {
+    if (this.props.autoOpenPopup && this.markerRef) {
       this.markerRef.leafletElement.openPopup();
     }
   }
 
   componentDidUpdate() {
-    if (this.props.autoOpenPopup) {
+    if (this.props.autoOpenPopup && this.markerRef) {
       this.markerRef.leafletElement.openPopup();
     }
   }
@@ -72,7 +63,7 @@ export default class RichMarker extends React.Component {
         }
       </svg>`;
 
-    return new L.divIcon({
+    return divIcon({
       iconSize: [24, 40],
       iconAnchor: [12, 37],
       popupAnchor: [0, -34],
