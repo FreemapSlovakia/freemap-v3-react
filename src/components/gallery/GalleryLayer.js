@@ -30,10 +30,12 @@ const galleryLayer = L.GridLayer.extend({
     // create a <canvas> element for drawing
     const tile = L.DomUtil.create('canvas', 'leaflet-tile');
     // setup tile width and height according to the options
-    tile.width = size.x;
-    tile.height = size.y;
+    const dpr = window.devicePixelRatio || 1;
+    tile.width = size.x * dpr;
+    tile.height = size.y * dpr;
     // get a canvas context and draw something on it using coords.x, coords.y and coords.z
     const ctx = tile.getContext('2d');
+    ctx.scale(dpr, dpr);
     ctx.strokeStyle = '#000';
     ctx.fillStyle = '#ff0';
     ctx.lineWidth = 1.5;
