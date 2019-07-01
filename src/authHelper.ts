@@ -137,7 +137,10 @@ function handleTips(store: MyStore) {
         tipsPreventNextTime(storage.getItem('preventTips') === 'true'),
       );
     }
-    if (!store.getState().tips.preventTips) {
+    if (
+      !store.getState().tips.preventTips &&
+      ['sk', 'cs'].includes(store.getState().l10n.language)
+    ) {
       store.dispatch(tipsNext(storage.getItem('tip') || null));
       store.dispatch(setActiveModal('tips'));
     }

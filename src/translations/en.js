@@ -445,7 +445,8 @@ export default {
       noAuthInfo: 'Only for logged-in users.',
     },
     general: {
-      tips: 'Show tips on page opening',
+      tips:
+        'Show tips on page opening (only if Slovak or Czech language is selected)',
     },
     expertInfo: `
       <div style="text-align: left">
