@@ -9,6 +9,7 @@ import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
 import injectL10n from 'fm3/l10nInjector';
+import * as FmPropTypes from 'fm3/propTypes';
 
 import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
 import {
@@ -37,6 +38,7 @@ class MoreMenuButton extends React.Component {
     onLanguageChange: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
     chosenLanguage: PropTypes.string,
+    mapType: FmPropTypes.mapType.isRequired,
   };
 
   state = {
@@ -254,9 +256,11 @@ class MoreMenuButton extends React.Component {
                     <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
                   </MenuItem>
                   <MenuItem divider />
-                  <MenuItem onClick={this.handleLegendClick}>
-                    <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
-                  </MenuItem>
+                  {['A', 'K', 'T', 'C'].includes(this.props.mapType) && (
+                    <MenuItem onClick={this.handleLegendClick}>
+                      <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={this.handleAboutClick}>
                     <FontAwesomeIcon icon="address-card-o" />{' '}
                     {t('more.contacts')}
@@ -358,6 +362,7 @@ export default compose(
     state => ({
       user: state.auth.user,
       chosenLanguage: state.l10n.chosenLanguage,
+      mapType: state.map.mapType,
     }),
     dispatch => ({
       onSettingsShow() {
