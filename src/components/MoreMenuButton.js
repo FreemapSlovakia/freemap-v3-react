@@ -237,10 +237,12 @@ class MoreMenuButton extends React.Component {
                     {t('more.reportAppError')}
                   </MenuItem>
                   <MenuItem divider />
-                  <MenuItem onClick={this.handleHelpClick}>
-                    <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
-                    <FontAwesomeIcon icon="chevron-right" />
-                  </MenuItem>
+                  {['sk', 'cs'].includes(this.props.language) && (
+                    <MenuItem onClick={this.handleHelpClick}>
+                      <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
+                      <FontAwesomeIcon icon="chevron-right" />
+                    </MenuItem>
+                  )}
                   <MenuItem onClick={this.handleSupportUsClick}>
                     <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
                     {t('more.supportUs')}{' '}
