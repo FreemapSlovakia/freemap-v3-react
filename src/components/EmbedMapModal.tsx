@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -15,9 +15,14 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
 
-export class EmbedMapModal extends React.Component {
+type Props = ReturnType<typeof mapDispatchToProps> & {
+  t: Translator;
+};
+
+export class EmbedMapModal extends React.Component<Props> {
   static propTypes = {
     onModalClose: PropTypes.func.isRequired,
     t: PropTypes.func.isRequired,
@@ -31,7 +36,9 @@ export class EmbedMapModal extends React.Component {
     enableLocateMe: true,
   };
 
-  setFormControl = textarea => {
+  textarea: HTMLInputElement | null = null;
+
+  setFormControl = (textarea: HTMLInputElement | null) => {
     this.textarea = textarea;
     if (textarea) {
       textarea.select();
@@ -39,37 +46,39 @@ export class EmbedMapModal extends React.Component {
   };
 
   handleCopyClick = () => {
-    this.textarea.select();
-    document.execCommand('copy');
+    if (this.textarea) {
+      this.textarea.select();
+      document.execCommand('copy');
+    }
   };
 
-  handleWidthChange = e => {
+  handleWidthChange = (e: React.FormEvent<FormControl>) => {
     this.setState({
-      width: e.target.value,
+      width: (e.target as HTMLInputElement).value,
     });
   };
 
-  handleHeightChange = e => {
+  handleHeightChange = (e: React.FormEvent<FormControl>) => {
     this.setState({
-      height: e.target.value,
+      height: (e.target as HTMLInputElement).value,
     });
   };
 
-  handleEnableSearchChange = e => {
+  handleEnableSearchChange = (e: React.FormEvent<Checkbox>) => {
     this.setState({
-      enableSearch: e.target.checked,
+      enableSearch: (e.target as HTMLInputElement).checked,
     });
   };
 
-  handleEnableMapSwitchChange = e => {
+  handleEnableMapSwitchChange = (e: React.FormEvent<Checkbox>) => {
     this.setState({
-      enableMapSwitch: e.target.checked,
+      enableMapSwitch: (e.target as HTMLInputElement).checked,
     });
   };
 
-  handleEnableLocateMeChange = e => {
+  handleEnableLocateMeChange = (e: React.FormEvent<Checkbox>) => {
     this.setState({
-      enableLocateMe: e.target.checked,
+      enableLocateMe: (e.target as HTMLInputElement).checked,
     });
   };
 
@@ -176,14 +185,16 @@ export class EmbedMapModal extends React.Component {
   }
 }
 
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
     null,
-    dispatch => ({
-      onModalClose() {
-        dispatch(setActiveModal(null));
-      },
-    }),
+    mapDispatchToProps,
   ),
 )(EmbedMapModal);

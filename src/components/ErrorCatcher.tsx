@@ -1,20 +1,22 @@
 import { connect } from 'react-redux';
 import { compose } from 'redux';
 import React from 'react';
-import PropTypes from 'prop-types';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 
-class ErrorCatcher extends React.Component {
-  static propTypes = {
-    children: PropTypes.node,
-    t: PropTypes.func.isRequired,
-    errorTicketId: PropTypes.string,
-  };
+type Props = ReturnType<typeof mapStateToProps> & {
+  t: Translator;
+};
 
-  state = {};
+interface IState {
+  error?: Error;
+}
 
-  componentDidCatch(error) {
+class ErrorCatcher extends React.Component<Props, IState> {
+  state: IState = {};
+
+  componentDidCatch(error: Error) {
     // eslint-disable-next-line
     console.error(error);
     this.setState({ error });
@@ -38,9 +40,11 @@ class ErrorCatcher extends React.Component {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  errorTicketId: state.main.errorTicketId,
+});
+
 export default compose(
   injectL10n(),
-  connect(state => ({
-    errorTicketId: state.main.errorTicketId,
-  })),
+  connect(mapStateToProps),
 )(ErrorCatcher);

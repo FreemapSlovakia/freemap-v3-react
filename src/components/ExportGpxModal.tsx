@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -11,7 +10,9 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportGpx } from 'fm3/actions/mainActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
@@ -27,21 +28,21 @@ const exportableDefinitions = [
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ];
 
-export class ExportGpxModal extends React.Component {
-  static propTypes = {
-    exportables: PropTypes.arrayOf(
-      PropTypes.oneOf(exportableDefinitions.map(({ type }) => type)).isRequired,
-    ).isRequired,
-    onExport: PropTypes.func.isRequired,
-    onModalClose: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  exportables: string[] | null; // TODO enum
+}
+
+export class ExportGpxModal extends React.Component<Props, IState> {
+  state: IState = {
     exportables: null,
   };
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props: Props, state: IState) {
     return state.exportables
       ? null
       : {
@@ -53,7 +54,11 @@ export class ExportGpxModal extends React.Component {
     this.props.onExport(this.state.exportables);
   };
 
-  handleCheckboxChange = type => {
+  handleCheckboxChange = (type: string) => {
+    if (!this.state.exportables) {
+      return;
+    }
+
     const set = new Set(this.state.exportables);
     if (this.state.exportables.includes(type)) {
       set.delete(type);
@@ -64,6 +69,11 @@ export class ExportGpxModal extends React.Component {
   };
 
   render() {
+    const { exportables: exs } = this.state;
+    if (!exs) {
+      return;
+    }
+
     const { onModalClose, exportables, t } = this.props;
 
     return (
@@ -78,7 +88,7 @@ export class ExportGpxModal extends React.Component {
           {exportableDefinitions.map(({ type, icon }) => (
             <Checkbox
               key={type}
-              checked={this.state.exportables.includes(type)}
+              checked={exs.includes(type)}
               disabled={!exportables.includes(type)}
               onChange={() => this.handleCheckboxChange(type)}
             >
@@ -88,10 +98,7 @@ export class ExportGpxModal extends React.Component {
           ))}
         </Modal.Body>
         <Modal.Footer>
-          <Button
-            onClick={this.handleExportClick}
-            disabled={!this.state.exportables.length}
-          >
+          <Button onClick={this.handleExportClick} disabled={!exs.length}>
             <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
           </Button>{' '}
           <Button onClick={onModalClose}>
@@ -103,56 +110,61 @@ export class ExportGpxModal extends React.Component {
   }
 }
 
+const mapStateToProps = (state: RootState) => {
+  const exportables: string[] = [];
+
+  if (state.search.selectedResult) {
+    // exportables.push('search');
+  }
+  if (state.routePlanner.alternatives.length) {
+    exportables.push('plannedRoute');
+  }
+  if (state.objects.objects.length) {
+    exportables.push('objects');
+  }
+  if (state.map.overlays.includes('I')) {
+    exportables.push('pictures');
+  }
+  if (state.areaMeasurement.points.length) {
+    exportables.push('areaMeasurement');
+  }
+  if (state.distanceMeasurement.points.length) {
+    exportables.push('distanceMeasurement');
+  }
+  if (state.elevationMeasurement.point) {
+    exportables.push('elevationMeasurement');
+  }
+  if (state.infoPoint.points.length) {
+    exportables.push('infoPoint');
+  }
+  if (state.tracking.tracks.length) {
+    exportables.push('tracking');
+  }
+  if (state.changesets.changesets.length) {
+    // exportables.push('changesets');
+  }
+  if (state.mapDetails.trackInfoPoints) {
+    // exportables.push('mapDetails');
+  }
+
+  return {
+    exportables,
+  };
+};
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+  onExport(exportables) {
+    dispatch(exportGpx(exportables));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => {
-      const exportables = [];
-      if (state.search.selectedResult) {
-        // exportables.push('search');
-      }
-      if (state.routePlanner.alternatives.length) {
-        exportables.push('plannedRoute');
-      }
-      if (state.objects.objects.length) {
-        exportables.push('objects');
-      }
-      if (state.map.overlays.includes('I')) {
-        exportables.push('pictures');
-      }
-      if (state.areaMeasurement.points.length) {
-        exportables.push('areaMeasurement');
-      }
-      if (state.distanceMeasurement.points.length) {
-        exportables.push('distanceMeasurement');
-      }
-      if (state.elevationMeasurement.point) {
-        exportables.push('elevationMeasurement');
-      }
-      if (state.infoPoint.points.length) {
-        exportables.push('infoPoint');
-      }
-      if (state.tracking.tracks.length) {
-        exportables.push('tracking');
-      }
-      if (state.changesets.changesets.length) {
-        // exportables.push('changesets');
-      }
-      if (state.mapDetails.trackInfoPoints) {
-        // exportables.push('mapDetails');
-      }
-
-      return {
-        exportables,
-      };
-    },
-    dispatch => ({
-      onModalClose() {
-        dispatch(setActiveModal(null));
-      },
-      onExport(exportables) {
-        dispatch(exportGpx(exportables));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(ExportGpxModal);
