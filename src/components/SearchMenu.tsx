@@ -1,8 +1,7 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
+import { compose, Dispatch } from 'redux';
+import { AsyncTypeahead, TypeaheadResult } from 'react-bootstrap-typeahead';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -10,6 +9,7 @@ import {
   searchSetQuery,
   searchHighlightResult,
   searchSelectResult,
+  SearchResult,
 } from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
 import {
@@ -17,43 +17,37 @@ import {
   routePlannerSetFinish,
 } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import * as FmPropTypes from 'fm3/propTypes';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/search.scss';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
+import { geoJSON } from 'leaflet';
 
-class SearchMenu extends React.Component {
-  static propTypes = {
-    tool: FmPropTypes.tool,
-    selectedResult: FmPropTypes.searchResult,
-    results: PropTypes.arrayOf(FmPropTypes.searchResult).isRequired,
-    onDoSearch: PropTypes.func.isRequired,
-    onResultHiglight: PropTypes.func.isRequired,
-    onResultSelect: PropTypes.func.isRequired,
-    onRoutePlannerWithStartInit: PropTypes.func.isRequired,
-    onRoutePlannerWithFinishInit: PropTypes.func.isRequired,
-    inProgress: PropTypes.bool.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  onSuggestionHighlightChange(result) {
+class SearchMenu extends React.Component<Props> {
+  onSuggestionHighlightChange(result: TypeaheadResult<SearchResult> | null) {
     // TODO to logic
-    if (result) {
+    const le = getMapLeafletElement();
+    if (le && result) {
       const { geojson } = result;
-      const options = {};
-      if (geojson.type === 'Point') {
-        options.maxZoom = 14;
-      }
-      const geojsonBounds = L.geoJson(geojson).getBounds();
-      getMapLeafletElement().fitBounds(geojsonBounds, options);
+      const geojsonBounds = geoJSON(geojson).getBounds();
+      le.fitBounds(
+        geojsonBounds,
+        geojson.type === 'Point' ? { maxZoom: 14 } : {},
+      );
     }
 
     this.props.onResultHiglight(result);
   }
 
-  handleSelectionChange = resultsSelectedByUser => {
-    this.props.onResultSelect(resultsSelectedByUser[0], this.props.tool);
+  handleSelectionChange = (resultsSelectedByUser: SearchResult[]) => {
+    this.props.onResultSelect(resultsSelectedByUser[0]);
   };
 
   render() {
@@ -118,29 +112,29 @@ class SearchMenu extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   tool: state.main.tool,
   results: state.search.results,
   selectedResult: state.search.selectedResult,
   inProgress: state.search.inProgress,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onDoSearch(query) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onDoSearch(query: string) {
     dispatch(searchSetQuery(query));
   },
-  onResultHiglight(result) {
+  onResultHiglight(result: SearchResult | null) {
     dispatch(searchHighlightResult(result));
   },
-  onResultSelect(result) {
+  onResultSelect(result: SearchResult) {
     dispatch(searchSelectResult(result));
   },
-  onRoutePlannerWithStartInit(result) {
+  onRoutePlannerWithStartInit(result: SearchResult) {
     const start = { lat: result.lat, lon: result.lon };
     dispatch(setTool('route-planner'));
     dispatch(routePlannerSetStart({ start }));
   },
-  onRoutePlannerWithFinishInit(result) {
+  onRoutePlannerWithFinishInit(result: SearchResult) {
     const finish = { lat: result.lat, lon: result.lon };
     dispatch(setTool('route-planner'));
     dispatch(routePlannerSetFinish({ finish }));
