@@ -7,24 +7,16 @@ import {
   infoPointSetActiveIndex,
 } from 'fm3/actions/infoPointActions';
 import RichMarker from 'fm3/components/RichMarker';
-import PropTypes from 'prop-types';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
+import { Point, DragEndEvent } from 'leaflet';
 
-class InfoPointResult extends React.Component {
-  static propTypes = {
-    points: PropTypes.arrayOf(
-      PropTypes.shape({
-        lat: PropTypes.number,
-        lon: PropTypes.number,
-        label: PropTypes.string,
-      }).isRequired,
-    ).isRequired,
-    onInfoPointPositionChange: PropTypes.func.isRequired,
-    onSelect: PropTypes.func.isRequired,
-    change: PropTypes.number.isRequired,
-    activeIndex: PropTypes.number,
-  };
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-  handleDragEnd = e => {
+class InfoPointResult extends React.Component<Props> {
+  handleDragEnd = (e: DragEndEvent) => {
     const coords = e.target.getLatLng();
     this.props.onInfoPointPositionChange(coords.lat, coords.lng);
   };
@@ -37,16 +29,16 @@ class InfoPointResult extends React.Component {
         key={`${change}-${i}`}
         faIcon="info"
         faIconLeftPadding="2px"
-        onDragend={this.handleDragEnd}
-        position={L.latLng(lat, lon)}
-        onClick={() => onSelect(i)}
+        ondragend={this.handleDragEnd}
+        position={{ lat, lng: lon }}
+        onclick={() => onSelect(i)}
         color={activeIndex === i ? '#65b2ff' : undefined}
         draggable={activeIndex === i}
       >
         {label && (
           <Tooltip
             className="compact"
-            offset={new L.Point(11, -25)}
+            offset={new Point(11, -25)}
             direction="right"
             permanent
           >
@@ -58,17 +50,17 @@ class InfoPointResult extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   points: state.infoPoint.points,
   change: state.infoPoint.change,
   activeIndex: state.infoPoint.activeIndex,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onInfoPointPositionChange(lat, lon) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onInfoPointPositionChange(lat: number, lon: number) {
     dispatch(infoPointChangePosition({ lat, lon }));
   },
-  onSelect(index) {
+  onSelect(index: number) {
     dispatch(infoPointSetActiveIndex(index));
   },
 });

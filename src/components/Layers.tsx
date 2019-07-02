@@ -8,6 +8,7 @@ import { baseLayers, overlayLayers, ILayerDef } from 'fm3/mapDefinitions';
 import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
@@ -159,13 +160,13 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (
-  dispatch: Dispatch,
-  props: ReturnType<typeof mapStateToProps>,
+  dispatch: Dispatch<RootAction>,
+  // props: ReturnType<typeof mapStateToProps>,
 ) => ({
   onMapTypeChange(mapType: string) {
-    if (props.mapType !== mapType) {
-      dispatch(mapRefocus({ mapType }));
-    }
+    // if (props.mapType !== mapType) {
+    dispatch(mapRefocus({ mapType }));
+    // }
   },
   onOverlaysChange(overlays: string[]) {
     dispatch(mapRefocus({ overlays }));

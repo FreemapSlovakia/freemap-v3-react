@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
@@ -14,17 +13,22 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import Dropdown from 'react-bootstrap/lib/Dropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-class ObjectsMenu extends React.Component {
-  static propTypes = {
-    onSearch: PropTypes.func.isRequired,
-    onLowZoom: PropTypes.func.isRequired,
-    zoom: PropTypes.number.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  filter: string;
+  dropdownOpened: boolean;
+}
+
+class ObjectsMenu extends React.Component<Props, IState> {
+  state: IState = {
     filter: '',
     dropdownOpened: false,
   };
@@ -59,8 +63,8 @@ class ObjectsMenu extends React.Component {
     );
   };
 
-  handleFilterSet = e => {
-    this.setState({ filter: e.target.value });
+  handleFilterSet = (e: React.FormEvent<FormControl>) => {
+    this.setState({ filter: (e.target as HTMLInputElement).value });
   };
 
   handleToggle = () => {
@@ -69,11 +73,11 @@ class ObjectsMenu extends React.Component {
     }));
   };
 
-  handleSelect = id => {
+  handleSelect = (id: any) => {
     if (this.props.zoom < 12) {
-      this.props.onLowZoom(id);
+      this.props.onLowZoom();
     } else {
-      this.props.onSearch(id);
+      this.props.onSearch(id as string);
     }
   };
 
@@ -92,7 +96,7 @@ class ObjectsMenu extends React.Component {
           onToggle={this.handleToggle}
           open={this.state.dropdownOpened}
         >
-          <FormGroup bsRole="toggle">
+          <FormGroup bsClass="toggle">
             <FormControl
               type="text"
               placeholder={t('objects.type')}
@@ -111,15 +115,15 @@ class ObjectsMenu extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onSearch(typeId) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onSearch(typeId: string) {
     dispatch(objectsSetFilter(typeId));
   },
-  onLowZoom(/* typeId */) {
+  onLowZoom() {
     dispatch(
       toastsAdd({
         collapseKey: 'objects.lowZoomAlert',

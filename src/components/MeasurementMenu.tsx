@@ -1,14 +1,19 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import { lineString } from '@turf/helpers';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import { setTool } from 'fm3/actions/mainActions';
-import { distanceMeasurementAddPoint } from 'fm3/actions/distanceMeasurementActions';
-import { areaMeasurementAddPoint } from 'fm3/actions/areaMeasurementActions';
+import {
+  distanceMeasurementAddPoint,
+  IPoint as IDistancePoint,
+} from 'fm3/actions/distanceMeasurementActions';
+import {
+  areaMeasurementAddPoint,
+  IPoint as IAreaPoint,
+} from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 
 import {
@@ -19,25 +24,17 @@ import {
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
-import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { LatLon } from 'fm3/types/common';
 
-class MeasurementMenu extends React.Component {
-  static propTypes = {
-    tool: FmPropTypes.tool,
-    onToolSet: PropTypes.func.isRequired,
-    areaPoints: FmPropTypes.points.isRequired,
-    distancePoints: FmPropTypes.points.isRequired,
-    routeDefined: PropTypes.bool.isRequired,
-    onElevationChartTrackGeojsonSet: PropTypes.func.isRequired,
-    onElevationChartClose: PropTypes.func.isRequired,
-    elevationChartTrackGeojson: PropTypes.object, // eslint-disable-line
-    onAreaPointAdd: PropTypes.func.isRequired,
-    onDistPointAdd: PropTypes.func.isRequired,
-    onElePointSet: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
+class MeasurementMenu extends React.Component<Props> {
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
@@ -46,7 +43,7 @@ class MeasurementMenu extends React.Component {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
   }
 
-  handlePoiAdd = (lat, lon, position, id0) => {
+  handlePoiAdd = (lat: number, lon: number, position: number, id0: number) => {
     if (this.props.tool === 'measure-ele') {
       this.props.onElePointSet({ lat, lon });
       return;
@@ -57,7 +54,7 @@ class MeasurementMenu extends React.Component {
         ? this.props.areaPoints
         : this.props.distancePoints;
     const pos = position ? Math.ceil(position / 2) : points.length;
-    let id;
+    let id: number;
     if (id0) {
       id = id0;
     } else if (pos === 0) {
@@ -146,7 +143,7 @@ class MeasurementMenu extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   tool: state.main.tool,
   distancePoints: state.distanceMeasurement.points,
   areaPoints: state.areaMeasurement.points,
@@ -154,7 +151,7 @@ const mapStateToProps = state => ({
   elevationChartTrackGeojson: state.elevationChart.trackGeojson,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToolSet(tool) {
     dispatch(setTool(tool));
   },
@@ -164,13 +161,13 @@ const mapDispatchToProps = dispatch => ({
   onElevationChartClose() {
     dispatch(elevationChartClose());
   },
-  onAreaPointAdd(point, position) {
+  onAreaPointAdd(point: IAreaPoint, position: number) {
     dispatch(areaMeasurementAddPoint({ point, position }));
   },
-  onDistPointAdd(point, position) {
+  onDistPointAdd(point: IDistancePoint, position: number) {
     dispatch(distanceMeasurementAddPoint({ point, position }));
   },
-  onElePointSet(point) {
+  onElePointSet(point: LatLon) {
     dispatch(elevationMeasurementSetPoint(point));
   },
 });

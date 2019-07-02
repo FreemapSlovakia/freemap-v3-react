@@ -20,12 +20,16 @@ import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 
+interface ILocation extends LatLon {
+  accuracy: number;
+}
+
 export interface IMainState {
   activeModal: string | null;
   tool: string | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
-  location: LatLon | null;
+  location: ILocation | null;
   expertMode: boolean;
   locate: boolean;
   selectingHomeLocation: boolean;

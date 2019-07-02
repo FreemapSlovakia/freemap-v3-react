@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import React from 'react';
 import PropTypes from 'prop-types';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -10,9 +10,20 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import * as FmPropTypes from 'fm3/propTypes';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-class MapSwitchButton extends React.Component {
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+interface IState {
+  show: boolean;
+}
+
+class MapSwitchButton extends React.Component<Props, IState> {
   static propTypes = {
     zoom: PropTypes.number.isRequired,
     overlays: FmPropTypes.overlays.isRequired,
@@ -25,11 +36,13 @@ class MapSwitchButton extends React.Component {
     t: PropTypes.func.isRequired,
   };
 
-  state = {
+  state: IState = {
     show: false,
   };
 
-  setButton = button => {
+  button: Button | null = null;
+
+  setButton = (button: Button | null) => {
     this.button = button;
   };
 
@@ -41,15 +54,16 @@ class MapSwitchButton extends React.Component {
     this.setState({ show: false });
   };
 
-  handleMapSelect = mapType => {
+  handleMapSelect = (mapType: string) => {
     this.setState({ show: false });
     if (this.props.mapType !== mapType) {
       this.props.onMapRefocus({ mapType });
     }
   };
 
-  handleOverlaySelect = (e, overlay) => {
-    if (e.target.dataset && e.target.dataset.strava) {
+  handleOverlaySelect = (e: React.MouseEvent<{}>, overlay: string) => {
+    const { dataset } = e.target as HTMLElement;
+    if (dataset && dataset.strava) {
       window.open('https://www.strava.com/heatmap');
       return;
     }
@@ -111,14 +125,16 @@ class MapSwitchButton extends React.Component {
                     <span
                       style={{
                         textDecoration:
-                          zoom < minZoom ? 'line-through' : 'none',
+                          minZoom !== undefined && zoom < minZoom
+                            ? 'line-through'
+                            : 'none',
                       }}
                     >
                       {t(`mapLayers.base.${type}`)}
                     </span>
                     {key && ' '}
                     {key && <kbd>{key}</kbd>}
-                    {zoom < minZoom && (
+                    {minZoom !== undefined && zoom < minZoom && (
                       <>
                         {' '}
                         <FontAwesomeIcon
@@ -153,7 +169,8 @@ class MapSwitchButton extends React.Component {
                     <span
                       style={{
                         textDecoration:
-                          zoom < minZoom || (strava && !stravaAuth)
+                          (minZoom !== undefined && zoom < minZoom) ||
+                          (strava && !stravaAuth)
                             ? 'line-through'
                             : 'none',
                       }}
@@ -162,7 +179,7 @@ class MapSwitchButton extends React.Component {
                     </span>
                     {key && ' '}
                     {key && <kbd>{key}</kbd>}
-                    {zoom < minZoom && (
+                    {minZoom !== undefined && zoom < minZoom && (
                       <>
                         {' '}
                         <FontAwesomeIcon
@@ -205,7 +222,7 @@ class MapSwitchButton extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,
   mapType: state.map.mapType,
   overlays: state.map.overlays,
@@ -217,7 +234,7 @@ const mapStateToProps = state => ({
   stravaAuth: state.map.stravaAuth,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMapRefocus(changes) {
     dispatch(mapRefocus(changes));
   },

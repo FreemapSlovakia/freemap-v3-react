@@ -1,24 +1,33 @@
 import axios from 'axios';
 import React, { useCallback, useRef, useState } from 'react';
-import PropTypes from 'prop-types';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { Overlay } from 'react-bootstrap';
+import { LatLon } from 'fm3/types/common';
+import { CRS } from 'leaflet';
 
-function OpenInExternalAppMenuButton({
+interface IProps extends LatLon {
+  lat: number;
+  lon: number;
+  zoom: number;
+  mapType: string;
+  expertMode: boolean;
+  t: Translator;
+}
+
+const OpenInExternalAppMenuButton: React.FC<IProps> = ({
   lat,
   lon,
   zoom,
   mapType,
   t,
   expertMode,
-}) {
-  const buttonRef = useRef();
+}) => {
+  const buttonRef = useRef<Button>();
   const [show, setShow] = useState(false);
 
   const handleMenuItemClick = useCallback(
@@ -41,22 +50,25 @@ function OpenInExternalAppMenuButton({
           );
           break;
         case 'josm': {
-          const bounds = getMapLeafletElement().getBounds();
-          const opts = {
-            params: {
-              left: bounds.getWest(),
-              right: bounds.getEast(),
-              top: bounds.getNorth(),
-              bottom: bounds.getSouth(),
-            },
-          };
-          [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
-            axios.get(`${proto}://localhost:${port}/load_and_zoom`, opts);
-          });
+          const leaflet = getMapLeafletElement();
+          if (leaflet) {
+            const bounds = leaflet.getBounds();
+            const opts = {
+              params: {
+                left: bounds.getWest(),
+                right: bounds.getEast(),
+                top: bounds.getNorth(),
+                bottom: bounds.getSouth(),
+              },
+            };
+            [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
+              axios.get(`${proto}://localhost:${port}/load_and_zoom`, opts);
+            });
+          }
           break;
         }
         case 'hiking.sk': {
-          const point = L.CRS.EPSG3857.project(L.latLng(lat, lon));
+          const point = CRS.EPSG3857.project({ lat, lng: lon });
           window.open(
             `https://mapy.hiking.sk/?zoom=${zoom > 15 ? 15 : zoom}&lon=${
               point.x
@@ -108,16 +120,18 @@ function OpenInExternalAppMenuButton({
 
   const getTarget = useCallback(() => buttonRef.current, [buttonRef.current]);
 
+  const Ovl = Overlay as any; // because trigger is missing
+
   return (
     <>
       <Button
-        ref={buttonRef}
+        ref={buttonRef as React.MutableRefObject<Button>}
         onClick={handleButtonClick}
         title={t('external.openInExternal')}
       >
         <FontAwesomeIcon icon="external-link" />
       </Button>
-      <Overlay
+      <Ovl
         rootClose
         placement="bottom"
         trigger="focus"
@@ -165,18 +179,9 @@ function OpenInExternalAppMenuButton({
             )}
           </ul>
         </Popover>
-      </Overlay>
+      </Ovl>
     </>
   );
-}
-
-OpenInExternalAppMenuButton.propTypes = {
-  lat: PropTypes.number.isRequired,
-  lon: PropTypes.number.isRequired,
-  zoom: PropTypes.number.isRequired,
-  mapType: PropTypes.string,
-  expertMode: PropTypes.bool,
-  t: PropTypes.func.isRequired,
 };
 
 export default injectL10n()(OpenInExternalAppMenuButton);

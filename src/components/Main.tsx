@@ -2,7 +2,6 @@ import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { compose } from 'redux';
@@ -15,7 +14,7 @@ import Panel from 'react-bootstrap/lib/Panel';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import Popover from 'react-bootstrap/lib/Popover';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import Layers from 'fm3/components/Layers';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -76,7 +75,6 @@ import AboutModal from 'fm3/components/AboutModal';
 import SupportUsModal from 'fm3/components/SupportUsModal';
 import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 
-import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
@@ -97,45 +95,26 @@ import TrackingModal from 'fm3/components/tracking/TrackingModal';
 import TrackingResult from 'fm3/components/tracking/TrackingResult';
 import TrackingMenu from 'fm3/components/tracking/TrackingMenu.tsx';
 
-class Main extends React.Component {
-  static propTypes = {
-    lat: PropTypes.number.isRequired,
-    lon: PropTypes.number.isRequired,
-    zoom: PropTypes.number.isRequired,
-    tool: FmPropTypes.tool,
-    mapType: FmPropTypes.mapType.isRequired,
-    onToolSet: PropTypes.func.isRequired,
-    onMapRefocus: PropTypes.func.isRequired,
-    activeModal: PropTypes.string,
-    progress: PropTypes.bool.isRequired,
-    onLocationSet: PropTypes.func.isRequired,
-    mouseCursor: PropTypes.string.isRequired,
-    onCheckLogin: PropTypes.func.isRequired,
-    ignoreEscape: PropTypes.bool.isRequired,
-    showElevationChart: PropTypes.bool.isRequired,
-    showGalleryPicker: PropTypes.bool.isRequired,
-    onMapClear: PropTypes.func.isRequired,
-    onLocate: PropTypes.func.isRequired,
-    locate: PropTypes.bool.isRequired,
-    showLoginModal: PropTypes.bool,
-    onMapReset: PropTypes.func.isRequired,
-    showMenu: PropTypes.bool,
-    expertMode: PropTypes.bool,
-    t: PropTypes.func.isRequired,
-    overlayPaneOpacity: PropTypes.number.isRequired,
-    embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
-    overlays: FmPropTypes.overlays.isRequired,
-    imhd: PropTypes.bool,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  showInfoBar: boolean;
+}
+
+class Main extends React.Component<Props, IState> {
+  state: IState = {
     showInfoBar: true,
   };
+
+  map: Map | null = null;
 
   componentDidMount() {
     this.props.onCheckLogin();
 
-    setMapLeafletElement(this.map.leafletElement);
+    setMapLeafletElement(this.map ? this.map.leafletElement : null);
     document.addEventListener('keydown', event => {
       const embed = window.self !== window.top;
       if (
@@ -204,13 +183,17 @@ class Main extends React.Component {
   };
 
   handleZoomInClick = () => {
-    const zoom = this.map.leafletElement.getZoom() + 1;
-    this.props.onMapRefocus({ zoom });
+    if (this.map) {
+      const zoom = this.map.leafletElement.getZoom() + 1;
+      this.props.onMapRefocus({ zoom });
+    }
   };
 
   handleZoomOutClick = () => {
-    const zoom = this.map.leafletElement.getZoom() - 1;
-    this.props.onMapRefocus({ zoom });
+    if (this.map) {
+      const zoom = this.map.leafletElement.getZoom() - 1;
+      this.props.onMapRefocus({ zoom });
+    }
   };
 
   handleInfoBarCloseClick = () => {
@@ -407,7 +390,7 @@ class Main extends React.Component {
                   onClick={this.handleZoomInClick}
                   title={t('main.zoomIn')}
                   disabled={
-                    this.map &&
+                    !!this.map &&
                     this.props.zoom >= this.map.leafletElement.getMaxZoom()
                   }
                 >
@@ -417,7 +400,7 @@ class Main extends React.Component {
                   onClick={this.handleZoomOutClick}
                   title={t('main.zoomOut')}
                   disabled={
-                    this.map &&
+                    !!this.map &&
                     this.props.zoom <= this.map.leafletElement.getMinZoom()
                   }
                 >
@@ -461,7 +444,7 @@ class Main extends React.Component {
           ref={map => {
             this.map = map;
           }}
-          center={L.latLng(lat, lon)}
+          center={{ lat, lng: lon }}
           zoom={zoom}
           onMoveend={this.handleMapMoveEnd}
           onMousemove={handleMapMouseMove}
@@ -563,7 +546,7 @@ export default compose(
 
 function handleMapClick({ latlng: { lat, lng: lon } }) {
   // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-  if (!window.preventMapClick) {
+  if (!window['preventMapClick']) {
     mapEventEmitter.emit('mapClick', lat, lon);
   }
 }

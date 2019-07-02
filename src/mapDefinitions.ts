@@ -52,6 +52,7 @@ export interface ILayerDef {
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
   subdomains?: string;
+  strava?: boolean;
 }
 
 export const baseLayers: ILayerDef[] = [

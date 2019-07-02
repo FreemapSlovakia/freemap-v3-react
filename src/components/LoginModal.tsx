@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -12,15 +11,20 @@ import {
   authLoginWithGoogle,
   authLoginClose,
 } from 'fm3/actions/authActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
 
-function LoginModal({
+type Props = ReturnType<typeof mapDispatchToProps> & {
+  t: Translator;
+};
+
+const LoginModal: React.FC<Props> = ({
   onClose,
   onLoginWithFacebook,
   onLoginWithGoogle,
   onLoginWithOsm,
   t,
-}) {
+}) => {
   return (
     <Modal show onHide={onClose}>
       <Modal.Header closeButton>
@@ -62,17 +66,9 @@ function LoginModal({
       </Modal.Footer>
     </Modal>
   );
-}
-
-LoginModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  onLoginWithFacebook: PropTypes.func.isRequired,
-  onLoginWithGoogle: PropTypes.func.isRequired,
-  onLoginWithOsm: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onClose() {
     dispatch(authLoginClose());
   },

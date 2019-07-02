@@ -1,11 +1,11 @@
 import { createStandardAction } from 'typesafe-actions';
 
 export interface ObjectsResult {
-  id: string;
+  id: number;
   lat: number;
   lon: number;
-  tags: string[];
-  typeId: string;
+  tags: { [key: string]: string };
+  typeId: number;
 }
 
 export const objectsSetFilter = createStandardAction('OBJECTS_SET_FILTER')<

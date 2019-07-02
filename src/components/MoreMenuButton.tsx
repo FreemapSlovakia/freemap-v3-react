@@ -1,52 +1,42 @@
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import React from 'react';
-import PropTypes from 'prop-types';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
-import injectL10n from 'fm3/l10nInjector';
-import * as FmPropTypes from 'fm3/propTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
-import { setActiveModal, setLocation } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import {
   authStartLogout,
   authChooseLoginMethod,
 } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-class MoreMenuButton extends React.Component {
-  static propTypes = {
-    onSettingsShow: PropTypes.func.isRequired,
-    onGpxExport: PropTypes.func.isRequired,
-    onPdfExport: PropTypes.func.isRequired,
-    onShare: PropTypes.func.isRequired,
-    onEmbed: PropTypes.func.isRequired,
-    onSupportUs: PropTypes.func.isRequired,
-    onAbout: PropTypes.func.isRequired,
-    onLegend: PropTypes.func.isRequired,
-    onLogin: PropTypes.func.isRequired,
-    onLogout: PropTypes.func.isRequired,
-    user: PropTypes.shape({
-      name: PropTypes.string.isRequired,
-    }),
-    onTip: PropTypes.func.isRequired,
-    onLanguageChange: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-    chosenLanguage: PropTypes.string,
-    mapType: FmPropTypes.mapType.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  show: boolean;
+  submenu: string | null;
+}
+
+class MoreMenuButton extends React.Component<Props, IState> {
+  state: IState = {
     show: false,
     submenu: null,
   };
 
-  setButton = button => {
+  button: Button | null = null;
+  setButton = (button: Button) => {
     this.button = button;
   };
 
@@ -358,13 +348,14 @@ class MoreMenuButton extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   user: state.auth.user,
   chosenLanguage: state.l10n.chosenLanguage,
+  language: state.l10n.language,
   mapType: state.map.mapType,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSettingsShow() {
     dispatch(setActiveModal('settings'));
   },
@@ -389,19 +380,16 @@ const mapDispatchToProps = dispatch => ({
   onLegend() {
     dispatch(setActiveModal('legend'));
   },
-  onLocationSet(lat, lon, accuracy) {
-    dispatch(setLocation({ lat, lon, accuracy }));
-  },
   onLogin() {
     dispatch(authChooseLoginMethod());
   },
   onLogout() {
     dispatch(authStartLogout());
   },
-  onTip(which) {
+  onTip(which: string) {
     dispatch(tipsShow(which));
   },
-  onLanguageChange(lang) {
+  onLanguageChange(lang: string | null) {
     dispatch(l10nSetChosenLanguage(lang));
   },
 });
