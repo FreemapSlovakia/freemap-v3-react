@@ -146,35 +146,39 @@ class MeasurementMenu extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  tool: state.main.tool,
+  distancePoints: state.distanceMeasurement.points,
+  areaPoints: state.areaMeasurement.points,
+  routeDefined: state.distanceMeasurement.points.length > 1,
+  elevationChartTrackGeojson: state.elevationChart.trackGeojson,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onToolSet(tool) {
+    dispatch(setTool(tool));
+  },
+  onElevationChartTrackGeojsonSet(trackGeojson) {
+    dispatch(elevationChartSetTrackGeojson(trackGeojson));
+  },
+  onElevationChartClose() {
+    dispatch(elevationChartClose());
+  },
+  onAreaPointAdd(point, position) {
+    dispatch(areaMeasurementAddPoint({ point, position }));
+  },
+  onDistPointAdd(point, position) {
+    dispatch(distanceMeasurementAddPoint({ point, position }));
+  },
+  onElePointSet(point) {
+    dispatch(elevationMeasurementSetPoint(point));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      tool: state.main.tool,
-      distancePoints: state.distanceMeasurement.points,
-      areaPoints: state.areaMeasurement.points,
-      routeDefined: state.distanceMeasurement.points.length > 1,
-      elevationChartTrackGeojson: state.elevationChart.trackGeojson,
-    }),
-    dispatch => ({
-      onToolSet(tool) {
-        dispatch(setTool(tool));
-      },
-      onElevationChartTrackGeojsonSet(trackGeojson) {
-        dispatch(elevationChartSetTrackGeojson(trackGeojson));
-      },
-      onElevationChartClose() {
-        dispatch(elevationChartClose());
-      },
-      onAreaPointAdd(point, position) {
-        dispatch(areaMeasurementAddPoint({ point, position }));
-      },
-      onDistPointAdd(point, position) {
-        dispatch(distanceMeasurementAddPoint({ point, position }));
-      },
-      onElePointSet(point) {
-        dispatch(elevationMeasurementSetPoint(point));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(MeasurementMenu);

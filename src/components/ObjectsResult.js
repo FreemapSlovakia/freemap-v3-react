@@ -48,10 +48,12 @@ ObjectsResult.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  objects: state.objects.objects,
+  language: state.l10n.language,
+});
+
 export default compose(
   injectL10n(),
-  connect(state => ({
-    objects: state.objects.objects,
-    language: state.l10n.language,
-  })),
+  connect(mapStateToProps),
 )(ObjectsResult);

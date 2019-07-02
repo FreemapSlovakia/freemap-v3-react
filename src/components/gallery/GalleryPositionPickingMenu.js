@@ -46,19 +46,23 @@ GalleryPositionPickingMenu.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  pickingPosition: state.gallery.pickingPositionForId !== null,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onPositionConfirm() {
+    dispatch(galleryConfirmPickedPosition());
+  },
+  onPositionCancel() {
+    dispatch(gallerySetItemForPositionPicking(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      pickingPosition: state.gallery.pickingPositionForId !== null,
-    }),
-    dispatch => ({
-      onPositionConfirm() {
-        dispatch(galleryConfirmPickedPosition());
-      },
-      onPositionCancel() {
-        dispatch(gallerySetItemForPositionPicking(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(GalleryPositionPickingMenu);

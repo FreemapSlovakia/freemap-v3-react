@@ -159,13 +159,15 @@ TrackViewerDetails.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  startPoints: state.trackViewer.startPoints,
+  finishPoints: state.trackViewer.finishPoints,
+  trackGeojson: state.trackViewer.trackGeojson,
+  eleSmoothingFactor: state.main.eleSmoothingFactor,
+  language: state.l10n.language,
+});
+
 export default compose(
   injectL10n(),
-  connect(state => ({
-    startPoints: state.trackViewer.startPoints,
-    finishPoints: state.trackViewer.finishPoints,
-    trackGeojson: state.trackViewer.trackGeojson,
-    eleSmoothingFactor: state.main.eleSmoothingFactor,
-    language: state.l10n.language,
-  })),
+  connect(mapStateToProps),
 )(TrackViewerDetails);

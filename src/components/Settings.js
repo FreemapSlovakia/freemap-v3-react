@@ -273,9 +273,7 @@ class Settings extends React.Component {
                               icon={selectedOverlayDetails.icon}
                             />{' '}
                             {t(
-                              `mapLayers.overlay.${
-                                selectedOverlayDetails.type
-                              }`,
+                              `mapLayers.overlay.${selectedOverlayDetails.type}`,
                             )}{' '}
                             {nf0.format(
                               (overlayOpacity[selectedOverlay] || 1) * 100,
@@ -400,23 +398,32 @@ class Settings extends React.Component {
   }
 }
 
-export default compose(
-  injectL10n(),
-  connect(
-    state => ({
-      tileFormat: state.map.tileFormat,
-      homeLocation: state.main.homeLocation,
-      overlayOpacity: state.map.overlayOpacity,
-      overlayPaneOpacity: state.map.overlayPaneOpacity,
-      expertMode: state.main.expertMode,
-      eleSmoothingFactor: state.main.eleSmoothingFactor,
-      selectingHomeLocation: state.main.selectingHomeLocation,
-      user: state.auth.user,
-      preventTips: state.tips.preventTips,
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onSave(
+const mapStateToProps = state => ({
+  tileFormat: state.map.tileFormat,
+  homeLocation: state.main.homeLocation,
+  overlayOpacity: state.map.overlayOpacity,
+  overlayPaneOpacity: state.map.overlayPaneOpacity,
+  expertMode: state.main.expertMode,
+  eleSmoothingFactor: state.main.eleSmoothingFactor,
+  selectingHomeLocation: state.main.selectingHomeLocation,
+  user: state.auth.user,
+  preventTips: state.tips.preventTips,
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onSave(
+    tileFormat,
+    homeLocation,
+    overlayOpacity,
+    overlayPaneOpacity,
+    expertMode,
+    trackViewerEleSmoothingFactor,
+    user,
+    preventTips,
+  ) {
+    dispatch(
+      saveSettings({
         tileFormat,
         homeLocation,
         overlayOpacity,
@@ -425,29 +432,24 @@ export default compose(
         trackViewerEleSmoothingFactor,
         user,
         preventTips,
-      ) {
-        dispatch(
-          saveSettings({
-            tileFormat,
-            homeLocation,
-            overlayOpacity,
-            overlayPaneOpacity,
-            expertMode,
-            trackViewerEleSmoothingFactor,
-            user,
-            preventTips,
-          }),
-        );
-      },
-      onClose() {
-        dispatch(setActiveModal(null));
-      },
-      onHomeLocationSelect() {
-        dispatch(setSelectingHomeLocation(true));
-      },
-      onHomeLocationSelectionFinish() {
-        dispatch(setSelectingHomeLocation(false));
-      },
-    }),
+      }),
+    );
+  },
+  onClose() {
+    dispatch(setActiveModal(null));
+  },
+  onHomeLocationSelect() {
+    dispatch(setSelectingHomeLocation(true));
+  },
+  onHomeLocationSelectionFinish() {
+    dispatch(setSelectingHomeLocation(false));
+  },
+});
+
+export default compose(
+  injectL10n(),
+  connect(
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Settings);

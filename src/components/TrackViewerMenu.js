@@ -119,38 +119,40 @@ class TrackViewerMenu extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  hasTrack: !!state.trackViewer.trackGeojson,
+  trackUID: state.trackViewer.trackUID,
+  elevationChartActive: !!state.elevationChart.trackGeojson,
+  colorizeTrackBy: state.trackViewer.colorizeTrackBy,
+  trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(state),
+});
+
+const mapDispatchToProps = dispatch => ({
+  onUpload() {
+    dispatch(setActiveModal('upload-track'));
+  },
+  onServerUpload() {
+    dispatch(trackViewerUploadTrack());
+  },
+  onColorizeTrackBy(approach) {
+    dispatch(trackViewerColorizeTrackBy(approach));
+  },
+  onShowTrackInfo() {
+    dispatch(trackViewerShowInfo());
+  },
+  onToggleElevationChart() {
+    dispatch(trackViewerToggleElevationChart());
+  },
+  onShare() {
+    dispatch(setActiveModal('track-viewer-share'));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      hasTrack: !!state.trackViewer.trackGeojson,
-      trackUID: state.trackViewer.trackUID,
-      elevationChartActive: !!state.elevationChart.trackGeojson,
-      colorizeTrackBy: state.trackViewer.colorizeTrackBy,
-      trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(
-        state,
-      ),
-    }),
-    dispatch => ({
-      onUpload() {
-        dispatch(setActiveModal('upload-track'));
-      },
-      onServerUpload() {
-        dispatch(trackViewerUploadTrack());
-      },
-      onColorizeTrackBy(approach) {
-        dispatch(trackViewerColorizeTrackBy(approach));
-      },
-      onShowTrackInfo() {
-        dispatch(trackViewerShowInfo());
-      },
-      onToggleElevationChart() {
-        dispatch(trackViewerToggleElevationChart());
-      },
-      onShare() {
-        dispatch(setActiveModal('track-viewer-share'));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TrackViewerMenu);
 

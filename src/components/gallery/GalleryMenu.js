@@ -65,24 +65,28 @@ GalleryMenu.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  filterIsActive: Object.keys(state.gallery.filter).some(
+    key => state.gallery.filter[key],
+  ),
+});
+
+const mapDispatchToProps = dispatch => ({
+  onUpload() {
+    dispatch(galleryShowUploadModal());
+  },
+  onFilterShow() {
+    dispatch(galleryShowFilter());
+  },
+  onOrderSelect(order) {
+    dispatch(galleryList(order));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      filterIsActive: Object.keys(state.gallery.filter).some(
-        key => state.gallery.filter[key],
-      ),
-    }),
-    dispatch => ({
-      onUpload() {
-        dispatch(galleryShowUploadModal());
-      },
-      onFilterShow() {
-        dispatch(galleryShowFilter());
-      },
-      onOrderSelect(order) {
-        dispatch(galleryList(order));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(GalleryMenu);

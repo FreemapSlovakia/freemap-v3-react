@@ -58,22 +58,26 @@ InfoPointMenu.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  isActive: state.infoPoint.activeIndex !== null,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onInfoPointAdd(lat, lon) {
+    dispatch(infoPointAdd({ lat, lon, label: '' }));
+  },
+  onLabelModify() {
+    dispatch(setActiveModal('info-point-change-label'));
+  },
+  onDelete() {
+    dispatch(infoPointDelete());
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      isActive: state.infoPoint.activeIndex !== null,
-    }),
-    dispatch => ({
-      onInfoPointAdd(lat, lon) {
-        dispatch(infoPointAdd({ lat, lon, label: '' }));
-      },
-      onLabelModify() {
-        dispatch(setActiveModal('info-point-change-label'));
-      },
-      onDelete() {
-        dispatch(infoPointDelete());
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(InfoPointMenu);

@@ -63,14 +63,16 @@ export class ShareMapModal extends React.Component {
   }
 }
 
+const mapDispatchToProps = dispatch => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
     null,
-    dispatch => ({
-      onModalClose() {
-        dispatch(setActiveModal(null));
-      },
-    }),
+    mapDispatchToProps,
   ),
 )(ShareMapModal);

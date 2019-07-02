@@ -374,57 +374,61 @@ function parse2(m) {
   ];
 }
 
+const mapStateToProps = state => ({
+  items: state.gallery.items,
+  visible: state.gallery.pickingPositionForId === null,
+  uploading: !!state.gallery.uploadingId,
+  allTags: state.gallery.tags,
+  showPreview: state.gallery.showPreview,
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onItemAdd(item) {
+    dispatch(galleryAddItem(item));
+  },
+  onItemRemove(id) {
+    dispatch(galleryRemoveItem(id));
+  },
+  onUpload() {
+    dispatch(galleryUpload());
+  },
+  onClose(ask) {
+    if (ask) {
+      dispatch(
+        toastsAdd({
+          collapseKey: 'galleryUploadModal.close',
+          messageKey: 'general.closeWithoutSaving',
+          style: 'warning',
+          actions: [
+            {
+              nameKey: 'general.yes',
+              action: galleryHideUploadModal(),
+              style: 'danger',
+            },
+            { nameKey: 'general.no' },
+          ],
+        }),
+      );
+    } else {
+      dispatch(galleryHideUploadModal());
+    }
+  },
+  onPositionPick(id) {
+    dispatch(gallerySetItemForPositionPicking(id));
+  },
+  onItemChange(id, item) {
+    dispatch(gallerySetItem({ id, item }));
+  },
+  onShowPreviewToggle() {
+    dispatch(galleryToggleShowPreview());
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      items: state.gallery.items,
-      visible: state.gallery.pickingPositionForId === null,
-      uploading: !!state.gallery.uploadingId,
-      allTags: state.gallery.tags,
-      showPreview: state.gallery.showPreview,
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onItemAdd(item) {
-        dispatch(galleryAddItem(item));
-      },
-      onItemRemove(id) {
-        dispatch(galleryRemoveItem(id));
-      },
-      onUpload() {
-        dispatch(galleryUpload());
-      },
-      onClose(ask) {
-        if (ask) {
-          dispatch(
-            toastsAdd({
-              collapseKey: 'galleryUploadModal.close',
-              messageKey: 'general.closeWithoutSaving',
-              style: 'warning',
-              actions: [
-                {
-                  nameKey: 'general.yes',
-                  action: galleryHideUploadModal(),
-                  style: 'danger',
-                },
-                { nameKey: 'general.no' },
-              ],
-            }),
-          );
-        } else {
-          dispatch(galleryHideUploadModal());
-        }
-      },
-      onPositionPick(id) {
-        dispatch(gallerySetItemForPositionPicking(id));
-      },
-      onItemChange(id, item) {
-        dispatch(gallerySetItem({ id, item }));
-      },
-      onShowPreviewToggle() {
-        dispatch(galleryToggleShowPreview());
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(GalleryUploadModal);

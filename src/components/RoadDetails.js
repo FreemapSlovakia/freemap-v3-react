@@ -65,10 +65,12 @@ RoadDetails.propTypes = {
   mapType: FmPropTypes.mapType.isRequired,
 };
 
+const mapStateToProps = state => ({
+  mapType: state.map.mapType,
+  language: state.l10n.language,
+});
+
 export default compose(
   injectL10n(),
-  connect(state => ({
-    mapType: state.map.mapType,
-    language: state.l10n.language,
-  })),
+  connect(mapStateToProps),
 )(RoadDetails);

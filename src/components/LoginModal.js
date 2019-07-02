@@ -72,23 +72,25 @@ LoginModal.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapDispatchToProps = dispatch => ({
+  onClose() {
+    dispatch(authLoginClose());
+  },
+  onLoginWithFacebook() {
+    dispatch(authLoginWithFacebook());
+  },
+  onLoginWithGoogle() {
+    dispatch(authLoginWithGoogle());
+  },
+  onLoginWithOsm() {
+    dispatch(authLoginWithOsm());
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    () => ({}),
-    dispatch => ({
-      onClose() {
-        dispatch(authLoginClose());
-      },
-      onLoginWithFacebook() {
-        dispatch(authLoginWithFacebook());
-      },
-      onLoginWithGoogle() {
-        dispatch(authLoginWithGoogle());
-      },
-      onLoginWithOsm() {
-        dispatch(authLoginWithOsm());
-      },
-    }),
+    undefined,
+    mapDispatchToProps,
   ),
 )(LoginModal);

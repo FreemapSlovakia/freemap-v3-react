@@ -358,54 +358,58 @@ class MoreMenuButton extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  user: state.auth.user,
+  chosenLanguage: state.l10n.chosenLanguage,
+  mapType: state.map.mapType,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onSettingsShow() {
+    dispatch(setActiveModal('settings'));
+  },
+  onGpxExport() {
+    dispatch(setActiveModal('export-gpx'));
+  },
+  onPdfExport() {
+    dispatch(setActiveModal('export-pdf'));
+  },
+  onShare() {
+    dispatch(setActiveModal('share'));
+  },
+  onEmbed() {
+    dispatch(setActiveModal('embed'));
+  },
+  onSupportUs() {
+    dispatch(setActiveModal('supportUs'));
+  },
+  onAbout() {
+    dispatch(setActiveModal('about'));
+  },
+  onLegend() {
+    dispatch(setActiveModal('legend'));
+  },
+  onLocationSet(lat, lon, accuracy) {
+    dispatch(setLocation({ lat, lon, accuracy }));
+  },
+  onLogin() {
+    dispatch(authChooseLoginMethod());
+  },
+  onLogout() {
+    dispatch(authStartLogout());
+  },
+  onTip(which) {
+    dispatch(tipsShow(which));
+  },
+  onLanguageChange(lang) {
+    dispatch(l10nSetChosenLanguage(lang));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      user: state.auth.user,
-      chosenLanguage: state.l10n.chosenLanguage,
-      mapType: state.map.mapType,
-    }),
-    dispatch => ({
-      onSettingsShow() {
-        dispatch(setActiveModal('settings'));
-      },
-      onGpxExport() {
-        dispatch(setActiveModal('export-gpx'));
-      },
-      onPdfExport() {
-        dispatch(setActiveModal('export-pdf'));
-      },
-      onShare() {
-        dispatch(setActiveModal('share'));
-      },
-      onEmbed() {
-        dispatch(setActiveModal('embed'));
-      },
-      onSupportUs() {
-        dispatch(setActiveModal('supportUs'));
-      },
-      onAbout() {
-        dispatch(setActiveModal('about'));
-      },
-      onLegend() {
-        dispatch(setActiveModal('legend'));
-      },
-      onLocationSet(lat, lon, accuracy) {
-        dispatch(setLocation({ lat, lon, accuracy }));
-      },
-      onLogin() {
-        dispatch(authChooseLoginMethod());
-      },
-      onLogout() {
-        dispatch(authStartLogout());
-      },
-      onTip(which) {
-        dispatch(tipsShow(which));
-      },
-      onLanguageChange(lang) {
-        dispatch(l10nSetChosenLanguage(lang));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(MoreMenuButton);

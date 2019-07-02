@@ -499,61 +499,65 @@ class Main extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  lat: state.map.lat,
+  lon: state.map.lon,
+  zoom: state.map.zoom,
+  tool: state.main.tool,
+  embedFeatures: state.main.embedFeatures,
+  mapType: state.map.mapType,
+  activeModal: state.main.activeModal,
+  progress: !!state.main.progress.length,
+  mouseCursor: selectMouseCursor(state),
+  user: state.auth.user,
+  ignoreEscape: !!(
+    (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
+    state.gallery.activeImageId ||
+    state.gallery.showPosition
+  ),
+  showElevationChart: !!state.elevationChart.elevationProfilePoints,
+  showGalleryPicker: isShowGalleryPicker(state),
+  locate: state.main.locate,
+  showLoginModal: state.auth.chooseLoginMethod,
+  showMenu:
+    !state.main.selectingHomeLocation &&
+    !state.gallery.pickingPositionForId &&
+    !state.gallery.showPosition,
+  expertMode: state.main.expertMode,
+  overlayPaneOpacity: state.map.overlayPaneOpacity,
+  overlays: state.map.overlays,
+  imhd: state.routePlanner.transportType === 'imhd',
+});
+
+const mapDispatchToProps = dispatch => ({
+  onToolSet(tool) {
+    dispatch(setTool(tool));
+  },
+  onMapRefocus(changes) {
+    dispatch(mapRefocus(changes));
+  },
+  onLocationSet(lat, lon, accuracy) {
+    dispatch(setLocation({ lat, lon, accuracy }));
+  },
+  onCheckLogin() {
+    dispatch(authCheckLogin());
+  },
+  onMapClear() {
+    dispatch(clearMap());
+  },
+  onMapReset() {
+    dispatch(mapReset());
+  },
+  onLocate() {
+    dispatch(toggleLocate());
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      lat: state.map.lat,
-      lon: state.map.lon,
-      zoom: state.map.zoom,
-      tool: state.main.tool,
-      embedFeatures: state.main.embedFeatures,
-      mapType: state.map.mapType,
-      activeModal: state.main.activeModal,
-      progress: !!state.main.progress.length,
-      mouseCursor: selectMouseCursor(state),
-      user: state.auth.user,
-      ignoreEscape: !!(
-        (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
-        state.gallery.activeImageId ||
-        state.gallery.showPosition
-      ),
-      showElevationChart: !!state.elevationChart.elevationProfilePoints,
-      showGalleryPicker: isShowGalleryPicker(state),
-      locate: state.main.locate,
-      showLoginModal: state.auth.chooseLoginMethod,
-      showMenu:
-        !state.main.selectingHomeLocation &&
-        !state.gallery.pickingPositionForId &&
-        !state.gallery.showPosition,
-      expertMode: state.main.expertMode,
-      overlayPaneOpacity: state.map.overlayPaneOpacity,
-      overlays: state.map.overlays, // for attribution
-      imhd: state.routePlanner.transportType === 'imhd', // for attribution
-    }),
-    dispatch => ({
-      onToolSet(tool) {
-        dispatch(setTool(tool));
-      },
-      onMapRefocus(changes) {
-        dispatch(mapRefocus(changes));
-      },
-      onLocationSet(lat, lon, accuracy) {
-        dispatch(setLocation({ lat, lon, accuracy }));
-      },
-      onCheckLogin() {
-        dispatch(authCheckLogin());
-      },
-      onMapClear() {
-        dispatch(clearMap());
-      },
-      onMapReset() {
-        dispatch(mapReset());
-      },
-      onLocate() {
-        dispatch(toggleLocate());
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Main);
 

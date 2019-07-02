@@ -74,19 +74,23 @@ class InfoPointLabelModal extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  label: state.infoPoint.points[state.infoPoint.activeIndex].label,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onInfoPointChangeLabel(label) {
+    dispatch(infoPointChangeLabel(label));
+  },
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      label: state.infoPoint.points[state.infoPoint.activeIndex].label,
-    }),
-    dispatch => ({
-      onInfoPointChangeLabel(label) {
-        dispatch(infoPointChangeLabel(label));
-      },
-      onModalClose() {
-        dispatch(setActiveModal(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(InfoPointLabelModal);

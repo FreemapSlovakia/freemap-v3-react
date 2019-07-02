@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */ // prevented warning in bootstrap code
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -266,18 +264,22 @@ function nt(value) {
   return value instanceof Date && !Number.isNaN(value) ? value : null;
 }
 
+const mapStateToProps = state => ({
+  filter: state.gallery.filter,
+  users: state.gallery.users,
+  tags: state.gallery.tags,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onClose() {
+    dispatch(galleryHideFilter());
+  },
+  onOk(filter) {
+    dispatch(gallerySetFilter(filter));
+  },
+});
+
 export default connect(
-  state => ({
-    filter: state.gallery.filter,
-    users: state.gallery.users,
-    tags: state.gallery.tags,
-  }),
-  dispatch => ({
-    onClose() {
-      dispatch(galleryHideFilter());
-    },
-    onOk(filter) {
-      dispatch(gallerySetFilter(filter));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(GalleryViewerModal);

@@ -45,16 +45,19 @@ TrackViewerShareModal.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  trackUID: state.trackViewer.trackUID,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onClose() {
+    dispatch(setActiveModal(null));
+  },
+});
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      trackUID: state.trackViewer.trackUID,
-    }),
-    dispatch => ({
-      onClose() {
-        dispatch(setActiveModal(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TrackViewerShareModal);

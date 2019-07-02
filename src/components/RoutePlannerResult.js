@@ -367,40 +367,44 @@ function RoutePlannerResult({
   );
 }
 
+const mapStateToProps = state => ({
+  start: state.routePlanner.start,
+  finish: state.routePlanner.finish,
+  midpoints: state.routePlanner.midpoints,
+  alternatives: state.routePlanner.alternatives,
+  activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
+  transportType: state.routePlanner.transportType,
+  mode: state.routePlanner.mode,
+  timestamp: state.routePlanner.timestamp,
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onStartSet(start) {
+    dispatch(routePlannerSetStart({ start, move: true }));
+  },
+  onFinishSet(finish) {
+    dispatch(routePlannerSetFinish({ finish, move: true }));
+  },
+  onAddMidpoint(position, midpoint) {
+    dispatch(routePlannerAddMidpoint({ midpoint, position }));
+  },
+  onMidpointSet(position, midpoint) {
+    dispatch(routePlannerSetMidpoint({ position, midpoint }));
+  },
+  onRemoveMidpoint(position) {
+    dispatch(routePlannerRemoveMidpoint(position));
+  },
+  onAlternativeChange(index) {
+    dispatch(routePlannerSetActiveAlternativeIndex(index));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      start: state.routePlanner.start,
-      finish: state.routePlanner.finish,
-      midpoints: state.routePlanner.midpoints,
-      alternatives: state.routePlanner.alternatives,
-      activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-      transportType: state.routePlanner.transportType,
-      mode: state.routePlanner.mode,
-      timestamp: state.routePlanner.timestamp,
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onStartSet(start) {
-        dispatch(routePlannerSetStart({ start, move: true }));
-      },
-      onFinishSet(finish) {
-        dispatch(routePlannerSetFinish({ finish, move: true }));
-      },
-      onAddMidpoint(position, midpoint) {
-        dispatch(routePlannerAddMidpoint({ midpoint, position }));
-      },
-      onMidpointSet(position, midpoint) {
-        dispatch(routePlannerSetMidpoint({ position, midpoint }));
-      },
-      onRemoveMidpoint(position) {
-        dispatch(routePlannerRemoveMidpoint(position));
-      },
-      onAlternativeChange(index) {
-        dispatch(routePlannerSetActiveAlternativeIndex(index));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(RoutePlannerResult);
 

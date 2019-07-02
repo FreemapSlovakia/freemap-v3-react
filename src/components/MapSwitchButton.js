@@ -205,24 +205,28 @@ class MapSwitchButton extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  zoom: state.map.zoom,
+  mapType: state.map.mapType,
+  overlays: state.map.overlays,
+  expertMode: state.main.expertMode,
+  pictureFilterIsActive: Object.keys(state.gallery.filter).some(
+    key => state.gallery.filter[key],
+  ),
+  isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
+  stravaAuth: state.map.stravaAuth,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onMapRefocus(changes) {
+    dispatch(mapRefocus(changes));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      zoom: state.map.zoom,
-      mapType: state.map.mapType,
-      overlays: state.map.overlays,
-      expertMode: state.main.expertMode,
-      pictureFilterIsActive: Object.keys(state.gallery.filter).some(
-        key => state.gallery.filter[key],
-      ),
-      isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-      stravaAuth: state.map.stravaAuth,
-    }),
-    dispatch => ({
-      onMapRefocus(changes) {
-        dispatch(mapRefocus(changes));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(MapSwitchButton);

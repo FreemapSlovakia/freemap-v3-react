@@ -58,18 +58,22 @@ class InfoPointResult extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  points: state.infoPoint.points,
+  change: state.infoPoint.change,
+  activeIndex: state.infoPoint.activeIndex,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onInfoPointPositionChange(lat, lon) {
+    dispatch(infoPointChangePosition({ lat, lon }));
+  },
+  onSelect(index) {
+    dispatch(infoPointSetActiveIndex(index));
+  },
+});
+
 export default connect(
-  state => ({
-    points: state.infoPoint.points,
-    change: state.infoPoint.change,
-    activeIndex: state.infoPoint.activeIndex,
-  }),
-  dispatch => ({
-    onInfoPointPositionChange(lat, lon) {
-      dispatch(infoPointChangePosition({ lat, lon }));
-    },
-    onSelect(index) {
-      dispatch(infoPointSetActiveIndex(index));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(InfoPointResult);

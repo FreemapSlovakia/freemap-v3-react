@@ -196,20 +196,24 @@ export class ExportPdfModal extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  language: state.l10n.language,
+  hasInfopoints: state.infoPoint.points.length > 1,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+  onExport(settings) {
+    dispatch(exportPdf(settings));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      language: state.l10n.language,
-      hasInfopoints: state.infoPoint.points.length > 1,
-    }),
-    dispatch => ({
-      onModalClose() {
-        dispatch(setActiveModal(null));
-      },
-      onExport(settings) {
-        dispatch(exportPdf(settings));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(ExportPdfModal);

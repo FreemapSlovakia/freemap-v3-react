@@ -58,13 +58,17 @@ class GalleryPicker extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  zoom: state.map.zoom,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onImageRequest(lat, lon) {
+    dispatch(galleryRequestImages({ lat, lon }));
+  },
+});
+
 export default connect(
-  state => ({
-    zoom: state.map.zoom,
-  }),
-  dispatch => ({
-    onImageRequest(lat, lon) {
-      dispatch(galleryRequestImages({ lat, lon }));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(GalleryPicker);

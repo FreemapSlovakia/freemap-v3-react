@@ -50,16 +50,20 @@ class GalleryShowPositionMenu extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  showPosition: state.gallery.showPosition,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onClose() {
+    dispatch(galleryCancelShowOnTheMap());
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      showPosition: state.gallery.showPosition,
-    }),
-    dispatch => ({
-      onClose() {
-        dispatch(galleryCancelShowOnTheMap());
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(GalleryShowPositionMenu);

@@ -1,5 +1,3 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */ // prevented warning in bootstrap code
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -490,9 +488,7 @@ class GalleryViewerModal extends React.Component {
             </Button>
           )}
           <Button
-            href={`${
-              process.env.API_URL
-            }/gallery/pictures/${activeImageId}/image`}
+            href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
             target="_blank"
           >
             <FontAwesomeIcon icon="external-link" />
@@ -511,70 +507,74 @@ class GalleryViewerModal extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  imageIds: state.gallery.imageIds,
+  image: state.gallery.image,
+  activeImageId: state.gallery.activeImageId,
+  zoom: state.map.zoom,
+  pickingPosition: state.gallery.pickingPositionForId !== null,
+  comment: state.gallery.comment,
+  editModel: state.gallery.editModel,
+  user: state.auth.user,
+  allTags: state.gallery.tags,
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onClose() {
+    dispatch(galleryClear(null));
+  },
+  onShowOnTheMap() {
+    dispatch(galleryShowOnTheMap());
+  },
+  onImageSelect(id) {
+    dispatch(galleryRequestImage(id));
+  },
+  onCommentChange(comment) {
+    dispatch(gallerySetComment(comment));
+  },
+  onCommentSubmit() {
+    dispatch(gallerySubmitComment());
+  },
+  onStarsChange(stars) {
+    dispatch(gallerySubmitStars(stars));
+  },
+  onEdit() {
+    dispatch(galleryEditPicture());
+  },
+  onDelete() {
+    dispatch(
+      toastsAdd({
+        collapseKey: 'gallery.deletePicture',
+        messageKey: 'gallery.viewer.deletePrompt',
+        style: 'warning',
+        cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
+        actions: [
+          {
+            nameKey: 'general.yes',
+            action: galleryDeletePicture(),
+            style: 'danger',
+          },
+          { nameKey: 'general.no' },
+        ],
+      }),
+    );
+  },
+  onEditModelChange(editModel) {
+    dispatch(gallerySetEditModel(editModel));
+  },
+  onSave() {
+    dispatch(gallerySavePicture());
+  },
+  onPositionPick() {
+    dispatch(gallerySetItemForPositionPicking(-1));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      imageIds: state.gallery.imageIds,
-      image: state.gallery.image,
-      activeImageId: state.gallery.activeImageId,
-      zoom: state.map.zoom,
-      pickingPosition: state.gallery.pickingPositionForId !== null,
-      comment: state.gallery.comment,
-      editModel: state.gallery.editModel,
-      user: state.auth.user,
-      allTags: state.gallery.tags,
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onClose() {
-        dispatch(galleryClear(null));
-      },
-      onShowOnTheMap() {
-        dispatch(galleryShowOnTheMap());
-      },
-      onImageSelect(id) {
-        dispatch(galleryRequestImage(id));
-      },
-      onCommentChange(comment) {
-        dispatch(gallerySetComment(comment));
-      },
-      onCommentSubmit() {
-        dispatch(gallerySubmitComment());
-      },
-      onStarsChange(stars) {
-        dispatch(gallerySubmitStars(stars));
-      },
-      onEdit() {
-        dispatch(galleryEditPicture());
-      },
-      onDelete() {
-        dispatch(
-          toastsAdd({
-            collapseKey: 'gallery.deletePicture',
-            messageKey: 'gallery.viewer.deletePrompt',
-            style: 'warning',
-            cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
-            actions: [
-              {
-                nameKey: 'general.yes',
-                action: galleryDeletePicture(),
-                style: 'danger',
-              },
-              { nameKey: 'general.no' },
-            ],
-          }),
-        );
-      },
-      onEditModelChange(editModel) {
-        dispatch(gallerySetEditModel(editModel));
-      },
-      onSave() {
-        dispatch(gallerySavePicture());
-      },
-      onPositionPick() {
-        dispatch(gallerySetItemForPositionPicking(-1));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(GalleryViewerModal);

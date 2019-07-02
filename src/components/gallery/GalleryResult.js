@@ -85,19 +85,23 @@ class GalleryResult extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  image: state.gallery.image,
+  activeImageId: state.gallery.activeImageId,
+  isPickingPosition: state.gallery.pickingPositionForId !== null,
+  pickingPosition: state.gallery.pickingPosition,
+  showFilter: state.gallery.showFilter,
+  showUploadModal: state.gallery.showUploadModal,
+  showPosition: state.gallery.showPosition,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onPositionPick(lat, lon) {
+    dispatch(gallerySetPickingPosition({ lat, lon }));
+  },
+});
+
 export default connect(
-  state => ({
-    image: state.gallery.image,
-    activeImageId: state.gallery.activeImageId,
-    isPickingPosition: state.gallery.pickingPositionForId !== null,
-    pickingPosition: state.gallery.pickingPosition,
-    showFilter: state.gallery.showFilter,
-    showUploadModal: state.gallery.showUploadModal,
-    showPosition: state.gallery.showPosition,
-  }),
-  dispatch => ({
-    onPositionPick(lat, lon) {
-      dispatch(gallerySetPickingPosition({ lat, lon }));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(GalleryResult);

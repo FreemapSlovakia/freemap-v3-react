@@ -318,7 +318,7 @@ class TrackViewerResult extends React.Component {
   }
 }
 
-export default connect(state => ({
+const mapStateToProps = state => ({
   trackGeojson: state.trackViewer.trackGeojson,
   startPoints: state.trackViewer.startPoints,
   finishPoints: state.trackViewer.finishPoints,
@@ -326,4 +326,6 @@ export default connect(state => ({
   colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   eleSmoothingFactor: state.main.eleSmoothingFactor,
   language: state.l10n.language,
-}))(TrackViewerResult);
+});
+
+export default connect(mapStateToProps)(TrackViewerResult);

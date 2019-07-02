@@ -90,17 +90,21 @@ class ToolsMenuButton extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  tool: state.main.tool,
+  expertMode: state.main.expertMode,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onToolSet(tool) {
+    dispatch(setTool(tool));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      tool: state.main.tool,
-      expertMode: state.main.expertMode,
-    }),
-    dispatch => ({
-      onToolSet(tool) {
-        dispatch(setTool(tool));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(ToolsMenuButton);

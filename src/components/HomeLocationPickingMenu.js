@@ -29,13 +29,17 @@ HomeLocationPickingMenu.propTypes = {
   onCancel: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  selectingHomeLocation: state.main.selectingHomeLocation,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onCancel() {
+    dispatch(setSelectingHomeLocation(false));
+  },
+});
+
 export default connect(
-  state => ({
-    selectingHomeLocation: state.main.selectingHomeLocation,
-  }),
-  dispatch => ({
-    onCancel() {
-      dispatch(setSelectingHomeLocation(false));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(HomeLocationPickingMenu);

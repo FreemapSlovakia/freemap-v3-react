@@ -118,35 +118,39 @@ class SearchMenu extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  tool: state.main.tool,
+  results: state.search.results,
+  selectedResult: state.search.selectedResult,
+  inProgress: state.search.inProgress,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onDoSearch(query) {
+    dispatch(searchSetQuery(query));
+  },
+  onResultHiglight(result) {
+    dispatch(searchHighlightResult(result));
+  },
+  onResultSelect(result) {
+    dispatch(searchSelectResult(result));
+  },
+  onRoutePlannerWithStartInit(result) {
+    const start = { lat: result.lat, lon: result.lon };
+    dispatch(setTool('route-planner'));
+    dispatch(routePlannerSetStart({ start }));
+  },
+  onRoutePlannerWithFinishInit(result) {
+    const finish = { lat: result.lat, lon: result.lon };
+    dispatch(setTool('route-planner'));
+    dispatch(routePlannerSetFinish({ finish }));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      tool: state.main.tool,
-      results: state.search.results,
-      selectedResult: state.search.selectedResult,
-      inProgress: state.search.inProgress,
-    }),
-    dispatch => ({
-      onDoSearch(query) {
-        dispatch(searchSetQuery(query));
-      },
-      onResultHiglight(result) {
-        dispatch(searchHighlightResult(result));
-      },
-      onResultSelect(result) {
-        dispatch(searchSelectResult(result));
-      },
-      onRoutePlannerWithStartInit(result) {
-        const start = { lat: result.lat, lon: result.lon };
-        dispatch(setTool('route-planner'));
-        dispatch(routePlannerSetStart({ start }));
-      },
-      onRoutePlannerWithFinishInit(result) {
-        const finish = { lat: result.lat, lon: result.lon };
-        dispatch(setTool('route-planner'));
-        dispatch(routePlannerSetFinish({ finish }));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(SearchMenu);

@@ -140,25 +140,29 @@ export class TipsModal extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  tip: state.tips.tip,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+  onPrevious() {
+    dispatch(tipsPrevious());
+  },
+  onNext() {
+    dispatch(tipsNext());
+  },
+  onNextTimePrevent(prevent) {
+    dispatch(tipsPreventNextTime(prevent));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      tip: state.tips.tip,
-    }),
-    dispatch => ({
-      onModalClose() {
-        dispatch(setActiveModal(null));
-      },
-      onPrevious() {
-        dispatch(tipsPrevious());
-      },
-      onNext() {
-        dispatch(tipsNext());
-      },
-      onNextTimePrevent(prevent) {
-        dispatch(tipsPreventNextTime(prevent));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(TipsModal);

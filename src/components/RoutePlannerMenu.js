@@ -356,83 +356,87 @@ class RoutePlannerMenu extends React.Component {
   }
 }
 
+const mapStateToProps = state => ({
+  pickMode: state.routePlanner.pickMode,
+  homeLocation: state.main.homeLocation,
+  transportType: state.routePlanner.transportType,
+  mode: state.routePlanner.mode,
+  pickPointMode: state.routePlanner.pickMode,
+  itineraryIsVisible: state.routePlanner.itineraryIsVisible,
+  routeFound: !!state.routePlanner.alternatives.length,
+  shapePoints: state.routePlanner.shapePoints,
+  activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
+  alternatives: state.routePlanner.alternatives,
+  elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
+  expertMode: state.main.expertMode,
+  language: state.l10n.language,
+  canSwap: !!(state.routePlanner.start && state.routePlanner.finish),
+});
+
+const mapDispatchToProps = dispatch => ({
+  onStartSet(start) {
+    dispatch(routePlannerSetStart({ start }));
+  },
+  onFinishSet(finish) {
+    dispatch(routePlannerSetFinish({ finish }));
+  },
+  onItineraryVisibilityToggle() {
+    dispatch(routePlannerToggleItineraryVisibility());
+  },
+  onTransportTypeChange(transportType) {
+    dispatch(routePlannerSetTransportType(transportType));
+  },
+  onModeChange(mode) {
+    dispatch(routePlannerSetMode(mode));
+  },
+  onPickPointModeChange(pickMode) {
+    dispatch(routePlannerSetPickMode(pickMode));
+  },
+  onProgressStart() {
+    dispatch(startProgress());
+  },
+  onProgressStop() {
+    dispatch(stopProgress());
+  },
+  onGetCurrentPositionError() {
+    dispatch(
+      toastsAdd({
+        collapseKey: 'routePlanner.gpsError',
+        messageKey: 'routePlanner.gpsError',
+        style: 'danger',
+        timeout: 5000,
+      }),
+    );
+  },
+  onMissingHomeLocation() {
+    dispatch(
+      toastsAdd({
+        collapseKey: 'routePlanner.noHomeAlert',
+        messageKey: 'routePlanner.noHomeAlert',
+        style: 'warning',
+        actions: [
+          { name: 'Nastav', action: setActiveModal('settings') },
+          { name: 'Zavri' },
+        ],
+      }),
+    );
+  },
+  onToggleElevationChart() {
+    dispatch(routePlannerToggleElevationChart());
+  },
+  onAlternativeChange(index) {
+    dispatch(routePlannerSetActiveAlternativeIndex(index));
+  },
+  onEndsSwap() {
+    dispatch(routePlannerSwapEnds());
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      pickMode: state.routePlanner.pickMode,
-      homeLocation: state.main.homeLocation,
-      transportType: state.routePlanner.transportType,
-      mode: state.routePlanner.mode,
-      pickPointMode: state.routePlanner.pickMode,
-      itineraryIsVisible: state.routePlanner.itineraryIsVisible,
-      routeFound: !!state.routePlanner.alternatives.length,
-      shapePoints: state.routePlanner.shapePoints,
-      activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-      alternatives: state.routePlanner.alternatives,
-      elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
-      expertMode: state.main.expertMode,
-      language: state.l10n.language,
-      canSwap: !!(state.routePlanner.start && state.routePlanner.finish),
-    }),
-    dispatch => ({
-      onStartSet(start) {
-        dispatch(routePlannerSetStart({ start }));
-      },
-      onFinishSet(finish) {
-        dispatch(routePlannerSetFinish({ finish }));
-      },
-      onItineraryVisibilityToggle() {
-        dispatch(routePlannerToggleItineraryVisibility());
-      },
-      onTransportTypeChange(transportType) {
-        dispatch(routePlannerSetTransportType(transportType));
-      },
-      onModeChange(mode) {
-        dispatch(routePlannerSetMode(mode));
-      },
-      onPickPointModeChange(pickMode) {
-        dispatch(routePlannerSetPickMode(pickMode));
-      },
-      onProgressStart() {
-        dispatch(startProgress());
-      },
-      onProgressStop() {
-        dispatch(stopProgress());
-      },
-      onGetCurrentPositionError() {
-        dispatch(
-          toastsAdd({
-            collapseKey: 'routePlanner.gpsError',
-            messageKey: 'routePlanner.gpsError',
-            style: 'danger',
-            timeout: 5000,
-          }),
-        );
-      },
-      onMissingHomeLocation() {
-        dispatch(
-          toastsAdd({
-            collapseKey: 'routePlanner.noHomeAlert',
-            messageKey: 'routePlanner.noHomeAlert',
-            style: 'warning',
-            actions: [
-              { name: 'Nastav', action: setActiveModal('settings') },
-              { name: 'Zavri' },
-            ],
-          }),
-        );
-      },
-      onToggleElevationChart() {
-        dispatch(routePlannerToggleElevationChart());
-      },
-      onAlternativeChange(index) {
-        dispatch(routePlannerSetActiveAlternativeIndex(index));
-      },
-      onEndsSwap() {
-        dispatch(routePlannerSwapEnds());
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(RoutePlannerMenu);
 

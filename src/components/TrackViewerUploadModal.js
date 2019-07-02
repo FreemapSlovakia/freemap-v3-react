@@ -85,30 +85,32 @@ class TrackViewerUploadModal extends React.Component {
   }
 }
 
+const mapDispatchToProps = dispatch => ({
+  onClose() {
+    dispatch(setActiveModal(null));
+  },
+  onUpload(trackGpx) {
+    dispatch(trackViewerSetTrackUID(null));
+    dispatch(trackViewerSetData({ trackGpx }));
+    dispatch(setActiveModal(null));
+    dispatch(elevationChartClose());
+  },
+  onLoadError(message) {
+    dispatch(
+      toastsAdd({
+        collapseKey: 'trackViewer.loadError',
+        message,
+        style: 'danger',
+        timeout: 5000,
+      }),
+    );
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    () => ({}),
-    dispatch => ({
-      onClose() {
-        dispatch(setActiveModal(null));
-      },
-      onUpload(trackGpx) {
-        dispatch(trackViewerSetTrackUID(null));
-        dispatch(trackViewerSetData({ trackGpx }));
-        dispatch(setActiveModal(null));
-        dispatch(elevationChartClose());
-      },
-      onLoadError(message) {
-        dispatch(
-          toastsAdd({
-            collapseKey: 'trackViewer.loadError',
-            message,
-            style: 'danger',
-            timeout: 5000,
-          }),
-        );
-      },
-    }),
+    null,
+    mapDispatchToProps,
   ),
 )(TrackViewerUploadModal);

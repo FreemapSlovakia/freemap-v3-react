@@ -49,31 +49,34 @@ Toasts.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
+const mapStateToProps = state => ({
+  toasts: state.toasts.toasts,
+});
+
+const mapDispatchToProps = dispatch => ({
+  onAction(id, action) {
+    // TODO use some action flag to indicate that we want the action to close the toast
+    dispatch(toastsRemove(id));
+    if (action) {
+      if (Array.isArray(action)) {
+        action.forEach(a => dispatch(a));
+      } else {
+        dispatch(action);
+      }
+    }
+  },
+  onTimeoutStop(id) {
+    dispatch(toastsStopTimeout(id));
+  },
+  onTimeoutRestart(id) {
+    dispatch(toastsRestartTimeout(id));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      toasts: state.toasts.toasts,
-    }),
-    dispatch => ({
-      onAction(id, action) {
-        // TODO use some action flag to indicate that we want the action to close the toast
-        dispatch(toastsRemove(id));
-
-        if (action) {
-          if (Array.isArray(action)) {
-            action.forEach(a => dispatch(a));
-          } else {
-            dispatch(action);
-          }
-        }
-      },
-      onTimeoutStop(id) {
-        dispatch(toastsStopTimeout(id));
-      },
-      onTimeoutRestart(id) {
-        dispatch(toastsRestartTimeout(id));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(Toasts);
