@@ -1,7 +1,6 @@
 import React, { useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
@@ -9,17 +8,24 @@ import Button from 'react-bootstrap/lib/Button';
 import { infoPointAdd, infoPointDelete } from 'fm3/actions/infoPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-function InfoPointMenu({
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+const InfoPointMenu: React.FC<Props> = ({
   onInfoPointAdd,
   onLabelModify,
   isActive,
   onDelete,
   t,
-}) {
+}) => {
   const handleInfoPointAdd = useCallback(
-    (lat, lon) => {
+    (lat: number, lon: number) => {
       onInfoPointAdd(lat, lon);
     },
     [onInfoPointAdd],
@@ -48,22 +54,14 @@ function InfoPointMenu({
       </Button>
     </>
   );
-}
-
-InfoPointMenu.propTypes = {
-  onLabelModify: PropTypes.func.isRequired,
-  onInfoPointAdd: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  isActive: PropTypes.bool,
-  t: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   isActive: state.infoPoint.activeIndex !== null,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onInfoPointAdd(lat, lon) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onInfoPointAdd(lat: number, lon: number) {
     dispatch(infoPointAdd({ lat, lon, label: '' }));
   },
   onLabelModify() {

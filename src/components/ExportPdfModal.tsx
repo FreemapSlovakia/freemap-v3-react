@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -15,18 +14,27 @@ import 'react-rangeslider/lib/index.css';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-export class ExportPdfModal extends React.Component {
-  static propTypes = {
-    onExport: PropTypes.func.isRequired,
-    onModalClose: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-    language: PropTypes.string,
-    hasInfopoints: PropTypes.bool,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  contours: boolean;
+  shadedRelief: boolean;
+  hikingTrails: boolean;
+  bicycleTrails: boolean;
+  skiTrails: boolean;
+  scale: number;
+  area: 'visible' | 'infopoints';
+}
+
+export class ExportPdfModal extends React.Component<Props, IState> {
+  state: IState = {
     contours: true,
     shadedRelief: true,
     hikingTrails: true,
@@ -196,12 +204,12 @@ export class ExportPdfModal extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
   hasInfopoints: state.infoPoint.points.length > 1,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },

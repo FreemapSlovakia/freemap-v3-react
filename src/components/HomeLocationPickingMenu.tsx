@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
@@ -7,8 +6,17 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setSelectingHomeLocation } from 'fm3/actions/mainActions';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
-function HomeLocationPickingMenu({ selectingHomeLocation, onCancel }) {
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
+
+const HomeLocationPickingMenu: React.FC<Props> = ({
+  selectingHomeLocation,
+  onCancel,
+}) => {
   if (!selectingHomeLocation) {
     return null;
   }
@@ -22,18 +30,13 @@ function HomeLocationPickingMenu({ selectingHomeLocation, onCancel }) {
       </Button>
     </Panel>
   );
-}
-
-HomeLocationPickingMenu.propTypes = {
-  selectingHomeLocation: PropTypes.bool,
-  onCancel: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   selectingHomeLocation: state.main.selectingHomeLocation,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onCancel() {
     dispatch(setSelectingHomeLocation(false));
   },
