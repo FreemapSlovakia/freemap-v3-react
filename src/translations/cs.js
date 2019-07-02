@@ -310,7 +310,7 @@ export default {
       showOnTheMap: 'Ukázat na mapě',
       openInNewWindow: 'Otevřít v novém okně',
       uploaded: 'Nahrál {username} dne {createdAt}',
-      captured: 'Odfoceno dne {takenAt}',
+      captured: 'Vyfoceno dne {takenAt}',
       deletePrompt: 'Smazat obrázek?',
     },
     editForm: {
