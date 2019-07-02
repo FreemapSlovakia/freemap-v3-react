@@ -201,7 +201,7 @@ function handleDragStart() {
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragEnd() {
-  setTimeout(() => {
+  window.setTimeout(() => {
     window['preventMapClick'] = false;
   });
 }

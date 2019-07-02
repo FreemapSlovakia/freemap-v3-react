@@ -40,7 +40,7 @@ export interface IRoutePlannerState {
   timestamp: number | null;
   transportType: TransportType | null;
   start: LatLon | null;
-  midpoints: Array<LatLon | null>;
+  midpoints: Array<LatLon>;
   finish: LatLon | null;
   pickMode: PickMode;
   itineraryIsVisible: boolean;

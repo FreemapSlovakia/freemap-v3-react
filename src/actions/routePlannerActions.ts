@@ -4,11 +4,11 @@ import { TransportType, RouteMode } from 'fm3/reducers/routePlannerReducer';
 
 export const routePlannerSetStart = createStandardAction(
   'ROUTE_PLANNER_SET_START',
-)<{ start: LatLon; move?: boolean }>();
+)<{ start: LatLon | null; move?: boolean }>();
 
 export const routePlannerSetFinish = createStandardAction(
   'ROUTE_PLANNER_SET_FINISH',
-)<{ finish: LatLon; move?: boolean }>();
+)<{ finish: LatLon | null; move?: boolean }>();
 
 export const routePlannerAddMidpoint = createStandardAction(
   'ROUTE_PLANNER_ADD_MIDPOINT',
@@ -28,7 +28,7 @@ export const routePlannerSetTransportType = createStandardAction(
 
 export const routePlannerSetMode = createStandardAction(
   'ROUTE_PLANNER_SET_MODE',
-)<'trip' | 'roundtrip'>();
+)<'trip' | 'roundtrip' | 'route'>();
 
 export const routePlannerSetPickMode = createStandardAction(
   'ROUTE_PLANNER_SET_PICK_MODE',
@@ -51,7 +51,7 @@ export const routePlannerSetParams = createStandardAction(
 )<{
   start: LatLon | null;
   finish: LatLon | null;
-  midpoints: Array<LatLon | null>;
+  midpoints: LatLon[];
   transportType: TransportType | null;
   mode?: RouteMode | null;
 }>();

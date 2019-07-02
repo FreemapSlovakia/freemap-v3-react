@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
@@ -14,30 +13,18 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
 } from 'fm3/actions/routePlannerActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
+import { LatLon } from 'fm3/types/common';
+import { divIcon, DragEndEvent } from 'leaflet';
 
-import * as FmPropTypes from 'fm3/propTypes';
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
-RoutePlannerResult.propTypes = {
-  start: FmPropTypes.point,
-  finish: FmPropTypes.point,
-  midpoints: FmPropTypes.points,
-  activeAlternativeIndex: PropTypes.number.isRequired,
-  alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative).isRequired,
-  onStartSet: PropTypes.func.isRequired,
-  onFinishSet: PropTypes.func.isRequired,
-  onMidpointSet: PropTypes.func.isRequired,
-  onAddMidpoint: PropTypes.func.isRequired,
-  onRemoveMidpoint: PropTypes.func.isRequired,
-  onAlternativeChange: PropTypes.func.isRequired,
-  transportType: PropTypes.string,
-  mode: PropTypes.oneOf(['route', 'trip', 'roundtrip']).isRequired,
-  timestamp: PropTypes.number,
-  t: PropTypes.func.isRequired,
-  language: PropTypes.string,
-};
-
-function RoutePlannerResult({
+const RoutePlannerResult: React.FC<Props> = ({
   transportType,
   t,
   language,
@@ -54,24 +41,27 @@ function RoutePlannerResult({
   midpoints,
   finish,
   timestamp,
-}) {
-  const tRef = useRef();
-  const draggingRef = useRef();
+}) => {
+  const tRef = useRef<number>();
+  const draggingRef = useRef<boolean>();
 
-  const [dragLat, setDragLat] = useState(null);
-  const [dragLon, setDragLon] = useState(null);
-  const [dragSegment, setDragSegment] = useState(null);
-  const [dragAlt, setDragAlt] = useState(null);
+  const [dragLat, setDragLat] = useState<number>();
+  const [dragLon, setDragLon] = useState<number>();
+  const [dragSegment, setDragSegment] = useState<number>();
+  const [dragAlt, setDragAlt] = useState<number>();
 
   useEffect(
     () => () => {
-      clearTimeout(tRef.current);
+      const tim = tRef.current;
+      if (typeof tim === 'number') {
+        clearTimeout(tim);
+      }
     },
     [],
   );
 
   function getSummary() {
-    const { distance, duration, extra } =
+    const { distance = undefined, duration = undefined, extra = undefined } =
       alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
     const nf = Intl.NumberFormat(language, {
       minimumFractionDigits: 1,
@@ -139,7 +129,7 @@ function RoutePlannerResult({
     }
     if (tRef.current) {
       clearTimeout(tRef.current);
-      tRef.current = null;
+      tRef.current = undefined;
     }
 
     setDragLat(e.latlng.lat);
@@ -152,9 +142,9 @@ function RoutePlannerResult({
     if (tRef.current) {
       clearTimeout(tRef.current);
     }
-    tRef.current = setTimeout(() => {
-      setDragLat(null);
-      setDragLon(null);
+    tRef.current = window.setTimeout(() => {
+      setDragLat(undefined);
+      setDragLon(undefined);
     }, 200);
   }, []);
 
@@ -167,7 +157,7 @@ function RoutePlannerResult({
   const handleFutureMouseOver = useCallback(() => {
     if (!draggingRef.current && tRef.current) {
       clearTimeout(tRef.current);
-      tRef.current = null;
+      tRef.current = undefined;
     }
   }, []);
 
@@ -187,23 +177,31 @@ function RoutePlannerResult({
   const handleFutureDragEnd = useCallback(
     e => {
       draggingRef.current = false;
-      setDragLat(null);
-      setDragLon(null);
+      setDragLat(undefined);
+      setDragLon(undefined);
 
-      onAddMidpoint(dragSegment, {
-        lat: e.target.getLatLng().lat,
-        lon: e.target.getLatLng().lng,
-      });
+      if (dragSegment !== undefined) {
+        onAddMidpoint(dragSegment, {
+          lat: e.target.getLatLng().lat,
+          lon: e.target.getLatLng().lng,
+        });
+      }
     },
     [onAddMidpoint, dragSegment],
   );
 
   const handleFutureClick = useCallback(() => {
-    onAlternativeChange(dragAlt);
+    if (dragAlt !== undefined) {
+      onAlternativeChange(dragAlt);
+    }
   }, [onAlternativeChange, dragAlt]);
 
   const handleRouteMarkerDragEnd = useCallback(
-    (movedPointType, position, event) => {
+    (
+      movedPointType: 'start' | 'midpoint' | 'finish',
+      position: number | null,
+      event: DragEndEvent,
+    ) => {
       draggingRef.current = false;
 
       const { lat, lng: lon } = event.target.getLatLng();
@@ -216,7 +214,9 @@ function RoutePlannerResult({
           onFinishSet({ lat, lon });
           break;
         case 'midpoint':
-          onMidpointSet(position, { lat, lon });
+          if (position !== null) {
+            onMidpointSet(position, { lat, lon });
+          }
           break;
         default:
           throw new Error('unknown pointType');
@@ -234,8 +234,7 @@ function RoutePlannerResult({
 
   const special = isSpecial(transportType);
 
-  const Icon = L.divIcon;
-  const circularIcon = new Icon({
+  const circularIcon = divIcon({
     // CircleMarker is not draggable
     iconSize: [14, 14],
     iconAnchor: [7, 7],
@@ -253,15 +252,15 @@ function RoutePlannerResult({
           faIconLeftPadding="2px"
           color="#409a40"
           draggable
-          onDragStart={handleDragStart}
-          onDragEnd={e => handleRouteMarkerDragEnd('start', null, e)}
-          position={L.latLng(start.lat, start.lon)}
-          onClick={handleStartPointClick}
+          ondragstart={handleDragStart}
+          ondragend={e => handleRouteMarkerDragEnd('start', null, e)}
+          position={{ lat: start.lat, lng: start.lon }}
+          onclick={handleStartPointClick}
         >
           {!isRoute && getSummary()}
         </RichMarker>
       )}
-      {dragLat !== null && dragLon !== null && (
+      {dragLat !== undefined && dragLon !== undefined && (
         <Marker
           draggable
           icon={circularIcon}
@@ -269,21 +268,21 @@ function RoutePlannerResult({
           onDragEnd={handleFutureDragEnd}
           onMouseOver={handleFutureMouseOver}
           onMouseOut={handleFutureMouseOut}
-          position={L.latLng(dragLat, dragLon)}
-          onClick={handleFutureClick}
+          position={{ lat: dragLat, lng: dragLon }}
+          onclick={handleFutureClick}
         />
       )}
       {midpoints.map(({ lat, lon }, i) => (
         <RichMarker
           draggable
-          onDragStart={handleDragStart}
-          onDragEnd={e => handleRouteMarkerDragEnd('midpoint', i, e)}
-          onClick={() => handleMidpointClick(i)}
+          ondragstart={handleDragStart}
+          ondragend={e => handleRouteMarkerDragEnd('midpoint', i, e)}
+          onclick={() => handleMidpointClick(i)}
           key={`midpoint-${i}`}
           zIndexOffset={9}
           faIcon={isRoute ? undefined : 'flag'}
           label={isRoute ? i + 1 : undefined}
-          position={L.latLng(lat, lon)}
+          position={{ lat, lng: lon }}
         />
       ))}
       {finish && (
@@ -292,10 +291,10 @@ function RoutePlannerResult({
           color={mode !== 'roundtrip' ? '#d9534f' : undefined}
           zIndexOffset={10}
           draggable
-          onDragStart={handleDragStart}
-          onDragEnd={e => handleRouteMarkerDragEnd('finish', null, e)}
-          position={L.latLng(finish.lat, finish.lon)}
-          onClick={handleEndPointClick}
+          ondragstart={handleDragStart}
+          ondragend={e => handleRouteMarkerDragEnd('finish', null, e)}
+          position={{ lat: finish.lat, lng: finish.lon }}
+          onclick={handleEndPointClick}
         >
           {isRoute && getSummary()}
         </RichMarker>
@@ -365,9 +364,9 @@ function RoutePlannerResult({
       <ElevationChartActivePoint />
     </>
   );
-}
+};
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   start: state.routePlanner.start,
   finish: state.routePlanner.finish,
   midpoints: state.routePlanner.midpoints,
@@ -379,23 +378,23 @@ const mapStateToProps = state => ({
   language: state.l10n.language,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onStartSet(start) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onStartSet(start: LatLon | null) {
     dispatch(routePlannerSetStart({ start, move: true }));
   },
-  onFinishSet(finish) {
+  onFinishSet(finish: LatLon | null) {
     dispatch(routePlannerSetFinish({ finish, move: true }));
   },
-  onAddMidpoint(position, midpoint) {
+  onAddMidpoint(position: number, midpoint: LatLon) {
     dispatch(routePlannerAddMidpoint({ midpoint, position }));
   },
-  onMidpointSet(position, midpoint) {
+  onMidpointSet(position: number, midpoint: LatLon) {
     dispatch(routePlannerSetMidpoint({ position, midpoint }));
   },
-  onRemoveMidpoint(position) {
+  onRemoveMidpoint(position: number) {
     dispatch(routePlannerRemoveMidpoint(position));
   },
-  onAlternativeChange(index) {
+  onAlternativeChange(index: number) {
     dispatch(routePlannerSetActiveAlternativeIndex(index));
   },
 });
@@ -411,7 +410,7 @@ export default compose(
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
 function addMissingSegments(alt) {
-  const routeSlices = [];
+  const routeSlices: any[] = [];
   for (let i = 0; i < alt.itinerary.length; i += 1) {
     const slice = alt.itinerary[i];
     const prevSlice = alt.itinerary[i - 1];
@@ -458,7 +457,7 @@ function addMissingSegments(alt) {
   return { ...alt, itinerary: routeSlices };
 }
 
-function imhdSummary(t, language, extra) {
+function imhdSummary(t: Translator, language: string, extra) {
   const dateFormat = new Intl.DateTimeFormat(language, {
     hour: '2-digit',
     minute: '2-digit',

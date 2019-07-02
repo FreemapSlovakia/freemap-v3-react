@@ -17,7 +17,7 @@ window.handleGoogleAuthApiLoad = () => {
       scope: 'profile email',
     });
 
-    setTimeout(() => {
+    window.setTimeout(() => {
       r([auth2]);
     }, 100);
   });

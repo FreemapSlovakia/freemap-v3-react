@@ -1,16 +1,26 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import injectL10n from 'fm3/l10nInjector';
-import PropTypes from 'prop-types';
-import * as FmPropTypes from 'fm3/propTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 import {
   resolveTrackSurface,
   resolveTrackClass,
   resolveBicycleTypeSuitableForTrack,
 } from 'fm3/osmOntologyTools';
+import { RootState } from 'fm3/storeCreator';
 
-function RoadDetails({ way, mapType, language, t }) {
+type Props = ReturnType<typeof mapStateToProps> & {
+  t: Translator;
+  way: {
+    id: number;
+    tags: {
+      [key: string]: string;
+    };
+    timestamp: number;
+  };
+};
+
+const RoadDetails: React.FC<Props> = ({ way, mapType, language, t }) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     day: '2-digit',
     month: '2-digit',
@@ -22,6 +32,7 @@ function RoadDetails({ way, mapType, language, t }) {
   const bicycleType = resolveBicycleTypeSuitableForTrack(way.tags);
   const isBicycleMap = mapType === 'C';
   const lastEditAt = dateFormat.format(new Date(way.timestamp));
+
   return (
     <div>
       <dl className="dl-horizontal">
@@ -52,20 +63,9 @@ function RoadDetails({ way, mapType, language, t }) {
       </p>
     </div>
   );
-}
-
-RoadDetails.propTypes = {
-  language: PropTypes.string,
-  t: PropTypes.func.isRequired,
-  way: PropTypes.shape({
-    tags: PropTypes.object.isRequired,
-    id: PropTypes.number.isRequired,
-    timestamp: PropTypes.string.isRequired,
-  }),
-  mapType: FmPropTypes.mapType.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   mapType: state.map.mapType,
   language: state.l10n.language,
 });

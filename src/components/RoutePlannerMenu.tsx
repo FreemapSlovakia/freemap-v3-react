@@ -1,13 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import {
   routePlannerSetStart,
@@ -27,43 +26,19 @@ import {
 } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import * as FmPropTypes from 'fm3/propTypes';
 import { getCurrentPosition } from 'fm3/geoutils';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
+import { TransportType } from 'fm3/reducers/routePlannerReducer';
 
-class RoutePlannerMenu extends React.Component {
-  static propTypes = {
-    onStartSet: PropTypes.func.isRequired,
-    onFinishSet: PropTypes.func.isRequired,
-    transportType: PropTypes.string,
-    mode: PropTypes.oneOf(['route', 'trip', 'roundtrip']).isRequired,
-    pickPointMode: PropTypes.string,
-    onTransportTypeChange: PropTypes.func.isRequired,
-    onModeChange: PropTypes.func.isRequired,
-    onPickPointModeChange: PropTypes.func.isRequired,
-    homeLocation: FmPropTypes.point,
-    // onItineraryVisibilityToggle: PropTypes.func.isRequired,
-    // itineraryIsVisible: PropTypes.bool.isRequired,
-    onToggleElevationChart: PropTypes.func.isRequired,
-    elevationProfileIsVisible: PropTypes.bool.isRequired,
-    onProgressStart: PropTypes.func.isRequired,
-    onProgressStop: PropTypes.func.isRequired,
-    routeFound: PropTypes.bool.isRequired,
-    onGetCurrentPositionError: PropTypes.func.isRequired,
-    onMissingHomeLocation: PropTypes.func.isRequired,
-    pickMode: PropTypes.string,
-    expertMode: PropTypes.bool,
-    t: PropTypes.func.isRequired,
-    activeAlternativeIndex: PropTypes.number.isRequired,
-    alternatives: PropTypes.arrayOf(FmPropTypes.routeAlternative.isRequired)
-      .isRequired,
-    onAlternativeChange: PropTypes.func.isRequired,
-    language: PropTypes.string,
-    onEndsSwap: PropTypes.func.isRequired,
-    canSwap: PropTypes.bool,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
+class RoutePlannerMenu extends React.Component<Props> {
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handlePoiAdd);
   }
@@ -73,25 +48,26 @@ class RoutePlannerMenu extends React.Component {
   }
 
   // TODO move to logic
-  setFromCurrentPosition(pointType) {
-    this.props.onProgressStart();
+  setFromCurrentPosition(pointType: 'start' | 'finish') {
+    const pid = Math.random();
+    this.props.onProgressStart(pid);
     getCurrentPosition().then(
       ({ lat, lon }) => {
-        this.props.onProgressStop();
+        this.props.onProgressStop(pid);
         if (pointType === 'start') {
           this.props.onStartSet({ lat, lon });
         } else if (pointType === 'finish') {
           this.props.onFinishSet({ lat, lon });
         } // else fail
       },
-      e => {
-        this.props.onProgressStop();
-        this.props.onGetCurrentPositionError(e);
+      (/*err*/) => {
+        this.props.onProgressStop(pid);
+        this.props.onGetCurrentPositionError();
       },
     );
   }
 
-  setFromHomeLocation(pointType) {
+  setFromHomeLocation(pointType: 'start' | 'finish') {
     const { homeLocation } = this.props;
     if (!homeLocation) {
       this.props.onMissingHomeLocation();
@@ -118,7 +94,7 @@ class RoutePlannerMenu extends React.Component {
     this.setFromHomeLocation('finish');
   };
 
-  handlePoiAdd = (lat, lon) => {
+  handlePoiAdd = (lat: number, lon: number) => {
     if (this.props.pickMode === 'start') {
       this.props.onStartSet({ lat, lon });
     } else if (this.props.pickMode === 'finish') {
@@ -147,20 +123,20 @@ class RoutePlannerMenu extends React.Component {
       onModeChange,
     } = this.props;
 
-    const transportTypes = [
+    const transportTypes: Array<[TransportType, string]> = [
       ['car', 'car'],
       ['car-free', 'car'],
       ['imhd', 'bus'],
       ['bike', 'bicycle'],
       ['bikesharing', 'bicycle'],
-      (expertMode || transportType === 'foot-stroller') && [
-        'foot-stroller',
-        'wheelchair-alt',
-      ],
       ['nordic', '!icon-skier-skiing'],
-      (expertMode || transportType === 'ski') && ['ski', '!icon-skiing'],
       ['foot', '!icon-hiking'],
     ];
+
+    if (expertMode) {
+      transportTypes.push(['foot-stroller', 'wheelchair-alt']);
+      transportTypes.push(['ski', '!icon-skiing']);
+    }
 
     const activeTransportType = transportTypes
       .filter(x => x)
@@ -173,6 +149,8 @@ class RoutePlannerMenu extends React.Component {
       maximumFractionDigits: 1,
     });
 
+    const DropdownButton2 = DropdownButton as any; // because active is missing
+
     return (
       <>
         <span className="fm-label">
@@ -180,7 +158,7 @@ class RoutePlannerMenu extends React.Component {
           <span className="hidden-xs"> {t('tools.routePlanner')}</span>
         </span>{' '}
         <ButtonGroup>
-          <DropdownButton
+          <DropdownButton2
             title={
               <span>
                 <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
@@ -202,7 +180,7 @@ class RoutePlannerMenu extends React.Component {
             <MenuItem onClick={this.handleStartHome}>
               <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
             </MenuItem>
-          </DropdownButton>
+          </DropdownButton2>
           {mode !== 'roundtrip' && (
             <>
               <Button
@@ -212,7 +190,7 @@ class RoutePlannerMenu extends React.Component {
               >
                 ⇆
               </Button>
-              <DropdownButton
+              <DropdownButton2
                 title={
                   <span>
                     <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
@@ -237,7 +215,7 @@ class RoutePlannerMenu extends React.Component {
                 <MenuItem onClick={this.handleFinishHome}>
                   <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
                 </MenuItem>
-              </DropdownButton>
+              </DropdownButton2>
             </>
           )}
         </ButtonGroup>{' '}
@@ -283,9 +261,9 @@ class RoutePlannerMenu extends React.Component {
         <DropdownButton
           id="mode"
           title={t(`routePlanner.mode.${mode}`)}
-          disabled={['imhd', 'bikesharing'].includes(transportType)}
+          disabled={transportType === 'imhd' || transportType === 'bikesharing'}
         >
-          {['route', 'trip', 'roundtrip'].map(mode1 => (
+          {(['route', 'trip', 'roundtrip'] as const).map(mode1 => (
             <MenuItem
               eventKey={mode1}
               key={mode1}
@@ -356,7 +334,7 @@ class RoutePlannerMenu extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   pickMode: state.routePlanner.pickMode,
   homeLocation: state.main.homeLocation,
   transportType: state.routePlanner.transportType,
@@ -364,7 +342,6 @@ const mapStateToProps = state => ({
   pickPointMode: state.routePlanner.pickMode,
   itineraryIsVisible: state.routePlanner.itineraryIsVisible,
   routeFound: !!state.routePlanner.alternatives.length,
-  shapePoints: state.routePlanner.shapePoints,
   activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
   alternatives: state.routePlanner.alternatives,
   elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
@@ -373,7 +350,7 @@ const mapStateToProps = state => ({
   canSwap: !!(state.routePlanner.start && state.routePlanner.finish),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onStartSet(start) {
     dispatch(routePlannerSetStart({ start }));
   },
@@ -383,20 +360,20 @@ const mapDispatchToProps = dispatch => ({
   onItineraryVisibilityToggle() {
     dispatch(routePlannerToggleItineraryVisibility());
   },
-  onTransportTypeChange(transportType) {
+  onTransportTypeChange(transportType: TransportType) {
     dispatch(routePlannerSetTransportType(transportType));
   },
-  onModeChange(mode) {
+  onModeChange(mode: 'trip' | 'roundtrip' | 'route') {
     dispatch(routePlannerSetMode(mode));
   },
-  onPickPointModeChange(pickMode) {
+  onPickPointModeChange(pickMode: 'start' | 'finish') {
     dispatch(routePlannerSetPickMode(pickMode));
   },
-  onProgressStart() {
-    dispatch(startProgress());
+  onProgressStart(pid) {
+    dispatch(startProgress(pid));
   },
-  onProgressStop() {
-    dispatch(stopProgress());
+  onProgressStop(pid) {
+    dispatch(stopProgress(pid));
   },
   onGetCurrentPositionError() {
     dispatch(
@@ -424,7 +401,7 @@ const mapDispatchToProps = dispatch => ({
   onToggleElevationChart() {
     dispatch(routePlannerToggleElevationChart());
   },
-  onAlternativeChange(index) {
+  onAlternativeChange(index: number) {
     dispatch(routePlannerSetActiveAlternativeIndex(index));
   },
   onEndsSwap() {
@@ -440,7 +417,7 @@ export default compose(
   ),
 )(RoutePlannerMenu);
 
-function imhdSummary(t, language, extra) {
+function imhdSummary(t: Translator, language: string, extra) {
   const dateFormat = new Intl.DateTimeFormat(language, {
     hour: '2-digit',
     minute: '2-digit',

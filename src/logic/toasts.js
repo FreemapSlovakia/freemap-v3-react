@@ -3,7 +3,7 @@ import { toastsRemove } from 'fm3/actions/toastsActions';
 export const timeoutMap = new Map();
 
 export function setupTimeout(id, timeout, dispatch, done) {
-  const timeoutId = setTimeout(() => {
+  const timeoutId = window.setTimeout(() => {
     timeoutMap.delete(id);
     dispatch(toastsRemove(id));
     done();

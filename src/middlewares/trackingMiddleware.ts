@@ -72,7 +72,7 @@ export const trackingMiddleware: Middleware<
       // TODO scale this value
       dispatch(wsOpen(null));
     } else {
-      reopenTs = setTimeout(() => {
+      reopenTs = window.setTimeout(() => {
         dispatch(wsOpen(null));
       }, 1000 - diff);
     }

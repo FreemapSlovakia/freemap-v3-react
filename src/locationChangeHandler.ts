@@ -58,6 +58,7 @@ import { TransportType } from './reducers/routePlannerReducer';
 import { MyStore } from './storeCreator';
 import { Location } from 'history';
 import { ITrackedDevice } from './types/trackingTypes';
+import { LatLon } from './types/common';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -104,9 +105,9 @@ export const handleLocationChange = (store: MyStore, location: Location) => {
         mode,
       } = getState().routePlanner;
 
-      const latLons = points.map(point =>
-        point ? { lat: point[0], lon: point[1] } : null,
-      );
+      const latLons = points
+        .map(point => (point ? { lat: point[0], lon: point[1] } : null))
+        .filter((x): x is LatLon => !!x);
       const nextStart = latLons[0];
       const nextMidpoints = latLons.slice(1, latLons.length - 1);
       const nextFinish =
@@ -188,7 +189,7 @@ export const handleLocationChange = (store: MyStore, location: Location) => {
     const urlAuthor = query['changesets-author'];
     if (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor) {
       // we need timeout otherwise map bounds can't be read
-      setTimeout(() => {
+      window.setTimeout(() => {
         dispatch(changesetsSetAuthorName(urlAuthor));
       }, 1000);
     }
@@ -534,7 +535,7 @@ function handleGallery(getState, dispatch, query) {
   if (query.show === 'gallery-upload') {
     if (!getState().gallery.showUploadModal) {
       // TODO fix: timeout to validate authentication first (ugly)
-      setTimeout(() => {
+      window.setTimeout(() => {
         dispatch(galleryShowUploadModal());
       }, 1000);
     }

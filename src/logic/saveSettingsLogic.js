@@ -50,7 +50,7 @@ export const saveSettingsLogic = createLogic({
           timeout: 5000,
         }),
       );
-      setTimeout(() => {
+      window.setTimeout(() => {
         // hack to prevent self-cancelling
         storeDispatch(setActiveModal(null));
       });
