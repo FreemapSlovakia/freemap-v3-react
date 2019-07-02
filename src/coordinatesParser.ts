@@ -26,13 +26,13 @@ export default function parseCoordinates(coord) {
   const mXml = P_XML.exec(coord);
   if (mXml) {
     return {
-      lat: parseFloat(toLatLon(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
-      lon: parseFloat(toLatLon(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
+      lat: toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
+      lon: toLatLon1(parseFloat(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
     };
   }
 
-  const sb = [];
-  const list = [];
+  const sb: string[] = [];
+  const list: Array<string | number> = [];
 
   const P = new RegExp(patterns, 'ig');
 
@@ -69,7 +69,7 @@ export default function parseCoordinates(coord) {
               .replace(W_TR, 'W'),
       );
     } else if (m[8]) {
-      throw new Error(`invalid token: ${m.group(8)}`);
+      throw new Error(`invalid token: ${m[8]}`);
     }
   }
 
@@ -78,43 +78,52 @@ export default function parseCoordinates(coord) {
   const params = [...list];
 
   if (pattern.match(/Ro?,?Ro?/)) {
-    return toLatLon(params[0], 0.0, 0.0, 'N', params[1], 0.0, 0.0, 'E');
+    return toLatLon(
+      params[0] as number,
+      0.0,
+      0.0,
+      'N',
+      params[1] as number,
+      0.0,
+      0.0,
+      'E',
+    );
   }
 
   if (pattern.match(/xRo?,?xRo?/)) {
     return toLatLon(
-      params[1],
+      params[1] as number,
       0.0,
       0.0,
-      params[0],
-      params[3],
+      params[0] as string,
+      params[3] as number,
       0.0,
       0.0,
-      params[2],
+      params[2] as string,
     );
   }
 
   if (pattern.match(/Ro?x,?Ro?x/)) {
     return toLatLon(
-      params[0],
+      params[0] as number,
       0.0,
       0.0,
-      params[1],
-      params[2],
+      params[1] as string,
+      params[2] as number,
       0.0,
       0.0,
-      params[3],
+      params[3] as string,
     );
   }
 
   if (pattern.match(/Zo[RZ]'?,?Zo[RZ]'?|Z[RZ],?Z[RZ]/)) {
     return toLatLon(
-      params[0],
-      params[1],
+      params[0] as number,
+      params[1] as number,
       0.0,
       'N',
-      params[2],
-      params[3],
+      params[2] as number,
+      params[3] as number,
       0.0,
       'E',
     );
@@ -122,65 +131,65 @@ export default function parseCoordinates(coord) {
 
   if (pattern.match(/xZo[RZ]'?,?xZo[RZ]'?|xZo?[RZ],?xZo?[RZ]/)) {
     return toLatLon(
-      params[1],
-      params[2],
+      params[1] as number,
+      params[2] as number,
       0.0,
-      params[0],
-      params[4],
-      params[5],
+      params[0] as string,
+      params[4] as number,
+      params[5] as number,
       0.0,
-      params[3],
+      params[3] as string,
     );
   }
 
   if (pattern.match(/Zo[RZ]'?x,?Zo[RZ]'?x|Zo?[RZ]x,?Zo?[RZ]x/)) {
     return toLatLon(
-      params[0],
-      params[1],
+      params[0] as number,
+      params[1] as number,
       0.0,
-      params[2],
-      params[3],
-      params[4],
+      params[2] as string,
+      params[3] as number,
+      params[4] as number,
       0.0,
-      params[5],
+      params[5] as string,
     );
   }
 
   if (pattern.match(/ZoZ'[RZ]"?x,?ZoZ'[RZ]"?x|ZZ[RZ]x,?ZZ[RZ]x/)) {
     return toLatLon(
-      params[0],
-      params[1],
-      params[2],
-      params[3],
-      params[4],
-      params[5],
-      params[6],
-      params[7],
+      params[0] as number,
+      params[1] as number,
+      params[2] as number,
+      params[3] as string,
+      params[4] as number,
+      params[5] as number,
+      params[6] as number,
+      params[7] as string,
     );
   }
 
   if (pattern.match(/xZoZ'[RZ]"?,?xZoZ'[RZ]"?|xZZ[RZ],?xZZ[RZ]/)) {
     return toLatLon(
-      params[1],
-      params[2],
-      params[3],
-      params[0],
-      params[5],
-      params[6],
-      params[7],
-      params[4],
+      params[1] as number,
+      params[2] as number,
+      params[3] as number,
+      params[0] as string,
+      params[5] as number,
+      params[6] as number,
+      params[7] as number,
+      params[4] as string,
     );
   }
 
   if (pattern.match(/ZZ[RZ],?ZZ[RZ]/)) {
     return toLatLon(
-      params[0],
-      params[1],
-      params[2],
+      params[0] as number,
+      params[1] as number,
+      params[2] as number,
       'N',
-      params[3],
-      params[4],
-      params[5],
+      params[3] as number,
+      params[4] as number,
+      params[5] as number,
       'E',
     );
   }
@@ -189,14 +198,14 @@ export default function parseCoordinates(coord) {
 }
 
 function toLatLon(
-  coord1deg,
-  coord1min,
-  coord1sec,
-  card1,
-  coord2deg,
-  coord2min,
-  coord2sec,
-  card2,
+  coord1deg: number,
+  coord1min: number,
+  coord1sec: number,
+  card1: string,
+  coord2deg: number,
+  coord2min: number,
+  coord2sec: number,
+  card2: string,
 ) {
   const latLon = {
     ...toLatLon1(coord1deg, coord1min, coord1sec, card1),
@@ -208,7 +217,12 @@ function toLatLon(
   return latLon;
 }
 
-function toLatLon1(coordDeg, coordMin, coordSec, card) {
+function toLatLon1(
+  coordDeg: number,
+  coordMin: number,
+  coordSec: number,
+  card: string,
+) {
   if (
     coordDeg < -180 ||
     coordDeg > 180 ||

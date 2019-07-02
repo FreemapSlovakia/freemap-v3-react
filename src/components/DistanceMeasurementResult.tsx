@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline } from 'react-leaflet';
 
@@ -7,17 +6,21 @@ import {
   distanceMeasurementAddPoint,
   distanceMeasurementUpdatePoint,
   distanceMeasurementRemovePoint,
+  IPoint,
 } from 'fm3/actions/distanceMeasurementActions';
 
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 
 import { distance } from 'fm3/geoutils';
-import * as FmPropTypes from 'fm3/propTypes';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { divIcon } from 'leaflet';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
 // const defaultIcon = new L.Icon.Default();
 
-const circularIcon = new L.divIcon({
+const circularIcon = divIcon({
   // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
@@ -25,17 +28,16 @@ const circularIcon = new L.divIcon({
   html: '<div class="circular-leaflet-marker-icon"></div>',
 });
 
-class DistanceMeasurementResult extends React.Component {
-  static propTypes = {
-    points: FmPropTypes.points.isRequired,
-    onPointAdd: PropTypes.func.isRequired,
-    onPointUpdate: PropTypes.func.isRequired,
-    onPointRemove: PropTypes.func.isRequired,
-    active: PropTypes.bool,
-    language: PropTypes.string,
-  };
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-  state = {};
+interface IState {
+  lat?: number;
+  lon?: number;
+}
+
+class DistanceMeasurementResult extends React.Component<Props, IState> {
+  state: IState = {};
 
   componentDidMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
@@ -47,7 +49,7 @@ class DistanceMeasurementResult extends React.Component {
     mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
   }
 
-  handlePoiAdd = (lat, lon, position, id0) => {
+  handlePoiAdd = (lat: number, lon: number, position: number, id0: number) => {
     handleDragStart();
     const { points } = this.props;
     const pos = position ? Math.ceil(position / 2) : points.length;
@@ -64,7 +66,7 @@ class DistanceMeasurementResult extends React.Component {
     this.props.onPointAdd({ lat, lon, id }, pos);
   };
 
-  handleMouseMove = (lat, lon, originalEvent) => {
+  handleMouseMove = (lat: number, lon: number, originalEvent) => {
     if (
       this.props.active &&
       originalEvent.target.classList.contains('leaflet-container')
@@ -80,26 +82,24 @@ class DistanceMeasurementResult extends React.Component {
   };
 
   handleMeasureMarkerDrag(
-    i,
-    {
-      latlng: { lat, lng: lon },
-    },
-    id,
+    i: number,
+    { latlng: { lat, lng: lon } },
+    id: number,
   ) {
     this.props.onPointUpdate(i, { lat, lon, id });
   }
 
-  handleMarkerClick(id) {
+  handleMarkerClick(id: number) {
     this.props.onPointRemove(id);
   }
 
   render() {
-    let prev = null;
+    let prev: IPoint | null = null;
     let dist = 0;
 
     const { points, language } = this.props;
 
-    const ps = [];
+    const ps: IPoint[] = [];
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
       if (i < points.length - 1) {
@@ -124,21 +124,21 @@ class DistanceMeasurementResult extends React.Component {
             interactive={false}
             positions={ps
               .filter((_, i) => i % 2 === 0)
-              .map(({ lat, lon }) => [lat, lon])}
+              .map(({ lat, lon }) => ({ lat, lng: lon }))}
           />
         )}
-        {!!(ps.length && this.state.lat) && (
+        {!!(ps.length && this.state.lat && this.state.lon) && (
           <Polyline
             weight={4}
             interactive={false}
             dashArray="6,8"
             positions={[
-              [ps[ps.length - 1].lat, ps[ps.length - 1].lon],
-              [this.state.lat, this.state.lon],
+              { lat: ps[ps.length - 1].lat, lng: ps[ps.length - 1].lon },
+              { lat: this.state.lat, lng: this.state.lon },
             ]}
           />
         )}
-        {ps.map((p, i) => {
+        {ps.map((p, i: number) => {
           if (i % 2 === 0) {
             if (prev) {
               dist += distance(p.lat, p.lon, prev.lat, prev.lon);
@@ -146,48 +146,45 @@ class DistanceMeasurementResult extends React.Component {
             prev = p;
           }
 
-          const props =
-            i % 2
-              ? {
-                  icon: circularIcon,
-                  opacity: 0.5,
-                  onDragstart: e =>
-                    this.handlePoiAdd(
-                      e.target.getLatLng().lat,
-                      e.target.getLatLng().lng,
-                      i,
-                      p.id,
-                    ),
-                }
-              : {
-                  // icon: defaultIcon, // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-                  icon: circularIcon,
-                  opacity: 1,
-                  onDrag: e => this.handleMeasureMarkerDrag(i / 2, e, p.id),
-                  onClick: () => this.handleMarkerClick(p.id),
-                  onDragstart: handleDragStart,
-                  onDragend: handleDragEnd,
-                };
-
-          return (
+          return i % 2 === 0 ? (
             <Marker
               key={`95Lp1ukO7F-${p.id}`}
               draggable
-              position={L.latLng(p.lat, p.lon)}
-              {...props}
+              position={{ lat: p.lat, lng: p.lon }}
+              // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+              icon={circularIcon}
+              opacity={1}
+              onDrag={e => this.handleMeasureMarkerDrag(i / 2, e, p.id)}
+              onClick={() => this.handleMarkerClick(p.id)}
+              onDragstart={handleDragStart}
+              onDragend={handleDragEnd}
             >
-              {i % 2 === 0 && (
-                <Tooltip
-                  key={`${p.id}-${ps.length}`}
-                  className="compact"
-                  offset={[-4, 0]}
-                  direction="right"
-                  permanent={i === ps.length - 1}
-                >
-                  <span>{nf.format(dist / 1000)} km</span>
-                </Tooltip>
-              )}
+              <Tooltip
+                key={`${p.id}-${ps.length}`}
+                className="compact"
+                offset={[-4, 0]}
+                direction="right"
+                permanent={i === ps.length - 1}
+              >
+                <span>{nf.format(dist / 1000)} km</span>
+              </Tooltip>
             </Marker>
+          ) : (
+            <Marker
+              key={`95Lp1ukO7F-${p.id}`}
+              draggable
+              position={{ lat: p.lat, lng: p.lon }}
+              icon={circularIcon}
+              opacity={0.5}
+              onDragstart={e =>
+                this.handlePoiAdd(
+                  e.target.getLatLng().lat,
+                  e.target.getLatLng().lng,
+                  i,
+                  p.id,
+                )
+              }
+            />
           );
         })}
 
@@ -199,31 +196,35 @@ class DistanceMeasurementResult extends React.Component {
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragStart() {
-  window.preventMapClick = true;
+  window['preventMapClick'] = true;
 }
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragEnd() {
   setTimeout(() => {
-    window.preventMapClick = false;
+    window['preventMapClick'] = false;
   });
 }
 
+const mapStateToProps = (state: RootState) => ({
+  points: state.distanceMeasurement.points,
+  active: state.main.tool === 'measure-dist',
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onPointAdd(point: IPoint, position: number) {
+    dispatch(distanceMeasurementAddPoint({ point, position }));
+  },
+  onPointUpdate(index: number, point: IPoint) {
+    dispatch(distanceMeasurementUpdatePoint({ index, point }));
+  },
+  onPointRemove(id: number) {
+    dispatch(distanceMeasurementRemovePoint(id));
+  },
+});
+
 export default connect(
-  state => ({
-    points: state.distanceMeasurement.points,
-    active: state.main.tool === 'measure-dist',
-    language: state.l10n.language,
-  }),
-  dispatch => ({
-    onPointAdd(point, position) {
-      dispatch(distanceMeasurementAddPoint({ point, position }));
-    },
-    onPointUpdate(index, point) {
-      dispatch(distanceMeasurementUpdatePoint({ index, point }));
-    },
-    onPointRemove(id) {
-      dispatch(distanceMeasurementRemovePoint(id));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(DistanceMeasurementResult);

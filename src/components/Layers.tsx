@@ -1,15 +1,18 @@
 import React, { useEffect, useCallback } from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TileLayer } from 'react-leaflet';
 import GalleryLayer from 'fm3/components/gallery/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import * as FmPropTypes from 'fm3/propTypes';
+import { baseLayers, overlayLayers, ILayerDef } from 'fm3/mapDefinitions';
 import { BingLayer } from 'react-leaflet-bing';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
 
-function Layers({
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
+
+const Layers: React.FC<Props> = ({
   mapType,
   overlays,
   isAdmin,
@@ -21,7 +24,7 @@ function Layers({
   onMapTypeChange,
   onOverlaysChange,
   embedFeatures,
-}) {
+}) => {
   const handleKeydown = useCallback(
     event => {
       const embed = window.self !== window.top;
@@ -74,7 +77,6 @@ function Layers({
     };
   }, [handleKeydown]);
 
-  // eslint-disable-next-line
   const getTileLayer = ({
     type,
     url,
@@ -82,7 +84,7 @@ function Layers({
     maxNativeZoom,
     zIndex = 1,
     subdomains = 'abc',
-  }) => {
+  }: ILayerDef) => {
     if (type === 'S') {
       return (
         <BingLayer
@@ -107,71 +109,70 @@ function Layers({
     }
 
     return (
-      <TileLayer
-        key={type}
-        url={url.replace('{tileFormat}', tileFormat)}
-        minZoom={minZoom}
-        maxZoom={20}
-        maxNativeZoom={maxNativeZoom}
-        opacity={overlayOpacity[type] || 1}
-        zIndex={zIndex}
-        subdomains={subdomains}
-        errorTileUrl={require('../images/missing-tile-256x256.png')}
-      />
+      !!url && (
+        <TileLayer
+          key={type}
+          url={url.replace('{tileFormat}', tileFormat)}
+          minZoom={minZoom}
+          maxZoom={20}
+          maxNativeZoom={maxNativeZoom}
+          opacity={overlayOpacity[type] || 1}
+          zIndex={zIndex}
+          subdomains={subdomains}
+          errorTileUrl={require('../images/missing-tile-256x256.png')}
+        />
+      )
     );
   };
 
-  return [
-    ...baseLayers
-      .filter(({ type }) => type === mapType)
-      .filter(({ adminOnly }) => isAdmin || !adminOnly)
-      .map(item => getTileLayer(item)),
-    ...overlayLayers
-      .filter(({ type }) => overlays.includes(type))
-      .filter(({ adminOnly }) => isAdmin || !adminOnly)
-      .map(item => getTileLayer(item)),
-  ];
-}
-
-Layers.propTypes = {
-  onMapTypeChange: PropTypes.func.isRequired,
-  onOverlaysChange: PropTypes.func.isRequired,
-  tileFormat: FmPropTypes.tileFormat.isRequired,
-  overlays: FmPropTypes.overlays,
-  mapType: FmPropTypes.mapType.isRequired,
-  overlayOpacity: FmPropTypes.overlayOpacity.isRequired,
-  disableKeyboard: PropTypes.bool,
-  galleryDirtySeq: PropTypes.number.isRequired,
-  galleryFilter: FmPropTypes.galleryFilter.isRequired,
-  isAdmin: PropTypes.bool,
-  embedFeatures: PropTypes.arrayOf(PropTypes.string).isRequired,
+  return (
+    <>
+      {[
+        ...baseLayers
+          .filter(({ type }) => type === mapType)
+          .filter(({ adminOnly }) => isAdmin || !adminOnly)
+          .map(item => getTileLayer(item)),
+        ...overlayLayers
+          .filter(({ type }) => overlays.includes(type))
+          .filter(({ adminOnly }) => isAdmin || !adminOnly)
+          .map(item => getTileLayer(item)),
+      ]}
+    </>
+  );
 };
 
+const mapStateToProps = (state: RootState) => ({
+  tileFormat: state.map.tileFormat,
+  overlays: state.map.overlays,
+  mapType: state.map.mapType,
+  overlayOpacity: state.map.overlayOpacity,
+  disableKeyboard: !!(
+    state.main.activeModal ||
+    (state.gallery.activeImageId &&
+      !state.gallery.showPosition &&
+      !state.gallery.pickingPositionForId)
+  ),
+  galleryFilter: state.gallery.filter,
+  galleryDirtySeq: state.gallery.dirtySeq,
+  isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
+  embedFeatures: state.main.embedFeatures,
+});
+
+const mapDispatchToProps = (
+  dispatch: Dispatch,
+  props: ReturnType<typeof mapStateToProps>,
+) => ({
+  onMapTypeChange(mapType: string) {
+    if (props.mapType !== mapType) {
+      dispatch(mapRefocus({ mapType }));
+    }
+  },
+  onOverlaysChange(overlays: string[]) {
+    dispatch(mapRefocus({ overlays }));
+  },
+});
+
 export default connect(
-  state => ({
-    tileFormat: state.map.tileFormat,
-    overlays: state.map.overlays,
-    mapType: state.map.mapType,
-    overlayOpacity: state.map.overlayOpacity,
-    disableKeyboard: !!(
-      state.main.activeModal ||
-      (state.gallery.activeImageId &&
-        !state.gallery.showPosition &&
-        !state.gallery.pickingPositionForId)
-    ), // NOTE there can be lot more things
-    galleryFilter: state.gallery.filter,
-    galleryDirtySeq: state.gallery.dirtySeq,
-    isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-    embedFeatures: state.main.embedFeatures,
-  }),
-  (dispatch, props) => ({
-    onMapTypeChange(mapType) {
-      if (props.mapType !== mapType) {
-        dispatch(mapRefocus({ mapType }));
-      }
-    },
-    onOverlaysChange(overlays) {
-      dispatch(mapRefocus({ overlays }));
-    },
-  }),
+  mapStateToProps,
+  mapDispatchToProps,
 )(Layers);

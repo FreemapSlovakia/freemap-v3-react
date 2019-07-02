@@ -49,7 +49,7 @@ const ElevationChart: React.FC<Props> = ({
         options={{
           tooltips: {
             enabled: false,
-            mode: 'x' as 'x',
+            mode: 'x' as const,
             intersect: false,
             custom(tooltip) {
               if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {

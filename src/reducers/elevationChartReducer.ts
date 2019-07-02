@@ -25,23 +25,13 @@ export interface IElevationProfilePoint extends LatLon {
 
 export interface IElevationChartState {
   trackGeojson: any;
-  activePoint: {
-    lat: number | null;
-    lon: number | null;
-    ele: number | null;
-    distance: number | null;
-  };
+  activePoint: IElevationProfilePoint | null;
   elevationProfilePoints: Array<IElevationProfilePoint> | null;
 }
 
 const initialState: IElevationChartState = {
   trackGeojson: null,
-  activePoint: {
-    lat: null,
-    lon: null,
-    ele: null,
-    distance: null,
-  },
+  activePoint: null,
   elevationProfilePoints: null,
 };
 
@@ -59,7 +49,7 @@ export const elevationChartReducer = createReducer<
   }))
   .handleAction(elevationChartRemoveActivePoint, state => ({
     ...state,
-    activePoint: initialState.activePoint,
+    activePoint: null,
   }))
   .handleAction(elevationChartSetElevationProfile, (state, action) => ({
     ...state,

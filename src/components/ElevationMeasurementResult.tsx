@@ -1,32 +1,29 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import {
   elevationMeasurementSetPoint,
   elevationMeasurementSetElevation,
 } from 'fm3/actions/elevationMeasurementActions';
 import RichMarker from 'fm3/components/RichMarker';
 import { formatGpsCoord } from 'fm3/geoutils';
-import * as FmPropTypes from 'fm3/propTypes';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { DragEndEvent } from 'leaflet';
 
-class ElevationMeasurementResult extends React.Component {
-  static propTypes = {
-    onPointSet: PropTypes.func.isRequired,
-    onElevationClear: PropTypes.func.isRequired,
-    point: FmPropTypes.point,
-    elevation: PropTypes.number,
-    language: PropTypes.string,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
+class ElevationMeasurementResult extends React.Component<Props> {
   handleDragStart = () => {
-    this.props.onElevationClear(null);
+    this.props.onElevationClear();
   };
 
-  handleDragEnd = event => {
+  handleDragEnd = (event: DragEndEvent) => {
     const { lat, lng: lon } = event.target.getLatLng();
     this.props.onPointSet({ lat, lon });
   };
@@ -43,15 +40,15 @@ class ElevationMeasurementResult extends React.Component {
       point && (
         <RichMarker
           autoOpenPopup
-          position={L.latLng(point.lat, point.lon)}
+          position={{ lat: point.lat, lng: point.lon }}
           // onDragstart={this.handleDragStart}
-          onDragend={this.handleDragEnd}
-          onDrag={this.handleDrag}
+          ondragend={this.handleDragEnd}
+          // ondrag={this.handleDrag}
           draggable
         >
           <Popup closeButton={false} autoClose={false} autoPan={false}>
             <>
-              {['D', 'DM', 'DMS'].map(format => (
+              {(['D', 'DM', 'DMS'] as const).map(format => (
                 <div key={format}>
                   {formatGpsCoord(point.lat, 'SN', format, language)}{' '}
                   {formatGpsCoord(point.lon, 'WE', format, language)}
@@ -71,21 +68,25 @@ class ElevationMeasurementResult extends React.Component {
   }
 }
 
+const mapStateToProps = (state: RootState) => ({
+  elevation: state.elevationMeasurement.elevation,
+  point: state.elevationMeasurement.point,
+  language: state.l10n.language,
+});
+
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onPointSet(point) {
+    dispatch(elevationMeasurementSetPoint(point));
+  },
+  onElevationClear() {
+    dispatch(elevationMeasurementSetElevation(null));
+  },
+});
+
 export default compose(
   injectL10n(),
   connect(
-    state => ({
-      elevation: state.elevationMeasurement.elevation,
-      point: state.elevationMeasurement.point,
-      language: state.l10n.language,
-    }),
-    dispatch => ({
-      onPointSet(point) {
-        dispatch(elevationMeasurementSetPoint(point));
-      },
-      onElevationClear() {
-        dispatch(elevationMeasurementSetElevation(null));
-      },
-    }),
+    mapStateToProps,
+    mapDispatchToProps,
   ),
 )(ElevationMeasurementResult);

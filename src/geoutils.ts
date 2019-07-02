@@ -3,10 +3,12 @@ import { LatLngLiteral } from 'leaflet';
 
 const PI2 = 2 * Math.PI;
 
+export type GpsCoordStyle = 'DMS' | 'DM' | 'D';
+
 export function formatGpsCoord(
   angle: number,
   cardinals: string,
-  style: 'DMS' | 'DM' | 'D' = 'DMS',
+  style: GpsCoordStyle = 'DMS',
   language: string,
 ): string {
   let cardinal = '';

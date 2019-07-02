@@ -39,7 +39,7 @@ export interface IAttributionDef {
   url?: string;
 }
 
-interface ILayerDef {
+export interface ILayerDef {
   type: string;
   icon: string;
   url?: string;
@@ -51,6 +51,7 @@ interface ILayerDef {
   showOnlyInExpertMode?: boolean;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
+  subdomains?: string;
 }
 
 export const baseLayers: ILayerDef[] = [
