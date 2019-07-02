@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -31,36 +30,34 @@ import {
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { formatGpsCoord } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
-import * as FmPropTypes from 'fm3/propTypes';
 import { overlayLayers } from 'fm3/mapDefinitions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { LatLon } from 'fm3/types/common';
 
-class Settings extends React.Component {
-  static propTypes = {
-    homeLocation: PropTypes.shape({
-      lat: PropTypes.number,
-      lon: PropTypes.number,
-    }),
-    tileFormat: FmPropTypes.tileFormat.isRequired,
-    onSave: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onHomeLocationSelect: PropTypes.func.isRequired,
-    onHomeLocationSelectionFinish: PropTypes.func.isRequired,
-    overlayOpacity: PropTypes.shape({}).isRequired,
-    overlayPaneOpacity: PropTypes.number.isRequired,
-    expertMode: PropTypes.bool.isRequired,
-    eleSmoothingFactor: PropTypes.number.isRequired,
-    selectingHomeLocation: PropTypes.bool,
-    user: PropTypes.shape({
-      name: PropTypes.string,
-      email: PropTypes.string,
-    }),
-    preventTips: PropTypes.bool,
-    language: PropTypes.string,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  constructor(props) {
+interface IState {
+  tileFormat: 'jpeg' | 'png';
+  homeLocation: LatLon | null;
+  overlayOpacity: { [type: string]: number };
+  overlayPaneOpacity: number;
+  expertMode: boolean;
+  eleSmoothingFactor: number;
+  name: string;
+  email: string;
+  preventTips: boolean;
+  selectedOverlay: string;
+}
+
+class Settings extends React.Component<Props, IState> {
+  state: IState;
+
+  constructor(props: Props) {
     super(props);
 
     this.state = {
@@ -85,12 +82,12 @@ class Settings extends React.Component {
     mapEventEmitter.removeListener('mapClick', this.onHomeLocationSelected);
   }
 
-  onHomeLocationSelected = (lat, lon) => {
+  onHomeLocationSelected = (lat: number, lon: number) => {
     this.setState({ homeLocation: { lat, lon } });
     this.props.onHomeLocationSelectionFinish();
   };
 
-  handleSave = e => {
+  handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     this.props.onSave(
@@ -110,17 +107,17 @@ class Settings extends React.Component {
     );
   };
 
-  handleNameChange = e => {
-    this.setState({ name: e.target.value });
+  handleNameChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ name: (e.target as HTMLInputElement).value });
   };
 
-  handleEmailChange = e => {
-    this.setState({ email: e.target.value });
+  handleEmailChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ email: (e.target as HTMLInputElement).value });
   };
 
-  handleShowTipsChange = e => {
+  handleShowTipsChange = (e: React.FormEvent<FormControl>) => {
     this.setState({
-      preventTips: !e.target.checked,
+      preventTips: !(e.target as HTMLInputElement).checked,
     });
   };
 
@@ -130,7 +127,7 @@ class Settings extends React.Component {
     });
   };
 
-  handleOverlayOpacityChange = newOpacity => {
+  handleOverlayOpacityChange = (newOpacity: number) => {
     this.setState(state => ({
       overlayOpacity: {
         ...state.overlayOpacity,
@@ -139,9 +136,9 @@ class Settings extends React.Component {
     }));
   };
 
-  handleExpertModeChange = e => {
+  handleExpertModeChange = (e: React.FormEvent<FormControl>) => {
     this.setState({
-      expertMode: e.target.checked,
+      expertMode: (e.target as HTMLInputElement).checked,
     });
   };
 
@@ -259,7 +256,7 @@ class Settings extends React.Component {
                     }
                   />
                 </div>
-                {expertMode && (
+                {expertMode && selectedOverlayDetails && (
                   <>
                     <hr />
                     <div>
@@ -398,7 +395,7 @@ class Settings extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   tileFormat: state.map.tileFormat,
   homeLocation: state.main.homeLocation,
   overlayOpacity: state.map.overlayOpacity,
@@ -411,16 +408,16 @@ const mapStateToProps = state => ({
   language: state.l10n.language,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSave(
-    tileFormat,
-    homeLocation,
-    overlayOpacity,
-    overlayPaneOpacity,
-    expertMode,
-    trackViewerEleSmoothingFactor,
-    user,
-    preventTips,
+    tileFormat: 'jpeg' | 'png',
+    homeLocation: LatLon | null,
+    overlayOpacity: { [type: string]: number },
+    overlayPaneOpacity: number,
+    expertMode: boolean,
+    trackViewerEleSmoothingFactor: number,
+    user: { name: string | null; email: string | null } | null,
+    preventTips: boolean,
   ) {
     dispatch(
       saveSettings({

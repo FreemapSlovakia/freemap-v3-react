@@ -1,4 +1,5 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
+import { LatLon } from 'fm3/types/common';
 
 export const setActiveModal = createStandardAction('SET_ACTIVE_MODAL')<
   string | null
@@ -46,13 +47,13 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 export const reloadApp = createAction('RELOAD_APP');
 
 export const saveSettings = createStandardAction('SAVE_SETTINGS')<{
-  tileFormat: any;
-  homeLocation: any;
-  overlayOpacity: number;
+  tileFormat: 'png' | 'jpeg';
+  homeLocation: LatLon | null;
+  overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
   expertMode: boolean;
   trackViewerEleSmoothingFactor: number;
-  user: any;
+  user: { name: string | null; email: string | null } | null;
   preventTips: boolean;
 }>();
 

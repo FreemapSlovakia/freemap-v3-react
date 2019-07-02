@@ -60,6 +60,7 @@
     "@types/react-bootstrap-typeahead": "3.4.5",
     "@types/react-dom": "16.8.4",
     "@types/react-leaflet": "2.2.1",
+    "@types/react-rangeslider": "2.2.0",
     "@types/react-redux": "7.1.1",
     "babel-eslint": "10.0.2",
     "babel-loader": "8.0.6",

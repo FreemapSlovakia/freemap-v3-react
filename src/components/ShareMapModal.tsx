@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -11,15 +10,17 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
 
-export class ShareMapModal extends React.Component {
-  static propTypes = {
-    onModalClose: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-  };
+type Props = ReturnType<typeof mapDispatchToProps> & {
+  t: Translator;
+};
 
-  setFormControl = textarea => {
+export class ShareMapModal extends React.Component<Props> {
+  textarea: HTMLInputElement | null;
+
+  setFormControl = (textarea: HTMLInputElement) => {
     this.textarea = textarea;
     if (textarea) {
       textarea.select();
@@ -27,8 +28,10 @@ export class ShareMapModal extends React.Component {
   };
 
   handleCopyClick = () => {
-    this.textarea.select();
-    document.execCommand('copy');
+    if (this.textarea) {
+      this.textarea.select();
+      document.execCommand('copy');
+    }
   };
 
   render() {
@@ -63,7 +66,7 @@ export class ShareMapModal extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
