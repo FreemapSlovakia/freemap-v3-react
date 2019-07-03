@@ -1,4 +1,3 @@
-import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
@@ -9,6 +8,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerColorizeTrackBy,
   trackViewerGpxLoad,
+  ITrackPoint,
 } from 'fm3/actions/trackViewerActions';
 import {
   osmClear,
@@ -16,13 +16,14 @@ import {
   osmLoadWay,
   osmLoadRelation,
 } from 'fm3/actions/osmActions';
+import { FeatureCollection } from 'geojson';
 
 export interface ITrackViewerState {
-  trackGeojson: object | null;
-  trackGpx: object | null;
+  trackGeojson: FeatureCollection | null;
+  trackGpx: string | null;
   trackUID: string | null;
-  startPoints: LatLon[];
-  finishPoints: LatLon[];
+  startPoints: ITrackPoint[];
+  finishPoints: ITrackPoint[];
   colorizeTrackBy: null | 'elevation' | 'steepness';
   gpxUrl: string | null;
 

@@ -1,14 +1,13 @@
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { toastsAdd, toastsRemove } from 'fm3/actions/toastsActions';
-
-export interface IToast {
-  id: number;
-  collapseKey?: string;
-}
+import {
+  toastsAdd,
+  toastsRemove,
+  IResolvedToast,
+} from 'fm3/actions/toastsActions';
 
 export interface IToastsState {
-  toasts: IToast[];
+  toasts: IResolvedToast[];
 }
 
 const initialState: IToastsState = {

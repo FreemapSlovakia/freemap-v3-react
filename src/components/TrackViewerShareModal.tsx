@@ -1,20 +1,27 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 import 'fm3/styles/trackViewer.scss';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-function TrackViewerShareModal({ onClose, trackUID, t }) {
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+const TrackViewerShareModal: React.FC<Props> = ({ onClose, trackUID, t }) => {
   const shareURL = trackUID
     ? `${window.location.origin}/?track-uid=${trackUID}`
     : '';
@@ -37,7 +44,7 @@ function TrackViewerShareModal({ onClose, trackUID, t }) {
       </Modal.Footer>
     </Modal>
   );
-}
+};
 
 TrackViewerShareModal.propTypes = {
   onClose: PropTypes.func.isRequired,
@@ -45,11 +52,11 @@ TrackViewerShareModal.propTypes = {
   t: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   trackUID: state.trackViewer.trackUID,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onClose() {
     dispatch(setActiveModal(null));
   },

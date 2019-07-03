@@ -1,20 +1,28 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
+import { FeatureCollection } from 'geojson';
 
 export type ColorizingMode = 'elevation' | 'steepness';
+
+export interface ITrackPoint extends LatLon {
+  id: number;
+  startTime?: number;
+  finishTime?: number;
+  lengthInKm: number;
+}
 
 export const trackViewerSetData = createStandardAction(
   'TRACK_VIEWER_SET_TRACK_DATA',
 )<{
-  trackGpx?: object;
-  trackGeojson: object;
-  startPoints: LatLon[];
-  finishPoints: LatLon[];
+  trackGpx?: string;
+  trackGeojson?: FeatureCollection;
+  startPoints?: ITrackPoint[];
+  finishPoints?: ITrackPoint[];
 }>();
 
 export const trackViewerSetTrackUID = createStandardAction(
   'TRACK_VIEWER_SET_TRACK_UID',
-)<string>();
+)<string | null>();
 
 export const trackViewerDownloadTrack = createStandardAction(
   'TRACK_VIEWER_DOWNLOAD_TRACK',

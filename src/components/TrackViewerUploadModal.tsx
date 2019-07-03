@@ -1,14 +1,13 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import Dropzone from 'react-dropzone';
 
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import {
@@ -19,33 +18,36 @@ import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import 'fm3/styles/trackViewer.scss';
+import { RootAction } from 'fm3/actions';
 
-class TrackViewerUploadModal extends React.Component {
-  static propTypes = {
-    onClose: PropTypes.func.isRequired,
-    onLoadError: PropTypes.func.isRequired,
-    onUpload: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-  };
+type Props = ReturnType<typeof mapDispatchToProps> & {
+  t: Translator;
+};
 
-  handleFileDrop = (acceptedFiles, rejectedFiles) => {
+class TrackViewerUploadModal extends React.Component<Props> {
+  handleFileDrop = (acceptedFiles: File[], rejectedFiles: File[]) => {
     const { onUpload, onLoadError } = this.props;
 
     if (acceptedFiles.length) {
       const reader = new FileReader();
       reader.readAsText(acceptedFiles[0], 'UTF-8');
-      reader.onload = event => {
-        onUpload(event.target.result);
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          onUpload(reader.result);
+        } else {
+          onLoadError(`Nepodarilo sa načítať súbor.`); // TODO translate
+        }
       };
 
-      reader.onerror = e => {
-        onLoadError(`Nepodarilo sa spracovať súbor: ${e && e.message}`);
+      reader.onerror = () => {
+        onLoadError(`Nepodarilo sa načítať súbor.`); // TODO translate
+        reader.abort();
       };
     }
 
     if (rejectedFiles.length) {
       onLoadError(
-        'Nesprávny formát súboru: Nahraný súbor musí mať príponu .gpx',
+        'Nesprávny formát súboru: Nahraný súbor musí mať príponu .gpx', // TODO translate
       );
     }
   };
@@ -64,8 +66,8 @@ class TrackViewerUploadModal extends React.Component {
             onDrop={this.handleFileDrop}
             multiple={false}
             accept=".gpx"
-            className="dropzone"
-            disablePreview
+            // className="dropzone"
+            // disablePreview
           >
             {({ getRootProps, getInputProps }) => (
               <div {...getRootProps()} className="dropzone">
@@ -85,17 +87,17 @@ class TrackViewerUploadModal extends React.Component {
   }
 }
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onClose() {
     dispatch(setActiveModal(null));
   },
-  onUpload(trackGpx) {
+  onUpload(trackGpx: string) {
     dispatch(trackViewerSetTrackUID(null));
     dispatch(trackViewerSetData({ trackGpx }));
     dispatch(setActiveModal(null));
     dispatch(elevationChartClose());
   },
-  onLoadError(message) {
+  onLoadError(message: string) {
     dispatch(
       toastsAdd({
         collapseKey: 'trackViewer.loadError',

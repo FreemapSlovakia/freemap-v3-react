@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
@@ -7,13 +6,18 @@ import Alert from 'react-bootstrap/lib/Alert';
 import * as FmPropTypes from 'fm3/propTypes';
 
 import 'fm3/styles/toasts.scss';
+import { RootAction } from 'fm3/actions';
+import { IResolvedToast } from 'fm3/actions/toastsActions';
 
-export default class Toast extends React.Component {
+interface IProps extends IResolvedToast {
+  onAction: (id: number, action?: RootAction | RootAction[]) => void;
+  onTimeoutStop: (id: number) => void;
+  onTimeoutRestart: (id: number) => void;
+}
+
+export default class Toast extends React.Component<IProps> {
   static propTypes = {
     ...FmPropTypes.toastDef,
-    onAction: PropTypes.func.isRequired,
-    onTimeoutStop: PropTypes.func.isRequired,
-    onTimeoutRestart: PropTypes.func.isRequired,
   };
 
   handleMouseEnter = () => {

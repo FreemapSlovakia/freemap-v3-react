@@ -2,7 +2,9 @@ import { createStandardAction, createAction } from 'typesafe-actions';
 
 export const tipsShow = createStandardAction('TIPS_SHOW')<string>();
 
-export const tipsNext = createStandardAction('TIPS_NEXT')<string | null>();
+export const tipsNext = createStandardAction('TIPS_NEXT')<
+  string | null | undefined
+>();
 
 export const tipsPrevious = createAction('TIPS_PREVIOUS');
 

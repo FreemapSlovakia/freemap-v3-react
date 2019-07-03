@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -19,20 +18,22 @@ import {
   tipsPrevious,
   tipsPreventNextTime,
 } from 'fm3/actions/tipsActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-export class TipsModal extends React.Component {
-  static propTypes = {
-    // eslint-disable-next-line
-    tip: PropTypes.string.isRequired,
-    onPrevious: PropTypes.func.isRequired,
-    onNext: PropTypes.func.isRequired,
-    onModalClose: PropTypes.func.isRequired,
-    onNextTimePrevent: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  loading: boolean;
+  tip: string | null;
+}
+
+export class TipsModal extends React.Component<Props, IState> {
+  state: IState = {
     loading: true,
     tip: null,
   };
@@ -42,7 +43,7 @@ export class TipsModal extends React.Component {
     document.addEventListener('keydown', this.handleKeydown);
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: Props) {
     if (prevProps.tip !== this.props.tip) {
       this.loadTip();
     }
@@ -52,7 +53,7 @@ export class TipsModal extends React.Component {
     document.removeEventListener('keydown', this.handleKeydown);
   }
 
-  handleKeydown = evt => {
+  handleKeydown = (evt: KeyboardEvent) => {
     if (evt.keyCode === 37 /* left key */) {
       this.props.onPrevious();
     } else if (evt.keyCode === 39 /* right key */) {
@@ -60,8 +61,8 @@ export class TipsModal extends React.Component {
     }
   };
 
-  handleNextTimePrevent = e => {
-    this.props.onNextTimePrevent(e.target.checked);
+  handleNextTimePrevent = (e: React.FormEvent<Checkbox>) => {
+    this.props.onNextTimePrevent((e.target as HTMLInputElement).checked);
   };
 
   loadTip() {
@@ -140,11 +141,11 @@ export class TipsModal extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   tip: state.tips.tip,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
@@ -152,9 +153,9 @@ const mapDispatchToProps = dispatch => ({
     dispatch(tipsPrevious());
   },
   onNext() {
-    dispatch(tipsNext());
+    dispatch(tipsNext(undefined));
   },
-  onNextTimePrevent(prevent) {
+  onNextTimePrevent(prevent: boolean) {
     dispatch(tipsPreventNextTime(prevent));
   },
 });

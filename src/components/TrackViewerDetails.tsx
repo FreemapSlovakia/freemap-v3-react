@@ -2,22 +2,28 @@ import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { smoothElevations, distance } from 'fm3/geoutils';
-import injectL10n from 'fm3/l10nInjector';
-import PropTypes from 'prop-types';
-import * as FmPropTypes from 'fm3/propTypes';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 
-function TrackViewerDetails({
+type Props = ReturnType<typeof mapStateToProps> & {
+  t: Translator;
+};
+
+const TrackViewerDetails: React.FC<Props> = ({
   startPoints,
   finishPoints,
   trackGeojson,
   eleSmoothingFactor,
   language,
   t,
-}) {
+}) => {
   // const {
   //   trackViewer: { startPoints, finishPoints, trackGeojson, eleSmoothingFactor },
   //   l10n: { language },
   // } = getState().trackViewer;
+  if (!trackGeojson) {
+    return null;
+  }
 
   const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, {
     minimumFractionDigits: 1,
@@ -32,10 +38,10 @@ function TrackViewerDetails({
     minute: '2-digit',
   });
 
-  const tableData = [];
+  const tableData: [string, string][] = [];
 
-  let startTime;
-  let finishTime;
+  let startTime: number | undefined;
+  let finishTime: number | undefined;
 
   if (startPoints.length) {
     [{ startTime }] = startPoints;
@@ -52,7 +58,7 @@ function TrackViewerDetails({
 
   let duration = 0;
   if (startTime && finishTime) {
-    duration = (new Date(finishTime) - new Date(startTime)) / 1000;
+    duration = (finishTime - startTime) / 1000;
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration - hours * 3600) / 60);
     tableData.push([
@@ -77,15 +83,17 @@ function TrackViewerDetails({
     }
   }
 
-  const firstRealFeature = trackGeojson.features[0];
+  const { geometry } = trackGeojson.features[0];
+
+  if (geometry.type !== 'LineString') {
+    return null; // TODO log error?
+  }
+
   let minEle = Infinity;
   let maxEle = -Infinity;
   let uphillEleSum = 0;
   let downhillEleSum = 0;
-  const smoothed = smoothElevations(
-    firstRealFeature.geometry.coordinates,
-    eleSmoothingFactor,
-  );
+  const smoothed = smoothElevations(geometry.coordinates, eleSmoothingFactor);
   let [prevCoord] = smoothed;
 
   smoothed.forEach(coord => {
@@ -145,21 +153,9 @@ function TrackViewerDetails({
       ])}
     </dl>
   );
-}
-
-TrackViewerDetails.propTypes = {
-  startPoints: PropTypes.arrayOf(FmPropTypes.startPoint.isRequired).isRequired,
-  finishPoints: PropTypes.arrayOf(FmPropTypes.finishPoint.isRequired)
-    .isRequired,
-  trackGeojson: PropTypes.shape({
-    features: PropTypes.array,
-  }),
-  eleSmoothingFactor: PropTypes.number.isRequired,
-  language: PropTypes.string,
-  t: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   startPoints: state.trackViewer.startPoints,
   finishPoints: state.trackViewer.finishPoints,
   trackGeojson: state.trackViewer.trackGeojson,

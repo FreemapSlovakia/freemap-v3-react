@@ -1,13 +1,12 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Button from 'react-bootstrap/lib/Button';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
@@ -17,27 +16,20 @@ import {
   trackViewerColorizeTrackBy,
   trackViewerShowInfo,
   trackViewerToggleElevationChart,
+  ColorizingMode,
 } from 'fm3/actions/trackViewerActions';
 
 import 'fm3/styles/trackViewer.scss';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-class TrackViewerMenu extends React.Component {
-  static propTypes = {
-    hasTrack: PropTypes.bool,
-    trackUID: PropTypes.string,
-    elevationChartActive: PropTypes.bool,
-    colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
-    trackGeojsonIsSuitableForElevationChart: PropTypes.bool.isRequired,
-    onUpload: PropTypes.func.isRequired,
-    onShare: PropTypes.func.isRequired,
-    onServerUpload: PropTypes.func.isRequired,
-    onColorizeTrackBy: PropTypes.func.isRequired,
-    onShowTrackInfo: PropTypes.func.isRequired,
-    onToggleElevationChart: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  componentDidUpdate(prevProps) {
+class TrackViewerMenu extends React.Component<Props> {
+  componentDidUpdate(prevProps: Props) {
     if (prevProps.trackUID === null && this.props.trackUID !== null) {
       this.props.onShare();
     }
@@ -92,7 +84,7 @@ class TrackViewerMenu extends React.Component {
             </>
           }
         >
-          {[null, 'elevation', 'steepness'].map(mode => (
+          {([null, 'elevation', 'steepness'] as const).map(mode => (
             <MenuItem
               eventKey={mode}
               key={mode || 'none'}
@@ -119,7 +111,7 @@ class TrackViewerMenu extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   hasTrack: !!state.trackViewer.trackGeojson,
   trackUID: state.trackViewer.trackUID,
   elevationChartActive: !!state.elevationChart.trackGeojson,
@@ -127,14 +119,14 @@ const mapStateToProps = state => ({
   trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(state),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onUpload() {
     dispatch(setActiveModal('upload-track'));
   },
   onServerUpload() {
     dispatch(trackViewerUploadTrack());
   },
-  onColorizeTrackBy(approach) {
+  onColorizeTrackBy(approach: ColorizingMode | null) {
     dispatch(trackViewerColorizeTrackBy(approach));
   },
   onShowTrackInfo() {
@@ -156,7 +148,7 @@ export default compose(
   ),
 )(TrackViewerMenu);
 
-function isSuitableForElevationChart(state) {
+function isSuitableForElevationChart(state: RootState) {
   const { trackGeojson } = state.trackViewer;
   if (trackGeojson && trackGeojson.features) {
     const firstGeojsonFeature = trackGeojson.features[0];

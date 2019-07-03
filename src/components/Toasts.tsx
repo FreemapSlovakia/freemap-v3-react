@@ -1,20 +1,31 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
-import * as FmPropTypes from 'fm3/propTypes';
 import {
   toastsRemove,
   toastsStopTimeout,
   toastsRestartTimeout,
 } from 'fm3/actions/toastsActions';
 import Toast from 'fm3/components/Toast';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/toasts.scss';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart, t }) {
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+const Toasts: React.FC<Props> = ({
+  toasts,
+  onAction,
+  onTimeoutStop,
+  onTimeoutRestart,
+  t,
+}) => {
   return (
     <div className="toasts">
       {toasts.map(
@@ -30,7 +41,7 @@ function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart, t }) {
             onAction={onAction}
             actions={actions.map(action => ({
               ...action,
-              name: action.name || t(action.nameKey),
+              name: action.nameKey ? t(action.nameKey) : action.name,
             }))}
             onTimeoutStop={onTimeoutStop}
             onTimeoutRestart={onTimeoutRestart}
@@ -39,22 +50,14 @@ function Toasts({ toasts, onAction, onTimeoutStop, onTimeoutRestart, t }) {
       )}
     </div>
   );
-}
-
-Toasts.propTypes = {
-  onAction: PropTypes.func.isRequired,
-  onTimeoutStop: PropTypes.func.isRequired,
-  onTimeoutRestart: PropTypes.func.isRequired,
-  toasts: PropTypes.arrayOf(FmPropTypes.toast.isRequired).isRequired,
-  t: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   toasts: state.toasts.toasts,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onAction(id, action) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onAction(id: number, action?: RootAction | RootAction[]) {
     // TODO use some action flag to indicate that we want the action to close the toast
     dispatch(toastsRemove(id));
     if (action) {
@@ -65,10 +68,10 @@ const mapDispatchToProps = dispatch => ({
       }
     }
   },
-  onTimeoutStop(id) {
+  onTimeoutStop(id: number) {
     dispatch(toastsStopTimeout(id));
   },
-  onTimeoutRestart(id) {
+  onTimeoutRestart(id: number) {
     dispatch(toastsRestartTimeout(id));
   },
 });

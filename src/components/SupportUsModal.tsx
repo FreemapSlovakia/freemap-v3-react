@@ -1,7 +1,6 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -10,9 +9,14 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootAction } from 'fm3/actions';
 
-export function SupportUsModal({ onModalClose, t }) {
+type Props = ReturnType<typeof mapDispatchToProps> & {
+  t: Translator;
+};
+
+export const SupportUsModal: React.FC<Props> = ({ onModalClose, t }) => {
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
@@ -92,14 +96,9 @@ export function SupportUsModal({ onModalClose, t }) {
       </Modal.Footer>
     </Modal>
   );
-}
-
-SupportUsModal.propTypes = {
-  onModalClose: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
 };
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },

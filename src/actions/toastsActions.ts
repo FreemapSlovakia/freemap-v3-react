@@ -1,14 +1,27 @@
 import { createStandardAction } from 'typesafe-actions';
+import { RootAction } from '.';
 
-interface ToastType {
-  message?: string | JSX.Element;
+export interface IToastAction {
+  name?: string;
+  nameKey?: string;
+  action?: RootAction | RootAction[];
+  style?: string;
+}
+
+export interface IToast {
+  message?: string | JSX.Element; // PropTypes.node, // TODO string only
   messageKey?: string;
-  messageParams?: { [key: string]: string };
-  actions?: any[]; // TODO
+  messageParams?: { [key: string]: any };
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
+  actions?: IToastAction[];
   collapseKey?: string;
   cancelType?: string;
+}
+
+export interface IResolvedToast extends IToast {
+  id: number;
+  actions: IToastAction[];
 }
 
 export const toastsAdd = createStandardAction('TOASTS_ADD').map(
@@ -21,7 +34,7 @@ export const toastsAdd = createStandardAction('TOASTS_ADD').map(
     style,
     collapseKey,
     cancelType,
-  }: ToastType) => ({
+  }: IToast) => ({
     payload: {
       id: Math.random(),
       message,
@@ -36,15 +49,15 @@ export const toastsAdd = createStandardAction('TOASTS_ADD').map(
   }),
 );
 
-export const toastsRemove = createStandardAction('TOASTS_REMOVE')<any>();
+export const toastsRemove = createStandardAction('TOASTS_REMOVE')<number>();
 
 export const toastsStopTimeout = createStandardAction('TOASTS_STOP_TIMEOUT')<
-  any
+  number
 >();
 
 export const toastsRestartTimeout = createStandardAction(
   'TOASTS_RESTART_TIMEOUT',
-)<any>();
+)<number>();
 
 // helpers
 

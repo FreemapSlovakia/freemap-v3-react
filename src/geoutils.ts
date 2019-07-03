@@ -1,5 +1,6 @@
 import geojsonArea from '@mapbox/geojson-area';
 import { LatLngLiteral } from 'leaflet';
+import { LatLon } from './types/common';
 
 const PI2 = 2 * Math.PI;
 
@@ -99,7 +100,7 @@ export function getCurrentPosition() {
   });
 }
 
-export function area(points) {
+export function area(points: LatLon[]) {
   return geojsonArea.geometry({
     type: 'Polygon',
     coordinates: [[...points, points[0]].map(({ lat, lon }) => [lon, lat])],
@@ -111,7 +112,10 @@ export function containsElevations(geojson) {
 }
 
 // returns array of [lat, lon, smoothedEle] triplets
-export function smoothElevations(coords, eleSmoothingFactor) {
+export function smoothElevations(
+  coords: number[][],
+  eleSmoothingFactor: number,
+) {
   let prevFloatingWindowEle = 0;
   return coords.map((lonLatEle, i) => {
     const floatingWindow = coords
@@ -139,11 +143,6 @@ export function smoothElevations(coords, eleSmoothingFactor) {
     prevFloatingWindowEle = flotingWindowEle;
     return [lonLatEle[0], lonLatEle[1], flotingWindowEle];
   });
-}
-
-interface LatLon {
-  lat: number;
-  lon: number;
 }
 
 export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {
