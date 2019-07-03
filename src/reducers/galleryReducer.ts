@@ -30,20 +30,21 @@ import {
   galleryCancelShowOnTheMap,
   galleryToggleShowPreview,
   IGalleryFilter,
+  IPicture,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 
 export interface IGalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
-  image: any;
+  image: IPicture | null;
   showUploadModal: boolean;
   items: any[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
   showPreview: boolean;
   uploadingId: number | null;
-  tags: string[];
+  tags: { name: string }[];
   users: Array<{
     id: number;
     name: string;
@@ -229,13 +230,17 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
     editModel: state.editModel
       ? null
       : {
-          title: state.image.title,
-          description: state.image.description,
-          takenAt: state.image.takenAt
+          title: state.image ? state.image.title : '',
+          description: state.image ? state.image.description : '',
+          takenAt: !state.image
+            ? ''
+            : state.image.takenAt
             ? toDatetimeLocal(state.image.takenAt)
             : '',
-          tags: [...state.image.tags],
-          position: { lat: state.image.lat, lon: state.image.lon },
+          tags: state.image ? [...state.image.tags] : [],
+          position: state.image
+            ? { lat: state.image.lat, lon: state.image.lon }
+            : null,
         },
   }))
   .handleAction(gallerySetEditModel, (state, action) => ({

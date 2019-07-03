@@ -1,7 +1,24 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
-import { LatLon } from 'fm3/types/common';
+import { LatLon, IUser } from 'fm3/types/common';
 
-interface IPicture {}
+export interface IPictureComment {
+  id: number;
+  createdAt: Date;
+  user: IUser;
+  comment: string;
+}
+
+export interface IPicture extends LatLon {
+  title: string;
+  description: string;
+  createdAt: Date;
+  takenAt: Date;
+  tags: string[];
+  comments: IPictureComment[];
+  rating: number;
+  myStars: number;
+  user: IUser;
+}
 
 export interface IGalleryFilter {
   tag?: string;
@@ -72,7 +89,7 @@ export const galleryUpload = createAction('GALLERY_UPLOAD');
 export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY');
 
 export const gallerySetTags = createStandardAction('GALLERY_SET_TAGS')<
-  string[]
+  { name: string }[]
 >();
 
 export const gallerySetUsers = createStandardAction('GALLERY_SET_USERS')<

@@ -3,8 +3,6 @@ import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import * as FmPropTypes from 'fm3/propTypes';
-
 import 'fm3/styles/toasts.scss';
 import { RootAction } from 'fm3/actions';
 import { IResolvedToast } from 'fm3/actions/toastsActions';
@@ -16,10 +14,6 @@ interface IProps extends IResolvedToast {
 }
 
 export default class Toast extends React.Component<IProps> {
-  static propTypes = {
-    ...FmPropTypes.toastDef,
-  };
-
   handleMouseEnter = () => {
     this.props.onTimeoutStop(this.props.id);
   };

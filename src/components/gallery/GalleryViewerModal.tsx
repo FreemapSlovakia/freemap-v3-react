@@ -1,12 +1,10 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import ReactStars from 'react-stars';
 
 import * as at from 'fm3/actionTypes';
-import * as FmPropTypes from 'fm3/propTypes';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import GalleryEditForm from 'fm3/components/gallery/GalleryEditForm';
@@ -36,62 +34,33 @@ import {
 } from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-class GalleryViewerModal extends React.Component {
-  static propTypes = {
-    imageIds: PropTypes.arrayOf(PropTypes.number.isRequired),
-    image: PropTypes.shape({
-      title: PropTypes.string,
-      description: PropTypes.string,
-      user: PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-      }),
-      createdAt: PropTypes.instanceOf(Date).isRequired,
-      takenAt: PropTypes.instanceOf(Date),
-      tags: PropTypes.arrayOf(PropTypes.string).isRequired,
-      comments: PropTypes.arrayOf(
-        PropTypes.shape({
-          createdAt: PropTypes.instanceOf(Date).isRequired,
-          user: PropTypes.shape({ name: PropTypes.string.isRequired })
-            .isRequired,
-          comment: PropTypes.string,
-        }),
-      ).isRequired,
-      rating: PropTypes.number.isRequired,
-      myStars: PropTypes.number,
-    }),
-    activeImageId: PropTypes.number.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onImageSelect: PropTypes.func.isRequired,
-    comment: PropTypes.string.isRequired,
-    onShowOnTheMap: PropTypes.func.isRequired,
-    onCommentChange: PropTypes.func.isRequired,
-    onCommentSubmit: PropTypes.func.isRequired,
-    onStarsChange: PropTypes.func.isRequired,
-    user: PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string.isRequired,
-      isAdmin: PropTypes.bool,
-    }),
-    onEdit: PropTypes.func.isRequired,
-    onDelete: PropTypes.func.isRequired,
-    editModel: FmPropTypes.galleryPictureModel,
-    onEditModelChange: PropTypes.func.isRequired,
-    onSave: PropTypes.func.isRequired,
-    allTags: FmPropTypes.allTags.isRequired,
-    onPositionPick: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-    language: PropTypes.string,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  state = {
+interface IState {
+  loading: boolean;
+  isFullscreen: boolean;
+  imgKey: number;
+  activeImageId: number | null;
+}
+
+class GalleryViewerModal extends React.Component<Props, IState> {
+  state: IState = {
     loading: true,
     isFullscreen: false,
     imgKey: 0,
     // eslint-disable-next-line
     activeImageId: null,
   };
+
+  imageElement: HTMLImageElement;
+
+  fullscreenElement: HTMLDivElement;
 
   static getDerivedStateFromProps(props, state) {
     if (props.activeImageId !== state.activeImageId) {
@@ -117,14 +86,14 @@ class GalleryViewerModal extends React.Component {
     );
   }
 
-  setImageElement = imageElement => {
+  setImageElement = (imageElement: HTMLImageElement) => {
     this.imageElement = imageElement;
     if (imageElement) {
       imageElement.addEventListener('load', this.handleImageLoad);
     }
   };
 
-  setFullscreenElement = element => {
+  setFullscreenElement = (element: HTMLDivElement) => {
     this.fullscreenElement = element;
   };
 
@@ -141,11 +110,12 @@ class GalleryViewerModal extends React.Component {
     this.props.onEditModelChange(editModel);
   };
 
-  handleKeydown = evt => {
+  handleKeydown = (evt: KeyboardEvent) => {
     if (
-      ['input', 'select', 'textarea'].includes(
-        evt.target.tagName.toLowerCase(),
-      ) ||
+      (evt.target &&
+        ['input', 'select', 'textarea'].includes(
+          (evt.target as any).tagName.toLowerCase(),
+        )) ||
       !this.props.imageIds ||
       this.props.imageIds.length < 2
     ) {
@@ -157,42 +127,48 @@ class GalleryViewerModal extends React.Component {
     }
   };
 
-  handlePreviousClick = e => {
+  handlePreviousClick = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
     }
 
     const { imageIds, activeImageId, onImageSelect } = this.props;
-    const index = imageIds.findIndex(id => id === activeImageId);
-    if (index > 0) {
-      onImageSelect(imageIds[index - 1]);
+    if (imageIds) {
+      const index = imageIds.findIndex(id => id === activeImageId);
+      if (index > 0) {
+        onImageSelect(imageIds[index - 1]);
+      }
     }
   };
 
-  handleNextClick = e => {
+  handleNextClick = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
     }
 
     const { imageIds, activeImageId, onImageSelect } = this.props;
-    const index = imageIds.findIndex(id => id === activeImageId);
-    if (index + 1 < imageIds.length) {
-      onImageSelect(imageIds[index + 1]);
+    if (imageIds) {
+      const index = imageIds.findIndex(id => id === activeImageId);
+      if (index + 1 < imageIds.length) {
+        onImageSelect(imageIds[index + 1]);
+      }
     }
   };
 
-  handleIndexChange = e => {
+  handleIndexChange = (e: React.FormEvent<FormControl>) => {
     const { imageIds, onImageSelect } = this.props;
-    onImageSelect(imageIds[e.target.value]);
+    if (imageIds) {
+      onImageSelect(imageIds[(e.target as HTMLSelectElement).value]);
+    }
   };
 
-  handleCommentFormSubmit = e => {
+  handleCommentFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     this.props.onCommentSubmit();
   };
 
-  handleCommentChange = e => {
-    this.props.onCommentChange(e.target.value);
+  handleCommentChange = (e: React.FormEvent<FormControl>) => {
+    this.props.onCommentChange((e.target as HTMLInputElement).value);
   };
 
   handleImageLoad = () => {
@@ -232,17 +208,27 @@ class GalleryViewerModal extends React.Component {
       language,
       t,
     } = this.props;
-    const index = imageIds && imageIds.findIndex(id => id === activeImageId);
+
+    if (!imageIds) {
+      return null;
+    }
+
+    const index = imageIds.findIndex(id => id === activeImageId);
+    if (index === -1) {
+      return null;
+    }
+
     const {
       title = '...',
-      description,
-      createdAt,
-      takenAt,
-      tags,
-      comments,
-      rating,
-      myStars,
+      description = undefined,
+      createdAt = undefined,
+      takenAt = undefined,
+      tags = undefined,
+      comments = undefined,
+      rating = undefined,
+      myStars = undefined,
     } = image || {};
+
     const { isFullscreen, loading, imgKey } = this.state;
 
     const nextImageId = imageIds && imageIds[index + 1];
@@ -358,17 +344,23 @@ class GalleryViewerModal extends React.Component {
                   username: () => (
                     <b key={image.user.name}>{image.user.name}</b>
                   ),
-                  createdAt: () => (
-                    <b key={createdAt}>{dateFormat.format(createdAt)}</b>
-                  ),
+                  createdAt: () =>
+                    createdAt && (
+                      <b key={createdAt.getTime()}>
+                        {dateFormat.format(createdAt)}
+                      </b>
+                    ),
                 })}
                 {takenAt && (
                   <>
                     {' ｜ '}
                     {t('gallery.viewer.captured', {
-                      takenAt: () => (
-                        <b key={takenAt}>{dateFormat.format(takenAt)}</b>
-                      ),
+                      takenAt: () =>
+                        takenAt && (
+                          <b key={takenAt.getTime()}>
+                            {dateFormat.format(takenAt)}
+                          </b>
+                        ),
                     })}
                   </>
                 )}
@@ -380,13 +372,14 @@ class GalleryViewerModal extends React.Component {
                   edit={false}
                 />
                 {description && ` ｜ ${description}`}
-                {tags.length > 0 && ' ｜ '}
-                {tags.map(tag => (
-                  <React.Fragment key={tag}>
-                    {' '}
-                    <Label>{tag}</Label>
-                  </React.Fragment>
-                ))}
+                {tags && tags.length > 0 && ' ｜ '}
+                {tags &&
+                  tags.map(tag => (
+                    <React.Fragment key={tag}>
+                      {' '}
+                      <Label>{tag}</Label>
+                    </React.Fragment>
+                  ))}
                 {!isFullscreen && editModel && (
                   <form onSubmit={this.handleSave}>
                     <hr />
@@ -411,12 +404,13 @@ class GalleryViewerModal extends React.Component {
                   <>
                     <hr />
                     <h5>{t('gallery.viewer.comments')}</h5>
-                    {comments.map(c => (
-                      <p key={c.id}>
-                        {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
-                        {c.comment}
-                      </p>
-                    ))}
+                    {comments &&
+                      comments.map(c => (
+                        <p key={c.id}>
+                          {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
+                          {c.comment}
+                        </p>
+                      ))}
                     {user && (
                       <form onSubmit={this.handleCommentFormSubmit}>
                         <FormGroup>
@@ -507,7 +501,7 @@ class GalleryViewerModal extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   imageIds: state.gallery.imageIds,
   image: state.gallery.image,
   activeImageId: state.gallery.activeImageId,
@@ -520,23 +514,23 @@ const mapStateToProps = state => ({
   language: state.l10n.language,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onClose() {
-    dispatch(galleryClear(null));
+    dispatch(galleryClear());
   },
   onShowOnTheMap() {
     dispatch(galleryShowOnTheMap());
   },
-  onImageSelect(id) {
+  onImageSelect(id: number) {
     dispatch(galleryRequestImage(id));
   },
-  onCommentChange(comment) {
+  onCommentChange(comment: string) {
     dispatch(gallerySetComment(comment));
   },
   onCommentSubmit() {
     dispatch(gallerySubmitComment());
   },
-  onStarsChange(stars) {
+  onStarsChange(stars: number) {
     dispatch(gallerySubmitStars(stars));
   },
   onEdit() {

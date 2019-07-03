@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 
@@ -44,12 +43,6 @@ const TrackViewerShareModal: React.FC<Props> = ({ onClose, trackUID, t }) => {
       </Modal.Footer>
     </Modal>
   );
-};
-
-TrackViewerShareModal.propTypes = {
-  onClose: PropTypes.func.isRequired,
-  trackUID: PropTypes.string,
-  t: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = (state: RootState) => ({

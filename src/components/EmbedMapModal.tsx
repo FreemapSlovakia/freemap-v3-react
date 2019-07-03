@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 
@@ -23,11 +22,6 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
 };
 
 export class EmbedMapModal extends React.Component<Props> {
-  static propTypes = {
-    onModalClose: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-  };
-
   state = {
     width: 500,
     height: 300,

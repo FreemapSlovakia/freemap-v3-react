@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 
@@ -22,13 +21,6 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 class MapDetailsMenu extends React.Component<Props> {
-  static propTypes = {
-    subtool: PropTypes.oneOf(['track-info']),
-    onSubtoolChange: PropTypes.func.isRequired,
-    onSetUserSelectedPosition: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
-  };
-
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.setUserSelectedPosition);
   }

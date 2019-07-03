@@ -1,5 +1,4 @@
 import React, { useCallback } from 'react';
-import PropTypes from 'prop-types';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ReactTags from 'react-tag-autocomplete';
 import 'fm3/styles/react-tag-autocomplete.css';
@@ -11,20 +10,20 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Alert from 'react-bootstrap/lib/Alert';
 
 import { formatGpsCoord } from 'fm3/geoutils';
-import * as FmPropTypes from 'fm3/propTypes';
 import DateTime from '../DateTime';
+import { Translator } from 'fm3/l10nInjector';
 
-GalleryEditForm.propTypes = {
-  model: FmPropTypes.galleryPictureModel.isRequired,
-  allTags: FmPropTypes.allTags.isRequired,
-  error: PropTypes.string,
-  onPositionPick: PropTypes.func,
-  onModelChange: PropTypes.func.isRequired,
-  t: PropTypes.func.isRequired,
-  language: PropTypes.string.isRequired,
-};
+interface IProps {
+  model: any; // TODO
+  allTags: { name: string }[];
+  error: string | null;
+  onPositionPick: () => void;
+  onModelChange: (model: any) => void; // TODO
+  t: Translator;
+  language: string;
+}
 
-export default function GalleryEditForm({
+const GalleryEditForm: React.FC<IProps> = ({
   model,
   allTags,
   error,
@@ -32,7 +31,7 @@ export default function GalleryEditForm({
   t,
   language,
   onModelChange,
-}) {
+}) => {
   const changeModel = useCallback(
     (key, value) => {
       onModelChange({ ...model, [key]: value });
@@ -158,4 +157,6 @@ export default function GalleryEditForm({
       </FormGroup>
     </div>
   );
-}
+};
+
+export default GalleryEditForm;

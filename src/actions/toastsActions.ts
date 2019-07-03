@@ -16,7 +16,7 @@ export interface IToast {
   style?: 'info' | 'warning' | 'danger';
   actions?: IToastAction[];
   collapseKey?: string;
-  cancelType?: string;
+  cancelType?: string | string[];
 }
 
 export interface IResolvedToast extends IToast {
