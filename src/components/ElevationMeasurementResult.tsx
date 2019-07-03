@@ -12,6 +12,7 @@ import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { DragEndEvent } from 'leaflet';
+import { LatLon } from 'fm3/types/common';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -75,7 +76,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPointSet(point) {
+  onPointSet(point: LatLon) {
     dispatch(elevationMeasurementSetPoint(point));
   },
   onElevationClear() {

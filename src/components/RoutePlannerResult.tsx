@@ -336,7 +336,7 @@ const RoutePlannerResult: React.FC<Props> = ({
                 onMouseOut={handlePolyMouseOut}
               />
             ))}
-            {itinerary.map((routeSlice, i) => (
+            {itinerary.map((routeSlice, i: number) => (
               <Polyline
                 key={`slice-${timestamp}-${alt}-${i}`}
                 ref={bringToFront}
@@ -487,8 +487,8 @@ function imhdSummary(t: Translator, language: string, extra) {
 }
 
 function imhdStep(
-  t,
-  language,
+  t: Translator,
+  language: string,
   { type, destination, departure, duration, number },
 ) {
   const dateFormat = new Intl.DateTimeFormat(language, {

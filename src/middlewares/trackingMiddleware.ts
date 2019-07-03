@@ -10,8 +10,9 @@ import { getType } from 'typesafe-actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import { ITrackedDevice } from 'fm3/types/trackingTypes';
 
-let reopenTs;
+let reopenTs: number | undefined;
 
 export const trackingMiddleware: Middleware<
   {},
@@ -61,7 +62,7 @@ export const trackingMiddleware: Middleware<
 
   if (trackedDevices.length === 0 && reopenTs) {
     clearTimeout(reopenTs);
-    reopenTs = null;
+    reopenTs = undefined;
   }
 
   if (trackedDevices.length === 0 && state < 2) {
@@ -102,13 +103,17 @@ export const trackingMiddleware: Middleware<
   }
 };
 
-function mangle(td) {
+function mangle(td: ITrackedDevice) {
   const { id, ...rest } = td;
-  const isDeviceId = /^\d+$/.test(id);
+  const isDeviceId = /^\d+$/.test(id.toString());
+  const xxx = isDeviceId
+    ? typeof id === 'number'
+      ? id
+      : Number.parseInt(id, 10)
+    : id;
   return {
-    [isDeviceId ? 'deviceId' : 'token']: isDeviceId
-      ? Number.parseInt(id, 10)
-      : id,
+    deviceId: isDeviceId ? xxx : undefined,
+    token: isDeviceId ? undefined : xxx,
     ...rest,
   };
 }

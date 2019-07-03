@@ -26,13 +26,25 @@ export const setLocation = createStandardAction('SET_LOCATION')<{
   accuracy: number;
 }>();
 
+export interface IPdfExportOptions {
+  contours: boolean;
+  shadedRelief: boolean;
+  hikingTrails: boolean;
+  bicycleTrails: boolean;
+  skiTrails: boolean;
+  scale: number;
+  area: 'visible' | 'infopoints';
+}
+
 export const setExpertMode = createStandardAction('SET_EXPERT_MODE')<boolean>();
 
 export const mainLoadState = createStandardAction('MAIN_LOAD_STATE')<any>();
 
 export const exportGpx = createStandardAction('EXPORT_GPX')<any>();
 
-export const exportPdf = createStandardAction('EXPORT_PDF')<any>();
+export const exportPdf = createStandardAction('EXPORT_PDF')<
+  IPdfExportOptions
+>();
 
 export const clearMap = createAction('CLEAR_MAP');
 
@@ -40,7 +52,7 @@ export const toggleLocate = createAction('LOCATE');
 
 export const setSelectingHomeLocation = createStandardAction(
   'SET_SELECTING_HOME_LOCATION',
-)<any>();
+)<boolean>();
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
 

@@ -64,14 +64,7 @@ import { Dispatch } from 'redux';
 const tipKeys = tips.map(([key]) => key);
 
 export const handleLocationChange = (store: MyStore, location: Location) => {
-  const { getState, dispatch: dispatch0 } = store;
-
-  const dispatch = (action: RootAction & { meta?: any }) => {
-    dispatch0({
-      ...action,
-      meta: { ...(action.meta || {}), isLocationChange: true },
-    });
-  };
+  const { getState, dispatch } = store;
 
   const query = queryString.parse(location.search);
 
@@ -454,31 +447,39 @@ function handleGallery(
   dispatch: Dispatch<RootAction>,
   query: ParsedQuery<string>,
 ) {
-  const qUserId = parseInt(query['gallery-user-id'], 10);
-  const qGalleryTag = query['gallery-tag'];
-  const qRatingFrom = parseFloat(query['gallery-rating-from']);
-  const qRatingTo = parseFloat(query['gallery-rating-to']);
-  const qTakenAtFrom = new Date(query['gallery-taken-at-from']);
-  const qTakenAtTo = new Date(query['gallery-taken-at-to']);
-  const qCreatedAtFrom = new Date(query['gallery-created-at-from']);
-  const qCreatedAtTo = new Date(query['gallery-created-at-to']);
+  let a = query['gallery-user-id'];
+  const qUserId = typeof a === 'string' ? parseInt(a, 10) : undefined;
+  a = query['gallery-tag'];
+  const qGalleryTag = typeof a === 'string' ? a : undefined;
+  a = query['gallery-rating-from'];
+  const qRatingFrom = typeof a === 'string' ? parseFloat(a) : undefined;
+  a = query['gallery-rating-to'];
+  const qRatingTo = typeof a === 'string' ? parseFloat(a) : undefined;
+  a = query['gallery-taken-at-from'];
+  const qTakenAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  a = query['gallery-taken-at-to'];
+  const qTakenAtTo = typeof a === 'string' ? new Date(a) : undefined;
+  a = query['gallery-created-at-from'];
+  const qCreatedAtFrom = typeof a === 'string' ? new Date(a) : undefined;
+  a = query['gallery-created-at-to'];
+  const qCreatedAtTo = typeof a === 'string' ? new Date(a) : undefined;
 
   if (
     qUserId ||
     qGalleryTag ||
     qRatingFrom ||
     qRatingTo ||
-    !Number.isNaN(qTakenAtFrom.getTime()) ||
-    !Number.isNaN(qTakenAtTo.getTime()) ||
-    !Number.isNaN(qCreatedAtFrom.getTime()) ||
-    !Number.isNaN(qCreatedAtTo.getTime())
+    qTakenAtFrom ||
+    qTakenAtTo ||
+    qCreatedAtFrom ||
+    qCreatedAtTo
   ) {
     const { filter } = getState().gallery;
     const newFilter: IGalleryFilter = {};
     if (qUserId && filter.userId !== qUserId) {
       newFilter.userId = qUserId;
     }
-    if (qGalleryTag && filter.tag !== qGalleryTag) {
+    if (typeof qGalleryTag === 'string' && filter.tag !== qGalleryTag) {
       newFilter.tag = qGalleryTag;
     }
     if (qRatingFrom && filter.ratingFrom !== qRatingFrom) {
@@ -488,28 +489,28 @@ function handleGallery(
       newFilter.ratingTo = qRatingTo;
     }
     if (
-      !Number.isNaN(qTakenAtFrom.getTime()) &&
+      qTakenAtFrom &&
       (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !==
         qTakenAtFrom.getTime()
     ) {
       newFilter.takenAtFrom = qTakenAtFrom;
     }
     if (
-      !Number.isNaN(qTakenAtTo.getTime()) &&
+      qTakenAtTo &&
       (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !==
         qTakenAtTo.getTime()
     ) {
       newFilter.takenAtTo = qTakenAtTo;
     }
     if (
-      !Number.isNaN(qCreatedAtFrom.getTime()) &&
+      qCreatedAtFrom &&
       (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !==
         qCreatedAtFrom.getTime()
     ) {
       newFilter.createdAtFrom = qCreatedAtFrom;
     }
     if (
-      !Number.isNaN(qCreatedAtTo.getTime()) &&
+      qCreatedAtTo &&
       (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !==
         qCreatedAtTo.getTime()
     ) {
@@ -520,7 +521,7 @@ function handleGallery(
     }
   }
 
-  if (query.image) {
+  if (typeof query.image === 'string') {
     const imageId = parseInt(query.image, 10);
     if (getState().gallery.activeImageId !== imageId) {
       dispatch(galleryRequestImage(imageId));

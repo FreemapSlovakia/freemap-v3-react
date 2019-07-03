@@ -22,7 +22,7 @@ const patterns =
 
 const P_XML = /lat=["']([+|-]?\d+[.,]\d+)["']\s+lon=["']([+|-]?\d+[.,]\d+)["']/;
 
-export default function parseCoordinates(coord) {
+export default function parseCoordinates(coord: string) {
   const mXml = P_XML.exec(coord);
   if (mXml) {
     return {

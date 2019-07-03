@@ -13,7 +13,11 @@ import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  exportPdf,
+  IPdfExportOptions,
+} from 'fm3/actions/mainActions';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -23,15 +27,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
-  contours: boolean;
-  shadedRelief: boolean;
-  hikingTrails: boolean;
-  bicycleTrails: boolean;
-  skiTrails: boolean;
-  scale: number;
-  area: 'visible' | 'infopoints';
-}
+interface IState extends IPdfExportOptions {}
 
 export class ExportPdfModal extends React.Component<Props, IState> {
   state: IState = {
@@ -213,8 +209,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
-  onExport(settings) {
-    dispatch(exportPdf(settings));
+  onExport(options: IPdfExportOptions) {
+    dispatch(exportPdf(options));
   },
 });
 

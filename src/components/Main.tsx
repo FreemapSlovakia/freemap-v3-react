@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -77,7 +77,7 @@ import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { mapRefocus, mapReset, IMapViewState } from 'fm3/actions/mapActions';
 import {
   setTool,
   setLocation,
@@ -94,6 +94,9 @@ import 'fm3/styles/leaflet.scss';
 import TrackingModal from 'fm3/components/tracking/TrackingModal';
 import TrackingResult from 'fm3/components/tracking/TrackingResult';
 import TrackingMenu from 'fm3/components/tracking/TrackingMenu.tsx';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { LeafletMouseEvent, LocationEvent } from 'leaflet';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -160,8 +163,8 @@ class Main extends React.Component<Props, IState> {
     }
   };
 
-  handleLocationFound = e => {
-    this.props.onLocationSet(e.latitude, e.longitude, e.accuracy);
+  handleLocationFound = (e: LocationEvent) => {
+    this.props.onLocationSet(e.latlng.lat, e.latlng.lng, e.accuracy);
   };
 
   handleEmbedLogoClick = () => {
@@ -421,9 +424,10 @@ class Main extends React.Component<Props, IState> {
         </div>
 
         {activeModal === 'settings' && <Settings />}
-        {['tracking-my', 'tracking-watched'].includes(activeModal) && (
-          <TrackingModal />
-        )}
+        {activeModal &&
+          ['tracking-my', 'tracking-watched'].includes(activeModal) && (
+            <TrackingModal />
+          )}
         {activeModal === 'share' && <ShareMapModal />}
         {activeModal === 'embed' && <EmbedMapModal />}
         {activeModal === 'export-gpx' && <ExportGpxModal />}
@@ -446,12 +450,12 @@ class Main extends React.Component<Props, IState> {
           }}
           center={{ lat, lng: lon }}
           zoom={zoom}
-          onMoveend={this.handleMapMoveEnd}
-          onMousemove={handleMapMouseMove}
-          onMouseover={handleMapMouseOver}
-          onMouseout={handleMapMouseOut}
-          onClick={handleMapClick}
-          onLocationfound={this.handleLocationFound}
+          onmoveend={this.handleMapMoveEnd}
+          onmousemove={handleMapMouseMove}
+          onmouseover={handleMapMouseOver}
+          onmouseout={handleMapMouseOut}
+          onclick={handleMapClick}
+          onlocationfound={this.handleLocationFound}
           style={{ cursor: mouseCursor }}
         >
           <ScaleControl imperial={false} position="bottomleft" />
@@ -482,7 +486,7 @@ class Main extends React.Component<Props, IState> {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   lat: state.map.lat,
   lon: state.map.lon,
   zoom: state.map.zoom,
@@ -512,14 +516,14 @@ const mapStateToProps = state => ({
   imhd: state.routePlanner.transportType === 'imhd',
 });
 
-const mapDispatchToProps = dispatch => ({
-  onToolSet(tool) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onToolSet(tool: string | null) {
     dispatch(setTool(tool));
   },
-  onMapRefocus(changes) {
+  onMapRefocus(changes: Partial<IMapViewState>) {
     dispatch(mapRefocus(changes));
   },
-  onLocationSet(lat, lon, accuracy) {
+  onLocationSet(lat: number, lon: number, accuracy: number) {
     dispatch(setLocation({ lat, lon, accuracy }));
   },
   onCheckLogin() {
@@ -544,26 +548,31 @@ export default compose(
   ),
 )(Main);
 
-function handleMapClick({ latlng: { lat, lng: lon } }) {
+function handleMapClick(e: LeafletMouseEvent) {
   // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
   if (!window['preventMapClick']) {
-    mapEventEmitter.emit('mapClick', lat, lon);
+    mapEventEmitter.emit('mapClick', e.latlng.lat, e.latlng.lng);
   }
 }
 
-function handleMapMouseMove({ latlng: { lat, lng: lon }, originalEvent }) {
-  mapEventEmitter.emit('mouseMove', lat, lon, originalEvent);
+function handleMapMouseMove(e: LeafletMouseEvent) {
+  mapEventEmitter.emit(
+    'mouseMove',
+    e.latlng.lat,
+    e.latlng.lng,
+    e.originalEvent,
+  );
 }
 
-function handleMapMouseOver({ latlng: { lat, lng: lon } }) {
-  mapEventEmitter.emit('mouseOver', lat, lon);
+function handleMapMouseOver(e: LeafletMouseEvent) {
+  mapEventEmitter.emit('mouseOver', e.latlng.lat, e.latlng.lng);
 }
 
-function handleMapMouseOut({ latlng: { lat, lng: lon } }) {
-  mapEventEmitter.emit('mouseOut', lat, lon);
+function handleMapMouseOut(e: LeafletMouseEvent) {
+  mapEventEmitter.emit('mouseOut', e.latlng.lat, e.latlng.lng);
 }
 
-function selectMouseCursor(state) {
+function selectMouseCursor(state: RootState) {
   if (state.main.selectingHomeLocation) {
     return 'crosshair';
   }
@@ -580,7 +589,7 @@ function selectMouseCursor(state) {
   }
 }
 
-function isShowGalleryPicker(state) {
+function isShowGalleryPicker(state: RootState) {
   return (
     (state.main.tool === null ||
       ['gallery', 'track-viewer', 'objects', 'changesets'].includes(

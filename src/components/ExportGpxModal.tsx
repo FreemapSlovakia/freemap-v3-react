@@ -26,7 +26,7 @@ const exportableDefinitions = [
   { type: 'tracking', icon: 'bullseye' },
   // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
-];
+] as const;
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
