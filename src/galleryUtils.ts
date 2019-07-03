@@ -1,3 +1,5 @@
+import { IGalleryFilter } from './actions/galleryActions';
+
 export function createFilter({
   tag,
   userId,
@@ -7,7 +9,7 @@ export function createFilter({
   takenAtTo,
   createdAtFrom,
   createdAtTo,
-}) {
+}: IGalleryFilter) {
   return {
     tag,
     userId,
@@ -20,7 +22,7 @@ export function createFilter({
   };
 }
 
-function plusDay(d) {
+function plusDay(d: Date) {
   if (!d) {
     return d;
   }

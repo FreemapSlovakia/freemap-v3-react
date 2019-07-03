@@ -16,7 +16,7 @@ const Attribution: React.FC<IProps> = ({ t, mapType, overlays, imhd }) => {
         [
           ...baseLayers.filter(({ type }) => mapType === type),
           ...overlayLayers.filter(({ type }) => overlays.includes(type)),
-        ].reduce((a, b) => [...a, ...b.attribution], []),
+        ].reduce((a, b) => [...a, ...b.attribution], [] as IAttributionDef[]),
       ).map(({ type, attributions }) => (
         <li key={type}>
           {t(`mapLayers.type.${type}`)}{' '}
@@ -54,7 +54,7 @@ const Attribution: React.FC<IProps> = ({ t, mapType, overlays, imhd }) => {
 function categorize(
   attributions: IAttributionDef[],
 ): Array<{ type: string; attributions: IAttributionDef[] }> {
-  const res = {};
+  const res: { [type: string]: IAttributionDef[] } = {};
 
   for (const attribution of attributions) {
     let x = res[attribution.type];

@@ -28,6 +28,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { LatLon } from 'fm3/types/common';
+import { GeoJsonObject } from 'geojson';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -152,10 +153,10 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool) {
+  onToolSet(tool: string) {
     dispatch(setTool(tool));
   },
-  onElevationChartTrackGeojsonSet(trackGeojson) {
+  onElevationChartTrackGeojsonSet(trackGeojson: GeoJsonObject) {
     dispatch(elevationChartSetTrackGeojson(trackGeojson));
   },
   onElevationChartClose() {

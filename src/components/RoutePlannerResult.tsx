@@ -311,7 +311,7 @@ const RoutePlannerResult: React.FC<Props> = ({
             {alt === activeAlternativeIndex &&
               special &&
               itinerary.map(
-                ({ shapePoints, name, maneuver, extra: extra1 }, i) => (
+                ({ shapePoints, name, maneuver, extra: extra1 }, i: number) => (
                   <Marker key={i} icon={circularIcon} position={shapePoints[0]}>
                     <Tooltip direction="right" permanent>
                       <div>{maneuverToText(name, maneuver, extra1)}</div>
@@ -319,7 +319,7 @@ const RoutePlannerResult: React.FC<Props> = ({
                   </Marker>
                 ),
               )}
-            {itinerary.map((routeSlice, i) => (
+            {itinerary.map((routeSlice, i: number) => (
               <Polyline
                 key={`slice-${i}`}
                 ref={bringToFront}

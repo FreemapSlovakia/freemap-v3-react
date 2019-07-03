@@ -1,6 +1,7 @@
 import geojsonArea from '@mapbox/geojson-area';
 import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common';
+import { Feature } from 'geojson';
 
 const PI2 = 2 * Math.PI;
 
@@ -66,7 +67,12 @@ export function distance(
   return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 
-export function bearing(lat1, lon1, lat2, lon2) {
+export function bearing(
+  lat1: number,
+  lon1: number,
+  lat2: number,
+  lon2: number,
+) {
   const dLon = lon2 - lon1;
   const y = Math.sin(dLon) * Math.cos(lat2);
   const x =
@@ -75,11 +81,11 @@ export function bearing(lat1, lon1, lat2, lon2) {
   return PI2 - ((Math.atan2(y, x) + PI2) % PI2);
 }
 
-export function toRad(deg) {
+export function toRad(deg: number) {
   return (deg * Math.PI) / 180;
 }
 
-export function getCurrentPosition() {
+export function getCurrentPosition(): Promise<LatLon> {
   const options = {
     enableHighAccuracy: true,
     timeout: 10000,
@@ -88,11 +94,11 @@ export function getCurrentPosition() {
 
   return new Promise((resolve, reject) => {
     // resolve({ lat: 48.786170, lon: 19.496098 });
-    const onSuccess = pos => {
+    const onSuccess = (pos: Position) => {
       resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
     };
 
-    const onError = error => {
+    const onError = (error: PositionError) => {
       reject(error);
     };
 
@@ -107,8 +113,11 @@ export function area(points: LatLon[]) {
   });
 }
 
-export function containsElevations(geojson) {
-  return geojson.geometry.coordinates[0].length === 3;
+export function containsElevations(geojson: Feature) {
+  return (
+    geojson.geometry.type === 'LineString' &&
+    geojson.geometry.coordinates[0].length === 3
+  );
 }
 
 // returns array of [lat, lon, smoothedEle] triplets

@@ -78,7 +78,7 @@ export class ExportPdfModal extends React.Component<Props, IState> {
     }));
   };
 
-  handleScaleChange = scale => {
+  handleScaleChange = (scale: number) => {
     this.setState({ scale });
   };
 

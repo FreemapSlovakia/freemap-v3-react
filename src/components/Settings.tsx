@@ -165,14 +165,14 @@ class Settings extends React.Component<Props, IState> {
     } = this.state;
 
     const userMadeChanges =
-      [
+      ([
         'tileFormat',
         'homeLocation',
         'expertMode',
         'eleSmoothingFactor',
         'preventTips',
         'overlayPaneOpacity',
-      ].some(prop => this.state[prop] !== this.props[prop]) ||
+      ] as const).some(prop => this.state[prop] !== this.props[prop]) ||
       (user && (name !== (user.name || '') || email !== (user.email || ''))) ||
       overlayLayers.some(
         ({ type }) =>

@@ -1,15 +1,13 @@
 import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 import React from 'react';
-import PropTypes from 'prop-types';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import * as FmPropTypes from 'fm3/propTypes';
-import { mapRefocus } from 'fm3/actions/mapActions';
+import { mapRefocus, IMapViewState } from 'fm3/actions/mapActions';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
@@ -24,18 +22,6 @@ interface IState {
 }
 
 class MapSwitchButton extends React.Component<Props, IState> {
-  static propTypes = {
-    zoom: PropTypes.number.isRequired,
-    overlays: FmPropTypes.overlays.isRequired,
-    mapType: FmPropTypes.mapType.isRequired,
-    onMapRefocus: PropTypes.func.isRequired,
-    expertMode: PropTypes.bool,
-    pictureFilterIsActive: PropTypes.bool,
-    isAdmin: PropTypes.bool,
-    stravaAuth: PropTypes.bool,
-    t: PropTypes.func.isRequired,
-  };
-
   state: IState = {
     show: false,
   };
@@ -235,7 +221,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapRefocus(changes) {
+  onMapRefocus(changes: Partial<IMapViewState>) {
     dispatch(mapRefocus(changes));
   },
 });

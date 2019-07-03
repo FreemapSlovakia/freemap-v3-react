@@ -18,7 +18,7 @@ export const infoPointChangePosition = createStandardAction(
 
 export const infoPointChangeLabel = createStandardAction(
   'INFO_POINT_CHANGE_LABEL',
-)<string>();
+)<string | undefined>();
 
 export const infoPointSetActiveIndex = createStandardAction(
   'INFO_POINT_SET_ACTIVE_INDEX',

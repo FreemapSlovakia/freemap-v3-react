@@ -22,11 +22,13 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 interface IState {
-  editedLabel: string;
+  editedLabel?: string;
 }
 
 class InfoPointLabelModal extends React.Component<Props, IState> {
-  constructor(props) {
+  state: IState = {};
+
+  constructor(props: Props) {
     super(props);
     this.state = {
       editedLabel: props.label,
@@ -85,7 +87,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onInfoPointChangeLabel(label: string) {
+  onInfoPointChangeLabel(label: string | undefined) {
     dispatch(infoPointChangeLabel(label));
   },
   onModalClose() {

@@ -187,7 +187,10 @@ if (!process.env.NODE_ENV) {
   });
 }
 
-function findNearestScale(scales, ratio = window.devicePixelRatio || 1) {
+function findNearestScale(
+  scales: number[],
+  ratio = window.devicePixelRatio || 1,
+) {
   let dif = Number.POSITIVE_INFINITY;
   let prevScale = scales[0];
   for (const scale of scales) {
@@ -202,7 +205,7 @@ function findNearestScale(scales, ratio = window.devicePixelRatio || 1) {
   return prevScale;
 }
 
-function scaleUrl(scales, url) {
+function scaleUrl(scales: number[], url: string) {
   const scale = findNearestScale(scales);
   return scale === 1 ? url : `${url}@${scale}x`;
 }

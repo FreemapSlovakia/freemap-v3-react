@@ -29,7 +29,7 @@ export function resolveTrackClass(tags: { [key: string]: string }) {
   return 'unknown';
 }
 
-const trackGradeToBike = {
+const trackGradeToBike: { [key: string]: string } = {
   grade1: 'road-bike',
   grade2: 'trekking-bike',
   grade3: 'trekking-bike',
@@ -37,7 +37,9 @@ const trackGradeToBike = {
   grade5: 'no-bike',
 };
 
-export function resolveBicycleTypeSuitableForTrack(tags) {
+export function resolveBicycleTypeSuitableForTrack(tags: {
+  [key: string]: string;
+}) {
   if (['motorway', 'trunk'].indexOf(tags.highway) >= 0) {
     return 'no-bike';
   }
@@ -46,11 +48,7 @@ export function resolveBicycleTypeSuitableForTrack(tags) {
     return 'road-bike';
   }
 
-  if (tags.tracktype) {
-    return trackGradeToBike[tags.tracktype];
-  }
-
-  return 'unknown';
+  return (tags.tracktype && trackGradeToBike[tags.tracktype]) || 'unknown';
 }
 
 // TODO finish

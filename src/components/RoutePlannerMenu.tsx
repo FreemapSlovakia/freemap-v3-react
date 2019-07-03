@@ -32,6 +32,7 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { TransportType } from 'fm3/reducers/routePlannerReducer';
+import { LatLon } from 'fm3/types/common';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -52,7 +53,7 @@ class RoutePlannerMenu extends React.Component<Props> {
     const pid = Math.random();
     this.props.onProgressStart(pid);
     getCurrentPosition().then(
-      ({ lat, lon }) => {
+      ({ lat, lon }: LatLon) => {
         this.props.onProgressStop(pid);
         if (pointType === 'start') {
           this.props.onStartSet({ lat, lon });
@@ -351,10 +352,10 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onStartSet(start) {
+  onStartSet(start: LatLon) {
     dispatch(routePlannerSetStart({ start }));
   },
-  onFinishSet(finish) {
+  onFinishSet(finish: LatLon) {
     dispatch(routePlannerSetFinish({ finish }));
   },
   onItineraryVisibilityToggle() {
@@ -369,10 +370,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPickPointModeChange(pickMode: 'start' | 'finish') {
     dispatch(routePlannerSetPickMode(pickMode));
   },
-  onProgressStart(pid) {
+  onProgressStart(pid: number) {
     dispatch(startProgress(pid));
   },
-  onProgressStop(pid) {
+  onProgressStop(pid: number) {
     dispatch(stopProgress(pid));
   },
   onGetCurrentPositionError() {

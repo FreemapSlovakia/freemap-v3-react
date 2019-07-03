@@ -1,4 +1,4 @@
-import queryString from 'query-string';
+import queryString, { ParsedQuery } from 'query-string';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 import {
@@ -55,10 +55,11 @@ import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
 import { RootAction } from './actions';
 import { TransportType } from './reducers/routePlannerReducer';
-import { MyStore } from './storeCreator';
+import { MyStore, RootState } from './storeCreator';
 import { Location } from 'history';
 import { ITrackedDevice } from './types/trackingTypes';
 import { LatLon } from './types/common';
+import { Dispatch } from 'redux';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -438,7 +439,7 @@ export const handleLocationChange = (store: MyStore, location: Location) => {
 };
 
 // TODO use some generic deep compare fn
-function trackedDevicesEquals(td1, td2) {
+function trackedDevicesEquals(td1: ITrackedDevice, td2: ITrackedDevice) {
   return (
     td1.id === td2.id &&
     td1.fromTime === td2.fromTime &&
@@ -448,7 +449,11 @@ function trackedDevicesEquals(td1, td2) {
   );
 }
 
-function handleGallery(getState, dispatch, query) {
+function handleGallery(
+  getState: () => RootState,
+  dispatch: Dispatch<RootAction>,
+  query: ParsedQuery<string>,
+) {
   const qUserId = parseInt(query['gallery-user-id'], 10);
   const qGalleryTag = query['gallery-tag'];
   const qRatingFrom = parseFloat(query['gallery-rating-from']);

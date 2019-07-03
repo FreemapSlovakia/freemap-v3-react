@@ -30,13 +30,9 @@ export interface IMapStateBase extends IMapViewState {
   tileFormat: 'jpeg' | 'png';
 }
 
-export const mapRefocus = createStandardAction('MAP_REFOCUS')<{
-  zoom?: number;
-  lat?: number;
-  lon?: number;
-  mapType?: string;
-  overlays?: string[];
-}>();
+export const mapRefocus = createStandardAction('MAP_REFOCUS')<
+  Partial<IMapViewState>
+>();
 
 export const mapSetTileFormat = createStandardAction('MAP_SET_TILE_FORMAT')<
   'png' | 'jpeg'
