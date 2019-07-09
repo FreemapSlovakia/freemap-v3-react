@@ -30,13 +30,13 @@ export interface IPictureComment {
 export interface IPicture extends LatLon {
   title: string;
   description: string;
-  createdAt: Date;
-  takenAt: Date;
   tags: string[];
   comments: IPictureComment[];
   rating: number;
   myStars: number;
   user: IUser;
+  createdAt: Date;
+  takenAt: Date | null;
 }
 
 export interface IGalleryFilter {
@@ -74,9 +74,7 @@ export const galleryCancelShowOnTheMap = createAction(
   'GALLERY_CANCEL_SHOW_ON_THE_MAP',
 );
 
-export const galleryAddItem = createStandardAction('GALLERY_ADD_ITEM')<
-  IPicture
->();
+export const galleryAddItem = createStandardAction('GALLERY_ADD_ITEM')<any>();
 
 export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
   number
@@ -101,7 +99,7 @@ export const galleryConfirmPickedPosition = createAction(
 
 export const gallerySetItemForPositionPicking = createStandardAction(
   'GALLERY_SET_ITEM_FOR_POSITION_PICKING',
-)<number>();
+)<number | null>();
 
 export const galleryUpload = createAction('GALLERY_UPLOAD');
 

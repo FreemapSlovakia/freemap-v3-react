@@ -1,22 +1,22 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 import Panel from 'react-bootstrap/lib/Panel';
 
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-class GalleryShowPositionMenu extends React.Component {
-  static propTypes = {
-    showPosition: PropTypes.bool,
-    onClose: PropTypes.func.isRequired,
-    t: PropTypes.func.isRequired,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
+class GalleryShowPositionMenu extends React.Component<Props> {
   componentDidMount() {
     // can't use keydown because it would close themodal
     document.addEventListener('keyup', this.handleKeyUp);
@@ -26,7 +26,7 @@ class GalleryShowPositionMenu extends React.Component {
     document.removeEventListener('keyup', this.handleKeyUp);
   }
 
-  handleKeyUp = event => {
+  handleKeyUp = (event: KeyboardEvent) => {
     if (event.keyCode === 27 /* escape key */) {
       this.props.onClose();
     }
@@ -50,11 +50,11 @@ class GalleryShowPositionMenu extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   showPosition: state.gallery.showPosition,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onClose() {
     dispatch(galleryCancelShowOnTheMap());
   },

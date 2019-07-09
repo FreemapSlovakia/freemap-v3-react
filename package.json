@@ -62,6 +62,7 @@
     "@types/react-leaflet": "2.2.1",
     "@types/react-rangeslider": "2.2.0",
     "@types/react-redux": "7.1.1",
+    "@types/react-tag-autocomplete": "5.6.1",
     "babel-eslint": "10.0.2",
     "babel-loader": "8.0.6",
     "copy-webpack-plugin": "5.0.3",

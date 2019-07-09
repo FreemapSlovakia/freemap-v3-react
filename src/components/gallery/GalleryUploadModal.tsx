@@ -1,15 +1,12 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
-import PropTypes from 'prop-types';
+import { compose, Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
-
-import * as FmPropTypes from 'fm3/propTypes';
 
 import {
   galleryAddItem,
@@ -19,51 +16,31 @@ import {
   galleryUpload,
   galleryHideUploadModal,
   galleryToggleShowPreview,
+  IPicture,
 } from 'fm3/actions/galleryActions';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import GalleryUploadItem from 'fm3/components/gallery/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { IPictureModel } from './GalleryEditForm';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
 
 let nextId = 1;
 
-class GalleryUploadModal extends React.Component {
-  static propTypes = {
-    items: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        file: PropTypes.object.isRequired,
-        url: PropTypes.string,
-        position: FmPropTypes.point,
-        title: PropTypes.string,
-        description: PropTypes.string,
-        tags: PropTypes.arrayOf(PropTypes.string),
-        takenAt: PropTypes.date,
-        error: PropTypes.string,
-      }).isRequired,
-    ).isRequired,
-    allTags: FmPropTypes.allTags.isRequired,
-    onItemAdd: PropTypes.func.isRequired,
-    onItemRemove: PropTypes.func.isRequired,
-    onClose: PropTypes.func.isRequired,
-    onPositionPick: PropTypes.func.isRequired,
-    onItemChange: PropTypes.func.isRequired,
-    visible: PropTypes.bool,
-    onUpload: PropTypes.func.isRequired,
-    onShowPreviewToggle: PropTypes.func.isRequired,
-    uploading: PropTypes.bool,
-    t: PropTypes.func.isRequired,
-    language: PropTypes.string.isRequired,
-    showPreview: PropTypes.bool,
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
   };
 
-  handleFileDrop = (acceptedFiles /* , rejectedFiles */) => {
+class GalleryUploadModal extends React.Component<Props> {
+  handleFileDrop = (acceptedFiles: File[] /* , rejectedFiles: File[] */) => {
     for (const accpetedFile of acceptedFiles) {
       this.processFile(accpetedFile, err => {
         if (err) {
@@ -75,11 +52,12 @@ class GalleryUploadModal extends React.Component {
 
   processFile = (file, cb) => {
     const reader = new FileReader();
-    reader.onerror = err => {
-      cb(err);
+    reader.onerror = () => {
+      reader.abort();
+      cb(new Error());
     };
     reader.onload = () => {
-      let tags;
+      let tags: { [key: string]: any };
       try {
         tags = ExifReader.load(reader.result);
       } catch (e) {
@@ -158,9 +136,9 @@ class GalleryUploadModal extends React.Component {
 
       const img = new Image();
       const url = URL.createObjectURL(file);
-      img.onerror = err => {
+      img.onerror = () => {
         URL.revokeObjectURL(url);
-        cb(err);
+        cb(new Error());
       };
       img.onload = () => {
         URL.revokeObjectURL(url);
@@ -223,11 +201,11 @@ class GalleryUploadModal extends React.Component {
     reader.readAsArrayBuffer(file.slice(0, 128 * 1024));
   };
 
-  handleRemove = id => {
+  handleRemove = (id: number) => {
     this.props.onItemRemove(id);
   };
 
-  handleModelChange = (id, model) => {
+  handleModelChange = (id: number, model: IPictureModel) => {
     const item = this.props.items.find(itm => itm.id === id);
     if (item) {
       this.props.onItemChange(id, {
@@ -311,8 +289,8 @@ class GalleryUploadModal extends React.Component {
               <Dropzone
                 onDrop={this.handleFileDrop}
                 accept=".jpg,.jpeg"
-                className="dropzone"
-                disablePreview
+                // className="dropzone"
+                // disablePreview
               >
                 {({ getRootProps, getInputProps }) => (
                   <div {...getRootProps()} className="dropzone">
@@ -345,36 +323,35 @@ class GalleryUploadModal extends React.Component {
 }
 
 // adds support for Olympus and other weirdos
-function adaptGpsCoordinate(x) {
-  if (!x) {
-    return [Number.NaN, null];
+function adaptGpsCoordinate(x: { description: string; value: string }) {
+  if (x) {
+    // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
+
+    const { description, value } = x;
+    const p = /^(?:(\d+),)?(\d+(?:\.\d+)?)([NSWE])?$/;
+    const m1 = p.exec(description);
+    const m2 = p.exec(value);
+    if (m1 && (!m2 || !m2[3])) {
+      return parse2(m1);
+    }
+    if (m2) {
+      return parse2(m2);
+    }
   }
 
-  // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
-
-  const { description, value } = x;
-  const p = /^(?:(\d+),)?(\d+(?:\.\d+)?)([NSWE])?$/;
-  const m1 = p.exec(description);
-  const m2 = p.exec(value);
-  if (m1 && (!m2 || !m2[3])) {
-    return parse2(m1);
-  }
-  if (m2) {
-    return parse2(m2);
-  }
-  return [Number.NaN, null];
+  return [Number.NaN, null] as const;
 }
 
-function parse2(m) {
+function parse2(m: RegExpExecArray) {
   return [
     m[1] === undefined
       ? parseFloat(m[2])
       : parseInt(m[1], 10) + parseFloat(m[2]) / 60,
     m[3] || null,
-  ];
+  ] as const;
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   items: state.gallery.items,
   visible: state.gallery.pickingPositionForId === null,
   uploading: !!state.gallery.uploadingId,
@@ -383,17 +360,17 @@ const mapStateToProps = state => ({
   language: state.l10n.language,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onItemAdd(item) {
     dispatch(galleryAddItem(item));
   },
-  onItemRemove(id) {
+  onItemRemove(id: number) {
     dispatch(galleryRemoveItem(id));
   },
   onUpload() {
     dispatch(galleryUpload());
   },
-  onClose(ask) {
+  onClose(ask: boolean) {
     if (ask) {
       dispatch(
         toastsAdd({
@@ -414,10 +391,10 @@ const mapDispatchToProps = dispatch => ({
       dispatch(galleryHideUploadModal());
     }
   },
-  onPositionPick(id) {
+  onPositionPick(id: number) {
     dispatch(gallerySetItemForPositionPicking(id));
   },
-  onItemChange(id, item) {
+  onItemChange(id: number, item: IPicture) {
     dispatch(gallerySetItem({ id, item }));
   },
   onShowPreviewToggle() {

@@ -1,8 +1,5 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
-import * as FmPropTypes from 'fm3/propTypes';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
@@ -14,23 +11,18 @@ import RichMarker from 'fm3/components/RichMarker';
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
+import { Dispatch } from 'redux';
+import { DragEndEvent } from 'leaflet';
 
-class GalleryResult extends React.Component {
-  static propTypes = {
-    onPositionPick: PropTypes.func.isRequired,
-    activeImageId: PropTypes.number,
-    isPickingPosition: PropTypes.bool,
-    pickingPosition: FmPropTypes.point,
-    showFilter: PropTypes.bool,
-    showUploadModal: PropTypes.bool,
-    showPosition: PropTypes.bool,
-    image: PropTypes.shape({
-      lat: PropTypes.number.isRequired,
-      lon: PropTypes.number.isRequired,
-    }),
-  };
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-  state = {};
+interface IState {}
+
+class GalleryResult extends React.Component<Props, IState> {
+  state: IState = {};
 
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);
@@ -41,13 +33,13 @@ class GalleryResult extends React.Component {
   }
 
   // TODO mode to GalleryMenu to be consistent with other tools
-  handleMapClick = (lat, lon) => {
+  handleMapClick = (lat: number, lon: number) => {
     if (this.props.isPickingPosition) {
       this.props.onPositionPick(lat, lon);
     }
   };
 
-  handlePositionMarkerDragEnd = e => {
+  handlePositionMarkerDragEnd = (e: DragEndEvent) => {
     const coords = e.target.getLatLng();
     this.props.onPositionPick(coords.lat, coords.lng);
   };
@@ -68,12 +60,12 @@ class GalleryResult extends React.Component {
         {pickingPosition && (
           <RichMarker
             draggable
-            position={L.latLng(pickingPosition.lat, pickingPosition.lon)}
-            onDragend={this.handlePositionMarkerDragEnd}
+            position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
+            ondragend={this.handlePositionMarkerDragEnd}
           />
         )}
         {showPosition && image && (
-          <RichMarker position={L.latLng(image.lat, image.lon)} />
+          <RichMarker position={{ lat: image.lat, lng: image.lon }} />
         )}
         {!isPickingPosition && activeImageId && !showPosition && (
           <GalleryViewerModal />
@@ -85,7 +77,7 @@ class GalleryResult extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   image: state.gallery.image,
   activeImageId: state.gallery.activeImageId,
   isPickingPosition: state.gallery.pickingPositionForId !== null,
@@ -95,8 +87,8 @@ const mapStateToProps = state => ({
   showPosition: state.gallery.showPosition,
 });
 
-const mapDispatchToProps = dispatch => ({
-  onPositionPick(lat, lon) {
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onPositionPick(lat: number, lon: number) {
     dispatch(gallerySetPickingPosition({ lat, lon }));
   },
 });

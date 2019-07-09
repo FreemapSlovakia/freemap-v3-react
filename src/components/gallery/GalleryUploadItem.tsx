@@ -1,29 +1,31 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import 'fm3/styles/react-tag-autocomplete.css';
 
 import Button from 'react-bootstrap/lib/Button';
-import * as FmPropTypes from 'fm3/propTypes';
-import GalleryEditForm from 'fm3/components/gallery/GalleryEditForm';
+import GalleryEditForm, {
+  IPictureModel,
+} from 'fm3/components/gallery/GalleryEditForm';
+import { Translator } from 'fm3/l10nInjector';
+import { IGalleryTag } from 'fm3/actions/galleryActions';
 
-export default class GalleryUploadItem extends React.Component {
-  static propTypes = {
-    id: PropTypes.number.isRequired,
-    filename: PropTypes.string,
-    url: PropTypes.string,
-    model: FmPropTypes.galleryPictureModel.isRequired,
-    allTags: FmPropTypes.allTags.isRequired,
-    error: PropTypes.string,
-    onRemove: PropTypes.func.isRequired,
-    onPositionPick: PropTypes.func.isRequired,
-    onModelChange: PropTypes.func.isRequired,
-    disabled: PropTypes.bool,
-    t: PropTypes.func.isRequired,
-    language: PropTypes.string.isRequired,
-    showPreview: PropTypes.bool,
-  };
+interface IProps {
+  id: number;
+  filename: string;
+  url: string;
+  model: IPictureModel;
+  allTags: IGalleryTag[];
+  error: string;
+  onRemove: (id: number) => void;
+  onPositionPick: (id: number) => void;
+  onModelChange: (id: number, model: IPictureModel) => void;
+  disabled: boolean;
+  t: Translator;
+  language: string;
+  showPreview: boolean;
+}
 
+export default class GalleryUploadItem extends React.Component<IProps> {
   handleRemove = () => {
     this.props.onRemove(this.props.id);
   };
@@ -32,7 +34,7 @@ export default class GalleryUploadItem extends React.Component {
     this.props.onPositionPick(this.props.id);
   };
 
-  handleModelChange = model => {
+  handleModelChange = (model: IPictureModel) => {
     this.props.onModelChange(this.props.id, model);
   };
 
@@ -65,7 +67,7 @@ export default class GalleryUploadItem extends React.Component {
             {...{ model, allTags, error }}
             t={t}
             language={language}
-            onPositionPick={disabled ? null : this.handlePositionPick}
+            onPositionPick={disabled ? undefined : this.handlePositionPick}
             onModelChange={this.handleModelChange}
           />{' '}
           <Button onClick={this.handleRemove} bsStyle="danger">

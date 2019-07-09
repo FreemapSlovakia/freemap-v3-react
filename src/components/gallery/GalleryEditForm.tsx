@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import ReactTags from 'react-tag-autocomplete';
+import ReactTags, { Tag } from 'react-tag-autocomplete';
 import 'fm3/styles/react-tag-autocomplete.css';
 
 import Button from 'react-bootstrap/lib/Button';
@@ -12,13 +12,23 @@ import Alert from 'react-bootstrap/lib/Alert';
 import { formatGpsCoord } from 'fm3/geoutils';
 import DateTime from '../DateTime';
 import { Translator } from 'fm3/l10nInjector';
+import { IGalleryTag } from 'fm3/actions/galleryActions';
+import { LatLon } from 'fm3/types/common';
+
+export interface IPictureModel {
+  title: string;
+  description: string;
+  tags: string[];
+  takenAt: string;
+  position: LatLon;
+}
 
 interface IProps {
-  model: any; // TODO
-  allTags: { name: string }[];
+  model: IPictureModel;
+  allTags: IGalleryTag[];
   error: string | null;
-  onPositionPick: () => void;
-  onModelChange: (model: any) => void; // TODO
+  onPositionPick: undefined | (() => void);
+  onModelChange: (model: IPictureModel) => void;
   t: Translator;
   language: string;
 }
@@ -33,35 +43,38 @@ const GalleryEditForm: React.FC<IProps> = ({
   onModelChange,
 }) => {
   const changeModel = useCallback(
-    (key, value) => {
+    (key: string, value) => {
       onModelChange({ ...model, [key]: value });
     },
     [model, onModelChange],
   );
 
   const handleTitleChange = useCallback(
-    e => {
-      changeModel('title', e.target.value || null);
+    (e: React.FormEvent<FormControl>) => {
+      changeModel('title', (e.target as HTMLInputElement).value || null);
     },
     [changeModel],
   );
 
   const handleDescriptionChange = useCallback(
-    e => {
-      changeModel('description', e.target.value || null);
+    (e: React.FormEvent<FormControl>) => {
+      changeModel(
+        'description',
+        (e.target as HTMLTextAreaElement).value || null,
+      );
     },
     [changeModel],
   );
 
   const handleTakenAtChange = useCallback(
-    value => {
+    (value: string) => {
       changeModel('takenAt', value);
     },
     [changeModel],
   );
 
   const handleTagAdded = useCallback(
-    ({ name }) => {
+    ({ name }: Tag) => {
       const fixed = name
         .toLowerCase()
         .trim()
@@ -74,7 +87,7 @@ const GalleryEditForm: React.FC<IProps> = ({
   );
 
   const handleTagDeleted = useCallback(
-    i => {
+    (i: number) => {
       const tags = [...model.tags];
       tags.splice(i, 1);
       changeModel('tags', tags);
