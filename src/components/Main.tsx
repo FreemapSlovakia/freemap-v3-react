@@ -83,6 +83,7 @@ import {
   setLocation,
   clearMap,
   toggleLocate,
+  Tool,
 } from 'fm3/actions/mainActions';
 import { authCheckLogin } from 'fm3/actions/authActions';
 
@@ -517,7 +518,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: string | null) {
+  onToolSet(tool: Tool | null) {
     dispatch(setTool(tool));
   },
   onMapRefocus(changes: Partial<IMapViewState>) {

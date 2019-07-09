@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Circle } from 'react-leaflet';
 
@@ -19,11 +18,6 @@ interface IState {
 }
 
 class GalleryPicker extends React.Component<Props, IState> {
-  static propTypes = {
-    onImageRequest: PropTypes.func.isRequired,
-    zoom: PropTypes.number.isRequired,
-  };
-
   state: IState = {};
 
   componentDidMount() {

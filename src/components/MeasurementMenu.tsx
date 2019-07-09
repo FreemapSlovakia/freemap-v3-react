@@ -5,7 +5,7 @@ import { lineString } from '@turf/helpers';
 
 import injectL10n, { Translator } from 'fm3/l10nInjector';
 
-import { setTool } from 'fm3/actions/mainActions';
+import { setTool, Tool } from 'fm3/actions/mainActions';
 import {
   distanceMeasurementAddPoint,
   IPoint as IDistancePoint,
@@ -44,7 +44,12 @@ class MeasurementMenu extends React.Component<Props> {
     mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
   }
 
-  handlePoiAdd = (lat: number, lon: number, position: number, id0: number) => {
+  handlePoiAdd = (
+    lat: number,
+    lon: number,
+    position?: number,
+    id0?: number,
+  ) => {
     if (this.props.tool === 'measure-ele') {
       this.props.onElePointSet({ lat, lon });
       return;
@@ -153,7 +158,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: string) {
+  onToolSet(tool: Tool) {
     dispatch(setTool(tool));
   },
   onElevationChartTrackGeojsonSet(trackGeojson: GeoJsonObject) {

@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { setTool } from 'fm3/actions/mainActions';
+import { setTool, Tool } from 'fm3/actions/mainActions';
 import injectL10n, { Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -104,7 +104,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: string) {
+  onToolSet(tool: Tool) {
     dispatch(setTool(tool));
   },
 });

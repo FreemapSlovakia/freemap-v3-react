@@ -1,11 +1,25 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
 
+export type Tool =
+  | 'objects'
+  | 'route-planner'
+  | 'measure-dist'
+  | 'measure-ele'
+  | 'measure-area'
+  | 'route-planner'
+  | 'track-viewer'
+  | 'info-point'
+  | 'changesets'
+  | 'gallery'
+  | 'map-details'
+  | 'tracking';
+
 export const setActiveModal = createStandardAction('SET_ACTIVE_MODAL')<
   string | null
 >();
 
-export const setTool = createStandardAction('SET_TOOL')<string | null>();
+export const setTool = createStandardAction('SET_TOOL')<Tool | null>();
 
 export const setHomeLocation = createStandardAction('SET_HOME_LOCATION')<{
   lat: number;

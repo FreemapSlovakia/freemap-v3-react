@@ -12,6 +12,7 @@ import {
   setActiveModal,
   setTool,
   setEmbedFeatures,
+  Tool,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
@@ -149,7 +150,7 @@ export const handleLocationChange = (store: MyStore, location: Location) => {
 
   const tool = query.tool && typeof query.tool === 'string' ? query.tool : null;
   if (getState().main.tool !== tool) {
-    dispatch(setTool(tool));
+    dispatch(setTool(tool as Tool));
   }
 
   const trackUID = query['track-uid'];
