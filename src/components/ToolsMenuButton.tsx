@@ -39,7 +39,7 @@ class ToolsMenuButton extends React.Component<Props, IState> {
     this.setState({ show: false });
   };
 
-  handleToolSelect(tool: string) {
+  handleToolSelect(tool: Tool) {
     this.setState({ show: false });
     this.props.onToolSet(tool);
   }
@@ -47,7 +47,7 @@ class ToolsMenuButton extends React.Component<Props, IState> {
   render() {
     const { t, tool, expertMode } = this.props;
 
-    const tools: [string, string, string][] = [
+    const tools: [Tool, string, string][] = [
       ['route-planner', 'map-signs', 'routePlanner'],
       ['objects', 'map-marker', 'objects'],
       ['gallery', 'picture-o', 'gallery'],

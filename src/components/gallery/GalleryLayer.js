@@ -1,3 +1,4 @@
+import PropTypes from 'prop-types';
 import axios from 'axios';
 import { GridLayer, withLeaflet } from 'react-leaflet';
 
@@ -94,8 +95,9 @@ const galleryLayer = L.GridLayer.extend({
 
 class GalleryLayer extends GridLayer {
   static propTypes = {
-    filter: galleryFilter.isRequired,
+    filter: PropTypes.object.isRequired,
   };
+
   createLeafletElement(props) {
     return new galleryLayer({ ...props });
   }
