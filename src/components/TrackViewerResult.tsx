@@ -1,6 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import * as FmPropTypes from 'fm3/propTypes';
 import { connect } from 'react-redux';
 import { Tooltip, Polyline } from 'react-leaflet';
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
@@ -10,34 +8,30 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
-import 'leaflet-hotline';
-import { point } from '@turf/helpers';
+import { point, Feature, Properties, LineString, Point } from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { geoJSON, Point as LPoint } from 'leaflet';
+import { RootState } from 'fm3/storeCreator';
 
-class TrackViewerResult extends React.Component {
-  static propTypes = {
-    trackGeojson: PropTypes.shape({
-      features: PropTypes.array,
-    }),
-    startPoints: PropTypes.arrayOf(FmPropTypes.startPoint.isRequired)
-      .isRequired,
-    finishPoints: PropTypes.arrayOf(FmPropTypes.finishPoint.isRequired)
-      .isRequired,
-    displayingElevationChart: PropTypes.bool,
-    colorizeTrackBy: PropTypes.oneOf(['elevation', 'steepness']),
-    eleSmoothingFactor: PropTypes.number.isRequired,
-    language: PropTypes.string,
-  };
+type Props = ReturnType<typeof mapStateToProps>;
 
-  state = {
-    infoLat: undefined,
-    infoLon: undefined,
-    infoDistanceKm: undefined,
-  };
+interface IState {
+  infoLat?: number;
+  infoLon?: number;
+  infoDistanceKm?: number;
+}
 
-  componentDidUpdate(prevProps) {
+interface GetFeatures {
+  (type: 'LineString'): Feature<LineString, Properties>[];
+  (type: 'Point'): Feature<Point, Properties>[];
+}
+
+class TrackViewerResult extends React.Component<Props, IState> {
+  state: IState = {};
+
+  componentDidUpdate(prevProps: Props) {
     const { trackGeojson } = this.props;
     if (!trackGeojson) {
       return;
@@ -48,17 +42,18 @@ class TrackViewerResult extends React.Component {
       trackGeojson &&
       JSON.stringify(prevProps.trackGeojson) !== JSON.stringify(trackGeojson)
     ) {
-      const geojsonBounds = L.geoJson(trackGeojson).getBounds();
-      if (geojsonBounds.isValid()) {
-        getMapLeafletElement().fitBounds(geojsonBounds);
+      const geojsonBounds = geoJSON(trackGeojson).getBounds();
+      const le = getMapLeafletElement();
+      if (le && geojsonBounds.isValid()) {
+        le.fitBounds(geojsonBounds);
       }
     }
   }
 
-  getFeatures = type =>
-    turfFlatten(this.props.trackGeojson).features.filter(
-      f => f.geometry.type === type,
-    );
+  getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
+    turfFlatten(this.props.trackGeojson as any).features.filter(
+      f => f && f.geometry && f.geometry.type === type,
+    ) as any;
 
   getColorLineDataForElevation = () =>
     this.getFeatures('LineString').map(feature => {
@@ -166,8 +161,11 @@ class TrackViewerResult extends React.Component {
     }`; // otherwise GeoJSON will still display the first data
 
     const xxx = this.getFeatures('LineString').map(feature => ({
-      name: feature.properties.name,
-      lineData: feature.geometry.coordinates.map(([lon, lat]) => [lat, lon]),
+      name: feature.properties && feature.properties.name,
+      lineData: feature.geometry.coordinates.map(([lng, lat]) => ({
+        lat,
+        lng,
+      })),
     }));
 
     const oneDecimalDigitNumberFormat = Intl.NumberFormat(language, {
@@ -226,16 +224,16 @@ class TrackViewerResult extends React.Component {
             faIcon="flag"
             key={`point-${i}`}
             interactive={false}
-            position={L.latLng(
-              geometry.coordinates[1],
-              geometry.coordinates[0],
-            )}
-            onClick={this.handlePointClick}
+            position={{
+              lat: geometry.coordinates[1],
+              lng: geometry.coordinates[0],
+            }}
+            onclick={this.handlePointClick}
           >
-            {properties.name && (
+            {properties && properties.name && (
               <Tooltip
                 className="compact"
-                offset={new L.Point(10, -25)}
+                offset={new LPoint(10, -25)}
                 direction="right"
                 permanent
               >
@@ -250,13 +248,13 @@ class TrackViewerResult extends React.Component {
             key={`5rZwATEZfM-${i}`}
             color="#409a40"
             interactive={false}
-            position={L.latLng(p.lat, p.lon)}
-            onClick={this.handlePointClick}
+            position={{ lat: p.lat, lng: p.lon }}
+            onclick={this.handlePointClick}
           >
             {p.startTime && (
               <Tooltip
                 className="compact"
-                offset={new L.Point(10, -25)}
+                offset={new LPoint(10, -25)}
                 direction="right"
                 permanent
               >
@@ -272,12 +270,12 @@ class TrackViewerResult extends React.Component {
             key={`GWT1OzhnV1-${i}`}
             color="#d9534f"
             interactive={false}
-            position={L.latLng(p.lat, p.lon)}
-            onClick={this.handlePointClick}
+            position={{ lat: p.lat, lng: p.lon }}
+            onclick={this.handlePointClick}
           >
             <Tooltip
               className="compact"
-              offset={new L.Point(10, -25)}
+              offset={new LPoint(10, -25)}
               direction="right"
               permanent
             >
@@ -290,23 +288,23 @@ class TrackViewerResult extends React.Component {
           </RichMarker>
         ))}
 
-        {this.state.infoLat && (
+        {this.state.infoLat && this.state.infoLon && this.state.infoDistanceKm && (
           <RichMarker
             faIcon="info"
             color="grey"
             interactive={false}
-            position={L.latLng(this.state.infoLat, this.state.infoLon)}
-            onClick={this.handlePointClick}
+            position={{ lat: this.state.infoLat, lng: this.state.infoLon }}
+            onclick={this.handlePointClick}
           >
             <Tooltip
               className="compact"
-              offset={new L.Point(10, -25)}
+              offset={new LPoint(10, -25)}
               direction="right"
               permanent
             >
               <span>
-                {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)}{' '}
-                km
+                {oneDecimalDigitNumberFormat.format(this.state.infoDistanceKm)}
+                {' km'}
               </span>
             </Tooltip>
           </RichMarker>
@@ -318,7 +316,7 @@ class TrackViewerResult extends React.Component {
   }
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   trackGeojson: state.trackViewer.trackGeojson,
   startPoints: state.trackViewer.startPoints,
   finishPoints: state.trackViewer.finishPoints,
