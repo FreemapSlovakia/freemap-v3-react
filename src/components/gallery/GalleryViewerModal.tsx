@@ -54,7 +54,6 @@ class GalleryViewerModal extends React.Component<Props, IState> {
     loading: true,
     isFullscreen: false,
     imgKey: 0,
-    // eslint-disable-next-line
     activeImageId: null,
   };
 

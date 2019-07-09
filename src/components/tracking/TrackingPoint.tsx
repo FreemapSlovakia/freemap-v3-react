@@ -14,7 +14,6 @@ interface TrackingPointProps {
 }
 
 // TODO to separate file
-// eslint-disable-next-line
 export const TrackingPoint = React.memo<TrackingPointProps>(
   ({ tp, width, color, language, onActivePointSet, onClick }) => {
     const df = new Intl.DateTimeFormat(language, {
@@ -61,7 +60,6 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
   },
 );
 
-// eslint-disable-next-line
 export function tooltipText(
   df: Intl.DateTimeFormat,
   nf: Intl.NumberFormat,

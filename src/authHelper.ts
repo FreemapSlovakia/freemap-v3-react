@@ -47,8 +47,6 @@ export default function initAuthHelper(store: MyStore) {
 
 function setupOsmLoginStep2Listener(store: MyStore) {
   window.addEventListener('message', e => {
-    /* eslint-disable no-underscore-dangle */
-
     if (
       e.origin !== window.location.origin ||
       typeof e.data !== 'object' ||

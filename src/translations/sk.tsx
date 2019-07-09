@@ -41,7 +41,6 @@ export default {
     createdAt: 'Vytvorené',
     actions: 'Akcie',
     add: 'Pridať nové',
-    back: 'Späť',
   },
 
   tools: {
@@ -1031,7 +1030,7 @@ export default {
           zariadenia <i>{deviceName}</i> s vašimi priateľmi.
         </p>
       ),
-      createTitle: ({ token, deviceName }) => (
+      createTitle: ({ deviceName }) => (
         <>
           Pridať token sledovania pre <i>{deviceName}</i>
         </>

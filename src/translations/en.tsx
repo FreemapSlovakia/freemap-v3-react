@@ -42,7 +42,6 @@ export default {
     createdAt: 'Created At',
     actions: 'Actions',
     add: 'Add new',
-    back: 'Back',
   },
 
   tools: {
@@ -1031,7 +1030,7 @@ export default {
           <i>{deviceName}</i> with your friends.
         </p>
       ),
-      createTitle: ({ token, deviceName }) => (
+      createTitle: ({ deviceName }) => (
         <>
           Add Watch Token for <i>{deviceName}</i>
         </>

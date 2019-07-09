@@ -17,7 +17,6 @@ class ErrorCatcher extends React.Component<Props, IState> {
   state: IState = {};
 
   componentDidCatch(error: Error) {
-    // eslint-disable-next-line
     console.error(error);
     this.setState({ error });
   }

@@ -7,7 +7,6 @@ import { createFilter } from 'fm3/galleryUtils';
 const galleryLayer = L.GridLayer.extend({
   createTile(coords, done) {
     const size = this.getTileSize();
-    // eslint-disable-next-line
     const map = this._map;
     const pointAa = map.unproject(
       [coords.x * size.x - 6, coords.y * size.y - 6],
@@ -97,8 +96,6 @@ class GalleryLayer extends GridLayer {
   static propTypes = {
     filter: galleryFilter.isRequired,
   };
-
-  // eslint-disable-next-line
   createLeafletElement(props) {
     return new galleryLayer({ ...props });
   }
