@@ -23,13 +23,13 @@ export const trackingAccessTokenMiddleware: Middleware<
 
     try {
       if (modifiedAccessTokenId) {
-        getAuthAxios(getState).put(
+        await getAuthAxios(getState).put(
           `/tracking/access-tokens/${modifiedAccessTokenId}`,
           action.payload,
         );
         dispatch(trackingActions.modifyAccessToken(undefined));
       } else {
-        getAuthAxios(getState).post(
+        await getAuthAxios(getState).post(
           `/tracking/devices/${
             getState().tracking.accessTokensDeviceId
           }/access-tokens`,

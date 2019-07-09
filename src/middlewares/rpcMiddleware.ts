@@ -66,7 +66,7 @@ export const rpcMiddleware: Middleware<{}, RootState, Dispatch<RootAction>> = ({
       }),
     );
   } else if (isActionOf(wsReceived, action)) {
-    let object;
+    let object: any;
 
     try {
       object = JSON.parse(action.payload);
@@ -74,8 +74,8 @@ export const rpcMiddleware: Middleware<{}, RootState, Dispatch<RootAction>> = ({
       // ignore
     }
 
-    if (object && object.jsonrpc === '2.0') {
-      if (object.method && object.id === undefined) {
+    if (object && typeof object === 'object' && object.jsonrpc === '2.0') {
+      if (typeof object.method === 'string' && object.id === undefined) {
         dispatch(rpcEvent({ method: object.method, params: object.params }));
       } else if (object.id !== undefined && !object.method) {
         const call = callMap.get(object.id);
