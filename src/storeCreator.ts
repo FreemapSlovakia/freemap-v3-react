@@ -30,6 +30,8 @@ import { RootAction } from './actions';
 import { trackingDeviceMiddleware } from './middlewares/trackingDeviceMiddleware';
 import { trackingFollowMiddleware } from './middlewares/trackingFollowMiddleware';
 import { trackingAccessTokenMiddleware } from './middlewares/trackingAccessTokenMiddleware';
+import { pdfExportMiddleware } from './middlewares/pdfExportMiddleware';
+import { utilityMiddleware } from './middlewares/utilityMiddleware';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -71,6 +73,8 @@ export default function createReduxStore() {
       trackingDeviceMiddleware,
       trackingAccessTokenMiddleware,
       trackingFollowMiddleware,
+      pdfExportMiddleware,
+      utilityMiddleware,
     ),
   );
 
