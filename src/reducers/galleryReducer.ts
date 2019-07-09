@@ -33,6 +33,7 @@ import {
   IPicture,
   IGalleryTag,
   IGalleryUser,
+  IGalleryItem,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 
@@ -41,7 +42,7 @@ export interface IGalleryState {
   activeImageId: number | null;
   image: IPicture | null;
   showUploadModal: boolean;
-  items: any[];
+  items: IGalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
   showPreview: boolean;
@@ -162,16 +163,21 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
     }
     return s;
   })
-  .handleAction(gallerySetItemForPositionPicking, (state, action) => ({
-    ...state,
-    pickingPositionForId: action.payload,
-    pickingPosition:
-      action.payload === -1
-        ? state.editModel.position
-        : typeof action.payload === 'number'
-        ? state.items.find(({ id }) => id === action.payload).position
-        : null,
-  }))
+  .handleAction(gallerySetItemForPositionPicking, (state, action) => {
+    let x: IGalleryItem | undefined;
+    return {
+      ...state,
+      pickingPositionForId: action.payload,
+      pickingPosition:
+        action.payload === -1
+          ? state.editModel.position
+          : typeof action.payload === 'number'
+          ? (x = state.items.find(({ id }) => id === action.payload))
+            ? x.position
+            : null
+          : null,
+    };
+  })
   .handleAction(galleryUpload, state => {
     const items =
       state.uploadingId === null

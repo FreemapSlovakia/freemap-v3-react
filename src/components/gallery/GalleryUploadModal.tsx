@@ -16,7 +16,7 @@ import {
   galleryUpload,
   galleryHideUploadModal,
   galleryToggleShowPreview,
-  IPicture,
+  IGalleryItem,
 } from 'fm3/actions/galleryActions';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -42,7 +42,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 class GalleryUploadModal extends React.Component<Props> {
   handleFileDrop = (acceptedFiles: File[] /* , rejectedFiles: File[] */) => {
     for (const accpetedFile of acceptedFiles) {
-      this.processFile(accpetedFile, err => {
+      this.processFile(accpetedFile, (err?: Error) => {
         if (err) {
           // TODO
         }
@@ -50,7 +50,7 @@ class GalleryUploadModal extends React.Component<Props> {
     }
   };
 
-  processFile = (file, cb) => {
+  processFile = (file: File, cb: (err?: Error) => void) => {
     const reader = new FileReader();
     reader.onerror = () => {
       reader.abort();
@@ -394,7 +394,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPositionPick(id: number) {
     dispatch(gallerySetItemForPositionPicking(id));
   },
-  onItemChange(id: number, item: IPicture) {
+  onItemChange(id: number, item: IGalleryItem) {
     dispatch(gallerySetItem({ id, item }));
   },
   onShowPreviewToggle() {

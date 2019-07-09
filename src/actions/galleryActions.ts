@@ -1,6 +1,18 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
 import { LatLon, IUser } from 'fm3/types/common';
 
+export interface IGalleryItem {
+  id: number;
+  title: string;
+  description: string;
+  tags: string[];
+  takenAt: Date | null;
+  position: LatLon | null;
+  error?: string | null;
+  url: string;
+  file: File;
+}
+
 export type GalleryListOrder =
   | '+createdAt'
   | '-createdAt'
@@ -74,7 +86,9 @@ export const galleryCancelShowOnTheMap = createAction(
   'GALLERY_CANCEL_SHOW_ON_THE_MAP',
 );
 
-export const galleryAddItem = createStandardAction('GALLERY_ADD_ITEM')<any>();
+export const galleryAddItem = createStandardAction('GALLERY_ADD_ITEM')<
+  IGalleryItem
+>();
 
 export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
   number
@@ -82,7 +96,7 @@ export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
 
 export const gallerySetItem = createStandardAction('GALLERY_SET_ITEM')<{
   id: number;
-  item: IPicture;
+  item: IGalleryItem;
 }>();
 
 export const gallerySetItemError = createStandardAction(

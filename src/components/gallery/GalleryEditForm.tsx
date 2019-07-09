@@ -20,13 +20,13 @@ export interface IPictureModel {
   description: string;
   tags: string[];
   takenAt: string;
-  position: LatLon;
+  position: LatLon | null;
 }
 
 interface IProps {
   model: IPictureModel;
   allTags: IGalleryTag[];
-  error: string | null;
+  error: string | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: IPictureModel) => void;
   t: Translator;

@@ -15,7 +15,7 @@ interface IProps {
   url: string;
   model: IPictureModel;
   allTags: IGalleryTag[];
-  error: string;
+  error: string | null | undefined;
   onRemove: (id: number) => void;
   onPositionPick: (id: number) => void;
   onModelChange: (id: number, model: IPictureModel) => void;
