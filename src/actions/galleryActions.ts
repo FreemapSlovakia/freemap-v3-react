@@ -1,6 +1,25 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
 import { LatLon, IUser } from 'fm3/types/common';
 
+export type GalleryListOrder =
+  | '+createdAt'
+  | '-createdAt'
+  | '+takenAt'
+  | '-takenAt'
+  | '+rating'
+  | '-rating';
+
+export interface IGalleryTag {
+  name: string;
+  count: number;
+}
+
+export interface IGalleryUser {
+  id: number;
+  name: string;
+  count: number;
+}
+
 export interface IPictureComment {
   id: number;
   createdAt: Date;
@@ -89,14 +108,11 @@ export const galleryUpload = createAction('GALLERY_UPLOAD');
 export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY');
 
 export const gallerySetTags = createStandardAction('GALLERY_SET_TAGS')<
-  { name: string }[]
+  IGalleryTag[]
 >();
 
 export const gallerySetUsers = createStandardAction('GALLERY_SET_USERS')<
-  Array<{
-    id: number;
-    name: string;
-  }>
+  IGalleryUser[]
 >();
 
 export const gallerySetComment = createStandardAction('GALLERY_SET_COMMENT')<
@@ -132,8 +148,8 @@ export const gallerySetFilter = createStandardAction('GALLERY_SET_FILTER')<
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE');
 
 export const galleryList = createStandardAction('GALLERY_LIST')<
-  '+createdAt' | '-createdAt' | '+takenAt' | '-takenAt' | '+rating' | '-rating'
->(); // TODO enum
+  GalleryListOrder
+>();
 
 export const galleryLayerHint = createAction('GALLERY_PREVENT_LAYER_HINT');
 

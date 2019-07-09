@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
@@ -10,34 +9,32 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 
-import { galleryFilter } from 'fm3/propTypes';
-
 import {
   gallerySetFilter,
   galleryHideFilter,
 } from 'fm3/actions/galleryActions';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
+import { RootAction } from 'fm3/actions';
 
-class GalleryViewerModal extends React.Component {
-  static propTypes = {
-    onOk: PropTypes.func.isRequired,
-    filter: galleryFilter.isRequired,
-    onClose: PropTypes.func.isRequired,
-    tags: PropTypes.arrayOf(
-      PropTypes.shape({
-        name: PropTypes.string.isRequired,
-        count: PropTypes.number.isRequired,
-      }).isRequired,
-    ).isRequired,
-    users: PropTypes.arrayOf(
-      PropTypes.shape({
-        id: PropTypes.number.isRequired,
-        name: PropTypes.string.isRequired,
-        count: PropTypes.number.isRequired,
-      }).isRequired,
-    ).isRequired,
-  };
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps>;
 
-  constructor(props) {
+interface IState {
+  tag: string;
+  userId: string;
+  takenAtFrom: string;
+  takenAtTo: string;
+  createdAtFrom: string;
+  createdAtTo: string;
+  ratingFrom: string;
+  ratingTo: string;
+}
+
+class GalleryViewerModal extends React.Component<Props, IState> {
+  state: IState;
+
+  constructor(props: Props) {
     super(props);
     const {
       tag,
@@ -73,39 +70,39 @@ class GalleryViewerModal extends React.Component {
     };
   }
 
-  handleTagChange = e => {
-    this.setState({ tag: e.target.value });
+  handleTagChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ tag: (e.target as HTMLSelectElement).value });
   };
 
-  handleUserIdChange = e => {
-    this.setState({ userId: e.target.value });
+  handleUserIdChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ userId: (e.target as HTMLSelectElement).value });
   };
 
-  handleTakenAtFromChange = e => {
-    this.setState({ takenAtFrom: e.target.value });
+  handleTakenAtFromChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ takenAtFrom: (e.target as HTMLInputElement).value });
   };
 
-  handleTakenAtToChange = e => {
-    this.setState({ takenAtTo: e.target.value });
+  handleTakenAtToChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ takenAtTo: (e.target as HTMLInputElement).value });
   };
 
-  handleCreatedAtFromChange = e => {
-    this.setState({ createdAtFrom: e.target.value });
+  handleCreatedAtFromChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ createdAtFrom: (e.target as HTMLInputElement).value });
   };
 
-  handleCreatedAtToChange = e => {
-    this.setState({ createdAtTo: e.target.value });
+  handleCreatedAtToChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ createdAtTo: (e.target as HTMLInputElement).value });
   };
 
-  handleRatingFromChange = e => {
-    this.setState({ ratingFrom: e.target.value });
+  handleRatingFromChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ ratingFrom: (e.target as HTMLInputElement).value });
   };
 
-  handleRatingToChange = e => {
-    this.setState({ ratingTo: e.target.value });
+  handleRatingToChange = (e: React.FormEvent<FormControl>) => {
+    this.setState({ ratingTo: (e.target as HTMLInputElement).value });
   };
 
-  handleFormSubmit = e => {
+  handleFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     this.props.onOk({
       tag: this.state.tag ? this.state.tag : null,
@@ -123,10 +120,10 @@ class GalleryViewerModal extends React.Component {
         this.state.createdAtTo ? new Date(this.state.createdAtTo) : null,
       ),
       ratingFrom: nn(
-        this.state.ratingFrom ? parseFloat(this.state.ratingFrom, 10) : null,
+        this.state.ratingFrom ? parseFloat(this.state.ratingFrom) : null,
       ),
       ratingTo: nn(
-        this.state.ratingTo ? parseFloat(this.state.ratingTo, 10) : null,
+        this.state.ratingTo ? parseFloat(this.state.ratingTo) : null,
       ),
     });
   };
@@ -161,7 +158,7 @@ class GalleryViewerModal extends React.Component {
                 value={this.state.tag}
                 onChange={this.handleTagChange}
               >
-                <option value={null} />
+                <option value="" />
                 {tags.map(({ name, count }) => (
                   <option key={name} value={name}>
                     {name} ({count})
@@ -176,7 +173,7 @@ class GalleryViewerModal extends React.Component {
                 value={this.state.userId}
                 onChange={this.handleUserIdChange}
               >
-                <option value={null} />
+                <option value="" />
                 {users.map(({ id, name, count }) => (
                   <option key={id} value={id}>
                     {name} ({count})
@@ -261,16 +258,16 @@ function nn(value) {
 }
 
 function nt(value) {
-  return value instanceof Date && !Number.isNaN(value) ? value : null;
+  return value instanceof Date && !Number.isNaN(value.getTime()) ? value : null;
 }
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   filter: state.gallery.filter,
   users: state.gallery.users,
   tags: state.gallery.tags,
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onClose() {
     dispatch(galleryHideFilter());
   },

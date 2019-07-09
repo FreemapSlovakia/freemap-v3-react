@@ -1,14 +1,14 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
+import { compose, Dispatch } from 'redux';
 
-import injectL10n from 'fm3/l10nInjector';
+import injectL10n, { Translator } from 'fm3/l10nInjector';
 
 import {
   galleryShowFilter,
   galleryShowUploadModal,
   galleryList,
+  GalleryListOrder,
 } from 'fm3/actions/galleryActions';
 
 import Button from 'react-bootstrap/lib/Button';
@@ -17,14 +17,21 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Form from 'react-bootstrap/lib/Form';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 
-function GalleryMenu({
+type Props = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
+
+const GalleryMenu: React.FC<Props> = ({
   onUpload,
   onFilterShow,
   filterIsActive,
   onOrderSelect,
   t,
-}) {
+}) => {
   return (
     <Form inline>
       <span className="fm-label">
@@ -38,7 +45,7 @@ function GalleryMenu({
       <DropdownButton
         id="all-pics"
         title={t('gallery.allPhotos')}
-        onSelect={onOrderSelect}
+        onSelect={onOrderSelect as (x: any) => void}
       >
         <MenuItem eventKey="+createdAt">
           {t('gallery.f.firstUploaded')}
@@ -55,30 +62,22 @@ function GalleryMenu({
       </Button>
     </Form>
   );
-}
-
-GalleryMenu.propTypes = {
-  onUpload: PropTypes.func.isRequired,
-  onFilterShow: PropTypes.func.isRequired,
-  onOrderSelect: PropTypes.func.isRequired,
-  filterIsActive: PropTypes.bool,
-  t: PropTypes.func.isRequired,
 };
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state: RootState) => ({
   filterIsActive: Object.keys(state.gallery.filter).some(
     key => state.gallery.filter[key],
   ),
 });
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onUpload() {
     dispatch(galleryShowUploadModal());
   },
   onFilterShow() {
     dispatch(galleryShowFilter());
   },
-  onOrderSelect(order) {
+  onOrderSelect(order: GalleryListOrder) {
     dispatch(galleryList(order));
   },
 });

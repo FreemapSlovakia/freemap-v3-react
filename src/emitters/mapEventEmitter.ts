@@ -1,3 +1,10 @@
 import { EventEmitter } from 'eventemitter3';
 
-export default new EventEmitter();
+interface EventTypes {
+  mouseOver: [number, number];
+  mouseOut: [number, number];
+  mapClick: [number, number];
+  mouseMove: [number, number, MouseEvent];
+}
+
+export default new EventEmitter<EventTypes>();

@@ -31,6 +31,8 @@ import {
   galleryToggleShowPreview,
   IGalleryFilter,
   IPicture,
+  IGalleryTag,
+  IGalleryUser,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 
@@ -44,11 +46,8 @@ export interface IGalleryState {
   pickingPosition: LatLon | null;
   showPreview: boolean;
   uploadingId: number | null;
-  tags: { name: string }[];
-  users: Array<{
-    id: number;
-    name: string;
-  }>;
+  tags: IGalleryTag[];
+  users: IGalleryUser[];
   dirtySeq: number;
   comment: string;
   showFilter: boolean;

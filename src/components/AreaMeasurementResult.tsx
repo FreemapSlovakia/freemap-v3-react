@@ -63,10 +63,13 @@ class AreaMeasurementResult extends React.Component<Props, IState> {
     this.props.onPointAdd({ lat, lon, id }, pos);
   };
 
-  handleMouseMove = (lat: number, lon: number, originalEvent) => {
+  handleMouseMove = (lat: number, lon: number, originalEvent: MouseEvent) => {
     if (
       this.props.active &&
-      originalEvent.target.classList.contains('leaflet-container')
+      originalEvent.target &&
+      (originalEvent.target as HTMLElement).classList.contains(
+        'leaflet-container',
+      )
     ) {
       this.setState({ lat, lon });
     } else {
