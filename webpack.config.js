@@ -202,7 +202,7 @@ module.exports = {
     new webpack.HashedModuleIdsPlugin(),
     new webpack.ContextReplacementPlugin(
       /intl\/locale-data\/jsonp$/,
-      /(sk|cs|en)\.js/,
+      /(sk|cs|en)\.tsx/,
     ),
     // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
     new OfflinePlugin({

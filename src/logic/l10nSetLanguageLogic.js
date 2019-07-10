@@ -22,7 +22,7 @@ export default createLogic({
 
     Promise.all([
       import(
-        /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.js`
+        /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.tsx`
       ),
       !global.hasNoNativeIntl
         ? null

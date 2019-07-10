@@ -32,6 +32,7 @@ import { trackingFollowMiddleware } from './middlewares/trackingFollowMiddleware
 import { trackingAccessTokenMiddleware } from './middlewares/trackingAccessTokenMiddleware';
 import { pdfExportMiddleware } from './middlewares/pdfExportMiddleware';
 import { utilityMiddleware } from './middlewares/utilityMiddleware';
+import { requestMiddleware } from './middlewares/requestMiddleware';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -69,6 +70,7 @@ export default function createReduxStore() {
       webSocketMiddleware,
       logicMiddleware,
       rpcMiddleware,
+      requestMiddleware,
       trackingMiddleware,
       trackingDeviceMiddleware,
       trackingAccessTokenMiddleware,

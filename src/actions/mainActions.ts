@@ -1,5 +1,10 @@
-import { createStandardAction, createAction } from 'typesafe-actions';
+import {
+  createStandardAction,
+  createAction,
+  createAsyncAction,
+} from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
+import { Method } from 'axios';
 
 export type Tool =
   | 'objects'
@@ -89,4 +94,28 @@ export const setErrorTicketId = createStandardAction('SET_ERROR_TICKET_ID')<
 
 export const setEmbedFeatures = createStandardAction('SET_EMBED_FEATURES')<
   any
+>();
+
+export interface Request {
+  url: string;
+  method: Method;
+  body?: object;
+  tag?: any;
+}
+
+export const request = createAsyncAction(
+  'REQUEST',
+  'REQUEST_SUCCESS',
+  'REQUEST_FAILURE',
+  // 'REQUEST_CANCEL',
+)<
+  Request,
+  {
+    tag: any;
+    result: any;
+  },
+  {
+    tag: any;
+    error: Error;
+  }
 >();

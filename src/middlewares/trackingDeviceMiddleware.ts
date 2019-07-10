@@ -1,4 +1,4 @@
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import { startProgress, stopProgress, request } from 'fm3/actions/mainActions';
 
 import { toastsAddError } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
@@ -16,26 +16,30 @@ export const trackingDeviceMiddleware: Middleware<
   next(action);
 
   if (isActionOf(trackingActions.saveDevice, action)) {
-    const pid = Math.random();
-    dispatch(startProgress(pid));
-
     const { modifiedDeviceId } = getState().tracking;
 
     try {
       if (modifiedDeviceId) {
-        await getAuthAxios(getState).put(
-          `/tracking/devices/${modifiedDeviceId}`,
-          action.payload,
+        await dispatch(
+          request.request({
+            method: 'put',
+            url: `/tracking/devices/${modifiedDeviceId}`,
+            body: action.payload,
+          }),
         );
         dispatch(trackingActions.modifyDevice(undefined));
       } else {
-        await getAuthAxios(getState).post('/tracking/devices', action.payload);
+        await dispatch(
+          request.request({
+            method: 'post',
+            url: '/tracking/devices',
+            body: action.payload,
+          }),
+        );
         dispatch(trackingActions.modifyDevice(undefined));
       }
     } catch (err) {
       dispatch(toastsAddError('tracking.savingError', err)); // TODO
-    } finally {
-      dispatch(stopProgress(pid));
     }
   } else if (isActionOf(trackingActions.loadDevices, action)) {
     const pid = Math.random();
