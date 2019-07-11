@@ -20,7 +20,10 @@
     "noUnusedParameters": true,
     "strict": false,
     "downlevelIteration": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "plugins": [
+      { "transform": "typescript-is/lib/transform-inline/transformer" }
+    ]
   },
   "include": ["src", "typings"]
 }

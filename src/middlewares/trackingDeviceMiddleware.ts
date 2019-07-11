@@ -46,8 +46,12 @@ export const trackingDeviceMiddleware: Middleware<
     dispatch(startProgress(pid));
     try {
       const { data } = await getAuthAxios(getState).get('/tracking/devices');
-      for (const device of data) {
-        device.createdAt = new Date(device.createdAt);
+      if (Array.isArray(data)) {
+        for (const device of data) {
+          if (device && typeof device === 'object') {
+            device.createdAt = new Date(device.createdAt);
+          }
+        }
       }
       dispatch(trackingActions.setDevices(data));
     } catch (err) {
