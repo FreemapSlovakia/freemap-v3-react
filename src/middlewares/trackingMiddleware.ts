@@ -24,8 +24,7 @@ export const trackingMiddleware: Middleware<
     action.payload === 'tracking-my' &&
     !getState().auth.user
   ) {
-    next(toastsAddError('tracking.unauthenticatedError'));
-    return;
+    return next(toastsAddError('tracking.unauthenticatedError'));
   }
 
   if (action.type === getType(rpcResponse)) {
@@ -51,7 +50,7 @@ export const trackingMiddleware: Middleware<
   const prevState = getState().websocket.state;
   const prevTrackedDevices = getState().tracking.trackedDevices;
 
-  next(action);
+  const result = next(action);
 
   const { trackedDevices } = getState().tracking;
   const { state, timestamp } = getState().websocket;
@@ -101,6 +100,8 @@ export const trackingMiddleware: Middleware<
       }
     }
   }
+
+  return result;
 };
 
 function mangle(td: ITrackedDevice) {

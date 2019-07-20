@@ -21,7 +21,7 @@ import * as tips from 'fm3/actions/tipsActions';
 import * as toasts from 'fm3/actions/toastsActions';
 import * as trackViewer from 'fm3/actions/trackViewerActions';
 
-const actions = {
+export const actions = {
   tracking: trackingActions,
   main,
   ws,

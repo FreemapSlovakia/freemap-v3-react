@@ -3,7 +3,7 @@ import { logicMiddleware } from 'fm3/middlewares/logicMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
-import { rpcMiddleware } from './middlewares/rpcMiddleware';
+import * as rpcProcessors from './processors/rpcProcessors';
 import { trackingMiddleware } from './middlewares/trackingMiddleware';
 import { authReducer } from './reducers/authReducer';
 import { areaMeasurementReducer } from './reducers/areaMeasurementReducer';
@@ -27,12 +27,15 @@ import { trackViewerReducer } from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
 import { StateType } from 'typesafe-actions';
 import { RootAction } from './actions';
-import { trackingDeviceMiddleware } from './middlewares/trackingDeviceMiddleware';
-import { trackingFollowMiddleware } from './middlewares/trackingFollowMiddleware';
-import { trackingAccessTokenMiddleware } from './middlewares/trackingAccessTokenMiddleware';
-import { pdfExportMiddleware } from './middlewares/pdfExportMiddleware';
+import { exportPdfProcessor } from './processors/pdfExportProcessor';
 import { utilityMiddleware } from './middlewares/utilityMiddleware';
-import { requestMiddleware } from './middlewares/requestMiddleware';
+import {
+  processorMiddleware,
+  processors,
+} from './middlewares/processorMiddleware';
+import * as trackingAccessTokenProcessors from './processors/trackingAccessTokenProcessors';
+import * as trackingDeviceProcessors from './processors/trackingDeviceProcessors';
+import { trackingFollowProcessor } from './processors/trackingFollowProcessors';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -61,6 +64,20 @@ const rootReducer = combineReducers(reducers);
 
 export type RootState = StateType<typeof rootReducer>;
 
+processors.push(
+  trackingAccessTokenProcessors.loadAccessTokensProcessor,
+  trackingAccessTokenProcessors.saveAccessTokenProcessor,
+  trackingAccessTokenProcessors.deleteAccessTokenProcessor,
+  trackingDeviceProcessors.loadDevicesProcessor,
+  trackingDeviceProcessors.saveDeviceProcessor,
+  trackingDeviceProcessors.deleteDeviceProcessor,
+  trackingFollowProcessor,
+  rpcProcessors.rpcCallProcessor,
+  rpcProcessors.rpcWsStateProcessor,
+  rpcProcessors.wsReceivedProcessor,
+  exportPdfProcessor,
+);
+
 export default function createReduxStore() {
   const store = createStore(
     rootReducer,
@@ -69,13 +86,8 @@ export default function createReduxStore() {
       errorHandlingMiddleware,
       webSocketMiddleware,
       logicMiddleware,
-      rpcMiddleware,
-      requestMiddleware,
+      processorMiddleware,
       trackingMiddleware,
-      trackingDeviceMiddleware,
-      trackingAccessTokenMiddleware,
-      trackingFollowMiddleware,
-      pdfExportMiddleware,
       utilityMiddleware,
     ),
   );

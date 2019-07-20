@@ -12,7 +12,7 @@ export const utilityMiddleware: Middleware<
   RootState,
   Dispatch<RootAction>
 > = ({ getState }) => next => (action: RootAction) => {
-  next(action);
+  const result = next(action);
 
   if (isActionOf(authSetUser, action)) {
     const {
@@ -38,4 +38,6 @@ export const utilityMiddleware: Middleware<
   } else if (isActionOf(reloadApp, action)) {
     window.location.reload();
   }
+
+  return result;
 };

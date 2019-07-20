@@ -105,9 +105,11 @@ export const webSocketMiddleware: Middleware<
 
   const user = getState().auth;
 
-  next(action);
+  const result = next(action);
 
   if (user !== getState().auth && ws && ws.readyState !== WebSocket.CLOSED) {
     ws.close();
   }
+
+  return result;
 };

@@ -1,5 +1,8 @@
-import axios, { AxiosRequestConfig } from 'axios';
+import axios, { AxiosRequestConfig, Method } from 'axios';
 import { RootState } from './storeCreator';
+import { Dispatch } from 'redux';
+import { RootAction } from './actions';
+import { startProgress, stopProgress } from './actions/mainActions';
 
 export function getAxios(expectedStatus?: number) {
   const cfg: AxiosRequestConfig = {
@@ -33,6 +36,36 @@ export function getAuthAxios(
   });
 
   return instance;
+}
+
+interface HttpRequestParams {
+  getState: () => RootState;
+  dispatch: Dispatch<RootAction>;
+  expectedStatus?: number;
+  url: string;
+  method: Method;
+  body?: object;
+}
+
+export function httpRequest({
+  getState,
+  dispatch,
+  expectedStatus,
+  method,
+  url,
+  body,
+}: HttpRequestParams) {
+  const pid = Math.random();
+  dispatch(startProgress(pid));
+  try {
+    return getAuthAxios(getState, expectedStatus).request({
+      method,
+      url,
+      data: body,
+    });
+  } finally {
+    dispatch(stopProgress(pid));
+  }
 }
 
 function createValidateStatus(expectedStatus: number | number[] = 200) {
