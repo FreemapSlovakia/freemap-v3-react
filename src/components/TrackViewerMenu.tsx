@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
@@ -141,7 +141,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

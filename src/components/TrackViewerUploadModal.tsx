@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import {
@@ -110,7 +110,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     null,
     mapDispatchToProps,

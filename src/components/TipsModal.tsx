@@ -18,7 +18,7 @@ import {
   tipsPrevious,
   tipsPreventNextTime,
 } from 'fm3/actions/tipsActions';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
@@ -88,10 +88,10 @@ export class TipsModal extends React.Component<Props, IState> {
     const { onPrevious, onNext, onModalClose, tip: tipKey, t } = this.props;
     const { tip, loading } = this.state;
 
-    let title;
-    let icon;
+    let title: string | undefined;
+    let icon: string | undefined;
     if (tipKey) {
-      [, title, icon] = tips.find(([key]) => key === tipKey);
+      [, title, icon] = tips.find(([key]) => key === tipKey) as any;
     }
 
     return (
@@ -101,7 +101,7 @@ export class TipsModal extends React.Component<Props, IState> {
             <FontAwesomeIcon icon="lightbulb-o" />
             {t('more.tips')}
             {'\u00A0 | \u00A0'}
-            {tipKey ? (
+            {title && icon ? (
               <>
                 <FontAwesomeIcon icon={icon} /> {title}
               </>
@@ -161,7 +161,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

@@ -7,7 +7,7 @@ import {
   elevationChartSetActivePoint,
   elevationChartRemoveActivePoint,
 } from 'fm3/actions/elevationChartActions';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/elevationChart.scss';
 import { RootState } from 'fm3/storeCreator';
@@ -137,7 +137,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

@@ -23,7 +23,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import GalleryUploadItem from 'fm3/components/gallery/GalleryUploadItem';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -403,7 +403,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

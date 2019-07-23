@@ -18,7 +18,7 @@ import {
   exportPdf,
   IPdfExportOptions,
 } from 'fm3/actions/mainActions';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
@@ -215,7 +215,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

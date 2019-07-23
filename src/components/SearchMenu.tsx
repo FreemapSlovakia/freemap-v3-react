@@ -17,7 +17,7 @@ import {
   routePlannerSetFinish,
 } from 'fm3/actions/routePlannerActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/search.scss';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
@@ -142,7 +142,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

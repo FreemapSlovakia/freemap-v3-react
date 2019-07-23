@@ -4,7 +4,7 @@ import { compose } from 'redux';
 import { Tooltip } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
 
@@ -70,6 +70,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(mapStateToProps),
 )(ElevationChartActivePoint);

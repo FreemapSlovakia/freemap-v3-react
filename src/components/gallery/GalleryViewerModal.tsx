@@ -4,10 +4,12 @@ import { compose, Dispatch } from 'redux';
 import ReactStars from 'react-stars';
 
 import * as at from 'fm3/actionTypes';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import GalleryEditForm from 'fm3/components/gallery/GalleryEditForm';
+import GalleryEditForm, {
+  IPictureModel,
+} from 'fm3/components/gallery/GalleryEditForm';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -57,11 +59,11 @@ class GalleryViewerModal extends React.Component<Props, IState> {
     activeImageId: null,
   };
 
-  imageElement: HTMLImageElement;
+  imageElement?: HTMLImageElement;
 
-  fullscreenElement: HTMLDivElement;
+  fullscreenElement?: HTMLDivElement;
 
-  static getDerivedStateFromProps(props, state) {
+  static getDerivedStateFromProps(props: Props, state: IState) {
     if (props.activeImageId !== state.activeImageId) {
       return {
         loading: true,
@@ -105,7 +107,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
     this.forceUpdate();
   };
 
-  handleEditModelChange = editModel => {
+  handleEditModelChange = (editModel: IPictureModel) => {
     this.props.onEditModelChange(editModel);
   };
 
@@ -157,7 +159,11 @@ class GalleryViewerModal extends React.Component<Props, IState> {
   handleIndexChange = (e: React.FormEvent<FormControl>) => {
     const { imageIds, onImageSelect } = this.props;
     if (imageIds) {
-      onImageSelect(imageIds[(e.target as HTMLSelectElement).value]);
+      const idx = parseInt((e.target as HTMLSelectElement).value, 10);
+      if (isNaN(idx)) {
+        throw new Error();
+      }
+      onImageSelect(imageIds[idx]);
     }
   };
 
@@ -175,7 +181,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
   };
 
   handleFullscreen = () => {
-    if (!document.exitFullscreen) {
+    if (!document.exitFullscreen || !this.fullscreenElement) {
       // unsupported
     } else if (document.fullscreenElement === this.fullscreenElement) {
       document.exitFullscreen();
@@ -184,7 +190,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
     }
   };
 
-  handleSave = e => {
+  handleSave = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     this.props.onSave();
   };
@@ -243,7 +249,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
       minute: '2-digit',
     });
 
-    const getImageUrl = id =>
+    const getImageUrl = (id: number) =>
       `${process.env.API_URL}/gallery/pictures/${id}/image?width=${
         isFullscreen
           ? window.innerWidth
@@ -284,14 +290,16 @@ class GalleryViewerModal extends React.Component<Props, IState> {
           >
             <div className="carousel">
               <div className="item active">
-                <img
-                  key={imgKey}
-                  ref={this.setImageElement}
-                  className={`gallery-image ${loading ? 'loading' : ''}`}
-                  src={getImageUrl(activeImageId)}
-                  sizes={sizes}
-                  alt={title}
-                />
+                {!!activeImageId && (
+                  <img
+                    key={imgKey}
+                    ref={this.setImageElement}
+                    className={`gallery-image ${loading ? 'loading' : ''}`}
+                    src={getImageUrl(activeImageId)}
+                    sizes={sizes}
+                    alt={title}
+                  />
+                )}
                 {!!nextImageId && !loading && (
                   <img
                     key={`next-${imgKey}`}
@@ -553,7 +561,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       }),
     );
   },
-  onEditModelChange(editModel) {
+  onEditModelChange(editModel: IPictureModel) {
     dispatch(gallerySetEditModel(editModel));
   },
   onSave() {
@@ -565,7 +573,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

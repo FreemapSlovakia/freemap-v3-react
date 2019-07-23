@@ -11,7 +11,7 @@ import {
   authLoginWithGoogle,
   authLoginClose,
 } from 'fm3/actions/authActions';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapDispatchToProps> & {
@@ -84,7 +84,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     undefined,
     mapDispatchToProps,

@@ -10,7 +10,7 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapDispatchToProps> & {
@@ -18,7 +18,7 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
 };
 
 export class ShareMapModal extends React.Component<Props> {
-  textarea: HTMLInputElement | null;
+  textarea?: HTMLInputElement;
 
   setFormControl = (textarea: HTMLInputElement) => {
     this.textarea = textarea;
@@ -73,7 +73,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     null,
     mapDispatchToProps,

@@ -55,23 +55,33 @@ export function splitAndSubstitute(
   return x.length === 1 ? x[0] : x;
 }
 
+interface ITranslations {
+  [key: string]: ITranslations | string | ((...params: any[]) => string);
+}
+
 export function translate(
-  translations: { [key: string]: any },
-  key: null | string,
+  translations: ITranslations,
+  key: string,
   dflt: string = '',
-) {
-  if (!key) {
-    throw new Error('missing key');
+): string | ((...params: any[]) => string) {
+  let curr: ITranslations = translations;
+  const keys = key.split('.');
+  for (;;) {
+    const key = keys.shift();
+    if (key === undefined) {
+      return dflt;
+    }
+    const item = curr[key];
+    if (typeof item === 'string' || typeof item === 'function') {
+      if (keys.length) {
+        throw new Error('sub-key refers to string or function');
+      }
+      return item;
+    } else if (typeof item !== 'object') {
+      throw new Error('sub-key refers to non-string and non-function');
+    }
+    curr = item;
   }
-  return (
-    key &&
-    key
-      .split('.')
-      .reduce(
-        (a, b) => (typeof a === 'object' && b in a ? a[b] : dflt),
-        translations,
-      )
-  );
 }
 
 // console.log('XXXXXXXXXXXX', splitAndSubstitute('foo {a} bar {b} baz', { a: 'A', b: undefined }));

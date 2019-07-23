@@ -1,5 +1,6 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
 import { LatLon, IUser } from 'fm3/types/common';
+import { IPictureModel } from 'fm3/components/gallery/GalleryEditForm';
 
 export interface IGalleryItem {
   id: number;
@@ -141,7 +142,7 @@ export const galleryEditPicture = createAction('GALLERY_EDIT_PICTURE');
 
 export const gallerySetEditModel = createStandardAction(
   'GALLERY_SET_EDIT_MODEL',
-)<IPicture>();
+)<IPictureModel>();
 
 export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE');
 

@@ -14,7 +14,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { compose, Dispatch } from 'redux';
 import { InputGroup } from 'react-bootstrap';
 import { RootState } from 'fm3/storeCreator';
@@ -59,7 +59,7 @@ const TrackedDeviceForm: React.FC<Props> = ({
       : '',
   );
 
-  const handleSubmit = e => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const id0 = id.trim();
     onSave({
@@ -204,7 +204,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

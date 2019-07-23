@@ -2,7 +2,7 @@ import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { smoothElevations, distance } from 'fm3/geoutils';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 type Props = ReturnType<typeof mapStateToProps> & {
@@ -164,6 +164,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(mapStateToProps),
 )(TrackViewerDetails);

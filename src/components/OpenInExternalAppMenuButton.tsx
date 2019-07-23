@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
@@ -184,4 +184,4 @@ const OpenInExternalAppMenuButton: React.FC<IProps> = ({
   );
 };
 
-export default injectL10n()(OpenInExternalAppMenuButton);
+export default withTranslator(OpenInExternalAppMenuButton);

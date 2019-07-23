@@ -13,11 +13,12 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
 } from 'fm3/actions/routePlannerActions';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DragEndEvent } from 'leaflet';
+import { TransportType } from 'fm3/reducers/routePlannerReducer';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -68,7 +69,10 @@ const RoutePlannerResult: React.FC<Props> = ({
       maximumFractionDigits: 1,
     });
 
-    return isSpecial(transportType) && extra && extra.numbers ? (
+    return transportType &&
+      isSpecial(transportType) &&
+      extra &&
+      extra.numbers ? (
       <Tooltip direction="top" offset={[0, -36]} permanent>
         <div>{imhdSummary(t, language, extra)}</div>
       </Tooltip>
@@ -232,7 +236,7 @@ const RoutePlannerResult: React.FC<Props> = ({
     [onRemoveMidpoint],
   );
 
-  const special = isSpecial(transportType);
+  const special = !!transportType && isSpecial(transportType);
 
   const circularIcon = divIcon({
     // CircleMarker is not draggable
@@ -400,7 +404,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,
@@ -409,7 +413,7 @@ export default compose(
 
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
-function addMissingSegments(alt) {
+function addMissingSegments(alt: any) {
   const routeSlices: any[] = [];
   for (let i = 0; i < alt.itinerary.length; i += 1) {
     const slice = alt.itinerary[i];
@@ -505,13 +509,13 @@ function imhdStep(
   });
 }
 
-function bikesharingStep(t, { type, destination, duration }) {
+function bikesharingStep(t: Translator, { type, destination, duration }) {
   return t(`routePlanner.bikesharing.step.${type}`, {
     destination,
     duration: Math.round(duration / 60),
   });
 }
 
-function isSpecial(transportType) {
+function isSpecial(transportType: TransportType) {
   return ['imhd', 'bikesharing'].includes(transportType);
 }

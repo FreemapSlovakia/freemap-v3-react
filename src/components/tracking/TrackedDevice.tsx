@@ -6,8 +6,8 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose, Dispatch } from 'redux';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 
@@ -96,10 +96,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  injectL10n(),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(TrackedDevice);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(TrackedDevice));

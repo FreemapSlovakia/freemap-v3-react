@@ -8,7 +8,7 @@ import {
   toastsRestartTimeout,
 } from 'fm3/actions/toastsActions';
 import Toast from 'fm3/components/Toast';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/toasts.scss';
 import { RootAction } from 'fm3/actions';
@@ -77,7 +77,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

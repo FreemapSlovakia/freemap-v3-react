@@ -8,8 +8,8 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import AccessToken from 'fm3/components/tracking/AccessToken';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { AccessToken } from 'fm3/components/tracking/AccessToken';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { compose, Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -97,7 +97,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

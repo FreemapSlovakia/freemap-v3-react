@@ -9,8 +9,8 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { IDevice } from 'fm3/types/trackingTypes';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose, Dispatch } from 'redux';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
@@ -137,10 +137,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  injectL10n(),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(Device);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(Device));

@@ -1,7 +1,7 @@
 import React from 'react';
 import { compose } from 'redux';
 import { connect } from 'react-redux';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import {
   resolveTrackSurface,
   resolveTrackClass,
@@ -71,6 +71,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(mapStateToProps),
 )(RoadDetails);

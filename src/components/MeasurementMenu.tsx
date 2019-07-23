@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 import { lineString } from '@turf/helpers';
 
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import { setTool, Tool } from 'fm3/actions/mainActions';
 import {
@@ -179,7 +179,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(
     mapStateToProps,
     mapDispatchToProps,

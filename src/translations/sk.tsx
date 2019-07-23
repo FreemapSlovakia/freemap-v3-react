@@ -1058,7 +1058,7 @@ export default {
       createTitle: 'Pridať zariadenie',
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
-      modifyTitle: ({ name }) => (
+      modifyTitle: ({ name }: { name: string }) => (
         <>
           Upraviť zariadenie <i>{name}</i>
         </>

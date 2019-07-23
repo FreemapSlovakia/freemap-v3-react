@@ -6,19 +6,18 @@ import Button from 'react-bootstrap/lib/Button';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { IAccessToken } from 'fm3/types/trackingTypes';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
-import { compose, Dispatch, bindActionCreators } from 'redux';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { Dispatch, bindActionCreators } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
-    language: string;
     t: Translator;
     accessToken: IAccessToken;
   };
 
-const AccessToken: React.FC<Props> = ({
+const AccessTokenInt: React.FC<Props> = ({
   onDelete,
   onModify,
   accessToken,
@@ -95,10 +94,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) =>
     dispatch,
   );
 
-export default compose(
-  injectL10n(),
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(AccessToken);
+export const AccessToken = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(AccessTokenInt));

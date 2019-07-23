@@ -5,7 +5,7 @@ import { Popup } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
 import { getPoiType } from 'fm3/poiTypes';
-import injectL10n, { Translator } from 'fm3/l10nInjector';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 type Props = ReturnType<typeof mapStateToProps> & {
@@ -59,6 +59,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 export default compose(
-  injectL10n(),
+  withTranslator,
   connect(mapStateToProps),
 )(ObjectsResult);
