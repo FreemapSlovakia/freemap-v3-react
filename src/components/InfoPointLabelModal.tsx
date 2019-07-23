@@ -57,6 +57,7 @@ class InfoPointLabelModal extends React.Component<Props, IState> {
             <FormGroup>
               <ControlLabel>{t('infoPoint.edit.label')}</ControlLabel>
               <FormControl
+                autoFocus
                 type="text"
                 placeholder={t('infoPoint.edit.example')}
                 value={this.state.editedLabel || ''}
