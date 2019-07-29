@@ -17,25 +17,16 @@ import {
   routePlannerToggleItineraryVisibility,
   routePlannerSetResult,
   routePlannerSetActiveAlternativeIndex,
+  TransportType,
+  IAlternative,
 } from 'fm3/actions/routePlannerActions';
-
-export type TransportType =
-  | 'car-free'
-  | 'foot-stroller'
-  | 'car'
-  | 'bikesharing'
-  | 'imhd'
-  | 'bike'
-  | 'nordic'
-  | 'ski'
-  | 'foot';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
 
 export type PickMode = 'start' | 'finish';
 
 export interface IRoutePlannerState {
-  alternatives: any[];
+  alternatives: IAlternative[];
   activeAlternativeIndex: number;
   timestamp: number | null;
   transportType: TransportType | null;

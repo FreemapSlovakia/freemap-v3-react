@@ -18,6 +18,7 @@ import {
   routePlannerToggleElevationChart,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSwapEnds,
+  TransportType,
 } from 'fm3/actions/routePlannerActions';
 import {
   setActiveModal,
@@ -31,7 +32,6 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
-import { TransportType } from 'fm3/reducers/routePlannerReducer';
 import { LatLon } from 'fm3/types/common';
 
 type Props = ReturnType<typeof mapStateToProps> &

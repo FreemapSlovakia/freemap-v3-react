@@ -1,6 +1,43 @@
 import { LatLon } from 'fm3/types/common';
 import { createStandardAction, createAction } from 'typesafe-actions';
-import { TransportType, RouteMode } from 'fm3/reducers/routePlannerReducer';
+import { RouteMode } from 'fm3/reducers/routePlannerReducer';
+
+export type RoutingMode = 'trip' | 'roundtrip' | 'route';
+
+export type TransportType =
+  | 'car-free'
+  | 'foot-stroller'
+  | 'car'
+  | 'bikesharing'
+  | 'imhd'
+  | 'bike'
+  | 'nordic'
+  | 'ski'
+  | 'foot';
+
+export interface IStep {
+  maneuver: {
+    location: LatLon;
+    type: string; // TODO enum?
+    modifier: string; // TODO enum?
+  };
+  distance: number;
+  duration: number;
+  name: string;
+  type: string; // TODO enum?
+  modifier; // TODO enum?
+  mode: RoutingMode;
+  shapePoints: any;
+  legIndex: number;
+  extra: any;
+}
+
+export interface IAlternative {
+  itinerary: IStep[];
+  distance: number;
+  duration: number;
+  extra: any; // TODO
+}
 
 export const routePlannerSetStart = createStandardAction(
   'ROUTE_PLANNER_SET_START',
@@ -28,7 +65,7 @@ export const routePlannerSetTransportType = createStandardAction(
 
 export const routePlannerSetMode = createStandardAction(
   'ROUTE_PLANNER_SET_MODE',
-)<'trip' | 'roundtrip' | 'route'>();
+)<RoutingMode>();
 
 export const routePlannerSetPickMode = createStandardAction(
   'ROUTE_PLANNER_SET_PICK_MODE',
@@ -39,7 +76,7 @@ export const routePlannerSetResult = createStandardAction(
 )<{
   timestamp: number;
   transportType: TransportType;
-  alternatives: object[]; // TODO
+  alternatives: IAlternative[];
 }>();
 
 export const routePlannerToggleItineraryVisibility = createAction(

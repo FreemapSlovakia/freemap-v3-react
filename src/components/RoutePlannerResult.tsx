@@ -12,13 +12,13 @@ import {
   routePlannerSetMidpoint,
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
+  TransportType,
 } from 'fm3/actions/routePlannerActions';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DragEndEvent } from 'leaflet';
-import { TransportType } from 'fm3/reducers/routePlannerReducer';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -82,12 +82,14 @@ const RoutePlannerResult: React.FC<Props> = ({
           <div>
             {t('routePlanner.distance', { value: nf.format(distance) })}
           </div>
-          <div>
-            {t('routePlanner.duration', {
-              h: Math.floor(duration / 60),
-              m: Math.round(duration % 60),
-            })}
-          </div>
+          {duration !== undefined && (
+            <div>
+              {t('routePlanner.duration', {
+                h: Math.floor(duration / 60),
+                m: Math.round(duration % 60),
+              })}
+            </div>
+          )}
         </div>
       </Tooltip>
     ) : null;

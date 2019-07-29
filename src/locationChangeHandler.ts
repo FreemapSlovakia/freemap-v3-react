@@ -15,7 +15,10 @@ import {
   Tool,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
+import {
+  routePlannerSetParams,
+  TransportType,
+} from 'fm3/actions/routePlannerActions';
 import {
   trackViewerDownloadTrack,
   trackViewerColorizeTrackBy,
@@ -55,7 +58,6 @@ import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
 import { RootAction } from './actions';
-import { TransportType } from './reducers/routePlannerReducer';
 import { MyStore, RootState } from './storeCreator';
 import { Location } from 'history';
 import { ITrackedDevice } from './types/trackingTypes';
