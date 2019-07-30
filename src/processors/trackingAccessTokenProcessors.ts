@@ -1,7 +1,7 @@
-import { toastsAddError } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { dispatchAxiosErrorAsToast } from './utils';
 
 export const saveAccessTokenProcessor: IProcessor<
   typeof trackingActions.saveAccessToken
@@ -33,7 +33,7 @@ export const saveAccessTokenProcessor: IProcessor<
         dispatch(trackingActions.modifyAccessToken(undefined));
       }
     } catch (err) {
-      dispatch(toastsAddError('tracking.loadError', err)); // TODO
+      dispatchAxiosErrorAsToast(dispatch, 'tracking.loadError', err); // TODO
     }
   },
 };
@@ -62,7 +62,7 @@ export const loadAccessTokensProcessor: IProcessor<
 
       dispatch(trackingActions.setAccessTokens(data));
     } catch (err) {
-      dispatch(toastsAddError('tracking.loadError', err)); // TODO
+      dispatchAxiosErrorAsToast(dispatch, 'tracking.loadError', err); // TODO
     }
   },
 };
@@ -82,7 +82,7 @@ export const deleteAccessTokenProcessor: IProcessor<
 
       dispatch(trackingActions.loadAccessTokens());
     } catch (err) {
-      dispatch(toastsAddError('tracking.deleteError', err)); // TODO
+      dispatchAxiosErrorAsToast(dispatch, 'tracking.deleteError', err); // TODO
     }
   },
 };

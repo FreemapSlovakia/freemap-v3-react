@@ -1,7 +1,7 @@
-import { toastsAddError } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { dispatchAxiosErrorAsToast } from './utils';
 
 export const saveDeviceProcessor: IProcessor<
   typeof trackingActions.saveDevice
@@ -31,7 +31,7 @@ export const saveDeviceProcessor: IProcessor<
         dispatch(trackingActions.modifyDevice(undefined));
       }
     } catch (err) {
-      dispatch(toastsAddError('tracking.savingError', err)); // TODO
+      dispatchAxiosErrorAsToast(dispatch, 'tracking.savingError', err); // TODO
     }
   },
 };
@@ -57,7 +57,7 @@ export const loadDevicesProcessor: IProcessor<
       }
       dispatch(trackingActions.setDevices(data));
     } catch (err) {
-      dispatch(toastsAddError('tracking.loadError', err)); // TODO
+      dispatchAxiosErrorAsToast(dispatch, 'tracking.loadError', err); // TODO
     }
   },
 };
@@ -68,7 +68,7 @@ export const deleteDeviceProcessor: IProcessor<
   actionCreator: trackingActions.deleteDevice,
   handle: async ({ dispatch, getState, action }) => {
     try {
-      await await httpRequest({
+      await httpRequest({
         dispatch,
         getState,
         method: 'DELETE',
@@ -79,7 +79,7 @@ export const deleteDeviceProcessor: IProcessor<
       });
       dispatch(trackingActions.loadDevices());
     } catch (err) {
-      dispatch(toastsAddError('tracking.deleteError', err)); // TODO
+      dispatchAxiosErrorAsToast(dispatch, 'tracking.deleteError', err); // TODO
     }
   },
 };

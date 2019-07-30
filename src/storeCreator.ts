@@ -36,6 +36,8 @@ import {
 import * as trackingAccessTokenProcessors from './processors/trackingAccessTokenProcessors';
 import * as trackingDeviceProcessors from './processors/trackingDeviceProcessors';
 import { trackingFollowProcessor } from './processors/trackingFollowProcessors';
+import { cancelProcessor } from './processors/cancelProcessor';
+import { authLogoutProcessor } from './processors/authLogoutProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -65,6 +67,8 @@ const rootReducer = combineReducers(reducers);
 export type RootState = StateType<typeof rootReducer>;
 
 processors.push(
+  cancelProcessor,
+  authLogoutProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

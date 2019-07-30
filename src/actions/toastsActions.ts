@@ -61,6 +61,9 @@ export const toastsRestartTimeout = createStandardAction(
 
 // helpers
 
+/**
+ * @deprecated use dispatchAxiosErrorAsToast
+ */
 export function toastsAddError(
   messageKey: string,
   err?: Error,
