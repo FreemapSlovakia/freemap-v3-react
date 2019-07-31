@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, Method, CancelTokenSource } from 'axios';
+import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
 import { RootState } from './storeCreator';
 import { Dispatch } from 'redux';
 import { RootAction } from './actions';
@@ -45,13 +45,10 @@ export function getAuthAxios(
   return instance;
 }
 
-interface HttpRequestParams {
+interface HttpRequestParams extends Omit<AxiosRequestConfig, 'cancelToken'> {
   getState: () => RootState;
   dispatch: Dispatch<RootAction>;
   expectedStatus?: number | number[];
-  url: string;
-  method: Method;
-  body?: object;
   cancelActions?: ActionType<RootAction>[];
 }
 
@@ -66,10 +63,8 @@ export async function httpRequest({
   getState,
   dispatch,
   expectedStatus,
-  method,
-  url,
-  body,
   cancelActions = [setTool, clearMap, setActiveModal],
+  ...rest
 }: HttpRequestParams) {
   let source: CancelTokenSource | undefined;
   let cancelItem: ICancelItem | undefined;
@@ -84,10 +79,8 @@ export async function httpRequest({
   dispatch(startProgress(pid));
   try {
     return await getAuthAxios(getState, expectedStatus).request({
-      method,
-      url,
-      data: body,
       cancelToken: cancelItem ? cancelItem.source.token : undefined,
+      ...rest,
     });
   } finally {
     if (cancelItem) {

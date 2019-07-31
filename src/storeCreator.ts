@@ -38,6 +38,12 @@ import * as trackingDeviceProcessors from './processors/trackingDeviceProcessors
 import { trackingFollowProcessor } from './processors/trackingFollowProcessors';
 import { cancelProcessor } from './processors/cancelProcessor';
 import { authLogoutProcessor } from './processors/authLogoutProcessor';
+import { searchProcessor } from './processors/searchProcessor';
+import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
+import { locateProcessor } from './processors/locateProcessor';
+import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
+import { gpxExportProcessor } from './processors/gpxExportProcessor';
+import { elevationMeasurementProcessor } from './processors/elevationMeasurementProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -69,6 +75,12 @@ export type RootState = StateType<typeof rootReducer>;
 processors.push(
   cancelProcessor,
   authLogoutProcessor,
+  searchProcessor,
+  tipsPreventProcessor,
+  locateProcessor,
+  saveSettingsProcessor,
+  gpxExportProcessor,
+  elevationMeasurementProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

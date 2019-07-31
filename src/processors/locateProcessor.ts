@@ -1,10 +1,10 @@
-import { createLogic } from 'redux-logic';
+import { toggleLocate } from 'fm3/actions/mainActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import * as at from 'fm3/actionTypes';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 
-export default createLogic({
-  type: at.LOCATE,
-  process({ getState }) {
+export const locateProcessor: IProcessor = {
+  actionCreator: toggleLocate,
+  handle: async ({ getState }) => {
     const leafletElement = getMapLeafletElement();
     if (leafletElement) {
       // may not exist yet when we start with ?tool=track-viewer
@@ -15,4 +15,4 @@ export default createLogic({
       }
     }
   },
-});
+};

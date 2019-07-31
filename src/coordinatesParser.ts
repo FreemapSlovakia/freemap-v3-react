@@ -26,8 +26,8 @@ export default function parseCoordinates(coord: string) {
   const mXml = P_XML.exec(coord);
   if (mXml) {
     return {
-      lat: toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
-      lon: toLatLon1(parseFloat(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
+      ...toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
+      ...toLatLon1(parseFloat(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
     };
   }
 

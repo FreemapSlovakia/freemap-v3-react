@@ -889,6 +889,7 @@ export default {
       d: 'Public transport (ÖPNV)',
       h: 'Historic',
       X: 'New Outdoor',
+      Y: 'New Outdoor (local)',
     },
     overlay: {
       I: 'Photos',

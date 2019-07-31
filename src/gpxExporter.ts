@@ -3,7 +3,7 @@ export const GPX_NS = 'http://www.topografix.com/GPX/1/1';
 export function createElement(
   parent: Element,
   name: string,
-  text: string | undefined | null,
+  text?: string | null,
   attributes: { [key: string]: string } = {},
 ) {
   const elem = document.createElementNS(GPX_NS, name);

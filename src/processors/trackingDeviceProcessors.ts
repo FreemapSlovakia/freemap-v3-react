@@ -17,7 +17,7 @@ export const saveDeviceProcessor: IProcessor<
           getState,
           method: 'put',
           url: `/tracking/devices/${modifiedDeviceId}`,
-          body: action.payload,
+          data: action.payload,
         });
         dispatch(trackingActions.modifyDevice(undefined));
       } else {
@@ -26,7 +26,7 @@ export const saveDeviceProcessor: IProcessor<
           getState,
           method: 'post',
           url: '/tracking/devices',
-          body: action.payload,
+          data: action.payload,
         });
         dispatch(trackingActions.modifyDevice(undefined));
       }

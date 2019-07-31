@@ -60,25 +60,32 @@ interface ITranslations {
 }
 
 export function translate(
-  translations: ITranslations,
+  translations: ITranslations | undefined,
   key: string,
   dflt: string = '',
 ): string | ((...params: any[]) => string) {
+  if (!translations) {
+    return '…';
+  }
   let curr: ITranslations = translations;
   const keys = key.split('.');
   for (;;) {
-    const key = keys.shift();
-    if (key === undefined) {
+    const part = keys.shift();
+    if (part === undefined) {
       return dflt;
     }
-    const item = curr[key];
+    const item = curr[part];
     if (typeof item === 'string' || typeof item === 'function') {
       if (keys.length) {
-        throw new Error('sub-key refers to string or function');
+        throw new Error(
+          `sub-key refers to string or function; ; key=${key}; type=${typeof item}`,
+        );
       }
       return item;
     } else if (typeof item !== 'object') {
-      throw new Error('sub-key refers to non-string and non-function');
+      throw new Error(
+        `sub-key refers to non-string and non-function; key=${key}; type=${typeof item}`,
+      );
     }
     curr = item;
   }

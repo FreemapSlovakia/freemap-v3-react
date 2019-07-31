@@ -17,7 +17,7 @@ export const saveAccessTokenProcessor: IProcessor<
           dispatch,
           method: 'PUT',
           url: `/tracking/access-tokens/${modifiedAccessTokenId}`,
-          body: action.payload,
+          data: action.payload,
         });
         dispatch(trackingActions.modifyAccessToken(undefined));
       } else {
@@ -28,7 +28,7 @@ export const saveAccessTokenProcessor: IProcessor<
           url: `/tracking/devices/${
             getState().tracking.accessTokensDeviceId
           }/access-tokens`,
-          body: action.payload,
+          data: action.payload,
         });
         dispatch(trackingActions.modifyAccessToken(undefined));
       }

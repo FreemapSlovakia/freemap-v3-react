@@ -884,6 +884,7 @@ export default {
       d: 'Veřejná doprava (ÖPNV)',
       h: 'Historická',
       X: 'Nová Outdoorová',
+      Y: 'Nová Outdoorová (local)',
     },
     overlay: {
       I: 'Fotografie',

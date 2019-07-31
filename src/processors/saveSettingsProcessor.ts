@@ -1,0 +1,97 @@
+import {
+  mapSetTileFormat,
+  mapSetOverlayOpacity,
+  mapSetOverlayPaneOpacity,
+} from 'fm3/actions/mapActions';
+import {
+  setHomeLocation,
+  setActiveModal,
+  setExpertMode,
+  saveSettings,
+} from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
+import { authSetUser } from 'fm3/actions/authActions';
+import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { httpRequest } from 'fm3/authAxios';
+import { dispatchAxiosErrorAsToast } from './utils';
+
+// TODO cancelType: [at.SET_ACTIVE_MODAL, at.SAVE_SETTINGS],
+
+export const saveSettingsProcessor: IProcessor<typeof saveSettings> = {
+  actionCreator: saveSettings,
+  handle: async ({ dispatch, getState, action }) => {
+    const {
+      tileFormat,
+      homeLocation,
+      overlayOpacity,
+      overlayPaneOpacity,
+      expertMode,
+      trackViewerEleSmoothingFactor,
+      preventTips,
+    } = action.payload;
+
+    // TODO don't save user if not changed
+
+    const { user } = getState().auth;
+    if (user) {
+      try {
+        await httpRequest({
+          getState,
+          dispatch,
+          method: 'PATCH',
+          url: `${process.env.API_URL}/auth/settings`,
+          expectedStatus: 204,
+          cancelActions: [setActiveModal, saveSettings],
+          data: Object.assign(
+            {
+              name: user.name,
+              email: user.email,
+              settings: {
+                tileFormat,
+                overlayOpacity,
+                overlayPaneOpacity,
+                expertMode,
+                trackViewerEleSmoothingFactor,
+              },
+              preventTips,
+            },
+            homeLocation
+              ? { lat: homeLocation.lat, lon: homeLocation.lon }
+              : {},
+          ),
+        });
+
+        dispatch(
+          authSetUser(
+            Object.assign({}, getState().auth.user, {
+              name: user.name,
+              email: user.email,
+            }),
+          ),
+        );
+      } catch (err) {
+        dispatchAxiosErrorAsToast(dispatch, 'settings.savingError', err);
+        return;
+      }
+    }
+
+    dispatch(mapSetTileFormat(tileFormat));
+    dispatch(setHomeLocation(homeLocation));
+    dispatch(mapSetOverlayOpacity(overlayOpacity));
+    dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));
+    dispatch(setExpertMode(expertMode));
+    dispatch(trackViewerSetEleSmoothingFactor(trackViewerEleSmoothingFactor));
+    dispatch(tipsPreventNextTime(preventTips));
+    dispatch(
+      toastsAdd({
+        collapseKey: 'settings.saved',
+        messageKey: 'settings.saveSuccess',
+        style: 'info',
+        timeout: 5000,
+      }),
+    );
+    dispatch(setActiveModal(null));
+  },
+};

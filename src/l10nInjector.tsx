@@ -3,7 +3,7 @@ import { translate, splitAndSubstitute } from 'fm3/stringUtils';
 import { Subtract } from 'utility-types';
 
 function tx(key: string, params: { [key: string]: any } = {}, dflt = '') {
-  const t = translate(global.translations || {}, key, dflt);
+  const t = translate(global.translations, key, dflt);
   return typeof t === 'function' ? t(params) : splitAndSubstitute(t, params);
 }
 

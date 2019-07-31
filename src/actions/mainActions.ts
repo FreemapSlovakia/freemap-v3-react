@@ -24,7 +24,7 @@ export const setTool = createStandardAction('SET_TOOL')<Tool | null>();
 export const setHomeLocation = createStandardAction('SET_HOME_LOCATION')<{
   lat: number;
   lon: number;
-}>();
+} | null>();
 
 export const startProgress = createStandardAction('START_PROGRESS')<
   string | number
