@@ -58,9 +58,8 @@ export const gpxExportProcessor: IProcessor<typeof exportGpx> = {
       try {
         const { data } = await httpRequest({
           getState,
-          dispatch,
           method: 'GET',
-          url: `${process.env.API_URL}/gallery/pictures`,
+          url: '/gallery/pictures',
           params: {
             by: 'bbox',
             bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,

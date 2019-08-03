@@ -16,9 +16,8 @@ export const tipsPreventProcessor: IProcessor<typeof tipsPreventNextTime> = {
     try {
       await httpRequest({
         getState,
-        dispatch,
         method: 'PATCH',
-        url: `${process.env.API_URL}/auth/settings`,
+        url: '/auth/settings',
         expectedStatus: 204,
       });
     } catch (err) {

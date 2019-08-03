@@ -41,6 +41,7 @@ export default {
     createdAt: 'Vytvorené',
     actions: 'Akcie',
     add: 'Pridať nové',
+    processorError: 'Chyba aplikácie: ${error}',
   },
 
   tools: {

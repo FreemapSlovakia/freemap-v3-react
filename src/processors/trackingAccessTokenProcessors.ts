@@ -14,7 +14,6 @@ export const saveAccessTokenProcessor: IProcessor<
       if (modifiedAccessTokenId) {
         await httpRequest({
           getState,
-          dispatch,
           method: 'PUT',
           url: `/tracking/access-tokens/${modifiedAccessTokenId}`,
           data: action.payload,
@@ -23,7 +22,6 @@ export const saveAccessTokenProcessor: IProcessor<
       } else {
         await httpRequest({
           getState,
-          dispatch,
           method: 'POST',
           url: `/tracking/devices/${
             getState().tracking.accessTokensDeviceId
@@ -46,7 +44,6 @@ export const loadAccessTokensProcessor: IProcessor<
     try {
       const { data } = await httpRequest({
         getState,
-        dispatch,
         method: 'GET',
         url: `/tracking/devices/${
           getState().tracking.accessTokensDeviceId
@@ -75,7 +72,6 @@ export const deleteAccessTokenProcessor: IProcessor<
     try {
       await httpRequest({
         getState,
-        dispatch,
         method: 'GET',
         url: `/tracking/access-tokens/${encodeURIComponent(action.payload)}`,
       });

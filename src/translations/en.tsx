@@ -42,6 +42,7 @@ export default {
     createdAt: 'Created At',
     actions: 'Actions',
     add: 'Add new',
+    processorError: 'Application error: ${error}',
   },
 
   tools: {

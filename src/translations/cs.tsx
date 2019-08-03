@@ -36,6 +36,7 @@ export default {
     back: 'Zpět',
     internalError: `!HTML!${errorMarkup}`,
     appUpdated: 'Je dostupná aktualizce. Obnovit stránku?',
+    processorError: 'Chyba aplikace: ${error}',
   },
 
   tools: {

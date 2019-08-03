@@ -19,9 +19,8 @@ export const elevationMeasurementProcessor: IProcessor = {
     try {
       const { data } = await httpRequest({
         getState,
-        dispatch,
         method: 'GET',
-        url: `${process.env.API_URL}/geotools/elevation`,
+        url: '/geotools/elevation',
         params: {
           coordinates: `${point.lat},${point.lon}`,
         },

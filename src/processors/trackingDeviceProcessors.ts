@@ -13,7 +13,6 @@ export const saveDeviceProcessor: IProcessor<
     try {
       if (modifiedDeviceId) {
         await httpRequest({
-          dispatch,
           getState,
           method: 'put',
           url: `/tracking/devices/${modifiedDeviceId}`,
@@ -22,7 +21,6 @@ export const saveDeviceProcessor: IProcessor<
         dispatch(trackingActions.modifyDevice(undefined));
       } else {
         await httpRequest({
-          dispatch,
           getState,
           method: 'post',
           url: '/tracking/devices',
@@ -43,7 +41,6 @@ export const loadDevicesProcessor: IProcessor<
   handle: async ({ dispatch, getState }) => {
     try {
       const { data } = await httpRequest({
-        dispatch,
         getState,
         method: 'GET',
         url: '/tracking/devices',
@@ -69,12 +66,9 @@ export const deleteDeviceProcessor: IProcessor<
   handle: async ({ dispatch, getState, action }) => {
     try {
       await httpRequest({
-        dispatch,
         getState,
         method: 'DELETE',
-        url: `${process.env.API_URL}/tracking/devices/${encodeURIComponent(
-          action.payload,
-        )}`,
+        url: `/tracking/devices/${encodeURIComponent(action.payload)}`,
         expectedStatus: 204,
       });
       dispatch(trackingActions.loadDevices());

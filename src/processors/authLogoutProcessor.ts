@@ -9,10 +9,9 @@ export const authLogoutProcessor: IProcessor = {
   handle: async ({ dispatch, getState }) => {
     try {
       await httpRequest({
-        dispatch,
         getState,
         method: 'post',
-        url: `${process.env.API_URL}/auth/logout`,
+        url: '/auth/logout',
         expectedStatus: [204, 401],
       });
 

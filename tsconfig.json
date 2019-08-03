@@ -5,10 +5,10 @@
     "strictNullChecks": true, // enable strict null checks as a best practice
     "module": "esnext", // specify module code generation
     "jsx": "react", // use typescript to transpile jsx to js
-    "target": "es6", // specify ECMAScript target version
+    "target": "es2016", // specify ECMAScript target version
     "allowJs": true, // allow a partial TypeScript and JavaScript codebase
     "moduleResolution": "node",
-    "lib": ["es2015", "dom"],
+    "lib": ["es7", "dom"],
     // was in jsconfig: "target": "es2015",
     // was in jsconfig: "module": "commonjs",
     "allowSyntheticDefaultImports": true,
@@ -23,7 +23,8 @@
     "resolveJsonModule": true,
     "plugins": [
       { "transform": "typescript-is/lib/transform-inline/transformer" }
-    ]
+    ],
+    "types": ["gapi", "gapi.auth2"]
   },
   "include": ["src", "typings"]
 }

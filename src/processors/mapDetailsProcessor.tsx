@@ -1,0 +1,118 @@
+import React from 'react';
+
+import {
+  mapDetailsSetTrackInfoPoints,
+  mapDetailsSetUserSelectedPosition,
+} from 'fm3/actions/mapDetailsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import RoadDetails from 'fm3/components/RoadDetails';
+import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import { lineString, point, featureCollection } from '@turf/helpers';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { httpRequest } from 'fm3/authAxios';
+import { dispatchAxiosErrorAsToast } from './utils';
+import { getType } from 'typesafe-actions';
+
+const mappings = {
+  way: element =>
+    lineString(element.geometry.map(({ lat, lon }) => [lon, lat])),
+  node: element => point([element.lon, element.lat]),
+  relation: element => ({
+    type: 'Feature',
+    geometry: {
+      type: 'GeometryCollection',
+      geometries: element.members
+        .filter(({ type }) =>
+          ['way', 'node' /* TODO , 'relation' */].includes(type),
+        )
+        .map(member =>
+          member.type === 'way'
+            ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat]))
+            : point([member.lon, member.lat]),
+        ),
+    },
+  }),
+};
+
+export const mapDetailsProcessor: IProcessor = {
+  actionCreator: mapDetailsSetUserSelectedPosition,
+  handle: async ({ dispatch, getState }) => {
+    const { subtool, userSelectedLat, userSelectedLon } = getState().mapDetails;
+    if (subtool !== 'track-info') {
+      return;
+    }
+
+    try {
+      const [{ data }, { data: data1 }] = await Promise.all([
+        httpRequest({
+          getState,
+          method: 'POST',
+          url: '//overpass-api.de/api/interpreter',
+          data:
+            '[out:json];(' +
+            // + `node(around:33,${userSelectedLat},${userSelectedLon});`
+            `way(around:33,${userSelectedLat},${userSelectedLon})[highway];` +
+            // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
+            ');out geom meta;',
+          expectedStatus: 200,
+        }),
+        { data: { elements: [] } },
+        // axios.post(
+        //   '//overpass-api.de/api/interpreter',
+        //   `[out:json];
+        //     is_in(${userSelectedLat},${userSelectedLon})->.a;
+        //     way(pivot.a);
+        //     out geom meta;
+        //     relation(pivot.a);
+        //     out geom meta;
+        //   `,
+        //   {
+        //     validateStatus: status => status === 200,
+        //     cancelToken: source.token,
+        //   },
+        // ),
+      ]);
+
+      const elements = [...(data.elements || []), ...(data1.elements || [])];
+      if (elements.length > 0) {
+        const geojson = featureCollection(
+          elements.map(element => mappings[element.type](element)),
+        );
+
+        data.elements.forEach(element => {
+          dispatch(
+            toastsAdd({
+              // collapseKey: 'mapDetails.trackInfo.detail',
+              message: <RoadDetails way={element} />,
+              cancelType: getType(mapDetailsSetUserSelectedPosition),
+              style: 'info',
+            }),
+          );
+        });
+
+        // dispatch(mapDetailsSetTrackInfoPoints(geojson));
+
+        dispatch(
+          trackViewerSetData({
+            trackGeojson: geojson,
+            startPoints: [],
+            finishPoints: [],
+          }),
+        );
+      } else {
+        dispatch(
+          toastsAdd({
+            collapseKey: 'mapDetails.trackInfo.detail',
+            messageKey: 'mapDetails.notFound',
+            cancelType: getType(mapDetailsSetUserSelectedPosition),
+            timeout: 5000,
+            style: 'info',
+          }),
+        );
+        dispatch(mapDetailsSetTrackInfoPoints(null));
+      }
+    } catch (err) {
+      dispatchAxiosErrorAsToast(dispatch, 'mapDetails.fetchingError', err);
+    }
+  },
+};

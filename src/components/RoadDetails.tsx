@@ -1,5 +1,4 @@
 import React from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import {
@@ -50,16 +49,14 @@ const RoadDetails: React.FC<Props> = ({ way, mapType, language, t }) => {
         <dd>{lastEditAt}</dd>
       </dl>
       <p>
-        {
-          <a
-            key="allDetails"
-            href={`https://www.openstreetmap.org/way/${way.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {t('roadDetails.showDetails')}
-          </a>
-        }
+        <a
+          key="allDetails"
+          href={`https://www.openstreetmap.org/way/${way.id}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {t('roadDetails.showDetails')}
+        </a>
       </p>
     </div>
   );
@@ -70,7 +67,4 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default compose(
-  withTranslator,
-  connect(mapStateToProps),
-)(RoadDetails);
+export default connect(mapStateToProps)(withTranslator(RoadDetails));

@@ -44,6 +44,11 @@ import { locateProcessor } from './processors/locateProcessor';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
 import { gpxExportProcessor } from './processors/gpxExportProcessor';
 import { elevationMeasurementProcessor } from './processors/elevationMeasurementProcessor';
+import { mapDetailsProcessor } from './processors/mapDetailsProcessor';
+import { changesetsProcessor } from './processors/changesetsProcessor';
+import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
+import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
+import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -81,6 +86,11 @@ processors.push(
   saveSettingsProcessor,
   gpxExportProcessor,
   elevationMeasurementProcessor,
+  mapDetailsProcessor,
+  changesetsProcessor,
+  authLoginWithFacebookProcessor,
+  authLoginWithGoogleProcessor,
+  authLoginWithOsmProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

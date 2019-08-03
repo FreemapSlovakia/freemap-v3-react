@@ -61,7 +61,6 @@ export const searchProcessor: IProcessor<typeof searchSetQuery> = {
 
     try {
       const { data } = await httpRequest({
-        dispatch,
         getState,
         url: `//old.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}`,
         method: 'GET',
