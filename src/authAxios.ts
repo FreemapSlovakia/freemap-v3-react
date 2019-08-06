@@ -66,8 +66,13 @@ export async function httpRequest({
     cancelRegister.add(cancelItem);
   }
 
+  const fn =
+    !rest.url || /^https?:\/\/|^\/\//.test(rest.url)
+      ? getAxios
+      : getAuthAxios.bind(undefined, getState);
+
   try {
-    return await getAuthAxios(getState, expectedStatus).request({
+    return await fn(expectedStatus).request({
       cancelToken: cancelItem ? cancelItem.source.token : undefined,
       ...rest,
     });

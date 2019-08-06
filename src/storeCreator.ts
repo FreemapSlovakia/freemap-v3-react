@@ -53,6 +53,7 @@ import { authSaveUserProcessor } from './processors/authSaveUserProcessor';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
 import { elevationChartProcessor } from './processors/elevationChartProcessor';
 import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
+import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -99,6 +100,7 @@ processors.push(
   l10nSetLanguageProcessor,
   elevationChartProcessor,
   objectsFetchProcessor,
+  osmLoadNodeProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,
