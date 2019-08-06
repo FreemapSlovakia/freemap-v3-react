@@ -9,7 +9,7 @@ export interface ObjectsResult {
 }
 
 export const objectsSetFilter = createStandardAction('OBJECTS_SET_FILTER')<
-  string
+  number
 >();
 
 export const objectsSetResult = createStandardAction('OBJECTS_SET_RESULT')<

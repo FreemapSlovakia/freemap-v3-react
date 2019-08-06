@@ -49,6 +49,10 @@ import { changesetsProcessor } from './processors/changesetsProcessor';
 import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
 import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
 import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
+import { authSaveUserProcessor } from './processors/authSaveUserProcessor';
+import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
+import { elevationChartProcessor } from './processors/elevationChartProcessor';
+import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -91,6 +95,10 @@ processors.push(
   authLoginWithFacebookProcessor,
   authLoginWithGoogleProcessor,
   authLoginWithOsmProcessor,
+  authSaveUserProcessor,
+  l10nSetLanguageProcessor,
+  elevationChartProcessor,
+  objectsFetchProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

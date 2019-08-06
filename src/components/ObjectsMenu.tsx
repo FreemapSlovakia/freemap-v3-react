@@ -77,7 +77,7 @@ class ObjectsMenu extends React.Component<Props, IState> {
     if (this.props.zoom < 12) {
       this.props.onLowZoom();
     } else {
-      this.props.onSearch(id as string);
+      this.props.onSearch(id as number);
     }
   };
 
@@ -120,7 +120,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSearch(typeId: string) {
+  onSearch(typeId: number) {
     dispatch(objectsSetFilter(typeId));
   },
   onLowZoom() {

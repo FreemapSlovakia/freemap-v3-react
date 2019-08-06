@@ -6,6 +6,7 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { clearMap } from 'fm3/actions/mainActions';
 import { dispatchAxiosErrorAsToast } from './utils';
+import { assertType } from 'typescript-is';
 
 export const elevationMeasurementProcessor: IProcessor = {
   actionCreator: elevationMeasurementSetPoint,
@@ -26,7 +27,8 @@ export const elevationMeasurementProcessor: IProcessor = {
         },
         cancelActions: [elevationMeasurementSetPoint, clearMap],
       });
-      dispatch(elevationMeasurementSetElevation(parseFloat(data[0])));
+
+      dispatch(elevationMeasurementSetElevation(assertType<[number]>(data)[0]));
     } catch (err) {
       dispatchAxiosErrorAsToast(
         dispatch,

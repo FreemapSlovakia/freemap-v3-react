@@ -9,6 +9,7 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { dispatchAxiosErrorAsToast } from './utils';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { assertType } from 'typescript-is';
 
 // TODO cancelType: at.CHANGESETS_SET_AUTHOR_NAME,
 
@@ -37,7 +38,7 @@ export const changesetsProcessor: IProcessor = {
 
     async function loadChangesets(toTime0, changesetsFromPreviousRequest) {
       const { data } = await httpRequest({
-        getState,
+        getState, // TODO no auth!
         method: 'GET',
         url: '//api.openstreetmap.org/api/0.6/changesets',
         expectedStatus: [200, 404],
@@ -49,7 +50,10 @@ export const changesetsProcessor: IProcessor = {
         cancelActions: [changesetsSetAuthorName, setTool, clearMap],
       });
 
-      const xml = new DOMParser().parseFromString(data, 'text/xml');
+      const xml = new DOMParser().parseFromString(
+        assertType<string>(data),
+        'text/xml',
+      );
       const rawChangesets = xml.getElementsByTagName('changeset');
       const arrayOfrawChangesets = Array.from(rawChangesets);
       const changesetsFromThisRequest = arrayOfrawChangesets

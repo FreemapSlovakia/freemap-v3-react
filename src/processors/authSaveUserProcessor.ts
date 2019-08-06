@@ -1,11 +1,12 @@
-import { createLogic } from 'redux-logic';
 import storage from 'fm3/storage';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { IUser } from 'fm3/types/common';
 
-let prevUser = null;
+let prevUser: IUser | null = null;
 
-export default createLogic({
-  type: '*',
-  process({ getState }, dispatch, done) {
+export const authSaveUserProcessor: IProcessor = {
+  actionCreator: '*',
+  handle: async ({ getState }) => {
     const { user } = getState().auth;
     if (user !== prevUser) {
       prevUser = user;
@@ -15,6 +16,5 @@ export default createLogic({
         storage.removeItem('user');
       }
     }
-    done();
   },
-});
+};

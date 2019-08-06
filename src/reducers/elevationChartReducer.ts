@@ -17,8 +17,8 @@ import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
 export interface IElevationProfilePoint extends LatLon {
-  climbUp: number;
-  climbDown: number;
+  climbUp?: number;
+  climbDown?: number;
   distance: number;
   ele: number;
 }

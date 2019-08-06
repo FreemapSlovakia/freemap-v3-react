@@ -2,6 +2,11 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { authLoginWithOsm } from 'fm3/actions/authActions';
 import { httpRequest } from 'fm3/authAxios';
 import { dispatchAxiosErrorAsToast } from './utils';
+import { assertType } from 'typescript-is';
+
+interface ILoginResponse {
+  redirect?: string;
+}
 
 export const authLoginWithOsmProcessor: IProcessor = {
   actionCreator: authLoginWithOsm,
@@ -15,9 +20,11 @@ export const authLoginWithOsmProcessor: IProcessor = {
         cancelActions: [],
       });
 
-      if (data.redirect) {
+      const { redirect } = assertType<ILoginResponse>(data);
+
+      if (redirect) {
         window.open(
-          data.redirect,
+          redirect,
           'osm-login',
           `width=600,height=550,left=${window.screen.width / 2 -
             600 / 2},top=${window.screen.height / 2 - 550 / 2}`,
