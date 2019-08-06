@@ -4,6 +4,7 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { dispatchAxiosErrorAsToast } from './utils';
 import { IUser } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 export const authLoginWithFacebookProcessor: IProcessor = {
   actionCreator: authLoginWithFacebook,
