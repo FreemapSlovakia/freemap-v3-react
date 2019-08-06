@@ -112,7 +112,7 @@ const ElevationChart: React.FC<Props> = ({
           ],
         }}
       />
-      {typeof climbUp === 'number' && (
+      {typeof climbUp === 'number' && typeof climbDown === 'number' && (
         <p style={{ marginLeft: '4px' }}>
           {t('trackViewer.details.uphill')}: {nf0.format(climbUp)} m,{' '}
           {t('trackViewer.details.downhill')}: {nf0.format(climbDown)} m

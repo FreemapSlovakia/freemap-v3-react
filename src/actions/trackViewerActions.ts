@@ -1,6 +1,6 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
-import { FeatureCollection } from '@turf/helpers';
+import { FeatureCollection } from 'geojson';
 
 export type ColorizingMode = 'elevation' | 'steepness';
 

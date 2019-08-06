@@ -12,6 +12,21 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { dispatchAxiosErrorAsToast } from './utils';
 import { getType } from 'typesafe-actions';
+import { assertType } from 'typescript-is';
+
+interface IElement {
+  id: number;
+  tags: {
+    [key: string]: string;
+  };
+  timestamp: number;
+  type: 'way' | 'node' | 'relation';
+  geometry: any; // TODO per type
+}
+
+interface IOverpassResult {
+  elements?: IElement[];
+}
 
 const mappings = {
   way: element =>
@@ -73,13 +88,15 @@ export const mapDetailsProcessor: IProcessor = {
         // ),
       ]);
 
-      const elements = [...(data.elements || []), ...(data1.elements || [])];
+      const oRes = assertType<IOverpassResult>(data);
+
+      const elements = [...(oRes.elements || []), ...(data1.elements || [])];
       if (elements.length > 0) {
         const geojson = featureCollection(
-          elements.map(element => mappings[element.type](element)),
+          elements.map(element => mappings[element.type](element) as any), // TODO fix type
         );
 
-        data.elements.forEach(element => {
+        (oRes.elements || []).forEach(element => {
           dispatch(
             toastsAdd({
               // collapseKey: 'mapDetails.trackInfo.detail',
@@ -94,7 +111,7 @@ export const mapDetailsProcessor: IProcessor = {
 
         dispatch(
           trackViewerSetData({
-            trackGeojson: geojson,
+            trackGeojson: geojson as any, // TODO fix type
             startPoints: [],
             finishPoints: [],
           }),

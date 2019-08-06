@@ -24,7 +24,13 @@
     "plugins": [
       { "transform": "typescript-is/lib/transform-inline/transformer" }
     ],
-    "types": ["gapi", "gapi.auth2"]
+    "types": [
+      "gapi",
+      "gapi.auth2",
+      "node",
+      "google.analytics",
+      "facebook-js-sdk"
+    ]
   },
   "include": ["src", "typings"]
 }

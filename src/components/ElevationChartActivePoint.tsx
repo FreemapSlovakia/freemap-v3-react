@@ -49,14 +49,15 @@ const ElevationChartActivePoint: React.FC<Props> = ({
             → {nf1.format(elevationChartActivePoint.distance / 1000)} km
             {' ▴ '}
             {nf0.format(elevationChartActivePoint.ele)} {t('general.masl')}
-            {typeof elevationChartActivePoint.climbUp === 'number' && (
-              <>
-                <br />
-                {' ↑ '}
-                {nf0.format(elevationChartActivePoint.climbUp)} m{' ↓ '}
-                {nf0.format(elevationChartActivePoint.climbDown)} m
-              </>
-            )}
+            {typeof elevationChartActivePoint.climbUp === 'number' &&
+              typeof elevationChartActivePoint.climbDown === 'number' && (
+                <>
+                  <br />
+                  {' ↑ '}
+                  {nf0.format(elevationChartActivePoint.climbUp)} m{' ↓ '}
+                  {nf0.format(elevationChartActivePoint.climbDown)} m
+                </>
+              )}
           </span>
         </Tooltip>
       </RichMarker>

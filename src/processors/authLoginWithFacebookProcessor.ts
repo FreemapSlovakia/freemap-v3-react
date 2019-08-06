@@ -9,15 +9,13 @@ import { assertType } from 'typescript-is';
 export const authLoginWithFacebookProcessor: IProcessor = {
   actionCreator: authLoginWithFacebook,
   handle: async ({ dispatch, getState }) => {
-    const fb = window['FB'];
-
-    let response = await new Promise<any>(resolve =>
-      fb.getLoginStatus(resolve),
+    let response = await new Promise<fb.StatusResponse>(resolve =>
+      FB.getLoginStatus(resolve),
     );
 
     if (response.status !== 'connected') {
-      response = await new Promise<any>(resolve => {
-        fb.login(resolve, { scope: 'email' });
+      response = await new Promise<fb.StatusResponse>(resolve => {
+        FB.login(resolve, { scope: 'email' });
       });
 
       if (response.status !== 'connected') {
