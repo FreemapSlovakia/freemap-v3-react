@@ -63,6 +63,7 @@ import { toastsRemoveProcessor } from './processors/toastsRemoveProcessor';
 import { toastsStopTimeoutProcessor } from './processors/toastsStopTimeoutProcessor';
 import { toastsAddProcessor } from './processors/toastsAddProcessor';
 import { toastsRestartTimeoutProcessor } from './processors/toastsRestartTimeoutProcessor';
+import { trackViewerDownloadTrackProcessor } from './processors/trackViewerDownloadTrackProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -119,6 +120,7 @@ processors.push(
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
+  trackViewerDownloadTrackProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,
