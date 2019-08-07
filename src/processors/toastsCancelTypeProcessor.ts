@@ -1,27 +1,21 @@
-import { createLogic } from 'redux-logic';
 import { toastsRemove } from 'fm3/actions/toastsActions';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 
-export default createLogic({
-  type: '*',
-  process(
-    {
-      getState,
-      action: { type },
-    },
-    dispatch,
-    done,
-  ) {
+export const toastsCancelTypeProcessor: IProcessor = {
+  actionCreator: '*',
+  handle: async ({ dispatch, getState, action }) => {
     getState()
-      .toasts.toasts.filter(({ cancelType }) => matches(type, cancelType))
+      .toasts.toasts.filter(({ cancelType }) =>
+        matches(action.type, cancelType),
+      )
       .forEach(({ id }) => {
         dispatch(toastsRemove(id));
       });
-    done();
   },
-});
+};
 
-function matches(value, test) {
-  if (test === null || test === undefined) {
+function matches(value: string, test: string | string[] | RegExp | undefined) {
+  if (test === undefined) {
     return false;
   }
   if (typeof test === 'string') {

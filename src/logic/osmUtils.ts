@@ -19,9 +19,9 @@ export function toNodes(data: Document) {
       throw Error('unexpected node');
     }
 
-    nodes[req(node.getAttribute('id'))] = [
-      parseFloat(req(node.getAttribute('lon'))),
-      parseFloat(req(node.getAttribute('lat'))),
+    nodes[ensureNotNull(node.getAttribute('id'))] = [
+      parseFloat(ensureNotNull(node.getAttribute('lon'))),
+      parseFloat(ensureNotNull(node.getAttribute('lat'))),
     ];
   }
 
@@ -57,13 +57,13 @@ export function toWays(data: Document, nodes: INodes) {
       coordinates.push(nodes[y.value]);
     }
 
-    ways[req(x.getAttribute('id'))] = coordinates;
+    ways[ensureNotNull(x.getAttribute('id'))] = coordinates;
   }
 
   return ways;
 }
 
-function req<T>(value: T | null): T {
+export function ensureNotNull<T>(value: T | null): T {
   if (value) {
     return value;
   }
@@ -71,14 +71,14 @@ function req<T>(value: T | null): T {
   throw new Error('null');
 }
 
-function ensureElement(node: Node | null): Element | null {
+export function ensureElement(node: Node | null): Element | null {
   if (node && !(node instanceof Element)) {
     throw Error('unexpected node');
   }
   return node;
 }
 
-function ensureAttr(node: Node | null): Attr | null {
+export function ensureAttr(node: Node | null): Attr | null {
   if (node && !(node instanceof Attr)) {
     throw Error('unexpected node');
   }

@@ -1,9 +1,9 @@
-import { createLogic } from 'redux-logic';
 import storage from 'fm3/storage';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 
-export default createLogic({
-  type: '*',
-  process({ getState }) {
+export const storageProcessor: IProcessor = {
+  actionCreator: '*',
+  handle: async ({ getState }) => {
     const state = getState();
 
     const mapState = state.map;
@@ -34,4 +34,4 @@ export default createLogic({
 
     storage.setItem('appState', JSON.stringify(appState));
   },
-});
+};

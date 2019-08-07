@@ -1,25 +1,26 @@
-import { createLogic } from 'redux-logic';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 
-import * as at from 'fm3/actionTypes';
+let prevMapType: string | undefined;
+let prevOverlays: string[] = [];
 
-let prevMapType;
-let prevOverlays = [];
-
-export default createLogic({
-  type: [at.MAP_REFOCUS, at.ENABLE_UPDATING_URL /* any initial action */],
-  process({ getState }, dispatch, done) {
+export const mapTypeGaProcessor: IProcessor = {
+  actionCreator: [mapRefocus, enableUpdatingUrl /* any initial action */],
+  handle: async ({ getState }) => {
     const {
       map: { mapType, overlays },
     } = getState();
+
     if (prevMapType !== mapType) {
       window.ga('set', 'dimension1', mapType);
       window.ga('send', 'event', 'Map', 'setMapType', mapType);
       prevMapType = mapType;
     }
+
     if ([...prevOverlays].sort().join(',') !== [...overlays].sort().join(',')) {
       window.ga('send', 'event', 'Map', 'setOverlays', overlays);
       prevOverlays = overlays;
     }
-    done();
   },
-});
+};

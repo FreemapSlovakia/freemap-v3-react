@@ -13,7 +13,7 @@ export interface IProcessor<T extends ActionCreator = ActionCreator> {
     dispatch: Dispatch<RootAction>;
     action: ActionType<T>;
   }) => void | Promise<void>;
-  actionCreator: T | '*';
+  actionCreator: T | T[] | '*';
 }
 
 export const processors: IProcessor[] = [];
@@ -29,7 +29,12 @@ export const processorMiddleware: Middleware<
   const promises: Promise<void>[] = [];
   if (typeof action == 'object' && action && typeof action.type == 'string') {
     for (const { actionCreator: actionType, handle } of processors) {
-      if (actionType === '*' || isActionOf(actionType, action)) {
+      if (
+        actionType === '*' ||
+        (Array.isArray(actionType) &&
+          actionType.some(ac => isActionOf(ac, action))) ||
+        isActionOf(actionType, action)
+      ) {
         const p = handle({ getState, dispatch, action, prevState });
         if (p) {
           promises.push(p);

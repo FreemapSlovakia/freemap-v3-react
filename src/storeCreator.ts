@@ -54,6 +54,15 @@ import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor'
 import { elevationChartProcessor } from './processors/elevationChartProcessor';
 import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
+import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
+import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
+import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
+import { storageProcessor } from './processors/storageProcessor';
+import { toastsCancelTypeProcessor } from './processors/toastsCancelTypeProcessor';
+import { toastsRemoveProcessor } from './processors/toastsRemoveProcessor';
+import { toastsStopTimeoutProcessor } from './processors/toastsStopTimeoutProcessor';
+import { toastsAddProcessor } from './processors/toastsAddProcessor';
+import { toastsRestartTimeoutProcessor } from './processors/toastsRestartTimeoutProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -101,6 +110,15 @@ processors.push(
   elevationChartProcessor,
   objectsFetchProcessor,
   osmLoadNodeProcessor,
+  osmLoadWayProcessor,
+  osmLoadRelationProcessor,
+  mapTypeGaProcessor,
+  storageProcessor,
+  toastsAddProcessor,
+  toastsCancelTypeProcessor,
+  toastsRemoveProcessor,
+  toastsRestartTimeoutProcessor,
+  toastsStopTimeoutProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

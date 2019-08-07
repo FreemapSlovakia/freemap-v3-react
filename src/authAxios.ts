@@ -66,16 +66,17 @@ export async function httpRequest({
     cancelRegister.add(cancelItem);
   }
 
-  const fn =
-    !rest.url || /^https?:\/\/|^\/\//.test(rest.url)
-      ? getAxios
-      : getAuthAxios.bind(undefined, getState);
+  const params = {
+    cancelToken: cancelItem ? cancelItem.source.token : undefined,
+    ...rest,
+  };
 
   try {
-    return await fn(expectedStatus).request({
-      cancelToken: cancelItem ? cancelItem.source.token : undefined,
-      ...rest,
-    });
+    if (!rest.url || /^https?:\/\/|^\/\//.test(rest.url)) {
+      return getAxios(expectedStatus).request(params);
+    } else {
+      return getAuthAxios(getState, expectedStatus).request(params);
+    }
   } finally {
     if (cancelItem) {
       cancelRegister.delete(cancelItem);
