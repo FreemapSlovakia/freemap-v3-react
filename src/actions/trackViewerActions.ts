@@ -44,8 +44,6 @@ export const trackViewerColorizeTrackBy = createStandardAction(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
 )<ColorizingMode | null>();
 
-export const trackViewerShowInfo = createAction('TRACK_VIEWER_SHOW_INFO');
-
 export const trackViewerToggleElevationChart = createAction(
   'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
 );

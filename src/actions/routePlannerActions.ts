@@ -4,6 +4,8 @@ import { RouteMode } from 'fm3/reducers/routePlannerReducer';
 
 export type RoutingMode = 'trip' | 'roundtrip' | 'route';
 
+export type SliceMode = 'foot';
+
 export type TransportType =
   | 'car-free'
   | 'foot-stroller'
@@ -26,7 +28,7 @@ export interface IStep {
   name: string;
   type: string; // TODO enum?
   modifier; // TODO enum?
-  mode: RoutingMode;
+  mode: SliceMode;
   shapePoints: any;
   legIndex: number;
   extra: any;

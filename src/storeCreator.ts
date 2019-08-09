@@ -64,6 +64,10 @@ import { toastsStopTimeoutProcessor } from './processors/toastsStopTimeoutProces
 import { toastsAddProcessor } from './processors/toastsAddProcessor';
 import { toastsRestartTimeoutProcessor } from './processors/toastsRestartTimeoutProcessor';
 import { trackViewerDownloadTrackProcessor } from './processors/trackViewerDownloadTrackProcessor';
+import { trackViewerGpxLoadProcessor } from './processors/trackViewerGpxLoadProcessor';
+import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadTrackProcessor';
+import { trackViewerToggleElevationChartProcessor } from './processors/trackViewerToggleElevationChartProcessor';
+import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -121,6 +125,10 @@ processors.push(
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
   trackViewerDownloadTrackProcessor,
+  trackViewerGpxLoadProcessor,
+  trackViewerUploadTrackProcessor,
+  trackViewerToggleElevationChartProcessor,
+  routePlannerFindRouteProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,
