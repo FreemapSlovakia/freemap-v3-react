@@ -1,6 +1,5 @@
 import FileSaver from 'file-saver';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
-import { toastsAddError } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
 import { addAttribute, createElement, GPX_NS } from 'fm3/gpxExporter';
@@ -10,6 +9,7 @@ import qs from 'query-string';
 
 export const gpxExportProcessor: IProcessor<typeof exportGpx> = {
   actionCreator: exportGpx,
+  errorKey: 'gallery.picturesFetchingError',
   handle: async ({ getState, action, dispatch }) => {
     const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
@@ -55,25 +55,21 @@ export const gpxExportProcessor: IProcessor<typeof exportGpx> = {
     if (le && set.has('pictures')) {
       const b = le.getBounds();
 
-      try {
-        const { data } = await httpRequest({
-          getState,
-          method: 'GET',
-          url: '/gallery/pictures',
-          params: {
-            by: 'bbox',
-            bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
-            ...createFilter(getState().gallery.filter),
-            fields: ['id', 'title', 'description', 'takenAt'],
-          },
-          paramsSerializer: qs.stringify,
-          expectedStatus: 200,
-        });
+      const { data } = await httpRequest({
+        getState,
+        method: 'GET',
+        url: '/gallery/pictures',
+        params: {
+          by: 'bbox',
+          bbox: `${b.getWest()},${b.getSouth()},${b.getEast()},${b.getNorth()}`,
+          ...createFilter(getState().gallery.filter),
+          fields: ['id', 'title', 'description', 'takenAt'],
+        },
+        paramsSerializer: qs.stringify,
+        expectedStatus: 200,
+      });
 
-        addPictures(doc, data);
-      } catch (err) {
-        dispatch(toastsAddError('gallery.picturesFetchingError', err));
-      }
+      addPictures(doc, data);
     }
 
     if (set.has('distanceMeasurement')) {

@@ -3,12 +3,12 @@ import { authSetUser, authLoginWithGoogle } from 'fm3/actions/authActions';
 import { getAuth2 } from 'fm3/gapiLoader';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { dispatchAxiosErrorAsToast } from './utils';
 import { assertType } from 'typescript-is';
 import { IUser } from 'fm3/types/common';
 
 export const authLoginWithGoogleProcessor: IProcessor = {
   actionCreator: authLoginWithGoogle,
+  errorKey: 'logIn.logInError',
   handle: async ({ dispatch, getState }) => {
     try {
       const auth2: gapi.auth2.GoogleAuth = await (getAuth2 as any)();
@@ -38,7 +38,7 @@ export const authLoginWithGoogleProcessor: IProcessor = {
       dispatch(authSetUser(user));
     } catch (err) {
       if (!['popup_closed_by_user', 'access_denied'].includes(err.error)) {
-        dispatchAxiosErrorAsToast(dispatch, 'logIn.logInError', err);
+        throw err;
       }
     }
   },

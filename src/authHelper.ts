@@ -60,6 +60,8 @@ function setupOsmLoginStep2Listener(store: MyStore) {
       e.data.__freemap.oauthParams,
     );
 
+    // TODO pust rest to processor
+
     const pid = Math.random();
     store.dispatch(startProgress(pid));
     axios

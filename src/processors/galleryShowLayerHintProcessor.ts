@@ -1,13 +1,12 @@
-import { createLogic } from 'redux-logic';
-
-import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { galleryLayerHint } from 'fm3/actions/galleryActions';
+import { galleryPreventLayerHint } from 'fm3/actions/galleryActions';
 import storage from 'fm3/storage';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { setTool } from 'fm3/actions/mainActions';
 
-export default createLogic({
-  type: at.SET_TOOL,
-  process({ getState }, dispatch, done) {
+export const galleryShowLayerHintProcessor: IProcessor = {
+  actionCreator: setTool,
+  handle: async ({ getState, dispatch }) => {
     if (
       getState().main.tool === 'gallery' &&
       !getState().map.overlays.includes('I') &&
@@ -22,12 +21,11 @@ export default createLogic({
             { nameKey: 'general.ok' },
             {
               nameKey: 'general.preventShowingAgain',
-              action: galleryLayerHint(),
+              action: galleryPreventLayerHint(),
             },
           ],
         }),
       );
     }
-    done();
   },
-});
+};

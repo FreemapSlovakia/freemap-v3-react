@@ -15,12 +15,10 @@ import { authSetUser } from 'fm3/actions/authActions';
 import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { dispatchAxiosErrorAsToast } from './utils';
-
-// TODO cancelType: [at.SET_ACTIVE_MODAL, at.SAVE_SETTINGS],
 
 export const saveSettingsProcessor: IProcessor<typeof saveSettings> = {
   actionCreator: saveSettings,
+  errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const {
       tileFormat,
@@ -36,44 +34,37 @@ export const saveSettingsProcessor: IProcessor<typeof saveSettings> = {
 
     const { user } = getState().auth;
     if (user) {
-      try {
-        await httpRequest({
-          getState,
-          method: 'PATCH',
-          url: '/auth/settings',
-          expectedStatus: 204,
-          cancelActions: [setActiveModal, saveSettings],
-          data: Object.assign(
-            {
-              name: user.name,
-              email: user.email,
-              settings: {
-                tileFormat,
-                overlayOpacity,
-                overlayPaneOpacity,
-                expertMode,
-                trackViewerEleSmoothingFactor,
-              },
-              preventTips,
+      await httpRequest({
+        getState,
+        method: 'PATCH',
+        url: '/auth/settings',
+        expectedStatus: 204,
+        cancelActions: [setActiveModal, saveSettings],
+        data: Object.assign(
+          {
+            name: user.name,
+            email: user.email,
+            settings: {
+              tileFormat,
+              overlayOpacity,
+              overlayPaneOpacity,
+              expertMode,
+              trackViewerEleSmoothingFactor,
             },
-            homeLocation
-              ? { lat: homeLocation.lat, lon: homeLocation.lon }
-              : {},
-          ),
-        });
+            preventTips,
+          },
+          homeLocation ? { lat: homeLocation.lat, lon: homeLocation.lon } : {},
+        ),
+      });
 
-        dispatch(
-          authSetUser(
-            Object.assign({}, getState().auth.user, {
-              name: user.name,
-              email: user.email,
-            }),
-          ),
-        );
-      } catch (err) {
-        dispatchAxiosErrorAsToast(dispatch, 'settings.savingError', err);
-        return;
-      }
+      dispatch(
+        authSetUser(
+          Object.assign({}, getState().auth.user, {
+            name: user.name,
+            email: user.email,
+          }),
+        ),
+      );
     }
 
     dispatch(mapSetTileFormat(tileFormat));

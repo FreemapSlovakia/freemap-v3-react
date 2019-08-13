@@ -68,6 +68,23 @@ import { trackViewerGpxLoadProcessor } from './processors/trackViewerGpxLoadProc
 import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadTrackProcessor';
 import { trackViewerToggleElevationChartProcessor } from './processors/trackViewerToggleElevationChartProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
+import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor';
+import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor';
+import { galleryPreventLayerHintProcessor } from './processors/galleryPreventLayerHintProcessor';
+import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
+import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor';
+import { galleryRequestImagesByOrderProcessor } from './processors/galleryRequestImagesByOrderProcessor';
+import { galleryRequestImagesByRadiusProcessor } from './processors/galleryRequestImagesByRadiusProcessor';
+import { gallerySavePictureProcessor } from './processors/gallerySavePictureProcessor';
+import { galleryShowImageGaProcessor } from './processors/galleryShowImageGaProcessor';
+import { galleryShowLayerHintProcessor } from './processors/galleryShowLayerHintProcessor';
+import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapProcessor';
+import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor';
+import {
+  galleryUploadModalProcessor,
+  galleryUploadModalTransformer,
+} from './processors/galleryUploadModalProcessor';
+import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -129,6 +146,21 @@ processors.push(
   trackViewerUploadTrackProcessor,
   trackViewerToggleElevationChartProcessor,
   routePlannerFindRouteProcessor,
+  galleryDeletePictureProcessor,
+  galleryFetchUsersProcessor,
+  galleryItemUploadProcessor,
+  galleryPreventLayerHintProcessor,
+  galleryRequestImageProcessor,
+  galleryRequestImagesByOrderProcessor,
+  galleryRequestImagesByRadiusProcessor,
+  gallerySavePictureProcessor,
+  galleryShowImageGaProcessor,
+  galleryShowLayerHintProcessor,
+  galleryShowOnTheMapProcessor,
+  gallerySubmitCommentProcessor,
+  gallerySubmitStarsProcessor,
+  galleryUploadModalProcessor,
+  galleryUploadModalTransformer,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

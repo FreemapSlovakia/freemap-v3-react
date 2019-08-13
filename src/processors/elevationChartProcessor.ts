@@ -14,11 +14,11 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { httpRequest } from 'fm3/authAxios';
-import { dispatchAxiosErrorAsToast } from './utils';
 import { assertType } from 'typescript-is';
 
 export const elevationChartProcessor: IProcessor = {
   actionCreator: elevationChartSetTrackGeojson,
+  errorKey: 'elevationChart.fetchError',
   handle: async ({ dispatch, getState }) => {
     const { trackGeojson } = getState().elevationChart;
 
@@ -77,6 +77,7 @@ async function resolveElevationProfilePointsViaApi(
     ele: number;
     distance: number;
   }[] = [];
+
   for (let dist = 0; dist <= totalDistanceInKm; dist += delta) {
     const [lon, lat] = getCoord(turfAlong(trackGeojson, dist));
     elevationProfilePoints.push({
@@ -87,41 +88,37 @@ async function resolveElevationProfilePointsViaApi(
     });
   }
 
-  try {
-    const { data } = await httpRequest({
-      getState,
-      method: 'POST',
-      url: '/geotools/elevation',
-      data: elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
-      expectedStatus: 200,
-      cancelActions: [
-        elevationChartSetTrackGeojson,
-        setTool,
-        elevationChartClose,
-      ],
-    });
+  const { data } = await httpRequest({
+    getState,
+    method: 'POST',
+    url: '/geotools/elevation',
+    data: elevationProfilePoints.map(({ lat, lon }) => [lat, lon]),
+    expectedStatus: 200,
+    cancelActions: [
+      elevationChartSetTrackGeojson,
+      setTool,
+      elevationChartClose,
+    ],
+  });
 
-    let climbUp = 0;
-    let climbDown = 0;
-    let prevEle: number | undefined;
+  let climbUp = 0;
+  let climbDown = 0;
+  let prevEle: number | undefined;
 
-    assertType<number[]>(data).forEach((ele: number, i: number) => {
-      if (prevEle !== undefined) {
-        const d = ele - prevEle;
-        if (d > 0) {
-          climbUp += d;
-        } else {
-          climbDown -= d;
-        }
+  assertType<number[]>(data).forEach((ele: number, i: number) => {
+    if (prevEle !== undefined) {
+      const d = ele - prevEle;
+      if (d > 0) {
+        climbUp += d;
+      } else {
+        climbDown -= d;
       }
+    }
 
-      // TODO following are computed data, should not go to store
-      Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
-      prevEle = ele;
-    });
+    // TODO following are computed data, should not go to store
+    Object.assign(elevationProfilePoints[i], { ele, climbUp, climbDown });
+    prevEle = ele;
+  });
 
-    dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
-  } catch (err) {
-    dispatchAxiosErrorAsToast(dispatch, 'elevationChart.fetchError', err);
-  }
+  dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
 }

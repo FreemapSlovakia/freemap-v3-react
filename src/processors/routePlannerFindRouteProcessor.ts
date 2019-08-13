@@ -17,7 +17,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import storage from 'fm3/storage';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { dispatchAxiosErrorAsToast } from './utils';
 import { isActionOf } from 'typesafe-actions';
 
 const updateRouteTypes = [
@@ -36,6 +35,7 @@ const updateRouteTypes = [
 
 export const routePlannerFindRouteProcessor: IProcessor = {
   actionCreator: updateRouteTypes,
+  errorKey: 'routePlanner.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
     const {
       start,
@@ -93,8 +93,7 @@ export const routePlannerFindRouteProcessor: IProcessor = {
           alternatives: [],
         }),
       );
-      dispatchAxiosErrorAsToast(dispatch, 'routePlanner.fetchingError', err);
-      return;
+      throw err;
     }
 
     // TODO assert

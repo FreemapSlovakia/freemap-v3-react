@@ -7,7 +7,6 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { dispatchAxiosErrorAsToast } from './utils';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
 
@@ -15,6 +14,7 @@ import { assertType } from 'typescript-is';
 
 export const changesetsProcessor: IProcessor = {
   actionCreator: changesetsSetAuthorName,
+  errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {
     const le = getMapLeafletElement();
     const state = getState();
@@ -30,11 +30,7 @@ export const changesetsProcessor: IProcessor = {
     const toTime = null;
     const bbox = le.getBounds().toBBoxString();
 
-    try {
-      loadChangesets(toTime, []);
-    } catch (err) {
-      dispatchAxiosErrorAsToast(dispatch, 'changesets.fetchError', err);
-    }
+    loadChangesets(toTime, []);
 
     async function loadChangesets(toTime0, changesetsFromPreviousRequest) {
       const { data } = await httpRequest({

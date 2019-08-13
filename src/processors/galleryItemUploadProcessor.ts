@@ -1,7 +1,4 @@
 import axios from 'axios';
-import { createLogic } from 'redux-logic';
-
-import * as at from 'fm3/actionTypes';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   galleryRemoveItem,
@@ -10,15 +7,17 @@ import {
   gallerySetItemError,
   galleryHideUploadModal,
 } from 'fm3/actions/galleryActions';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { httpRequest } from 'fm3/authAxios';
 
-export default createLogic({
-  type: at.GALLERY_UPLOAD,
-  cancelType: at.GALLERY_HIDE_UPLOAD_MODAL,
-  process({ getState }, dispatch, done) {
+export const galleryItemUploadProcessor: IProcessor = {
+  actionCreator: galleryUpload,
+  handle: async ({ getState, dispatch }) => {
     const { items, uploadingId } = getState().gallery;
 
     if (uploadingId === null) {
       dispatch(gallerySetLayerDirty());
+
       if (getState().gallery.items.length === 0) {
         dispatch(
           toastsAdd({
@@ -28,13 +27,17 @@ export default createLogic({
             style: 'info',
           }),
         );
+
         dispatch(galleryHideUploadModal());
       }
-      done();
       return;
     }
 
     const item = items.find(({ id }) => id === uploadingId);
+
+    if (!item) {
+      return; // TODO error
+    }
 
     const formData = new FormData();
     formData.append('image', item.file);
@@ -58,23 +61,22 @@ export default createLogic({
     //   tags: item.tags,
     // })], { type: 'application/json' }));
 
-    axios
-      .post(`${process.env.API_URL}/gallery/pictures`, formData, {
-        headers: {
-          Authorization: `Bearer ${getState().auth.user.authToken}`,
-        },
-        validateStatus: status => status === 200,
-      })
-      .then(() => {
-        dispatch(galleryRemoveItem(item.id));
-        dispatch(galleryUpload());
-      })
-      .catch(err => {
-        dispatch(gallerySetItemError({ id: item.id, error: err.message }));
-        dispatch(galleryUpload());
-      })
-      .then(() => {
-        done();
+    try {
+      await httpRequest({
+        getState,
+        method: 'POST',
+        url: '/gallery/pictures',
+        data: formData,
+        expectedStatus: 200,
+        cancelActions: [galleryHideUploadModal],
       });
+      axios;
+
+      dispatch(galleryRemoveItem(item.id));
+      dispatch(galleryUpload());
+    } catch (err) {
+      dispatch(gallerySetItemError({ id: item.id, error: err.message }));
+      dispatch(galleryUpload());
+    }
   },
-});
+};

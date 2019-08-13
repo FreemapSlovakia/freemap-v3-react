@@ -41,6 +41,7 @@ export interface IPictureComment {
 }
 
 export interface IPicture extends LatLon {
+  id: number;
   title: string;
   description: string;
   tags: string[];
@@ -164,7 +165,9 @@ export const galleryList = createStandardAction('GALLERY_LIST')<
   GalleryListOrder
 >();
 
-export const galleryLayerHint = createAction('GALLERY_PREVENT_LAYER_HINT');
+export const galleryPreventLayerHint = createAction(
+  'GALLERY_PREVENT_LAYER_HINT',
+);
 
 export const galleryToggleShowPreview = createAction(
   'GALLERY_TOGGLE_SHOW_PREVIEW',

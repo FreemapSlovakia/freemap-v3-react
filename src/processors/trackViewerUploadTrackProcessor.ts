@@ -6,10 +6,10 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
-import { dispatchAxiosErrorAsToast } from './utils';
 
 export const trackViewerUploadTrackProcessor: IProcessor = {
   actionCreator: trackViewerUploadTrack,
+  errorKey: 'trackViewer.savingError',
   handle: async ({ dispatch, getState }) => {
     const { trackGpx } = getState().trackViewer;
     if (!trackGpx) {
@@ -26,24 +26,21 @@ export const trackViewerUploadTrackProcessor: IProcessor = {
           style: 'danger',
         }),
       );
+
       return;
     }
 
-    try {
-      const { data } = await httpRequest({
-        getState,
-        method: 'POST',
-        url: '/tracklogs',
-        data: {
-          data: btoa(unescape(encodeURIComponent(trackGpx))),
-          mediaType: 'application/gpx+xml',
-        },
-        expectedStatus: 201,
-      });
+    const { data } = await httpRequest({
+      getState,
+      method: 'POST',
+      url: '/tracklogs',
+      data: {
+        data: btoa(unescape(encodeURIComponent(trackGpx))),
+        mediaType: 'application/gpx+xml',
+      },
+      expectedStatus: 201,
+    });
 
-      dispatch(trackViewerSetTrackUID(assertType<{ uid: string }>(data).uid));
-    } catch (err) {
-      dispatchAxiosErrorAsToast(dispatch, 'trackViewer.savingError', err);
-    }
+    dispatch(trackViewerSetTrackUID(assertType<{ uid: string }>(data).uid));
   },
 };
