@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { compose, Dispatch } from 'redux';
 import ReactStars from 'react-stars';
 
-import * as at from 'fm3/actionTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
@@ -38,6 +37,7 @@ import {
 import 'fm3/styles/gallery.scss';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import { getType } from 'typesafe-actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -549,7 +549,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
         collapseKey: 'gallery.deletePicture',
         messageKey: 'gallery.viewer.deletePrompt',
         style: 'warning',
-        cancelType: [at.GALLERY_CLEAR, at.GALLERY_REQUEST_IMAGE],
+        cancelType: [getType(galleryClear), getType(galleryRequestImage)],
         actions: [
           {
             nameKey: 'general.yes',

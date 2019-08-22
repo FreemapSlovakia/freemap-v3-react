@@ -1,7 +1,7 @@
 import { lineString } from '@turf/helpers';
 
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { toNodes, toWays } from 'fm3/logic/osmUtils.js';
+import { toNodes, toWays } from 'fm3/osmUtils';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadWay } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';

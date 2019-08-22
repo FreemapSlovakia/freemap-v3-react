@@ -1,20 +1,26 @@
-import { createLogic } from 'redux-logic';
 import { lineString } from '@turf/helpers';
-
-import * as at from 'fm3/actionTypes';
 import {
   elevationChartSetTrackGeojson,
   elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
+import {
+  routePlannerToggleElevationChart,
+  routePlannerSetActiveAlternativeIndex,
+} from 'fm3/actions/routePlannerActions';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { isActionOf } from 'typesafe-actions';
 
-export default createLogic({
-  type: [
-    at.ROUTE_PLANNER_TOGGLE_ELEVATION_CHART,
-    at.ROUTE_PLANNER_SET_ACTIVE_ALTERNATIVE_INDEX,
+export const routePlannerToggleElevationChartProcessor: IProcessor<
+  | typeof routePlannerToggleElevationChart
+  | typeof routePlannerSetActiveAlternativeIndex
+> = {
+  actionCreator: [
+    routePlannerToggleElevationChart,
+    routePlannerSetActiveAlternativeIndex,
   ],
-  process({ getState, action }, dispatch, done) {
+  handle: async ({ dispatch, getState, action }) => {
     const shown = !!getState().elevationChart.trackGeojson;
-    const toggling = action.type === at.ROUTE_PLANNER_TOGGLE_ELEVATION_CHART;
+    const toggling = isActionOf(routePlannerToggleElevationChart, action);
     if (toggling && shown) {
       dispatch(elevationChartClose());
     } else if ((!shown && toggling) || (shown && !toggling)) {
@@ -33,6 +39,5 @@ export default createLogic({
         ),
       );
     }
-    done();
   },
-});
+};

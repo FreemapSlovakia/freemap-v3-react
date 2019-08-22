@@ -6,17 +6,17 @@ import Button from 'react-bootstrap/lib/Button';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
-import * as at from 'fm3/actionTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
 import {
   trackViewerUploadTrack,
   trackViewerColorizeTrackBy,
   trackViewerToggleElevationChart,
   ColorizingMode,
+  trackViewerSetData,
 } from 'fm3/actions/trackViewerActions';
 
 import 'fm3/styles/trackViewer.scss';
@@ -24,6 +24,7 @@ import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import TrackViewerDetails from './TrackViewerDetails';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { getType } from 'typesafe-actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -136,7 +137,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       toastsAdd({
         collapseKey: 'trackViewer.trackInfo',
         message: <TrackViewerDetails />, // TODO only string
-        cancelType: [at.CLEAR_MAP, at.TRACK_VIEWER_SET_TRACK_DATA],
+        cancelType: [getType(clearMap), getType(trackViewerSetData)],
         style: 'info',
       }),
     );

@@ -8,17 +8,16 @@ import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 import { Middleware, Dispatch } from 'redux';
 import { getType } from 'typesafe-actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
+import { RootAction } from 'fm3/actions';
 
 let reopenTs: number | undefined;
 
-export const trackingMiddleware: Middleware<
-  {},
-  RootState,
-  Dispatch<RootAction>
-> = ({ dispatch, getState }) => next => (action: RootAction) => {
+export const trackingMiddleware: Middleware<{}, RootState, Dispatch> = ({
+  dispatch,
+  getState,
+}) => next => (action: RootAction) => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

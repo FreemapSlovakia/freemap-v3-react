@@ -1,50 +1,82 @@
-import { createLogic } from 'redux-logic';
 import history from 'fm3/historyHolder';
 import refModals from 'fm3/refModals.json';
 import allTips from 'fm3/tips/index.json';
-import * as at from 'fm3/actionTypes';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { mapLoadState, mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { LatLon } from 'fm3/types/common';
+import {
+  setTool,
+  clearMap,
+  setActiveModal,
+  enableUpdatingUrl,
+} from 'fm3/actions/mainActions';
+import {
+  trackViewerColorizeTrackBy,
+  trackViewerDownloadTrack,
+  trackViewerSetTrackUID,
+} from 'fm3/actions/trackViewerActions';
+import {
+  galleryRequestImage,
+  galleryClear,
+  galleryShowFilter,
+  galleryHideFilter,
+  galleryShowUploadModal,
+  galleryHideUploadModal,
+  gallerySetFilter,
+} from 'fm3/actions/galleryActions';
+import {
+  changesetsSetDays,
+  changesetsSetAuthorName,
+} from 'fm3/actions/changesetsActions';
+import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
+import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { isActionOf } from 'typesafe-actions';
+import { distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
+import { areaMeasurementUpdatePoint } from 'fm3/actions/areaMeasurementActions';
 
 const tipKeys = allTips.map(([key]) => key);
 
-let lastActionType;
+let lastActionType: string | undefined;
 
-export const urlLogic = createLogic({
-  type: [
-    at.MAP_LOAD_STATE,
-    at.MAP_REFOCUS,
-    /^ROUTE_PLANNER_/,
-    at.SET_TOOL,
-    at.CLEAR_MAP,
-    at.MAP_RESET,
-    at.TRACK_VIEWER_SET_TRACK_UID,
-    at.TRACK_VIEWER_COLORIZE_TRACK_BY,
-    at.TRACK_VIEWER_DOWNLOAD_TRACK,
-    at.GALLERY_REQUEST_IMAGE,
-    at.GALLERY_CLEAR,
-    at.GALLERY_SHOW_FILTER,
-    at.GALLERY_HIDE_FILTER,
-    at.GALLERY_SHOW_UPLOAD_MODAL,
-    at.GALLERY_HIDE_UPLOAD_MODAL,
-    at.CHANGESETS_SET_DAYS,
-    at.CHANGESETS_SET_AUTHOR_NAME,
-    /^INFO_POINT_.*/,
-    /^DISTANCE_MEASUREMENT_.*/,
-    /^AREA_MEASUREMENT_.*/,
-    at.ELEVATION_MEASUREMENT_SET_POINT,
-    at.GALLERY_SET_FILTER,
-    at.SET_ACTIVE_MODAL,
-    /^TIPS_.*/,
-    at.AUTH_CHOOSE_LOGIN_METHOD,
-    at.AUTH_LOGIN_CLOSE,
-    /^AUTH_LOGIN_WITH_.*/,
-    /^OSM_LOAD_.*/,
-    at.ENABLE_UPDATING_URL,
-    at.TRACKING_SET_TRACKED_DEVICES,
-    at.TRACKING_SAVE_TRACKED_DEVICE,
-    at.TRACKING_DELETE_TRACKED_DEVICE,
-    at.TRACKING_SET_ACTIVE,
+export const urlProcessor: IProcessor = {
+  actionCreator: [
+    mapLoadState,
+    mapRefocus,
+    setTool,
+    clearMap,
+    mapReset,
+    trackViewerSetTrackUID,
+    trackViewerColorizeTrackBy,
+    trackViewerDownloadTrack,
+    galleryRequestImage,
+    galleryClear,
+    galleryShowFilter,
+    galleryHideFilter,
+    galleryShowUploadModal,
+    galleryHideUploadModal,
+    changesetsSetDays,
+    changesetsSetAuthorName,
+    elevationMeasurementSetPoint,
+    gallerySetFilter,
+    setActiveModal,
+    authChooseLoginMethod,
+    authLoginClose,
+    enableUpdatingUrl,
+    trackingActions.setTrackedDevices,
+    trackingActions.saveTrackedDevice,
+    trackingActions.deleteTrackedDevice,
+    trackingActions.setActive,
+    // TODO
+    // /^ROUTE_PLANNER_/,
+    // /^INFO_POINT_.*/,
+    // /^DISTANCE_MEASUREMENT_.*/,
+    // /^AREA_MEASUREMENT_.*/,
+    // /^TIPS_.*/,
+    // /^AUTH_LOGIN_WITH_.*/,
+    // /^OSM_LOAD_.*/,
   ],
-  process({ getState, action }, _, done) {
+  handle: async ({ getState, action }) => {
     const {
       map,
       routePlanner,
@@ -63,7 +95,6 @@ export const urlLogic = createLogic({
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
-      done();
       return;
     }
 
@@ -290,27 +321,25 @@ export const urlLogic = createLogic({
 
     const search = `?${queryParts.join('&')}`;
 
-    if (
-      window.location.search !== search &&
-      !(action.meta && action.meta.isLocationChange)
-    ) {
-      const method = [
-        at.MAP_REFOCUS,
-        at.DISTANCE_MEASUREMENT_UPDATE_POINT,
-        at.AREA_MEASUREMENT_UPDATE_POINT,
-      ].includes(lastActionType)
-        ? 'replace'
-        : 'push';
+    if (window.location.search !== search) {
+      const method =
+        lastActionType &&
+        isActionOf(
+          [
+            mapRefocus,
+            distanceMeasurementUpdatePoint,
+            areaMeasurementUpdatePoint,
+          ],
+          action,
+        )
+          ? 'replace'
+          : 'push';
       history[method]({ pathname: '/', search });
       lastActionType = action.type;
     }
-
-    done();
   },
-});
+};
 
-function serializePoint(point) {
+function serializePoint(point: LatLon | null) {
   return point ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}` : '';
 }
-
-export default urlLogic;

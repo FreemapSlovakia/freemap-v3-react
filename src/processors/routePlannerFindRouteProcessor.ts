@@ -31,8 +31,6 @@ const updateRouteTypes = [
   routePlannerSetParams,
 ];
 
-// TODO  cancelType: [...updateRouteTypes],
-
 export const routePlannerFindRouteProcessor: IProcessor = {
   actionCreator: updateRouteTypes,
   errorKey: 'routePlanner.fetchingError',

@@ -1,15 +1,15 @@
-import { createLogic } from 'redux-logic';
-
-import * as at from 'fm3/actionTypes';
 import { routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { setTool } from 'fm3/actions/mainActions';
 
-export default createLogic({
-  type: at.SET_TOOL,
-  process({ getState }, dispatch, done) {
+export const routePlannerSetupTransportTypeProcessor: IProcessor = {
+  actionCreator: setTool,
+  handle: async ({ dispatch, getState }) => {
     const {
       main: { tool },
       routePlanner: { start, finish },
     } = getState();
+
     if (tool === 'route-planner' && !(start && finish)) {
       const { mapType } = getState().map;
       dispatch(
@@ -26,7 +26,5 @@ export default createLogic({
         ),
       );
     }
-
-    done();
   },
-});
+};

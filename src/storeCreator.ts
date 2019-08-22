@@ -1,5 +1,4 @@
 import { createStore, applyMiddleware, combineReducers, Store } from 'redux';
-import { logicMiddleware } from 'fm3/middlewares/logicMiddleware';
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
@@ -85,6 +84,13 @@ import {
   galleryUploadModalTransformer,
 } from './processors/galleryUploadModalProcessor';
 import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
+import { urlProcessor } from './processors/urlProcessor';
+import { routePlannerPreventHintProcssor } from './processors/routePlannerPreventHintProcssor';
+import { routePlannerRefocusMapProcessor } from './processors/routePlannerRefocusMapProcessor';
+import { routePlannerSetupTransportTypeProcessor } from './processors/routePlannerSetupTransportTypeProcessor';
+import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
+import { errorProcessor } from './processors/errorProcessor';
+import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTrackDataProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -114,6 +120,7 @@ const rootReducer = combineReducers(reducers);
 export type RootState = StateType<typeof rootReducer>;
 
 processors.push(
+  errorProcessor,
   cancelProcessor,
   authLogoutProcessor,
   searchProcessor,
@@ -141,6 +148,7 @@ processors.push(
   toastsRemoveProcessor,
   toastsRestartTimeoutProcessor,
   toastsStopTimeoutProcessor,
+  trackViewerSetTrackDataProcessor,
   trackViewerDownloadTrackProcessor,
   trackViewerGpxLoadProcessor,
   trackViewerUploadTrackProcessor,
@@ -161,6 +169,10 @@ processors.push(
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
   galleryUploadModalTransformer,
+  routePlannerPreventHintProcssor,
+  routePlannerRefocusMapProcessor,
+  routePlannerSetupTransportTypeProcessor,
+  routePlannerToggleElevationChartProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,
@@ -172,6 +184,7 @@ processors.push(
   rpcProcessors.rpcWsStateProcessor,
   rpcProcessors.wsReceivedProcessor,
   exportPdfProcessor,
+  urlProcessor,
 );
 
 export default function createReduxStore() {
@@ -181,14 +194,11 @@ export default function createReduxStore() {
       loggerMiddleware,
       errorHandlingMiddleware,
       webSocketMiddleware,
-      logicMiddleware,
       processorMiddleware,
       trackingMiddleware,
       utilityMiddleware,
     ),
   );
-
-  logicMiddleware.addDeps({ storeDispatch: store.dispatch }); // see https://github.com/jeffbski/redux-logic/issues/63
 
   return store;
 }

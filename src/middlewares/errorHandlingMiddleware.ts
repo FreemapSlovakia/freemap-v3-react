@@ -1,4 +1,3 @@
-import * as at from 'fm3/actionTypes';
 import { sendError } from 'fm3/globalErrorHandler';
 import { Middleware, Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
@@ -10,10 +9,11 @@ export const errorHandlingMiddleware: Middleware<
   Dispatch<RootAction>
 > = () => next => action => {
   try {
-    if (action.type === at.UNHANDLED_LOGIC_ERROR) {
-      sendError({ kind: 'unhandledLogic', error: action.payload });
-      return null;
-    }
+    // TODO
+    // if (action.type === at.UNHANDLED_LOGIC_ERROR) {
+    //   sendError({ kind: 'unhandledLogic', error: action.payload });
+    //   return null;
+    // }
 
     return next(action);
   } catch (error) {

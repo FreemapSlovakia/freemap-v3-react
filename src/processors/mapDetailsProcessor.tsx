@@ -10,7 +10,6 @@ import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { lineString, point, featureCollection } from '@turf/helpers';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { dispatchAxiosErrorAsToast } from './utils';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 

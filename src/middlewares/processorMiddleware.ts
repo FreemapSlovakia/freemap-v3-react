@@ -1,5 +1,4 @@
 import { Middleware, Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import {
   isActionOf,
@@ -16,13 +15,13 @@ export interface IProcessor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
     prevState: RootState;
     getState: () => RootState;
-    dispatch: Dispatch<RootAction>;
+    dispatch: Dispatch;
     action: ActionType<T>;
   }) => Action | null | undefined | void;
   handle?: (params: {
     prevState: RootState;
     getState: () => RootState;
-    dispatch: Dispatch<RootAction>;
+    dispatch: Dispatch;
     action: ActionType<T>;
   }) => void | Promise<void>;
   actionCreator: T | T[] | '*';
@@ -31,11 +30,10 @@ export interface IProcessor<T extends ActionCreator = ActionCreator> {
 
 export const processors: IProcessor[] = [];
 
-export const processorMiddleware: Middleware<
-  {},
-  RootState,
-  Dispatch<RootAction>
-> = ({ getState, dispatch }) => next => (action: Action) => {
+export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
+  getState,
+  dispatch,
+}) => next => (action: Action) => {
   const prevState = getState();
 
   let a: Action = action;

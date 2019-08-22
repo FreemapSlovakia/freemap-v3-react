@@ -1,14 +1,15 @@
-import { createLogic } from 'redux-logic';
 import turfLength from '@turf/length';
 import toGeoJSON from '@mapbox/togeojson';
-import * as at from 'fm3/actionTypes';
+import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 
-export default createLogic({
-  type: at.TRACK_VIEWER_SET_TRACK_DATA,
-  transform({ action }, next) {
+export const trackViewerSetTrackDataProcessor: IProcessor<
+  typeof trackViewerSetData
+> = {
+  actionCreator: trackViewerSetData,
+  transform: ({ action }) => {
     if (!action.payload.trackGpx) {
-      next(action);
-      return;
+      return action;
     }
 
     // TODO add error handling for failed string-to-gpx and gpx-to-geojson parsing
@@ -16,11 +17,13 @@ export default createLogic({
       action.payload.trackGpx,
       'text/xml',
     );
+
     const trackGeojson = toGeoJSON.gpx(gpxAsXml);
 
-    const startPoints = [];
-    const finishPoints = [];
-    trackGeojson.features.forEach(feature => {
+    const startPoints: any[] = []; // TODO
+    const finishPoints: any[] = []; // TODO
+
+    for (const feature of trackGeojson.features) {
       if (feature.geometry.type === 'LineString') {
         const lengthInKm = turfLength(feature);
         const coords = feature.geometry.coordinates;
@@ -46,8 +49,9 @@ export default createLogic({
           finishTime,
         });
       }
-    });
-    next({
+    }
+
+    return {
       ...action,
       payload: {
         ...action.payload,
@@ -55,6 +59,6 @@ export default createLogic({
         startPoints,
         finishPoints,
       },
-    });
+    };
   },
-});
+};

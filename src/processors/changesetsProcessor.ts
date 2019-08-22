@@ -1,4 +1,3 @@
-import * as at from 'fm3/actionTypes';
 import {
   changesetsSet,
   changesetsSetAuthorName,
@@ -9,8 +8,7 @@ import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
-
-// TODO cancelType: at.CHANGESETS_SET_AUTHOR_NAME,
+import { getType } from 'typesafe-actions';
 
 export const changesetsProcessor: IProcessor = {
   actionCreator: changesetsSetAuthorName,
@@ -106,7 +104,7 @@ export const changesetsProcessor: IProcessor = {
           toastsAdd({
             collapseKey: 'changeset.detail',
             messageKey: 'changesets.notFound',
-            cancelType: [at.SET_TOOL, at.CHANGESETS_SET_AUTHOR_NAME],
+            cancelType: [getType(setTool), getType(changesetsSetAuthorName)],
             timeout: 5000,
             style: 'info',
           }),
