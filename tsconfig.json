@@ -5,7 +5,7 @@
     "strictNullChecks": true, // enable strict null checks as a best practice
     "module": "esnext", // specify module code generation
     "jsx": "react", // use typescript to transpile jsx to js
-    "target": "es2016", // specify ECMAScript target version
+    "target": "es2017", // specify ECMAScript target version
     "allowJs": true, // allow a partial TypeScript and JavaScript codebase
     "moduleResolution": "node",
     "lib": ["es7", "dom"],
