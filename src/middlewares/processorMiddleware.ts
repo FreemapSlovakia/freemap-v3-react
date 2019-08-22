@@ -90,7 +90,11 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
     },
   );
 
-  if (!isDone) {
+  setTimeout(() => {
+    if (isDone) {
+      return;
+    }
+
     const pid = Math.random();
     dispatch(startProgress(pid));
     p.then(
@@ -113,7 +117,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
         );
       },
     );
-  }
+  });
 
   return result;
 };
