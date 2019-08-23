@@ -360,6 +360,9 @@ export default {
     ratingError: 'Nastala chyba při hodnocení {err}',
     unauthenticatedError:
       'Pro nahrávání fotek do galerie musíte být přihlášen.',
+    missingPositionError: 'Chyba pozice.',
+    invalidPositionError: 'Nesprávný formát souřadnic.',
+    invalidTakenAt: 'Nevalidní datum a čas focení.',
   },
 
   measurement: {

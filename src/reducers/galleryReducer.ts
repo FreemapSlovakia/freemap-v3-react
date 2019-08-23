@@ -208,6 +208,7 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
       state.uploadingId === null
         ? state.items.map(item => ({ ...item, error: getError(item) }))
         : state.items;
+
     const next = items.find(item => !item.error);
 
     return {
@@ -305,12 +306,17 @@ function getError(item: IGalleryItem) {
   const errors: string[] = [];
 
   if (!item.dirtyPosition) {
-    // TODO also validate
-    errors.push('Chýba pozícia.'); // TODO translate
+    errors.push('gallery.missingPositionError');
+  } else {
+    try {
+      parseCoordinates(item.dirtyPosition);
+    } catch (err) {
+      errors.push('gallery.invalidPositionError');
+    }
   }
 
   if (item.takenAt && Number.isNaN(item.takenAt.getTime())) {
-    errors.push('Nevalidný dátum a čas fotenia.'); // TODO translate
+    errors.push('gallery.invalidTakenAt');
   }
 
   return errors.length ? errors.join('\n') : null;

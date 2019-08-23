@@ -365,6 +365,9 @@ export default {
     ratingError: 'Nastala chyba pri hodnotení: {err}',
     unauthenticatedError:
       'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
+    missingPositionError: 'Chýba pozícia.',
+    invalidPositionError: 'Nesprávny formát súradníc.',
+    invalidTakenAt: 'Nevalidný dátum a čas fotenia.',
   },
 
   measurement: {

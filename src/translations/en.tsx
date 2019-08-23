@@ -363,6 +363,9 @@ export default {
     commentAddingError: 'Error adding comment: {err}',
     ratingError: 'Error rating photo: {err}',
     unauthenticatedError: 'Please log-in to upload the photos to the gallery.',
+    missingPositionError: 'Missing location.',
+    invalidPositionError: 'Invalid location coordinates format.',
+    invalidTakenAt: 'Invalid capture date and time.',
   },
 
   measurement: {

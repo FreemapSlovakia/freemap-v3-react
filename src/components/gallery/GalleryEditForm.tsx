@@ -103,7 +103,7 @@ const GalleryEditForm: React.FC<IProps> = ({
 
   return (
     <div>
-      {error && <Alert bsStyle="danger">{error}</Alert>}
+      {error && <Alert bsStyle="danger">{t(error)}</Alert>}
       <FormGroup>
         <FormControl
           placeholder={t('gallery.editForm.name')}
