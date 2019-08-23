@@ -7,7 +7,7 @@ import {
   elevationMeasurementSetElevation,
 } from 'fm3/actions/elevationMeasurementActions';
 import RichMarker from 'fm3/components/RichMarker';
-import { formatGpsCoord } from 'fm3/geoutils';
+import { latLonToString } from 'fm3/geoutils';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -51,8 +51,7 @@ class ElevationMeasurementResult extends React.Component<Props> {
             <>
               {(['D', 'DM', 'DMS'] as const).map(format => (
                 <div key={format}>
-                  {formatGpsCoord(point.lat, 'SN', format, language)}{' '}
-                  {formatGpsCoord(point.lon, 'WE', format, language)}
+                  {latLonToString(point, language, format)}
                 </div>
               ))}
               {typeof elevation === 'number' && (

@@ -9,6 +9,7 @@ import {
 } from 'fm3/actions/galleryActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import parseCoordinates from 'fm3/coordinatesParser';
 
 export const galleryItemUploadProcessor: IProcessor = {
   actionCreator: galleryUpload,
@@ -46,7 +47,7 @@ export const galleryItemUploadProcessor: IProcessor = {
       JSON.stringify({
         title: item.title,
         description: item.description,
-        position: item.position,
+        position: parseCoordinates(item.dirtyPosition),
         takenAt: item.takenAt && item.takenAt.toISOString(),
         tags: item.tags,
       }),

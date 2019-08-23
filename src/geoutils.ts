@@ -15,6 +15,7 @@ export function formatGpsCoord(
 ): string {
   let cardinal = '';
   let a = angle;
+
   if (cardinals) {
     cardinal = `${cardinals[angle < 0 ? 0 : 1]} `;
     a = Math.abs(angle);
@@ -160,4 +161,17 @@ export function toLatLng({ lat, lon }: LatLon): LatLngLiteral {
 
 export function toLatLngArr(arr: LatLon[]): LatLngLiteral[] {
   return arr.map(toLatLng);
+}
+
+export function latLonToString(
+  latLon: LatLon,
+  language: string,
+  style: GpsCoordStyle = 'DMS',
+) {
+  return `${formatGpsCoord(
+    latLon.lat,
+    'SN',
+    style,
+    language,
+  )}, ${formatGpsCoord(latLon.lon, 'WE', style, language)}`;
 }

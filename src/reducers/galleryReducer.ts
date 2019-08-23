@@ -36,6 +36,10 @@ import {
   IGalleryItem,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
+import { IPictureModel } from 'fm3/components/gallery/GalleryEditForm';
+import parseCoordinates from 'fm3/coordinatesParser';
+import { latLonToString } from 'fm3/geoutils';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
 export interface IGalleryState {
   imageIds: number[] | null;
@@ -53,8 +57,9 @@ export interface IGalleryState {
   comment: string;
   showFilter: boolean;
   filter: IGalleryFilter;
-  editModel: any;
+  editModel: IPictureModel | null;
   showPosition: boolean;
+  language: string;
 }
 
 const initialState: IGalleryState = {
@@ -89,6 +94,7 @@ const initialState: IGalleryState = {
 
   editModel: null,
   showPosition: false,
+  language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
 
 export const galleryReducer = createReducer<IGalleryState, RootAction>(
@@ -152,12 +158,27 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
       pickingPositionForId: null,
       pickingPosition: null,
     };
+
     if (state.pickingPositionForId === -1) {
-      s.editModel = { ...state.editModel, position: state.pickingPosition };
+      if (!state.editModel) {
+        throw new Error('editModel is null');
+      }
+      s.editModel = {
+        ...state.editModel,
+        dirtyPosition: state.pickingPosition
+          ? latLonToString(state.pickingPosition, state.language)
+          : state.editModel.dirtyPosition, // TODO language
+      };
     } else {
       s.items = state.items.map(item =>
         item.id === state.pickingPositionForId
-          ? { ...item, position: state.pickingPosition }
+          ? {
+              ...item,
+              position: state.pickingPosition,
+              dirtyPosition: state.pickingPosition
+                ? latLonToString(state.pickingPosition, state.language)
+                : '',
+            }
           : item,
       );
     }
@@ -170,10 +191,14 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
       pickingPositionForId: action.payload,
       pickingPosition:
         action.payload === -1
-          ? state.editModel.position
+          ? state.editModel
+            ? parseCoordinates(state.editModel.dirtyPosition)
+            : null
           : typeof action.payload === 'number'
           ? (x = state.items.find(({ id }) => id === action.payload))
-            ? x.position
+            ? x.dirtyPosition
+              ? parseCoordinates(x.dirtyPosition)
+              : null
             : null
           : null,
     };
@@ -230,24 +255,31 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
     items: [],
     pickingPositionForId: null,
   }))
-  .handleAction(galleryEditPicture, state => ({
-    ...state,
-    editModel: state.editModel
-      ? null
-      : {
-          title: state.image ? state.image.title : '',
-          description: state.image ? state.image.description : '',
-          takenAt: !state.image
-            ? ''
-            : state.image.takenAt
-            ? toDatetimeLocal(state.image.takenAt)
-            : '',
-          tags: state.image ? [...state.image.tags] : [],
-          position: state.image
-            ? { lat: state.image.lat, lon: state.image.lon }
-            : null,
-        },
-  }))
+  .handleAction(galleryEditPicture, state => {
+    const position = state.image
+      ? { lat: state.image.lat, lon: state.image.lon }
+      : null;
+
+    return {
+      ...state,
+      editModel: state.editModel
+        ? null
+        : {
+            title: state.image ? state.image.title : '',
+            description: state.image ? state.image.description : '',
+            takenAt: !state.image
+              ? ''
+              : state.image.takenAt
+              ? toDatetimeLocal(state.image.takenAt)
+              : '',
+            tags: state.image ? [...state.image.tags] : [],
+            position,
+            dirtyPosition: position
+              ? latLonToString(position, state.language)
+              : '',
+          },
+    };
+  })
   .handleAction(gallerySetEditModel, (state, action) => ({
     ...state,
     editModel: action.payload,
@@ -263,15 +295,23 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
   .handleAction(galleryToggleShowPreview, state => ({
     ...state,
     showPreview: !state.showPreview,
+  }))
+  .handleAction(l10nSetLanguage, (state, action) => ({
+    ...state,
+    language: action.payload,
   }));
 
-function getError(item) {
+function getError(item: IGalleryItem) {
   const errors: string[] = [];
-  if (!item.position) {
+
+  if (!item.dirtyPosition) {
+    // TODO also validate
     errors.push('Chýba pozícia.'); // TODO translate
   }
+
   if (item.takenAt && Number.isNaN(item.takenAt.getTime())) {
     errors.push('Nevalidný dátum a čas fotenia.'); // TODO translate
   }
+
   return errors.length ? errors.join('\n') : null;
 }

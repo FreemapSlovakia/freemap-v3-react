@@ -28,6 +28,7 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { IPictureModel } from './GalleryEditForm';
+import { latLonToString } from 'fm3/geoutils';
 
 const ExifReader = require('exifreader');
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
@@ -52,10 +53,12 @@ class GalleryUploadModal extends React.Component<Props> {
 
   processFile = (file: File, cb: (err?: Error) => void) => {
     const reader = new FileReader();
+
     reader.onerror = () => {
       reader.abort();
       cb(new Error());
     };
+
     reader.onload = () => {
       let tags: { [key: string]: any };
       try {
@@ -101,6 +104,7 @@ class GalleryUploadModal extends React.Component<Props> {
             ''
           ).toUpperCase()
         ] || Number.NaN);
+
       const lon =
         rawLon *
         (EW[
@@ -114,7 +118,10 @@ class GalleryUploadModal extends React.Component<Props> {
       this.props.onItemAdd({
         id,
         file,
-        position: Number.isNaN(lat) || Number.isNaN(lon) ? null : { lat, lon },
+        dirtyPosition:
+          Number.isNaN(lat) || Number.isNaN(lon)
+            ? ''
+            : latLonToString({ lat, lon }, this.props.language),
         title: tags.title
           ? tags.title.description
           : tags.DocumentName
@@ -136,10 +143,12 @@ class GalleryUploadModal extends React.Component<Props> {
 
       const img = new Image();
       const url = URL.createObjectURL(file);
+
       img.onerror = () => {
         URL.revokeObjectURL(url);
         cb(new Error());
       };
+
       img.onload = () => {
         URL.revokeObjectURL(url);
 
@@ -229,7 +238,6 @@ class GalleryUploadModal extends React.Component<Props> {
       uploading,
       allTags,
       t,
-      language,
       showPreview,
       onShowPreviewToggle,
     } = this.props;
@@ -245,22 +253,21 @@ class GalleryUploadModal extends React.Component<Props> {
               id,
               file,
               url,
-              position,
               title,
               description,
               takenAt,
               tags,
               error,
+              dirtyPosition,
             }) => (
               <GalleryUploadItem
                 key={id}
                 id={id}
                 t={t}
-                language={language}
                 filename={file.name}
                 url={url}
                 model={{
-                  position,
+                  dirtyPosition,
                   title,
                   description,
                   takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
@@ -361,7 +368,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onItemAdd(item) {
+  onItemAdd(item: IGalleryItem) {
     dispatch(galleryAddItem(item));
   },
   onItemRemove(id: number) {

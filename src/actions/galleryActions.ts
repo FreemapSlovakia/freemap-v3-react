@@ -8,9 +8,10 @@ export interface IGalleryItem {
   description: string;
   tags: string[];
   takenAt: Date | null;
-  position: LatLon | null;
+  // position: LatLon | null;
+  dirtyPosition: string | '';
   error?: string | null;
-  url: string;
+  url?: string;
   file: File;
 }
 

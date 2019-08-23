@@ -394,7 +394,6 @@ class GalleryViewerModal extends React.Component<Props, IState> {
 
                     <GalleryEditForm
                       t={t}
-                      language={language}
                       model={editModel}
                       allTags={allTags}
                       error={null}

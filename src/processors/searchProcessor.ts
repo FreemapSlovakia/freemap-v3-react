@@ -1,10 +1,11 @@
 import { searchSetResults, searchSetQuery } from 'fm3/actions/searchActions';
 import { clearMap } from 'fm3/actions/mainActions';
 import parseCoordinates from 'fm3/coordinatesParser';
-import { formatGpsCoord } from 'fm3/geoutils';
+import { latLonToString } from 'fm3/geoutils';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
-import { Point } from 'geojson';
 import { httpRequest } from 'fm3/authAxios';
+import { LatLon } from 'fm3/types/common';
+import { point } from '@turf/helpers';
 
 export const searchProcessor: IProcessor<typeof searchSetQuery> = {
   actionCreator: searchSetQuery,
@@ -19,7 +20,7 @@ export const searchProcessor: IProcessor<typeof searchSetQuery> = {
       return;
     }
 
-    let coords;
+    let coords: LatLon | undefined;
     try {
       coords = parseCoordinates(query);
     } catch (e) {
@@ -27,29 +28,16 @@ export const searchProcessor: IProcessor<typeof searchSetQuery> = {
     }
 
     if (coords) {
-      const format = 'DM';
-      const name = `${formatGpsCoord(
-        coords.lat,
-        'SN',
-        format,
-        language,
-      )} ${formatGpsCoord(coords.lon, 'WE', format, language)}`;
-
-      const geojson: Point = {
-        type: 'Point',
-        coordinates: [coords.lon, coords.lat],
-      };
-
       dispatch(
         searchSetResults([
           {
             id: -1,
             label: query.toUpperCase(),
-            geojson,
+            geojson: point([coords.lon, coords.lat]),
             lat: coords.lat,
             lon: coords.lon,
             tags: {
-              name,
+              name: latLonToString(coords, language),
               type: 'Point',
             },
           },

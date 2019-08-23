@@ -5,6 +5,7 @@ import {
 } from 'fm3/actions/galleryActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import parseCoordinates from 'fm3/coordinatesParser';
 
 export const gallerySavePictureProcessor: IProcessor = {
   actionCreator: gallerySavePicture,
@@ -17,13 +18,15 @@ export const gallerySavePictureProcessor: IProcessor = {
 
     const { id } = image;
 
-    editModel.takenAt = editModel.takenAt ? new Date(editModel.takenAt) : null;
-
     await httpRequest({
       getState,
       method: 'PUT',
       url: `/gallery/pictures/${id}`,
-      data: editModel,
+      data: {
+        ...editModel,
+        position: parseCoordinates(editModel.dirtyPosition),
+        takenAt: editModel.takenAt ? new Date(editModel.takenAt) : null,
+      },
       expectedStatus: 204,
     });
 

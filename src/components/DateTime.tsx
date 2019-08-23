@@ -30,7 +30,7 @@ const DateTime: React.FC<IProps> = ({ value, onChange, placeholders }) => {
 
   const propagateChange = React.useCallback(
     (date, time) => {
-      onChange(date || time ? `${date}T${time}` : '');
+      onChange(date ? `${date}T${time || '00:00:00'}` : '');
     },
     [onChange],
   );

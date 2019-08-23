@@ -12,7 +12,7 @@ import { IGalleryTag } from 'fm3/actions/galleryActions';
 interface IProps {
   id: number;
   filename: string;
-  url: string;
+  url?: string;
   model: IPictureModel;
   allTags: IGalleryTag[];
   error: string | null | undefined;
@@ -21,7 +21,6 @@ interface IProps {
   onModelChange: (id: number, model: IPictureModel) => void;
   disabled: boolean;
   t: Translator;
-  language: string;
   showPreview: boolean;
 }
 
@@ -48,7 +47,6 @@ export default class GalleryUploadItem extends React.Component<IProps> {
       allTags,
       error,
       t,
-      language,
       showPreview,
     } = this.props;
     return (
@@ -66,7 +64,6 @@ export default class GalleryUploadItem extends React.Component<IProps> {
           <GalleryEditForm
             {...{ model, allTags, error }}
             t={t}
-            language={language}
             onPositionPick={disabled ? undefined : this.handlePositionPick}
             onModelChange={this.handleModelChange}
           />{' '}

@@ -9,18 +9,16 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import { formatGpsCoord } from 'fm3/geoutils';
 import DateTime from '../DateTime';
 import { Translator } from 'fm3/l10nInjector';
 import { IGalleryTag } from 'fm3/actions/galleryActions';
-import { LatLon } from 'fm3/types/common';
 
 export interface IPictureModel {
   title: string;
   description: string;
   tags: string[];
   takenAt: string;
-  position: LatLon | null;
+  dirtyPosition: string;
 }
 
 interface IProps {
@@ -30,7 +28,6 @@ interface IProps {
   onPositionPick: undefined | (() => void);
   onModelChange: (model: IPictureModel) => void;
   t: Translator;
-  language: string;
 }
 
 const GalleryEditForm: React.FC<IProps> = ({
@@ -39,11 +36,10 @@ const GalleryEditForm: React.FC<IProps> = ({
   error,
   onPositionPick,
   t,
-  language,
   onModelChange,
 }) => {
   const changeModel = useCallback(
-    (key: string, value) => {
+    (key: keyof IPictureModel, value) => {
       onModelChange({ ...model, [key]: value });
     },
     [model, onModelChange],
@@ -69,6 +65,16 @@ const GalleryEditForm: React.FC<IProps> = ({
   const handleTakenAtChange = useCallback(
     (value: string) => {
       changeModel('takenAt', value);
+    },
+    [changeModel],
+  );
+
+  const handlePositionChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      changeModel(
+        'dirtyPosition',
+        (e.target as HTMLTextAreaElement).value || null,
+      );
     },
     [changeModel],
   );
@@ -132,23 +138,8 @@ const GalleryEditForm: React.FC<IProps> = ({
           <FormControl
             type="text"
             placeholder={t('gallery.editForm.location')}
-            value={
-              model.position
-                ? `${formatGpsCoord(
-                    model.position.lat,
-                    'SN',
-                    'DMS',
-                    language,
-                  )}, ${formatGpsCoord(
-                    model.position.lon,
-                    'WE',
-                    'DMS',
-                    language,
-                  )}`
-                : ''
-            }
-            onClick={onPositionPick}
-            readOnly
+            onChange={handlePositionChange}
+            value={model.dirtyPosition}
           />
           <InputGroup.Button>
             <Button onClick={onPositionPick}>

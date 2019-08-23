@@ -1,3 +1,6 @@
+import { LatLon } from './types/common';
+import { assertType } from 'typescript-is';
+
 // TODO publish as npm package
 
 const N_TR = 'S';
@@ -22,13 +25,13 @@ const patterns =
 
 const P_XML = /lat=["']([+|-]?\d+[.,]\d+)["']\s+lon=["']([+|-]?\d+[.,]\d+)["']/;
 
-export default function parseCoordinates(coord: string) {
+export default function parseCoordinates(coord: string): LatLon {
   const mXml = P_XML.exec(coord);
   if (mXml) {
-    return {
+    return assertType<LatLon>({
       ...toLatLon1(parseFloat(mXml[1].replace(',', '.')), 0.0, 0.0, 'N'),
       ...toLatLon1(parseFloat(mXml[2].replace(',', '.')), 0.0, 0.0, 'E'),
-    };
+    });
   }
 
   const sb: string[] = [];
@@ -206,15 +209,12 @@ function toLatLon(
   coord2min: number,
   coord2sec: number,
   card2: string,
-) {
+): LatLon {
   const latLon = {
     ...toLatLon1(coord1deg, coord1min, coord1sec, card1),
     ...toLatLon1(coord2deg, coord2min, coord2sec, card2),
   };
-  if (Number.isNaN(latLon.lat) || Number.isNaN(latLon.lon)) {
-    throw new Error('invalid lat/lon parameters');
-  }
-  return latLon;
+  return assertType<LatLon>(latLon);
 }
 
 function toLatLon1(
@@ -237,6 +237,7 @@ function toLatLon1(
   const coord =
     (coordDeg < 0 ? -1 : 1) *
     (Math.abs(coordDeg) + coordMin / 60 + coordSec / 3600);
+
   return {
     [card === 'N' || card === 'S' ? 'lat' : 'lon']:
       card === 'N' || card === 'E' ? coord : -coord,

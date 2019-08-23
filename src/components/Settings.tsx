@@ -28,7 +28,7 @@ import {
 } from 'fm3/actions/mainActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { formatGpsCoord } from 'fm3/geoutils';
+import { latLonToString } from 'fm3/geoutils';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { overlayLayers } from 'fm3/mapDefinitions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -327,17 +327,7 @@ class Settings extends React.Component<Props, IState> {
                 <p>
                   {t('settings.map.homeLocation.label')}{' '}
                   {homeLocation
-                    ? `${formatGpsCoord(
-                        homeLocation.lat,
-                        'SN',
-                        'DMS',
-                        language,
-                      )} ${formatGpsCoord(
-                        homeLocation.lon,
-                        'WE',
-                        'DMS',
-                        language,
-                      )}`
+                    ? latLonToString(homeLocation, language)
                     : t('settings.map.homeLocation.undefined')}
                 </p>
                 <Button onClick={() => onHomeLocationSelect()}>
