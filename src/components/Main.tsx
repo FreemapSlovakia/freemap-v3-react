@@ -281,8 +281,8 @@ class Main extends React.Component<Props, IState> {
                   />
                   {showMenu && <SearchMenu />}
                 </Panel>
-                <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
-                  {showMenu && (
+                {showMenu && (
+                  <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
                     <ButtonToolbar>
                       <ButtonGroup>
                         <ToolsMenuButton />
@@ -317,8 +317,8 @@ class Main extends React.Component<Props, IState> {
                         <MoreMenuButton />
                       </ButtonGroup>
                     </ButtonToolbar>
-                  )}
-                </Panel>
+                  </Panel>
+                )}
               </>
             )}
             {showMenu && tool && (
