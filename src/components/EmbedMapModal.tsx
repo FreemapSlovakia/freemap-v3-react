@@ -34,14 +34,21 @@ export class EmbedMapModal extends React.Component<Props> {
 
   setFormControl = (textarea: HTMLInputElement | null) => {
     this.textarea = textarea;
-    if (textarea) {
-      textarea.select();
-    }
+    setTimeout(() => {
+      if (textarea) {
+        textarea.setSelectionRange(0, 9999);
+      }
+    });
   };
 
   handleCopyClick = () => {
     if (this.textarea) {
-      this.textarea.select();
+      this.textarea.focus();
+      setTimeout(() => {
+        if (this.textarea) {
+          this.textarea.setSelectionRange(0, 9999);
+        }
+      });
       document.execCommand('copy');
     }
   };
