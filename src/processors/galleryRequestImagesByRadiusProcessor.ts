@@ -18,6 +18,7 @@ export const galleryRequestImagesByRadiusProcessor: IProcessor<
     const { data } = await httpRequest({
       getState,
       method: 'GET',
+      url: '/gallery/pictures',
       params: {
         by: 'radius',
         lat,
