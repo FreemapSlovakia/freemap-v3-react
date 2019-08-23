@@ -1147,6 +1147,56 @@ export default {
       </>
     ),
   },
+  pdfExport: {
+    title: 'Exportovat do PDF',
+    area: 'Exportovat oblast:',
+    areas: {
+      visible: 'Viditelnou oblast mapy',
+      pinned: 'Plochu ohraničenou body v mapě',
+    },
+    layersTitle: 'Volitelné vrstvy:',
+    layers: {
+      contours: 'Vrstevnice',
+      shading: 'Tieňovaný reliéf',
+      hikingTrails: 'Stínovaný reliéf',
+      bicycleTrails: 'Cyklotrasy',
+      skiTrails: 'Lyžařské trasy',
+      horseTrails: 'Jezdecké trasy',
+    },
+    mapScale: 'Měřítko mapy:',
+    alert: () => (
+      <>
+        Upozornění:
+        <ul>
+          <li>Exportuje se outdoorová mapa bez interatívnych prvků.</li>
+          <li>Export mapy do PDF může trvat i desítky sekund.</li>
+          <li>
+            Při publikované mapy je do ní nutno uvést její licenci:
+            <br />
+            <em>
+              mapa ©{' '}
+              <a
+                href="https://www.freemap.sk/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Freemap Slovakia
+              </a>
+              , dáta{' '}
+              <a
+                href="https://osm.org/copyright"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                © přispěvatelé OpenStreetMap
+              </a>
+              , © SRTM
+            </em>
+          </li>
+        </ul>{' '}
+      </>
+    ),
+  },
 };
 
 function numberize(n, words) {

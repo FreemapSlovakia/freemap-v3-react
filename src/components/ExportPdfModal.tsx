@@ -96,101 +96,71 @@ export class ExportPdfModal extends React.Component<Props, IState> {
       <Modal show onHide={onModalClose}>
         <Modal.Header closeButton>
           <Modal.Title>
-            <FontAwesomeIcon icon="file-pdf-o" /> Exportovať do PDF
+            <FontAwesomeIcon icon="file-pdf-o" /> {t('pdfExport.title')}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Alert bsStyle="warning">
-            Upozornenia:
-            <ul>
-              <li>
-                Toto je experimentálna funkcia <FontAwesomeIcon icon="flask" />.
-              </li>
-              <li>
-                Exportuje sa experimentálna outdoorova mapa bez možných
-                dodatočných prvkov.
-              </li>
-              <li>Export mapy do PDF môže trvať aj desiatky sekúnd.</li>
-              <li>
-                Do publikovanej mapy je nutné uviesť jej licenciu:
-                <br />
-                mapa ©{' '}
-                <a
-                  href="https://www.freemap.sk/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Freemap Slovakia
-                </a>
-                , dáta{' '}
-                <a
-                  href="https://osm.org/copyright"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  © prispievatelia OpenStreetMap
-                </a>
-                , © SRTM
-              </li>
-            </ul>
-          </Alert>
-          <p>Exportovať oblasť:</p>
+          <Alert bsStyle="warning">{t('pdfExport.alert')}</Alert>
+          <p>{t('pdfExport.area')}</p>
           <ButtonGroup>
             <Button
               active={this.state.area === 'visible'}
               onClick={() => this.setState({ area: 'visible' })}
             >
-              Viditeľnú oblasť mapy
+              {t('pdfExport.areas.visible')}
             </Button>
             <Button
               active={this.state.area === 'infopoints'}
               onClick={() => this.setState({ area: 'infopoints' })}
               disabled={!hasInfopoints}
             >
-              Plochu ohraničenú bodmi v mape{' '}
+              {t('pdfExport.areas.pinned')}{' '}
               <FontAwesomeIcon icon="thumb-tack" />
             </Button>
           </ButtonGroup>
           <hr />
-          <p>Voliteľné vrstvy:</p>
+          <p>{t('pdfExport.layersTitle')}</p>
           <Checkbox
             checked={this.state.contours}
             onChange={this.handleContoursChange}
           >
-            Vrstevnice
+            {t('pdfExport.layers.contours')}
           </Checkbox>
           <Checkbox
             checked={this.state.shadedRelief}
             onChange={this.handleShadedReliefChange}
           >
-            Tieňovaný reliéf
+            {t('pdfExport.layers.shading')}
           </Checkbox>
           <Checkbox
             checked={this.state.hikingTrails}
             onChange={this.handleHikingTrailsChange}
           >
-            Turistické trasy
+            {t('pdfExport.layers.hikingTrails')}
           </Checkbox>
           <Checkbox
             checked={this.state.bicycleTrails}
             onChange={this.handleBicycleTrailsChange}
           >
-            Cyklotrasy
+            {t('pdfExport.layers.bicycleTrails')}
           </Checkbox>
           <Checkbox
             checked={this.state.skiTrails}
             onChange={this.handleSkiTrailsChange}
           >
-            Lyžiarské trasy
+            {t('pdfExport.layers.skiTrails')}
           </Checkbox>
           <Checkbox
             checked={this.state.horseTrails}
             onChange={this.handleHorseTrailsChange}
           >
-            Jasdecké trasy
+            {t('pdfExport.layers.horseTrails')}
           </Checkbox>
           <hr />
-          <p>Mierka mapy: {nf.format(this.state.scale)}</p>
+          <p>
+            {' '}
+            {t('pdfExport.mapScale')} {nf.format(this.state.scale)}
+          </p>
           <Slider
             value={this.state.scale}
             min={0.1}
