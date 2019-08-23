@@ -61,12 +61,14 @@ class TrackViewerResult extends React.Component<Props, IState> {
         getCoords(feature),
         this.props.eleSmoothingFactor,
       );
+
       const eles = smoothed.map(coord => coord[2]);
       const maxEle = Math.max(...eles);
       const minEle = Math.min(...eles);
+
       return smoothed.map(coord => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
-        return [coord[1], coord[0], color || 0];
+        return [coord[1], coord[0], color || 0] as const;
       });
     });
 
@@ -76,7 +78,9 @@ class TrackViewerResult extends React.Component<Props, IState> {
         getCoords(feature),
         this.props.eleSmoothingFactor,
       );
+
       let prevCoord = smoothed[0];
+
       return smoothed.map(coord => {
         const [lon, lat, ele] = coord;
         const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
@@ -86,7 +90,7 @@ class TrackViewerResult extends React.Component<Props, IState> {
         }
         prevCoord = coord;
         const color = angle / 0.5 + 0.5;
-        return [lat, lon, color || 0];
+        return [lat, lon, color || 0] as const;
       });
     });
 

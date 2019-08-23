@@ -1,11 +1,11 @@
 window.fbAsyncInit = function fbAsyncInit() {
-  window.FB.init({
+  FB.init({
     appId: '171410630094006',
     // xfbml: true,
     status: true,
     version: 'v2.10',
   });
-  // window.FB.AppEvents.logPageView();
+  // FB.AppEvents.logPageView();
 };
 
 if (!document.getElementById('facebook-jssdk')) {
@@ -13,5 +13,8 @@ if (!document.getElementById('facebook-jssdk')) {
   js.id = 'facebook-jssdk';
   js.src = '//connect.facebook.net/sk_SK/sdk.js';
   const fjs = document.getElementsByTagName('script')[0];
+  if (!fjs || !fjs.parentNode) {
+    throw new Error('no script');
+  }
   fjs.parentNode.insertBefore(js, fjs);
 }

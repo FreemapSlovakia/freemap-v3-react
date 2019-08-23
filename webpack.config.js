@@ -19,7 +19,7 @@ renderer.link = (href, title, text) =>
 module.exports = {
   mode: prod ? 'production' : 'development',
   context: path.resolve(__dirname, 'src'),
-  entry: './boot.js',
+  entry: './index.tsx',
   output: {
     filename: '[name].[chunkhash].js',
     chunkFilename: '[name].[chunkhash].js',

@@ -1,11 +1,11 @@
 import PropTypes from 'prop-types';
 import axios from 'axios';
-import { GridLayer, withLeaflet } from 'react-leaflet';
+import { GridLayer, withLeaflet, GridLayerProps } from 'react-leaflet';
 
-import { galleryFilter } from 'fm3/propTypes';
 import { createFilter } from 'fm3/galleryUtils';
+import { DomUtil } from 'leaflet';
 
-const galleryLayer = L.GridLayer.extend({
+const galleryLayer = window['L'].GridLayer.extend({
   createTile(coords, done) {
     const size = this.getTileSize();
     const map = this._map;
@@ -28,13 +28,17 @@ const galleryLayer = L.GridLayer.extend({
     );
 
     // create a <canvas> element for drawing
-    const tile = L.DomUtil.create('canvas', 'leaflet-tile');
+    const tile = DomUtil.create('canvas', 'leaflet-tile') as HTMLCanvasElement;
     // setup tile width and height according to the options
     const dpr = window.devicePixelRatio || 1;
     tile.width = size.x * dpr;
     tile.height = size.y * dpr;
     // get a canvas context and draw something on it using coords.x, coords.y and coords.z
     const ctx = tile.getContext('2d');
+    if (!ctx) {
+      throw Error('no context');
+    }
+
     ctx.scale(dpr, dpr);
     ctx.strokeStyle = '#000';
     ctx.fillStyle = '#ff0';
@@ -93,12 +97,16 @@ const galleryLayer = L.GridLayer.extend({
   },
 });
 
-class GalleryLayer extends GridLayer {
+interface IProps extends GridLayerProps {
+  filter: any; // TODO
+}
+
+class GalleryLayer extends GridLayer<IProps> {
   static propTypes = {
     filter: PropTypes.object.isRequired,
   };
 
-  createLeafletElement(props) {
+  createLeafletElement(props: IProps) {
     return new galleryLayer({ ...props });
   }
 
