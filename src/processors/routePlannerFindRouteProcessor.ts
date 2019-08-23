@@ -76,9 +76,12 @@ export const routePlannerFindRouteProcessor: IProcessor = {
       data = (await httpRequest({
         getState,
         method: 'GET',
-        url: `https://routing.epsilon.sk/${
-          mode === 'route' ? 'route' : 'trip'
-        }/v1/${transportType.replace(/-.*/, '')}/${allPoints}`,
+        url: `https://routing.${
+          transportType.startsWith('car') ? 'freemap' : 'epsilon'
+        }.sk/${mode === 'route' ? 'route' : 'trip'}/v1/${transportType.replace(
+          /-.*/,
+          '',
+        )}/${allPoints}`,
         params,
         expectedStatus: [200, 400],
         cancelActions: updateRouteTypes,
