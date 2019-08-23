@@ -29,7 +29,7 @@ export const utilityMiddleware: Middleware<{}, RootState, Dispatch> = ({
     if (tool) {
       window.ga('send', 'event', 'Tool', 'setTool', tool);
     }
-  } else if (isActionOf(tipsNext, action) || isActionOf(tipsPrevious, action)) {
+  } else if (isActionOf([tipsNext, tipsPrevious], action)) {
     const { tip } = getState().tips;
 
     if (tip) {
