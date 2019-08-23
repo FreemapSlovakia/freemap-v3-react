@@ -46,6 +46,7 @@ export interface IPdfExportOptions {
   hikingTrails: boolean;
   bicycleTrails: boolean;
   skiTrails: boolean;
+  horseTrails: boolean;
   scale: number;
   area: 'visible' | 'infopoints';
 }

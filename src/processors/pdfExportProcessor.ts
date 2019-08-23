@@ -18,6 +18,7 @@ export const exportPdfProcessor: IProcessor<typeof exportPdf> = {
       hikingTrails,
       bicycleTrails,
       skiTrails,
+      horseTrails,
     } = action.payload;
 
     let w: number | undefined = undefined;
@@ -44,7 +45,7 @@ export const exportPdfProcessor: IProcessor<typeof exportPdf> = {
     window.open(
       `https://outdoor.tiles.freemap.sk/pdf?zoom=${getState().map.zoom}` +
         `&bbox=${w},${s},${e},${n}&scale=${scale}` +
-        `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&shading=${shadedRelief}&contours=${contours}`,
+        `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&horseTrails=${horseTrails}&shading=${shadedRelief}&contours=${contours}`,
     );
     dispatch(setActiveModal(null));
   },
