@@ -29,11 +29,53 @@ import {
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
-import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
+import {
+  authChooseLoginMethod,
+  authLoginClose,
+  authLoginWithFacebook,
+  authLoginWithGoogle,
+  authLoginWithOsm,
+} from 'fm3/actions/authActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { isActionOf } from 'typesafe-actions';
-import { distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
-import { areaMeasurementUpdatePoint } from 'fm3/actions/areaMeasurementActions';
+import {
+  distanceMeasurementUpdatePoint,
+  distanceMeasurementAddPoint,
+  distanceMeasurementRemovePoint,
+} from 'fm3/actions/distanceMeasurementActions';
+import {
+  areaMeasurementUpdatePoint,
+  areaMeasurementAddPoint,
+  areaMeasurementRemovePoint,
+  areaMeasurementSetPoints,
+} from 'fm3/actions/areaMeasurementActions';
+import {
+  infoPointAdd,
+  infoPointChangeLabel,
+  infoPointChangePosition,
+  infoPointDelete,
+  infoPointSetAll,
+} from 'fm3/actions/infoPointActions';
+import { tipsNext, tipsPrevious, tipsShow } from 'fm3/actions/tipsActions';
+import {
+  routePlannerAddMidpoint,
+  routePlannerSetFinish,
+  routePlannerSetStart,
+  routePlannerSetActiveAlternativeIndex,
+  routePlannerSetMode,
+  routePlannerSwapEnds,
+  routePlannerSetParams,
+  routePlannerSetTransportType,
+  routePlannerSetPickMode,
+  routePlannerRemoveMidpoint,
+  routePlannerSetMidpoint,
+  routePlannerToggleElevationChart,
+} from 'fm3/actions/routePlannerActions';
+import {
+  osmLoadNode,
+  osmLoadRelation,
+  osmLoadWay,
+} from 'fm3/actions/osmActions';
 
 const tipKeys = allTips.map(([key]) => key);
 
@@ -67,14 +109,39 @@ export const urlProcessor: IProcessor = {
     trackingActions.saveTrackedDevice,
     trackingActions.deleteTrackedDevice,
     trackingActions.setActive,
-    // TODO
-    // /^ROUTE_PLANNER_/,
-    // /^INFO_POINT_.*/,
-    // /^DISTANCE_MEASUREMENT_.*/,
-    // /^AREA_MEASUREMENT_.*/,
-    // /^TIPS_.*/,
-    // /^AUTH_LOGIN_WITH_.*/,
-    // /^OSM_LOAD_.*/,
+    authLoginWithOsm,
+    authLoginWithFacebook,
+    authLoginWithGoogle,
+    areaMeasurementAddPoint,
+    areaMeasurementUpdatePoint,
+    areaMeasurementRemovePoint,
+    areaMeasurementSetPoints,
+    distanceMeasurementAddPoint,
+    distanceMeasurementUpdatePoint,
+    distanceMeasurementRemovePoint,
+    infoPointAdd,
+    infoPointChangeLabel,
+    infoPointChangePosition,
+    infoPointDelete,
+    infoPointSetAll,
+    tipsNext,
+    tipsPrevious,
+    tipsShow,
+    osmLoadNode,
+    osmLoadRelation,
+    osmLoadWay,
+    routePlannerSetStart,
+    routePlannerSetFinish,
+    routePlannerSetMidpoint,
+    routePlannerAddMidpoint,
+    routePlannerRemoveMidpoint,
+    routePlannerSetActiveAlternativeIndex,
+    routePlannerSetMode,
+    routePlannerSetPickMode,
+    routePlannerSwapEnds,
+    routePlannerSetParams,
+    routePlannerSetTransportType,
+    routePlannerToggleElevationChart,
   ],
   handle: async ({ getState, action }) => {
     const {
