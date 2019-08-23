@@ -160,7 +160,14 @@ class GalleryUploadModal extends React.Component<Props> {
         canvas.width = width;
         canvas.height = height;
 
-        const transformations = [
+        const transformations: [
+          number,
+          number,
+          number,
+          number,
+          number,
+          number,
+        ][] = [
           [1, 0, 0, 1, 0, 0],
           [-1, 0, 0, 1, width, 0],
           [-1, 0, 0, -1, width, height],
@@ -174,12 +181,15 @@ class GalleryUploadModal extends React.Component<Props> {
         pica
           .resize(img, canvas)
           .then(() => {
-            let canvas2;
+            let canvas2: HTMLCanvasElement;
             if (o === 1) {
               canvas2 = canvas;
             } else {
               canvas2 = document.createElement('canvas');
               const ctx = canvas2.getContext('2d');
+              if (!ctx) {
+                throw new Error('context is null');
+              }
               canvas2.width = o > 4 ? height : width;
               canvas2.height = o > 4 ? width : height;
               ctx.transform(...transformations[o - 1]);
