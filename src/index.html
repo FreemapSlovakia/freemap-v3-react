@@ -1,72 +1,101 @@
 <!DOCTYPE html>
 <html lang="sk">
-
-  <%
-    const baseUrl = process.env.DEPLOYMENT === 'www' ? 'https://www.freemap.sk/'
-      : process.env.DEPLOYMENT === 'next' ? 'http://next.freemap.sk/'
-      : 'http://local.freemap.sk:9000/';
-  %>
+  <% const baseUrl = process.env.DEPLOYMENT === 'www' ?
+  'https://www.freemap.sk/' : process.env.DEPLOYMENT === 'next' ?
+  'http://next.freemap.sk/' : 'http://local.freemap.sk:9000/'; %>
 
   <head>
     <title>Freemap Slovakia - digitálna mapa Slovenska</title>
 
-    <meta charset="UTF-8">
+    <meta charset="UTF-8" />
 
-    <meta name="copyright" content="OZ Freemap Slovakia, http://www.freemap.sk/">
-    <meta name="description" content="Freemap je voľne dostupná online mapa Slovenska s možnosťou zadarmo používať offline verziu.">
-    <meta name="author" content="Freemap Slovakia">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
-    <meta name="google-site-verification" content="sbT_FygRVxqv1MyTmcynJH3dSq2sVlUBNqaxCvlECU4">
-    <meta name="application-name" content="Freemap Slovakia">
-    <meta name="apple-mobile-web-app-title" content="Freemap Slovakia">
+    <meta
+      name="copyright"
+      content="OZ Freemap Slovakia, http://www.freemap.sk/"
+    />
+    <meta
+      name="description"
+      content="Freemap je voľne dostupná online mapa Slovenska s možnosťou zadarmo používať offline verziu."
+    />
+    <meta name="author" content="Freemap Slovakia" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no"
+    />
+    <meta
+      name="google-site-verification"
+      content="sbT_FygRVxqv1MyTmcynJH3dSq2sVlUBNqaxCvlECU4"
+    />
+    <meta name="application-name" content="Freemap Slovakia" />
+    <meta name="apple-mobile-web-app-title" content="Freemap Slovakia" />
 
-    <meta property="fb:app_id" content="171410630094006">
-    <meta property="og:title" content="Freemap Slovakia - digitálna mapa Slovenska">
-    <meta property="og:description" content="Freemap je voľne dostupná online mapa Slovenska s možnosťou zadarmo používať offline verziu.">
-    <meta property="og:image" content="<%= baseUrl + require('./images/logo.jpg') %>">
-    <meta property="og:image:width" content="600">
-    <meta property="og:image:height" content="600">
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="<%= baseUrl %>">
+    <meta property="fb:app_id" content="171410630094006" />
+    <meta
+      property="og:title"
+      content="Freemap Slovakia - digitálna mapa Slovenska"
+    />
+    <meta
+      property="og:description"
+      content="Freemap je voľne dostupná online mapa Slovenska s možnosťou zadarmo používať offline verziu."
+    />
+    <meta
+      property="og:image"
+      content="<%= baseUrl + require('./images/logo.jpg') %>"
+    />
+    <meta property="og:image:width" content="600" />
+    <meta property="og:image:height" content="600" />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="<%= baseUrl %>" />
 
-    <meta http-equiv="Accept-CH" content="Width">
+    <meta http-equiv="Accept-CH" content="Width" />
 
-    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon">
-    <link rel="apple-touch-icon" href="<%= require('./images/logo.jpg') %>">
+    <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
+    <link rel="apple-touch-icon" href="<%= require('./images/logo.jpg') %>" />
 
     <% for (const css of htmlWebpackPlugin.files.chunks.main.css) { %>
-      <link rel="stylesheet" href="<%= css %>">
+    <link rel="stylesheet" href="<%= css %>" />
     <% } %>
   </head>
 
   <body>
     <div id="app"></div>
     <script>
-      var fm_seh = function (e) {
+      var fm_seh = function(e) {
         var app = document.getElementById('app');
         if (!app.children || !app.children.length) {
-          app.innerHTML = '<div style="margin: 20px; padding: 20px; border: 6px solid red">' +
-            '<p>Aplikáciu sa nepodarilo spustiť.<p>' +
-            '<p>Application error.</p></div>';
+          app.innerHTML = `<div style="margin: 20px; padding: 20px; border: 6px solid red">
+              <h1>Aplikáciu sa nepodarilo spustiť</h1>
+              <p>
+                Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium).
+                Praveký Internet Explorer už viac podporovaný nie je.
+              <p>
+              <h1>Problem starting application</h1>
+              <p>
+                Please make sure you are using recent version of some modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium).
+                Ancient Internet Explorer is no more supported.
+              </p>
+            </div>`;
         }
       };
 
       window.addEventListener('error', fm_seh);
-      window.addEventListener('load', function () {
+      window.addEventListener('load', function() {
         window.removeEventListener('error', fm_seh);
         delete fm_seh;
       });
     </script>
     <script src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
     <script async src="https://www.google-analytics.com/analytics.js"></script>
-    <script async src="https://apis.google.com/js/platform.js?onload=handleGoogleAuthApiLoad"></script>
+    <script
+      async
+      src="https://apis.google.com/js/platform.js?onload=handleGoogleAuthApiLoad"
+    ></script>
     <noscript>
       Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.
-      <br>
+      <br />
       ~~~
-      <br>
+      <br />
       JavaScript enabled browser is required to run this application.
     </noscript>
   </body>
-
 </html>
