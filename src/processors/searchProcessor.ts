@@ -1,6 +1,6 @@
 import { searchSetResults, searchSetQuery } from 'fm3/actions/searchActions';
 import { clearMap } from 'fm3/actions/mainActions';
-import parseCoordinates from 'fm3/coordinatesParser';
+import { parseCoordinates } from 'fm3/coordinatesParser';
 import { latLonToString } from 'fm3/geoutils';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';

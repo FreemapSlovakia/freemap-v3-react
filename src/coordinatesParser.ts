@@ -25,7 +25,7 @@ const patterns =
 
 const P_XML = /lat=["']([+|-]?\d+[.,]\d+)["']\s+lon=["']([+|-]?\d+[.,]\d+)["']/;
 
-export default function parseCoordinates(coord: string): LatLon {
+export function parseCoordinates(coord: string): LatLon {
   const mXml = P_XML.exec(coord);
   if (mXml) {
     return assertType<LatLon>({

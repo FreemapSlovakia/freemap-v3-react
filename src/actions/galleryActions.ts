@@ -10,7 +10,7 @@ export interface IGalleryItem {
   takenAt: Date | null;
   // position: LatLon | null;
   dirtyPosition: string | '';
-  error?: string | null;
+  errors: string[];
   url?: string;
   file: File;
 }

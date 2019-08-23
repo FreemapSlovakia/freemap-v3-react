@@ -208,6 +208,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
       onDelete,
       onEdit,
       editModel,
+      saveError: saveErrors,
       allTags,
       onPositionPick,
       language,
@@ -396,7 +397,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
                       t={t}
                       model={editModel}
                       allTags={allTags}
-                      error={null}
+                      errors={saveErrors}
                       onPositionPick={onPositionPick}
                       onModelChange={this.handleEditModelChange}
                     />
@@ -514,6 +515,7 @@ const mapStateToProps = (state: RootState) => ({
   pickingPosition: state.gallery.pickingPositionForId !== null,
   comment: state.gallery.comment,
   editModel: state.gallery.editModel,
+  saveError: state.gallery.saveErrors,
   user: state.auth.user,
   allTags: state.gallery.tags,
   language: state.l10n.language,

@@ -24,7 +24,7 @@ export interface IPictureModel {
 interface IProps {
   model: IPictureModel;
   allTags: IGalleryTag[];
-  error: string | null | undefined;
+  errors: string[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: IPictureModel) => void;
   t: Translator;
@@ -33,7 +33,7 @@ interface IProps {
 const GalleryEditForm: React.FC<IProps> = ({
   model,
   allTags,
-  error,
+  errors,
   onPositionPick,
   t,
   onModelChange,
@@ -103,7 +103,12 @@ const GalleryEditForm: React.FC<IProps> = ({
 
   return (
     <div>
-      {error && <Alert bsStyle="danger">{t(error)}</Alert>}
+      {errors &&
+        errors.map(error => (
+          <Alert bsStyle="danger" key={error}>
+            {error.startsWith('~') ? error.slice(1) : t(error)}
+          </Alert>
+        ))}
       <FormGroup>
         <FormControl
           placeholder={t('gallery.editForm.name')}

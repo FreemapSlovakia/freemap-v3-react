@@ -34,10 +34,11 @@ import {
   IGalleryTag,
   IGalleryUser,
   IGalleryItem,
+  gallerySavePicture,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
 import { IPictureModel } from 'fm3/components/gallery/GalleryEditForm';
-import parseCoordinates from 'fm3/coordinatesParser';
+import { parseCoordinates } from 'fm3/coordinatesParser';
 import { latLonToString } from 'fm3/geoutils';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
@@ -60,6 +61,7 @@ export interface IGalleryState {
   editModel: IPictureModel | null;
   showPosition: boolean;
   language: string;
+  saveErrors: string[];
 }
 
 const initialState: IGalleryState = {
@@ -93,6 +95,7 @@ const initialState: IGalleryState = {
   },
 
   editModel: null,
+  saveErrors: [],
   showPosition: false,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
@@ -144,7 +147,7 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
     ...state,
     items: state.items.map(item =>
       item.id === action.payload.id
-        ? { ...item, error: action.payload.error }
+        ? { ...item, errors: [action.payload.error] }
         : item,
     ),
   }))
@@ -192,13 +195,11 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
       pickingPosition:
         action.payload === -1
           ? state.editModel
-            ? parseCoordinates(state.editModel.dirtyPosition)
+            ? safeParseCoordinates(state.editModel.dirtyPosition)
             : null
           : typeof action.payload === 'number'
           ? (x = state.items.find(({ id }) => id === action.payload))
-            ? x.dirtyPosition
-              ? parseCoordinates(x.dirtyPosition)
-              : null
+            ? safeParseCoordinates(x.dirtyPosition)
             : null
           : null,
     };
@@ -206,10 +207,10 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
   .handleAction(galleryUpload, state => {
     const items =
       state.uploadingId === null
-        ? state.items.map(item => ({ ...item, error: getError(item) }))
+        ? state.items.map(item => ({ ...item, errors: getErrors(item) }))
         : state.items;
 
-    const next = items.find(item => !item.error);
+    const next = items.find(item => !item.errors || item.errors.length === 0);
 
     return {
       ...state,
@@ -300,9 +301,13 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
   .handleAction(l10nSetLanguage, (state, action) => ({
     ...state,
     language: action.payload,
+  }))
+  .handleAction(gallerySavePicture, state => ({
+    ...state,
+    saveErrors: state.editModel ? getErrors(state.editModel) : [],
   }));
 
-function getError(item: IGalleryItem) {
+function getErrors(item: IGalleryItem | IPictureModel) {
   const errors: string[] = [];
 
   if (!item.dirtyPosition) {
@@ -315,9 +320,22 @@ function getError(item: IGalleryItem) {
     }
   }
 
-  if (item.takenAt && Number.isNaN(item.takenAt.getTime())) {
+  if (
+    (item.takenAt instanceof Date && Number.isNaN(item.takenAt.getTime())) ||
+    (item.takenAt &&
+      typeof item.takenAt === 'string' &&
+      Number.isNaN(new Date(item.takenAt).getTime()))
+  ) {
     errors.push('gallery.invalidTakenAt');
   }
 
-  return errors.length ? errors.join('\n') : null;
+  return errors;
+}
+
+function safeParseCoordinates(coords) {
+  try {
+    return parseCoordinates(coords);
+  } catch (err) {
+    return null;
+  }
 }

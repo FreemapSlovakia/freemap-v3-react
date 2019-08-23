@@ -15,7 +15,7 @@ interface IProps {
   url?: string;
   model: IPictureModel;
   allTags: IGalleryTag[];
-  error: string | null | undefined;
+  errors: string[] | null | undefined;
   onRemove: (id: number) => void;
   onPositionPick: (id: number) => void;
   onModelChange: (id: number, model: IPictureModel) => void;
@@ -45,7 +45,7 @@ export default class GalleryUploadItem extends React.Component<IProps> {
       disabled,
       model,
       allTags,
-      error,
+      errors,
       t,
       showPreview,
     } = this.props;
@@ -62,7 +62,7 @@ export default class GalleryUploadItem extends React.Component<IProps> {
         )}
         <fieldset disabled={disabled}>
           <GalleryEditForm
-            {...{ model, allTags, error }}
+            {...{ model, allTags, errors }}
             t={t}
             onPositionPick={disabled ? undefined : this.handlePositionPick}
             onModelChange={this.handleModelChange}

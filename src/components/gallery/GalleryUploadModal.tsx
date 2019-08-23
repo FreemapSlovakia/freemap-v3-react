@@ -134,6 +134,7 @@ class GalleryUploadModal extends React.Component<Props> {
             )
           : null,
         tags: keywords,
+        errors: [],
       });
 
       if (!this.props.showPreview) {
@@ -267,7 +268,7 @@ class GalleryUploadModal extends React.Component<Props> {
               description,
               takenAt,
               tags,
-              error,
+              errors,
               dirtyPosition,
             }) => (
               <GalleryUploadItem
@@ -284,7 +285,7 @@ class GalleryUploadModal extends React.Component<Props> {
                   tags,
                 }}
                 allTags={allTags}
-                error={error}
+                errors={errors}
                 onRemove={this.handleRemove}
                 onPositionPick={onPositionPick}
                 onModelChange={this.handleModelChange}

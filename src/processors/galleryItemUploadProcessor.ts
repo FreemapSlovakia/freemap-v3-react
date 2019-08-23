@@ -9,7 +9,7 @@ import {
 } from 'fm3/actions/galleryActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import parseCoordinates from 'fm3/coordinatesParser';
+import { parseCoordinates } from 'fm3/coordinatesParser';
 
 export const galleryItemUploadProcessor: IProcessor = {
   actionCreator: galleryUpload,
@@ -76,7 +76,7 @@ export const galleryItemUploadProcessor: IProcessor = {
       dispatch(galleryRemoveItem(item.id));
       dispatch(galleryUpload());
     } catch (err) {
-      dispatch(gallerySetItemError({ id: item.id, error: err.message }));
+      dispatch(gallerySetItemError({ id: item.id, error: `~${err.message}` }));
       dispatch(galleryUpload());
     }
   },
