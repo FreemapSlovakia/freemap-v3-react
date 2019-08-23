@@ -319,6 +319,7 @@ export default {
       uploaded: 'Nahral {username} dňa {createdAt}',
       captured: 'Odfotené dňa {takenAt}',
       deletePrompt: 'Zmazať obrázok?',
+      modify: 'Úprava',
     },
     editForm: {
       name: 'Názov',

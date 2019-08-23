@@ -390,7 +390,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
                 {!isFullscreen && editModel && (
                   <form onSubmit={this.handleSave}>
                     <hr />
-                    <h5>Úprava</h5>
+                    <h5>{t('gallery.viewer.modify')}</h5>
 
                     <GalleryEditForm
                       t={t}
@@ -400,7 +400,6 @@ class GalleryViewerModal extends React.Component<Props, IState> {
                       onPositionPick={onPositionPick}
                       onModelChange={this.handleEditModelChange}
                     />
-                    {/* TODO put inside a form and save in onSubmit */}
                     <Button bsStyle="primary" type="submit">
                       <Glyphicon glyph="save" /> {t('general.save')}
                     </Button>

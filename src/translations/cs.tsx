@@ -314,6 +314,7 @@ export default {
       uploaded: 'Nahrál {username} dne {createdAt}',
       captured: 'Vyfoceno dne {takenAt}',
       deletePrompt: 'Smazat obrázek?',
+      modify: 'Úprava',
     },
     editForm: {
       name: 'Název',

@@ -318,6 +318,7 @@ export default {
       uploaded: 'Uploaded by {username} on {createdAt}',
       captured: 'Captured on {takenAt}',
       deletePrompt: 'Delete this picture?',
+      modify: 'Modify',
     },
     editForm: {
       name: 'Name',
