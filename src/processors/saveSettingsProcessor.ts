@@ -28,12 +28,12 @@ export const saveSettingsProcessor: IProcessor<typeof saveSettings> = {
       expertMode,
       trackViewerEleSmoothingFactor,
       preventTips,
+      user,
     } = action.payload;
 
     // TODO don't save user if not changed
 
-    const { user } = getState().auth;
-    if (user) {
+    if (user && getState().auth.user) {
       await httpRequest({
         getState,
         method: 'PATCH',
