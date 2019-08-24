@@ -17,10 +17,6 @@ const TrackViewerDetails: React.FC<Props> = ({
   language,
   t,
 }) => {
-  // const {
-  //   trackViewer: { startPoints, finishPoints, trackGeojson, eleSmoothingFactor },
-  //   l10n: { language },
-  // } = getState().trackViewer;
   if (!trackGeojson) {
     return null;
   }
@@ -29,10 +25,12 @@ const TrackViewerDetails: React.FC<Props> = ({
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
+
   const noDecimalDigitsNumberFormat = Intl.NumberFormat(language, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+
   const timeFormat = new Intl.DateTimeFormat(language, {
     hour: 'numeric',
     minute: '2-digit',
@@ -40,25 +38,26 @@ const TrackViewerDetails: React.FC<Props> = ({
 
   const tableData: [string, string][] = [];
 
-  let startTime: number | undefined;
-  let finishTime: number | undefined;
+  let startTime: Date | undefined;
+  let finishTime: Date | undefined;
 
   if (startPoints.length) {
-    [{ startTime }] = startPoints;
+    startTime = startPoints[0].startTime;
     if (startTime) {
-      tableData.push(['startTime', timeFormat.format(new Date(startTime))]);
+      tableData.push(['startTime', timeFormat.format(startTime)]);
     }
   }
+
   if (finishPoints.length) {
-    [{ finishTime }] = finishPoints;
+    finishTime = finishPoints[0].finishTime;
     if (finishTime) {
-      tableData.push(['finishTime', timeFormat.format(new Date(finishTime))]);
+      tableData.push(['finishTime', timeFormat.format(finishTime)]);
     }
   }
 
   let duration = 0;
   if (startTime && finishTime) {
-    duration = (finishTime - startTime) / 1000;
+    duration = (finishTime.getTime() - startTime.getTime()) / 1000;
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration - hours * 3600) / 60);
     tableData.push([
@@ -68,7 +67,7 @@ const TrackViewerDetails: React.FC<Props> = ({
   }
 
   if (finishPoints.length) {
-    const [{ lengthInKm }] = finishPoints;
+    const { lengthInKm } = finishPoints[0];
     tableData.push([
       'distance',
       `${oneDecimalDigitNumberFormat.format(lengthInKm)} km`,
@@ -103,6 +102,7 @@ const TrackViewerDetails: React.FC<Props> = ({
       prevCoord[1],
       prevCoord[0],
     );
+
     if (10 * eleSmoothingFactor < distanceFromPrevPointInMeters) {
       // otherwise the ele sums are very high
       const ele = coord[2];
@@ -122,22 +122,26 @@ const TrackViewerDetails: React.FC<Props> = ({
       prevCoord = coord;
     }
   });
+
   if (minEle !== Infinity) {
     tableData.push([
       'minEle',
       `${noDecimalDigitsNumberFormat.format(minEle)} ${t('general.masl')}`,
     ]);
   }
+
   if (maxEle !== -Infinity) {
     tableData.push([
       'maxEle',
       `${noDecimalDigitsNumberFormat.format(maxEle)} ${t('general.masl')}`,
     ]);
   }
+
   tableData.push([
     'uphill',
     `${noDecimalDigitsNumberFormat.format(uphillEleSum)} m`,
   ]);
+
   tableData.push([
     'downhill',
     `${noDecimalDigitsNumberFormat.format(downhillEleSum)} m`,

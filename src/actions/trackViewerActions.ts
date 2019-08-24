@@ -5,9 +5,8 @@ import { FeatureCollection } from 'geojson';
 export type ColorizingMode = 'elevation' | 'steepness';
 
 export interface ITrackPoint extends LatLon {
-  id: number;
-  startTime?: number;
-  finishTime?: number;
+  startTime?: Date;
+  finishTime?: Date;
   lengthInKm: number;
 }
 

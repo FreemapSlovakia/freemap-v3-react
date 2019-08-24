@@ -1,7 +1,12 @@
 import turfLength from '@turf/length';
 import toGeoJSON from '@mapbox/togeojson';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import {
+  trackViewerSetData,
+  ITrackPoint,
+} from 'fm3/actions/trackViewerActions';
+import { assertType } from 'typescript-is';
+import { FeatureCollection } from 'geojson';
 
 export const trackViewerSetTrackDataProcessor: IProcessor<
   typeof trackViewerSetData
@@ -18,26 +23,29 @@ export const trackViewerSetTrackDataProcessor: IProcessor<
       'text/xml',
     );
 
-    const trackGeojson = toGeoJSON.gpx(gpxAsXml);
+    const trackGeojson = assertType<FeatureCollection>(toGeoJSON.gpx(gpxAsXml));
 
-    const startPoints: any[] = []; // TODO
-    const finishPoints: any[] = []; // TODO
+    const startPoints: ITrackPoint[] = []; // TODO
+    const finishPoints: ITrackPoint[] = []; // TODO
 
     for (const feature of trackGeojson.features) {
       if (feature.geometry.type === 'LineString') {
         const lengthInKm = turfLength(feature);
         const coords = feature.geometry.coordinates;
         const startLonlat = coords[0];
-        let startTime;
-        let finishTime;
-        const times = feature.properties.coordTimes;
+        let startTime: Date | undefined;
+        let finishTime: Date | undefined;
+        const times = assertType<string[] | undefined>(
+          feature.properties && feature.properties.coordTimes,
+        );
         if (times) {
-          [startTime] = times;
-          finishTime = times[times.length - 1];
+          startTime = new Date(times[0]);
+          finishTime = new Date(times[times.length - 1]);
         }
         startPoints.push({
           lat: startLonlat[1],
           lon: startLonlat[0],
+          lengthInKm: 0,
           startTime,
         });
 
@@ -50,6 +58,13 @@ export const trackViewerSetTrackDataProcessor: IProcessor<
         });
       }
     }
+
+    trackViewerSetData({
+      ...action.payload,
+      trackGeojson,
+      startPoints,
+      finishPoints,
+    });
 
     return {
       ...action,
