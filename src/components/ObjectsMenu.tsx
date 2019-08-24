@@ -84,6 +84,8 @@ class ObjectsMenu extends React.Component<Props, IState> {
   render() {
     const { t } = this.props;
 
+    const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
+
     return (
       <>
         <span className="fm-label">
@@ -96,14 +98,14 @@ class ObjectsMenu extends React.Component<Props, IState> {
           onToggle={this.handleToggle}
           open={this.state.dropdownOpened}
         >
-          <FormGroup bsClass="toggle">
+          <FormGroup2 bsRole="toggle">
             <FormControl
               type="text"
               placeholder={t('objects.type')}
               onChange={this.handleFilterSet}
               value={this.state.filter}
             />
-          </FormGroup>
+          </FormGroup2>
           <Dropdown.Menu>
             {poiTypeGroups.map(pointTypeGroup =>
               this.getGroupMenuItems(pointTypeGroup),
