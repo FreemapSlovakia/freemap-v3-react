@@ -18,7 +18,7 @@ interface IElement {
   tags: {
     [key: string]: string;
   };
-  timestamp: number;
+  timestamp: string;
   type: 'way' | 'node' | 'relation';
   geometry: any; // TODO per type
 }

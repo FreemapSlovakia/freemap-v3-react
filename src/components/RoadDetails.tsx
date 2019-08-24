@@ -15,7 +15,7 @@ type Props = ReturnType<typeof mapStateToProps> & {
     tags: {
       [key: string]: string;
     };
-    timestamp: number;
+    timestamp: string;
   };
 };
 
