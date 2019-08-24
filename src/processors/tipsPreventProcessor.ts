@@ -15,6 +15,9 @@ export const tipsPreventProcessor: IProcessor<typeof tipsPreventNextTime> = {
         method: 'PATCH',
         url: '/auth/settings',
         expectedStatus: 204,
+        data: {
+          preventTips: getState().tips.preventTips,
+        },
       });
     }
   },
