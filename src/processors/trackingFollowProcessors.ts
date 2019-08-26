@@ -16,16 +16,17 @@ export const trackingFollowProcessor: IProcessor = {
       ? tracks.find(t => t.id === activeTrackId)
       : undefined;
 
+    const differs = prevTrack !== track;
+    prevTrack = track;
+
     if (
       track &&
       !isActionOf(trackingActions.setActive, action) &&
-      prevTrack !== track &&
+      differs &&
       track.trackPoints.length
     ) {
       const { lat, lon } = track.trackPoints[track.trackPoints.length - 1];
       dispatch(mapRefocus({ lat, lon }));
     }
-
-    prevTrack = track;
   },
 };
