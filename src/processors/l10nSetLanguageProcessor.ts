@@ -17,16 +17,9 @@ export const l10nSetLanguageProcessor: IProcessor = {
       simplify(navigator.language) ||
       'en';
 
-    const [translations] = await Promise.all([
-      import(
-        /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.tsx`
-      ),
-      !window['hasNoNativeIntl']
-        ? null
-        : import(
-            /* webpackChunkName: "localeData-[request]" */ `intl/locale-data/jsonp/${language}.js`
-          ),
-    ]);
+    const translations = await import(
+      /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.tsx`
+    );
 
     window['translations'] = translations.default;
     dispatch(l10nSetLanguage(language));
