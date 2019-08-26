@@ -48,6 +48,7 @@ export const changesetsProcessor: IProcessor = {
         assertType<string>(data),
         'text/xml',
       );
+
       const rawChangesets = xml.getElementsByTagName('changeset');
       const arrayOfrawChangesets = Array.from(rawChangesets);
       const changesetsFromThisRequest = arrayOfrawChangesets

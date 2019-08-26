@@ -1,6 +1,11 @@
-import { gallerySetUsers, galleryShowFilter } from 'fm3/actions/galleryActions';
+import {
+  gallerySetUsers,
+  galleryShowFilter,
+  IGalleryUser,
+} from 'fm3/actions/galleryActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { assertType } from 'typescript-is';
 
 export const galleryFetchUsersProcessor: IProcessor = {
   actionCreator: galleryShowFilter,
@@ -13,6 +18,6 @@ export const galleryFetchUsersProcessor: IProcessor = {
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetUsers(data));
+    dispatch(gallerySetUsers(assertType<IGalleryUser[]>(data)));
   },
 };
