@@ -215,14 +215,9 @@ class GalleryViewerModal extends React.Component<Props, IState> {
       t,
     } = this.props;
 
-    if (!imageIds) {
-      return null;
-    }
-
-    const index = imageIds.findIndex(id => id === activeImageId);
-    if (index === -1) {
-      return null;
-    }
+    const index = imageIds
+      ? imageIds.findIndex(id => id === activeImageId)
+      : -1;
 
     const {
       title = '...',
