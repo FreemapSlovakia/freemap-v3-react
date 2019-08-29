@@ -229,7 +229,7 @@
     "filter": [
       {
         "key": "amenity",
-        "value": "doctor"
+        "value": "doctors"
       }
     ]
   },
