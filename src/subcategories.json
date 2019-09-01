@@ -1014,17 +1014,6 @@
     ]
   },
   {
-    "id": 88,
-    "categoryId": 6,
-    "filename": "dive",
-    "filter": [
-      {
-        "key": "shop",
-        "value": "dive"
-      }
-    ]
-  },
-  {
     "id": 89,
     "categoryId": 6,
     "filename": "dry_cleaning",
