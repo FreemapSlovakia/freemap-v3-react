@@ -91,6 +91,7 @@ import { routePlannerSetupTransportTypeProcessor } from './processors/routePlann
 import { routePlannerToggleElevationChartProcessor } from './processors/routePlannerToggleElevationChartProcessor';
 import { errorProcessor } from './processors/errorProcessor';
 import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTrackDataProcessor';
+import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -124,6 +125,7 @@ processors.push(
   cancelProcessor,
   authLogoutProcessor,
   searchProcessor,
+  searchHighlightProcessor,
   tipsPreventProcessor,
   locateProcessor,
   saveSettingsProcessor,
