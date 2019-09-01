@@ -609,7 +609,6 @@ export default {
       94: 'Farm products',
       95: 'Flower shop',
       96: 'Paintings',
-      97: 'Furnace',
       98: 'Funeral directors',
       99: 'Furniture',
       100: 'Garden centre',

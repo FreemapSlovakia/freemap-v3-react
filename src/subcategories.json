@@ -1102,17 +1102,6 @@
     ]
   },
   {
-    "id": 97,
-    "categoryId": 6,
-    "filename": "furnace",
-    "filter": [
-      {
-        "key": "shop",
-        "value": "furnace"
-      }
-    ]
-  },
-  {
     "id": 98,
     "categoryId": 6,
     "filename": "funeral_directors",

@@ -609,7 +609,6 @@ export default {
       94: 'Farmárske produkty',
       95: 'Kvetinárstvo',
       96: 'Obrazy',
-      97: 'furnace',
       98: 'funeral_directors',
       99: 'Nábytok',
       100: 'Záhradné centrum',

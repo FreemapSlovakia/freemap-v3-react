@@ -604,7 +604,6 @@ export default {
       94: 'Farmářské produkty',
       95: 'Květinářství',
       96: 'Obrazy',
-      97: 'furnace',
       98: 'funeral_directors',
       99: 'Nábytek',
       100: 'Zahradní centrum',
