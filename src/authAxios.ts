@@ -72,7 +72,7 @@ export async function httpRequest({
   };
 
   try {
-    if (!rest.url || /^https?:\/\/|^\/\//.test(rest.url)) {
+    if (!rest.url || /^(https?:)?\/\//.test(rest.url)) {
       return getAxios(expectedStatus).request(params);
     } else {
       return getAuthAxios(getState, expectedStatus).request(params);

@@ -29,7 +29,7 @@ export const objectsFetchProcessor: IProcessor<typeof objectsSetFilter> = {
     )}; out center;`;
 
     const { data } = await httpRequest({
-      getState, // TODO no auth!
+      getState,
       method: 'POST',
       url: '//overpass-api.de/api/interpreter',
       data: `data=${encodeURIComponent(query)}`,

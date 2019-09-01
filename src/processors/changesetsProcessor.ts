@@ -32,7 +32,7 @@ export const changesetsProcessor: IProcessor = {
 
     async function loadChangesets(toTime0, changesetsFromPreviousRequest) {
       const { data } = await httpRequest({
-        getState, // TODO no auth!
+        getState,
         method: 'GET',
         url: '//api.openstreetmap.org/api/0.6/changesets',
         expectedStatus: [200, 404],
