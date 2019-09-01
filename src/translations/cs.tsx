@@ -596,7 +596,6 @@ export default {
       85: 'Záclony a závěsy',
       86: 'Delikatesy',
       87: 'Obchodní dům',
-      88: 'Potápěčské potřeby',
       89: 'Čistírna',
       90: 'Domácí výrobky',
       91: 'Elektronika',
