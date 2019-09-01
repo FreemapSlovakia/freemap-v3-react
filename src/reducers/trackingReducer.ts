@@ -9,11 +9,8 @@ import {
 } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
 import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
-import {
-  wsStateChanged,
-  rpcResponse,
-  rpcEvent,
-} from 'fm3/actions/websocketActions';
+import { wsStateChanged } from 'fm3/actions/websocketActions';
+import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
 
 export interface ITrackingState {
   devices: IDevice[];

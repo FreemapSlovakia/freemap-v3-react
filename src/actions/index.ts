@@ -2,6 +2,7 @@ import { ActionType } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import * as main from 'fm3/actions/mainActions';
 import * as ws from 'fm3/actions/websocketActions';
+import * as rpc from 'fm3/actions/rpcActions';
 import * as areaMeasuremnet from 'fm3/actions/areaMeasurementActions';
 import * as distanceMeasuremnet from 'fm3/actions/distanceMeasurementActions';
 import * as elevationMeasuremnet from 'fm3/actions/elevationMeasurementActions';
@@ -25,6 +26,7 @@ export const actions = {
   tracking: trackingActions,
   main,
   ws,
+  rpc,
   areaMeasuremnet,
   distanceMeasuremnet,
   elevationMeasuremnet,

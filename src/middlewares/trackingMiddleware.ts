@@ -1,9 +1,5 @@
-import {
-  wsClose,
-  wsOpen,
-  rpcCall,
-  rpcResponse,
-} from 'fm3/actions/websocketActions';
+import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
+import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
 import { Middleware, Dispatch } from 'redux';
 import { getType } from 'typesafe-actions';

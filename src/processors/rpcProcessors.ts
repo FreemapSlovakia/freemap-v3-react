@@ -1,10 +1,5 @@
-import {
-  wsSend,
-  rpcResponse,
-  rpcEvent,
-  rpcCall,
-  wsReceived,
-} from 'fm3/actions/websocketActions';
+import { wsSend, wsReceived } from 'fm3/actions/websocketActions';
+import { rpcResponse, rpcEvent, rpcCall } from 'fm3/actions/rpcActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 
 // TODO implement call timeout
