@@ -141,7 +141,7 @@ class MoreMenuButton extends React.Component<Props, IState> {
     });
   };
 
-  handleTipSelect = (tip: string) => {
+  handleTipSelect = (tip: any) => {
     this.props.onTip(tip);
     this.close();
   };

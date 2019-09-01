@@ -121,7 +121,7 @@ class Settings extends React.Component<Props, IState> {
     });
   };
 
-  handleOverlaySelect = (o: string) => {
+  handleOverlaySelect = (o: any) => {
     this.setState({
       selectedOverlay: o,
     });
