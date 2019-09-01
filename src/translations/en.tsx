@@ -524,7 +524,7 @@ export default {
       5: 'Hotel',
       6: 'Parking',
       7: 'Airport',
-      8: 'Tram station',
+      8: 'Trin station',
       9: 'Bus station',
       10: 'Bus stop',
       11: 'Castle',
