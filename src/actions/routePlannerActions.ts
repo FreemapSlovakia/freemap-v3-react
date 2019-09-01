@@ -17,11 +17,21 @@ export type TransportType =
   | 'ski'
   | 'foot';
 
+export type TManeuerModifier =
+  | 'uturn'
+  | 'sharp right'
+  | 'slight right'
+  | 'right'
+  | 'sharp left'
+  | 'slight left'
+  | 'left'
+  | 'straight';
+
 export interface IStep {
   maneuver: {
     location: LatLon;
     type: string; // TODO enum?
-    modifier: string; // TODO enum?
+    modifier: TManeuerModifier;
   };
   distance: number;
   duration: number;
