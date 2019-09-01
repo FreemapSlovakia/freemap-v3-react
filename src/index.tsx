@@ -1,4 +1,4 @@
-import { setStore } from 'fm3/globalErrorHandler';
+import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
 import 'fullscreen-api-polyfill';
 
 import React from 'react';
@@ -11,26 +11,28 @@ import Main from 'fm3/components/Main';
 import ErrorCatcher from 'fm3/components/ErrorCatcher';
 
 import {
-  mainLoadState,
   enableUpdatingUrl,
   reloadApp,
+  setAppState,
 } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
-import { mapLoadState, mapSetStravaAuth } from 'fm3/actions/mapActions';
-import { trackViewerLoadState } from 'fm3/actions/trackViewerActions';
+import { mapSetStravaAuth } from 'fm3/actions/mapActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import history from 'fm3/historyHolder';
+import { history } from 'fm3/historyHolder';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
-import initAuthHelper from 'fm3/authHelper';
+import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
-import createStore from 'fm3/storeCreator';
-import storage from 'fm3/storage';
+import { createReduxStore } from 'fm3/storeCreator';
+import { storage } from 'fm3/storage';
 
 import 'font-awesome/scss/font-awesome.scss';
 import 'fm3/styles/bootstrap-override.scss';
+import { authInit } from './actions/authActions';
+import { assertType } from 'typescript-is';
+import { IAppState } from './types/common';
 
 if (window.location.search === '?reset-local-storage') {
   storage.clear();
@@ -38,18 +40,20 @@ if (window.location.search === '?reset-local-storage') {
 
 document.body.classList.add(window.self === window.top ? 'full' : 'embedded');
 
-const store = createStore();
+const store = createReduxStore();
 
-setStore(store);
-
-const { location } = history;
+setErrorHandlerStore(store);
 
 loadAppState();
 
-history.listen(handleLocationChange.bind(undefined, store));
+const { location } = history;
+history.listen(location => {
+  handleLocationChange(store, location);
+});
 handleLocationChange(store, location);
 
-initAuthHelper(store);
+store.dispatch(authInit());
+attachOsmLoginMessageHandler(store);
 
 store.dispatch(enableUpdatingUrl());
 
@@ -91,35 +95,20 @@ if (process.env.NODE_ENV) {
 }
 
 function loadAppState() {
-  let appState;
+  let appState: IAppState | undefined;
   const as = storage.getItem('appState');
   if (as) {
     try {
-      appState = JSON.parse(as);
+      appState = assertType<IAppState>(JSON.parse(as));
     } catch (e) {
       // ignore
     }
   }
 
   if (appState) {
-    if (appState.main) {
-      store.dispatch(mainLoadState(appState.main));
-    }
-    if (appState.map) {
-      store.dispatch(mapLoadState(appState.map));
-    }
-    if (appState.trackViewer) {
-      store.dispatch(trackViewerLoadState(appState.trackViewer));
-    }
+    store.dispatch(setAppState(appState));
+    store.dispatch(l10nSetChosenLanguage(appState.language));
   }
-
-  store.dispatch(
-    l10nSetChosenLanguage(
-      appState && [null, 'en', 'sk', 'cs'].includes(appState.language)
-        ? appState.language
-        : null,
-    ),
-  );
 }
 
 function checkStravaAuth() {

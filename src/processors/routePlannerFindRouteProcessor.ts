@@ -14,7 +14,7 @@ import {
   IStep,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { isActionOf } from 'typesafe-actions';

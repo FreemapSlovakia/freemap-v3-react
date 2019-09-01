@@ -15,7 +15,10 @@ interface IProps extends PathProps {
 
 class Hotline extends Path<IProps, LPath> {
   createLeafletElement(props: IProps) {
-    return window['L'].hotline(props.positions, this.getOptions(props));
+    return (window['L'] as any).hotline(
+      props.positions,
+      this.getOptions(props),
+    );
   }
 
   updateLeafletElement(fromProps: IProps, toProps: IProps) {

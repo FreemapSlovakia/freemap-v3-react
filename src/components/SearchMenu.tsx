@@ -51,6 +51,11 @@ const SearchMenu: React.FC<Props> = ({
 
   return (
     <>
+      {/* <Form inline onSubmit={this.handleSearch}>
+        <FormGroup>
+          <FormControl />
+        </FormGroup>
+      </Form> */}
       <AsyncTypeahead
         id="search"
         isLoading={inProgress}

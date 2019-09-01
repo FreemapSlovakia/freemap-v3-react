@@ -32,10 +32,6 @@ export const mapSetOverlayPaneOpacity = createStandardAction(
   'MAP_SET_OVERLAY_PANE_OPACITY',
 )<number>();
 
-export const mapLoadState = createStandardAction('MAP_LOAD_STATE')<
-  IMapStateBase
->();
-
 export const mapSetStravaAuth = createStandardAction('MAP_SET_STRAVA_AUTH')<
   boolean
 >();

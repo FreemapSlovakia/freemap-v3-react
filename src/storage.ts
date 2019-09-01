@@ -1,4 +1,4 @@
-import storage from 'local-storage-fallback';
+import strg from 'local-storage-fallback';
 
 let s: StorageFallback;
 
@@ -8,9 +8,7 @@ try {
   }
   s = window.localStorage;
 } catch (e) {
-  s = storage;
+  s = strg;
 }
 
-const ss = s;
-
-export default ss;
+export const storage = s;

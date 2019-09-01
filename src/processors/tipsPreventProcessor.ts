@@ -1,6 +1,6 @@
 import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 import { httpRequest } from 'fm3/authAxios';
 
 export const tipsPreventProcessor: IProcessor<typeof tipsPreventNextTime> = {

@@ -1,5 +1,5 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
-import { LatLon } from 'fm3/types/common';
+import { LatLon, IAppState } from 'fm3/types/common';
 
 export type Tool =
   | 'objects'
@@ -53,7 +53,7 @@ export interface IPdfExportOptions {
 
 export const setExpertMode = createStandardAction('SET_EXPERT_MODE')<boolean>();
 
-export const mainLoadState = createStandardAction('MAIN_LOAD_STATE')<any>();
+export const setAppState = createStandardAction('SET_APP_STATE')<IAppState>();
 
 export const exportGpx = createStandardAction('EXPORT_GPX')<any>();
 

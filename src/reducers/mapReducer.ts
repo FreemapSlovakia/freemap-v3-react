@@ -1,6 +1,5 @@
 import { createReducer } from 'typesafe-actions';
 import {
-  mapLoadState,
   IMapStateBase,
   mapRefocus,
   mapReset,
@@ -11,7 +10,7 @@ import {
 } from 'fm3/actions/mapActions';
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
-import { setTool } from 'fm3/actions/mainActions';
+import { setTool, setAppState } from 'fm3/actions/mainActions';
 
 export interface IMapState extends IMapStateBase {
   stravaAuth: boolean;
@@ -34,48 +33,8 @@ const initialState: IMapState = {
 };
 
 export const mapReducer = createReducer<IMapState, RootAction>(initialState)
-  .handleAction(mapLoadState, (state, action) => {
-    // TODO improve validation
-
-    const s = { ...state };
-    const {
-      mapType,
-      lat,
-      lon,
-      zoom,
-      overlays,
-      overlayOpacity,
-      tileFormat,
-      overlayPaneOpacity,
-    } = action.payload;
-    if (mapType) {
-      s.mapType = mapType;
-    }
-    if (typeof lat === 'number') {
-      s.lat = lat;
-    }
-    if (typeof lon === 'number') {
-      s.lon = lon;
-    }
-    if (typeof zoom === 'number') {
-      s.zoom = zoom;
-    }
-    if (Array.isArray(overlays)) {
-      s.overlays = [...overlays];
-    }
-    if (overlayOpacity) {
-      s.overlayOpacity = {
-        ...initialState.overlayOpacity,
-        ...overlayOpacity,
-      };
-    }
-    if (overlayPaneOpacity) {
-      s.overlayPaneOpacity = overlayPaneOpacity;
-    }
-    if (tileFormat) {
-      s.tileFormat = tileFormat;
-    }
-    return s;
+  .handleAction(setAppState, (state, action) => {
+    return { ...state, ...action.payload.map };
   })
   .handleAction(mapReset, state => ({
     ...state,

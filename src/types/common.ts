@@ -1,3 +1,8 @@
+import { IMapStateBase } from 'fm3/actions/mapActions';
+import { IRoutePlannerState } from 'fm3/reducers/routePlannerReducer';
+import { ITrackViewerState } from 'fm3/reducers/trackViewerReducer';
+import { IMainState } from 'fm3/reducers/mainReducer';
+
 export interface LatLon {
   lat: number;
   lon: number;
@@ -21,4 +26,12 @@ declare global {
     FB: fb.FacebookStatic;
     fbAsyncInit?: () => void;
   }
+}
+
+export interface IAppState {
+  main: Pick<IMainState, 'homeLocation' | 'expertMode'>;
+  map: IMapStateBase;
+  trackViewer: Pick<ITrackViewerState, 'eleSmoothingFactor'>;
+  language: string | null;
+  routePlanner: Pick<IRoutePlannerState, 'transportType'>;
 }

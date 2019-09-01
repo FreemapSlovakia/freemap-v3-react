@@ -33,12 +33,6 @@ export const trackViewerSetEleSmoothingFactor = createStandardAction(
   'TRACK_VIEWER_SET_ELE_SMOOTHING_FACTOR',
 )<number>();
 
-export const trackViewerLoadState = createStandardAction(
-  'TRACK_VIEWER_LOAD_STATE',
-)<{
-  eleSmoothingFactor?: number;
-}>();
-
 export const trackViewerColorizeTrackBy = createStandardAction(
   'TRACK_VIEWER_COLORIZE_TRACK_BY',
 )<ColorizingMode | null>();

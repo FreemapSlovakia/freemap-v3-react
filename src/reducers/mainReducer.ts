@@ -2,7 +2,7 @@ import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import {
-  mainLoadState,
+  setAppState,
   setActiveModal,
   setTool,
   setHomeLocation,
@@ -55,21 +55,8 @@ const initialState: IMainState = {
 };
 
 export const mainReducer = createReducer<IMainState, RootAction>(initialState)
-  .handleAction(mainLoadState, (state, action) => {
-    const s = { ...state };
-    const { homeLocation, expertMode } = action.payload;
-    if (
-      homeLocation &&
-      typeof homeLocation.lat === 'number' &&
-      typeof homeLocation.lon === 'number'
-    ) {
-      s.homeLocation = {
-        lat: homeLocation.lat as number,
-        lon: homeLocation.lon as number,
-      };
-    }
-    s.expertMode = !!expertMode;
-    return s;
+  .handleAction(setAppState, (state, action) => {
+    return { ...state, ...action.payload.main };
   })
   .handleAction(authSetUser, (state, action) => {
     const p = action.payload;

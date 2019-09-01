@@ -5,7 +5,7 @@ import { GridLayer, withLeaflet, GridLayerProps } from 'react-leaflet';
 import { createFilter } from 'fm3/galleryUtils';
 import { DomUtil } from 'leaflet';
 
-const galleryLayer = window['L'].GridLayer.extend({
+const galleryLayer = (window['L'] as any).GridLayer.extend({
   createTile(coords, done) {
     const size = this.getTileSize();
     const map = this._map;

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { setErrorTicketId } from 'fm3/actions/mainActions';
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 import { MyStore } from './storeCreator';
 
 let store: MyStore;

@@ -28,7 +28,7 @@ export const routePlannerToggleElevationChartProcessor: IProcessor<
       dispatch(
         elevationChartSetTrackGeojson(
           lineString(
-            []
+            ([] as any[])
               .concat(
                 ...alternatives[activeAlternativeIndex].itinerary.map(
                   ({ shapePoints }) => shapePoints,

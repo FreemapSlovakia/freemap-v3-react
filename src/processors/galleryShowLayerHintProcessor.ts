@@ -1,6 +1,6 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryPreventLayerHint } from 'fm3/actions/galleryActions';
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { setTool } from 'fm3/actions/mainActions';
 

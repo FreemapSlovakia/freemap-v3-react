@@ -4,7 +4,7 @@ import { isActionOf } from 'typesafe-actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { setTool, reloadApp } from 'fm3/actions/mainActions';
 import { tipsPrevious, tipsNext } from 'fm3/actions/tipsActions';
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 
 // TODO to processors
 

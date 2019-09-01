@@ -92,6 +92,8 @@ import { routePlannerToggleElevationChartProcessor } from './processors/routePla
 import { errorProcessor } from './processors/errorProcessor';
 import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTrackDataProcessor';
 import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
+import { authInitProcessor } from './processors/authInitProcessor';
+import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -133,9 +135,11 @@ processors.push(
   elevationMeasurementProcessor,
   mapDetailsProcessor,
   changesetsProcessor,
+  authInitProcessor,
   authLoginWithFacebookProcessor,
   authLoginWithGoogleProcessor,
   authLoginWithOsmProcessor,
+  authLoginWithOsm2Processor,
   authSaveUserProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
@@ -189,7 +193,7 @@ processors.push(
   urlProcessor,
 );
 
-export default function createReduxStore() {
+export function createReduxStore() {
   const store = createStore(
     rootReducer,
     applyMiddleware(

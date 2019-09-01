@@ -1,4 +1,4 @@
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { IUser } from 'fm3/types/common';
 

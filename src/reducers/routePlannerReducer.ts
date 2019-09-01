@@ -2,7 +2,7 @@ import produce from 'immer';
 import { LatLon } from 'fm3/types/common';
 import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { clearMap, setTool, setAppState } from 'fm3/actions/mainActions';
 import {
   routePlannerSetParams,
   routePlannerSetStart,
@@ -59,6 +59,9 @@ export const routePlannerReducer = createReducer<
   IRoutePlannerState,
   RootAction
 >(initialState)
+  .handleAction(setAppState, (state, action) => {
+    return { ...state, ...action.payload.routePlanner };
+  })
   .handleAction(setTool, state => ({
     ...state,
     pickMode: !state.start ? 'start' : 'finish',

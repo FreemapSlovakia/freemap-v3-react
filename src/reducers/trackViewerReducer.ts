@@ -1,8 +1,7 @@
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, setAppState } from 'fm3/actions/mainActions';
 import {
-  trackViewerLoadState,
   trackViewerSetData,
   trackViewerSetTrackUID,
   trackViewerDownloadTrack,
@@ -52,13 +51,8 @@ export const trackViewerReducer = createReducer<ITrackViewerState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
-  .handleAction(trackViewerLoadState, (state, action) => {
-    const s = { ...state };
-    const { eleSmoothingFactor } = action.payload;
-    if (eleSmoothingFactor) {
-      s.eleSmoothingFactor = eleSmoothingFactor;
-    }
-    return s;
+  .handleAction(setAppState, (state, action) => {
+    return { ...state, ...action.payload.trackViewer };
   })
   .handleAction(trackViewerSetData, (state, action) => ({
     ...state,

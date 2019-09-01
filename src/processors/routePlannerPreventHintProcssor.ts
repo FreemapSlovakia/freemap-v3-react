@@ -1,4 +1,4 @@
-import storage from 'fm3/storage';
+import { storage } from 'fm3/storage';
 import { routePlannerPreventHint } from 'fm3/actions/routePlannerActions';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 
