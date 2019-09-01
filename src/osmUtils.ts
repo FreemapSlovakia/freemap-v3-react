@@ -29,7 +29,7 @@ export function toNodes(data: Document) {
 }
 
 export function toWays(data: Document, nodes: INodes) {
-  const ways = {};
+  const ways: { [key: string]: [number, number][] } = {};
 
   const wayRes = data.evaluate(
     '/osm/way',
