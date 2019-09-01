@@ -17,7 +17,7 @@
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strict": true,
+    "strict": false,
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "plugins": [

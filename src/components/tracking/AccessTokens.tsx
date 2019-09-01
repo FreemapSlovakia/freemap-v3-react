@@ -16,7 +16,6 @@ import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
-    language: string;
     t: Translator;
   };
 
@@ -77,6 +76,7 @@ const AccessTokens: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => ({
   accessTokens: state.tracking.accessTokens,
+  language: state.l10n.language,
   deviceName: (
     state.tracking.devices.find(
       device => device.id === state.tracking.accessTokensDeviceId,

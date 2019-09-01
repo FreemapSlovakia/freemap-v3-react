@@ -1211,6 +1211,6 @@ export default {
   },
 };
 
-function numberize(n, words) {
+function numberize(n: number, words: [string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
 }
