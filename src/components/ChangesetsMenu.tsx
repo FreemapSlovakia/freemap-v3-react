@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import Form from 'react-bootstrap/lib/Form';
 import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
@@ -154,10 +154,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(ChangesetsMenu);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(ChangesetsMenu));

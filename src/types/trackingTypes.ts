@@ -60,4 +60,5 @@ export interface ITrackPoint {
   speed?: number | null;
   message?: string | null;
   altitude?: number | null;
+  bearing?: number | null;
 }

@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
 import { Popup } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
@@ -12,7 +11,7 @@ type Props = ReturnType<typeof mapStateToProps> & {
   t: Translator;
 };
 
-const ObjectsResult: React.FC<Props> = ({ objects, t, language }) => {
+const ObjectsResultInt: React.FC<Props> = ({ objects, t, language }) => {
   return (
     <>
       {objects.map(({ id, lat, lon, tags, typeId }) => {
@@ -58,7 +57,6 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default compose(
-  withTranslator,
-  connect(mapStateToProps),
-)(ObjectsResult);
+export const ObjectsResult = connect(mapStateToProps)(
+  withTranslator(ObjectsResultInt),
+);

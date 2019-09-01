@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
@@ -69,10 +69,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(MapDetailsMenu);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(MapDetailsMenu));

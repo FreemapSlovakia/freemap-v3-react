@@ -34,7 +34,17 @@ window.addEventListener('error', evt => {
   });
 });
 
-export function sendError(errDetails) {
+interface IErrorDetails {
+  kind: string;
+  action?: any;
+  error?: any;
+  message?: string;
+  filename?: string;
+  lineno?: number;
+  colno?: number;
+}
+
+export function sendError(errDetails: IErrorDetails) {
   // eslint-disable-next-line
   console.error('Application error:', errDetails);
 

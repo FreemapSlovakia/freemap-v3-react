@@ -1,6 +1,6 @@
 import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -131,10 +131,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(SearchMenu);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(SearchMenu));

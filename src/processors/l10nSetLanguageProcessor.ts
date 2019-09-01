@@ -21,7 +21,7 @@ export const l10nSetLanguageProcessor: IProcessor = {
       /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.tsx`
     );
 
-    window['translations'] = translations.default;
+    window.translations = translations.default;
     dispatch(l10nSetLanguage(language));
   },
 };

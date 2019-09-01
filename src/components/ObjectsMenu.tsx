@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
@@ -33,7 +33,7 @@ class ObjectsMenu extends React.Component<Props, IState> {
     dropdownOpened: false,
   };
 
-  getGroupMenuItems = ({ id: gid }) => {
+  getGroupMenuItems = ({ id: gid }: { id: number }) => {
     const { t } = this.props;
 
     const items = poiTypes
@@ -143,10 +143,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(ObjectsMenu);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(ObjectsMenu));

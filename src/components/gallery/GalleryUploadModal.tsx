@@ -1,7 +1,7 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -51,7 +51,7 @@ class GalleryUploadModal extends React.Component<Props> {
     }
   };
 
-  processFile = (file: File, cb: (err?: Error) => void) => {
+  processFile = (file: File, cb: (err?: any) => void) => {
     const reader = new FileReader();
 
     reader.onerror = () => {
@@ -67,7 +67,7 @@ class GalleryUploadModal extends React.Component<Props> {
         tags = {};
       }
 
-      const keywords = [];
+      const keywords: string[] = [];
 
       // try {
       //   keywords.push(...tags.Keywords.description.split(',').map(x => x.trim()).filter(x => x));
@@ -210,7 +210,7 @@ class GalleryUploadModal extends React.Component<Props> {
             }
             cb();
           })
-          .catch(err => {
+          .catch((err: any) => {
             cb(err);
           });
       };
@@ -420,10 +420,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(GalleryUploadModal);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(GalleryUploadModal));

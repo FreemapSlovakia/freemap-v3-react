@@ -11,7 +11,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import Device from './Device';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
@@ -80,10 +80,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(Devices);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(Devices));

@@ -4,7 +4,7 @@ import 'leaflet/dist/leaflet.css';
 import React from 'react';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -24,7 +24,7 @@ import SearchMenu from 'fm3/components/SearchMenu';
 import SearchResults from 'fm3/components/SearchResults';
 
 import ObjectsMenu from 'fm3/components/ObjectsMenu';
-import ObjectsResult from 'fm3/components/ObjectsResult';
+import { ObjectsResult } from 'fm3/components/ObjectsResult';
 
 import MeasurementMenu from 'fm3/components/MeasurementMenu';
 import DistanceMeasurementResult from 'fm3/components/DistanceMeasurementResult';
@@ -108,7 +108,7 @@ interface IState {
   showInfoBar: boolean;
 }
 
-class Main extends React.Component<Props, IState> {
+class MainInt extends React.Component<Props, IState> {
   state: IState = {
     showInfoBar: true,
   };
@@ -541,17 +541,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(Main);
+export const Main = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(MainInt));
 
 function handleMapClick(e: LeafletMouseEvent) {
   // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-  if (!window['preventMapClick']) {
+  if (!window.preventMapClick) {
     mapEventEmitter.emit('mapClick', e.latlng.lat, e.latlng.lng);
   }
 }

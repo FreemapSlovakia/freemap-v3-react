@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -160,15 +160,12 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
-  onExport(exportables) {
+  onExport(exportables: string[] | null) {
     dispatch(exportGpx(exportables));
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(ExportGpxModal);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(ExportGpxModal));

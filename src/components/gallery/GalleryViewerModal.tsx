@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import ReactStars from 'react-stars';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -567,10 +567,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(GalleryViewerModal);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(GalleryViewerModal));

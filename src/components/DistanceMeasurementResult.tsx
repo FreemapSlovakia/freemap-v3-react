@@ -196,13 +196,13 @@ class DistanceMeasurementResult extends React.Component<Props, IState> {
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragStart() {
-  window['preventMapClick'] = true;
+  window.preventMapClick = true;
 }
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragEnd() {
   window.setTimeout(() => {
-    window['preventMapClick'] = false;
+    window.preventMapClick = false;
   });
 }
 

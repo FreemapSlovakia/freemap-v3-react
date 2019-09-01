@@ -1,4 +1,4 @@
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import React from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -141,7 +141,7 @@ class MoreMenuButton extends React.Component<Props, IState> {
     });
   };
 
-  handleTipSelect = tip => {
+  handleTipSelect = (tip: string) => {
     this.props.onTip(tip);
     this.close();
   };
@@ -394,10 +394,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(MoreMenuButton);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(MoreMenuButton));

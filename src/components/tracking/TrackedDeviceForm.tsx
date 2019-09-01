@@ -15,7 +15,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { ITrackedDevice } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { InputGroup } from 'react-bootstrap';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -203,10 +203,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(TrackedDeviceForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(TrackedDeviceForm));

@@ -13,7 +13,7 @@ import { IEditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
 import { Checkbox } from 'react-bootstrap';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 
@@ -119,10 +119,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(DeviceForm);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(DeviceForm));

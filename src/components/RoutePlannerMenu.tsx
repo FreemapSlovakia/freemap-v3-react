@@ -1,5 +1,5 @@
 import React from 'react';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -410,13 +410,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(RoutePlannerMenu);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(RoutePlannerMenu));
 
 function imhdSummary(t: Translator, language: string, extra) {
   const dateFormat = new Intl.DateTimeFormat(language, {

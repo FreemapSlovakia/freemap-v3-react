@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { Line } from 'react-chartjs-2';
 
 import {
@@ -136,10 +136,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(ElevationChart);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(ElevationChart));

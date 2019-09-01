@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import Dropzone from 'react-dropzone';
 
 import Button from 'react-bootstrap/lib/Button';
@@ -109,10 +109,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    null,
-    mapDispatchToProps,
-  ),
-)(TrackViewerUploadModal);
+export default connect(
+  null,
+  mapDispatchToProps,
+)(withTranslator(TrackViewerUploadModal));

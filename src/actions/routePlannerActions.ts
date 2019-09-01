@@ -37,9 +37,9 @@ export interface IStep {
   duration: number;
   name: string;
   type: string; // TODO enum?
-  modifier; // TODO enum?
+  modifier: string; // TODO enum?
   mode: SliceMode;
-  shapePoints: any;
+  shapePoints: [number, number][];
   legIndex: number;
   extra: any;
 }

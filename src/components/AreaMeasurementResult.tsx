@@ -83,7 +83,7 @@ class AreaMeasurementResult extends React.Component<Props, IState> {
 
   handleMeasureMarkerDrag(
     i: number,
-    { latlng: { lat, lng: lon } },
+    { latlng: { lat, lng: lon } }: { latlng: { lat: number; lng: number } },
     id: number,
   ) {
     this.props.onPointUpdate(i, { lat, lon, id });
@@ -216,13 +216,13 @@ class AreaMeasurementResult extends React.Component<Props, IState> {
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragStart() {
-  window['preventMapClick'] = true;
+  window.preventMapClick = true;
 }
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragEnd() {
   window.setTimeout(() => {
-    window['preventMapClick'] = false;
+    window.preventMapClick = false;
   });
 }
 

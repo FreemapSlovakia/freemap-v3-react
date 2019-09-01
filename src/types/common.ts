@@ -25,6 +25,9 @@ declare global {
     ga: UniversalAnalytics.ga;
     FB: fb.FacebookStatic;
     fbAsyncInit?: () => void;
+    handleGoogleAuthApiLoad?: () => void;
+    preventMapClick?: boolean;
+    translations?: object;
   }
 }
 

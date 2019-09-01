@@ -1,7 +1,7 @@
 import React from 'react';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import {
   elevationMeasurementSetPoint,
   elevationMeasurementSetElevation,
@@ -83,10 +83,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(ElevationMeasurementResult);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(ElevationMeasurementResult));

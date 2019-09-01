@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { compose } from 'redux';
 import { Tooltip } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
@@ -70,7 +69,6 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default compose(
-  withTranslator,
-  connect(mapStateToProps),
-)(ElevationChartActivePoint);
+export default connect(mapStateToProps)(
+  withTranslator(ElevationChartActivePoint),
+);

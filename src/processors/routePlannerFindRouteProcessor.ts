@@ -18,6 +18,42 @@ import { storage } from 'fm3/storage';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { isActionOf } from 'typesafe-actions';
+import { assertType } from 'typescript-is';
+
+interface IOsrmStep {
+  distance: number;
+  duration: number;
+  geometry: {
+    coordinates: [number, number][];
+  };
+  name: string;
+  // weight: number;
+  mode: string;
+  extra: {};
+  maneuver: {
+    type: string;
+    modifier: string;
+    location: [number, number];
+  };
+}
+
+interface IOsrmLeg {
+  distance: number;
+  duration: number;
+  // weight: number;
+  // summary: string;
+  steps: IOsrmStep[];
+}
+
+interface IOsrmRoute {
+  distance: number;
+  duration: number;
+  legs: IOsrmLeg[];
+  // geometry: any;
+  // weight: number;
+  // weight_name: string;
+  extra: {};
+}
 
 const updateRouteTypes = [
   routePlannerSetStart,
@@ -124,14 +160,20 @@ export const routePlannerFindRouteProcessor: IProcessor = {
         );
       }
 
-      const alts = (routes || trips).map(route => {
+      const rts = routes || trips;
+      assertType<any[]>(rts);
+
+      const alts = rts.map((rt: any) => {
+        const route = assertType<IOsrmRoute>(rt);
+
         const {
           legs,
           distance: totalDistance,
           duration: totalDuration,
           extra: totalExtra,
         } = route;
-        const itinerary = [].concat(
+
+        const itinerary = ([] as any).concat(
           ...legs.map((leg, legIndex: number) =>
             leg.steps.map(
               ({
@@ -171,17 +213,19 @@ export const routePlannerFindRouteProcessor: IProcessor = {
           ),
         );
 
-        return {
+        const alt: IAlternative = {
           itinerary,
           distance: totalDistance / 1000,
           duration: totalDuration / 60,
           extra: totalExtra,
         };
+
+        return alt;
       });
 
-      const alternatives =
+      const alternatives: IAlternative[] =
         transportType === 'imhd'
-          ? alts.map(alt => addMissingSegments(alt))
+          ? alts.map((alt: IAlternative) => addMissingSegments(alt))
           : alts;
 
       dispatch(

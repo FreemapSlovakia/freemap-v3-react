@@ -1,5 +1,4 @@
 import React from 'react';
-import { compose } from 'redux';
 import { connect } from 'react-redux';
 import { smoothElevations, distance } from 'fm3/geoutils';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -167,7 +166,4 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default compose(
-  withTranslator,
-  connect(mapStateToProps),
-)(TrackViewerDetails);
+export default connect(mapStateToProps)(withTranslator(TrackViewerDetails));

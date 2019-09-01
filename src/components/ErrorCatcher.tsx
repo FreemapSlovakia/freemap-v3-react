@@ -1,5 +1,4 @@
 import { connect } from 'react-redux';
-import { compose } from 'redux';
 import React from 'react';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -13,7 +12,7 @@ interface IState {
   error?: Error;
 }
 
-class ErrorCatcher extends React.Component<Props, IState> {
+class ErrorCatcherInt extends React.Component<Props, IState> {
   state: IState = {};
 
   componentDidCatch(error: Error) {
@@ -43,7 +42,6 @@ const mapStateToProps = (state: RootState) => ({
   errorTicketId: state.main.errorTicketId,
 });
 
-export default compose(
-  withTranslator,
-  connect(mapStateToProps),
-)(ErrorCatcher);
+export const ErrorCatcher = connect(mapStateToProps)(
+  withTranslator(ErrorCatcherInt),
+);

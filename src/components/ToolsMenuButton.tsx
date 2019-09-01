@@ -1,4 +1,4 @@
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import React from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -109,10 +109,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(ToolsMenuButton);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(ToolsMenuButton));

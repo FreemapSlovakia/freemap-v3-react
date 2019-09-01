@@ -6,6 +6,13 @@ import { addAttribute, createElement, GPX_NS } from 'fm3/gpxExporter';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { IProcessor } from 'fm3/middlewares/processorMiddleware';
 import qs from 'query-string';
+import { IRoutePlannerState } from 'fm3/reducers/routePlannerReducer';
+import { LatLon } from 'fm3/types/common';
+import { IObjectsState } from 'fm3/reducers/objectsReducer';
+import { IInfoPointState } from 'fm3/reducers/infoPointReducer';
+import { IElevationMeasurementState } from 'fm3/reducers/elevationMeasurementReducer';
+import { IDistanceMeasurementState } from 'fm3/reducers/distanceMeasurementReducer';
+import { ITrackingState } from 'fm3/reducers/trackingReducer';
 
 export const gpxExportProcessor: IProcessor<typeof exportGpx> = {
   actionCreator: exportGpx,
@@ -140,47 +147,70 @@ function addPictures(doc: Document, pictures) {
   });
 }
 
-function addADMeasurement(doc: Document, { points }) {
+function addADMeasurement(
+  doc: Document,
+  { points }: IDistanceMeasurementState,
+) {
   const trkEle = createElement(doc.documentElement, 'trk');
   const trksegEle = createElement(trkEle, 'trkseg');
 
   if (points.length) {
     points.forEach(({ lat, lon }) => {
-      createElement(trksegEle, 'trkpt', undefined, { lat, lon });
+      createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
     });
   }
 }
 
-function addElevationMeasurement(doc: Document, { point, elevation }) {
+function addElevationMeasurement(
+  doc: Document,
+  { point, elevation }: IElevationMeasurementState,
+) {
   if (point) {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
-      lat: point.lat,
-      lon: point.lon,
-    });
-    createElement(wptEle, 'ele', elevation);
+    const wptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon({
+        lat: point.lat,
+        lon: point.lon,
+      }),
+    );
+    if (elevation !== null) {
+      createElement(wptEle, 'ele', elevation.toString());
+    }
   }
 }
 
-function addInfoPoint(doc: Document, { points }) {
+function addInfoPoint(doc: Document, { points }: IInfoPointState) {
   points.forEach(({ lat, lon, label }) => {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
-      lat,
-      lon,
-    });
+    const wptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon({
+        lat,
+        lon,
+      }),
+    );
     if (label) {
       createElement(wptEle, 'name', label);
     }
   });
 }
 
-function addObjects(doc: Document, { objects }) {
+function addObjects(doc: Document, { objects }: IObjectsState) {
   objects.forEach(({ lat, lon, tags }) => {
-    const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
-      lat,
-      lon,
-    });
+    const wptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon({
+        lat,
+        lon,
+      }),
+    );
 
-    if (!Number.isNaN(tags.ele)) {
+    if (!Number.isNaN(parseFloat(tags.ele))) {
       createElement(wptEle, 'ele', tags.ele);
     }
 
@@ -192,33 +222,37 @@ function addObjects(doc: Document, { objects }) {
 
 function addPlannedRoute(
   doc: Document,
-  { alternatives, start, finish, midpoints },
+  { alternatives, start, finish, midpoints }: IRoutePlannerState,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
-  const startWptEle = createElement(
-    doc.documentElement,
-    'wpt',
-    undefined,
-    start,
-  );
-  createElement(startWptEle, 'name', 'Štart');
+  if (start) {
+    const startWptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon(start),
+    );
+    createElement(startWptEle, 'name', 'Štart');
+  }
 
-  const finishWptEle = createElement(
-    doc.documentElement,
-    'wpt',
-    undefined,
-    finish,
-  );
-  createElement(finishWptEle, 'name', 'Cieľ');
+  if (finish) {
+    const finishWptEle = createElement(
+      doc.documentElement,
+      'wpt',
+      undefined,
+      toLatLon(finish),
+    );
+    createElement(finishWptEle, 'name', 'Cieľ');
+  }
 
-  midpoints.forEach((midpoint, i) => {
+  midpoints.forEach((midpoint, i: number) => {
     const midpointWptEle = createElement(
       doc.documentElement,
       'wpt',
       undefined,
-      midpoint,
+      toLatLon(midpoint),
     );
     createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
   });
@@ -229,15 +263,25 @@ function addPlannedRoute(
     const trksegEle = createElement(trkEle, 'trkseg');
     itinerary.forEach(({ shapePoints }) => {
       shapePoints.forEach(([lat, lon]) => {
-        createElement(trksegEle, 'trkpt', undefined, { lat, lon });
+        createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
       });
     });
   });
 }
 
+function toLatLon(latLon: LatLon) {
+  return {
+    lat: latLon.lat.toString(),
+    lon: latLon.lon.toString(),
+  };
+}
+
 export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
-function addTracking(doc: Document, { tracks, trackedDevices }) {
+function addTracking(
+  doc: Document,
+  { tracks, trackedDevices }: ITrackingState,
+) {
   const tdMap = new Map(trackedDevices.map(td => [td.id, td]));
   const tracks1 = tracks.map(track => ({
     ...track,
@@ -262,8 +306,13 @@ function addTracking(doc: Document, { tracks, trackedDevices }) {
       gsmSignal,
       message,
     } of track.trackPoints) {
-      const ptEle = createElement(trksegEle, 'trkpt', undefined, { lat, lon });
-      createElement(ptEle, 'time', ts);
+      const ptEle = createElement(
+        trksegEle,
+        'trkpt',
+        undefined,
+        toLatLon({ lat, lon }),
+      );
+      createElement(ptEle, 'time', ts.toISOString());
       if (typeof altitude === 'number') {
         createElement(ptEle, 'ele', altitude.toString());
       }
@@ -273,8 +322,8 @@ function addTracking(doc: Document, { tracks, trackedDevices }) {
       if (typeof bearing === 'number') {
         createElement(ptEle, 'magvar', bearing.toString()); // maybe not the most suitable tag
       }
-      if (message) {
-        createElement(ptEle, 'cmt', accuracy);
+      if (message && typeof accuracy === 'number') {
+        createElement(ptEle, 'cmt', accuracy.toString());
       }
       if (
         typeof speed === 'number' ||

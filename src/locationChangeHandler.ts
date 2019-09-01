@@ -553,7 +553,11 @@ function handleGallery(
   }
 }
 
-function handleInfoPoint(getState, dispatch, query) {
+function handleInfoPoint(
+  getState: () => RootState,
+  dispatch: Dispatch,
+  query: queryString.ParsedQuery<string>,
+) {
   const infoPoint = query['info-point'];
   const ips = (!infoPoint
     ? []
@@ -570,8 +574,9 @@ function handleInfoPoint(getState, dispatch, query) {
     }));
 
   // backward compatibility
-  if (query['info-point-label'] && ips.length) {
-    ips[0].label = decodeURIComponent(query['info-point-label']);
+  const ipl = query['info-point-label'];
+  if (ipl && ips.length) {
+    ips[0].label = typeof ipl === 'string' ? decodeURIComponent(ipl) : '';
   }
 
   // compare
@@ -591,11 +596,11 @@ function handleInfoPoint(getState, dispatch, query) {
   }
 }
 
-function serializePoints(points) {
+function serializePoints(points: LatLon[]) {
   return points.map(point => serializePoint(point)).join(',');
 }
 
-function serializePoint(point) {
+function serializePoint(point: LatLon | null) {
   return point && typeof point.lat === 'number' && typeof point.lon === 'number'
     ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}`
     : '';

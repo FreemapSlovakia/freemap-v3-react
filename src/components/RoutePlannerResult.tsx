@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { compose, Dispatch } from 'redux';
+import { Dispatch } from 'redux';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
 import RichMarker from 'fm3/components/RichMarker';
@@ -13,6 +13,7 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
   TransportType,
+  IAlternative,
 } from 'fm3/actions/routePlannerActions';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -405,17 +406,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default compose(
-  withTranslator,
-  connect(
-    mapStateToProps,
-    mapDispatchToProps,
-  ),
-)(RoutePlannerResult);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(withTranslator(RoutePlannerResult));
 
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
-function addMissingSegments(alt: any) {
+function addMissingSegments(alt: IAlternative) {
   const routeSlices: any[] = [];
   for (let i = 0; i < alt.itinerary.length; i += 1) {
     const slice = alt.itinerary[i];
