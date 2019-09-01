@@ -1388,17 +1388,6 @@
     ]
   },
   {
-    "id": 123,
-    "categoryId": 6,
-    "filename": "organic",
-    "filter": [
-      {
-        "key": "shop",
-        "value": "organic"
-      }
-    ]
-  },
-  {
     "id": 124,
     "categoryId": 6,
     "filename": "outdoor",

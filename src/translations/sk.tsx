@@ -635,7 +635,6 @@ export default {
       120: 'Hudobné nástroje',
       121: 'Noviny',
       122: 'Optika',
-      123: 'Organické potraviny',
       124: 'Outdoor',
       125: 'Farby',
       126: 'pawnbroker',

@@ -635,7 +635,6 @@ export default {
       120: 'Music store',
       121: 'Newspaper',
       122: 'Optics',
-      123: 'Organic food',
       124: 'Outdoor',
       125: 'Paint',
       126: 'Pawnbroker',
