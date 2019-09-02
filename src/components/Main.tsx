@@ -99,6 +99,8 @@ import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { LeafletMouseEvent, LocationEvent } from 'leaflet';
 
+import fmLogo from '../images/freemap-logo-print.png';
+
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;
@@ -241,7 +243,7 @@ class MainInt extends React.Component<Props, IState> {
         {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
         <img
           id="freemap-logo-print"
-          src={require('../images/freemap-logo-print.png')}
+          src={fmLogo}
           width="150"
           height="54"
           alt="freemap logo"

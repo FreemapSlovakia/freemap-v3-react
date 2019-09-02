@@ -1,17 +1,20 @@
-declare namespace NodeJS {
-  interface Global {
-    translations: any;
-  }
+// declare var process: {
+//   env: {
+//     API_URL: string;
+//     NODE_ENV: string;
+//     BROWSER: string;
+//     DEPLOYMENT: string;
+//     MAX_GPX_TRACK_SIZE_IN_MB: number;
+//     GA_TRACKING_CODE: string;
+//   };
+// };
+
+declare module '*.png' {
+  const value: any;
+  export default value;
 }
 
-declare var process: {
-  env: {
-    API_URL: string;
-    NODE_ENV: string;
-    BROWSER: string;
-    DEPLOYMENT: string;
-    MAX_GPX_TRACK_SIZE_IN_MB: number;
-    MAPQUEST_API_KEY: string;
-    GA_TRACKING_CODE: string;
-  };
-};
+declare module '*.gif' {
+  const value: any;
+  export default value;
+}

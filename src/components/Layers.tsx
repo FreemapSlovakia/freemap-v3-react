@@ -10,6 +10,8 @@ import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
+import missingTile from '../images/missing-tile-256x256.png';
+
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
@@ -120,7 +122,7 @@ const Layers: React.FC<Props> = ({
           opacity={overlayOpacity[type] || 1}
           zIndex={zIndex}
           subdomains={subdomains}
-          errorTileUrl={require('../images/missing-tile-256x256.png')}
+          errorTileUrl={missingTile}
         />
       )
     );

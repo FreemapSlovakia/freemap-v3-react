@@ -55,7 +55,7 @@ export function splitAndSubstitute(
   return x.length === 1 ? x[0] : x;
 }
 
-interface ITranslations {
+export interface ITranslations {
   [key: string]: ITranslations | string | ((...params: any[]) => string);
 }
 

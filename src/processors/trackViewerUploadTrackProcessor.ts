@@ -16,12 +16,16 @@ export const trackViewerUploadTrackProcessor: IProcessor = {
       return;
     }
 
-    if (trackGpx.length > process.env.MAX_GPX_TRACK_SIZE_IN_MB * 1000000) {
+    const maxSize = process.env.MAX_GPX_TRACK_SIZE_IN_MB
+      ? parseInt(process.env.MAX_GPX_TRACK_SIZE_IN_MB, 10)
+      : -1;
+
+    if (trackGpx.length > maxSize * 1000000) {
       dispatch(
         toastsAdd({
           messageKey: 'trackViewer.tooBigError',
           messageParams: {
-            maxSize: process.env.MAX_GPX_TRACK_SIZE_IN_MB,
+            maxSize,
           },
           style: 'danger',
         }),

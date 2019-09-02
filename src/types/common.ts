@@ -2,6 +2,7 @@ import { IMapStateBase } from 'fm3/actions/mapActions';
 import { IRoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { ITrackViewerState } from 'fm3/reducers/trackViewerReducer';
 import { IMainState } from 'fm3/reducers/mainReducer';
+import { ITranslations } from 'fm3/stringUtils';
 
 export interface LatLon {
   lat: number;
@@ -27,7 +28,7 @@ declare global {
     fbAsyncInit?: () => void;
     handleGoogleAuthApiLoad?: () => void;
     preventMapClick?: boolean;
-    translations?: object;
+    translations?: ITranslations;
   }
 }
 

@@ -13,6 +13,8 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
+import legend from 'fm3/legend/index.json';
+
 type Props = ReturnType<typeof mapDispatchToProps>;
 
 interface ILegendItem {
@@ -34,7 +36,7 @@ const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
       <Modal.Body>
         <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
         <PanelGroup accordion id="pg1">
-          {require('fm3/legend/index.json').map((c: ILegendItem, i: number) => (
+          {legend.map((c: ILegendItem, i: number) => (
             <Panel key={`yyy${c.n}`} eventKey={i}>
               {c.items.map(e => (
                 <div key={`xxx${c.n}-${e.n}`}>

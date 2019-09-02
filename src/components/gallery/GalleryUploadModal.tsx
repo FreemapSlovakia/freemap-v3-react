@@ -30,8 +30,9 @@ import { RootAction } from 'fm3/actions';
 import { IPictureModel } from './GalleryEditForm';
 import { latLonToString } from 'fm3/geoutils';
 
-const ExifReader = require('exifreader');
+import ExifReader from 'exifreader';
 const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
+// import pica from 'pica';
 
 let nextId = 1;
 
@@ -62,7 +63,7 @@ class GalleryUploadModal extends React.Component<Props> {
     reader.onload = () => {
       let tags: { [key: string]: any };
       try {
-        tags = ExifReader.load(reader.result);
+        tags = ExifReader.load(reader.result as ArrayBuffer);
       } catch (e) {
         tags = {};
       }

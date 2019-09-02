@@ -8,6 +8,7 @@ const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const OfflinePlugin = require('offline-plugin');
+const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -35,15 +36,6 @@ module.exports = {
   devtool: prod ? 'source-map' : 'cheap-module-eval-source-map',
   module: {
     rules: [
-      // {
-      //   enforce: 'pre',
-      //   test: /\.js$/,
-      //   exclude: /node_modules/,
-      //   loader: 'eslint-loader',
-      //   options: {
-      //     fix: false,
-      //   },
-      // },
       {
         // babelify some very modern libraries
         test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first)\/.*\.js$/,
@@ -61,7 +53,6 @@ module.exports = {
           ],
         },
       },
-      // changed from { test: /\.jsx?$/, use: { loader: 'babel-loader' } },
       {
         test: /\.(t|j)sx?$/,
         exclude: /node_modules/,
@@ -69,38 +60,12 @@ module.exports = {
           loader: 'ts-loader',
           options: {
             compiler: 'ttypescript',
+            transpileOnly: true,
           },
         },
       },
       // addition - add source-map support
       { enforce: 'pre', test: /\.js$/, loader: 'source-map-loader' },
-
-      // {
-      //   test: /\.js$/,
-      //   loader: 'babel-loader',
-      //   exclude: /\bnode_modules\b/,
-      //   options: {
-      //     presets: [
-      //       ['@babel/preset-env', {
-      //         corejs: '3.0.0',
-      //         targets: {
-      //           browsers: ['> 1%'],
-      //         },
-      //         useBuiltIns: 'usage',
-      //         shippedProposals: true,
-      //         modules: false,
-      //       }],
-      //       ['@babel/preset-react', {
-      //         development: !prod,
-      //       }],
-      //     ],
-      //     plugins: [
-      //       '@babel/plugin-syntax-dynamic-import',
-      //       '@babel/plugin-proposal-class-properties',
-      //     ],
-      //   },
-      // },
-
       {
         test: /\.(png|svg|jpg|jpeg|gif|woff|ttf|eot|woff2)$/,
         loader: 'url-loader',
@@ -145,13 +110,16 @@ module.exports = {
     ],
   },
   plugins: [
+    new ForkTsCheckerWebpackPlugin({
+      eslint: true,
+      tsconfig: path.resolve(__dirname, './tsconfig.json'),
+    }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react
         BROWSER: JSON.stringify(true),
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
-        MAPQUEST_API_KEY: JSON.stringify('Fmjtd|luu82qut25,rg=o5-94twla'),
         API_URL: JSON.stringify(
           {
             www: 'https://backend.freemap.sk',

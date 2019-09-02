@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { RootState } from './storeCreator';
 
 function tx(key: string, params: { [key: string]: any } = {}, dflt = '') {
-  const t = translate(global.translations, key, dflt);
+  const t = translate(window.translations, key, dflt);
   return typeof t === 'function' ? t(params) : splitAndSubstitute(t, params);
 }
 

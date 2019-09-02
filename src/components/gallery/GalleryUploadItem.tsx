@@ -8,6 +8,7 @@ import GalleryEditForm, {
 } from 'fm3/components/gallery/GalleryEditForm';
 import { Translator } from 'fm3/l10nInjector';
 import { IGalleryTag } from 'fm3/actions/galleryActions';
+import spinnerbar from 'fm3/images/spinnerbar.gif';
 
 interface IProps {
   id: number;
@@ -54,7 +55,7 @@ export default class GalleryUploadItem extends React.Component<IProps> {
         {showPreview ? (
           <img
             className="gallery-image gallery-image-upload"
-            src={url || require('fm3/images/spinnerbar.gif')}
+            src={url || spinnerbar}
             alt={filename}
           />
         ) : (
