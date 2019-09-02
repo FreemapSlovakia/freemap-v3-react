@@ -2,6 +2,8 @@ import React from 'react';
 import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import ExifReader from 'exifreader';
+import pica from 'pica';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -29,10 +31,6 @@ import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { IPictureModel } from './GalleryEditForm';
 import { latLonToString } from 'fm3/geoutils';
-
-import ExifReader from 'exifreader';
-const pica = require('pica/dist/pica')(); // require('pica') seems not to use service workers
-// import pica from 'pica';
 
 let nextId = 1;
 
@@ -180,7 +178,7 @@ class GalleryUploadModal extends React.Component<Props> {
           [0, -1, 1, 0, 0, width],
         ];
 
-        pica
+        pica()
           .resize(img, canvas)
           .then(() => {
             let canvas2: HTMLCanvasElement;

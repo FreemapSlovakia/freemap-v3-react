@@ -30,6 +30,7 @@ module.exports = {
     extensions: ['.ts', '.tsx', '.js', '.jsx'],
     alias: {
       fm3: path.resolve(__dirname, 'src'),
+      pica: 'pica/dist/pica.js',
     },
   },
   // more info: https://webpack.js.org/configuration/devtool/
