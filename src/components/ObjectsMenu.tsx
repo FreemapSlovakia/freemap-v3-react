@@ -33,7 +33,7 @@ class ObjectsMenu extends React.Component<Props, IState> {
     dropdownOpened: false,
   };
 
-  getGroupMenuItems = ({ id: gid }: { id: number }) => {
+  getGroupMenuItems = ({ id: gid }: { id: number }, showDivider: boolean) => {
     const { t } = this.props;
 
     const items = poiTypes
@@ -56,7 +56,7 @@ class ObjectsMenu extends React.Component<Props, IState> {
 
     return items.length === 0 ? null : (
       <React.Fragment key={gid}>
-        <MenuItem divider />
+        {showDivider && <MenuItem divider />}
         <MenuItem header>{t(`objects.categories.${gid}`)}</MenuItem>
         {items}
       </React.Fragment>
@@ -107,8 +107,8 @@ class ObjectsMenu extends React.Component<Props, IState> {
             />
           </FormGroup2>
           <Dropdown.Menu>
-            {poiTypeGroups.map(pointTypeGroup =>
-              this.getGroupMenuItems(pointTypeGroup),
+            {poiTypeGroups.map((pointTypeGroup, i) =>
+              this.getGroupMenuItems(pointTypeGroup, i > 0),
             )}
           </Dropdown.Menu>
         </Dropdown>
