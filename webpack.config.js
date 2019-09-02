@@ -60,7 +60,7 @@ module.exports = {
           loader: 'ts-loader',
           options: {
             compiler: 'ttypescript',
-            transpileOnly: true,
+            // transpileOnly: true, // TODO we can't use this because then ttypescript is not used and typescript-is requires it :-(
           },
         },
       },
@@ -110,10 +110,11 @@ module.exports = {
     ],
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      eslint: true,
-      tsconfig: path.resolve(__dirname, './tsconfig.json'),
-    }),
+    // TODO disabled because of `// transpileOnly: true`
+    // new ForkTsCheckerWebpackPlugin({
+    //   eslint: true,
+    //   tsconfig: path.resolve(__dirname, './tsconfig.json'),
+    // }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react

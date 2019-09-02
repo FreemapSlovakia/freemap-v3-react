@@ -101,14 +101,16 @@ function loadAppState() {
     try {
       appState = assertType<IAppState>(JSON.parse(as));
     } catch (e) {
-      // ignore
+      storage.removeItem('appState');
+      throw e;
     }
   }
 
   if (appState) {
     store.dispatch(setAppState(appState));
-    store.dispatch(l10nSetChosenLanguage(appState.language));
   }
+
+  store.dispatch(l10nSetChosenLanguage(appState ? appState.language : null));
 }
 
 function checkStravaAuth() {
