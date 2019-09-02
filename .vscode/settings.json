@@ -10,5 +10,6 @@
   },
   "editor.formatOnSave": true,
   "typescript.tsserver.log": "normal",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "eslint.enable": true
 }
