@@ -10,9 +10,8 @@ module.exports = {
   },
   plugins: ['react', 'react-hooks', 'prettier'],
   extends: [
-    // TODO enable one day
-    // 'plugin:@typescript-eslint/recommended',
-    // 'prettier/@typescript-eslint',
+    'plugin:@typescript-eslint/recommended',
+    'prettier/@typescript-eslint',
     'plugin:prettier/recommended',
   ],
   parserOptions: {
@@ -31,7 +30,6 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-use-before-define': 0,
-    '@typescript-eslint/interface-name-prefix': 0,
   },
   globals: {
     L: true,
