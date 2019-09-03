@@ -12,6 +12,8 @@ const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
+const fastDev = !prod && !process.env.DISABLE_FAST_DEV;
+
 const renderer = new marked.Renderer();
 
 renderer.link = (href, title, text) =>
@@ -60,8 +62,8 @@ module.exports = {
         use: {
           loader: 'ts-loader',
           options: {
-            compiler: 'ttypescript',
-            // transpileOnly: true, // TODO we can't use this because then ttypescript is not used and typescript-is requires it :-(
+            compiler: 'ttypescript', // this is for typescript-is
+            transpileOnly: fastDev,
           },
         },
       },
@@ -111,11 +113,11 @@ module.exports = {
     ],
   },
   plugins: [
-    // TODO disabled because of `// transpileOnly: true`
-    // new ForkTsCheckerWebpackPlugin({
-    //   eslint: true,
-    //   tsconfig: path.resolve(__dirname, './tsconfig.json'),
-    // }),
+    fastDev &&
+      new ForkTsCheckerWebpackPlugin({
+        eslint: true,
+        tsconfig: path.resolve(__dirname, './tsconfig.json'),
+      }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react

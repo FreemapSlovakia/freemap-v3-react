@@ -1,3 +1,4 @@
+import { setDefaultGetErrorMessage } from 'typescript-is';
 import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
 import 'fullscreen-api-polyfill';
 
@@ -33,6 +34,8 @@ import 'fm3/styles/bootstrap-override.scss';
 import { authInit } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { IAppState } from './types/common';
+
+setDefaultGetErrorMessage(() => null);
 
 if (window.location.search === '?reset-local-storage') {
   storage.clear();
