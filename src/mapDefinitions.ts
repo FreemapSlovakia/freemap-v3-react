@@ -190,7 +190,7 @@ if (!process.env.NODE_ENV) {
 function findNearestScale(
   scales: number[],
   ratio = window.devicePixelRatio || 1,
-) {
+): number {
   let dif = Number.POSITIVE_INFINITY;
   let prevScale = scales[0];
   for (const scale of scales) {
@@ -205,7 +205,7 @@ function findNearestScale(
   return prevScale;
 }
 
-function scaleUrl(scales: number[], url: string) {
+function scaleUrl(scales: number[], url: string): string {
   const scale = findNearestScale(scales);
   return scale === 1 ? url : `${url}@${scale}x`;
 }

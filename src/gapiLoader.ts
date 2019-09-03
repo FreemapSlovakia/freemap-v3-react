@@ -9,7 +9,7 @@ export function getAuth2() {
   return auth2 ? Promise.resolve(auth2) : p;
 }
 
-window.handleGoogleAuthApiLoad = () => {
+window.handleGoogleAuthApiLoad = (): void => {
   gapi.load('auth2', () => {
     auth2 = gapi.auth2.init({
       client_id:

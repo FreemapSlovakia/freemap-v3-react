@@ -97,7 +97,7 @@ if (process.env.NODE_ENV) {
   });
 }
 
-function loadAppState() {
+function loadAppState(): void {
   let appState: AppState | undefined;
   const as = storage.getItem('appState');
   if (as) {
@@ -116,9 +116,9 @@ function loadAppState() {
   store.dispatch(l10nSetChosenLanguage(appState ? appState.language : null));
 }
 
-function checkStravaAuth() {
+function checkStravaAuth(): void {
   const img = new Image();
-  img.onload = () => {
+  img.onload = (): void => {
     store.dispatch(mapSetStravaAuth(true));
   };
   img.src =

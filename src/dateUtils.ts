@@ -1,5 +1,5 @@
 export function toDatetimeLocal(date: Date): string {
-  const ten = (i: number) => (i < 10 ? '0' : '') + i;
+  const ten = (i: number): string => (i < 10 ? '0' : '') + i;
   const YYYY = date.getFullYear();
   const MM = ten(date.getMonth() + 1);
   const DD = ten(date.getDate());

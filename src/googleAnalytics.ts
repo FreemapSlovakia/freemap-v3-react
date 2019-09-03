@@ -1,6 +1,6 @@
 (window as any).ga =
   window.ga ||
-  function initGa(...args: any[]) {
+  function initGa(...args: any[]): void {
     (window.ga.q = window.ga.q || []).push(args);
   };
 

@@ -3,7 +3,7 @@ import qs from 'query-string';
 import { authLoginWithOsm2 } from 'fm3/actions/authActions';
 import { MyStore } from './storeCreator';
 
-export function attachOsmLoginMessageHandler(store: MyStore) {
+export function attachOsmLoginMessageHandler(store: MyStore): void {
   // OSM Login handler
   window.addEventListener('message', e => {
     if (

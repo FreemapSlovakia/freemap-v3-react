@@ -22,7 +22,7 @@ export function createFilter({
   };
 }
 
-function plusDay(d: Date) {
+function plusDay(d: Date): Date {
   if (!d) {
     return d;
   }

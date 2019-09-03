@@ -51,7 +51,7 @@ export function getMapStateFromUrl(
   return { lat, lon, zoom, mapType, overlays };
 }
 
-function undefineNaN(val: number) {
+function undefineNaN(val: number): number | undefined {
   return Number.isNaN(val) ? undefined : val;
 }
 
@@ -61,7 +61,7 @@ export function getMapStateDiffFromUrl(
     | null
     | undefined,
   state2: MapViewState,
-) {
+): Partial<MapViewState> | null {
   if (!state1 || !state2) {
     return null;
   }

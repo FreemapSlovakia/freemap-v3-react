@@ -2,7 +2,11 @@ interface Nodes {
   [id: string]: [number, number];
 }
 
-export function toNodes(data: Document) {
+interface Ways {
+  [key: string]: [number, number][];
+}
+
+export function toNodes(data: Document): Nodes {
   const nodes: Nodes = {};
   const nodeRes = data.evaluate(
     '/osm/node',
@@ -28,8 +32,8 @@ export function toNodes(data: Document) {
   return nodes;
 }
 
-export function toWays(data: Document, nodes: Nodes) {
-  const ways: { [key: string]: [number, number][] } = {};
+export function toWays(data: Document, nodes: Nodes): Ways {
+  const ways: Ways = {};
 
   const wayRes = data.evaluate(
     '/osm/way',

@@ -1,4 +1,4 @@
-export function resolveTrackSurface(tags: { [key: string]: string }) {
+export function resolveTrackSurface(tags: { [key: string]: string }): string {
   if (tags.surface) {
     return tags.surface;
   }
@@ -19,7 +19,7 @@ export function resolveTrackSurface(tags: { [key: string]: string }) {
   return 'unknown';
 }
 
-export function resolveTrackClass(tags: { [key: string]: string }) {
+export function resolveTrackClass(tags: { [key: string]: string }): string {
   if (tags.highway) {
     if (tags.highway === 'track') {
       return tags.tracktype || 'unknown';
@@ -39,7 +39,7 @@ const trackGradeToBike: { [key: string]: string } = {
 
 export function resolveBicycleTypeSuitableForTrack(tags: {
   [key: string]: string;
-}) {
+}): string {
   if (['motorway', 'trunk'].indexOf(tags.highway) >= 0) {
     return 'no-bike';
   }
