@@ -21,7 +21,9 @@
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "plugins": [
-      { "transform": "typescript-is/lib/transform-inline/transformer" }
+      {
+        "transform": "typescript-is/lib/transform-inline/transformer"
+      }
     ],
     "types": ["gapi", "gapi.auth2", "google.analytics", "facebook-js-sdk"]
   },

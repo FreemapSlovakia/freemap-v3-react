@@ -1,27 +1,27 @@
 import { createStandardAction } from 'typesafe-actions';
 import { RootAction } from '.';
 
-export interface IToastAction {
+export interface ToastAction {
   name?: string;
   nameKey?: string;
   action?: RootAction | RootAction[];
   style?: string;
 }
 
-export interface IToast {
+export interface Toast {
   message?: string | JSX.Element; // PropTypes.node, // TODO string only
   messageKey?: string;
   messageParams?: { [key: string]: any };
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
-  actions?: IToastAction[];
+  actions?: ToastAction[];
   collapseKey?: string;
   cancelType?: string | string[] | RegExp;
 }
 
-export interface IResolvedToast extends IToast {
+export interface ResolvedToast extends Toast {
   id: number;
-  actions: IToastAction[];
+  actions: ToastAction[];
 }
 
 export const toastsAdd = createStandardAction('TOASTS_ADD').map(
@@ -34,7 +34,7 @@ export const toastsAdd = createStandardAction('TOASTS_ADD').map(
     style,
     collapseKey,
     cancelType,
-  }: IToast) => ({
+  }: Toast) => ({
     payload: {
       id: Math.random(),
       message,

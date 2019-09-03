@@ -8,22 +8,22 @@ import {
   infoPointChangeLabel,
   infoPointSetActiveIndex,
   infoPointSetAll,
-  IInfoPoint,
+  InfoPoint,
 } from 'fm3/actions/infoPointActions';
 
-export interface IInfoPointState {
-  points: IInfoPoint[];
+export interface InfoPointState {
+  points: InfoPoint[];
   activeIndex: null | number;
   change: number;
 }
 
-const initialState: IInfoPointState = {
+const initialState: InfoPointState = {
   points: [],
   activeIndex: null,
   change: 0,
 };
 
-export const infoPointReducer = createReducer<IInfoPointState, RootAction>(
+export const infoPointReducer = createReducer<InfoPointState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

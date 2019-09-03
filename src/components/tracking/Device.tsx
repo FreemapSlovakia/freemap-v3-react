@@ -8,7 +8,7 @@ import Tooltip from 'react-bootstrap/lib/Tooltip';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { IDevice } from 'fm3/types/trackingTypes';
+import { Device } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
@@ -16,7 +16,7 @@ import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
-    device: IDevice;
+    device: Device;
     language: string;
     t: Translator;
   };

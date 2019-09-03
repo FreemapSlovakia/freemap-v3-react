@@ -2,12 +2,12 @@ import { searchSetResults, searchSetQuery } from 'fm3/actions/searchActions';
 import { clearMap } from 'fm3/actions/mainActions';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 import { latLonToString } from 'fm3/geoutils';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { LatLon } from 'fm3/types/common';
 import { point } from '@turf/helpers';
 
-export const searchProcessor: IProcessor<typeof searchSetQuery> = {
+export const searchProcessor: Processor<typeof searchSetQuery> = {
   actionCreator: searchSetQuery,
   errorKey: 'search.fetchingError',
   handle: async ({ dispatch, getState }) => {

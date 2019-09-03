@@ -17,7 +17,7 @@ export type TransportType =
   | 'ski'
   | 'foot';
 
-export type TManeuerModifier =
+export type ManeuerModifier =
   | 'uturn'
   | 'sharp right'
   | 'slight right'
@@ -27,11 +27,11 @@ export type TManeuerModifier =
   | 'left'
   | 'straight';
 
-export interface IStep {
+export interface Step {
   maneuver: {
     location: LatLon;
     type: string; // TODO enum?
-    modifier: TManeuerModifier;
+    modifier: ManeuerModifier;
   };
   distance: number;
   duration: number;
@@ -44,8 +44,8 @@ export interface IStep {
   extra: any;
 }
 
-export interface IAlternative {
-  itinerary: IStep[];
+export interface Alternative {
+  itinerary: Step[];
   distance: number;
   duration: number;
   extra: any; // TODO
@@ -88,7 +88,7 @@ export const routePlannerSetResult = createStandardAction(
 )<{
   timestamp: number;
   transportType: TransportType;
-  alternatives: IAlternative[];
+  alternatives: Alternative[];
 }>();
 
 export const routePlannerToggleItineraryVisibility = createAction(

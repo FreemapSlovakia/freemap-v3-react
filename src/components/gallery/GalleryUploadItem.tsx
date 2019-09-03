@@ -4,28 +4,28 @@ import 'fm3/styles/react-tag-autocomplete.css';
 
 import Button from 'react-bootstrap/lib/Button';
 import GalleryEditForm, {
-  IPictureModel,
+  PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
 import { Translator } from 'fm3/l10nInjector';
-import { IGalleryTag } from 'fm3/actions/galleryActions';
+import { GalleryTag } from 'fm3/actions/galleryActions';
 import spinnerbar from 'fm3/images/spinnerbar.gif';
 
-interface IProps {
+interface Props {
   id: number;
   filename: string;
   url?: string;
-  model: IPictureModel;
-  allTags: IGalleryTag[];
+  model: PictureModel;
+  allTags: GalleryTag[];
   errors: string[] | null | undefined;
   onRemove: (id: number) => void;
   onPositionPick: (id: number) => void;
-  onModelChange: (id: number, model: IPictureModel) => void;
+  onModelChange: (id: number, model: PictureModel) => void;
   disabled: boolean;
   t: Translator;
   showPreview: boolean;
 }
 
-export default class GalleryUploadItem extends React.Component<IProps> {
+export default class GalleryUploadItem extends React.Component<Props> {
   handleRemove = () => {
     this.props.onRemove(this.props.id);
   };
@@ -34,7 +34,7 @@ export default class GalleryUploadItem extends React.Component<IProps> {
     this.props.onPositionPick(this.props.id);
   };
 
-  handleModelChange = (model: IPictureModel) => {
+  handleModelChange = (model: PictureModel) => {
     this.props.onModelChange(this.props.id, model);
   };
 

@@ -13,7 +13,7 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
   TransportType,
-  IAlternative,
+  Alternative,
 } from 'fm3/actions/routePlannerActions';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -413,7 +413,7 @@ export default connect(
 
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
-function addMissingSegments(alt: IAlternative) {
+function addMissingSegments(alt: Alternative) {
   const routeSlices: any[] = [];
   for (let i = 0; i < alt.itinerary.length; i += 1) {
     const slice = alt.itinerary[i];

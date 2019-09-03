@@ -7,11 +7,11 @@ import {
   gallerySetItemError,
   galleryHideUploadModal,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 
-export const galleryItemUploadProcessor: IProcessor = {
+export const galleryItemUploadProcessor: Processor = {
   actionCreator: galleryUpload,
   handle: async ({ getState, dispatch }) => {
     const { items, uploadingId } = getState().gallery;

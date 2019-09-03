@@ -7,21 +7,21 @@ import {
   mapDetailsSetTrackInfoPoints,
 } from 'fm3/actions/mapDetailsActions';
 
-export interface IMapDetailsState {
+export interface MapDetailsState {
   userSelectedLat: number | null;
   userSelectedLon: number | null;
   subtool: string | null;
   trackInfoPoints: any[] | null;
 }
 
-const initialState: IMapDetailsState = {
+const initialState: MapDetailsState = {
   userSelectedLat: null,
   userSelectedLon: null,
   subtool: null,
   trackInfoPoints: null,
 };
 
-export const mapDetailsReducer = createReducer<IMapDetailsState, RootAction>(
+export const mapDetailsReducer = createReducer<MapDetailsState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

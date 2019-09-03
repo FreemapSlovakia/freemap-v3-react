@@ -1,15 +1,15 @@
 import * as React from 'react';
 import { Tooltip, CircleMarker } from 'react-leaflet';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { ITrackPoint } from 'fm3/types/trackingTypes';
+import { TrackPoint } from 'fm3/types/trackingTypes';
 import { toLatLng } from 'fm3/geoutils';
 
 interface TrackingPointProps {
-  tp: ITrackPoint;
+  tp: TrackPoint;
   width: number;
   color: string;
   language: string;
-  onActivePointSet: (tp: ITrackPoint | null) => void;
+  onActivePointSet: (tp: TrackPoint | null) => void;
   onClick: () => void;
 }
 
@@ -63,7 +63,7 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
 export function tooltipText(
   df: Intl.DateTimeFormat,
   nf: Intl.NumberFormat,
-  { battery, ts, gsmSignal, speed, message, altitude }: ITrackPoint,
+  { battery, ts, gsmSignal, speed, message, altitude }: TrackPoint,
   label?: String | null,
 ) {
   // TODO bearing

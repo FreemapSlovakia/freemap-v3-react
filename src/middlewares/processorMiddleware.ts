@@ -11,7 +11,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
 import { dispatchAxiosErrorAsToast } from 'fm3/processors/utils';
 
-export interface IProcessor<T extends ActionCreator = ActionCreator> {
+export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
     prevState: RootState;
     getState: () => RootState;
@@ -28,7 +28,7 @@ export interface IProcessor<T extends ActionCreator = ActionCreator> {
   errorKey?: string;
 }
 
-export const processors: IProcessor[] = [];
+export const processors: Processor[] = [];
 
 export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
   getState,

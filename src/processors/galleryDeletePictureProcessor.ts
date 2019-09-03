@@ -5,10 +5,10 @@ import {
   galleryClear,
   galleryDeletePicture,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const galleryDeletePictureProcessor: IProcessor = {
+export const galleryDeletePictureProcessor: Processor = {
   actionCreator: galleryDeletePicture,
   errorKey: 'gallery.deletingError',
   handle: async ({ getState, dispatch }) => {

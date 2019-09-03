@@ -1,10 +1,10 @@
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { authLoginWithOsm2, authSetUser } from 'fm3/actions/authActions';
 import { httpRequest } from 'fm3/authAxios';
 import { setHomeLocation } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-export const authLoginWithOsm2Processor: IProcessor<
+export const authLoginWithOsm2Processor: Processor<
   typeof authLoginWithOsm2
 > = {
   actionCreator: authLoginWithOsm2,

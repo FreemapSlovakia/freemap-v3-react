@@ -1,14 +1,14 @@
 import turfLength from '@turf/length';
 import toGeoJSON from '@mapbox/togeojson';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import {
   trackViewerSetData,
-  ITrackPoint,
+  TrackPoint,
 } from 'fm3/actions/trackViewerActions';
 import { assertType } from 'typescript-is';
 import { FeatureCollection } from 'geojson';
 
-export const trackViewerSetTrackDataProcessor: IProcessor<
+export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData
 > = {
   actionCreator: trackViewerSetData,
@@ -25,8 +25,8 @@ export const trackViewerSetTrackDataProcessor: IProcessor<
 
     const trackGeojson = assertType<FeatureCollection>(toGeoJSON.gpx(gpxAsXml));
 
-    const startPoints: ITrackPoint[] = []; // TODO
-    const finishPoints: ITrackPoint[] = []; // TODO
+    const startPoints: TrackPoint[] = []; // TODO
+    const finishPoints: TrackPoint[] = []; // TODO
 
     for (const feature of trackGeojson.features) {
       if (feature.geometry.type === 'LineString') {

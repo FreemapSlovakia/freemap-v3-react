@@ -24,13 +24,13 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   show: boolean;
   submenu: string | null;
 }
 
-class MoreMenuButton extends React.Component<Props, IState> {
-  state: IState = {
+class MoreMenuButton extends React.Component<Props, State> {
+  state: State = {
     show: false,
     submenu: null,
   };

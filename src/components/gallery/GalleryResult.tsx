@@ -19,10 +19,10 @@ import { DragEndEvent } from 'leaflet';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface IState {}
+interface State {}
 
-class GalleryResult extends React.Component<Props, IState> {
-  state: IState = {};
+class GalleryResult extends React.Component<Props, State> {
+  state: State = {};
 
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);

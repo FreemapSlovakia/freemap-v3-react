@@ -2,7 +2,7 @@ import { createStandardAction, createAction } from 'typesafe-actions';
 
 export const mapReset = createAction('MAP_RESET');
 
-export interface IMapViewState {
+export interface MapViewState {
   mapType: string;
   lat: number;
   lon: number;
@@ -10,14 +10,14 @@ export interface IMapViewState {
   overlays: string[];
 }
 
-export interface IMapStateBase extends IMapViewState {
+export interface MapStateBase extends MapViewState {
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
   tileFormat: 'jpeg' | 'png';
 }
 
 export const mapRefocus = createStandardAction('MAP_REFOCUS')<
-  Partial<IMapViewState>
+  Partial<MapViewState>
 >();
 
 export const mapSetTileFormat = createStandardAction('MAP_SET_TILE_FORMAT')<

@@ -18,7 +18,7 @@ import {
   galleryUpload,
   galleryHideUploadModal,
   galleryToggleShowPreview,
-  IGalleryItem,
+  GalleryItem,
 } from 'fm3/actions/galleryActions';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -29,7 +29,7 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { IPictureModel } from './GalleryEditForm';
+import { PictureModel } from './GalleryEditForm';
 import { latLonToString } from 'fm3/geoutils';
 
 let nextId = 1;
@@ -224,7 +224,7 @@ class GalleryUploadModal extends React.Component<Props> {
     this.props.onItemRemove(id);
   };
 
-  handleModelChange = (id: number, model: IPictureModel) => {
+  handleModelChange = (id: number, model: PictureModel) => {
     const item = this.props.items.find(itm => itm.id === id);
     if (item) {
       this.props.onItemChange(id, {
@@ -378,7 +378,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onItemAdd(item: IGalleryItem) {
+  onItemAdd(item: GalleryItem) {
     dispatch(galleryAddItem(item));
   },
   onItemRemove(id: number) {
@@ -411,7 +411,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPositionPick(id: number) {
     dispatch(gallerySetItemForPositionPicking(id));
   },
-  onItemChange(id: number, item: IGalleryItem) {
+  onItemChange(id: number, item: GalleryItem) {
     dispatch(gallerySetItem({ id, item }));
   },
   onShowPreviewToggle() {

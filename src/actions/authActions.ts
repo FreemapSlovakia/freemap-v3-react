@@ -1,5 +1,5 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
-import { IUser } from 'fm3/types/common';
+import { User } from 'fm3/types/common';
 
 export const authCheckLogin = createAction('AUTH_CHECK_LOGIN');
 
@@ -20,7 +20,7 @@ export const authLogout = createAction('AUTH_LOGOUT');
 
 export const authStartLogout = createAction('AUTH_START_LOGOUT');
 
-export const authSetUser = createStandardAction('AUTH_SET_USER')<IUser>();
+export const authSetUser = createStandardAction('AUTH_SET_USER')<User>();
 
 export const authChooseLoginMethod = createAction('AUTH_CHOOSE_LOGIN_METHOD');
 

@@ -1,11 +1,11 @@
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 
 let prevMapType: string | undefined;
 let prevOverlays: string[] = [];
 
-export const mapTypeGaProcessor: IProcessor = {
+export const mapTypeGaProcessor: Processor = {
   actionCreator: [mapRefocus, enableUpdatingUrl /* any initial action */],
   handle: async ({ getState }) => {
     const {

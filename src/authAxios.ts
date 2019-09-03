@@ -44,12 +44,12 @@ interface HttpRequestParams extends Omit<AxiosRequestConfig, 'cancelToken'> {
   cancelActions?: ActionType<RootAction>[];
 }
 
-interface ICancelItem {
+interface CancelItem {
   cancelActions: ActionType<RootAction>[];
   source: CancelTokenSource;
 }
 
-export const cancelRegister = new Set<ICancelItem>();
+export const cancelRegister = new Set<CancelItem>();
 
 export async function httpRequest({
   getState,
@@ -58,7 +58,7 @@ export async function httpRequest({
   ...rest
 }: HttpRequestParams) {
   let source: CancelTokenSource | undefined;
-  let cancelItem: ICancelItem | undefined;
+  let cancelItem: CancelItem | undefined;
 
   if (cancelActions) {
     source = axios.CancelToken.source();

@@ -1,12 +1,12 @@
 import { Location } from 'history';
-import { IMapViewState } from './actions/mapActions';
+import { MapViewState } from './actions/mapActions';
 
 // it's amazing that old freemap is using at least three different url param formats
 
 // either freemap.sk/#m=T,p=48.21836|17.4166|16|T or freemap.sk/?m=A&p=48.1855|17.4029|14
 export function getTrasformedParamsIfIsOldFreemapUrl(
   location: Location,
-): false | IMapViewState {
+): false | MapViewState {
   const isFromOldFreemapUrlFormat1 =
     location.hash &&
     (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
@@ -44,14 +44,14 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
   location: Location,
-): false | IMapViewState {
+): false | MapViewState {
   if (
     location.search &&
     (location.search.indexOf('marker=1') >= 0 ||
       location.search.indexOf('markerLat') >= 0)
   ) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
-    const out: IMapViewState = {
+    const out: MapViewState = {
       lat: parseFloat(oldFreemapUrlParams.lat),
       lon: parseFloat(oldFreemapUrlParams.lon),
       zoom: parseInt(oldFreemapUrlParams.zoom, 10),
@@ -75,7 +75,7 @@ export function getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(
       label: oldFreemapUrlParams.markerHtml,
     };
   }
-  return false;
+  return null;
 }
 
 function rawUrlParamsToHash(

@@ -4,7 +4,7 @@ import { FeatureCollection } from 'geojson';
 
 export type ColorizingMode = 'elevation' | 'steepness';
 
-export interface ITrackPoint extends LatLon {
+export interface TrackPoint extends LatLon {
   startTime?: Date;
   finishTime?: Date;
   lengthInKm: number;
@@ -15,8 +15,8 @@ export const trackViewerSetData = createStandardAction(
 )<{
   trackGpx?: string;
   trackGeojson?: FeatureCollection;
-  startPoints?: ITrackPoint[];
-  finishPoints?: ITrackPoint[];
+  startPoints?: TrackPoint[];
+  finishPoints?: TrackPoint[];
 }>();
 
 export const trackViewerSetTrackUID = createStandardAction(

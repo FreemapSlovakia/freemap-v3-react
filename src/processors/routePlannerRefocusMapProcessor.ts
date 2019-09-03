@@ -4,11 +4,11 @@ import {
   routePlannerSetStart,
   routePlannerSetFinish,
 } from 'fm3/actions/routePlannerActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
 
-export const routePlannerRefocusMapProcessor: IProcessor<
+export const routePlannerRefocusMapProcessor: Processor<
   typeof routePlannerSetStart | typeof routePlannerSetFinish
 > = {
   actionCreator: [routePlannerSetStart, routePlannerSetFinish],

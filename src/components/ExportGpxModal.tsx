@@ -37,16 +37,16 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   exportables: string[] | null; // TODO enum
 }
 
-export class ExportGpxModal extends React.Component<Props, IState> {
-  state: IState = {
+export class ExportGpxModal extends React.Component<Props, State> {
+  state: State = {
     exportables: null,
   };
 
-  static getDerivedStateFromProps(props: Props, state: IState) {
+  static getDerivedStateFromProps(props: Props, state: State) {
     return state.exportables
       ? null
       : {

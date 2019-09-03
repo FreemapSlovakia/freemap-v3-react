@@ -15,7 +15,7 @@ function checkDatetimeLocalInput(): boolean {
 
 const supportsDatetimeLocal: boolean = checkDatetimeLocalInput();
 
-interface IProps {
+interface Props {
   value: string;
   onChange: (value: string) => void;
   placeholders?: {
@@ -25,7 +25,7 @@ interface IProps {
   };
 }
 
-const DateTime: React.FC<IProps> = ({ value, onChange, placeholders }) => {
+const DateTime: React.FC<Props> = ({ value, onChange, placeholders }) => {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
 
   const propagateChange = React.useCallback(

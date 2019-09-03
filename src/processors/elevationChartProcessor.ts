@@ -10,13 +10,13 @@ import {
   elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
 import { setTool } from 'fm3/actions/mainActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
-export const elevationChartProcessor: IProcessor = {
+export const elevationChartProcessor: Processor = {
   actionCreator: elevationChartSetTrackGeojson,
   errorKey: 'elevationChart.fetchError',
   handle: async ({ dispatch, getState }) => {

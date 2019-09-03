@@ -1,49 +1,49 @@
-const OSM_MAP_ATTR: IAttributionDef = {
+const OSM_MAP_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0OpenStreetMap',
   url: 'https://osm.org/',
 };
 
-const OSM_DATA_ATTR: IAttributionDef = {
+const OSM_DATA_ATTR: AttributionDef = {
   type: 'data',
   nameKey: 'mapLayers.attr.osmData',
   url: 'https://osm.org/copyright',
 };
 
-const FM_ATTR: IAttributionDef = {
+const FM_ATTR: AttributionDef = {
   type: 'map',
   nameKey: 'mapLayers.attr.freemap',
 };
 
-const SRTM_ATTR: IAttributionDef = {
+const SRTM_ATTR: AttributionDef = {
   type: 'data',
   nameKey: 'mapLayers.attr.srtm',
 };
 
-const STRAVA_ATTR: IAttributionDef = {
+const STRAVA_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0Strava',
   url: 'https://www.strava.com/',
 };
 
-const NLC_ATTR: IAttributionDef = {
+const NLC_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0NLC Zvolen',
   url: 'http://www.nlcsk.org/',
 };
 
-export interface IAttributionDef {
+export interface AttributionDef {
   type: string;
   name?: string;
   nameKey?: string;
   url?: string;
 }
 
-export interface ILayerDef {
+export interface LayerDef {
   type: string;
   icon: string;
   url?: string;
-  attribution: IAttributionDef[];
+  attribution: AttributionDef[];
   minZoom?: number;
   minNativeZoom?: number;
   maxNativeZoom?: number;
@@ -55,7 +55,7 @@ export interface ILayerDef {
   strava?: boolean;
 }
 
-export const baseLayers: ILayerDef[] = [
+export const baseLayers: LayerDef[] = [
   {
     type: 'X',
     icon: 'tree',
@@ -210,7 +210,7 @@ function scaleUrl(scales: number[], url: string) {
   return scale === 1 ? url : `${url}@${scale}x`;
 }
 
-export const overlayLayers: ILayerDef[] = [
+export const overlayLayers: LayerDef[] = [
   {
     type: 'I',
     icon: 'picture-o',

@@ -1,8 +1,8 @@
 import { toggleLocate } from 'fm3/actions/mainActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const locateProcessor: IProcessor = {
+export const locateProcessor: Processor = {
   actionCreator: toggleLocate,
   handle: async ({ getState }) => {
     const leafletElement = getMapLeafletElement();

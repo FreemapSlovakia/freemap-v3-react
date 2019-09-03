@@ -29,42 +29,42 @@ import {
   galleryShowOnTheMap,
   galleryCancelShowOnTheMap,
   galleryToggleShowPreview,
-  IGalleryFilter,
-  IPicture,
-  IGalleryTag,
-  IGalleryUser,
-  IGalleryItem,
+  GalleryFilter,
+  Picture,
+  GalleryTag,
+  GalleryUser,
+  GalleryItem,
   gallerySavePicture,
 } from 'fm3/actions/galleryActions';
 import { LatLon } from 'fm3/types/common';
-import { IPictureModel } from 'fm3/components/gallery/GalleryEditForm';
+import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 import { latLonToString } from 'fm3/geoutils';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 
-export interface IGalleryState {
+export interface GalleryState {
   imageIds: number[] | null;
   activeImageId: number | null;
-  image: IPicture | null;
+  image: Picture | null;
   showUploadModal: boolean;
-  items: IGalleryItem[];
+  items: GalleryItem[];
   pickingPositionForId: number | null;
   pickingPosition: LatLon | null;
   showPreview: boolean;
   uploadingId: number | null;
-  tags: IGalleryTag[];
-  users: IGalleryUser[];
+  tags: GalleryTag[];
+  users: GalleryUser[];
   dirtySeq: number;
   comment: string;
   showFilter: boolean;
-  filter: IGalleryFilter;
-  editModel: IPictureModel | null;
+  filter: GalleryFilter;
+  editModel: PictureModel | null;
   showPosition: boolean;
   language: string;
   saveErrors: string[];
 }
 
-const initialState: IGalleryState = {
+const initialState: GalleryState = {
   imageIds: null,
   activeImageId: null,
   image: null,
@@ -100,7 +100,7 @@ const initialState: IGalleryState = {
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
 
-export const galleryReducer = createReducer<IGalleryState, RootAction>(
+export const galleryReducer = createReducer<GalleryState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, state => ({
@@ -188,7 +188,7 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
     return s;
   })
   .handleAction(gallerySetItemForPositionPicking, (state, action) => {
-    let x: IGalleryItem | undefined;
+    let x: GalleryItem | undefined;
     return {
       ...state,
       pickingPositionForId: action.payload,
@@ -307,7 +307,7 @@ export const galleryReducer = createReducer<IGalleryState, RootAction>(
     saveErrors: state.editModel ? getErrors(state.editModel) : [],
   }));
 
-function getErrors(item: IGalleryItem | IPictureModel) {
+function getErrors(item: GalleryItem | PictureModel) {
   const errors: string[] = [];
 
   if (!item.dirtyPosition) {

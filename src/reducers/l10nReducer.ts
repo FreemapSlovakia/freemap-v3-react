@@ -5,17 +5,17 @@ import {
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
 
-export interface IL10nState {
+export interface L10nState {
   chosenLanguage: string | null;
   language: string;
 }
 
-const initialState: IL10nState = {
+const initialState: L10nState = {
   chosenLanguage: null,
   language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
 };
 
-export const l10nReducer = createReducer<IL10nState, RootAction>(initialState)
+export const l10nReducer = createReducer<L10nState, RootAction>(initialState)
   .handleAction(l10nSetChosenLanguage, (state, action) => ({
     ...state,
     chosenLanguage: action.payload,

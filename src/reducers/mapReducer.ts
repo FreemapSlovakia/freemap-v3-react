@@ -1,6 +1,6 @@
 import { createReducer } from 'typesafe-actions';
 import {
-  IMapStateBase,
+  MapStateBase,
   mapRefocus,
   mapReset,
   mapSetTileFormat,
@@ -12,13 +12,13 @@ import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { setTool, setAppState } from 'fm3/actions/mainActions';
 
-export interface IMapState extends IMapStateBase {
+export interface MapState extends MapStateBase {
   stravaAuth: boolean;
   tool: string | null; // TODO enum
   removeGalleryOverlayOnGalleryToolQuit: boolean;
 }
 
-const initialState: IMapState = {
+const initialState: MapState = {
   mapType: 'X',
   lat: 48.70714,
   lon: 19.4995,
@@ -32,7 +32,7 @@ const initialState: IMapState = {
   removeGalleryOverlayOnGalleryToolQuit: false,
 };
 
-export const mapReducer = createReducer<IMapState, RootAction>(initialState)
+export const mapReducer = createReducer<MapState, RootAction>(initialState)
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.map };
   })
@@ -55,7 +55,7 @@ export const mapReducer = createReducer<IMapState, RootAction>(initialState)
     overlayPaneOpacity: action.payload,
   }))
   .handleAction(mapRefocus, (state, action) => {
-    const newState: IMapState = { ...state };
+    const newState: MapState = { ...state };
     const { zoom, lat, lon, mapType, overlays } = action.payload;
 
     if (zoom) {

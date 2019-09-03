@@ -1,7 +1,7 @@
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { cancelRegister } from 'fm3/authAxios';
 
-export const cancelProcessor: IProcessor = {
+export const cancelProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ action }) => {
     for (const x of cancelRegister) {

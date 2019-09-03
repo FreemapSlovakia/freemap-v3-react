@@ -3,10 +3,10 @@ import { getPoiType } from 'fm3/poiTypes';
 
 import { objectsSetResult, objectsSetFilter } from 'fm3/actions/objectsActions';
 import { setTool, clearMap } from 'fm3/actions/mainActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const objectsFetchProcessor: IProcessor<typeof objectsSetFilter> = {
+export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
   actionCreator: objectsSetFilter,
   errorKey: 'objects.fetchingError',
   handle: async ({ dispatch, getState, action }) => {

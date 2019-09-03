@@ -2,10 +2,10 @@ import {
   elevationChartSetTrackGeojson,
   elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { trackViewerToggleElevationChart } from 'fm3/actions/trackViewerActions';
 
-export const trackViewerToggleElevationChartProcessor: IProcessor = {
+export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
   handle: async ({ dispatch, getState }) => {
     if (getState().elevationChart.trackGeojson) {

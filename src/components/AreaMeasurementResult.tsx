@@ -7,7 +7,7 @@ import {
   areaMeasurementAddPoint,
   areaMeasurementUpdatePoint,
   areaMeasurementRemovePoint,
-  IPoint,
+  Point,
 } from 'fm3/actions/areaMeasurementActions';
 
 import { area } from 'fm3/geoutils';
@@ -28,13 +28,13 @@ const circularIcon = divIcon({
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface IState {
+interface State {
   lat?: number;
   lon?: number;
 }
 
-class AreaMeasurementResult extends React.Component<Props, IState> {
-  state: IState = {};
+class AreaMeasurementResult extends React.Component<Props, State> {
+  state: State = {};
 
   componentDidMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
@@ -96,7 +96,7 @@ class AreaMeasurementResult extends React.Component<Props, IState> {
   render() {
     const { points, language } = this.props;
 
-    const ps: IPoint[] = [];
+    const ps: Point[] = [];
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
       const p1 = points[i];
@@ -233,10 +233,10 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPointAdd(point: IPoint, position: number) {
+  onPointAdd(point: Point, position: number) {
     dispatch(areaMeasurementAddPoint({ point, position }));
   },
-  onPointUpdate(index: number, point: IPoint) {
+  onPointUpdate(index: number, point: Point) {
     dispatch(areaMeasurementUpdatePoint({ index, point }));
   },
   onPointRemove(i: number) {

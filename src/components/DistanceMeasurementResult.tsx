@@ -6,7 +6,7 @@ import {
   distanceMeasurementAddPoint,
   distanceMeasurementUpdatePoint,
   distanceMeasurementRemovePoint,
-  IPoint,
+  Point,
 } from 'fm3/actions/distanceMeasurementActions';
 
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
@@ -31,13 +31,13 @@ const circularIcon = divIcon({
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface IState {
+interface State {
   lat?: number;
   lon?: number;
 }
 
-class DistanceMeasurementResult extends React.Component<Props, IState> {
-  state: IState = {};
+class DistanceMeasurementResult extends React.Component<Props, State> {
+  state: State = {};
 
   componentDidMount() {
     mapEventEmitter.on('mouseMove', this.handleMouseMove);
@@ -94,12 +94,12 @@ class DistanceMeasurementResult extends React.Component<Props, IState> {
   }
 
   render() {
-    let prev: IPoint | null = null;
+    let prev: Point | null = null;
     let dist = 0;
 
     const { points, language } = this.props;
 
-    const ps: IPoint[] = [];
+    const ps: Point[] = [];
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
       if (i < points.length - 1) {
@@ -213,10 +213,10 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPointAdd(point: IPoint, position: number) {
+  onPointAdd(point: Point, position: number) {
     dispatch(distanceMeasurementAddPoint({ point, position }));
   },
-  onPointUpdate(index: number, point: IPoint) {
+  onPointUpdate(index: number, point: Point) {
     dispatch(distanceMeasurementUpdatePoint({ index, point }));
   },
   onPointRemove(id: number) {

@@ -7,7 +7,7 @@ import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
-import { mapRefocus, IMapViewState } from 'fm3/actions/mapActions';
+import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
@@ -17,12 +17,12 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   show: boolean;
 }
 
-class MapSwitchButton extends React.Component<Props, IState> {
-  state: IState = {
+class MapSwitchButton extends React.Component<Props, State> {
+  state: State = {
     show: false,
   };
 
@@ -221,7 +221,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapRefocus(changes: Partial<IMapViewState>) {
+  onMapRefocus(changes: Partial<MapViewState>) {
     dispatch(mapRefocus(changes));
   },
 });

@@ -3,18 +3,18 @@ import { RootAction } from 'fm3/actions';
 import {
   toastsAdd,
   toastsRemove,
-  IResolvedToast,
+  ResolvedToast,
 } from 'fm3/actions/toastsActions';
 
-export interface IToastsState {
-  toasts: IResolvedToast[];
+export interface ToastsState {
+  toasts: ResolvedToast[];
 }
 
-const initialState: IToastsState = {
+const initialState: ToastsState = {
   toasts: [],
 };
 
-export const toastsReducer = createReducer<IToastsState, RootAction>(
+export const toastsReducer = createReducer<ToastsState, RootAction>(
   initialState,
 )
   .handleAction(toastsAdd, (state, action) => {

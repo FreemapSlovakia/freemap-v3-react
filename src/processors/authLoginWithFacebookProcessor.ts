@@ -1,11 +1,11 @@
 import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
 import { authSetUser, authLoginWithFacebook } from 'fm3/actions/authActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { IUser } from 'fm3/types/common';
+import { User } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
 
-export const authLoginWithFacebookProcessor: IProcessor = {
+export const authLoginWithFacebookProcessor: Processor = {
   actionCreator: authLoginWithFacebook,
   errorKey: 'logIn.logInError',
   handle: async ({ dispatch, getState }) => {
@@ -33,7 +33,7 @@ export const authLoginWithFacebookProcessor: IProcessor = {
       data: { accessToken: response.authResponse.accessToken },
     });
 
-    const user = assertType<IUser>(data);
+    const user = assertType<User>(data);
 
     dispatch(
       toastsAdd({

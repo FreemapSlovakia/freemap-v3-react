@@ -34,7 +34,7 @@ window.addEventListener('error', evt => {
   });
 });
 
-interface IErrorDetails {
+interface ErrorDetails {
   kind: string;
   action?: any;
   error?: any;
@@ -44,7 +44,7 @@ interface IErrorDetails {
   colno?: number;
 }
 
-export function sendError(errDetails: IErrorDetails) {
+export function sendError(errDetails: ErrorDetails): void {
   // eslint-disable-next-line
   console.error('Application error:', errDetails);
 
@@ -88,7 +88,7 @@ export function sendError(errDetails: IErrorDetails) {
     );
 }
 
-function handle(id: string) {
+function handle(id: string): void {
   if (store) {
     store.dispatch(setErrorTicketId(id));
   } else {

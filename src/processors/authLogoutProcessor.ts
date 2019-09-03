@@ -1,9 +1,9 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { authLogout, authStartLogout } from 'fm3/actions/authActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const authLogoutProcessor: IProcessor = {
+export const authLogoutProcessor: Processor = {
   actionCreator: authStartLogout,
   errorKey: 'logIn.logOutError',
   handle: async ({ dispatch, getState }) => {

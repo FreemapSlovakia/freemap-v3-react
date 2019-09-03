@@ -4,10 +4,10 @@ import {
   galleryRequestImages,
 } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const galleryRequestImagesByRadiusProcessor: IProcessor<
+export const galleryRequestImagesByRadiusProcessor: Processor<
   typeof galleryRequestImages
 > = {
   actionCreator: galleryRequestImages,

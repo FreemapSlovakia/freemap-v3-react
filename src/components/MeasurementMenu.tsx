@@ -8,11 +8,11 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { setTool, Tool } from 'fm3/actions/mainActions';
 import {
   distanceMeasurementAddPoint,
-  IPoint as IDistancePoint,
+  Point as DistancePoint,
 } from 'fm3/actions/distanceMeasurementActions';
 import {
   areaMeasurementAddPoint,
-  IPoint as IAreaPoint,
+  Point as AreaPoint,
 } from 'fm3/actions/areaMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 
@@ -167,10 +167,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onElevationChartClose() {
     dispatch(elevationChartClose());
   },
-  onAreaPointAdd(point: IAreaPoint, position: number) {
+  onAreaPointAdd(point: AreaPoint, position: number) {
     dispatch(areaMeasurementAddPoint({ point, position }));
   },
-  onDistPointAdd(point: IDistancePoint, position: number) {
+  onDistPointAdd(point: DistancePoint, position: number) {
     dispatch(distanceMeasurementAddPoint({ point, position }));
   },
   onElePointSet(point: LatLon) {

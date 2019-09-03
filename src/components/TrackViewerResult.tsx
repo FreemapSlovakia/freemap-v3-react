@@ -17,7 +17,7 @@ import { RootState } from 'fm3/storeCreator';
 
 type Props = ReturnType<typeof mapStateToProps>;
 
-interface IState {
+interface State {
   infoLat?: number;
   infoLon?: number;
   infoDistanceKm?: number;
@@ -28,8 +28,8 @@ interface GetFeatures {
   (type: 'Point'): Feature<Point, Properties>[];
 }
 
-class TrackViewerResult extends React.Component<Props, IState> {
-  state: IState = {};
+class TrackViewerResult extends React.Component<Props, State> {
+  state: State = {};
 
   componentDidUpdate(prevProps: Props) {
     const { trackGeojson } = this.props;

@@ -20,16 +20,16 @@ import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 
-interface ILocation extends LatLon {
+interface Location extends LatLon {
   accuracy: number;
 }
 
-export interface IMainState {
+export interface MainState {
   activeModal: string | null;
   tool: string | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
-  location: ILocation | null;
+  location: Location | null;
   expertMode: boolean;
   locate: boolean;
   selectingHomeLocation: boolean;
@@ -39,7 +39,7 @@ export interface IMainState {
   embedFeatures: string[];
 }
 
-const initialState: IMainState = {
+const initialState: MainState = {
   activeModal: null,
   tool: null,
   homeLocation: null,
@@ -54,7 +54,7 @@ const initialState: IMainState = {
   embedFeatures: [],
 };
 
-export const mainReducer = createReducer<IMainState, RootAction>(initialState)
+export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.main };
   })

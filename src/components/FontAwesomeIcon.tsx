@@ -1,7 +1,7 @@
 import React from 'react';
 import 'fm3/font/styles.css';
 
-interface IProps
+interface Props
   extends React.DetailedHTMLProps<
     React.HTMLAttributes<HTMLElement>,
     HTMLElement
@@ -10,7 +10,7 @@ interface IProps
   className?: string;
 }
 
-const FontAwesomeIcon: React.FC<IProps> = ({ icon, ...props }) => {
+const FontAwesomeIcon: React.FC<Props> = ({ icon, ...props }) => {
   return (
     <i
       {...props}

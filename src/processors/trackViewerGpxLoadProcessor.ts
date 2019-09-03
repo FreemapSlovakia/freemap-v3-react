@@ -3,10 +3,10 @@ import {
   trackViewerGpxLoad,
 } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
-export const trackViewerGpxLoadProcessor: IProcessor = {
+export const trackViewerGpxLoadProcessor: Processor = {
   actionCreator: trackViewerGpxLoad,
   errorKey: 'trackViewer.fetchingError',
   handle: async ({ dispatch, getState }) => {

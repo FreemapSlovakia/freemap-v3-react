@@ -1,10 +1,10 @@
 import { storage } from 'fm3/storage';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
-import { IUser } from 'fm3/types/common';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { User } from 'fm3/types/common';
 
-let prevUser: IUser | null = null;
+let prevUser: User | null = null;
 
-export const authSaveUserProcessor: IProcessor = {
+export const authSaveUserProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ getState }) => {
     const { user } = getState().auth;

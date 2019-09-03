@@ -2,31 +2,31 @@ import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import {
-  ITrack,
-  ITrackedDevice,
-  IDevice,
-  IAccessToken,
+  Track,
+  TrackedDevice,
+  Device,
+  AccessToken,
 } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
 import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
 
-export interface ITrackingState {
-  devices: IDevice[];
-  accessTokens: IAccessToken[];
+export interface TrackingState {
+  devices: Device[];
+  accessTokens: AccessToken[];
   accessTokensDeviceId: number | null | undefined;
   modifiedDeviceId: number | null | undefined;
   modifiedAccessTokenId: number | null | undefined;
   modifiedTrackedDeviceId: undefined | null | number | string;
-  trackedDevices: ITrackedDevice[];
-  tracks: ITrack[];
+  trackedDevices: TrackedDevice[];
+  tracks: Track[];
   showLine: boolean;
   showPoints: boolean;
   activeTrackId: null | string | number;
 }
 
-const initialState: ITrackingState = {
+const initialState: TrackingState = {
   devices: [],
   accessTokens: [],
   accessTokensDeviceId: undefined,
@@ -40,7 +40,7 @@ const initialState: ITrackingState = {
   activeTrackId: null,
 };
 
-export const trackingReducer = createReducer<ITrackingState, RootAction>(
+export const trackingReducer = createReducer<TrackingState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

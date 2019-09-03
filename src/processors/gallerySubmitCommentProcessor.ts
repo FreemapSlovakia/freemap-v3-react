@@ -2,10 +2,10 @@ import {
   galleryRequestImage,
   gallerySubmitComment,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const gallerySubmitCommentProcessor: IProcessor = {
+export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
   errorKey: 'gallery.commentAddingError',
   handle: async ({ getState, dispatch }) => {

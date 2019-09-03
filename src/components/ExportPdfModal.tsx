@@ -16,7 +16,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import {
   setActiveModal,
   exportPdf,
-  IPdfExportOptions,
+  PdfExportOptions,
 } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -27,10 +27,10 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState extends IPdfExportOptions {}
+interface State extends PdfExportOptions {}
 
-export class ExportPdfModal extends React.Component<Props, IState> {
-  state: IState = {
+export class ExportPdfModal extends React.Component<Props, State> {
+  state: State = {
     contours: true,
     shadedRelief: true,
     hikingTrails: true,
@@ -192,7 +192,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
-  onExport(options: IPdfExportOptions) {
+  onExport(options: PdfExportOptions) {
     dispatch(exportPdf(options));
   },
 });

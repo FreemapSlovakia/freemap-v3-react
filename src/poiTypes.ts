@@ -6,7 +6,7 @@ export const poiTypeGroups = categories.map(c => ({
   icon: c.filename,
 }));
 
-interface IFilter {
+interface PoiFilter {
   key: string;
   value?: string;
   keyOperation?: string;
@@ -38,7 +38,7 @@ export function getPoiType(id: number) {
   return poiTypesMap.get(id);
 }
 
-function toOverpassFilter(element: string, filter: IFilter[]): string {
+function toOverpassFilter(element: string, filter: PoiFilter[]): string {
   return `${element}${filter
     .map(
       ({ keyOperation, key, operation = '=', value }) =>

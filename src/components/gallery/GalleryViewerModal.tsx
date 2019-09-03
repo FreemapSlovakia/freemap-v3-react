@@ -7,7 +7,7 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import GalleryEditForm, {
-  IPictureModel,
+  PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
 
 import Modal from 'react-bootstrap/lib/Modal';
@@ -44,15 +44,15 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   loading: boolean;
   isFullscreen: boolean;
   imgKey: number;
   activeImageId: number | null;
 }
 
-class GalleryViewerModal extends React.Component<Props, IState> {
-  state: IState = {
+class GalleryViewerModal extends React.Component<Props, State> {
+  state: State = {
     loading: true,
     isFullscreen: false,
     imgKey: 0,
@@ -63,7 +63,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
 
   fullscreenElement?: HTMLDivElement;
 
-  static getDerivedStateFromProps(props: Props, state: IState) {
+  static getDerivedStateFromProps(props: Props, state: State) {
     if (props.activeImageId !== state.activeImageId) {
       return {
         loading: true,
@@ -107,7 +107,7 @@ class GalleryViewerModal extends React.Component<Props, IState> {
     this.forceUpdate();
   };
 
-  handleEditModelChange = (editModel: IPictureModel) => {
+  handleEditModelChange = (editModel: PictureModel) => {
     this.props.onEditModelChange(editModel);
   };
 
@@ -556,7 +556,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       }),
     );
   },
-  onEditModelChange(editModel: IPictureModel) {
+  onEditModelChange(editModel: PictureModel) {
     dispatch(gallerySetEditModel(editModel));
   },
   onSave() {

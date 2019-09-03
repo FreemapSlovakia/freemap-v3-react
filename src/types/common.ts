@@ -1,15 +1,15 @@
-import { IMapStateBase } from 'fm3/actions/mapActions';
-import { IRoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { ITrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { IMainState } from 'fm3/reducers/mainReducer';
-import { ITranslations } from 'fm3/stringUtils';
+import { MapStateBase } from 'fm3/actions/mapActions';
+import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
+import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
+import { MainState } from 'fm3/reducers/mainReducer';
+import { Translations } from 'fm3/stringUtils';
 
 export interface LatLon {
   lat: number;
   lon: number;
 }
 
-export interface IUser {
+export interface User {
   name: string;
   email: string;
   id: number;
@@ -28,14 +28,14 @@ declare global {
     fbAsyncInit?: () => void;
     handleGoogleAuthApiLoad?: () => void;
     preventMapClick?: boolean;
-    translations?: ITranslations;
+    translations?: Translations;
   }
 }
 
-export interface IAppState {
-  main: Pick<IMainState, 'homeLocation' | 'expertMode'>;
-  map: IMapStateBase;
-  trackViewer: Pick<ITrackViewerState, 'eleSmoothingFactor'>;
+export interface AppState {
+  main: Pick<MainState, 'homeLocation' | 'expertMode'>;
+  map: MapStateBase;
+  trackViewer: Pick<TrackViewerState, 'eleSmoothingFactor'>;
   language: string | null;
-  routePlanner: Pick<IRoutePlannerState, 'transportType'>;
+  routePlanner: Pick<RoutePlannerState, 'transportType'>;
 }

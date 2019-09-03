@@ -24,18 +24,18 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   authorName: string | null;
   authorNameFromProps: string | null;
 }
 
 class ChangesetsMenu extends React.Component<Props> {
-  state: IState = {
+  state: State = {
     authorName: null,
     authorNameFromProps: null,
   };
 
-  static getDerivedStateFromProps(props: Props, state: IState) {
+  static getDerivedStateFromProps(props: Props, state: State) {
     if (props.authorName !== state.authorNameFromProps) {
       return {
         authorName: props.authorName,

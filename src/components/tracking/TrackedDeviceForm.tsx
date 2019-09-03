@@ -13,7 +13,7 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { ITrackedDevice } from 'fm3/types/trackingTypes';
+import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { InputGroup } from 'react-bootstrap';
@@ -198,7 +198,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onCancel() {
     dispatch(trackingActions.modifyTrackedDevice(undefined));
   },
-  onSave(device: ITrackedDevice) {
+  onSave(device: TrackedDevice) {
     dispatch(trackingActions.saveTrackedDevice(device));
   },
 });

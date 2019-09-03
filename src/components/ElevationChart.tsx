@@ -12,7 +12,7 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import 'fm3/styles/elevationChart.scss';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { IElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
+import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -128,7 +128,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  setActivePoint(activePoint: IElevationProfilePoint) {
+  setActivePoint(activePoint: ElevationProfilePoint) {
     dispatch(elevationChartSetActivePoint(activePoint));
   },
   removeActivePoint() {

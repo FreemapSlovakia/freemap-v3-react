@@ -11,7 +11,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import DateTime from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
-import { IAccessTokenBase } from 'fm3/types/trackingTypes';
+import { AccessTokenBase } from 'fm3/types/trackingTypes';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
@@ -119,7 +119,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onCancel() {
     dispatch(trackingActions.modifyAccessToken(undefined));
   },
-  onSave(accessToken: IAccessTokenBase) {
+  onSave(accessToken: AccessTokenBase) {
     dispatch(trackingActions.saveAccessToken(accessToken));
   },
 });

@@ -1,7 +1,7 @@
 import { gallerySetImage } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const galleryShowImageGaProcessor: IProcessor = {
+export const galleryShowImageGaProcessor: Processor = {
   actionCreator: gallerySetImage,
   handle: async ({ getState }) => {
     const {

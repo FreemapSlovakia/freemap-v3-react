@@ -1,15 +1,15 @@
 import { createStandardAction } from 'typesafe-actions';
 import {
-  ITrackedDevice,
-  IDevice,
-  IAccessToken,
-  IEditedDevice,
-  IAccessTokenBase,
+  TrackedDevice,
+  Device,
+  AccessToken,
+  EditedDevice,
+  AccessTokenBase,
 } from 'fm3/types/trackingTypes';
 
 export const trackingActions = {
   setTrackedDevices: createStandardAction('TRACKING_SET_TRACKED_DEVICES')<
-    ITrackedDevice[]
+    TrackedDevice[]
   >(),
 
   modifyTrackedDevice: createStandardAction('TRACKING_MODIFY_TRACKED_DEVICE')<
@@ -21,10 +21,10 @@ export const trackingActions = {
   >(),
 
   saveTrackedDevice: createStandardAction('TRACKING_SAVE_TRACKED_DEVICE')<
-    ITrackedDevice
+    TrackedDevice
   >(),
 
-  setDevices: createStandardAction('TRACKING_SET_DEVICES')<IDevice[]>(),
+  setDevices: createStandardAction('TRACKING_SET_DEVICES')<Device[]>(),
 
   modifyDevice: createStandardAction('TRACKING_MODIFY_DEVICE')<
     number | undefined | null
@@ -32,12 +32,12 @@ export const trackingActions = {
 
   deleteDevice: createStandardAction('TRACKING_DELETE_DEVICE')<number>(),
 
-  saveDevice: createStandardAction('TRACKING_SAVE_DEVICE')<IEditedDevice>(),
+  saveDevice: createStandardAction('TRACKING_SAVE_DEVICE')<EditedDevice>(),
 
   loadDevices: createStandardAction('TRACKING_LOAD_DEVICES')<void>(),
 
   setAccessTokens: createStandardAction('TRACKING_SET_ACCESS_TOKENS')<
-    IAccessToken[]
+    AccessToken[]
   >(),
 
   modifyAccessToken: createStandardAction('TRACKING_MODIFY_ACCESS_TOKEN')<
@@ -49,7 +49,7 @@ export const trackingActions = {
   >(),
 
   saveAccessToken: createStandardAction('TRACKING_SAVE_ACCESS_TOKEN')<
-    IAccessTokenBase
+    AccessTokenBase
   >(),
 
   loadAccessTokens: createStandardAction('TRACKING_LOAD_ACCESS_TOKENS')<void>(),

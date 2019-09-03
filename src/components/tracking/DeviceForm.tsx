@@ -9,7 +9,7 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { IEditedDevice } from 'fm3/types/trackingTypes';
+import { EditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
 import { Checkbox } from 'react-bootstrap';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -114,7 +114,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onCancel() {
     dispatch(trackingActions.modifyDevice(undefined));
   },
-  onSave(device: IEditedDevice) {
+  onSave(device: EditedDevice) {
     dispatch(trackingActions.saveDevice(device));
   },
 });

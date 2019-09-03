@@ -1,15 +1,15 @@
 import { storage } from 'fm3/storage';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
-import { IAppState } from 'fm3/types/common';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { AppState } from 'fm3/types/common';
 
-export const storageProcessor: IProcessor = {
+export const storageProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ getState }) => {
     const state = getState();
 
     const mapState = state.map;
 
-    const appState: IAppState = {
+    const appState: AppState = {
       main: {
         homeLocation: state.main.homeLocation,
         expertMode: state.main.expertMode,

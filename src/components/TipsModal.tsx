@@ -27,13 +27,13 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   loading: boolean;
   tip: string | null;
 }
 
-export class TipsModal extends React.Component<Props, IState> {
-  state: IState = {
+export class TipsModal extends React.Component<Props, State> {
+  state: State = {
     loading: true,
     tip: null,
   };

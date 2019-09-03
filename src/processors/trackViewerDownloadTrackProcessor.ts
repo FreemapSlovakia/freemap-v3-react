@@ -4,9 +4,9 @@ import {
 } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const trackViewerDownloadTrackProcessor: IProcessor = {
+export const trackViewerDownloadTrackProcessor: Processor = {
   actionCreator: trackViewerDownloadTrack,
   errorKey: 'trackViewer.fetchingError',
   handle: async ({ dispatch, getState }) => {

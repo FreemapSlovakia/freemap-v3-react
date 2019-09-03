@@ -7,7 +7,7 @@ import {
   trackViewerDownloadTrack,
   trackViewerColorizeTrackBy,
   trackViewerGpxLoad,
-  ITrackPoint,
+  TrackPoint,
 } from 'fm3/actions/trackViewerActions';
 import {
   osmClear,
@@ -17,12 +17,12 @@ import {
 } from 'fm3/actions/osmActions';
 import { FeatureCollection } from 'geojson';
 
-export interface ITrackViewerState {
+export interface TrackViewerState {
   trackGeojson: FeatureCollection | null;
   trackGpx: string | null;
   trackUID: string | null;
-  startPoints: ITrackPoint[];
-  finishPoints: ITrackPoint[];
+  startPoints: TrackPoint[];
+  finishPoints: TrackPoint[];
   colorizeTrackBy: null | 'elevation' | 'steepness';
   gpxUrl: string | null;
 
@@ -32,7 +32,7 @@ export interface ITrackViewerState {
   eleSmoothingFactor?: number;
 }
 
-const initialState: ITrackViewerState = {
+const initialState: TrackViewerState = {
   trackGeojson: null,
   trackGpx: null,
   trackUID: null,
@@ -47,7 +47,7 @@ const initialState: ITrackViewerState = {
   eleSmoothingFactor: undefined,
 };
 
-export const trackViewerReducer = createReducer<ITrackViewerState, RootAction>(
+export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

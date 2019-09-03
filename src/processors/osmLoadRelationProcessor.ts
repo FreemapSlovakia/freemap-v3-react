@@ -2,12 +2,12 @@ import { lineString, point, Feature, featureCollection } from '@turf/helpers';
 
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toNodes, toWays, ensureElement, ensureNotNull } from 'fm3/osmUtils';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';
 import { FeatureCollection } from 'geojson';
 
-export const osmLoadRelationProcessor: IProcessor = {
+export const osmLoadRelationProcessor: Processor = {
   actionCreator: osmLoadRelation,
   errorKey: 'osm.fetchingError',
   handle: async ({ dispatch, getState }) => {

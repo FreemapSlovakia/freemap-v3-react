@@ -2,11 +2,11 @@ import React from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { divIcon } from 'leaflet';
 
-interface IProps extends MarkerProps, IIconProps {
+interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;
 }
 
-interface IIconProps {
+interface IconProps {
   label?: string | number;
   color?: string;
   image?: string;
@@ -14,7 +14,7 @@ interface IIconProps {
   faIconLeftPadding?: string;
 }
 
-export default class RichMarker extends React.Component<IProps> {
+export default class RichMarker extends React.Component<Props> {
   markerRef: Marker | null = null;
 
   componentDidMount() {
@@ -43,7 +43,7 @@ export default class RichMarker extends React.Component<IProps> {
   }
 }
 
-export function createMarkerIcon(props: IIconProps = {}) {
+export function createMarkerIcon(props: IconProps = {}) {
   const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = props;
 
   const gradinentDef = `<defs>

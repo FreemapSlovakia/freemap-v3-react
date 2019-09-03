@@ -5,7 +5,7 @@ import Button from 'react-bootstrap/lib/Button';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { ITrackedDevice } from 'fm3/types/trackingTypes';
+import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
@@ -13,7 +13,7 @@ import { RootState } from 'fm3/storeCreator';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
-    device: ITrackedDevice;
+    device: TrackedDevice;
     t: Translator;
   };
 

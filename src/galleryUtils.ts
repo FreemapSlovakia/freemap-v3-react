@@ -1,4 +1,4 @@
-import { IGalleryFilter } from './actions/galleryActions';
+import { GalleryFilter } from './actions/galleryActions';
 
 export function createFilter({
   tag,
@@ -9,7 +9,7 @@ export function createFilter({
   takenAtTo,
   createdAtFrom,
   createdAtTo,
-}: IGalleryFilter) {
+}: GalleryFilter) {
   return {
     tag,
     userId,

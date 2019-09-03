@@ -1,7 +1,7 @@
 import { toastsRemove } from 'fm3/actions/toastsActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const toastsCancelTypeProcessor: IProcessor = {
+export const toastsCancelTypeProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ dispatch, getState, action }) => {
     getState()
@@ -14,7 +14,10 @@ export const toastsCancelTypeProcessor: IProcessor = {
   },
 };
 
-function matches(value: string, test: string | string[] | RegExp | undefined) {
+function matches(
+  value: string,
+  test: string | string[] | RegExp | undefined,
+): boolean {
   if (test === undefined) {
     return false;
   }

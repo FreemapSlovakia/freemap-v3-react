@@ -2,10 +2,10 @@ import {
   gallerySetImage,
   galleryRequestImage,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const galleryRequestImageProcessor: IProcessor<
+export const galleryRequestImageProcessor: Processor<
   typeof galleryRequestImage
 > = {
   actionCreator: galleryRequestImage,

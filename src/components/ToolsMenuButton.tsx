@@ -16,12 +16,12 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   show: boolean;
 }
 
-class ToolsMenuButton extends React.Component<Props, IState> {
-  state: IState = {
+class ToolsMenuButton extends React.Component<Props, State> {
+  state: State = {
     show: false,
   };
 

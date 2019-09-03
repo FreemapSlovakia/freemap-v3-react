@@ -11,9 +11,9 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import DateTime from '../DateTime';
 import { Translator } from 'fm3/l10nInjector';
-import { IGalleryTag } from 'fm3/actions/galleryActions';
+import { GalleryTag } from 'fm3/actions/galleryActions';
 
-export interface IPictureModel {
+export interface PictureModel {
   title: string;
   description: string;
   tags: string[];
@@ -21,16 +21,16 @@ export interface IPictureModel {
   dirtyPosition: string;
 }
 
-interface IProps {
-  model: IPictureModel;
-  allTags: IGalleryTag[];
+interface Props {
+  model: PictureModel;
+  allTags: GalleryTag[];
   errors: string[] | null | undefined;
   onPositionPick: undefined | (() => void);
-  onModelChange: (model: IPictureModel) => void;
+  onModelChange: (model: PictureModel) => void;
   t: Translator;
 }
 
-const GalleryEditForm: React.FC<IProps> = ({
+const GalleryEditForm: React.FC<Props> = ({
   model,
   allTags,
   errors,
@@ -39,7 +39,7 @@ const GalleryEditForm: React.FC<IProps> = ({
   onModelChange,
 }) => {
   const changeModel = useCallback(
-    (key: keyof IPictureModel, value) => {
+    (key: keyof PictureModel, value) => {
       onModelChange({ ...model, [key]: value });
     },
     [model, onModelChange],

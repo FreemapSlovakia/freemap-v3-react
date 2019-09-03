@@ -41,7 +41,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   tileFormat: 'jpeg' | 'png';
   homeLocation: LatLon | null;
   overlayOpacity: { [type: string]: number };
@@ -54,8 +54,8 @@ interface IState {
   selectedOverlay: string;
 }
 
-class Settings extends React.Component<Props, IState> {
-  state: IState;
+class Settings extends React.Component<Props, State> {
+  state: State;
 
   constructor(props: Props) {
     super(props);

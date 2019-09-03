@@ -3,11 +3,11 @@ import {
   gallerySetLayerDirty,
   gallerySavePicture,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 
-export const gallerySavePictureProcessor: IProcessor = {
+export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,
   errorKey: 'gallery.savingError',
   handle: async ({ getState, dispatch }) => {

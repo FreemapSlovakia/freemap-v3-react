@@ -17,7 +17,7 @@ import legend from 'fm3/legend/index.json';
 
 type Props = ReturnType<typeof mapDispatchToProps>;
 
-interface ILegendItem {
+interface LegendItem {
   n: string;
   items: Array<{
     i: string;
@@ -36,7 +36,7 @@ const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
       <Modal.Body>
         <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
         <PanelGroup accordion id="pg1">
-          {legend.map((c: ILegendItem, i: number) => (
+          {legend.map((c: LegendItem, i: number) => (
             <Panel key={`yyy${c.n}`} eventKey={i}>
               {c.items.map(e => (
                 <div key={`xxx${c.n}-${e.n}`}>

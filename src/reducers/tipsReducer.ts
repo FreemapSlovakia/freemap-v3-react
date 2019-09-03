@@ -9,17 +9,17 @@ import {
 } from 'fm3/actions/tipsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 
-export interface ITipsState {
+export interface TipsState {
   tip: string | null;
   preventTips: boolean;
 }
 
-const initialState: ITipsState = {
+const initialState: TipsState = {
   tip: null,
   preventTips: false,
 };
 
-export const tipsReducer = createReducer<ITipsState, RootAction>(initialState)
+export const tipsReducer = createReducer<TipsState, RootAction>(initialState)
   .handleAction(tipsShow, (state, action) => ({
     ...state,
     tip: action.payload,

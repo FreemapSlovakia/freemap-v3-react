@@ -55,19 +55,19 @@ export function splitAndSubstitute(
   return x.length === 1 ? x[0] : x;
 }
 
-export interface ITranslations {
-  [key: string]: ITranslations | string | ((...params: any[]) => string);
+export interface Translations {
+  [key: string]: Translations | string | ((...params: any[]) => string);
 }
 
 export function translate(
-  translations: ITranslations | undefined,
+  translations: Translations | undefined,
   key: string,
   dflt: string = '',
 ): string | ((...params: any[]) => string) {
   if (!translations) {
     return '…';
   }
-  let curr: ITranslations = translations;
+  let curr: Translations = translations;
   const keys = key.split('.');
   for (;;) {
     const part = keys.shift();

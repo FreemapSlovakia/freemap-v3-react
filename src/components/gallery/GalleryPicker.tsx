@@ -12,13 +12,13 @@ import { RootAction } from 'fm3/actions';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface IState {
+interface State {
   lat?: number;
   lon?: number;
 }
 
-class GalleryPicker extends React.Component<Props, IState> {
-  state: IState = {};
+class GalleryPicker extends React.Component<Props, State> {
+  state: State = {};
 
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);

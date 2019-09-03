@@ -4,17 +4,17 @@ import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
 import { addAttribute, createElement, GPX_NS } from 'fm3/gpxExporter';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import qs from 'query-string';
-import { IRoutePlannerState } from 'fm3/reducers/routePlannerReducer';
+import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { LatLon } from 'fm3/types/common';
-import { IObjectsState } from 'fm3/reducers/objectsReducer';
-import { IInfoPointState } from 'fm3/reducers/infoPointReducer';
-import { IElevationMeasurementState } from 'fm3/reducers/elevationMeasurementReducer';
-import { IDistanceMeasurementState } from 'fm3/reducers/distanceMeasurementReducer';
-import { ITrackingState } from 'fm3/reducers/trackingReducer';
+import { ObjectsState } from 'fm3/reducers/objectsReducer';
+import { InfoPointState } from 'fm3/reducers/infoPointReducer';
+import { ElevationMeasurementState } from 'fm3/reducers/elevationMeasurementReducer';
+import { DistanceMeasurementState } from 'fm3/reducers/distanceMeasurementReducer';
+import { TrackingState } from 'fm3/reducers/trackingReducer';
 
-export const gpxExportProcessor: IProcessor<typeof exportGpx> = {
+export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
   errorKey: 'gallery.picturesFetchingError',
   handle: async ({ getState, action, dispatch }) => {
@@ -147,10 +147,7 @@ function addPictures(doc: Document, pictures) {
   });
 }
 
-function addADMeasurement(
-  doc: Document,
-  { points }: IDistanceMeasurementState,
-) {
+function addADMeasurement(doc: Document, { points }: DistanceMeasurementState) {
   const trkEle = createElement(doc.documentElement, 'trk');
   const trksegEle = createElement(trkEle, 'trkseg');
 
@@ -163,7 +160,7 @@ function addADMeasurement(
 
 function addElevationMeasurement(
   doc: Document,
-  { point, elevation }: IElevationMeasurementState,
+  { point, elevation }: ElevationMeasurementState,
 ) {
   if (point) {
     const wptEle = createElement(
@@ -181,7 +178,7 @@ function addElevationMeasurement(
   }
 }
 
-function addInfoPoint(doc: Document, { points }: IInfoPointState) {
+function addInfoPoint(doc: Document, { points }: InfoPointState) {
   points.forEach(({ lat, lon, label }) => {
     const wptEle = createElement(
       doc.documentElement,
@@ -198,7 +195,7 @@ function addInfoPoint(doc: Document, { points }: IInfoPointState) {
   });
 }
 
-function addObjects(doc: Document, { objects }: IObjectsState) {
+function addObjects(doc: Document, { objects }: ObjectsState) {
   objects.forEach(({ lat, lon, tags }) => {
     const wptEle = createElement(
       doc.documentElement,
@@ -222,7 +219,7 @@ function addObjects(doc: Document, { objects }: IObjectsState) {
 
 function addPlannedRoute(
   doc: Document,
-  { alternatives, start, finish, midpoints }: IRoutePlannerState,
+  { alternatives, start, finish, midpoints }: RoutePlannerState,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
@@ -278,10 +275,7 @@ function toLatLon(latLon: LatLon) {
 
 export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
-function addTracking(
-  doc: Document,
-  { tracks, trackedDevices }: ITrackingState,
-) {
+function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   const tdMap = new Map(trackedDevices.map(td => [td.id, td]));
   const tracks1 = tracks.map(track => ({
     ...track,

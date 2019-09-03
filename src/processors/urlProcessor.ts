@@ -1,7 +1,7 @@
 import { history } from 'fm3/historyHolder';
 import refModals from 'fm3/refModals.json';
 import allTips from 'fm3/tips/index.json';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { setAppState } from 'fm3/actions/mainActions';
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
@@ -82,7 +82,7 @@ const tipKeys = allTips.map(([key]) => key);
 
 let lastActionType: string | undefined;
 
-export const urlProcessor: IProcessor = {
+export const urlProcessor: Processor = {
   actionCreator: [
     setAppState,
     mapRefocus,

@@ -2,11 +2,11 @@ import { point } from '@turf/helpers';
 
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { toNodes } from 'fm3/osmUtils';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadNode } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';
 
-export const osmLoadNodeProcessor: IProcessor = {
+export const osmLoadNodeProcessor: Processor = {
   actionCreator: osmLoadNode,
   errorKey: 'osm.fetchingError',
   handle: async ({ dispatch, getState }) => {

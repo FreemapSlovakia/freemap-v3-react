@@ -1,8 +1,8 @@
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const exportPdfProcessor: IProcessor<typeof exportPdf> = {
+export const exportPdfProcessor: Processor<typeof exportPdf> = {
   actionCreator: exportPdf,
   handle: async ({ dispatch, getState, action }) => {
     const le = getMapLeafletElement();

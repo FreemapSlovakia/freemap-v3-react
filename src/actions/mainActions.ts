@@ -1,5 +1,5 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
-import { LatLon, IAppState } from 'fm3/types/common';
+import { LatLon, AppState } from 'fm3/types/common';
 
 export type Tool =
   | 'objects'
@@ -40,7 +40,7 @@ export const setLocation = createStandardAction('SET_LOCATION')<{
   accuracy: number;
 }>();
 
-export interface IPdfExportOptions {
+export interface PdfExportOptions {
   contours: boolean;
   shadedRelief: boolean;
   hikingTrails: boolean;
@@ -53,13 +53,11 @@ export interface IPdfExportOptions {
 
 export const setExpertMode = createStandardAction('SET_EXPERT_MODE')<boolean>();
 
-export const setAppState = createStandardAction('SET_APP_STATE')<IAppState>();
+export const setAppState = createStandardAction('SET_APP_STATE')<AppState>();
 
 export const exportGpx = createStandardAction('EXPORT_GPX')<any>();
 
-export const exportPdf = createStandardAction('EXPORT_PDF')<
-  IPdfExportOptions
->();
+export const exportPdf = createStandardAction('EXPORT_PDF')<PdfExportOptions>();
 
 export const clearMap = createAction('CLEAR_MAP');
 

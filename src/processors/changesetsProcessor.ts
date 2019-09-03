@@ -4,13 +4,13 @@ import {
 } from 'fm3/actions/changesetsActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { clearMap, setTool } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
 import { getType } from 'typesafe-actions';
 
-export const changesetsProcessor: IProcessor = {
+export const changesetsProcessor: Processor = {
   actionCreator: changesetsSetAuthorName,
   errorKey: 'changesets.fetchError',
   handle: async ({ dispatch, getState }) => {

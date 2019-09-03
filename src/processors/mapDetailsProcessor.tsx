@@ -8,12 +8,12 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import RoadDetails from 'fm3/components/RoadDetails';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { lineString, point, featureCollection } from '@turf/helpers';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
-interface IElement {
+interface Element {
   id: number;
   tags: {
     [key: string]: string;
@@ -23,8 +23,8 @@ interface IElement {
   geometry: any; // TODO per type
 }
 
-interface IOverpassResult {
-  elements?: IElement[];
+interface OverpassResult {
+  elements?: Element[];
 }
 
 const mappings = {
@@ -48,7 +48,7 @@ const mappings = {
   }),
 };
 
-export const mapDetailsProcessor: IProcessor = {
+export const mapDetailsProcessor: Processor = {
   actionCreator: mapDetailsSetUserSelectedPosition,
   errorKey: 'mapDetails.fetchingError',
   handle: async ({ dispatch, getState }) => {
@@ -87,7 +87,7 @@ export const mapDetailsProcessor: IProcessor = {
       // ),
     ]);
 
-    const oRes = assertType<IOverpassResult>(data);
+    const oRes = assertType<OverpassResult>(data);
 
     const elements = [...(oRes.elements || []), ...(data1.elements || [])];
     if (elements.length > 0) {

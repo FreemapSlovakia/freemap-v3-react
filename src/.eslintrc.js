@@ -8,7 +8,7 @@ module.exports = {
     es6: true,
     node: false,
   },
-  plugins: ['react', 'react-hooks', 'prettier'],
+  plugins: ['react', 'react-hooks', 'prettier', '@typescript-eslint'],
   extends: [
     'plugin:@typescript-eslint/recommended',
     'prettier/@typescript-eslint',
@@ -31,6 +31,9 @@ module.exports = {
   },
   rules: {
     '@typescript-eslint/no-use-before-define': 0,
+    '@typescript-eslint/explicit-function-return-type': 1,
+    '@typescript-eslint/no-explicit-any': 0, // TODO remove one day
+    'react/prop-types': 0,
   },
   globals: {
     L: true,

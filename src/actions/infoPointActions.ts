@@ -1,14 +1,12 @@
 import { createStandardAction, createAction } from 'typesafe-actions';
 
-export interface IInfoPoint {
+export interface InfoPoint {
   lat: number;
   lon: number;
   label?: string;
 }
 
-export const infoPointAdd = createStandardAction('INFO_POINT_ADD')<
-  IInfoPoint
->();
+export const infoPointAdd = createStandardAction('INFO_POINT_ADD')<InfoPoint>();
 
 export const infoPointDelete = createAction('INFO_POINT_DELETE');
 
@@ -25,5 +23,5 @@ export const infoPointSetActiveIndex = createStandardAction(
 )<number>();
 
 export const infoPointSetAll = createStandardAction('INFO_POINT_SET_ALL')<
-  IInfoPoint[]
+  InfoPoint[]
 >();

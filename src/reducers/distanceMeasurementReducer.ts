@@ -7,19 +7,19 @@ import {
   distanceMeasurementUpdatePoint,
   distanceMeasurementRemovePoint,
   distanceMeasurementSetPoints,
-  IPoint,
+  Point,
 } from 'fm3/actions/distanceMeasurementActions';
 
-export interface IDistanceMeasurementState {
-  points: IPoint[];
+export interface DistanceMeasurementState {
+  points: Point[];
 }
 
-const initialState: IDistanceMeasurementState = {
+const initialState: DistanceMeasurementState = {
   points: [],
 };
 
 export const distanceMeasurementReducer = createReducer<
-  IDistanceMeasurementState,
+  DistanceMeasurementState,
   RootAction
 >(initialState)
   .handleAction(clearMap, () => initialState)

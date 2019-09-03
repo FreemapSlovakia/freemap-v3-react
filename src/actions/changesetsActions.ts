@@ -1,6 +1,6 @@
 import { createStandardAction } from 'typesafe-actions';
 
-export interface IChangeset {
+export interface Changeset {
   id: number;
   userName: string;
   description: string;
@@ -10,7 +10,7 @@ export interface IChangeset {
 }
 
 export const changesetsSet = createStandardAction('CHANGESETS_SET')<
-  IChangeset[]
+  Changeset[]
 >();
 
 export const changesetsSetDays = createStandardAction('CHANGESETS_SET_DAYS')<

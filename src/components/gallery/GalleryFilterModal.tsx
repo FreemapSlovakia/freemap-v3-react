@@ -20,7 +20,7 @@ import { RootAction } from 'fm3/actions';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface IState {
+interface State {
   tag: string;
   userId: string;
   takenAtFrom: string;
@@ -31,8 +31,8 @@ interface IState {
   ratingTo: string;
 }
 
-class GalleryViewerModal extends React.Component<Props, IState> {
-  state: IState;
+class GalleryViewerModal extends React.Component<Props, State> {
+  state: State;
 
   constructor(props: Props) {
     super(props);

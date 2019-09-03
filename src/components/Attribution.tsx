@@ -1,22 +1,22 @@
 import * as React from 'react';
-import { baseLayers, overlayLayers, IAttributionDef } from 'fm3/mapDefinitions';
+import { baseLayers, overlayLayers, AttributionDef } from 'fm3/mapDefinitions';
 import { Translator } from 'fm3/l10nInjector';
 
-interface IProps {
+interface Props {
   t: Translator;
   imhd: boolean;
   mapType: string; // TODO enum
   overlays: string[]; // TODO enum
 }
 
-const Attribution: React.FC<IProps> = ({ t, mapType, overlays, imhd }) => {
+const Attribution: React.FC<Props> = ({ t, mapType, overlays, imhd }) => {
   return (
     <ul style={{ padding: '10px 0 0 20px' }}>
       {categorize(
         [
           ...baseLayers.filter(({ type }) => mapType === type),
           ...overlayLayers.filter(({ type }) => overlays.includes(type)),
-        ].reduce((a, b) => [...a, ...b.attribution], [] as IAttributionDef[]),
+        ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
       ).map(({ type, attributions }) => (
         <li key={type}>
           {t(`mapLayers.type.${type}`)}{' '}
@@ -52,9 +52,9 @@ const Attribution: React.FC<IProps> = ({ t, mapType, overlays, imhd }) => {
 };
 
 function categorize(
-  attributions: IAttributionDef[],
-): Array<{ type: string; attributions: IAttributionDef[] }> {
-  const res: { [type: string]: IAttributionDef[] } = {};
+  attributions: AttributionDef[],
+): Array<{ type: string; attributions: AttributionDef[] }> {
+  const res: { [type: string]: AttributionDef[] } = {};
 
   for (const attribution of attributions) {
     let x = res[attribution.type];

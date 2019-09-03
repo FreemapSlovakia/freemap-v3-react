@@ -8,12 +8,12 @@ type Props = ReturnType<typeof mapStateToProps> & {
   t: Translator;
 };
 
-interface IState {
+interface State {
   error?: Error;
 }
 
-class ErrorCatcherInt extends React.Component<Props, IState> {
-  state: IState = {};
+class ErrorCatcherInt extends React.Component<Props, State> {
+  state: State = {};
 
   componentDidCatch(error: Error) {
     console.error(error);

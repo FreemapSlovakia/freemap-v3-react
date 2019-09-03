@@ -3,15 +3,15 @@ import { createReducer } from 'typesafe-actions';
 import { clearMap } from 'fm3/actions/mainActions';
 import { objectsSetResult, ObjectsResult } from 'fm3/actions/objectsActions';
 
-export interface IObjectsState {
+export interface ObjectsState {
   objects: ObjectsResult[];
 }
 
-const initialState: IObjectsState = {
+const initialState: ObjectsState = {
   objects: [],
 };
 
-export const objectsReducer = createReducer<IObjectsState, RootAction>(
+export const objectsReducer = createReducer<ObjectsState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

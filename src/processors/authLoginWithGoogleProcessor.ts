@@ -1,12 +1,12 @@
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { authSetUser, authLoginWithGoogle } from 'fm3/actions/authActions';
 import { getAuth2 } from 'fm3/gapiLoader';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
-import { IUser } from 'fm3/types/common';
+import { User } from 'fm3/types/common';
 
-export const authLoginWithGoogleProcessor: IProcessor = {
+export const authLoginWithGoogleProcessor: Processor = {
   actionCreator: authLoginWithGoogle,
   errorKey: 'logIn.logInError',
   handle: async ({ dispatch, getState }) => {
@@ -24,7 +24,7 @@ export const authLoginWithGoogleProcessor: IProcessor = {
         data: { idToken },
       });
 
-      const user = assertType<IUser>(data);
+      const user = assertType<User>(data);
 
       dispatch(
         toastsAdd({

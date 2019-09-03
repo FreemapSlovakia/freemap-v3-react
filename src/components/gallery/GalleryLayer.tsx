@@ -97,16 +97,16 @@ const galleryLayer = (window['L'] as any).GridLayer.extend({
   },
 });
 
-interface IProps extends GridLayerProps {
+interface Props extends GridLayerProps {
   filter: any; // TODO
 }
 
-class GalleryLayer extends GridLayer<IProps> {
+class GalleryLayer extends GridLayer<Props> {
   static propTypes = {
     filter: PropTypes.object.isRequired,
   };
 
-  createLeafletElement(props: IProps) {
+  createLeafletElement(props: Props) {
     return new galleryLayer({ ...props });
   }
 

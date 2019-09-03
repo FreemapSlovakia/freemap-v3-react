@@ -1,12 +1,12 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { isActionOf } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { ITrack } from 'fm3/types/trackingTypes';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Track } from 'fm3/types/trackingTypes';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-let prevTrack: ITrack | undefined;
+let prevTrack: Track | undefined;
 
-export const trackingFollowProcessor: IProcessor = {
+export const trackingFollowProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ dispatch, getState, action }) => {
     const { tracks, activeTrackId } = getState().tracking;

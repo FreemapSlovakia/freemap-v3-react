@@ -5,11 +5,11 @@ import {
   galleryShowFilter,
   galleryEditPicture,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 import { httpRequest } from 'fm3/authAxios';
 
-export const galleryUploadModalTransformer: IProcessor = {
+export const galleryUploadModalTransformer: Processor = {
   actionCreator: galleryShowUploadModal,
   transform: ({ getState, action }) => {
     return getState().auth.user
@@ -18,7 +18,7 @@ export const galleryUploadModalTransformer: IProcessor = {
   },
 };
 
-export const galleryUploadModalProcessor: IProcessor = {
+export const galleryUploadModalProcessor: Processor = {
   actionCreator: [
     galleryShowUploadModal,
     galleryShowFilter,

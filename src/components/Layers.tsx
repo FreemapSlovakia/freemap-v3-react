@@ -4,7 +4,7 @@ import { TileLayer } from 'react-leaflet';
 import GalleryLayer from 'fm3/components/gallery/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { baseLayers, overlayLayers, ILayerDef } from 'fm3/mapDefinitions';
+import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
 import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
@@ -87,7 +87,7 @@ const Layers: React.FC<Props> = ({
     maxNativeZoom,
     zIndex = 1,
     subdomains = 'abc',
-  }: ILayerDef) => {
+  }: LayerDef) => {
     if (type === 'S') {
       return (
         <BingLayer

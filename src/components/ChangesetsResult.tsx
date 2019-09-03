@@ -6,7 +6,7 @@ import RichMarker from 'fm3/components/RichMarker';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   changesetsSetAuthorName,
-  IChangeset,
+  Changeset,
 } from 'fm3/actions/changesetsActions';
 
 import 'fm3/styles/changesets.scss';
@@ -32,7 +32,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
 class Changesets extends React.Component<Props> {
-  opacityOf = (changeset: IChangeset, now: Date) => {
+  opacityOf = (changeset: Changeset, now: Date) => {
     const { days } = this.props;
     if (days === null) {
       return 1;
@@ -85,7 +85,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onShowChangesetDetail(changeset: IChangeset) {
+  onShowChangesetDetail(changeset: Changeset) {
     const message = (
       <div>
         <dl className="dl-horizontal">

@@ -7,19 +7,19 @@ import {
   areaMeasurementUpdatePoint,
   areaMeasurementRemovePoint,
   areaMeasurementSetPoints,
-  IPoint,
+  Point,
 } from 'fm3/actions/areaMeasurementActions';
 
-export interface IAreaMeasurementState {
-  points: IPoint[];
+export interface AreaMeasurementState {
+  points: Point[];
 }
 
-const initialState: IAreaMeasurementState = {
+const initialState: AreaMeasurementState = {
   points: [],
 };
 
 export const areaMeasurementReducer = createReducer<
-  IAreaMeasurementState,
+  AreaMeasurementState,
   RootAction
 >(initialState)
   .handleAction(clearMap, () => initialState)

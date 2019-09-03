@@ -33,7 +33,7 @@ import 'font-awesome/scss/font-awesome.scss';
 import 'fm3/styles/bootstrap-override.scss';
 import { authInit } from './actions/authActions';
 import { assertType } from 'typescript-is';
-import { IAppState } from './types/common';
+import { AppState } from './types/common';
 
 setDefaultGetErrorMessage(() => null);
 
@@ -98,11 +98,11 @@ if (process.env.NODE_ENV) {
 }
 
 function loadAppState() {
-  let appState: IAppState | undefined;
+  let appState: AppState | undefined;
   const as = storage.getItem('appState');
   if (as) {
     try {
-      appState = assertType<IAppState>(JSON.parse(as));
+      appState = assertType<AppState>(JSON.parse(as));
     } catch (e) {
       storage.removeItem('appState');
       throw e;

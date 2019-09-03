@@ -22,13 +22,13 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   filter: string;
   dropdownOpened: boolean;
 }
 
-class ObjectsMenu extends React.Component<Props, IState> {
-  state: IState = {
+class ObjectsMenu extends React.Component<Props, State> {
+  state: State = {
     filter: '',
     dropdownOpened: false,
   };

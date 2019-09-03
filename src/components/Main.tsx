@@ -77,7 +77,7 @@ import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import { mapRefocus, mapReset, IMapViewState } from 'fm3/actions/mapActions';
+import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
 import {
   setTool,
   setLocation,
@@ -106,12 +106,12 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   showInfoBar: boolean;
 }
 
-class MainInt extends React.Component<Props, IState> {
-  state: IState = {
+class MainInt extends React.Component<Props, State> {
+  state: State = {
     showInfoBar: true,
   };
 
@@ -523,7 +523,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToolSet(tool: Tool | null) {
     dispatch(setTool(tool));
   },
-  onMapRefocus(changes: Partial<IMapViewState>) {
+  onMapRefocus(changes: Partial<MapViewState>) {
     dispatch(mapRefocus(changes));
   },
   onLocationSet(lat: number, lon: number, accuracy: number) {

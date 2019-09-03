@@ -5,7 +5,7 @@ import { Middleware, Dispatch } from 'redux';
 import { getType } from 'typesafe-actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
-import { ITrackedDevice } from 'fm3/types/trackingTypes';
+import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
 
 let reopenTs: number | undefined;
@@ -99,7 +99,7 @@ export const trackingMiddleware: Middleware<{}, RootState, Dispatch> = ({
   return result;
 };
 
-function mangle(td: ITrackedDevice) {
+function mangle(td: TrackedDevice) {
   const { id, ...rest } = td;
   const isDeviceId = /^\d+$/.test(id.toString());
   const xxx = isDeviceId

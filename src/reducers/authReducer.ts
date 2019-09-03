@@ -1,4 +1,4 @@
-import { IUser } from 'fm3/types/common';
+import { User } from 'fm3/types/common';
 import { RootAction } from 'fm3/actions';
 import {
   authSetUser,
@@ -11,9 +11,9 @@ import {
 } from 'fm3/actions/authActions';
 import { createReducer } from 'typesafe-actions';
 
-export interface IAuthState {
+export interface AuthState {
   chooseLoginMethod: boolean;
-  user: IUser | null;
+  user: User | null;
 }
 
 const initialState = {
@@ -21,7 +21,7 @@ const initialState = {
   user: null,
 };
 
-export const authReducer = createReducer<IAuthState, RootAction>(initialState)
+export const authReducer = createReducer<AuthState, RootAction>(initialState)
   .handleAction(authSetUser, (state, action) => ({
     ...state,
     user: action.payload && {

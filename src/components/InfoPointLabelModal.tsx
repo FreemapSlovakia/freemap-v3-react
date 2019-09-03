@@ -21,12 +21,12 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface IState {
+interface State {
   editedLabel?: string;
 }
 
-class InfoPointLabelModal extends React.Component<Props, IState> {
-  state: IState = {};
+class InfoPointLabelModal extends React.Component<Props, State> {
+  state: State = {};
 
   constructor(props: Props) {
     super(props);

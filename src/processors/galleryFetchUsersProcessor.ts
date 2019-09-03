@@ -1,13 +1,13 @@
 import {
   gallerySetUsers,
   galleryShowFilter,
-  IGalleryUser,
+  GalleryUser,
 } from 'fm3/actions/galleryActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
-export const galleryFetchUsersProcessor: IProcessor = {
+export const galleryFetchUsersProcessor: Processor = {
   actionCreator: galleryShowFilter,
   errorKey: 'gallery.tagsFetchingError',
   handle: async ({ getState, dispatch }) => {
@@ -18,6 +18,6 @@ export const galleryFetchUsersProcessor: IProcessor = {
       expectedStatus: 200,
     });
 
-    dispatch(gallerySetUsers(assertType<IGalleryUser[]>(data)));
+    dispatch(gallerySetUsers(assertType<GalleryUser[]>(data)));
   },
 };

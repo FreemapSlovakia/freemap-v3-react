@@ -3,11 +3,11 @@ import {
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
-export const trackViewerUploadTrackProcessor: IProcessor = {
+export const trackViewerUploadTrackProcessor: Processor = {
   actionCreator: trackViewerUploadTrack,
   errorKey: 'trackViewer.savingError',
   handle: async ({ dispatch, getState }) => {

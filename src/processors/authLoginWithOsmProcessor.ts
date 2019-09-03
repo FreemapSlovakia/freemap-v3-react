@@ -1,13 +1,13 @@
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { authLoginWithOsm } from 'fm3/actions/authActions';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
-interface ILoginResponse {
+interface LoginResponse {
   redirect?: string;
 }
 
-export const authLoginWithOsmProcessor: IProcessor = {
+export const authLoginWithOsmProcessor: Processor = {
   actionCreator: authLoginWithOsm,
   errorKey: 'logIn.logInError',
   handle: async ({ getState }) => {
@@ -19,7 +19,7 @@ export const authLoginWithOsmProcessor: IProcessor = {
       cancelActions: [],
     });
 
-    const { redirect } = assertType<ILoginResponse>(data);
+    const { redirect } = assertType<LoginResponse>(data);
 
     if (redirect) {
       window.open(

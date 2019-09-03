@@ -5,22 +5,22 @@ import {
   changesetsSetDays,
   changesetsSetAuthorName,
   changesetsSet,
-  IChangeset,
+  Changeset,
 } from 'fm3/actions/changesetsActions';
 
-export interface IChangesetsState {
-  changesets: IChangeset[];
+export interface ChangesetsState {
+  changesets: Changeset[];
   days: number | null;
   authorName: string | null;
 }
 
-const initialState: IChangesetsState = {
+const initialState: ChangesetsState = {
   changesets: [],
   days: null,
   authorName: null,
 };
 
-export const changesetReducer = createReducer<IChangesetsState, RootAction>(
+export const changesetReducer = createReducer<ChangesetsState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

@@ -5,15 +5,15 @@ import Alert from 'react-bootstrap/lib/Alert';
 
 import 'fm3/styles/toasts.scss';
 import { RootAction } from 'fm3/actions';
-import { IResolvedToast } from 'fm3/actions/toastsActions';
+import { ResolvedToast } from 'fm3/actions/toastsActions';
 
-interface IProps extends IResolvedToast {
+interface Props extends ResolvedToast {
   onAction: (id: number, action?: RootAction | RootAction[]) => void;
   onTimeoutStop: (id: number) => void;
   onTimeoutRestart: (id: number) => void;
 }
 
-export default class Toast extends React.Component<IProps> {
+export default class Toast extends React.Component<Props> {
   handleMouseEnter = () => {
     this.props.onTimeoutStop(this.props.id);
   };

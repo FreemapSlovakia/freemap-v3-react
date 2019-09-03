@@ -4,7 +4,7 @@ import { Polyline, Tooltip, Circle } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
-import { ITrackPoint } from 'fm3/types/trackingTypes';
+import { TrackPoint } from 'fm3/types/trackingTypes';
 import {
   TrackingPoint,
   tooltipText,
@@ -17,7 +17,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
 interface State {
-  activePoint: ITrackPoint | null;
+  activePoint: TrackPoint | null;
 }
 
 // TODO functional component with hooks was causing massive re-rendering
@@ -28,7 +28,7 @@ class TrackingResult extends React.Component<Props, State> {
     activePoint: null,
   };
 
-  handleActivePointSet = (activePoint: ITrackPoint | null) => {
+  handleActivePointSet = (activePoint: TrackPoint | null) => {
     this.setState({
       activePoint,
     });
@@ -68,9 +68,9 @@ class TrackingResult extends React.Component<Props, State> {
         this.clickHandlerMemo[track.id] = handleClick;
       }
 
-      const segments: ITrackPoint[][] = [];
-      let curSegment: ITrackPoint[] | null = null;
-      let prevTp: ITrackPoint | undefined;
+      const segments: TrackPoint[][] = [];
+      let curSegment: TrackPoint[] | null = null;
+      let prevTp: TrackPoint | undefined;
 
       for (const tp of track.trackPoints) {
         if (
@@ -169,7 +169,7 @@ class TrackingResult extends React.Component<Props, State> {
   }
 }
 
-function toLatLon(x: ITrackPoint) {
+function toLatLon(x: TrackPoint) {
   return { lat: x.lat, lng: x.lon };
 }
 

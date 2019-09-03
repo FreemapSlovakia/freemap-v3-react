@@ -9,7 +9,7 @@ import {
   searchSelectResult,
 } from 'fm3/actions/searchActions';
 
-export interface ISearchState {
+export interface SearchState {
   query: string | null;
   results: SearchResult[];
   highlightedResult: SearchResult | null;
@@ -25,7 +25,7 @@ const initialState = {
   inProgress: false,
 };
 
-export const searchReducer = createReducer<ISearchState, RootAction>(
+export const searchReducer = createReducer<SearchState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)

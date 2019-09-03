@@ -44,7 +44,7 @@ import {
   galleryClear,
   galleryHideFilter,
   galleryHideUploadModal,
-  IGalleryFilter,
+  GalleryFilter,
 } from 'fm3/actions/galleryActions';
 import {
   changesetsSetDays,
@@ -60,13 +60,16 @@ import { trackingActions } from './actions/trackingActions';
 import { RootAction } from './actions';
 import { MyStore, RootState } from './storeCreator';
 import { Location } from 'history';
-import { ITrackedDevice } from './types/trackingTypes';
+import { TrackedDevice } from './types/trackingTypes';
 import { LatLon } from './types/common';
 import { Dispatch } from 'redux';
 
 const tipKeys = tips.map(([key]) => key);
 
-export const handleLocationChange = (store: MyStore, location: Location) => {
+export const handleLocationChange = (
+  store: MyStore,
+  location: Location,
+): void => {
   const { getState, dispatch } = store;
 
   const query = queryString.parse(location.search);
@@ -348,11 +351,11 @@ export const handleLocationChange = (store: MyStore, location: Location) => {
 
   const { track } = query;
   const trackings = !track ? [] : Array.isArray(track) ? track : [track];
-  const parsed: ITrackedDevice[] = [];
+  const parsed: TrackedDevice[] = [];
 
   for (const tracking of trackings) {
     const [id0, ...parts] = tracking.split('/');
-    let id = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
+    const id = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
     let fromTime: Date | null = null;
     let maxAge: number | null = null;
     let maxCount: number | null = null;
@@ -435,7 +438,7 @@ export const handleLocationChange = (store: MyStore, location: Location) => {
 };
 
 // TODO use some generic deep compare fn
-function trackedDevicesEquals(td1: ITrackedDevice, td2: ITrackedDevice) {
+function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
   return (
     td1.id === td2.id &&
     td1.fromTime === td2.fromTime &&
@@ -478,7 +481,7 @@ function handleGallery(
     qCreatedAtTo
   ) {
     const { filter } = getState().gallery;
-    const newFilter: IGalleryFilter = {};
+    const newFilter: GalleryFilter = {};
     if (qUserId && filter.userId !== qUserId) {
       newFilter.userId = qUserId;
     }
@@ -557,7 +560,7 @@ function handleInfoPoint(
   getState: () => RootState,
   dispatch: Dispatch,
   query: queryString.ParsedQuery<string>,
-) {
+): void {
   const infoPoint = query['info-point'];
   const ips = (!infoPoint
     ? []
@@ -596,11 +599,11 @@ function handleInfoPoint(
   }
 }
 
-function serializePoints(points: LatLon[]) {
+function serializePoints(points: LatLon[]): string {
   return points.map(point => serializePoint(point)).join(',');
 }
 
-function serializePoint(point: LatLon | null) {
+function serializePoint(point: LatLon | null): string {
   return point && typeof point.lat === 'number' && typeof point.lon === 'number'
     ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}`
     : '';

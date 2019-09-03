@@ -18,15 +18,15 @@ import {
   routePlannerSetResult,
   routePlannerSetActiveAlternativeIndex,
   TransportType,
-  IAlternative,
+  Alternative,
 } from 'fm3/actions/routePlannerActions';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
 
 export type PickMode = 'start' | 'finish';
 
-export interface IRoutePlannerState {
-  alternatives: IAlternative[];
+export interface RoutePlannerState {
+  alternatives: Alternative[];
   activeAlternativeIndex: number;
   timestamp: number | null;
   transportType: TransportType | null;
@@ -44,7 +44,7 @@ const clearResult = {
   timestamp: null,
 };
 
-const initialState: IRoutePlannerState = {
+const initialState: RoutePlannerState = {
   transportType: null,
   start: null,
   midpoints: [],
@@ -55,10 +55,9 @@ const initialState: IRoutePlannerState = {
   ...clearResult,
 };
 
-export const routePlannerReducer = createReducer<
-  IRoutePlannerState,
-  RootAction
->(initialState)
+export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
+  initialState,
+)
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.routePlanner };
   })

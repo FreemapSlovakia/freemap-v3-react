@@ -1,8 +1,8 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const saveDeviceProcessor: IProcessor<
+export const saveDeviceProcessor: Processor<
   typeof trackingActions.saveDevice
 > = {
   actionCreator: trackingActions.saveDevice,
@@ -30,7 +30,7 @@ export const saveDeviceProcessor: IProcessor<
   },
 };
 
-export const loadDevicesProcessor: IProcessor<
+export const loadDevicesProcessor: Processor<
   typeof trackingActions.loadDevices
 > = {
   actionCreator: trackingActions.loadDevices,
@@ -52,7 +52,7 @@ export const loadDevicesProcessor: IProcessor<
   },
 };
 
-export const deleteDeviceProcessor: IProcessor<
+export const deleteDeviceProcessor: Processor<
   typeof trackingActions.deleteDevice
 > = {
   actionCreator: trackingActions.deleteDevice,

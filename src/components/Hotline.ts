@@ -3,7 +3,7 @@ import { Path, withLeaflet, PathProps } from 'react-leaflet';
 import { Path as LPath } from 'leaflet';
 // import { Hotline as LHotline } from 'leaflet-hotline'; TODO
 
-interface IProps extends PathProps {
+interface Props extends PathProps {
   positions: (readonly [number, number, number])[];
   outlineWidth: number;
   outlineColor?: string;
@@ -13,15 +13,15 @@ interface IProps extends PathProps {
   weight?: number; // TODO ingerited from PathProps; should we actually extend from Path?
 }
 
-class Hotline extends Path<IProps, LPath> {
-  createLeafletElement(props: IProps) {
+class Hotline extends Path<Props, LPath> {
+  createLeafletElement(props: Props) {
     return (window['L'] as any).hotline(
       props.positions,
       this.getOptions(props),
     );
   }
 
-  updateLeafletElement(fromProps: IProps, toProps: IProps) {
+  updateLeafletElement(fromProps: Props, toProps: Props) {
     if (toProps.positions !== fromProps.positions) {
       (this.leafletElement as any).setLatLngs(toProps.positions);
     }

@@ -1,19 +1,19 @@
 import { wsSend, wsReceived } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent, rpcCall } from 'fm3/actions/rpcActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 // TODO implement call timeout
 
-interface ICall {
+interface Call {
   method: string;
   params: any;
   tag?: any;
 }
 
-const callMap = new Map<number, ICall>();
+const callMap = new Map<number, Call>();
 let id = 0;
 
-export const rpcWsStateProcessor: IProcessor = {
+export const rpcWsStateProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ dispatch, getState, prevState }) => {
     const oldState = prevState.websocket.state;
@@ -39,7 +39,7 @@ export const rpcWsStateProcessor: IProcessor = {
   },
 };
 
-export const rpcCallProcessor: IProcessor<typeof rpcCall> = {
+export const rpcCallProcessor: Processor<typeof rpcCall> = {
   actionCreator: rpcCall,
   handle: async ({ dispatch, action }) => {
     id += 1;
@@ -63,7 +63,7 @@ export const rpcCallProcessor: IProcessor<typeof rpcCall> = {
   },
 };
 
-export const wsReceivedProcessor: IProcessor<typeof wsReceived> = {
+export const wsReceivedProcessor: Processor<typeof wsReceived> = {
   actionCreator: wsReceived,
   handle: async ({ dispatch, action }) => {
     let object: any;

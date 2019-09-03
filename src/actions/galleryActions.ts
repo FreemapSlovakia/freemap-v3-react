@@ -1,8 +1,8 @@
 import { createAction, createStandardAction } from 'typesafe-actions';
-import { LatLon, IUser } from 'fm3/types/common';
-import { IPictureModel } from 'fm3/components/gallery/GalleryEditForm';
+import { LatLon, User } from 'fm3/types/common';
+import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 
-export interface IGalleryItem {
+export interface GalleryItem {
   id: number;
   title: string;
   description: string;
@@ -23,38 +23,38 @@ export type GalleryListOrder =
   | '+rating'
   | '-rating';
 
-export interface IGalleryTag {
+export interface GalleryTag {
   name: string;
   count: number;
 }
 
-export interface IGalleryUser {
+export interface GalleryUser {
   id: number;
   name: string;
   count: number;
 }
 
-export interface IPictureComment {
+export interface PictureComment {
   id: number;
   createdAt: Date;
-  user: IUser;
+  user: User;
   comment: string;
 }
 
-export interface IPicture extends LatLon {
+export interface Picture extends LatLon {
   id: number;
   title: string;
   description: string;
   tags: string[];
-  comments: IPictureComment[];
+  comments: PictureComment[];
   rating: number;
   myStars: number;
-  user: IUser;
+  user: User;
   createdAt: Date;
   takenAt: Date | null;
 }
 
-export interface IGalleryFilter {
+export interface GalleryFilter {
   tag?: string;
   userId?: number;
   takenAtFrom?: Date;
@@ -78,7 +78,7 @@ export const gallerySetImageIds = createStandardAction('GALLERY_SET_IMAGE_IDS')<
 >();
 
 export const gallerySetImage = createStandardAction('GALLERY_SET_IMAGE')<
-  IPicture
+  Picture
 >();
 
 export const galleryClear = createAction('GALLERY_CLEAR');
@@ -90,7 +90,7 @@ export const galleryCancelShowOnTheMap = createAction(
 );
 
 export const galleryAddItem = createStandardAction('GALLERY_ADD_ITEM')<
-  IGalleryItem
+  GalleryItem
 >();
 
 export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
@@ -99,7 +99,7 @@ export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
 
 export const gallerySetItem = createStandardAction('GALLERY_SET_ITEM')<{
   id: number;
-  item: IGalleryItem;
+  item: GalleryItem;
 }>();
 
 export const gallerySetItemError = createStandardAction(
@@ -123,11 +123,11 @@ export const galleryUpload = createAction('GALLERY_UPLOAD');
 export const gallerySetLayerDirty = createAction('GALLERY_SET_LAYER_DIRTY');
 
 export const gallerySetTags = createStandardAction('GALLERY_SET_TAGS')<
-  IGalleryTag[]
+  GalleryTag[]
 >();
 
 export const gallerySetUsers = createStandardAction('GALLERY_SET_USERS')<
-  IGalleryUser[]
+  GalleryUser[]
 >();
 
 export const gallerySetComment = createStandardAction('GALLERY_SET_COMMENT')<
@@ -144,7 +144,7 @@ export const galleryEditPicture = createAction('GALLERY_EDIT_PICTURE');
 
 export const gallerySetEditModel = createStandardAction(
   'GALLERY_SET_EDIT_MODEL',
-)<IPictureModel>();
+)<PictureModel>();
 
 export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE');
 
@@ -157,7 +157,7 @@ export const galleryShowUploadModal = createAction('GALLERY_SHOW_UPLOAD_MODAL');
 export const galleryHideUploadModal = createAction('GALLERY_HIDE_UPLOAD_MODAL');
 
 export const gallerySetFilter = createStandardAction('GALLERY_SET_FILTER')<
-  IGalleryFilter
+  GalleryFilter
 >();
 
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE');

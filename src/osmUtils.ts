@@ -1,9 +1,9 @@
-interface INodes {
+interface Nodes {
   [id: string]: [number, number];
 }
 
 export function toNodes(data: Document) {
-  const nodes: INodes = {};
+  const nodes: Nodes = {};
   const nodeRes = data.evaluate(
     '/osm/node',
     data,
@@ -28,7 +28,7 @@ export function toNodes(data: Document) {
   return nodes;
 }
 
-export function toWays(data: Document, nodes: INodes) {
+export function toWays(data: Document, nodes: Nodes) {
   const ways: { [key: string]: [number, number][] } = {};
 
   const wayRes = data.evaluate(

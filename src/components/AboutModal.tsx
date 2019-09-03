@@ -11,11 +11,11 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
-interface IProps {
+interface Props {
   onModalClose: () => void;
 }
 
-export const AboutModal: React.FC<IProps> = ({ onModalClose }) => {
+export const AboutModal: React.FC<Props> = ({ onModalClose }) => {
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>

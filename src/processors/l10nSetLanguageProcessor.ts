@@ -2,9 +2,9 @@ import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const l10nSetLanguageProcessor: IProcessor = {
+export const l10nSetLanguageProcessor: Processor = {
   actionCreator: l10nSetChosenLanguage,
   handle: async ({ dispatch, getState }) => {
     const { chosenLanguage } = getState().l10n;

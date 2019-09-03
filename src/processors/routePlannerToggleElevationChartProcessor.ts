@@ -7,10 +7,10 @@ import {
   routePlannerToggleElevationChart,
   routePlannerSetActiveAlternativeIndex,
 } from 'fm3/actions/routePlannerActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 
-export const routePlannerToggleElevationChartProcessor: IProcessor<
+export const routePlannerToggleElevationChartProcessor: Processor<
   | typeof routePlannerToggleElevationChart
   | typeof routePlannerSetActiveAlternativeIndex
 > = {

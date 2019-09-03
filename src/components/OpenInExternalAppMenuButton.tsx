@@ -10,7 +10,7 @@ import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
 
-interface IProps extends LatLon {
+interface Props extends LatLon {
   lat: number;
   lon: number;
   zoom: number;
@@ -19,7 +19,7 @@ interface IProps extends LatLon {
   t: Translator;
 }
 
-const OpenInExternalAppMenuButton: React.FC<IProps> = ({
+const OpenInExternalAppMenuButton: React.FC<Props> = ({
   lat,
   lon,
   zoom,

@@ -10,17 +10,17 @@ import {
   routePlannerSetTransportType,
   routePlannerSetMode,
   routePlannerSetParams,
-  IAlternative,
-  IStep,
+  Alternative,
+  Step,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { storage } from 'fm3/storage';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
-interface IOsrmStep {
+interface OsrmStep {
   distance: number;
   duration: number;
   geometry: {
@@ -37,18 +37,18 @@ interface IOsrmStep {
   };
 }
 
-interface IOsrmLeg {
+interface OsrmLeg {
   distance: number;
   duration: number;
   // weight: number;
   // summary: string;
-  steps: IOsrmStep[];
+  steps: OsrmStep[];
 }
 
-interface IOsrmRoute {
+interface OsrmRoute {
   distance: number;
   duration: number;
-  legs: IOsrmLeg[];
+  legs: OsrmLeg[];
   // geometry: any;
   // weight: number;
   // weight_name: string;
@@ -67,7 +67,7 @@ const updateRouteTypes = [
   routePlannerSetParams,
 ];
 
-export const routePlannerFindRouteProcessor: IProcessor = {
+export const routePlannerFindRouteProcessor: Processor = {
   actionCreator: updateRouteTypes,
   errorKey: 'routePlanner.fetchingError',
   handle: async ({ dispatch, getState, action }) => {
@@ -164,7 +164,7 @@ export const routePlannerFindRouteProcessor: IProcessor = {
       assertType<any[]>(rts);
 
       const alts = rts.map((rt: any) => {
-        const route = assertType<IOsrmRoute>(rt);
+        const route = assertType<OsrmRoute>(rt);
 
         const {
           legs,
@@ -213,7 +213,7 @@ export const routePlannerFindRouteProcessor: IProcessor = {
           ),
         );
 
-        const alt: IAlternative = {
+        const alt: Alternative = {
           itinerary,
           distance: totalDistance / 1000,
           duration: totalDuration / 60,
@@ -223,9 +223,9 @@ export const routePlannerFindRouteProcessor: IProcessor = {
         return alt;
       });
 
-      const alternatives: IAlternative[] =
+      const alternatives: Alternative[] =
         transportType === 'imhd'
-          ? alts.map((alt: IAlternative) => addMissingSegments(alt))
+          ? alts.map((alt: Alternative) => addMissingSegments(alt))
           : alts;
 
       dispatch(
@@ -255,8 +255,8 @@ export const routePlannerFindRouteProcessor: IProcessor = {
   },
 };
 
-function addMissingSegments(alt: IAlternative) {
-  const routeSlices: IStep[] = [];
+function addMissingSegments(alt: Alternative) {
+  const routeSlices: Step[] = [];
   for (let i = 0; i < alt.itinerary.length; i += 1) {
     const slice = alt.itinerary[i];
     const prevSlice = alt.itinerary[i - 1];

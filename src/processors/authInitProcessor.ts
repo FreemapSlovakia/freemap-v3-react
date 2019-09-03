@@ -1,12 +1,12 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { history } from 'fm3/historyHolder';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { storage } from 'fm3/storage';
 
-export const authInitProcessor: IProcessor = {
+export const authInitProcessor: Processor = {
   actionCreator: authInit,
   errorKey: 'logIn.verifyError',
   handle: async ({ getState, dispatch }) => {

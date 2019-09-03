@@ -1,3 +1,4 @@
+const process = require('process');
 const path = require('path');
 const webpack = require('webpack');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -113,11 +114,11 @@ module.exports = {
     ],
   },
   plugins: [
-    fastDev &&
-      new ForkTsCheckerWebpackPlugin({
-        eslint: true,
-        tsconfig: path.resolve(__dirname, './tsconfig.json'),
-      }),
+    new ForkTsCheckerWebpackPlugin({
+      eslint: true,
+      tsconfig: path.resolve(__dirname, './tsconfig.json'),
+      async: fastDev,
+    }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react

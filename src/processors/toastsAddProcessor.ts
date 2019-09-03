@@ -1,8 +1,8 @@
 import { setupTimeout, removeTimeout } from 'fm3/processors/toasts';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-export const toastsAddProcessor: IProcessor<typeof toastsAdd> = {
+export const toastsAddProcessor: Processor<typeof toastsAdd> = {
   actionCreator: toastsAdd,
   handle: async ({ dispatch, getState, action }) => {
     const {

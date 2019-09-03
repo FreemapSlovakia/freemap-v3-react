@@ -13,10 +13,10 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const saveSettingsProcessor: IProcessor<typeof saveSettings> = {
+export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,
   errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {

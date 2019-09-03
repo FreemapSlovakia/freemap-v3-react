@@ -6,14 +6,14 @@ import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
 import { Location } from 'history';
-import { IMapViewState } from './actions/mapActions';
+import { MapViewState } from './actions/mapActions';
 
 const baseLetters = baseLayers.map(({ type }) => type);
 const overlayLetters = overlayLayers.map(({ type }) => type);
 
 export function getMapStateFromUrl(
   location: Location,
-): Partial<IMapViewState> & Pick<IMapViewState, 'overlays'> {
+): Partial<MapViewState> & Pick<MapViewState, 'overlays'> {
   {
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
       location,
@@ -57,17 +57,17 @@ function undefineNaN(val: number) {
 
 export function getMapStateDiffFromUrl(
   state1:
-    | Partial<IMapViewState> & Pick<IMapViewState, 'overlays'>
+    | Partial<MapViewState> & Pick<MapViewState, 'overlays'>
     | null
     | undefined,
-  state2: IMapViewState,
+  state2: MapViewState,
 ) {
   if (!state1 || !state2) {
     return null;
   }
 
   const { lat, lon, zoom, mapType, overlays = [] } = state1;
-  const changes: Partial<IMapViewState> = {};
+  const changes: Partial<MapViewState> = {};
 
   if (mapType && mapType !== state2.mapType) {
     changes.mapType = mapType;

@@ -2,12 +2,12 @@ import {
   elevationMeasurementSetElevation,
   elevationMeasurementSetPoint,
 } from 'fm3/actions/elevationMeasurementActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { clearMap } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
 
-export const elevationMeasurementProcessor: IProcessor = {
+export const elevationMeasurementProcessor: Processor = {
   actionCreator: elevationMeasurementSetPoint,
   errorKey: 'measurement.elevationFetchError',
   handle: async ({ getState, dispatch }) => {

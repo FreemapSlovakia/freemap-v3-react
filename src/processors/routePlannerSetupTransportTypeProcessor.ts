@@ -1,8 +1,8 @@
 import { routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
-import { IProcessor } from 'fm3/middlewares/processorMiddleware';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { setTool } from 'fm3/actions/mainActions';
 
-export const routePlannerSetupTransportTypeProcessor: IProcessor = {
+export const routePlannerSetupTransportTypeProcessor: Processor = {
   actionCreator: setTool,
   handle: async ({ dispatch, getState }) => {
     const {
