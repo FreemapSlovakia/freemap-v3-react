@@ -11,8 +11,9 @@ export const authLoginWithOsm2Processor: IProcessor<
   errorKey: 'logIn.logInError',
   handle: async ({ getState, dispatch, action }) => {
     const { data } = await httpRequest({
-      url: '/auth/login2',
       getState,
+      method: 'POST',
+      url: '/auth/login2',
       data: action.payload,
       expectedStatus: 200,
     });
