@@ -52,6 +52,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       url: `//old.freemap.sk/api/0.3/searchhint/${encodeURIComponent(query)}`,
       method: 'GET',
       params: {
+        // eslint-disable-next-line
         max_count: 10,
       },
       expectedStatus: 200,

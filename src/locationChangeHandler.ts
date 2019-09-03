@@ -290,6 +290,7 @@ export const handleLocationChange = (
   const osmRelation = query['osm-relation'];
   const osmRelationId =
     typeof osmRelation === 'string' && parseInt(osmRelation, 10);
+
   if (osmRelationId) {
     if (osmRelationId !== getState().trackViewer.osmRelationId) {
       dispatch(osmLoadRelation(osmRelationId));
@@ -304,6 +305,7 @@ export const handleLocationChange = (
     getMapStateFromUrl(location),
     getState().map,
   );
+
   if (diff && Object.keys(diff).length) {
     dispatch(mapRefocus(diff));
   }

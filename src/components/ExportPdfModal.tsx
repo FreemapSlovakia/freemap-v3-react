@@ -27,7 +27,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface State extends PdfExportOptions {}
+type State = PdfExportOptions;
 
 export class ExportPdfModal extends React.Component<Props, State> {
   state: State = {

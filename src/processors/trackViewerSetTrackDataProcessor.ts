@@ -1,10 +1,7 @@
 import turfLength from '@turf/length';
 import toGeoJSON from '@mapbox/togeojson';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import {
-  trackViewerSetData,
-  TrackPoint,
-} from 'fm3/actions/trackViewerActions';
+import { trackViewerSetData, TrackPoint } from 'fm3/actions/trackViewerActions';
 import { assertType } from 'typescript-is';
 import { FeatureCollection } from 'geojson';
 

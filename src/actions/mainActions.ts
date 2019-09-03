@@ -55,7 +55,7 @@ export const setExpertMode = createStandardAction('SET_EXPERT_MODE')<boolean>();
 
 export const setAppState = createStandardAction('SET_APP_STATE')<AppState>();
 
-export const exportGpx = createStandardAction('EXPORT_GPX')<any>();
+export const exportGpx = createStandardAction('EXPORT_GPX')<string[]>();
 
 export const exportPdf = createStandardAction('EXPORT_PDF')<PdfExportOptions>();
 
@@ -87,5 +87,5 @@ export const setErrorTicketId = createStandardAction('SET_ERROR_TICKET_ID')<
 >();
 
 export const setEmbedFeatures = createStandardAction('SET_EMBED_FEATURES')<
-  any
+  string[]
 >();

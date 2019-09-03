@@ -15,7 +15,13 @@ export interface User {
   id: number;
   authToken: string;
   isAdmin: boolean;
-  settings?: any;
+  settings?: {
+    expertMode?: boolean;
+    trackViewerEleSmoothingFactor?: number;
+    tileFormat?: 'png' | 'jpeg';
+    overlayOpacity?: { [type: string]: number };
+    overlayPaneOpacity?: number;
+  };
   preventTips?: boolean;
   lat?: number | null;
   lon?: number | null;

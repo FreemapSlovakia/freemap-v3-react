@@ -64,7 +64,7 @@ export function tooltipText(
   df: Intl.DateTimeFormat,
   nf: Intl.NumberFormat,
   { battery, ts, gsmSignal, speed, message, altitude }: TrackPoint,
-  label?: String | null,
+  label?: string | null,
 ) {
   // TODO bearing
 

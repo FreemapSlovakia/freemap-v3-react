@@ -161,7 +161,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(setActiveModal(null));
   },
   onExport(exportables: string[] | null) {
-    dispatch(exportGpx(exportables));
+    if (exportables) {
+      dispatch(exportGpx(exportables));
+    }
   },
 });
 

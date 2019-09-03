@@ -31,8 +31,8 @@ function splitByVars(input: string, special: boolean): SplitItem[] {
   return ret;
 }
 
-function exec(x: any): any {
-  return typeof x === 'function' ? x() : x;
+function exec<T>(x: T | (() => T)): T {
+  return typeof x === 'function' ? (x as (() => T))() : x;
 }
 
 // for 'foo {a} bar {b} baz' and { a: 'A', b: <Lol /> } returns ['foo A bar ', <Lol />, ' baz']
@@ -62,7 +62,7 @@ export interface Translations {
 export function translate(
   translations: Translations | undefined,
   key: string,
-  dflt: string = '',
+  dflt = '',
 ): string | ((...params: any[]) => string) {
   if (!translations) {
     return '…';

@@ -39,6 +39,7 @@ export const changesetsProcessor: Processor = {
         params: {
           bbox,
           time: fromTime + (toTime0 ? `,${toTime0}` : ''),
+          // eslint-disable-next-line
           display_name: state.changesets.authorName,
         },
         cancelActions: [changesetsSetAuthorName, setTool, clearMap],

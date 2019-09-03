@@ -4,9 +4,7 @@ import { httpRequest } from 'fm3/authAxios';
 import { setHomeLocation } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-export const authLoginWithOsm2Processor: Processor<
-  typeof authLoginWithOsm2
-> = {
+export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
   actionCreator: authLoginWithOsm2,
   errorKey: 'logIn.logInError',
   handle: async ({ getState, dispatch, action }) => {
