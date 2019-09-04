@@ -1,7 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -22,7 +21,13 @@ import 'fm3/styles/search.scss';
 import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
-// import { FormControl, FormGroup, Form } from 'react-bootstrap';
+import {
+  FormControl,
+  FormGroup,
+  Form,
+  Dropdown,
+  MenuItem,
+} from 'react-bootstrap';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -40,48 +45,67 @@ const SearchMenu: React.FC<Props> = ({
   inProgress,
   t,
 }) => {
-  const handleSelectionChange = useCallback(
-    (resultsSelectedByUser: SearchResult[]) => {
-      onResultSelect(resultsSelectedByUser[0]);
+  const embed = window.self !== window.top;
+
+  const [value, setValue] = useState('');
+
+  const handleSearch = useCallback(
+    (e: React.FormEvent<Form>) => {
+      e.preventDefault();
+      onDoSearch(value);
     },
-    [onResultSelect],
+    [onDoSearch, value],
   );
 
-  const embed = window.self !== window.top;
+  const handleChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      setValue((e.target as HTMLInputElement).value);
+    },
+    [setValue],
+  );
+
+  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
+
+  const handleSelect = useCallback(
+    eventKey => {
+      const found = results.find(item => item.id === eventKey);
+      if (found) {
+        onResultHiglight(found);
+        // onResultSelect(found);
+      }
+    },
+    [results, onResultSelect],
+  );
 
   return (
     <>
-      {/* <Form inline onSubmit={this.handleSearch}>
-        <FormGroup>
-          <FormControl />
-        </FormGroup>
-      </Form> */}
-      <AsyncTypeahead
-        id="search"
-        isLoading={inProgress}
-        labelKey="label"
-        useCache={false}
-        minLength={3}
-        delay={500}
-        ignoreDiacritics
-        onSearch={onDoSearch}
-        options={results}
-        searchText={t('search.inProgress')}
-        placeholder="&#xF002; Brusno"
-        clearButton
-        onChange={handleSelectionChange}
-        emptyLabel={t('search.noResults')}
-        promptText={t('search.prompt')}
-        renderMenuItemChildren={result => (
-          <div
-            key={result.label + result.id}
-            onMouseEnter={() => onResultHiglight(result)}
-            onMouseLeave={() => onResultHiglight(null)}
-          >
-            {result.tags.name} <br />({result.geojson.type})
-          </div>
-        )}
-      />{' '}
+      <Form inline onSubmit={handleSearch}>
+        <Dropdown
+          // className="dropdown-long"
+          id="objectsMenuDropdown"
+          // onToggle={handleToggle}
+          open={results.length > 0}
+        >
+          <FormGroup2 bsRole="toggle">
+            <FormControl onChange={handleChange} value={value} />
+          </FormGroup2>
+          <Dropdown.Menu>
+            {results.map(result => (
+              <MenuItem
+                key={result.id}
+                eventKey={result.id}
+                onSelect={handleSelect}
+              >
+                {result.label}
+                <br />
+                <small>
+                  {result.class}={result.type}
+                </small>
+              </MenuItem>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
+      </Form>{' '}
       {selectedResult && !embed && (
         <ButtonGroup>
           <Button

@@ -20,6 +20,7 @@ const SearchResults: React.FC<Props> = ({
     <>
       {highlightedResult && (
         <GeoJSON
+          key={highlightedResult.id}
           data={highlightedResult.geojson}
           style={{ weight: 5 }}
           pointToLayer={ptl}
@@ -27,6 +28,7 @@ const SearchResults: React.FC<Props> = ({
       )}
       {selectedResult && (
         <GeoJSON
+          key={selectedResult.id}
           data={selectedResult.geojson}
           style={{ weight: 5 }}
           pointToLayer={ptl}
