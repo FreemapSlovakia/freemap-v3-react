@@ -12,6 +12,7 @@ export function getAuth2() {
 window.handleGoogleAuthApiLoad = (): void => {
   gapi.load('auth2', () => {
     auth2 = gapi.auth2.init({
+      // eslint-disable-next-line
       client_id:
         '120698260366-tt592mqhut3931ct83667sfihdkv69jj.apps.googleusercontent.com',
       scope: 'profile email',

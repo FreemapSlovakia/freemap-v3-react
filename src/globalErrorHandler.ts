@@ -95,6 +95,18 @@ function handle(id: string): void {
     document.body.innerHTML = `
       <h1>Application error</h1>
       <p>Ticket ID: ${id}.</p>
-      <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>`;
+      <p>You can send ticket ID and steps how to reproduce the error to <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.</p>
+
+      <h1>Chyba aplikácie</h1>
+      <p>ID incidentu: ${id}.</p>
+      <p>Na <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a> nám môžete zaslať toto ID a kroky, ako sa vám to podarilo.</p>
+
+      <h1>Alkalmazáshiba</h1>
+      <p>Jegyazonosító (ticket ID): ${id}.</p>
+      <p>
+        A jegyazonosítót és a hiba újbóli megjelenéséhez vezető lépések leírását a következő e-mail címre küldheti:
+        <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>.
+      </p>
+    `;
   }
 }
