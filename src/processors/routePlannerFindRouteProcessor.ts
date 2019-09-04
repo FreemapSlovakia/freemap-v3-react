@@ -52,7 +52,7 @@ interface OsrmRoute {
   // geometry: any;
   // weight: number;
   // weight_name: string;
-  extra: {};
+  extra?: any;
 }
 
 const updateRouteTypes = [

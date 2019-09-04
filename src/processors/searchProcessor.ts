@@ -1,7 +1,6 @@
 import { searchSetResults, searchSetQuery } from 'fm3/actions/searchActions';
 import { clearMap } from 'fm3/actions/mainActions';
 import { parseCoordinates } from 'fm3/coordinatesParser';
-import { latLonToString } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { LatLon } from 'fm3/types/common';
@@ -37,10 +36,6 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
             geojson: point([coords.lon, coords.lat]),
             lat: coords.lat,
             lon: coords.lon,
-            tags: {
-              name: latLonToString(coords, language),
-              type: 'Point',
-            },
           },
         ]),
       );
