@@ -1,15 +1,14 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { AsyncTypeahead } from 'react-bootstrap-typeahead';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import {
   searchSetQuery,
-  searchHighlightResult,
   searchSelectResult,
   SearchResult,
+  searchSetResults,
 } from 'fm3/actions/searchActions';
 import { setTool } from 'fm3/actions/mainActions';
 import {
@@ -19,10 +18,16 @@ import {
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/search.scss';
-import 'react-bootstrap-typeahead/css/Typeahead.css';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
-// import { FormControl, FormGroup, Form } from 'react-bootstrap';
+import {
+  FormControl,
+  FormGroup,
+  Form,
+  Dropdown,
+  MenuItem,
+  InputGroup,
+} from 'react-bootstrap';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -31,57 +36,121 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 const SearchMenu: React.FC<Props> = ({
   onResultSelect,
-  onResultHiglight,
   onRoutePlannerWithStartInit,
   onRoutePlannerWithFinishInit,
   selectedResult,
   onDoSearch,
   results,
+  onModify,
   inProgress,
   t,
 }) => {
-  const handleSelectionChange = useCallback(
-    (resultsSelectedByUser: SearchResult[]) => {
-      onResultSelect(resultsSelectedByUser[0]);
+  const embed = window.self !== window.top;
+
+  const [value, setValue] = useState('');
+
+  const [open, setOpen] = useState(false);
+
+  const handleSearch = useCallback(
+    (e: React.FormEvent<Form>) => {
+      e.preventDefault();
+      onDoSearch(value);
     },
-    [onResultSelect],
+    [onDoSearch, value],
   );
 
-  const embed = window.self !== window.top;
+  const handleChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      setValue((e.target as HTMLInputElement).value);
+      if (results.length > 0) {
+        onModify();
+      }
+    },
+    [setValue, onModify, results],
+  );
+
+  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
+
+  const handleSelect = useCallback(
+    eventKey => {
+      const found = results.find(item => item.id === eventKey);
+      if (found) {
+        onResultSelect(found);
+      }
+      console.log(selectedResult, eventKey);
+      if (selectedResult && selectedResult.id === eventKey) {
+        setOpen(false);
+      }
+    },
+    [results, onResultSelect, selectedResult],
+  );
+
+  const handleClose = useCallback(
+    (open: any, _: any, { source }: any) => {
+      if (!open && source !== 'select') {
+        setOpen(false);
+      } else if (open) {
+        if (results.length > 0) {
+          setOpen(true);
+        }
+      }
+    },
+    [setOpen, results],
+  );
+
+  useEffect(() => {
+    if (results.length) {
+      setOpen(true);
+    } else {
+      setOpen(false);
+      // setValue(''); TODO
+    }
+  }, [results, setOpen]);
 
   return (
     <>
-      {/* <Form inline onSubmit={this.handleSearch}>
-        <FormGroup>
-          <FormControl />
-        </FormGroup>
-      </Form> */}
-      <AsyncTypeahead
-        id="search"
-        isLoading={inProgress}
-        labelKey="label"
-        useCache={false}
-        minLength={3}
-        delay={500}
-        ignoreDiacritics
-        onSearch={onDoSearch}
-        options={results}
-        searchText={t('search.inProgress')}
-        placeholder="&#xF002; Brusno"
-        clearButton
-        onChange={handleSelectionChange}
-        emptyLabel={t('search.noResults')}
-        promptText={t('search.prompt')}
-        renderMenuItemChildren={result => (
-          <div
-            key={result.label + result.id}
-            onMouseEnter={() => onResultHiglight(result)}
-            onMouseLeave={() => onResultHiglight(null)}
-          >
-            {result.tags.name} <br />({result.geojson.type})
-          </div>
-        )}
-      />{' '}
+      <Form inline onSubmit={handleSearch}>
+        <Dropdown
+          // className="dropdown-long"
+          id="objectsMenuDropdown"
+          // onToggle={handleToggle}
+          open={open}
+          onToggle={handleClose as any}
+        >
+          <FormGroup2 bsRole="toggle">
+            <FormControl
+              onChange={handleChange}
+              value={value}
+              placeholder="Brusno"
+            />
+          </FormGroup2>
+          <Dropdown.Menu className="fm-search-dropdown">
+            {results.map(result => (
+              <MenuItem
+                key={result.id}
+                eventKey={result.id}
+                onSelect={handleSelect}
+                active={!!selectedResult && result.id === selectedResult.id}
+              >
+                {result.label}
+                <br />
+                {!!(result.class && result.type) && (
+                  <small>
+                    {result.class}={result.type}
+                  </small>
+                )}
+              </MenuItem>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>{' '}
+        <Button
+          type="submit"
+          title="Search"
+          /* TODO translate */ disabled={!value}
+        >
+          <Glyphicon glyph="search" />
+        </Button>
+      </Form>{' '}
       {selectedResult && !embed && (
         <ButtonGroup>
           <Button
@@ -113,9 +182,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onDoSearch(query: string) {
     dispatch(searchSetQuery(query));
   },
-  onResultHiglight(result: SearchResult | null) {
-    dispatch(searchHighlightResult(result));
-  },
   onResultSelect(result: SearchResult) {
     dispatch(searchSelectResult(result));
   },
@@ -128,6 +194,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     const finish = { lat: result.lat, lon: result.lon };
     dispatch(setTool('route-planner'));
     dispatch(routePlannerSetFinish({ finish }));
+  },
+  onModify() {
+    dispatch(searchSetResults([]));
   },
 });
 

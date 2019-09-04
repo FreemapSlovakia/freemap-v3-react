@@ -12,21 +12,12 @@ const ptl = (_: Feature, latLng: LatLng) => {
   return marker(latLng, { icon: createMarkerIcon() });
 };
 
-const SearchResults: React.FC<Props> = ({
-  highlightedResult,
-  selectedResult,
-}) => {
+const SearchResults: React.FC<Props> = ({ selectedResult }) => {
   return (
     <>
-      {highlightedResult && (
-        <GeoJSON
-          data={highlightedResult.geojson}
-          style={{ weight: 5 }}
-          pointToLayer={ptl}
-        />
-      )}
       {selectedResult && (
         <GeoJSON
+          key={selectedResult.id}
           data={selectedResult.geojson}
           style={{ weight: 5 }}
           pointToLayer={ptl}
@@ -37,7 +28,6 @@ const SearchResults: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  highlightedResult: state.search.highlightedResult,
   selectedResult: state.search.selectedResult,
 });
 

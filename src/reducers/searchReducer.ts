@@ -5,14 +5,12 @@ import {
   searchSetQuery,
   searchSetResults,
   SearchResult,
-  searchHighlightResult,
   searchSelectResult,
 } from 'fm3/actions/searchActions';
 
 export interface SearchState {
   query: string | null;
   results: SearchResult[];
-  highlightedResult: SearchResult | null;
   selectedResult: SearchResult | null;
   inProgress: boolean;
 }
@@ -20,7 +18,6 @@ export interface SearchState {
 const initialState = {
   query: null,
   results: [],
-  highlightedResult: null,
   selectedResult: null,
   inProgress: false,
 };
@@ -39,12 +36,7 @@ export const searchReducer = createReducer<SearchState, RootAction>(
     results: action.payload,
     inProgress: false,
   }))
-  .handleAction(searchHighlightResult, (state, action) => ({
-    ...state,
-    highlightedResult: action.payload,
-  }))
   .handleAction(searchSelectResult, (state, action) => ({
     ...state,
     selectedResult: action.payload,
-    highlightedResult: null,
   }));
