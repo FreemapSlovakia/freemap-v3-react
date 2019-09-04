@@ -13,7 +13,7 @@ export const l10nSetLanguageProcessor: Processor = {
       (navigator.languages &&
         navigator.languages
           .map(lang => simplify(lang))
-          .find(lang => lang && ['en', 'sk', 'cs'].includes(lang))) ||
+          .find(lang => lang && ['en', 'sk', 'cs', 'hu'].includes(lang))) ||
       simplify(navigator.language) ||
       'en';
 

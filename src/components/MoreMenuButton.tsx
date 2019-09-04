@@ -122,6 +122,11 @@ class MoreMenuButton extends React.Component<Props, State> {
     this.props.onLanguageChange('cs');
   };
 
+  handleHungarianClick = () => {
+    this.close();
+    this.props.onLanguageChange('hu');
+  };
+
   handleLanguageClick = () => {
     this.setState({ submenu: 'language' });
   };
@@ -172,7 +177,7 @@ class MoreMenuButton extends React.Component<Props, State> {
               {submenu === null ? (
                 <>
                   <MenuItem onClick={this.handleLanguageClick}>
-                    <FontAwesomeIcon icon="language" /> Language / Jazyk{' '}
+                    <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv{' '}
                     <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
                   {user ? (
@@ -274,7 +279,7 @@ class MoreMenuButton extends React.Component<Props, State> {
               ) : submenu === 'language' ? (
                 <>
                   <MenuItem header>
-                    <FontAwesomeIcon icon="language" /> Language / Jazyk
+                    <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv
                   </MenuItem>
                   <MenuItem onClick={this.handleBackClick}>
                     <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
@@ -303,6 +308,12 @@ class MoreMenuButton extends React.Component<Props, State> {
                     active={chosenLanguage === 'cs'}
                   >
                     Česky
+                  </MenuItem>
+                  <MenuItem
+                    onClick={this.handleHungarianClick}
+                    active={chosenLanguage === 'hu'}
+                  >
+                    Magyar
                   </MenuItem>
                 </>
               ) : null}
