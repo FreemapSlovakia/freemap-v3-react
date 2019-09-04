@@ -115,7 +115,7 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      eslint: true,
+      eslint: !fastDev,
       tsconfig: path.resolve(__dirname, './tsconfig.json'),
       async: fastDev,
     }),
