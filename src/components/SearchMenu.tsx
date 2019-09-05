@@ -26,7 +26,6 @@ import {
   Form,
   Dropdown,
   MenuItem,
-  InputGroup,
 } from 'react-bootstrap';
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -42,7 +41,7 @@ const SearchMenu: React.FC<Props> = ({
   onDoSearch,
   results,
   onModify,
-  inProgress,
+  // inProgress,
   t,
 }) => {
   const embed = window.self !== window.top;

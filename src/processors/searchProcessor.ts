@@ -13,7 +13,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
   handle: async ({ dispatch, getState }) => {
     const {
       search: { query },
-      l10n: { language },
+      // l10n: { language },
     } = getState();
 
     if (!query) {
