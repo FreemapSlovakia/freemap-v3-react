@@ -12,7 +12,7 @@ export interface L10nState {
 
 const initialState: L10nState = {
   chosenLanguage: null,
-  language: 'en-US', // TODO this is hack so that setLanguage will change it in any case on load (eg. to 'en')
+  language: 'en',
 };
 
 export const l10nReducer = createReducer<L10nState, RootAction>(initialState)

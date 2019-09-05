@@ -113,7 +113,13 @@ function loadAppState(): void {
     store.dispatch(setAppState(appState));
   }
 
-  store.dispatch(l10nSetChosenLanguage(appState ? appState.language : null));
+  store.dispatch(
+    l10nSetChosenLanguage(
+      appState
+        ? appState.language && appState.language.replace(/-.*/, '') // fixing wrong saved language because of bug in older version
+        : null,
+    ),
+  );
 }
 
 function checkStravaAuth(): void {

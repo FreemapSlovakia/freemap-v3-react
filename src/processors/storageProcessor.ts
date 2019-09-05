@@ -30,7 +30,7 @@ export const storageProcessor: Processor = {
       trackViewer: {
         eleSmoothingFactor: state.main.eleSmoothingFactor,
       },
-      language: state.l10n.language,
+      language: state.l10n.chosenLanguage,
     };
 
     storage.setItem('appState', JSON.stringify(appState));
