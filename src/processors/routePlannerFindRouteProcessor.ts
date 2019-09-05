@@ -29,10 +29,10 @@ interface OsrmStep {
   name: string;
   // weight: number;
   mode: string;
-  extra: {};
+  extra?: any; // TODO
   maneuver: {
     type: string;
-    modifier: string;
+    modifier?: string;
     location: [number, number];
   };
 }
@@ -52,7 +52,7 @@ interface OsrmRoute {
   // geometry: any;
   // weight: number;
   // weight_name: string;
-  extra?: any;
+  extra?: any; // TODO
 }
 
 const updateRouteTypes = [

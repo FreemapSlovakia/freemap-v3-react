@@ -41,14 +41,14 @@ export interface Step {
   mode: SliceMode;
   shapePoints: [number, number][];
   legIndex: number;
-  extra: any;
+  extra?: any; // TODO
 }
 
 export interface Alternative {
   itinerary: Step[];
   distance: number;
   duration: number;
-  extra: any; // TODO
+  extra?: any; // TODO
 }
 
 export const routePlannerSetStart = createStandardAction(
