@@ -54,15 +54,15 @@ export const transportTypeDefs: {
     development: true,
   },
   {
-    type: 'foot-osm',
-    icon: '!icon-hiking',
-    url: 'https://routing.openstreetmap.de/routed-foot/$MODE/v1/driving',
-  },
-  {
     type: 'foot',
     icon: '!icon-hiking',
     url: `${EPS_URL}$MODE/v1/foot`,
     slovakiaOnly: true,
+  },
+  {
+    type: 'foot-osm',
+    icon: '!icon-hiking',
+    url: 'https://routing.openstreetmap.de/routed-foot/$MODE/v1/driving',
   },
   {
     type: 'foot-stroller',
