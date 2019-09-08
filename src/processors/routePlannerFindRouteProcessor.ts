@@ -19,6 +19,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
+import { transportTypeDefs } from 'fm3/transportTypeDefs';
 
 interface OsrmStep {
   distance: number;
@@ -89,6 +90,12 @@ export const routePlannerFindRouteProcessor: Processor = {
       [finish.lon, finish.lat].join(','),
     ].join(';');
 
+    const ttDef = transportTypeDefs.find(({ type }) => type === transportType);
+
+    if (!ttDef) {
+      throw new Error(`unknown transport type: ${transportType}`);
+    }
+
     const params = {
       alternatives: mode === 'route' || undefined,
       steps: true,
@@ -98,12 +105,7 @@ export const routePlannerFindRouteProcessor: Processor = {
       source: mode === 'route' ? undefined : 'first',
       destination: mode === 'trip' ? 'last' : undefined,
       // continue_straight: true,
-      exclude:
-        transportType === 'car-free'
-          ? 'toll'
-          : transportType === 'foot-stroller'
-          ? 'stroller'
-          : undefined,
+      exclude: ttDef.exclude,
     };
 
     let data: any;
@@ -112,11 +114,9 @@ export const routePlannerFindRouteProcessor: Processor = {
       data = (await httpRequest({
         getState,
         method: 'GET',
-        url: `https://routing.${
-          transportType.startsWith('car') ? 'freemap' : 'epsilon'
-        }.sk/${mode === 'route' ? 'route' : 'trip'}/v1/${transportType.replace(
-          /-.*/,
-          '',
+        url: `${ttDef.url.replace(
+          '$MODE',
+          mode === 'route' ? 'route' : 'trip',
         )}/${allPoints}`,
         params,
         expectedStatus: [200, 400],

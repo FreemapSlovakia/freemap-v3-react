@@ -17,9 +17,9 @@ import {
   routePlannerToggleItineraryVisibility,
   routePlannerSetResult,
   routePlannerSetActiveAlternativeIndex,
-  TransportType,
   Alternative,
 } from 'fm3/actions/routePlannerActions';
+import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
 
@@ -178,9 +178,3 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     activeAlternativeIndex: action.payload,
   }));
-
-function isSpecial(transportType: TransportType | null) {
-  return (
-    transportType !== null && ['imhd', 'bikesharing'].includes(transportType)
-  );
-}

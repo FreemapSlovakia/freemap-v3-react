@@ -75,14 +75,18 @@ export default {
     transportType: {
       car: 'Car',
       'car-free': 'Car (toll free)',
-      bikesharing: 'Bike sharing (in devel.)',
-      imhd: 'Public transport (in devel.)',
-      bike: 'Bicycle',
+      bikesharing: 'Bike sharing',
+      imhd: 'Public transport',
+      'bike-osm': 'Bicycle',
+      bike: 'Bicycle touring',
       'foot-stroller': 'Stroller / Wheelchair',
       nordic: 'Nordic skiing',
       ski: 'Downhill skiing',
-      foot: 'Foot',
+      'foot-osm': 'Foot',
+      foot: 'Hiking',
     },
+    slovakiaOnly: 'available only for Slovaka',
+    development: 'in development',
     mode: {
       route: 'Ordered',
       trip: 'Visiting places',
@@ -91,27 +95,27 @@ export default {
     alternative: 'Alternative',
     // eslint-disable-next-line
     distance: ({ value }) => (
-      <Fragment>
+      <>
         Distance: <b>{value} km</b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     duration: ({ h, m }) => (
-      <Fragment>
+      <>
         Duration:{' '}
         <b>
           {h} h {m} m
         </b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
-      <Fragment>
+      <>
         Distance: <b>{distance} km</b> | Duration:{' '}
         <b>
           {h} h {m} m
         </b>
-      </Fragment>
+      </>
     ),
     noHomeAlert: 'You need to set your home position in settings first.',
     showMidpointHint: 'To add a midpoint, drag a route segment.',
@@ -159,7 +163,7 @@ export default {
       total: {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
-          <Fragment>
+          <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -167,11 +171,11 @@ export default {
                 <b>{n}</b>
               </Fragment>
             ))}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
-          <Fragment>
+          <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -189,13 +193,13 @@ export default {
             <b>
               {wait} {numberize(wait, ['minutes', 'minute'])}
             </b>
-          </Fragment>
+          </>
         ),
       },
       step: {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
-          <Fragment>
+          <>
             at <b>{departure}</b> walk{' '}
             <b>
               {duration} {numberize(duration, ['minutes', 'minute'])}
@@ -203,17 +207,17 @@ export default {
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
-              <Fragment>
+              <>
                 to <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
-          <Fragment>
+          <>
             at <b>{departure}</b> {type} <b>{number}</b> to <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
       type: {
@@ -227,7 +231,7 @@ export default {
       step: {
         // eslint-disable-next-line
         foot: ({ duration, destination }) => (
-          <Fragment>
+          <>
             walk{' '}
             <b>
               {duration} {numberize(duration, ['minutes', 'minute'])}
@@ -235,21 +239,21 @@ export default {
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
-              <Fragment>
+              <>
                 to <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
-          <Fragment>
+          <>
             bicycle{' '}
             <b>
               {duration} {numberize(duration, ['minutes', 'minte'])}
             </b>{' '}
             to <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
     },

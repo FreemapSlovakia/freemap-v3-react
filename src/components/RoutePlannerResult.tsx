@@ -12,7 +12,6 @@ import {
   routePlannerSetMidpoint,
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
-  TransportType,
   Alternative,
 } from 'fm3/actions/routePlannerActions';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
@@ -20,6 +19,7 @@ import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DragEndEvent } from 'leaflet';
+import { isSpecial } from 'fm3/transportTypeDefs';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -70,10 +70,7 @@ const RoutePlannerResult: React.FC<Props> = ({
       maximumFractionDigits: 1,
     });
 
-    return transportType &&
-      isSpecial(transportType) &&
-      extra &&
-      extra.numbers ? (
+    return isSpecial(transportType) && extra && extra.numbers ? (
       <Tooltip direction="top" offset={[0, -36]} permanent>
         <div>{imhdSummary(t, language, extra)}</div>
       </Tooltip>
@@ -514,8 +511,4 @@ function bikesharingStep(t: Translator, { type, destination, duration }) {
     destination,
     duration: Math.round(duration / 60),
   });
-}
-
-function isSpecial(transportType: TransportType) {
-  return ['imhd', 'bikesharing'].includes(transportType);
 }

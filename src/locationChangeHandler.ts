@@ -15,10 +15,7 @@ import {
   Tool,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import {
-  routePlannerSetParams,
-  TransportType,
-} from 'fm3/actions/routePlannerActions';
+import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import {
   trackViewerDownloadTrack,
   trackViewerColorizeTrackBy,
@@ -63,6 +60,7 @@ import { Location } from 'history';
 import { TrackedDevice } from './types/trackingTypes';
 import { LatLon } from './types/common';
 import { Dispatch } from 'redux';
+import { isTransportType } from './transportTypeDefs';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -92,9 +90,7 @@ export const handleLocationChange = (
 
     if (
       typeof query.transport === 'string' &&
-      /^(car|car-free|foot|bike|foot-stroller|ski|nordic|imhd|bikesharing)$/.test(
-        query.transport,
-      ) &&
+      isTransportType(query.transport) &&
       pointsOk
     ) {
       const {
@@ -130,7 +126,7 @@ export const handleLocationChange = (
             start: nextStart,
             finish: nextFinish,
             midpoints: nextMidpoints,
-            transportType: query.transport as TransportType,
+            transportType: query.transport,
             mode:
               routeMode === 'trip' || routeMode === 'roundtrip'
                 ? routeMode

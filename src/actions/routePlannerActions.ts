@@ -1,21 +1,11 @@
 import { LatLon } from 'fm3/types/common';
 import { createStandardAction, createAction } from 'typesafe-actions';
 import { RouteMode } from 'fm3/reducers/routePlannerReducer';
+import { TransportType } from 'fm3/transportTypeDefs';
 
 export type RoutingMode = 'trip' | 'roundtrip' | 'route';
 
 export type SliceMode = 'foot';
-
-export type TransportType =
-  | 'car-free'
-  | 'foot-stroller'
-  | 'car'
-  | 'bikesharing'
-  | 'imhd'
-  | 'bike'
-  | 'nordic'
-  | 'ski'
-  | 'foot';
 
 export type ManeuerModifier =
   | 'uturn'

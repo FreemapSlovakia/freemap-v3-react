@@ -76,14 +76,18 @@ export default {
     transportType: {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
-      bikesharing: 'Kerékpármegosztás (fejl. alatt)',
-      imhd: 'Tömegközlekedés (fejl. alatt)',
+      bikesharing: 'Kerékpármegosztás',
+      imhd: 'Tömegközlekedés',
+      'bike-osm': 'Kerékpár (OSM)', // TODO "Bicycle touring"
       bike: 'Kerékpár',
       'foot-stroller': 'Babakocsi / kerekesszék',
       nordic: 'Sífutás',
       ski: 'Alpesi sí',
-      foot: 'Gyaloglás',
+      foot: 'Gyaloglás', // TODO "Hiking"
+      'foot-osm': 'Gyaloglás (OSM)',
     },
+    slovakiaOnly: 'available only for Slovaka', // TODO
+    development: 'fejl. alatt',
     mode: {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',

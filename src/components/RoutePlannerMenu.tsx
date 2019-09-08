@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useEffect, useCallback } from 'react';
 import { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
@@ -18,7 +18,6 @@ import {
   routePlannerToggleElevationChart,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSwapEnds,
-  TransportType,
 } from 'fm3/actions/routePlannerActions';
 import {
   setActiveModal,
@@ -33,307 +32,329 @@ import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
+import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;
   };
 
-class RoutePlannerMenu extends React.Component<Props> {
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdd);
-  }
+const RoutePlannerMenu: React.FC<Props> = ({
+  pickPointMode,
+  transportType,
+  onTransportTypeChange,
+  onPickPointModeChange,
+  // onItineraryVisibilityToggle,
+  // itineraryIsVisible,
+  elevationProfileIsVisible,
+  routeFound,
+  expertMode,
+  onToggleElevationChart,
+  t,
+  activeAlternativeIndex,
+  alternatives,
+  onAlternativeChange,
+  language,
+  onEndsSwap,
+  canSwap,
+  mode,
+  onModeChange,
+  pickMode,
+  onProgressStart,
+  onProgressStop,
+  onStartSet,
+  onFinishSet,
+  onGetCurrentPositionError,
+  onMissingHomeLocation,
+  homeLocation,
+}) => {
+  const handlePoiAdd = useCallback(
+    (lat: number, lon: number) => {
+      if (pickMode === 'start') {
+        onStartSet({ lat, lon });
+      } else if (pickMode === 'finish') {
+        onFinishSet({ lat, lon });
+      }
+    },
+    [pickMode, onStartSet, onFinishSet],
+  );
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-  }
+  useEffect(() => {
+    mapEventEmitter.on('mapClick', handlePoiAdd);
+    return () => {
+      mapEventEmitter.removeListener('mapClick', handlePoiAdd);
+    };
+  }, [handlePoiAdd]);
 
   // TODO move to logic
-  setFromCurrentPosition(pointType: 'start' | 'finish') {
-    const pid = Math.random();
-    this.props.onProgressStart(pid);
-    getCurrentPosition().then(
-      ({ lat, lon }: LatLon) => {
-        this.props.onProgressStop(pid);
-        if (pointType === 'start') {
-          this.props.onStartSet({ lat, lon });
-        } else if (pointType === 'finish') {
-          this.props.onFinishSet({ lat, lon });
-        } // else fail
-      },
-      (/*err*/) => {
-        this.props.onProgressStop(pid);
-        this.props.onGetCurrentPositionError();
-      },
-    );
-  }
+  const setFromCurrentPosition = useCallback(
+    (pointType: 'start' | 'finish') => {
+      const pid = Math.random();
+      onProgressStart(pid);
+      getCurrentPosition().then(
+        ({ lat, lon }: LatLon) => {
+          onProgressStop(pid);
+          if (pointType === 'start') {
+            onStartSet({ lat, lon });
+          } else if (pointType === 'finish') {
+            onFinishSet({ lat, lon });
+          } // else fail
+        },
+        (/*err*/) => {
+          onProgressStop(pid);
+          onGetCurrentPositionError();
+        },
+      );
+    },
+    [
+      onProgressStart,
+      onProgressStop,
+      onStartSet,
+      onFinishSet,
+      onGetCurrentPositionError,
+    ],
+  );
 
-  setFromHomeLocation(pointType: 'start' | 'finish') {
-    const { homeLocation } = this.props;
-    if (!homeLocation) {
-      this.props.onMissingHomeLocation();
-    } else if (pointType === 'start') {
-      this.props.onStartSet(homeLocation);
-    } else if (pointType === 'finish') {
-      this.props.onFinishSet(homeLocation);
-    }
-  }
+  const setFromHomeLocation = useCallback(
+    (pointType: 'start' | 'finish') => {
+      if (!homeLocation) {
+        onMissingHomeLocation();
+      } else if (pointType === 'start') {
+        onStartSet(homeLocation);
+      } else if (pointType === 'finish') {
+        onFinishSet(homeLocation);
+      }
+    },
+    [homeLocation, onMissingHomeLocation, onStartSet, onFinishSet],
+  );
 
-  handleStartCurrent = () => {
-    this.setFromCurrentPosition('start');
-  };
+  const handleStartCurrent = useCallback(() => {
+    setFromCurrentPosition('start');
+  }, [setFromCurrentPosition]);
 
-  handleStartHome = () => {
-    this.setFromHomeLocation('start');
-  };
+  const handleStartHome = useCallback(() => {
+    setFromHomeLocation('start');
+  }, [setFromHomeLocation]);
 
-  handleFinishCurrent = () => {
-    this.setFromCurrentPosition('finish');
-  };
+  const handleFinishCurrent = useCallback(() => {
+    setFromCurrentPosition('finish');
+  }, [setFromCurrentPosition]);
 
-  handleFinishHome = () => {
-    this.setFromHomeLocation('finish');
-  };
+  const handleFinishHome = useCallback(() => {
+    setFromHomeLocation('finish');
+  }, [setFromHomeLocation]);
 
-  handlePoiAdd = (lat: number, lon: number) => {
-    if (this.props.pickMode === 'start') {
-      this.props.onStartSet({ lat, lon });
-    } else if (this.props.pickMode === 'finish') {
-      this.props.onFinishSet({ lat, lon });
-    }
-  };
+  const activeTransportType = useMemo(
+    () => transportTypeDefs.find(({ type }) => type === transportType),
+    [transportType],
+  );
 
-  render() {
-    const {
-      pickPointMode,
-      transportType,
-      onTransportTypeChange,
-      onPickPointModeChange,
-      /* onItineraryVisibilityToggle, itineraryIsVisible, */ elevationProfileIsVisible,
-      routeFound,
-      expertMode,
-      onToggleElevationChart,
-      t,
-      activeAlternativeIndex,
-      alternatives,
-      onAlternativeChange,
-      language,
-      onEndsSwap,
-      canSwap,
-      mode,
-      onModeChange,
-    } = this.props;
+  const activeAlternative = alternatives[activeAlternativeIndex];
 
-    const transportTypes: Array<[TransportType, string]> = [
-      ['car', 'car'],
-      ['car-free', 'car'],
-      ['imhd', 'bus'],
-      ['bike', 'bicycle'],
-      ['bikesharing', 'bicycle'],
-      ['nordic', '!icon-skier-skiing'],
-      ['foot', '!icon-hiking'],
-    ];
+  const nf = Intl.NumberFormat(language, {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
 
-    if (expertMode) {
-      transportTypes.push(['foot-stroller', 'wheelchair-alt']);
-      transportTypes.push(['ski', '!icon-skiing']);
-    }
+  const DropdownButton2 = DropdownButton as any; // because active is missing
 
-    const activeTransportType = transportTypes
-      .filter(x => x)
-      .find(([type]) => type === transportType);
-
-    const activeAlternative = alternatives[activeAlternativeIndex];
-
-    const nf = Intl.NumberFormat(language, {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-    });
-
-    const DropdownButton2 = DropdownButton as any; // because active is missing
-
-    return (
-      <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="map-signs" />
-          <span className="hidden-xs"> {t('tools.routePlanner')}</span>
-        </span>{' '}
-        <ButtonGroup>
-          <DropdownButton2
-            title={
-              <span>
-                <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
-                <span className="hidden-xs"> {t('routePlanner.start')}</span>
-              </span>
-            }
-            id="set-start-dropdown"
-            onClick={() => onPickPointModeChange('start')}
-            active={pickPointMode === 'start'}
-          >
-            <MenuItem>
-              <FontAwesomeIcon icon="map-marker" />{' '}
-              {t('routePlanner.point.pick')}
-            </MenuItem>
-            <MenuItem onClick={this.handleStartCurrent}>
-              <FontAwesomeIcon icon="bullseye" />{' '}
-              {t('routePlanner.point.current')}
-            </MenuItem>
-            <MenuItem onClick={this.handleStartHome}>
-              <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
-            </MenuItem>
-          </DropdownButton2>
-          {mode !== 'roundtrip' && (
-            <>
-              <Button
-                onClick={onEndsSwap}
-                disabled={!canSwap}
-                title={t('routePlanner.swap')}
-              >
-                ⇆
-              </Button>
-              <DropdownButton2
-                title={
-                  <span>
-                    <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
-                    <span className="hidden-xs">
-                      {' '}
-                      {t('routePlanner.finish')}
-                    </span>
-                  </span>
-                }
-                id="set-finish-dropdown"
-                onClick={() => onPickPointModeChange('finish')}
-                active={pickPointMode === 'finish'}
-              >
-                <MenuItem>
-                  <FontAwesomeIcon icon="map-marker" />{' '}
-                  {t('routePlanner.point.pick')}
-                </MenuItem>
-                <MenuItem onClick={this.handleFinishCurrent}>
-                  <FontAwesomeIcon icon="bullseye" />{' '}
-                  {t('routePlanner.point.current')}
-                </MenuItem>
-                <MenuItem onClick={this.handleFinishHome}>
-                  <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
-                </MenuItem>
-              </DropdownButton2>
-            </>
-          )}
-        </ButtonGroup>{' '}
-        <DropdownButton
-          id="transport-type"
+  return (
+    <>
+      <span className="fm-label">
+        <FontAwesomeIcon icon="map-signs" />
+        <span className="hidden-xs"> {t('tools.routePlanner')}</span>
+      </span>{' '}
+      <ButtonGroup>
+        <DropdownButton2
           title={
-            !activeTransportType ? (
-              ''
-            ) : (
-              <>
-                <FontAwesomeIcon icon={activeTransportType[1]} />
-                {['car', 'bikesharing'].includes(activeTransportType[0]) && (
-                  <FontAwesomeIcon icon="money" />
-                )}
-                <span className="hidden-xs">
-                  {' '}
-                  {t(
-                    `routePlanner.transportType.${activeTransportType[0]}`,
-                  ).replace(/\s*,.*/, '')}
-                </span>
-              </>
-            )
+            <span>
+              <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
+              <span className="hidden-xs"> {t('routePlanner.start')}</span>
+            </span>
           }
+          id="set-start-dropdown"
+          onClick={() => onPickPointModeChange('start')}
+          active={pickPointMode === 'start'}
         >
-          {transportTypes
-            .filter(x => x)
-            .map(([type, icon]) => (
-              <MenuItem
-                eventKey={type}
-                key={type}
-                title={t(`routePlanner.transportType.${type}`)}
-                active={transportType === type}
-                onClick={() => onTransportTypeChange(type)}
-              >
-                <FontAwesomeIcon icon={icon} />
-                {['car', 'bikesharing'].includes(type) && (
-                  <FontAwesomeIcon icon="money" />
-                )}{' '}
-                {t(`routePlanner.transportType.${type}`)}
-              </MenuItem>
-            ))}
-        </DropdownButton>{' '}
-        <DropdownButton
-          id="mode"
-          title={t(`routePlanner.mode.${mode}`)}
-          disabled={transportType === 'imhd' || transportType === 'bikesharing'}
-        >
-          {(['route', 'trip', 'roundtrip'] as const).map(mode1 => (
-            <MenuItem
-              eventKey={mode1}
-              key={mode1}
-              title={t(`routePlanner.mode.${mode1}`)}
-              active={mode === mode1}
-              onClick={() => onModeChange(mode1)}
-            >
-              {t(`routePlanner.mode.${mode1}`)}
-            </MenuItem>
-          ))}
-        </DropdownButton>
-        {alternatives.length > 1 && (
+          <MenuItem>
+            <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
+          </MenuItem>
+          <MenuItem onClick={handleStartCurrent}>
+            <FontAwesomeIcon icon="bullseye" />{' '}
+            {t('routePlanner.point.current')}
+          </MenuItem>
+          <MenuItem onClick={handleStartHome}>
+            <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
+          </MenuItem>
+        </DropdownButton2>
+        {mode !== 'roundtrip' && (
           <>
-            {' '}
-            <DropdownButton
-              id="transport-type"
-              title={
-                transportType === 'imhd' &&
-                activeAlternative.extra &&
-                activeAlternative.extra.price
-                  ? imhdSummary(t, language, activeAlternative.extra)
-                  : t('routePlanner.summary', {
-                      distance: nf.format(activeAlternative.distance),
-                      h: Math.floor(activeAlternative.duration / 60),
-                      m: Math.round(activeAlternative.duration % 60),
-                    })
-              }
+            <Button
+              onClick={onEndsSwap}
+              disabled={!canSwap}
+              title={t('routePlanner.swap')}
             >
-              {alternatives.map(({ duration, distance, extra }, i) => (
-                <MenuItem
-                  eventKey={i}
-                  key={i}
-                  active={i === activeAlternativeIndex}
-                  onClick={() => onAlternativeChange(i)}
-                >
-                  {transportType === 'imhd' && extra && extra.price
-                    ? imhdSummary(t, language, extra)
-                    : t('routePlanner.summary', {
-                        distance: nf.format(distance),
-                        h: Math.floor(duration / 60),
-                        m: Math.round(duration % 60),
-                      })}
-                </MenuItem>
-              ))}
-            </DropdownButton>
+              ⇆
+            </Button>
+            <DropdownButton2
+              title={
+                <span>
+                  <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
+                  <span className="hidden-xs"> {t('routePlanner.finish')}</span>
+                </span>
+              }
+              id="set-finish-dropdown"
+              onClick={() => onPickPointModeChange('finish')}
+              active={pickPointMode === 'finish'}
+            >
+              <MenuItem>
+                <FontAwesomeIcon icon="map-marker" />{' '}
+                {t('routePlanner.point.pick')}
+              </MenuItem>
+              <MenuItem onClick={handleFinishCurrent}>
+                <FontAwesomeIcon icon="bullseye" />{' '}
+                {t('routePlanner.point.current')}
+              </MenuItem>
+              <MenuItem onClick={handleFinishHome}>
+                <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
+              </MenuItem>
+            </DropdownButton2>
           </>
         )}
-        {/* ' '}
-        <Button
-          onClick={() => onItineraryVisibilityToggle()}
-          active={itineraryIsVisible}
-          title="Itinerár"
-        >
-          <FontAwesomeIcon icon="list-ol" /><span className="hidden-xs"> Itinerár</span>
-        </Button>
-        */}{' '}
-        <Button
-          onClick={onToggleElevationChart}
-          active={elevationProfileIsVisible}
-          disabled={!routeFound}
-          title={t('general.elevationProfile')}
-        >
-          <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> {t('general.elevationProfile')}</span>
-        </Button>
-      </>
-    );
-  }
-}
+      </ButtonGroup>{' '}
+      <DropdownButton
+        id="transport-type"
+        title={
+          activeTransportType ? (
+            <>
+              <FontAwesomeIcon icon={activeTransportType.icon} />
+              {['car', 'bikesharing'].includes(activeTransportType.type) && (
+                <FontAwesomeIcon icon="money" />
+              )}
+              <span className="hidden-xs">
+                {' '}
+                {t(
+                  `routePlanner.transportType.${activeTransportType.type}`,
+                ).replace(/\s*,.*/, '')}
+              </span>
+            </>
+          ) : (
+            ''
+          )
+        }
+      >
+        {transportTypeDefs
+          .filter(({ expert }) => expertMode || !expert)
+          .map(({ type, icon, slovakiaOnly, development }) => (
+            <MenuItem
+              eventKey={type}
+              key={type}
+              title={t(`routePlanner.transportType.${type}`)}
+              active={transportType === type}
+              onClick={() => onTransportTypeChange(type)}
+            >
+              <FontAwesomeIcon icon={icon} />
+              {['car', 'bikesharing'].includes(type) && (
+                <FontAwesomeIcon icon="money" />
+              )}{' '}
+              {t(`routePlanner.transportType.${type}`)}
+              {development && (
+                <>
+                  {' '}
+                  <FontAwesomeIcon
+                    icon="flask"
+                    title={t('routePlanner.development')}
+                    className="text-warning"
+                  />
+                </>
+              )}
+              {slovakiaOnly && (
+                <>
+                  {' '}
+                  <FontAwesomeIcon
+                    icon="exclamation-triangle"
+                    title={t('routePlanner.slovakiaOnly')}
+                    className="text-warning"
+                  />
+                </>
+              )}
+            </MenuItem>
+          ))}
+      </DropdownButton>{' '}
+      <DropdownButton
+        id="mode"
+        title={t(`routePlanner.mode.${mode}`)}
+        disabled={transportType === 'imhd' || transportType === 'bikesharing'}
+      >
+        {(['route', 'trip', 'roundtrip'] as const).map(mode1 => (
+          <MenuItem
+            eventKey={mode1}
+            key={mode1}
+            title={t(`routePlanner.mode.${mode1}`)}
+            active={mode === mode1}
+            onClick={() => onModeChange(mode1)}
+          >
+            {t(`routePlanner.mode.${mode1}`)}
+          </MenuItem>
+        ))}
+      </DropdownButton>
+      {alternatives.length > 1 && (
+        <>
+          {' '}
+          <DropdownButton
+            id="transport-type"
+            title={
+              transportType === 'imhd' &&
+              activeAlternative.extra &&
+              activeAlternative.extra.price
+                ? imhdSummary(t, language, activeAlternative.extra)
+                : t('routePlanner.summary', {
+                    distance: nf.format(activeAlternative.distance),
+                    h: Math.floor(activeAlternative.duration / 60),
+                    m: Math.round(activeAlternative.duration % 60),
+                  })
+            }
+          >
+            {alternatives.map(({ duration, distance, extra }, i) => (
+              <MenuItem
+                eventKey={i}
+                key={i}
+                active={i === activeAlternativeIndex}
+                onClick={() => onAlternativeChange(i)}
+              >
+                {transportType === 'imhd' && extra && extra.price
+                  ? imhdSummary(t, language, extra)
+                  : t('routePlanner.summary', {
+                      distance: nf.format(distance),
+                      h: Math.floor(duration / 60),
+                      m: Math.round(duration % 60),
+                    })}
+              </MenuItem>
+            ))}
+          </DropdownButton>
+        </>
+      )}
+      {/* ' '}
+      <Button
+        onClick={() => onItineraryVisibilityToggle()}
+        active={itineraryIsVisible}
+        title="Itinerár"
+      >
+        <FontAwesomeIcon icon="list-ol" /><span className="hidden-xs"> Itinerár</span>
+      </Button>
+      */}{' '}
+      <Button
+        onClick={onToggleElevationChart}
+        active={elevationProfileIsVisible}
+        disabled={!routeFound}
+        title={t('general.elevationProfile')}
+      >
+        <FontAwesomeIcon icon="bar-chart" />
+        <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+      </Button>
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   pickMode: state.routePlanner.pickMode,
