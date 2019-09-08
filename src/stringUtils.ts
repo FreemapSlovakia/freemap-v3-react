@@ -77,15 +77,17 @@ export function translate(
     const item = curr[part];
     if (typeof item === 'string' || typeof item === 'function') {
       if (keys.length) {
-        throw new Error(
-          `sub-key refers to string or function; ; key=${key}; type=${typeof item}`,
-        );
+        // throw new Error(
+        //   `sub-key refers to string or function; ; key=${key}; type=${typeof item}`,
+        // );
+        return key;
       }
       return item;
     } else if (typeof item !== 'object') {
-      throw new Error(
-        `sub-key refers to non-string and non-function; key=${key}; type=${typeof item}`,
-      );
+      // throw new Error(
+      //   `sub-key refers to non-string and non-function; key=${key}; type=${typeof item}`,
+      // );
+      return key;
     }
     curr = item;
   }
