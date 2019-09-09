@@ -16,6 +16,8 @@ import {
   osmLoadRelation,
 } from 'fm3/actions/osmActions';
 import { FeatureCollection } from 'geojson';
+import produce from 'immer';
+import { searchSelectResult } from 'fm3/actions/searchActions';
 
 export interface TrackViewerState {
   trackGeojson: FeatureCollection | null;
@@ -86,4 +88,20 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
   .handleAction(osmLoadRelation, (state, action) => ({
     ...state,
     osmRelationId: action.payload,
-  }));
+  }))
+  .handleAction(searchSelectResult, (state, action) =>
+    produce(state, draft => {
+      draft.osmNodeId = null;
+      draft.osmWayId = null;
+      draft.osmRelationId = null;
+      if (action.payload.osmType === 'node') {
+        draft.osmNodeId = action.payload.id;
+      }
+      if (action.payload.osmType === 'way') {
+        draft.osmWayId = action.payload.id;
+      }
+      if (action.payload.osmType === 'relation') {
+        draft.osmRelationId = action.payload.id;
+      }
+    }),
+  );

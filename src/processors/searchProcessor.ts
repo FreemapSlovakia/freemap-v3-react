@@ -73,6 +73,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         lon: d.lon,
         class: d.class,
         type: d.type,
+        osmType: d.osm_type,
       };
     });
 

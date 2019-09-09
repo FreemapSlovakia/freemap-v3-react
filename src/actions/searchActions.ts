@@ -9,6 +9,7 @@ export interface SearchResult {
   lon: number;
   class?: string;
   type?: string;
+  osmType?: string;
 }
 
 export const searchSetQuery = createStandardAction('SEARCH_SET_QUERY')<
