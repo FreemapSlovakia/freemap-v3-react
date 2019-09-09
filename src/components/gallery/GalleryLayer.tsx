@@ -26,10 +26,12 @@ class LGalleryLayer extends LGridLayer {
   createTile(coords: Coords, done: DoneCallback) {
     const size = this.getTileSize();
     const map = this._map;
+
     const pointAa = map.unproject(
       [coords.x * size.x - 6, coords.y * size.y - 6],
       coords.z,
     );
+
     const pointBa = map.unproject(
       [(coords.x + 1) * size.x + 6, (coords.y + 1) * size.y + 6],
       coords.z,
@@ -39,18 +41,18 @@ class LGalleryLayer extends LGridLayer {
       [coords.x * size.x, coords.y * size.y],
       coords.z,
     );
+
     const pointB = map.unproject(
       [(coords.x + 1) * size.x, (coords.y + 1) * size.y],
       coords.z,
     );
 
-    // create a <canvas> element for drawing
     const tile = DomUtil.create('canvas', 'leaflet-tile') as HTMLCanvasElement;
-    // setup tile width and height according to the options
+
     const dpr = window.devicePixelRatio || 1;
     tile.width = size.x * dpr;
     tile.height = size.y * dpr;
-    // get a canvas context and draw something on it using coords.x, coords.y and coords.z
+
     const ctx = tile.getContext('2d');
     if (!ctx) {
       throw Error('no context');
@@ -90,8 +92,6 @@ class LGalleryLayer extends LGridLayer {
           })
           .map(({ la, lo }) => ({ lat: la / k, lon: lo / k }));
 
-        // console.log('xxxxxxxxxxx', data.length, mangled.length);
-
         mangled.forEach(({ lat, lon }) => {
           const y =
             size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
@@ -109,7 +109,6 @@ class LGalleryLayer extends LGridLayer {
         done(err);
       });
 
-    // return the tile so it can be rendered on screen
     return tile;
   }
 }
