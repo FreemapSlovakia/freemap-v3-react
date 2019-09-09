@@ -46,20 +46,19 @@ export const osmLoadRelationProcessor: Processor = {
 
       switch (type) {
         case 'node':
-          features.push(point(nodes[ref]));
+          if (nodes[ref]) {
+            features.push(point(nodes[ref]));
+          }
           break;
         case 'way':
-          features.push(lineString(ways[ref]));
+          if (ways[ref]) {
+            features.push(lineString(ways[ref]));
+          }
           break;
         case 'relation':
         default:
           break;
       }
-
-      nodes[type] = [
-        parseFloat(ensureNotNull(x.getAttribute('lon'))),
-        parseFloat(ensureNotNull(x.getAttribute('lat'))),
-      ];
     }
 
     const trackGeojson = featureCollection(features);
