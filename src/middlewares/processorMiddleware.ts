@@ -71,6 +71,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
           errorKey === undefined
             ? p
             : p.catch(err => {
+                console.error(err);
                 dispatchAxiosErrorAsToast(dispatch, errorKey, err);
               }),
         );
