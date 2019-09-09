@@ -94,6 +94,7 @@ import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTra
 import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
 import { authInitProcessor } from './processors/authInitProcessor';
 import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
+import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -179,6 +180,7 @@ processors.push(
   routePlannerRefocusMapProcessor,
   routePlannerSetupTransportTypeProcessor,
   routePlannerToggleElevationChartProcessor,
+  routePlannerSetFromCurrentPositionProcessor,
   trackingAccessTokenProcessors.loadAccessTokensProcessor,
   trackingAccessTokenProcessors.saveAccessTokenProcessor,
   trackingAccessTokenProcessors.deleteAccessTokenProcessor,

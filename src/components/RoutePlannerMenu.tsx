@@ -18,15 +18,11 @@ import {
   routePlannerToggleElevationChart,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSwapEnds,
+  routePlannerSetFromCurrentPosition,
 } from 'fm3/actions/routePlannerActions';
-import {
-  setActiveModal,
-  startProgress,
-  stopProgress,
-} from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import { getCurrentPosition } from 'fm3/geoutils';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 import { RootAction } from 'fm3/actions';
@@ -60,12 +56,10 @@ const RoutePlannerMenu: React.FC<Props> = ({
   mode,
   onModeChange,
   pickMode,
-  onProgressStart,
-  onProgressStop,
   onStartSet,
   onFinishSet,
-  onGetCurrentPositionError,
   onMissingHomeLocation,
+  onSetFromCurrentPosition,
   homeLocation,
 }) => {
   const handlePoiAdd = useCallback(
@@ -86,35 +80,6 @@ const RoutePlannerMenu: React.FC<Props> = ({
     };
   }, [handlePoiAdd]);
 
-  // TODO move to logic
-  const setFromCurrentPosition = useCallback(
-    (pointType: 'start' | 'finish') => {
-      const pid = Math.random();
-      onProgressStart(pid);
-      getCurrentPosition().then(
-        ({ lat, lon }: LatLon) => {
-          onProgressStop(pid);
-          if (pointType === 'start') {
-            onStartSet({ lat, lon });
-          } else if (pointType === 'finish') {
-            onFinishSet({ lat, lon });
-          } // else fail
-        },
-        (/*err*/) => {
-          onProgressStop(pid);
-          onGetCurrentPositionError();
-        },
-      );
-    },
-    [
-      onProgressStart,
-      onProgressStop,
-      onStartSet,
-      onFinishSet,
-      onGetCurrentPositionError,
-    ],
-  );
-
   const setFromHomeLocation = useCallback(
     (pointType: 'start' | 'finish') => {
       if (!homeLocation) {
@@ -129,16 +94,16 @@ const RoutePlannerMenu: React.FC<Props> = ({
   );
 
   const handleStartCurrent = useCallback(() => {
-    setFromCurrentPosition('start');
-  }, [setFromCurrentPosition]);
+    onSetFromCurrentPosition('start');
+  }, [onSetFromCurrentPosition]);
 
   const handleStartHome = useCallback(() => {
     setFromHomeLocation('start');
   }, [setFromHomeLocation]);
 
   const handleFinishCurrent = useCallback(() => {
-    setFromCurrentPosition('finish');
-  }, [setFromCurrentPosition]);
+    onSetFromCurrentPosition('finish');
+  }, [onSetFromCurrentPosition]);
 
   const handleFinishHome = useCallback(() => {
     setFromHomeLocation('finish');
@@ -391,22 +356,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPickPointModeChange(pickMode: 'start' | 'finish') {
     dispatch(routePlannerSetPickMode(pickMode));
   },
-  onProgressStart(pid: number) {
-    dispatch(startProgress(pid));
-  },
-  onProgressStop(pid: number) {
-    dispatch(stopProgress(pid));
-  },
-  onGetCurrentPositionError() {
-    dispatch(
-      toastsAdd({
-        collapseKey: 'routePlanner.gpsError',
-        messageKey: 'routePlanner.gpsError',
-        style: 'danger',
-        timeout: 5000,
-      }),
-    );
-  },
   onMissingHomeLocation() {
     dispatch(
       toastsAdd({
@@ -428,6 +377,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onEndsSwap() {
     dispatch(routePlannerSwapEnds());
+  },
+  onSetFromCurrentPosition(end: 'start' | 'finish') {
+    dispatch(routePlannerSetFromCurrentPosition(end));
   },
 });
 

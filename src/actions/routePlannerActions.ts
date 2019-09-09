@@ -49,6 +49,10 @@ export const routePlannerSetFinish = createStandardAction(
   'ROUTE_PLANNER_SET_FINISH',
 )<{ finish: LatLon | null; move?: boolean }>();
 
+export const routePlannerSetFromCurrentPosition = createStandardAction(
+  'ROUTE_PLANNER_SET_FROM_CURRENT_POSITION',
+)<'start' | 'finish'>();
+
 export const routePlannerAddMidpoint = createStandardAction(
   'ROUTE_PLANNER_ADD_MIDPOINT',
 )<{ midpoint: LatLon; position: number }>();
