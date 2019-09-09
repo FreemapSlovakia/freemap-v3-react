@@ -50,6 +50,8 @@ const SearchMenu: React.FC<Props> = ({
 
   const [open, setOpen] = useState(false);
 
+  const [searchState, setSearchState] = useState(0);
+
   const handleSearch = useCallback(
     (e: React.FormEvent<Form>) => {
       e.preventDefault();
@@ -84,14 +86,12 @@ const SearchMenu: React.FC<Props> = ({
     [results, onResultSelect, selectedResult],
   );
 
-  const handleClose = useCallback(
+  const handleToggle = useCallback(
     (open: any, _: any, { source }: any) => {
       if (!open && source !== 'select') {
         setOpen(false);
-      } else if (open) {
-        if (results.length > 0) {
-          setOpen(true);
-        }
+      } else if (open && results.length > 0) {
+        setOpen(true);
       }
     },
     [setOpen, results],
@@ -100,11 +100,12 @@ const SearchMenu: React.FC<Props> = ({
   useEffect(() => {
     if (results.length) {
       setOpen(true);
+      setSearchState(searchState + 1);
     } else {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, setOpen]);
+  }, [results, setOpen, setSearchState]);
 
   return (
     <>
@@ -112,9 +113,9 @@ const SearchMenu: React.FC<Props> = ({
         <Dropdown
           // className="dropdown-long"
           id="objectsMenuDropdown"
-          // onToggle={handleToggle}
           open={open}
-          onToggle={handleClose as any}
+          onToggle={handleToggle as any}
+          key={searchState}
         >
           <FormGroup2 bsRole="toggle">
             <FormControl
