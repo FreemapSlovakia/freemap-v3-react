@@ -16,16 +16,6 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { getType } from 'typesafe-actions';
 
-const timeFormat = new Intl.DateTimeFormat(
-  'sk', // TODO language
-  {
-    day: '2-digit',
-    month: '2-digit',
-    hour: 'numeric',
-    minute: '2-digit',
-  },
-);
-
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -56,7 +46,7 @@ class Changesets extends React.Component<Props> {
           key={changeset.id}
           faIconLeftPadding="2px"
           position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
-          onclick={() => onShowChangesetDetail(changeset)}
+          onclick={() => onShowChangesetDetail(changeset, this.props.language)}
         >
           <Tooltip
             opacity={opacity}
@@ -80,12 +70,20 @@ class Changesets extends React.Component<Props> {
 }
 
 const mapStateToProps = (state: RootState) => ({
+  language: state.l10n.language,
   changesets: state.changesets.changesets,
   days: state.changesets.days,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onShowChangesetDetail(changeset: Changeset) {
+  onShowChangesetDetail(changeset: Changeset, language: string) {
+    const timeFormat = new Intl.DateTimeFormat(language, {
+      day: '2-digit',
+      month: '2-digit',
+      hour: 'numeric',
+      minute: '2-digit',
+    });
+
     const message = (
       <div>
         <dl className="dl-horizontal">
