@@ -3,10 +3,27 @@ import axios from 'axios';
 import { GridLayer, withLeaflet, GridLayerProps } from 'react-leaflet';
 
 import { createFilter } from 'fm3/galleryUtils';
-import { DomUtil } from 'leaflet';
+import {
+  DomUtil,
+  GridLayer as LGridLayer,
+  Coords,
+  DoneCallback,
+  GridLayerOptions,
+} from 'leaflet';
 
-const galleryLayer = (window['L'] as any).GridLayer.extend({
-  createTile(coords, done) {
+type GalleryLayerOptions = GridLayerOptions & {
+  filter: any;
+};
+
+class LGalleryLayer extends LGridLayer {
+  private _options?: GalleryLayerOptions;
+
+  constructor(options?: GalleryLayerOptions) {
+    super(options);
+    this._options = options;
+  }
+
+  createTile(coords: Coords, done: DoneCallback) {
     const size = this.getTileSize();
     const map = this._map;
     const pointAa = map.unproject(
@@ -51,7 +68,7 @@ const galleryLayer = (window['L'] as any).GridLayer.extend({
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
-          ...createFilter(this.options.filter),
+          ...(this._options ? createFilter(this._options.filter) : {}),
         },
         validateStatus: status => status === 200,
       })
@@ -86,7 +103,7 @@ const galleryLayer = (window['L'] as any).GridLayer.extend({
           ctx.stroke();
         });
 
-        done(null, tile);
+        done(undefined, tile);
       })
       .catch(err => {
         done(err);
@@ -94,20 +111,20 @@ const galleryLayer = (window['L'] as any).GridLayer.extend({
 
     // return the tile so it can be rendered on screen
     return tile;
-  },
-});
+  }
+}
 
 interface Props extends GridLayerProps {
   filter: any; // TODO
 }
 
-class GalleryLayer extends GridLayer<Props> {
+class GalleryLayer extends GridLayer<Props, LGalleryLayer> {
   static propTypes = {
     filter: PropTypes.object.isRequired,
   };
 
   createLeafletElement(props: Props) {
-    return new galleryLayer({ ...props });
+    return new LGalleryLayer({ ...props });
   }
 
   // updateLeafletElement(fromProps, toProps) {
