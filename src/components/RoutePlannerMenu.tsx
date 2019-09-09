@@ -244,7 +244,7 @@ const RoutePlannerMenu: React.FC<Props> = ({
         }
       >
         {transportTypeDefs
-          .filter(({ expert }) => expertMode || !expert)
+          .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
           .map(({ type, icon, slovakiaOnly, development }) => (
             <MenuItem
               eventKey={type}
