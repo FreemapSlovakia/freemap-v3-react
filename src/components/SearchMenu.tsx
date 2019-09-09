@@ -78,7 +78,6 @@ const SearchMenu: React.FC<Props> = ({
       if (found) {
         onResultSelect(found);
       }
-      console.log(selectedResult, eventKey);
       if (selectedResult && selectedResult.id === eventKey) {
         setOpen(false);
       }
