@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect } from 'react';
+import React, { useCallback, useState, useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import Button from 'react-bootstrap/lib/Button';
@@ -31,6 +31,7 @@ import {
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;
+    hidden?: boolean;
   };
 
 const SearchMenu: React.FC<Props> = ({
@@ -43,6 +44,7 @@ const SearchMenu: React.FC<Props> = ({
   onModify,
   // inProgress,
   t,
+  hidden,
 }) => {
   const embed = window.self !== window.top;
 
@@ -51,6 +53,8 @@ const SearchMenu: React.FC<Props> = ({
   const [open, setOpen] = useState(false);
 
   const [searchState, setSearchState] = useState(0);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSearch = useCallback(
     (e: React.FormEvent<Form>) => {
@@ -100,30 +104,35 @@ const SearchMenu: React.FC<Props> = ({
     if (results.length) {
       setOpen(true);
       setSearchState(searchState + 1);
+      if (inputRef.current) {
+        inputRef.current.focus();
+      }
     } else {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, setOpen, setSearchState]);
+  }, [results, setOpen, setSearchState, inputRef]);
 
   return (
-    <>
+    <span style={{ display: hidden ? 'none' : 'inline' }}>
       <Form inline onSubmit={handleSearch}>
         <Dropdown
           // className="dropdown-long"
           id="objectsMenuDropdown"
           open={open}
           onToggle={handleToggle as any}
-          key={searchState}
         >
           <FormGroup2 bsRole="toggle">
             <FormControl
               onChange={handleChange}
               value={value}
               placeholder="Brusno"
+              inputRef={x => {
+                inputRef.current = x;
+              }}
             />
           </FormGroup2>
-          <Dropdown.Menu className="fm-search-dropdown">
+          <Dropdown.Menu key={searchState} className="fm-search-dropdown">
             {results.map(result => (
               <MenuItem
                 key={result.id}
@@ -144,8 +153,9 @@ const SearchMenu: React.FC<Props> = ({
         </Dropdown>{' '}
         <Button
           type="submit"
+          /* TODO translate */
           title="Search"
-          /* TODO translate */ disabled={!value}
+          disabled={!value}
         >
           <Glyphicon glyph="search" />
         </Button>
@@ -166,7 +176,7 @@ const SearchMenu: React.FC<Props> = ({
           </Button>
         </ButtonGroup>
       )}
-    </>
+    </span>
   );
 };
 
