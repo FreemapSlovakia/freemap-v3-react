@@ -9,7 +9,7 @@ export interface ToastAction {
 }
 
 export interface Toast {
-  message?: string | JSX.Element; // PropTypes.node, // TODO string only
+  message?: string | JSX.Element; // TODO string only
   messageKey?: string;
   messageParams?: { [key: string]: any };
   timeout?: number;
