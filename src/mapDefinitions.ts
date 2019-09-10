@@ -53,13 +53,15 @@ export interface LayerDef {
   zIndex?: number; // TODO only overlays
   subdomains?: string;
   strava?: boolean;
+  extraScales?: number[];
 }
 
 export const baseLayers: LayerDef[] = [
   {
     type: 'X',
     icon: 'tree',
-    url: scaleUrl([1, 2, 3], 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}'),
+    url: 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}',
+    extraScales: [2, 3],
     attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
     minZoom: 6,
     maxNativeZoom: 19,
@@ -179,35 +181,13 @@ if (!process.env.NODE_ENV) {
   baseLayers.push({
     type: 'Y',
     icon: 'flask',
-    url: scaleUrl([1, 2, 3], 'http://localhost:4000/{z}/{x}/{y}'),
+    url: 'http://localhost:4000/{z}/{x}/{y}',
+    extraScales: [2, 3],
     attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
     minZoom: 6,
     maxNativeZoom: 19,
     key: 'y',
   });
-}
-
-function findNearestScale(
-  scales: number[],
-  ratio = window.devicePixelRatio || 1,
-): number {
-  let dif = Number.POSITIVE_INFINITY;
-  let prevScale = scales[0];
-  for (const scale of scales) {
-    const newDif = Math.abs(ratio - scale);
-    if (newDif >= dif) {
-      return prevScale;
-    }
-    prevScale = scale;
-    dif = newDif;
-  }
-
-  return prevScale;
-}
-
-function scaleUrl(scales: number[], url: string): string {
-  const scale = findNearestScale(scales);
-  return scale === 1 ? url : `${url}@${scale}x`;
 }
 
 export const overlayLayers: LayerDef[] = [

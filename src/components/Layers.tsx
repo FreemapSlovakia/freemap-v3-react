@@ -1,6 +1,5 @@
 import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { TileLayer } from 'react-leaflet';
 import GalleryLayer from 'fm3/components/gallery/GalleryLayer';
 
 import { mapRefocus } from 'fm3/actions/mapActions';
@@ -11,6 +10,7 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
 import missingTile from '../images/missing-tile-256x256.png';
+import ScaledTileLayer from './gallery/ScaledTileLayer';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
@@ -87,6 +87,7 @@ const Layers: React.FC<Props> = ({
     maxNativeZoom,
     zIndex = 1,
     subdomains = 'abc',
+    extraScales,
   }: LayerDef) => {
     if (type === 'S') {
       return (
@@ -113,7 +114,7 @@ const Layers: React.FC<Props> = ({
 
     return (
       !!url && (
-        <TileLayer
+        <ScaledTileLayer
           key={type}
           url={url.replace('{tileFormat}', tileFormat)}
           minZoom={minZoom}
@@ -123,6 +124,7 @@ const Layers: React.FC<Props> = ({
           zIndex={zIndex}
           subdomains={subdomains}
           errorTileUrl={missingTile}
+          extraScales={extraScales}
         />
       )
     );
