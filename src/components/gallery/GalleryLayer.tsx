@@ -1,4 +1,3 @@
-import PropTypes from 'prop-types';
 import axios from 'axios';
 import { GridLayer, withLeaflet, GridLayerProps } from 'react-leaflet';
 
@@ -118,10 +117,6 @@ interface Props extends GridLayerProps {
 }
 
 class GalleryLayer extends GridLayer<Props, LGalleryLayer> {
-  static propTypes = {
-    filter: PropTypes.object.isRequired,
-  };
-
   createLeafletElement(props: Props) {
     return new LGalleryLayer({ ...props });
   }
