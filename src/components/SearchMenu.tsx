@@ -32,6 +32,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;
     hidden?: boolean;
+    preventShortcut?: boolean;
   };
 
 const SearchMenu: React.FC<Props> = ({
@@ -45,6 +46,7 @@ const SearchMenu: React.FC<Props> = ({
   // inProgress,
   t,
   hidden,
+  preventShortcut,
 }) => {
   const embed = window.self !== window.top;
 
@@ -100,6 +102,13 @@ const SearchMenu: React.FC<Props> = ({
     [setOpen, results],
   );
 
+  const setInputRef = useCallback(
+    ref => {
+      inputRef.current = ref;
+    },
+    [inputRef],
+  );
+
   useEffect(() => {
     if (results.length) {
       setOpen(true);
@@ -112,6 +121,32 @@ const SearchMenu: React.FC<Props> = ({
       // setValue(''); TODO
     }
   }, [results, setOpen, setSearchState, inputRef]);
+
+  useEffect(() => {
+    if (hidden || preventShortcut) {
+      return;
+    }
+
+    const handler = (e: KeyboardEvent) => {
+      if (
+        inputRef.current &&
+        (e.keyCode === 114 || ((e.ctrlKey || e.metaKey) && e.keyCode === 70))
+      ) {
+        inputRef.current.focus();
+        e.preventDefault();
+      }
+    };
+
+    document.addEventListener('keydown', handler);
+
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
+  }, [hidden, inputRef, preventShortcut]);
+
+  const handleInputFocus = useCallback((e: React.FocusEvent<FormControl>) => {
+    ((e.target as any) as HTMLInputElement).select();
+  }, []);
 
   return (
     <span style={{ display: hidden ? 'none' : 'inline' }}>
@@ -127,9 +162,8 @@ const SearchMenu: React.FC<Props> = ({
               onChange={handleChange}
               value={value}
               placeholder="Brusno"
-              inputRef={x => {
-                inputRef.current = x;
-              }}
+              inputRef={setInputRef}
+              onFocus={handleInputFocus}
             />
           </FormGroup2>
           <Dropdown.Menu key={searchState} className="fm-search-dropdown">

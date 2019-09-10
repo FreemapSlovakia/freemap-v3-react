@@ -269,7 +269,10 @@ class MainInt extends React.Component<Props, State> {
                     onClick={this.handleEmbedLogoClick}
                   />
                   {embedFeatures.includes('search') && (
-                    <SearchMenu hidden={!showMenu} />
+                    <SearchMenu
+                      hidden={!showMenu}
+                      preventShortcut={!!activeModal}
+                    />
                   )}
                 </Panel>
               </>
@@ -281,7 +284,10 @@ class MainInt extends React.Component<Props, State> {
                     className={progress ? 'in-progress' : 'idle'}
                     onClick={onMapReset}
                   />
-                  <SearchMenu hidden={!showMenu} />
+                  <SearchMenu
+                    hidden={!showMenu}
+                    preventShortcut={!!activeModal}
+                  />
                 </Panel>
                 {showMenu && (
                   <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
