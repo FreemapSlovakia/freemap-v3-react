@@ -236,6 +236,10 @@ const MainInt: React.FC<Props> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
+  const handleDropzoneClick = useCallback(e => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <>
       <style>
@@ -352,9 +356,7 @@ const MainInt: React.FC<Props> = ({
 
       <div
         {...getRootProps({
-          onClick: e => {
-            e.stopPropagation();
-          },
+          onClick: handleDropzoneClick,
         })}
       >
         {isDragActive && (
