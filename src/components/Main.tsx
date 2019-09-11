@@ -108,6 +108,8 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
+const embed = window.self !== window.top;
+
 const MainInt: React.FC<Props> = ({
   lat,
   lon,
@@ -201,9 +203,13 @@ const MainInt: React.FC<Props> = ({
     [onLocationSet],
   );
 
-  const handleEmbedLogoClick = useCallback(() => {
-    window.open(window.location.href, '_blank');
-  }, []);
+  const handleLogoClick = useCallback(() => {
+    if (embed) {
+      window.open(window.location.href, '_blank');
+    } else {
+      onMapReset();
+    }
+  }, [onMapReset]);
 
   const handleToolCloseClick = useCallback(() => {
     onToolSet(null);
@@ -212,8 +218,6 @@ const MainInt: React.FC<Props> = ({
   const handleInfoBarCloseClick = useCallback(() => {
     setShowInfoBar(false);
   }, [setShowInfoBar]);
-
-  const embed = window.self !== window.top;
 
   const onDrop = useCallback(acceptedFiles => {
     if (acceptedFiles.length) {
@@ -266,31 +270,17 @@ const MainInt: React.FC<Props> = ({
           </div>
         )}
         <div className="menus">
-          {embed ? (
-            <Panel className="fm-toolbar">
-              <Button
-                id="freemap-logo"
-                className={progress ? 'in-progress' : 'idle'}
-                onClick={handleEmbedLogoClick}
-              />
-              {embedFeatures.includes('search') && <SearchMenu />}
-            </Panel>
-          ) : (
-            <>
-              <Panel className="fm-toolbar">
-                <Button
-                  id="freemap-logo"
-                  className={progress ? 'in-progress' : 'idle'}
-                  onClick={onMapReset}
-                />
-                <SearchMenu
-                  hidden={!showMenu}
-                  preventShortcut={!!activeModal}
-                />
-              </Panel>
-              {showMenu && <Menu />}
-            </>
-          )}
+          <Panel className="fm-toolbar">
+            <Button
+              id="freemap-logo"
+              className={progress ? 'in-progress' : 'idle'}
+              onClick={handleLogoClick}
+            />
+            {(!embed || embedFeatures.includes('search')) && (
+              <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
+            )}
+          </Panel>
+          {!embed && showMenu && <Menu />}
           {showMenu && tool && (
             <Panel className="fm-toolbar">
               {tool === 'objects' && <ObjectsMenu />}
