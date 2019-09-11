@@ -1,7 +1,7 @@
 import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -106,79 +106,114 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface State {
-  showInfoBar: boolean;
-}
+const MainInt: React.FC<Props> = ({
+  lat,
+  lon,
+  zoom,
+  mapType,
+  tool,
+  activeModal,
+  progress,
+  mouseCursor,
+  showElevationChart,
+  showGalleryPicker,
+  onMapClear,
+  showLoginModal,
+  onMapReset,
+  showMenu,
+  expertMode,
+  overlayPaneOpacity,
+  embedFeatures,
+  overlays,
+  imhd,
+  onCheckLogin,
+  ignoreEscape,
+  onToolSet,
+  onMapRefocus,
+  onLocationSet,
+  locate,
+  onLocate,
+  t,
+}) => {
+  const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
 
-class MainInt extends React.Component<Props, State> {
-  state: State = {
-    showInfoBar: true,
-  };
+  const mapRef = useRef<Map | null>();
 
-  map: Map | null = null;
+  const setMap = useCallback(
+    map => {
+      mapRef.current = map;
+    },
+    [mapRef],
+  );
 
-  componentDidMount() {
-    this.props.onCheckLogin();
+  useEffect(() => {
+    onCheckLogin();
+  }, [onCheckLogin]);
 
-    setMapLeafletElement(this.map ? this.map.leafletElement : null);
-    document.addEventListener('keydown', event => {
+  useEffect(() => {
+    setMapLeafletElement(mapRef.current ? mapRef.current.leafletElement : null);
+  }, []);
+
+  useEffect(() => {
+    const handler = event => {
       const embed = window.self !== window.top;
-      if (
-        !embed &&
-        event.keyCode === 27 /* escape key */ &&
-        !this.props.ignoreEscape
-      ) {
-        this.props.onToolSet(null);
+      if (!embed && event.keyCode === 27 /* escape key */ && !ignoreEscape) {
+        onToolSet(null);
       }
-    });
+    };
 
-    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
-  }
+    document.addEventListener('keydown', handler);
 
-  componentWillUnmount() {
-    document.removeEventListener(
-      'fullscreenchange',
-      this.handleFullscreenChange,
-    );
-    setMapLeafletElement(null);
-  }
+    return () => {
+      document.removeEventListener('keydown', handler);
+    };
+  }, [ignoreEscape, onToolSet]);
 
-  handleFullscreenChange = () => {
-    this.forceUpdate();
-  };
+  const [forceUpdate, setForceUpdate] = useState(0);
 
-  handleMapMoveEnd = () => {
+  useEffect(() => {
+    const handler = () => {
+      setForceUpdate(forceUpdate + 1);
+    };
+
+    document.addEventListener('fullscreenchange', handler);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handler);
+    };
+  }, [forceUpdate, setForceUpdate]);
+
+  const handleMapMoveEnd = useCallback(() => {
     // TODO analyze why this can be null
-    if (!this.map) {
+    if (!mapRef.current) {
       return;
     }
 
-    const map = this.map.leafletElement;
-    const { lat, lng: lon } = map.getCenter();
-    const zoom = map.getZoom();
+    const map = mapRef.current.leafletElement;
+    const { lat: newLat, lng: newLon } = map.getCenter();
+    const newZoom = map.getZoom();
 
-    if (
-      this.props.lat !== lat ||
-      this.props.lon !== lon ||
-      this.props.zoom !== zoom
-    ) {
-      this.props.onMapRefocus({ lat, lon, zoom });
+    if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
+      onMapRefocus({ lat, lon, zoom });
     }
-  };
+  }, [onMapRefocus, lat, lon, zoom]);
 
-  handleLocationFound = (e: LocationEvent) => {
-    this.props.onLocationSet(e.latlng.lat, e.latlng.lng, e.accuracy);
-  };
+  const handleLocationFound = useCallback(
+    (e: LocationEvent) => {
+      onLocationSet(e.latlng.lat, e.latlng.lng, e.accuracy);
+    },
+    [onLocationSet],
+  );
 
-  handleEmbedLogoClick = () => {
+  const handleEmbedLogoClick = useCallback(() => {
     window.open(window.location.href, '_blank');
-  };
+  }, []);
 
-  handleToolCloseClick = () => {
-    this.props.onToolSet(null);
-  };
+  const handleToolCloseClick = useCallback(() => {
+    onToolSet(null);
+  }, [onToolSet]);
 
-  handleFullscreenClick = () => {
+  const handleFullscreenClick = useCallback(() => {
     if (!document.exitFullscreen) {
       // undupported
     } else if (document.fullscreenElement) {
@@ -186,314 +221,283 @@ class MainInt extends React.Component<Props, State> {
     } else {
       document.body.requestFullscreen();
     }
-  };
+  }, [onToolSet]);
 
-  handleZoomInClick = () => {
-    if (this.map) {
-      const zoom = this.map.leafletElement.getZoom() + 1;
-      this.props.onMapRefocus({ zoom });
+  const handleZoomInClick = useCallback(() => {
+    if (mapRef.current) {
+      const zoom = mapRef.current.leafletElement.getZoom() + 1;
+      onMapRefocus({ zoom });
     }
-  };
+  }, [onMapRefocus]);
 
-  handleZoomOutClick = () => {
-    if (this.map) {
-      const zoom = this.map.leafletElement.getZoom() - 1;
-      this.props.onMapRefocus({ zoom });
+  const handleZoomOutClick = useCallback(() => {
+    if (mapRef.current) {
+      const zoom = mapRef.current.leafletElement.getZoom() - 1;
+      onMapRefocus({ zoom });
     }
-  };
+  }, [onMapRefocus]);
 
-  handleInfoBarCloseClick = () => {
-    this.setState({
-      showInfoBar: false,
-    });
-  };
+  const handleInfoBarCloseClick = useCallback(() => {
+    setShowInfoBar(false);
+  }, [setShowInfoBar]);
 
-  render() {
-    const {
-      lat,
-      lon,
-      zoom,
-      mapType,
-      tool,
-      activeModal,
-      progress,
-      mouseCursor,
-      showElevationChart,
-      showGalleryPicker,
-      onMapClear,
-      showLoginModal,
-      onMapReset,
-      showMenu,
-      expertMode,
-      t,
-      overlayPaneOpacity,
-      embedFeatures,
-      overlays,
-      imhd,
-    } = this.props;
+  const embed = window.self !== window.top;
 
-    const embed = window.self !== window.top;
+  return (
+    <>
+      <style>
+        {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
+      </style>
 
-    return (
-      <>
-        <style>
-          {`.leaflet-overlay-pane { opacity: ${overlayPaneOpacity} }`}
-        </style>
+      {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
+      <img
+        id="freemap-logo-print"
+        src={fmLogo}
+        width="150"
+        height="54"
+        alt="freemap logo"
+        style={{ display: 'none' }}
+      />
 
-        {/* see https://stackoverflow.com/questions/24680588/load-external-images-in-print-media why we must allways fetch the image :-( */}
-        <img
-          id="freemap-logo-print"
-          src={fmLogo}
-          width="150"
-          height="54"
-          alt="freemap logo"
-          style={{ display: 'none' }}
-        />
+      <Toasts />
 
-        <Toasts />
-
-        <div className="header">
-          {process.env.DEPLOYMENT === 'next' && this.state.showInfoBar && (
-            <div className="info-bar">
-              <CloseButton onClick={this.handleInfoBarCloseClick} />
-              {t('main.devInfo')}
-            </div>
-          )}
-          <div className="menus">
-            {embed ? (
-              <>
-                <Panel className="fm-toolbar">
-                  <Button
-                    id="freemap-logo"
-                    className={progress ? 'in-progress' : 'idle'}
-                    onClick={this.handleEmbedLogoClick}
-                  />
-                  {embedFeatures.includes('search') && (
-                    <SearchMenu
-                      hidden={!showMenu}
-                      preventShortcut={!!activeModal}
-                    />
-                  )}
-                </Panel>
-              </>
-            ) : (
-              <>
-                <Panel className="fm-toolbar">
-                  <Button
-                    id="freemap-logo"
-                    className={progress ? 'in-progress' : 'idle'}
-                    onClick={onMapReset}
-                  />
+      <div className="header">
+        {process.env.DEPLOYMENT === 'next' && showInfoBar && (
+          <div className="info-bar">
+            <CloseButton onClick={handleInfoBarCloseClick} />
+            {t('main.devInfo')}
+          </div>
+        )}
+        <div className="menus">
+          {embed ? (
+            <>
+              <Panel className="fm-toolbar">
+                <Button
+                  id="freemap-logo"
+                  className={progress ? 'in-progress' : 'idle'}
+                  onClick={handleEmbedLogoClick}
+                />
+                {embedFeatures.includes('search') && (
                   <SearchMenu
                     hidden={!showMenu}
                     preventShortcut={!!activeModal}
                   />
-                </Panel>
-                {showMenu && (
-                  <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
-                    <ButtonToolbar>
-                      <ButtonGroup>
-                        <ToolsMenuButton />
-                        <Button onClick={onMapClear} title={t('main.clearMap')}>
-                          <FontAwesomeIcon icon="eraser" />
-                        </Button>
-                        {document.exitFullscreen && (
-                          <Button
-                            onClick={this.handleFullscreenClick}
-                            title={
-                              document.fullscreenElement
-                                ? t('general.exitFullscreen')
-                                : t('general.fullscreen')
-                            }
-                          >
-                            <FontAwesomeIcon
-                              icon={
-                                document.fullscreenElement
-                                  ? 'compress'
-                                  : 'expand'
-                              }
-                            />
-                          </Button>
-                        )}
-                        <OpenInExternalAppMenuButton
-                          lat={lat}
-                          lon={lon}
-                          zoom={zoom}
-                          mapType={mapType}
-                          expertMode={expertMode}
-                        />
-                        <MoreMenuButton />
-                      </ButtonGroup>
-                    </ButtonToolbar>
-                  </Panel>
-                )}
-              </>
-            )}
-            {showMenu && tool && (
-              <Panel className="fm-toolbar">
-                {tool === 'objects' && <ObjectsMenu />}
-                {tool === 'route-planner' && <RoutePlannerMenu />}
-                {['measure-dist', 'measure-ele', 'measure-area'].includes(
-                  tool,
-                ) && <MeasurementMenu />}
-                {tool === 'track-viewer' && <TrackViewerMenu />}
-                {tool === 'info-point' && <InfoPointMenu />}
-                {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'gallery' && <GalleryMenu />}
-                {tool === 'map-details' && <MapDetailsMenu />}
-                {tool === 'tracking' && <TrackingMenu />}
-                {!embed && (
-                  <>
-                    {' '}
-                    <Button
-                      onClick={this.handleToolCloseClick}
-                      title={t('main.closeTool')}
-                    >
-                      <FontAwesomeIcon icon="close" />
-                      <span className="hidden-xs"> {t('main.close')}</span>
-                    </Button>
-                  </>
                 )}
               </Panel>
-            )}
-            <GalleryPositionPickingMenu />
-            <GalleryShowPositionMenu />
-            <HomeLocationPickingMenu />
-          </div>
-        </div>
-
-        <div className="fm-type-zoom-control">
-          <Panel
-            className="fm-toolbar"
-            style={{ float: 'right', marginRight: '10px' }}
-          >
-            <ButtonToolbar>
-              <OverlayTrigger
-                trigger="click"
-                rootClose
-                placement="top"
-                overlay={
-                  <Popover
-                    id="popover-positioned-right"
-                    className="fm-attr-popover"
-                  >
-                    <Attribution
-                      t={t}
-                      mapType={mapType}
-                      overlays={overlays}
-                      imhd={imhd}
-                    />
-                  </Popover>
-                }
-              >
-                <Button title={t('main.copyright')}>
-                  <FontAwesomeIcon icon="copyright" />
-                </Button>
-              </OverlayTrigger>
-            </ButtonToolbar>
-          </Panel>
-          <Panel className="fm-toolbar">
-            <ButtonToolbar>
-              {(!embed || !embedFeatures.includes('noMapSwitch')) && (
-                <MapSwitchButton />
-              )}
-              <ButtonGroup>
-                <Button
-                  onClick={this.handleZoomInClick}
-                  title={t('main.zoomIn')}
-                  disabled={
-                    !!this.map &&
-                    this.props.zoom >= this.map.leafletElement.getMaxZoom()
-                  }
-                >
-                  <FontAwesomeIcon icon="plus" />
-                </Button>
-                <Button
-                  onClick={this.handleZoomOutClick}
-                  title={t('main.zoomOut')}
-                  disabled={
-                    !!this.map &&
-                    this.props.zoom <= this.map.leafletElement.getMinZoom()
-                  }
-                >
-                  <FontAwesomeIcon icon="minus" />
-                </Button>
-              </ButtonGroup>
-              {(!embed || !embedFeatures.includes('noLocateMe')) && (
-                <Button
-                  onClick={this.props.onLocate}
-                  title={t('main.locateMe')}
-                  active={this.props.locate}
-                >
-                  <FontAwesomeIcon icon="dot-circle-o" />
-                </Button>
-              )}
-            </ButtonToolbar>
-          </Panel>
-        </div>
-
-        {activeModal === 'settings' && <Settings />}
-        {activeModal &&
-          ['tracking-my', 'tracking-watched'].includes(activeModal) && (
-            <TrackingModal />
-          )}
-        {activeModal === 'share' && <ShareMapModal />}
-        {activeModal === 'embed' && <EmbedMapModal />}
-        {activeModal === 'export-gpx' && <ExportGpxModal />}
-        {activeModal === 'export-pdf' && <ExportPdfModal />}
-        {activeModal === 'tips' && <TipsModal />}
-        {activeModal === 'about' && <AboutModal />}
-        {activeModal === 'supportUs' && <SupportUsModal />}
-        {activeModal === 'legend' && <AsyncLegendModal />}
-        {activeModal === 'info-point-change-label' && <InfoPointLabelModal />}
-        {activeModal === 'upload-track' && <TrackViewerUploadModal />}
-        {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
-        {showLoginModal && <LoginModal />}
-
-        <Map
-          zoomControl={false}
-          attributionControl={false}
-          maxZoom={20}
-          ref={map => {
-            this.map = map;
-          }}
-          center={{ lat, lng: lon }}
-          zoom={zoom}
-          onmoveend={this.handleMapMoveEnd}
-          onmousemove={handleMapMouseMove}
-          onmouseover={handleMapMouseOver}
-          onmouseout={handleMapMouseOut}
-          onclick={handleMapClick}
-          onlocationfound={this.handleLocationFound}
-          style={{ cursor: mouseCursor }}
-        >
-          <ScaleControl imperial={false} position="bottomleft" />
-          <Layers />
-
-          {showMenu && (
+            </>
+          ) : (
             <>
-              <SearchResults />
-              <ObjectsResult />
-              <RoutePlannerResult />
-              <DistanceMeasurementResult />
-              <ElevationMeasurementResult />
-              <AreaMeasurementResult />
-              <LocationResult />
-              <TrackViewerResult />
-              <InfoPointResult />
-              <ChangesetsResult />
-              <TrackingResult />
-              {showElevationChart && <AsyncElevationChart />}
-              {showGalleryPicker && <GalleryPicker />}
+              <Panel className="fm-toolbar">
+                <Button
+                  id="freemap-logo"
+                  className={progress ? 'in-progress' : 'idle'}
+                  onClick={onMapReset}
+                />
+                <SearchMenu
+                  hidden={!showMenu}
+                  preventShortcut={!!activeModal}
+                />
+              </Panel>
+              {showMenu && (
+                <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
+                  <ButtonToolbar>
+                    <ButtonGroup>
+                      <ToolsMenuButton />
+                      <Button onClick={onMapClear} title={t('main.clearMap')}>
+                        <FontAwesomeIcon icon="eraser" />
+                      </Button>
+                      {document.exitFullscreen && (
+                        <Button
+                          onClick={handleFullscreenClick}
+                          title={
+                            document.fullscreenElement
+                              ? t('general.exitFullscreen')
+                              : t('general.fullscreen')
+                          }
+                        >
+                          <FontAwesomeIcon
+                            icon={
+                              document.fullscreenElement ? 'compress' : 'expand'
+                            }
+                          />
+                        </Button>
+                      )}
+                      <OpenInExternalAppMenuButton
+                        lat={lat}
+                        lon={lon}
+                        zoom={zoom}
+                        mapType={mapType}
+                        expertMode={expertMode}
+                      />
+                      <MoreMenuButton />
+                    </ButtonGroup>
+                  </ButtonToolbar>
+                </Panel>
+              )}
             </>
           )}
-          <GalleryResult />
-          {/* TODO should not be extra just because for position picking */}
-        </Map>
-      </>
-    );
-  }
-}
+          {showMenu && tool && (
+            <Panel className="fm-toolbar">
+              {tool === 'objects' && <ObjectsMenu />}
+              {tool === 'route-planner' && <RoutePlannerMenu />}
+              {['measure-dist', 'measure-ele', 'measure-area'].includes(
+                tool,
+              ) && <MeasurementMenu />}
+              {tool === 'track-viewer' && <TrackViewerMenu />}
+              {tool === 'info-point' && <InfoPointMenu />}
+              {tool === 'changesets' && <ChangesetsMenu />}
+              {tool === 'gallery' && <GalleryMenu />}
+              {tool === 'map-details' && <MapDetailsMenu />}
+              {tool === 'tracking' && <TrackingMenu />}
+              {!embed && (
+                <>
+                  {' '}
+                  <Button
+                    onClick={handleToolCloseClick}
+                    title={t('main.closeTool')}
+                  >
+                    <FontAwesomeIcon icon="close" />
+                    <span className="hidden-xs"> {t('main.close')}</span>
+                  </Button>
+                </>
+              )}
+            </Panel>
+          )}
+          <GalleryPositionPickingMenu />
+          <GalleryShowPositionMenu />
+          <HomeLocationPickingMenu />
+        </div>
+      </div>
+
+      <div className="fm-type-zoom-control">
+        <Panel
+          className="fm-toolbar"
+          style={{ float: 'right', marginRight: '10px' }}
+        >
+          <ButtonToolbar>
+            <OverlayTrigger
+              trigger="click"
+              rootClose
+              placement="top"
+              overlay={
+                <Popover
+                  id="popover-positioned-right"
+                  className="fm-attr-popover"
+                >
+                  <Attribution
+                    t={t}
+                    mapType={mapType}
+                    overlays={overlays}
+                    imhd={imhd}
+                  />
+                </Popover>
+              }
+            >
+              <Button title={t('main.copyright')}>
+                <FontAwesomeIcon icon="copyright" />
+              </Button>
+            </OverlayTrigger>
+          </ButtonToolbar>
+        </Panel>
+        <Panel className="fm-toolbar">
+          <ButtonToolbar>
+            {(!embed || !embedFeatures.includes('noMapSwitch')) && (
+              <MapSwitchButton />
+            )}
+            <ButtonGroup>
+              <Button
+                onClick={handleZoomInClick}
+                title={t('main.zoomIn')}
+                disabled={
+                  !!mapRef.current &&
+                  zoom >= mapRef.current.leafletElement.getMaxZoom()
+                }
+              >
+                <FontAwesomeIcon icon="plus" />
+              </Button>
+              <Button
+                onClick={handleZoomOutClick}
+                title={t('main.zoomOut')}
+                disabled={
+                  !!mapRef.current &&
+                  zoom <= mapRef.current.leafletElement.getMinZoom()
+                }
+              >
+                <FontAwesomeIcon icon="minus" />
+              </Button>
+            </ButtonGroup>
+            {(!embed || !embedFeatures.includes('noLocateMe')) && (
+              <Button
+                onClick={onLocate}
+                title={t('main.locateMe')}
+                active={locate}
+              >
+                <FontAwesomeIcon icon="dot-circle-o" />
+              </Button>
+            )}
+          </ButtonToolbar>
+        </Panel>
+      </div>
+
+      {activeModal === 'settings' && <Settings />}
+      {activeModal &&
+        ['tracking-my', 'tracking-watched'].includes(activeModal) && (
+          <TrackingModal />
+        )}
+      {activeModal === 'share' && <ShareMapModal />}
+      {activeModal === 'embed' && <EmbedMapModal />}
+      {activeModal === 'export-gpx' && <ExportGpxModal />}
+      {activeModal === 'export-pdf' && <ExportPdfModal />}
+      {activeModal === 'tips' && <TipsModal />}
+      {activeModal === 'about' && <AboutModal />}
+      {activeModal === 'supportUs' && <SupportUsModal />}
+      {activeModal === 'legend' && <AsyncLegendModal />}
+      {activeModal === 'info-point-change-label' && <InfoPointLabelModal />}
+      {activeModal === 'upload-track' && <TrackViewerUploadModal />}
+      {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
+      {showLoginModal && <LoginModal />}
+
+      <Map
+        zoomControl={false}
+        attributionControl={false}
+        maxZoom={20}
+        ref={setMap}
+        center={{ lat, lng: lon }}
+        zoom={zoom}
+        onmoveend={handleMapMoveEnd}
+        onmousemove={handleMapMouseMove}
+        onmouseover={handleMapMouseOver}
+        onmouseout={handleMapMouseOut}
+        onclick={handleMapClick}
+        onlocationfound={handleLocationFound}
+        style={{ cursor: mouseCursor }}
+      >
+        <ScaleControl imperial={false} position="bottomleft" />
+        <Layers />
+
+        {showMenu && (
+          <>
+            <SearchResults />
+            <ObjectsResult />
+            <RoutePlannerResult />
+            <DistanceMeasurementResult />
+            <ElevationMeasurementResult />
+            <AreaMeasurementResult />
+            <LocationResult />
+            <TrackViewerResult />
+            <InfoPointResult />
+            <ChangesetsResult />
+            <TrackingResult />
+            {showElevationChart && <AsyncElevationChart />}
+            {showGalleryPicker && <GalleryPicker />}
+          </>
+        )}
+        <GalleryResult />
+        {/* TODO should not be extra just because for position picking */}
+      </Map>
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   lat: state.map.lat,
