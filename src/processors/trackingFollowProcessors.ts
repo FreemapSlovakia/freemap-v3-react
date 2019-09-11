@@ -3,18 +3,14 @@ import { isActionOf } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { Track } from 'fm3/types/trackingTypes';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { trackingTrackSelector } from 'fm3/selectors/mainSelectors';
 
 let prevTrack: Track | undefined;
 
 export const trackingFollowProcessor: Processor = {
   actionCreator: '*',
   handle: async ({ dispatch, getState, action }) => {
-    const { tracks, activeTrackId } = getState().tracking;
-
-    // TODO use selector
-    const track = activeTrackId
-      ? tracks.find(t => t.id === activeTrackId)
-      : undefined;
+    const track = trackingTrackSelector(getState());
 
     const differs = prevTrack !== track;
     prevTrack = track;

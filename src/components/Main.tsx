@@ -6,13 +6,9 @@ import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import CloseButton from 'react-bootstrap/lib/CloseButton';
 import Panel from 'react-bootstrap/lib/Panel';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Popover from 'react-bootstrap/lib/Popover';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
@@ -47,12 +43,10 @@ import GalleryPositionPickingMenu from 'fm3/components/gallery/GalleryPositionPi
 import GalleryShowPositionMenu from 'fm3/components/gallery/GalleryShowPositionMenu';
 
 import Settings from 'fm3/components/Settings';
+import { Menu } from 'fm3/components/Menu';
+import { Copyright } from 'fm3/components/Copyright';
+import { MapControls } from 'fm3/components/MapControls';
 import HomeLocationPickingMenu from 'fm3/components/HomeLocationPickingMenu';
-
-import OpenInExternalAppMenuButton from 'fm3/components/OpenInExternalAppMenuButton';
-import ToolsMenuButton from 'fm3/components/ToolsMenuButton';
-import MapSwitchButton from 'fm3/components/MapSwitchButton';
-import MoreMenuButton from 'fm3/components/MoreMenuButton';
 
 import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
 
@@ -81,14 +75,12 @@ import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
 import {
   setTool,
   setLocation,
-  clearMap,
-  toggleLocate,
   Tool,
+  setActiveModal,
 } from 'fm3/actions/mainActions';
 import { authCheckLogin } from 'fm3/actions/authActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
-import Attribution from 'fm3/components/Attribution';
 
 import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
@@ -100,6 +92,16 @@ import { RootAction } from 'fm3/actions';
 import { LeafletMouseEvent, LocationEvent } from 'leaflet';
 
 import fmLogo from '../images/freemap-logo-print.png';
+import { useDropzone } from 'react-dropzone';
+import {
+  trackViewerSetTrackUID,
+  trackViewerSetData,
+} from 'fm3/actions/trackViewerActions';
+import { elevationChartClose } from 'fm3/actions/elevationChartActions';
+import {
+  mouseCursorSelector,
+  showGalleryPickerSelector,
+} from 'fm3/selectors/mainSelectors';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -110,29 +112,23 @@ const MainInt: React.FC<Props> = ({
   lat,
   lon,
   zoom,
-  mapType,
   tool,
   activeModal,
   progress,
   mouseCursor,
   showElevationChart,
   showGalleryPicker,
-  onMapClear,
   showLoginModal,
   onMapReset,
   showMenu,
-  expertMode,
   overlayPaneOpacity,
   embedFeatures,
-  overlays,
-  imhd,
   onCheckLogin,
   ignoreEscape,
   onToolSet,
   onMapRefocus,
   onLocationSet,
-  locate,
-  onLocate,
+  onUpload,
   t,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
@@ -155,7 +151,7 @@ const MainInt: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
-    const handler = event => {
+    const handler = (event: KeyboardEvent) => {
       const embed = window.self !== window.top;
       if (!embed && event.keyCode === 27 /* escape key */ && !ignoreEscape) {
         onToolSet(null);
@@ -194,7 +190,7 @@ const MainInt: React.FC<Props> = ({
     const newZoom = map.getZoom();
 
     if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
-      onMapRefocus({ lat, lon, zoom });
+      onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
     }
   }, [onMapRefocus, lat, lon, zoom]);
 
@@ -213,35 +209,32 @@ const MainInt: React.FC<Props> = ({
     onToolSet(null);
   }, [onToolSet]);
 
-  const handleFullscreenClick = useCallback(() => {
-    if (!document.exitFullscreen) {
-      // undupported
-    } else if (document.fullscreenElement) {
-      document.exitFullscreen();
-    } else {
-      document.body.requestFullscreen();
-    }
-  }, [onToolSet]);
-
-  const handleZoomInClick = useCallback(() => {
-    if (mapRef.current) {
-      const zoom = mapRef.current.leafletElement.getZoom() + 1;
-      onMapRefocus({ zoom });
-    }
-  }, [onMapRefocus]);
-
-  const handleZoomOutClick = useCallback(() => {
-    if (mapRef.current) {
-      const zoom = mapRef.current.leafletElement.getZoom() - 1;
-      onMapRefocus({ zoom });
-    }
-  }, [onMapRefocus]);
-
   const handleInfoBarCloseClick = useCallback(() => {
     setShowInfoBar(false);
   }, [setShowInfoBar]);
 
   const embed = window.self !== window.top;
+
+  const onDrop = useCallback(acceptedFiles => {
+    if (acceptedFiles.length) {
+      const reader = new FileReader();
+      reader.readAsText(acceptedFiles[0], 'UTF-8');
+      reader.onload = () => {
+        if (typeof reader.result === 'string') {
+          onUpload(reader.result);
+        } else {
+          // onLoadError(`Nepodarilo sa načítať súbor.`); // TODO translate
+        }
+      };
+
+      reader.onerror = () => {
+        // onLoadError(`Nepodarilo sa načítať súbor.`); // TODO translate
+        reader.abort();
+      };
+    }
+  }, []);
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
   return (
     <>
@@ -298,42 +291,7 @@ const MainInt: React.FC<Props> = ({
                   preventShortcut={!!activeModal}
                 />
               </Panel>
-              {showMenu && (
-                <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
-                  <ButtonToolbar>
-                    <ButtonGroup>
-                      <ToolsMenuButton />
-                      <Button onClick={onMapClear} title={t('main.clearMap')}>
-                        <FontAwesomeIcon icon="eraser" />
-                      </Button>
-                      {document.exitFullscreen && (
-                        <Button
-                          onClick={handleFullscreenClick}
-                          title={
-                            document.fullscreenElement
-                              ? t('general.exitFullscreen')
-                              : t('general.fullscreen')
-                          }
-                        >
-                          <FontAwesomeIcon
-                            icon={
-                              document.fullscreenElement ? 'compress' : 'expand'
-                            }
-                          />
-                        </Button>
-                      )}
-                      <OpenInExternalAppMenuButton
-                        lat={lat}
-                        lon={lon}
-                        zoom={zoom}
-                        mapType={mapType}
-                        expertMode={expertMode}
-                      />
-                      <MoreMenuButton />
-                    </ButtonGroup>
-                  </ButtonToolbar>
-                </Panel>
-              )}
+              {showMenu && <Menu />}
             </>
           )}
           {showMenu && tool && (
@@ -370,73 +328,8 @@ const MainInt: React.FC<Props> = ({
       </div>
 
       <div className="fm-type-zoom-control">
-        <Panel
-          className="fm-toolbar"
-          style={{ float: 'right', marginRight: '10px' }}
-        >
-          <ButtonToolbar>
-            <OverlayTrigger
-              trigger="click"
-              rootClose
-              placement="top"
-              overlay={
-                <Popover
-                  id="popover-positioned-right"
-                  className="fm-attr-popover"
-                >
-                  <Attribution
-                    t={t}
-                    mapType={mapType}
-                    overlays={overlays}
-                    imhd={imhd}
-                  />
-                </Popover>
-              }
-            >
-              <Button title={t('main.copyright')}>
-                <FontAwesomeIcon icon="copyright" />
-              </Button>
-            </OverlayTrigger>
-          </ButtonToolbar>
-        </Panel>
-        <Panel className="fm-toolbar">
-          <ButtonToolbar>
-            {(!embed || !embedFeatures.includes('noMapSwitch')) && (
-              <MapSwitchButton />
-            )}
-            <ButtonGroup>
-              <Button
-                onClick={handleZoomInClick}
-                title={t('main.zoomIn')}
-                disabled={
-                  !!mapRef.current &&
-                  zoom >= mapRef.current.leafletElement.getMaxZoom()
-                }
-              >
-                <FontAwesomeIcon icon="plus" />
-              </Button>
-              <Button
-                onClick={handleZoomOutClick}
-                title={t('main.zoomOut')}
-                disabled={
-                  !!mapRef.current &&
-                  zoom <= mapRef.current.leafletElement.getMinZoom()
-                }
-              >
-                <FontAwesomeIcon icon="minus" />
-              </Button>
-            </ButtonGroup>
-            {(!embed || !embedFeatures.includes('noLocateMe')) && (
-              <Button
-                onClick={onLocate}
-                title={t('main.locateMe')}
-                active={locate}
-              >
-                <FontAwesomeIcon icon="dot-circle-o" />
-              </Button>
-            )}
-          </ButtonToolbar>
-        </Panel>
+        <Copyright />
+        <MapControls />
       </div>
 
       {activeModal === 'settings' && <Settings />}
@@ -457,44 +350,66 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
       {showLoginModal && <LoginModal />}
 
-      <Map
-        zoomControl={false}
-        attributionControl={false}
-        maxZoom={20}
-        ref={setMap}
-        center={{ lat, lng: lon }}
-        zoom={zoom}
-        onmoveend={handleMapMoveEnd}
-        onmousemove={handleMapMouseMove}
-        onmouseover={handleMapMouseOver}
-        onmouseout={handleMapMouseOut}
-        onclick={handleMapClick}
-        onlocationfound={handleLocationFound}
-        style={{ cursor: mouseCursor }}
+      <div
+        {...getRootProps({
+          onClick: e => {
+            e.stopPropagation();
+          },
+        })}
       >
-        <ScaleControl imperial={false} position="bottomleft" />
-        <Layers />
-
-        {showMenu && (
-          <>
-            <SearchResults />
-            <ObjectsResult />
-            <RoutePlannerResult />
-            <DistanceMeasurementResult />
-            <ElevationMeasurementResult />
-            <AreaMeasurementResult />
-            <LocationResult />
-            <TrackViewerResult />
-            <InfoPointResult />
-            <ChangesetsResult />
-            <TrackingResult />
-            {showElevationChart && <AsyncElevationChart />}
-            {showGalleryPicker && <GalleryPicker />}
-          </>
+        {isDragActive && (
+          <div
+            style={{
+              backgroundColor: 'rgba(0,0,255,10%)',
+              position: 'absolute',
+              top: 0,
+              right: 0,
+              bottom: 0,
+              left: 0,
+              zIndex: 20000,
+            }}
+          ></div>
         )}
-        <GalleryResult />
-        {/* TODO should not be extra just because for position picking */}
-      </Map>
+        <input {...getInputProps()} />
+        <Map
+          zoomControl={false}
+          attributionControl={false}
+          maxZoom={20}
+          ref={setMap}
+          center={{ lat, lng: lon }}
+          zoom={zoom}
+          onmoveend={handleMapMoveEnd}
+          onmousemove={handleMapMouseMove}
+          onmouseover={handleMapMouseOver}
+          onmouseout={handleMapMouseOut}
+          onclick={handleMapClick}
+          onlocationfound={handleLocationFound}
+          style={{ cursor: mouseCursor }}
+        >
+          <ScaleControl imperial={false} position="bottomleft" />
+          <Layers />
+
+          {showMenu && (
+            <>
+              <SearchResults />
+              <ObjectsResult />
+              <RoutePlannerResult />
+              <DistanceMeasurementResult />
+              <ElevationMeasurementResult />
+              <AreaMeasurementResult />
+              <LocationResult />
+              <TrackViewerResult />
+              <InfoPointResult />
+              <ChangesetsResult />
+              <TrackingResult />
+              {showElevationChart && <AsyncElevationChart />}
+              {showGalleryPicker && <GalleryPicker />}
+            </>
+          )}
+          {/* TODO should not be extra just because for position picking */}
+          <GalleryResult />
+        </Map>
+      </div>
     </>
   );
 };
@@ -505,10 +420,9 @@ const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,
   tool: state.main.tool,
   embedFeatures: state.main.embedFeatures,
-  mapType: state.map.mapType,
   activeModal: state.main.activeModal,
   progress: !!state.main.progress.length,
-  mouseCursor: selectMouseCursor(state),
+  mouseCursor: mouseCursorSelector(state),
   user: state.auth.user,
   ignoreEscape: !!(
     (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
@@ -516,17 +430,13 @@ const mapStateToProps = (state: RootState) => ({
     state.gallery.showPosition
   ),
   showElevationChart: !!state.elevationChart.elevationProfilePoints,
-  showGalleryPicker: isShowGalleryPicker(state),
-  locate: state.main.locate,
+  showGalleryPicker: showGalleryPickerSelector(state),
   showLoginModal: state.auth.chooseLoginMethod,
   showMenu:
     !state.main.selectingHomeLocation &&
     !state.gallery.pickingPositionForId &&
     !state.gallery.showPosition,
-  expertMode: state.main.expertMode,
   overlayPaneOpacity: state.map.overlayPaneOpacity,
-  overlays: state.map.overlays,
-  imhd: state.routePlanner.transportType === 'imhd',
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -542,14 +452,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onCheckLogin() {
     dispatch(authCheckLogin());
   },
-  onMapClear() {
-    dispatch(clearMap());
-  },
   onMapReset() {
     dispatch(mapReset());
   },
-  onLocate() {
-    dispatch(toggleLocate());
+  onUpload(trackGpx: string) {
+    dispatch(trackViewerSetTrackUID(null));
+    dispatch(trackViewerSetData({ trackGpx }));
+    dispatch(setActiveModal(null));
+    dispatch(elevationChartClose());
   },
 });
 
@@ -580,34 +490,4 @@ function handleMapMouseOver(e: LeafletMouseEvent) {
 
 function handleMapMouseOut(e: LeafletMouseEvent) {
   mapEventEmitter.emit('mouseOut', e.latlng.lat, e.latlng.lng);
-}
-
-function selectMouseCursor(state: RootState) {
-  if (state.main.selectingHomeLocation) {
-    return 'crosshair';
-  }
-  switch (state.main.tool) {
-    case 'measure-dist':
-    case 'measure-ele':
-    case 'measure-area':
-    case 'map-details':
-    case 'route-planner':
-    case 'info-point':
-      return state.routePlanner.pickMode ? 'crosshair' : 'auto';
-    default:
-      return isShowGalleryPicker(state) ? 'crosshair' : 'auto';
-  }
-}
-
-function isShowGalleryPicker(state: RootState) {
-  return (
-    (state.main.tool === null ||
-      ['gallery', 'track-viewer', 'objects', 'changesets'].includes(
-        state.main.tool,
-      )) &&
-    state.map.overlays.includes('I') &&
-    state.gallery.pickingPositionForId === null &&
-    !state.gallery.showPosition &&
-    !state.main.selectingHomeLocation
-  );
 }

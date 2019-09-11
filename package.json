@@ -40,6 +40,7 @@
     "react-tag-autocomplete": "5.11.1",
     "redux": "4.0.4",
     "redux-logger": "3.0.6",
+    "reselect": "4.0.0",
     "typesafe-actions": "5.0.0-0",
     "typescript-is": "0.12.3"
   },
