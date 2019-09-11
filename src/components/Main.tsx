@@ -267,21 +267,14 @@ const MainInt: React.FC<Props> = ({
         )}
         <div className="menus">
           {embed ? (
-            <>
-              <Panel className="fm-toolbar">
-                <Button
-                  id="freemap-logo"
-                  className={progress ? 'in-progress' : 'idle'}
-                  onClick={handleEmbedLogoClick}
-                />
-                {embedFeatures.includes('search') && (
-                  <SearchMenu
-                    hidden={!showMenu}
-                    preventShortcut={!!activeModal}
-                  />
-                )}
-              </Panel>
-            </>
+            <Panel className="fm-toolbar">
+              <Button
+                id="freemap-logo"
+                className={progress ? 'in-progress' : 'idle'}
+                onClick={handleEmbedLogoClick}
+              />
+              {embedFeatures.includes('search') && <SearchMenu />}
+            </Panel>
           ) : (
             <>
               <Panel className="fm-toolbar">
