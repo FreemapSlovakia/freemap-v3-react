@@ -10,7 +10,7 @@ import Checkbox from 'react-bootstrap/lib/Checkbox';
 import {
   galleryAddItem,
   galleryRemoveItem,
-  gallerySetItem,
+  galleryMergeItem,
   gallerySetItemForPositionPicking,
   galleryUpload,
   galleryHideUploadModal,
@@ -45,22 +45,20 @@ const GalleryUploadModal: React.FC<Props> = ({
   showPreview,
   onShowPreviewToggle,
   onItemRemove,
-  onItemChange,
+  onItemMerge,
   onItemAdd,
   onClose,
   language,
 }) => {
   const handleModelChange = useCallback(
     (id: number, model: PictureModel) => {
-      const item = items.find(itm => itm.id === id);
-      if (item) {
-        onItemChange({
-          ...model,
-          takenAt: model.takenAt ? new Date(model.takenAt) : null,
-        });
-      }
+      onItemMerge({
+        id,
+        ...model,
+        takenAt: model.takenAt ? new Date(model.takenAt) : null,
+      });
     },
-    [items, onItemChange],
+    [onItemMerge],
   );
 
   const handleClose = useCallback(() => {
@@ -71,7 +69,7 @@ const GalleryUploadModal: React.FC<Props> = ({
     showPreview,
     language,
     onItemAdd,
-    onItemChange,
+    onItemMerge,
   );
 
   return (
@@ -203,8 +201,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPositionPick(id: number) {
     dispatch(gallerySetItemForPositionPicking(id));
   },
-  onItemChange(item: Partial<GalleryItem>) {
-    dispatch(gallerySetItem(item));
+  onItemMerge(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
+    dispatch(galleryMergeItem(item));
   },
   onShowPreviewToggle() {
     dispatch(galleryToggleShowPreview());

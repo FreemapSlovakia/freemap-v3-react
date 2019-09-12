@@ -97,7 +97,7 @@ export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
   number
 >();
 
-export const gallerySetItem = createStandardAction('GALLERY_SET_ITEM')<
+export const galleryMergeItem = createStandardAction('GALLERY_SET_ITEM')<
   Pick<GalleryItem, 'id'> & Partial<GalleryItem>
 >();
 

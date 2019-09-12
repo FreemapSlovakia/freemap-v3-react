@@ -9,7 +9,7 @@ import {
   galleryRequestImage,
   galleryAddItem,
   galleryRemoveItem,
-  gallerySetItem,
+  galleryMergeItem,
   gallerySetItemError,
   gallerySetPickingPosition,
   galleryConfirmPickedPosition,
@@ -137,7 +137,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     items: state.items.filter(({ id }) => action.payload !== id),
   }))
-  .handleAction(gallerySetItem, (state, action) => ({
+  .handleAction(galleryMergeItem, (state, action) => ({
     ...state,
     items: state.items.map(item =>
       item.id === action.payload.id ? { ...item, ...action.payload } : item,
