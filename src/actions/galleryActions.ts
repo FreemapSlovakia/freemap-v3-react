@@ -97,10 +97,9 @@ export const galleryRemoveItem = createStandardAction('GALLERY_REMOVE_ITEM')<
   number
 >();
 
-export const gallerySetItem = createStandardAction('GALLERY_SET_ITEM')<{
-  id: number;
-  item: GalleryItem;
-}>();
+export const gallerySetItem = createStandardAction('GALLERY_SET_ITEM')<
+  Pick<GalleryItem, 'id'> & Partial<GalleryItem>
+>();
 
 export const gallerySetItemError = createStandardAction(
   'GALLERY_SET_ITEM_ERROR',

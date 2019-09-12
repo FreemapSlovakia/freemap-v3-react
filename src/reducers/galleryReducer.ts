@@ -140,7 +140,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
   .handleAction(gallerySetItem, (state, action) => ({
     ...state,
     items: state.items.map(item =>
-      item.id === action.payload.id ? action.payload.item : item,
+      item.id === action.payload.id ? { ...item, ...action.payload } : item,
     ),
   }))
   .handleAction(gallerySetItemError, (state, action) => ({
