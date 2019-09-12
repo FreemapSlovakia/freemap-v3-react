@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import Dropzone from 'react-dropzone';
+import { useDropzone } from 'react-dropzone';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -27,7 +27,7 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { PictureModel } from './GalleryEditForm';
-import { useFileDropHandler } from './fileDropHandlerHook';
+import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -65,12 +65,17 @@ const GalleryUploadModal: React.FC<Props> = ({
     onClose(!!items.length);
   }, [onClose, items]);
 
-  const handleFileDrop = useFileDropHandler(
+  const handleFileDrop = usePictureDropHandler(
     showPreview,
     language,
     onItemAdd,
     onItemMerge,
   );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileDrop,
+    accept: '.jpg,.jpeg',
+  });
 
   return (
     <Modal show={visible} onHide={handleClose}>
@@ -123,23 +128,17 @@ const GalleryUploadModal: React.FC<Props> = ({
               {t('gallery.uploadModal.showPreview')}
             </Checkbox>
 
-            <Dropzone
-              onDrop={handleFileDrop}
-              accept=".jpg,.jpeg"
-              // className="dropzone"
-              // disablePreview
+            <div
+              {...getRootProps()}
+              className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
             >
-              {({ getRootProps, getInputProps }) => (
-                <div {...getRootProps()} className="dropzone">
-                  <input {...getInputProps()} />
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: t('gallery.uploadModal.rules'),
-                    }}
-                  />
-                </div>
-              )}
-            </Dropzone>
+              <input {...getInputProps()} />
+              <div
+                dangerouslySetInnerHTML={{
+                  __html: t('gallery.uploadModal.rules'),
+                }}
+              />
+            </div>
           </>
         )}
       </Modal.Body>

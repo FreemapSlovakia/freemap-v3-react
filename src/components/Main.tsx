@@ -102,6 +102,16 @@ import {
   mouseCursorSelector,
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
+import {
+  GalleryItem,
+  galleryAddItem,
+  galleryMergeItem,
+  galleryShowUploadModal,
+} from 'fm3/actions/galleryActions';
+import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
+import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import GalleryModals from './gallery/GalleryModals';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -130,7 +140,13 @@ const MainInt: React.FC<Props> = ({
   onToolSet,
   onMapRefocus,
   onLocationSet,
-  onUpload,
+  onGpxDrop,
+  onGpxLoadError,
+  onPictureUpdated,
+  onPictureAdded,
+  onPicturesDrop,
+  authenticated,
+  language,
   t,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
@@ -219,24 +235,38 @@ const MainInt: React.FC<Props> = ({
     setShowInfoBar(false);
   }, [setShowInfoBar]);
 
-  const onDrop = useCallback(acceptedFiles => {
-    if (acceptedFiles.length) {
-      const reader = new FileReader();
-      reader.readAsText(acceptedFiles[0], 'UTF-8');
-      reader.onload = () => {
-        if (typeof reader.result === 'string') {
-          onUpload(reader.result);
-        } else {
-          // onLoadError(`Nepodarilo sa načítať súbor.`); // TODO translate
-        }
-      };
+  const handlePicturesDrop = usePictureDropHandler(
+    true,
+    language,
+    onPictureAdded,
+    onPictureUpdated,
+  );
 
-      reader.onerror = () => {
-        // onLoadError(`Nepodarilo sa načítať súbor.`); // TODO translate
-        reader.abort();
-      };
-    }
-  }, []);
+  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError);
+
+  const onDrop = useCallback(
+    (acceptedFiles: File[]) => {
+      const pictureFiles = acceptedFiles.filter(
+        file => file.type === 'image/jpeg',
+      );
+
+      if (pictureFiles.length) {
+        onPicturesDrop(); // if no user then it displays valuable error
+        if (authenticated) {
+          handlePicturesDrop(pictureFiles);
+        }
+      }
+
+      const gpxFiles = acceptedFiles.filter(file =>
+        file.name.toLowerCase().endsWith('.gpx'),
+      );
+
+      if (gpxFiles.length) {
+        handleGpxDrop(gpxFiles);
+      }
+    },
+    [handlePicturesDrop, handleGpxDrop, onPicturesDrop, authenticated],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
@@ -336,6 +366,7 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
       {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
       {showLoginModal && <LoginModal />}
+      <GalleryModals />
 
       <div
         {...getRootProps({
@@ -345,7 +376,7 @@ const MainInt: React.FC<Props> = ({
         {isDragActive && (
           <div
             style={{
-              backgroundColor: 'rgba(0,0,255,10%)',
+              backgroundColor: 'rgba(217,237,247,50%)',
               position: 'absolute',
               top: 0,
               right: 0,
@@ -408,7 +439,7 @@ const mapStateToProps = (state: RootState) => ({
   activeModal: state.main.activeModal,
   progress: !!state.main.progress.length,
   mouseCursor: mouseCursorSelector(state),
-  user: state.auth.user,
+  authenticated: !!state.auth.user,
   ignoreEscape: !!(
     (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
     state.gallery.activeImageId ||
@@ -422,6 +453,7 @@ const mapStateToProps = (state: RootState) => ({
     !state.gallery.pickingPositionForId &&
     !state.gallery.showPosition,
   overlayPaneOpacity: state.map.overlayPaneOpacity,
+  language: state.l10n.language,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -440,11 +472,30 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMapReset() {
     dispatch(mapReset());
   },
-  onUpload(trackGpx: string) {
+  onGpxDrop(trackGpx: string) {
     dispatch(trackViewerSetTrackUID(null));
     dispatch(trackViewerSetData({ trackGpx }));
     dispatch(setActiveModal(null));
     dispatch(elevationChartClose());
+  },
+  onGpxLoadError(message: string) {
+    dispatch(
+      toastsAdd({
+        collapseKey: 'trackViewer.loadError',
+        message,
+        style: 'danger',
+        timeout: 5000,
+      }),
+    );
+  },
+  onPicturesDrop() {
+    dispatch(galleryShowUploadModal());
+  },
+  onPictureAdded(item: GalleryItem) {
+    dispatch(galleryAddItem(item));
+  },
+  onPictureUpdated(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
+    dispatch(galleryMergeItem(item));
   },
 });
 

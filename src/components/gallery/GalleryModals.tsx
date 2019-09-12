@@ -3,7 +3,9 @@ import { connect } from 'react-redux';
 
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
-import RichMarker from 'fm3/components/RichMarker';
+import GalleryViewerModal from 'fm3/components/gallery/GalleryViewerModal';
+import GalleryFilterModal from 'fm3/components/gallery/GalleryFilterModal';
+import AsyncGalleryUploadModal from 'fm3/components/gallery/AsyncGalleryUploadModal';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
@@ -16,7 +18,7 @@ import { DragEndEvent } from 'leaflet';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-class GalleryResult extends React.Component<Props> {
+class GalleryModals extends React.Component<Props> {
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);
   }
@@ -38,29 +40,31 @@ class GalleryResult extends React.Component<Props> {
   };
 
   render() {
-    const { pickingPosition, showPosition, image } = this.props;
+    const {
+      activeImageId,
+      isPickingPosition,
+      showFilter,
+      showUploadModal,
+      showPosition,
+    } = this.props;
 
     return (
       <>
-        {pickingPosition && (
-          <RichMarker
-            draggable
-            position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
-            ondragend={this.handlePositionMarkerDragEnd}
-          />
+        {!isPickingPosition && activeImageId && !showPosition && (
+          <GalleryViewerModal />
         )}
-        {showPosition && image && (
-          <RichMarker position={{ lat: image.lat, lng: image.lon }} />
-        )}
+        {showFilter && <GalleryFilterModal />}
+        {showUploadModal && <AsyncGalleryUploadModal />}
       </>
     );
   }
 }
 
 const mapStateToProps = (state: RootState) => ({
-  image: state.gallery.image,
+  activeImageId: state.gallery.activeImageId,
   isPickingPosition: state.gallery.pickingPositionForId !== null,
-  pickingPosition: state.gallery.pickingPosition,
+  showFilter: state.gallery.showFilter,
+  showUploadModal: state.gallery.showUploadModal,
   showPosition: state.gallery.showPosition,
 });
 
@@ -73,4 +77,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 export default connect(
   mapStateToProps,
   mapDispatchToProps,
-)(GalleryResult);
+)(GalleryModals);

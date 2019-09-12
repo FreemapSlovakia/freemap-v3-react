@@ -81,7 +81,7 @@ function loadPreview(
   img.src = url;
 }
 
-export function useFileDropHandler(
+export function usePictureDropHandler(
   showPreview: boolean,
   language: string,
   onItemAdd: (item: GalleryItem) => void,
