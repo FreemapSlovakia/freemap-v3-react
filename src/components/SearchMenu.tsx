@@ -120,7 +120,7 @@ const SearchMenu: React.FC<Props> = ({
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, setOpen, setSearchState, inputRef]);
+  }, [results, setOpen, setSearchState, inputRef, searchState]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {

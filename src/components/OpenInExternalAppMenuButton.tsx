@@ -154,7 +154,7 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
           break;
       }
     },
-    [lat, lon, mapType, zoom, url],
+    [lat, lon, mapType, zoom, url, includePoint, pointTitle],
   );
 
   const handleButtonClick = useCallback(() => {
@@ -165,7 +165,7 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
     setShow(false);
   }, [setShow]);
 
-  const getTarget = useCallback(() => buttonRef.current, [buttonRef.current]);
+  const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
 
   const Ovl = Overlay as any; // because trigger is missing
 

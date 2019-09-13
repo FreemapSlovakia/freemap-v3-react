@@ -15,7 +15,7 @@ import OpenInExternalAppMenuButton from 'fm3/components/OpenInExternalAppMenuBut
 import ToolsMenuButton from 'fm3/components/ToolsMenuButton';
 import MoreMenuButton from 'fm3/components/MoreMenuButton';
 
-import { setTool, clearMap, Tool } from 'fm3/actions/mainActions';
+import { clearMap } from 'fm3/actions/mainActions';
 
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -33,7 +33,6 @@ const MenuInt: React.FC<Props> = ({
   tool,
   expertMode,
   onMapClear,
-  onToolSet,
   t,
 }) => {
   const handleFullscreenClick = useCallback(() => {
@@ -44,7 +43,7 @@ const MenuInt: React.FC<Props> = ({
     } else {
       document.body.requestFullscreen();
     }
-  }, [onToolSet]);
+  }, []);
 
   return (
     <Panel className={`fm-toolbar${tool ? ' hidden-xs' : ''}`}>
@@ -94,9 +93,6 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: Tool | null) {
-    dispatch(setTool(tool));
-  },
   onMapClear() {
     dispatch(clearMap());
   },
