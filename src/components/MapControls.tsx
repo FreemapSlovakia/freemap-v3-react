@@ -25,9 +25,6 @@ export const MapControlsInt: React.FC<Props> = ({
   t,
 }) => {
   const leafletElement = getMapLeafletElement();
-  if (!leafletElement) {
-    return null;
-  }
 
   const handleZoomInClick = useCallback(() => {
     onMapRefocus({ zoom: zoom + 1 });
@@ -36,6 +33,10 @@ export const MapControlsInt: React.FC<Props> = ({
   const handleZoomOutClick = useCallback(() => {
     onMapRefocus({ zoom: zoom - 1 });
   }, [onMapRefocus, zoom]);
+
+  if (!leafletElement) {
+    return null;
+  }
 
   const embed = window.self !== window.top;
 
