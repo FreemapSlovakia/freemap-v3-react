@@ -135,7 +135,11 @@ class TrackViewerResult extends React.Component<Props, State> {
     this.setState({ infoLat, infoLon, infoDistanceKm });
   };
 
-  computeInfoDistanceKm = (infoLat, infoLon, geojsonLineString) => {
+  computeInfoDistanceKm = (
+    infoLat: number,
+    infoLon: number,
+    geojsonLineString,
+  ) => {
     const p1 = point(geojsonLineString.geometry.coordinates[0]);
     const p2 = point([infoLon, infoLat]);
     return turfLength(turfLineSlice(p1, p2, geojsonLineString));

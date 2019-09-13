@@ -6,6 +6,8 @@
     "@mapbox/geojson-area": "0.2.2",
     "@mapbox/togeojson": "0.16.0",
     "@turf/along": "6.0.1",
+    "@turf/bbox": "6.0.1",
+    "@turf/buffer": "5.1.5",
     "@turf/flatten": "5.1.5",
     "@turf/helpers": "6.1.4",
     "@turf/invariant": "6.1.2",

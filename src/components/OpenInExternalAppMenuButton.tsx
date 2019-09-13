@@ -9,6 +9,9 @@ import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
 import qs from 'query-string';
+import buffer from '@turf/buffer';
+import bbox from '@turf/bbox';
+import { point } from '@turf/helpers';
 
 interface Props extends LatLon {
   lat: number;
@@ -71,18 +74,28 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
         case 'josm': {
           const leaflet = getMapLeafletElement();
           if (leaflet) {
-            const bounds = leaflet.getBounds();
-            const opts = {
-              params: {
-                left: bounds.getWest(),
-                right: bounds.getEast(),
-                top: bounds.getNorth(),
-                bottom: bounds.getSouth(),
-              },
-            };
+            let left;
+            let right;
+            let top;
+            let bottom;
+
+            if (includePoint) {
+              [left, bottom, right, top] = bbox(
+                buffer(point([lon, lat]), 100, { units: 'meters', steps: 10 }),
+              );
+            } else {
+              const bounds = leaflet.getBounds();
+              left = bounds.getWest();
+              right = bounds.getEast();
+              top = bounds.getNorth();
+              bottom = bounds.getSouth();
+            }
+
             [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
               axios
-                .get(`${proto}://localhost:${port}/load_and_zoom`, opts)
+                .get(`${proto}://localhost:${port}/load_and_zoom`, {
+                  params: { left, right, top, bottom },
+                })
                 .then(() => {
                   if (includePoint) {
                     axios.get(`${proto}://localhost:${port}/add_node`, {
