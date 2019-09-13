@@ -10,7 +10,7 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
 import missingTile from '../images/missing-tile-256x256.png';
-import ScaledTileLayer from './gallery/ScaledTileLayer';
+import ScaledTileLayer from './ScaledTileLayer';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
