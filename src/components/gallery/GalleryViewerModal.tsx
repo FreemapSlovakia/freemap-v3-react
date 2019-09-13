@@ -38,6 +38,7 @@ import 'fm3/styles/gallery.scss';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { getType } from 'typesafe-actions';
+import OpenInExternalAppMenuButton from '../OpenInExternalAppMenuButton';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -212,6 +213,7 @@ class GalleryViewerModal extends React.Component<Props, State> {
       allTags,
       onPositionPick,
       language,
+      expertMode,
       t,
     } = this.props;
 
@@ -228,6 +230,8 @@ class GalleryViewerModal extends React.Component<Props, State> {
       comments = undefined,
       rating = undefined,
       myStars = undefined,
+      lat,
+      lon,
     } = image || {};
 
     const { isFullscreen, loading, imgKey } = this.state;
@@ -482,16 +486,25 @@ class GalleryViewerModal extends React.Component<Props, State> {
               </span>
             </Button>
           )}
-          <Button
-            href={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
-            target="_blank"
-          >
-            <FontAwesomeIcon icon="external-link" />
-            <span className="hidden-sm hidden-xs">
-              {' '}
-              {t('gallery.viewer.openInNewWindow')}
-            </span>
-          </Button>
+          {lat !== undefined && lon !== undefined && (
+            <OpenInExternalAppMenuButton
+              lat={lat}
+              lon={lon}
+              mapType={'X'}
+              zoom={14}
+              expertMode={expertMode}
+              placement="top"
+              includePoint
+              pointTitle={title}
+              url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
+            >
+              <FontAwesomeIcon icon="external-link" />
+              <span className="hidden-sm hidden-xs">
+                {' '}
+                {t('gallery.viewer.openInNewWindow')}
+              </span>
+            </OpenInExternalAppMenuButton>
+          )}
           <Button onClick={onClose}>
             <Glyphicon glyph="remove" />
             <span className="hidden-xs"> {t('general.close')}</span>
@@ -514,6 +527,7 @@ const mapStateToProps = (state: RootState) => ({
   user: state.auth.user,
   allTags: state.gallery.tags,
   language: state.l10n.language,
+  expertMode: state.main.expertMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

@@ -74,7 +74,9 @@ const MenuInt: React.FC<Props> = ({
             zoom={zoom}
             mapType={mapType}
             expertMode={expertMode}
-          />
+          >
+            <FontAwesomeIcon icon="external-link" />
+          </OpenInExternalAppMenuButton>
           <MoreMenuButton />
         </ButtonGroup>
       </ButtonToolbar>

@@ -319,7 +319,7 @@ export default {
       addComment: 'Add',
       yourRating: 'Your rating:',
       showOnTheMap: 'Show on the map',
-      openInNewWindow: 'Open in new window',
+      openInNewWindow: 'Open in…',
       uploaded: 'Uploaded by {username} on {createdAt}',
       captured: 'Captured on {takenAt}',
       deletePrompt: 'Delete this picture?',
@@ -803,6 +803,7 @@ export default {
     josm: 'Edit in JOSM',
     id: 'Edit in iD',
     'routing-debug': 'Routing debugger',
+    window: 'New window',
   },
 
   search: {

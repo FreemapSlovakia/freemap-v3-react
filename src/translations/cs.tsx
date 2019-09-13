@@ -315,7 +315,7 @@ export default {
       addComment: 'Přidej',
       yourRating: 'Tvé hodnocení:',
       showOnTheMap: 'Ukázat na mapě',
-      openInNewWindow: 'Otevřít v novém okně',
+      openInNewWindow: 'Otevřít v…',
       uploaded: 'Nahrál {username} dne {createdAt}',
       captured: 'Vyfoceno dne {takenAt}',
       deletePrompt: 'Smazat obrázek?',
@@ -798,6 +798,7 @@ export default {
     josm: 'Editor JOSM',
     id: 'Editor iD',
     'routing-debug': 'Ladění navigace',
+    window: 'Novém okně',
   },
 
   search: {

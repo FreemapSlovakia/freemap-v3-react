@@ -320,7 +320,7 @@ export default {
       addComment: 'Pridaj',
       yourRating: 'Tvoje hodnotenie:',
       showOnTheMap: 'Ukázať na mape',
-      openInNewWindow: 'Otvoriť v novom okne',
+      openInNewWindow: 'Otvoriť v…',
       uploaded: 'Nahral {username} dňa {createdAt}',
       captured: 'Odfotené dňa {takenAt}',
       deletePrompt: 'Zmazať obrázok?',
@@ -803,6 +803,7 @@ export default {
     josm: 'Editor JOSM',
     id: 'Editor iD',
     'routing-debug': 'Ladenie navigácie',
+    window: 'Novom okne',
   },
 
   search: {

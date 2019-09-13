@@ -320,7 +320,7 @@ export default {
       addComment: 'Hozzáadás',
       yourRating: 'Az Ön értékelése:',
       showOnTheMap: 'Megjelenítés a térképen',
-      openInNewWindow: 'Megnyitás új ablakban',
+      openInNewWindow: 'Megnyitás…',
       uploaded: '{username} töltötte fel ekkor: {createdAt}',
       captured: 'Ekkor készült: {takenAt}',
       deletePrompt: 'Kép törlése?',
@@ -809,6 +809,7 @@ export default {
     josm: 'Szerkesztés JOSM-mal',
     id: 'Szerkesztés iD-vel',
     'routing-debug': 'Útvonaltervezési hibakereső',
+    window: 'Új ablakban',
   },
 
   search: {

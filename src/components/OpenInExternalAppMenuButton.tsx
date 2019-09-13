@@ -3,12 +3,12 @@ import React, { useCallback, useRef, useState } from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Popover from 'react-bootstrap/lib/Popover';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
+import qs from 'query-string';
 
 interface Props extends LatLon {
   lat: number;
@@ -16,7 +16,12 @@ interface Props extends LatLon {
   zoom: number;
   mapType: string;
   expertMode: boolean;
+  placement?: string;
+  includePoint?: boolean;
+  pointTitle?: string;
+  url?: string;
   t: Translator;
+  children: JSX.Element | JSX.Element[];
 }
 
 const OpenInExternalAppMenuButton: React.FC<Props> = ({
@@ -26,6 +31,11 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
   mapType,
   t,
   expertMode,
+  placement,
+  includePoint,
+  pointTitle,
+  url,
+  children,
 }) => {
   const buttonRef = useRef<Button>();
   const [show, setShow] = useState(false);
@@ -35,12 +45,21 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
       setShow(false);
 
       switch (dataset.where) {
+        case 'window':
+          window.open(url);
+          break;
         case 'osm.org':
-          window.open(
-            `https://www.openstreetmap.org/#map=${
-              zoom > 19 ? 19 : zoom
-            }/${lat.toFixed(5)}/${lon.toFixed(5)}`,
-          );
+          if (includePoint) {
+            window.open(
+              `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}&zoom=${zoom}`,
+            );
+          } else {
+            window.open(
+              `https://www.openstreetmap.org/#map=${
+                zoom > 19 ? 19 : zoom
+              }/${lat.toFixed(5)}/${lon.toFixed(5)}`,
+            );
+          }
           break;
         case 'osm.org/id':
           window.open(
@@ -62,28 +81,56 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
               },
             };
             [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
-              axios.get(`${proto}://localhost:${port}/load_and_zoom`, opts);
+              axios
+                .get(`${proto}://localhost:${port}/load_and_zoom`, opts)
+                .then(() => {
+                  if (includePoint) {
+                    axios.get(`${proto}://localhost:${port}/add_node`, {
+                      params: {
+                        lat,
+                        lon,
+                        addtags: `name=${pointTitle}`,
+                      },
+                    });
+                  }
+                });
             });
           }
           break;
         }
         case 'hiking.sk': {
           const point = CRS.EPSG3857.project({ lat, lng: lon });
-          window.open(
-            `https://mapy.hiking.sk/?zoom=${zoom > 15 ? 15 : zoom}&lon=${
-              point.x
-            }&lat=${point.y}&layers=00B00FFFTTFTTTTFFFFFFTTT`,
-          );
+          const params: any = {
+            zoom: zoom > 15 ? 15 : zoom,
+            lon: point.x,
+            lat: point.y,
+            layers: '00B00FFFTTFTTTTFFFFFFTTT',
+          };
+
+          if (includePoint) {
+            params.x = lon;
+            params.y = lat;
+          }
+
+          window.open(`https://mapy.hiking.sk/?${qs.stringify(params)}`);
           break;
         }
         case 'google':
-          window.open(`https://www.google.sk/maps/@${lat},${lon},${zoom}z`);
+          if (includePoint) {
+            window.open(
+              `http://maps.google.com/maps?&z=${zoom}&q=loc:${lat}+${lon}`,
+            );
+          } else {
+            window.open(`https://www.google.com/maps/@${lat},${lon},${zoom}z`);
+          }
           break;
         case 'mapy.cz/ophoto':
           window.open(
             `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
               zoom > 19 ? 19 : zoom
-            }&base=ophoto`,
+            }&base=ophoto${
+              includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''
+            }`,
           );
           break;
         case 'oma.sk':
@@ -107,7 +154,7 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
           break;
       }
     },
-    [lat, lon, mapType, zoom],
+    [lat, lon, mapType, zoom, url],
   );
 
   const handleButtonClick = useCallback(() => {
@@ -129,11 +176,11 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
         onClick={handleButtonClick}
         title={t('external.openInExternal')}
       >
-        <FontAwesomeIcon icon="external-link" />
+        {children}
       </Button>
       <Ovl
         rootClose
-        placement="bottom"
+        placement={placement || 'bottom'}
         trigger="focus"
         show={show}
         onHide={handleHide}
@@ -141,6 +188,14 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
+            {url && (
+              <>
+                <MenuItem data-where="window" onClick={handleMenuItemClick}>
+                  {t('external.window')}
+                </MenuItem>
+                <MenuItem divider />
+              </>
+            )}
             <MenuItem data-where="osm.org" onClick={handleMenuItemClick}>
               {t('external.osm')}
             </MenuItem>
