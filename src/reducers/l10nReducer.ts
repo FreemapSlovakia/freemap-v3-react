@@ -8,11 +8,13 @@ import {
 export interface L10nState {
   chosenLanguage: string | null;
   language: string;
+  counter: number;
 }
 
 const initialState: L10nState = {
   chosenLanguage: null,
   language: 'en',
+  counter: 0,
 };
 
 export const l10nReducer = createReducer<L10nState, RootAction>(initialState)
@@ -23,4 +25,5 @@ export const l10nReducer = createReducer<L10nState, RootAction>(initialState)
   .handleAction(l10nSetLanguage, (state, action) => ({
     ...state,
     language: action.payload,
+    counter: state.counter + 1,
   }));

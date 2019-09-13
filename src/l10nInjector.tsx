@@ -34,9 +34,8 @@ export const withTranslator = <BaseProps extends InjectedProps>(
     }
   }
 
-  // even we don't use language in Hoc we need it to re-render wrapped component on language change
   const mapStateToProps = (state: RootState) => ({
-    language: state.l10n.language,
+    languageCounter: state.l10n.counter, // force applying english language on load
   });
 
   return connect<TStateProps, {}, HocProps, RootState>(mapStateToProps)(
