@@ -43,6 +43,7 @@ const SearchMenu: React.FC<Props> = ({
   onDoSearch,
   results,
   onModify,
+  searchSeq,
   // inProgress,
   t,
   hidden,
@@ -53,8 +54,6 @@ const SearchMenu: React.FC<Props> = ({
   const [value, setValue] = useState('');
 
   const [open, setOpen] = useState(false);
-
-  const [searchState, setSearchState] = useState(0);
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
@@ -112,7 +111,6 @@ const SearchMenu: React.FC<Props> = ({
   useEffect(() => {
     if (results.length) {
       setOpen(true);
-      setSearchState(searchState + 1);
       if (inputRef.current) {
         inputRef.current.focus();
       }
@@ -120,7 +118,7 @@ const SearchMenu: React.FC<Props> = ({
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, setOpen, setSearchState, inputRef, searchState]);
+  }, [results, setOpen, inputRef]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -166,7 +164,7 @@ const SearchMenu: React.FC<Props> = ({
               onFocus={handleInputFocus}
             />
           </FormGroup2>
-          <Dropdown.Menu key={searchState} className="fm-search-dropdown">
+          <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
             {results.map(result => (
               <MenuItem
                 key={result.id}
@@ -219,6 +217,7 @@ const mapStateToProps = (state: RootState) => ({
   results: state.search.results,
   selectedResult: state.search.selectedResult,
   inProgress: state.search.inProgress,
+  searchSeq: state.search.searchSeq,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

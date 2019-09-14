@@ -13,11 +13,13 @@ export interface SearchState {
   results: SearchResult[];
   selectedResult: SearchResult | null;
   inProgress: boolean;
+  searchSeq: number;
 }
 
 const initialState = {
   query: null,
   results: [],
+  searchSeq: 0,
   selectedResult: null,
   inProgress: false,
 };
@@ -34,6 +36,7 @@ export const searchReducer = createReducer<SearchState, RootAction>(
   .handleAction(searchSetResults, (state, action) => ({
     ...state,
     results: action.payload,
+    searchSeq: state.searchSeq + 1,
     inProgress: false,
   }))
   .handleAction(searchSelectResult, (state, action) => ({
