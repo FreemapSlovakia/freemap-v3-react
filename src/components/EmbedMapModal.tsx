@@ -21,16 +21,54 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
   t: Translator;
 };
 
-export class EmbedMapModal extends React.Component<Props> {
-  state = {
-    width: 500,
-    height: 300,
+type State = {
+  width: string;
+  height: string;
+  enableSearch: boolean;
+  enableMapSwitch: boolean;
+  enableLocateMe: boolean;
+  url: string;
+  iframeUrl: string;
+};
+
+export class EmbedMapModal extends React.Component<Props, State> {
+  state: State = {
+    width: '500',
+    height: '300',
     enableSearch: true,
     enableMapSwitch: true,
     enableLocateMe: true,
+    url: '',
+    iframeUrl: '',
   };
 
+  timerRef: number | null = null;
+
+  oldUrl: string | null = null;
+
+  iframe: HTMLIFrameElement | null = null;
+
   textarea: HTMLInputElement | null = null;
+
+  constructor(props: Props) {
+    super(props);
+    this.state.url = this.getUrl(window.location.href);
+    this.state.iframeUrl = this.getUrl(window.location.href);
+  }
+
+  componentDidUpdate() {
+    if (this.iframe && this.iframe.contentWindow) {
+      this.iframe.contentWindow.postMessage(
+        {
+          freemap: {
+            action: 'setEmbedFeatures',
+            payload: this.getEmbedFeatures(),
+          },
+        },
+        '*',
+      );
+    }
+  }
 
   setFormControl = (textarea: HTMLInputElement | null) => {
     this.textarea = textarea;
@@ -65,22 +103,77 @@ export class EmbedMapModal extends React.Component<Props> {
     });
   };
 
-  handleEnableSearchChange = (e: React.FormEvent<Checkbox>) => {
+  adjustUrl = () => {
     this.setState({
-      enableSearch: (e.target as HTMLInputElement).checked,
+      url: this.getUrl(this.state.url),
     });
+  };
+
+  handleEnableSearchChange = (e: React.FormEvent<Checkbox>) => {
+    this.setState(
+      {
+        enableSearch: (e.target as HTMLInputElement).checked,
+      },
+      this.adjustUrl,
+    );
   };
 
   handleEnableMapSwitchChange = (e: React.FormEvent<Checkbox>) => {
-    this.setState({
-      enableMapSwitch: (e.target as HTMLInputElement).checked,
-    });
+    this.setState(
+      {
+        enableMapSwitch: (e.target as HTMLInputElement).checked,
+      },
+      this.adjustUrl,
+    );
   };
 
   handleEnableLocateMeChange = (e: React.FormEvent<Checkbox>) => {
-    this.setState({
-      enableLocateMe: (e.target as HTMLInputElement).checked,
-    });
+    this.setState(
+      {
+        enableLocateMe: (e.target as HTMLInputElement).checked,
+      },
+      this.adjustUrl,
+    );
+  };
+
+  setIframe = (ref: HTMLIFrameElement | null) => {
+    this.iframe = ref;
+    if (ref) {
+      this.timerRef = window.setInterval(() => {
+        const { contentWindow } = ref;
+        if (contentWindow) {
+          const { href } = contentWindow.location;
+          if (this.oldUrl !== href) {
+            this.oldUrl = href;
+            this.setState({ url: href });
+          }
+        }
+      }, 100);
+    } else {
+      if (this.timerRef) {
+        window.clearInterval(this.timerRef);
+        this.timerRef = null;
+      }
+      this.oldUrl = null;
+    }
+  };
+
+  getEmbedFeatures = () => {
+    const { enableSearch, enableMapSwitch, enableLocateMe } = this.state;
+
+    return [
+      enableSearch && 'search',
+      !enableMapSwitch && 'noMapSwitch',
+      !enableLocateMe && 'noLocateMe',
+    ].filter(x => x);
+  };
+
+  getUrl = (url: string) => {
+    const embedFeatures = this.getEmbedFeatures();
+
+    return `${url.replace(/&(show|embed)=[^&]*/, '')}${
+      embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''
+    }`;
   };
 
   render() {
@@ -92,15 +185,6 @@ export class EmbedMapModal extends React.Component<Props> {
       enableMapSwitch,
       enableLocateMe,
     } = this.state;
-
-    const embedFeatures = [
-      enableSearch && 'search',
-      !enableMapSwitch && 'noMapSwitch',
-      !enableLocateMe && 'noLocateMe',
-    ].filter(x => x);
-    const shareURL = `${window.location.href.replace(/&show=[^&]*/, '')}${
-      embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''
-    }`;
 
     return (
       <Modal show onHide={onModalClose} className="dynamic">
@@ -160,7 +244,7 @@ export class EmbedMapModal extends React.Component<Props> {
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
-            value={`<iframe src="${shareURL}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen />`}
+            value={`<iframe src="${this.state.url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen />`}
             readOnly
             rows={3}
           />
@@ -169,8 +253,9 @@ export class EmbedMapModal extends React.Component<Props> {
           <iframe
             title="Freemap.sk"
             style={{ width: `${width}px`, height: `${height}px`, border: '0' }}
-            src={shareURL}
+            src={this.state.iframeUrl}
             allowFullScreen
+            ref={this.setIframe}
           />
         </Modal.Body>
         <Modal.Footer>

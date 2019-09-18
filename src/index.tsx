@@ -15,6 +15,7 @@ import {
   enableUpdatingUrl,
   reloadApp,
   setAppState,
+  setEmbedFeatures,
 } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { mapSetStravaAuth } from 'fm3/actions/mapActions';
@@ -120,6 +121,16 @@ function loadAppState(): void {
         : null,
     ),
   );
+
+  window.addEventListener('message', (e: MessageEvent) => {
+    const { data } = e;
+    if (data && typeof data === 'object' && typeof data.freemap === 'object') {
+      console.log('OK');
+      if (data.freemap.action === 'setEmbedFeatures') {
+        store.dispatch(setEmbedFeatures(data.freemap.payload));
+      }
+    }
+  });
 }
 
 function checkStravaAuth(): void {
