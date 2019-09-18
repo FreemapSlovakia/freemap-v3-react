@@ -112,6 +112,9 @@ import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import GalleryModals from './gallery/GalleryModals';
+import { ButtonGroup } from 'react-bootstrap';
+import MoreMenuButton from './MoreMenuButton';
+import ToolsMenuButton from './ToolsMenuButton';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -309,8 +312,13 @@ const MainInt: React.FC<Props> = ({
             {(!embed || embedFeatures.includes('search')) && (
               <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
             )}
+            {!embed && showMenu && (
+              <ButtonGroup>
+                <ToolsMenuButton />
+                <MoreMenuButton />
+              </ButtonGroup>
+            )}
           </Panel>
-          {!embed && showMenu && <Menu />}
           {showMenu && tool && (
             <Panel className="fm-toolbar">
               {tool === 'objects' && <ObjectsMenu />}
