@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import { setTool, Tool } from 'fm3/actions/mainActions';
+import { setTool, Tool, clearMap } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -43,6 +43,10 @@ class ToolsMenuButton extends React.Component<Props, State> {
     this.setState({ show: false });
     this.props.onToolSet(tool);
   }
+  handleMapClear = () => {
+    this.setState({ show: false });
+    this.props.onMapClear();
+  };
 
   render() {
     const { t, tool, expertMode } = this.props;
@@ -81,6 +85,11 @@ class ToolsMenuButton extends React.Component<Props, State> {
         >
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
+              <MenuItem onClick={this.handleMapClear}>
+                <FontAwesomeIcon icon="eraser" /> {t('main.clearMap')}
+              </MenuItem>
+              <MenuItem divider />
+
               {tools.map(([newTool, icon, name]) => (
                 <MenuItem
                   key={newTool}
@@ -104,6 +113,9 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onMapClear() {
+    dispatch(clearMap());
+  },
   onToolSet(tool: Tool) {
     dispatch(setTool(tool));
   },

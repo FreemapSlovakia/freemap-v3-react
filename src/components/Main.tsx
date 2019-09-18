@@ -270,7 +270,7 @@ const MainInt: React.FC<Props> = ({
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const handleDropzoneClick = useCallback(e => {
+  const handleDropzoneClick = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
 

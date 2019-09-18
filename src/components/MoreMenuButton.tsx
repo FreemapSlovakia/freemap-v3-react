@@ -18,6 +18,7 @@ import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import OpenInExternalAppMenuItems from './OpenInExternalAppMenuItems';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -151,8 +152,21 @@ class MoreMenuButton extends React.Component<Props, State> {
     this.close();
   };
 
+  handleOpenExternally = () => {
+    this.setState({ submenu: 'openExternally' });
+  };
+
   render() {
-    const { user, t, chosenLanguage } = this.props;
+    const {
+      user,
+      t,
+      chosenLanguage,
+      lat,
+      lon,
+      zoom,
+      expertMode,
+      mapType,
+    } = this.props;
     const { submenu } = this.state;
 
     return (
@@ -194,6 +208,11 @@ class MoreMenuButton extends React.Component<Props, State> {
                     <FontAwesomeIcon icon="cog" /> {t('more.settings')}
                   </MenuItem>
                   <MenuItem divider />
+                  <MenuItem onClick={this.handleOpenExternally}>
+                    <FontAwesomeIcon icon="external-link" />{' '}
+                    {t('external.openInExternal')}{' '}
+                    <FontAwesomeIcon icon="chevron-right" />
+                  </MenuItem>
                   <MenuItem onClick={this.handlePdfExportClick}>
                     <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
                   </MenuItem>
@@ -275,6 +294,25 @@ class MoreMenuButton extends React.Component<Props, State> {
                       <FontAwesomeIcon icon={icon} /> {name}
                     </MenuItem>
                   ))}
+                </>
+              ) : submenu === 'openExternally' ? (
+                <>
+                  <MenuItem header>
+                    <FontAwesomeIcon icon="external-link" />{' '}
+                    {t('external.openInExternal')}
+                  </MenuItem>
+                  <MenuItem onClick={this.handleBackClick}>
+                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                  </MenuItem>
+                  <MenuItem divider />
+                  <OpenInExternalAppMenuItems
+                    lat={lat}
+                    lon={lon}
+                    zoom={zoom}
+                    mapType={mapType}
+                    expertMode={expertMode}
+                    onSelect={this.close}
+                  />
                 </>
               ) : submenu === 'language' ? (
                 <>
@@ -364,6 +402,10 @@ const mapStateToProps = (state: RootState) => ({
   chosenLanguage: state.l10n.chosenLanguage,
   language: state.l10n.language,
   mapType: state.map.mapType,
+  lat: state.map.lat,
+  lon: state.map.lon,
+  zoom: state.map.zoom,
+  expertMode: state.main.expertMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

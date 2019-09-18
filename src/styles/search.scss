@@ -1,11 +1,7 @@
-.rbt {
-  display: inline-flex !important;
-  vertical-align: middle;
-}
-
-.rbt-input-main {
-  width: 200px;
-  font-family: FontAwesome, Arial;
+@media (max-width: 767px) {
+  .fm-search-input {
+    max-width: calc(50vw);
+  }
 }
 
 .fm-search-dropdown {

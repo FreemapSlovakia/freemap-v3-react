@@ -1,4 +1,4 @@
-@import "variables";
+@import 'variables';
 
 #app {
   position: absolute;
@@ -84,10 +84,10 @@ button#freemap-logo {
   margin: 0 4px;
   height: 34px;
   width: 122px;
-	-webkit-transform: scale(1);
-	transform: scale(1);
-	-webkit-transition: .1s ease-in-out;
-  transition: .1s ease-in-out;
+  -webkit-transform: scale(1);
+  transform: scale(1);
+  -webkit-transition: 0.1s ease-in-out;
+  transition: 0.1s ease-in-out;
 
   &.in-progress {
     animation: pulse 1s infinite;
@@ -107,9 +107,6 @@ button#freemap-logo {
       background-size: 42px 34px;
       width: 42px;
     }
-    .fm-label {
-      display: none;
-    }
   }
 }
 
@@ -125,7 +122,7 @@ button#freemap-logo {
   }
 }
 
-.dropdown-menu>li>a {
+.dropdown-menu > li > a {
   padding: 5px 20px;
 }
 
@@ -133,7 +130,7 @@ button#freemap-logo {
   .popover-content {
     padding: 0;
 
-    &>ul {
+    & > ul {
       min-width: 160px;
       padding: 5px 0;
       margin: 2px 0 0;
@@ -142,7 +139,7 @@ button#freemap-logo {
       text-align: left;
       background-color: #fff;
 
-      &>li>a {
+      & > li > a {
         display: block;
         padding: 5px 20px;
         clear: both;
@@ -158,7 +155,7 @@ button#freemap-logo {
         }
       }
 
-      &>li.active>a {
+      & > li.active > a {
         color: #fff;
         text-decoration: none;
         outline: 0;
@@ -172,14 +169,13 @@ button#freemap-logo {
         background-color: #e5e5e5;
       }
     }
-
   }
 }
 
 .fm-toolbar {
   @media screen {
     margin: 0 3px 8px;
-    background-color: rgba(255, 255, 255, 0.80);
+    background-color: rgba(255, 255, 255, 0.8);
     display: inline-block;
     vertical-align: top;
 
@@ -211,7 +207,7 @@ button#freemap-logo {
   bottom: 10px;
   left: 0;
   right: 0;
-  &>div {
+  & > div {
     pointer-events: all;
     display: table;
     margin: 0 auto;

@@ -26,7 +26,9 @@ import {
   Form,
   Dropdown,
   MenuItem,
+  InputGroup,
 } from 'react-bootstrap';
+import FontAwesomeIcon from './FontAwesomeIcon';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -156,13 +158,26 @@ const SearchMenu: React.FC<Props> = ({
           onToggle={handleToggle as any}
         >
           <FormGroup2 bsRole="toggle">
-            <FormControl
-              onChange={handleChange}
-              value={value}
-              placeholder="Brusno"
-              inputRef={setInputRef}
-              onFocus={handleInputFocus}
-            />
+            <InputGroup>
+              <FormControl
+                className="fm-search-input"
+                onChange={handleChange}
+                value={value}
+                placeholder="Brusno"
+                inputRef={setInputRef}
+                onFocus={handleInputFocus}
+              />
+              <InputGroup.Button>
+                <Button
+                  type="submit"
+                  /* TODO translate */
+                  title="Search"
+                  disabled={!value}
+                >
+                  <FontAwesomeIcon icon="search" />
+                </Button>
+              </InputGroup.Button>
+            </InputGroup>
           </FormGroup2>
           <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
             {results.map(result => (
@@ -183,14 +198,6 @@ const SearchMenu: React.FC<Props> = ({
             ))}
           </Dropdown.Menu>
         </Dropdown>{' '}
-        <Button
-          type="submit"
-          /* TODO translate */
-          title="Search"
-          disabled={!value}
-        >
-          <Glyphicon glyph="search" />
-        </Button>
       </Form>{' '}
       {selectedResult && !embed && (
         <ButtonGroup>

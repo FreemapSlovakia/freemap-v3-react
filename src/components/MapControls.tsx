@@ -34,6 +34,16 @@ export const MapControlsInt: React.FC<Props> = ({
     onMapRefocus({ zoom: zoom - 1 });
   }, [onMapRefocus, zoom]);
 
+  const handleFullscreenClick = useCallback(() => {
+    if (!document.exitFullscreen) {
+      // unsupported
+    } else if (document.fullscreenElement) {
+      document.exitFullscreen();
+    } else {
+      document.body.requestFullscreen();
+    }
+  }, []);
+
   if (!leafletElement) {
     return null;
   }
@@ -65,6 +75,20 @@ export const MapControlsInt: React.FC<Props> = ({
         {(!embed || !embedFeatures.includes('noLocateMe')) && (
           <Button onClick={onLocate} title={t('main.locateMe')} active={locate}>
             <FontAwesomeIcon icon="dot-circle-o" />
+          </Button>
+        )}
+        {document.exitFullscreen && (
+          <Button
+            onClick={handleFullscreenClick}
+            title={
+              document.fullscreenElement
+                ? t('general.exitFullscreen')
+                : t('general.fullscreen')
+            }
+          >
+            <FontAwesomeIcon
+              icon={document.fullscreenElement ? 'compress' : 'expand'}
+            />
           </Button>
         )}
       </ButtonToolbar>
