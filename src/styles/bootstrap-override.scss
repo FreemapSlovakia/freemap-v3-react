@@ -64,3 +64,9 @@ input[type='time'] {
   content: ' *';
   color: red;
 }
+
+@media (max-width: 767px) {
+  .btn {
+    padding: 6px 9px;
+  }
+}
