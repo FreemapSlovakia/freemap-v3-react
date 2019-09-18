@@ -112,6 +112,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import GalleryModals from './gallery/GalleryModals';
 import MoreMenuButton from './MoreMenuButton';
 import ToolsMenuButton from './ToolsMenuButton';
+import FontAwesomeIcon from './FontAwesomeIcon';
+import { toolDefinitions } from 'fm3/toolDefinitions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -256,6 +258,8 @@ const MainInt: React.FC<Props> = ({
     e.stopPropagation();
   }, []);
 
+  const embedToolDef = embed && toolDefinitions.find(td => td.tool === tool);
+
   return (
     <>
       <style>
@@ -299,7 +303,16 @@ const MainInt: React.FC<Props> = ({
           </Panel>
           {showMenu && (!embed || tool) && (
             <Panel className="fm-toolbar">
-              {!embed && <ToolsMenuButton />}
+              {embed ? (
+                embedToolDef && (
+                  <>
+                    <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
+                    {t(`tools.${embedToolDef.msgKey}`)}{' '}
+                  </>
+                )
+              ) : (
+                <ToolsMenuButton />
+              )}
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {tool &&

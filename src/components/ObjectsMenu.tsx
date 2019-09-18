@@ -7,7 +7,6 @@ import { objectsSetFilter } from 'fm3/actions/objectsActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Dropdown from 'react-bootstrap/lib/Dropdown';

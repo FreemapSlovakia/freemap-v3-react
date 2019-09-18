@@ -10,6 +10,7 @@ import { setTool, Tool, clearMap } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import { toolDefinitions } from 'fm3/toolDefinitions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -51,25 +52,9 @@ class ToolsMenuButton extends React.Component<Props, State> {
   render() {
     const { t, tool, expertMode } = this.props;
 
-    const tools: [Tool | null, string, string][] = [
-      [null, 'briefcase', 'none'],
-      ['route-planner', 'map-signs', 'routePlanner'],
-      ['objects', 'map-marker', 'objects'],
-      ['gallery', 'picture-o', 'gallery'],
-      ['measure-dist', '!icon-ruler', 'measurement'],
-      ['track-viewer', 'road', 'trackViewer'],
-      ['info-point', 'thumb-tack', 'infoPoint'],
-      ['map-details', 'info', 'mapDetails'],
-      ['tracking', 'bullseye', 'tracking'],
-    ];
-
-    if (expertMode) {
-      tools.push(['changesets', 'pencil', 'changesets']);
-    }
-
-    const toolDef = tools.find(
-      t => t[0] === (tool ? tool.replace(/-area|-ele/, '-dist') : null),
-    );
+    const toolDef = toolDefinitions.find(
+      t => t.tool === (tool ? tool.replace(/-area|-ele/, '-dist') : null),
+    ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
     return (
       <>
@@ -80,10 +65,10 @@ class ToolsMenuButton extends React.Component<Props, State> {
           id="tools-button"
           bsStyle="primary"
         >
-          <FontAwesomeIcon icon={toolDef ? toolDef[1] : 'briefcase'} />
+          <FontAwesomeIcon icon={toolDef ? toolDef.icon : 'briefcase'} />
           <span className="hidden-xs">
             {' '}
-            {t(`tools.${tool && toolDef ? toolDef[2] : 'tools'}`)}
+            {t(`tools.${tool && toolDef ? toolDef.msgKey : 'tools'}`)}
           </span>
         </Button>
         {tool && <FontAwesomeIcon icon="chevron-right" />}
@@ -107,18 +92,20 @@ class ToolsMenuButton extends React.Component<Props, State> {
               </MenuItem>
               <MenuItem divider />
 
-              {tools.map(
-                ([newTool, icon, name]) =>
-                  newTool && (
-                    <MenuItem
-                      key={newTool}
-                      onClick={() => this.handleToolSelect(newTool)}
-                      active={toolDef && toolDef[0] === newTool}
-                    >
-                      <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
-                    </MenuItem>
-                  ),
-              )}
+              {toolDefinitions
+                .filter(({ expertOnly }) => expertMode || !expertOnly)
+                .map(
+                  ({ tool: newTool, icon, msgKey }) =>
+                    newTool && (
+                      <MenuItem
+                        key={newTool}
+                        onClick={() => this.handleToolSelect(newTool)}
+                        active={toolDef && toolDef.tool === newTool}
+                      >
+                        <FontAwesomeIcon icon={icon} /> {t(`tools.${msgKey}`)}
+                      </MenuItem>
+                    ),
+                )}
             </ul>
           </Popover>
         </Overlay>
