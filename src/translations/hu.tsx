@@ -48,6 +48,7 @@ export default {
   },
 
   tools: {
+    none: 'Zárja be az eszközt', // TODO google-translated
     tools: 'Eszközök',
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',

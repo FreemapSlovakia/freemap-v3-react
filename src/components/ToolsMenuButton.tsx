@@ -76,6 +76,7 @@ class ToolsMenuButton extends React.Component<Props, State> {
           onClick={this.handleButtonClick}
           title={t('tools.tools')}
           id="tools-button"
+          bsStyle="primary"
         >
           <FontAwesomeIcon icon={toolDef ? toolDef[1] : 'briefcase'} />
           <span className="hidden-xs">

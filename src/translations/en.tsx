@@ -47,6 +47,7 @@ export default {
   },
 
   tools: {
+    none: 'Close tool',
     tools: 'Tools',
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
