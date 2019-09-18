@@ -46,7 +46,7 @@ export default {
   },
 
   tools: {
-    none: 'Zavri nástroj',
+    none: 'Zavrieť nástroj',
     tools: 'Nástroje',
     routePlanner: 'Vyhľadávač trás',
     objects: 'Miesta',

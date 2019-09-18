@@ -359,8 +359,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
         messageKey: 'routePlanner.noHomeAlert',
         style: 'warning',
         actions: [
-          { name: 'Nastav', action: setActiveModal('settings') },
-          { name: 'Zavri' },
+          { name: 'Nastaviť', action: setActiveModal('settings') }, // TODO translate
+          { name: 'Zavrieť' }, // TODO translate
         ],
       }),
     );
