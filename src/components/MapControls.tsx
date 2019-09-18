@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import MapSwitchButton from './MapSwitchButton';
@@ -43,6 +43,20 @@ export const MapControlsInt: React.FC<Props> = ({
       document.body.requestFullscreen();
     }
   }, []);
+
+  const [forceUpdate, setForceUpdate] = useState(0);
+
+  useEffect(() => {
+    const handler = () => {
+      setForceUpdate(forceUpdate + 1);
+    };
+
+    document.addEventListener('fullscreenchange', handler);
+
+    return () => {
+      document.removeEventListener('fullscreenchange', handler);
+    };
+  }, [forceUpdate, setForceUpdate]);
 
   if (!leafletElement) {
     return null;

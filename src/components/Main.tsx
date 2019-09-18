@@ -185,20 +185,6 @@ const MainInt: React.FC<Props> = ({
     };
   }, [ignoreEscape, onToolSet]);
 
-  const [forceUpdate, setForceUpdate] = useState(0);
-
-  useEffect(() => {
-    const handler = () => {
-      setForceUpdate(forceUpdate + 1);
-    };
-
-    document.addEventListener('fullscreenchange', handler);
-
-    return () => {
-      document.removeEventListener('fullscreenchange', handler);
-    };
-  }, [forceUpdate, setForceUpdate]);
-
   const handleMapMoveEnd = useCallback(() => {
     // TODO analyze why this can be null
     if (!mapRef.current) {
