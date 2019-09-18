@@ -297,7 +297,7 @@ const MainInt: React.FC<Props> = ({
               <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
             )}
           </Panel>
-          {showMenu && (
+          {showMenu && (!embed || tool) && (
             <Panel className="fm-toolbar">
               {!embed && <ToolsMenuButton />}
               {tool === 'objects' && <ObjectsMenu />}
