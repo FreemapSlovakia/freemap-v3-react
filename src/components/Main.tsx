@@ -13,7 +13,6 @@ import Panel from 'react-bootstrap/lib/Panel';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import Layers from 'fm3/components/Layers';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import Toasts from 'fm3/components/Toasts';
 
 import SearchMenu from 'fm3/components/SearchMenu';
@@ -111,7 +110,6 @@ import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import GalleryModals from './gallery/GalleryModals';
-import { ButtonGroup } from 'react-bootstrap';
 import MoreMenuButton from './MoreMenuButton';
 import ToolsMenuButton from './ToolsMenuButton';
 
@@ -214,10 +212,6 @@ const MainInt: React.FC<Props> = ({
       onMapReset();
     }
   }, [onMapReset]);
-
-  const handleToolCloseClick = useCallback(() => {
-    onToolSet(null);
-  }, [onToolSet]);
 
   const handleInfoBarCloseClick = useCallback(() => {
     setShowInfoBar(false);

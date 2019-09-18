@@ -51,7 +51,7 @@ class ToolsMenuButton extends React.Component<Props, State> {
   render() {
     const { t, tool, expertMode } = this.props;
 
-    const tools: [Tool, string, string][] = [
+    const tools: [Tool | null, string, string][] = [
       [null, 'briefcase', 'none'],
       ['route-planner', 'map-signs', 'routePlanner'],
       ['objects', 'map-marker', 'objects'],
@@ -67,7 +67,9 @@ class ToolsMenuButton extends React.Component<Props, State> {
       tools.push(['changesets', 'pencil', 'changesets']);
     }
 
-    const toolDef = tools.find(t => t[0] === (tool || null));
+    const toolDef = tools.find(
+      t => t[0] === (tool ? tool.replace(/-area|-ele/, '-dist') : null),
+    );
 
     return (
       <>
@@ -105,17 +107,18 @@ class ToolsMenuButton extends React.Component<Props, State> {
               </MenuItem>
               <MenuItem divider />
 
-              {tools
-                .filter(([newTool]) => newTool)
-                .map(([newTool, icon, name]) => (
-                  <MenuItem
-                    key={newTool}
-                    onClick={() => this.handleToolSelect(newTool)}
-                    active={tool && tool === newTool}
-                  >
-                    <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
-                  </MenuItem>
-                ))}
+              {tools.map(
+                ([newTool, icon, name]) =>
+                  newTool && (
+                    <MenuItem
+                      key={newTool}
+                      onClick={() => this.handleToolSelect(newTool)}
+                      active={toolDef && toolDef[0] === newTool}
+                    >
+                      <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
+                    </MenuItem>
+                  ),
+              )}
             </ul>
           </Popover>
         </Overlay>
