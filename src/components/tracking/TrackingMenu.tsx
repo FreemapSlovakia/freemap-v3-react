@@ -36,10 +36,6 @@ const TrackingMenu: React.FC<Props> = ({
 
   return (
     <>
-      <span className="fm-label">
-        <FontAwesomeIcon icon="bullseye" />
-        <span className="hidden-xs"> {t('tools.tracking')}</span>
-      </span>{' '}
       <Button onClick={onTrackedDevicesClick}>
         <FontAwesomeIcon icon="eye" />
         <span className="hidden-md hidden-sm hidden-xs">

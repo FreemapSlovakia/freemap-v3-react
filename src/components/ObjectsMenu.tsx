@@ -88,10 +88,6 @@ class ObjectsMenu extends React.Component<Props, State> {
 
     return (
       <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="map-marker" />
-          <span className="hidden-xs"> {t('tools.objects')}</span>
-        </span>{' '}
         <Dropdown
           className="dropdown-long"
           id="objectsMenuDropdown"

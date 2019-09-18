@@ -43,7 +43,6 @@ import GalleryPositionPickingMenu from 'fm3/components/gallery/GalleryPositionPi
 import GalleryShowPositionMenu from 'fm3/components/gallery/GalleryShowPositionMenu';
 
 import Settings from 'fm3/components/Settings';
-import { Menu } from 'fm3/components/Menu';
 import { Copyright } from 'fm3/components/Copyright';
 import { MapControls } from 'fm3/components/MapControls';
 import HomeLocationPickingMenu from 'fm3/components/HomeLocationPickingMenu';
@@ -309,41 +308,30 @@ const MainInt: React.FC<Props> = ({
               className={progress ? 'in-progress' : 'idle'}
               onClick={handleLogoClick}
             />
+            {!embed && showMenu && (
+              <>
+                <MoreMenuButton />{' '}
+              </>
+            )}
             {(!embed || embedFeatures.includes('search')) && (
               <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
             )}
-            {!embed && showMenu && (
-              <ButtonGroup>
-                <ToolsMenuButton />
-                <MoreMenuButton />
-              </ButtonGroup>
-            )}
           </Panel>
-          {showMenu && tool && (
+          {showMenu && (
             <Panel className="fm-toolbar">
+              <ToolsMenuButton />
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
-              {['measure-dist', 'measure-ele', 'measure-area'].includes(
-                tool,
-              ) && <MeasurementMenu />}
+              {tool &&
+                ['measure-dist', 'measure-ele', 'measure-area'].includes(
+                  tool,
+                ) && <MeasurementMenu />}
               {tool === 'track-viewer' && <TrackViewerMenu />}
               {tool === 'info-point' && <InfoPointMenu />}
               {tool === 'changesets' && <ChangesetsMenu />}
               {tool === 'gallery' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}
-              {!embed && (
-                <>
-                  {' '}
-                  <Button
-                    onClick={handleToolCloseClick}
-                    title={t('main.closeTool')}
-                  >
-                    <FontAwesomeIcon icon="close" />
-                    <span className="hidden-xs"> {t('main.close')}</span>
-                  </Button>
-                </>
-              )}
             </Panel>
           )}
           <GalleryPositionPickingMenu />

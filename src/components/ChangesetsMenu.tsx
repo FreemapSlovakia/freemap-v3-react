@@ -76,10 +76,6 @@ class ChangesetsMenu extends React.Component<Props> {
 
     return (
       <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="pencil" />
-          <span className="hidden-xs"> {t('tools.changesets')}</span>
-        </span>{' '}
         <Form inline>
           <ButtonGroup>
             <DropdownButton

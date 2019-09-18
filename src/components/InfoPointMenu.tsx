@@ -40,10 +40,6 @@ const InfoPointMenu: React.FC<Props> = ({
 
   return (
     <>
-      <span className="fm-label">
-        <FontAwesomeIcon icon="thumb-tack" />
-        <span className="hidden-xs"> {t('tools.infoPoint')}</span>
-      </span>{' '}
       <Button onClick={onLabelModify} disabled={!isActive}>
         <FontAwesomeIcon icon="tag" />
         <span className="hidden-xs"> {t('infoPoint.modify')}</span>

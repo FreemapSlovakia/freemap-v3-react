@@ -34,10 +34,6 @@ const GalleryMenu: React.FC<Props> = ({
 }) => {
   return (
     <Form inline>
-      <span className="fm-label">
-        <FontAwesomeIcon icon="picture-o" />
-        <span className="hidden-xs"> {t('tools.gallery')}</span>
-      </span>{' '}
       <Button onClick={onFilterShow} active={filterIsActive}>
         <FontAwesomeIcon icon="filter" />
         <span className="hidden-xs"> {t('gallery.filter')}</span>

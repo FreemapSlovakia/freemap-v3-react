@@ -62,10 +62,6 @@ class TrackViewerMenu extends React.Component<Props> {
 
     return (
       <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="road" />
-          <span className="hidden-xs"> {t('tools.trackViewer')}</span>
-        </span>{' '}
         <Button onClick={() => onUpload()}>
           <FontAwesomeIcon icon="upload" />
           <span className="hidden-xs"> {t('trackViewer.upload')}</span>

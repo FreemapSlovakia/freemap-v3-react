@@ -125,10 +125,6 @@ const RoutePlannerMenu: React.FC<Props> = ({
 
   return (
     <>
-      <span className="fm-label">
-        <FontAwesomeIcon icon="map-signs" />
-        <span className="hidden-xs"> {t('tools.routePlanner')}</span>
-      </span>{' '}
       <ButtonGroup>
         <DropdownButton2
           title={

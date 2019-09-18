@@ -176,7 +176,7 @@ class MoreMenuButton extends React.Component<Props, State> {
           onClick={this.handleButtonClick}
           title={t('more.more')}
         >
-          <FontAwesomeIcon icon="ellipsis-v" />
+          <FontAwesomeIcon icon="bars" />
         </Button>
         <Overlay
           rootClose

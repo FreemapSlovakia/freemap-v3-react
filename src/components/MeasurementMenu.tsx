@@ -104,10 +104,6 @@ class MeasurementMenu extends React.Component<Props> {
 
     return (
       <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="!icon-ruler" />
-          <span className="hidden-xs"> {t('tools.measurement')}</span>
-        </span>{' '}
         <ButtonGroup>
           <Button
             onClick={() => onToolSet('measure-dist')}

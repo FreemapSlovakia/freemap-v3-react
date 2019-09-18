@@ -39,7 +39,7 @@ class ToolsMenuButton extends React.Component<Props, State> {
     this.setState({ show: false });
   };
 
-  handleToolSelect(tool: Tool) {
+  handleToolSelect(tool: Tool | null) {
     this.setState({ show: false });
     this.props.onToolSet(tool);
   }
@@ -52,6 +52,7 @@ class ToolsMenuButton extends React.Component<Props, State> {
     const { t, tool, expertMode } = this.props;
 
     const tools: [Tool, string, string][] = [
+      [null, 'briefcase', 'none'],
       ['route-planner', 'map-signs', 'routePlanner'],
       ['objects', 'map-marker', 'objects'],
       ['gallery', 'picture-o', 'gallery'],
@@ -66,6 +67,8 @@ class ToolsMenuButton extends React.Component<Props, State> {
       tools.push(['changesets', 'pencil', 'changesets']);
     }
 
+    const toolDef = tools.find(t => t[0] === (tool || null));
+
     return (
       <>
         <Button
@@ -74,8 +77,13 @@ class ToolsMenuButton extends React.Component<Props, State> {
           title={t('tools.tools')}
           id="tools-button"
         >
-          <FontAwesomeIcon icon="briefcase" />
+          <FontAwesomeIcon icon={toolDef ? toolDef[1] : 'briefcase'} />
+          <span className="hidden-xs">
+            {' '}
+            {t(`tools.${tool && toolDef ? toolDef[2] : 'tools'}`)}
+          </span>
         </Button>
+        {tool && <FontAwesomeIcon icon="chevron-right" />}
         <Overlay
           rootClose
           placement="bottom"
@@ -85,20 +93,28 @@ class ToolsMenuButton extends React.Component<Props, State> {
         >
           <Popover id="popover-trigger-click-root-close" className="fm-menu">
             <ul>
+              {tool && (
+                <MenuItem onClick={() => this.handleToolSelect(null)}>
+                  <FontAwesomeIcon icon="briefcase" /> {t('tools.none')}
+                </MenuItem>
+              )}
+
               <MenuItem onClick={this.handleMapClear}>
                 <FontAwesomeIcon icon="eraser" /> {t('main.clearMap')}
               </MenuItem>
               <MenuItem divider />
 
-              {tools.map(([newTool, icon, name]) => (
-                <MenuItem
-                  key={newTool}
-                  onClick={() => this.handleToolSelect(newTool)}
-                  active={tool === newTool}
-                >
-                  <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
-                </MenuItem>
-              ))}
+              {tools
+                .filter(([newTool]) => newTool)
+                .map(([newTool, icon, name]) => (
+                  <MenuItem
+                    key={newTool}
+                    onClick={() => this.handleToolSelect(newTool)}
+                    active={tool && tool === newTool}
+                  >
+                    <FontAwesomeIcon icon={icon} /> {t(`tools.${name}`)}
+                  </MenuItem>
+                ))}
             </ul>
           </Popover>
         </Overlay>
@@ -116,7 +132,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMapClear() {
     dispatch(clearMap());
   },
-  onToolSet(tool: Tool) {
+  onToolSet(tool: Tool | null) {
     dispatch(setTool(tool));
   },
 });

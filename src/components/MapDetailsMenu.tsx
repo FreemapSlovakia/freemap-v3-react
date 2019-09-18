@@ -38,20 +38,14 @@ class MapDetailsMenu extends React.Component<Props> {
   render() {
     const { subtool, onSubtoolChange, t } = this.props;
     return (
-      <>
-        <span className="fm-label">
-          <FontAwesomeIcon icon="info" />
-          <span className="hidden-xs"> {t('tools.mapDetails')}</span>
-        </span>{' '}
-        <Button
-          onClick={() => onSubtoolChange('track-info')}
-          active={subtool === 'track-info'}
-          title={t('mapDetails.road')}
-        >
-          <FontAwesomeIcon icon="road" />
-          <span className="hidden-xs"> {t('mapDetails.road')}</span>
-        </Button>
-      </>
+      <Button
+        onClick={() => onSubtoolChange('track-info')}
+        active={subtool === 'track-info'}
+        title={t('mapDetails.road')}
+      >
+        <FontAwesomeIcon icon="road" />
+        <span className="hidden-xs"> {t('mapDetails.road')}</span>
+      </Button>
     );
   }
 }
