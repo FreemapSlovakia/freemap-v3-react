@@ -299,7 +299,7 @@ const MainInt: React.FC<Props> = ({
           </Panel>
           {showMenu && (
             <Panel className="fm-toolbar">
-              <ToolsMenuButton />
+              {!embed && <ToolsMenuButton />}
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {tool &&
