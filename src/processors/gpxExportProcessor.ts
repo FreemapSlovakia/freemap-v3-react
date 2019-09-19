@@ -54,6 +54,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
       objects,
       routePlanner,
       tracking,
+      trackViewer,
     } = getState();
 
     const set = new Set(action.payload);
@@ -107,10 +108,32 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
       addTracking(doc, tracking);
     }
 
-    const serializer = new XMLSerializer();
+    if (set.has('gpx')) {
+      addGpx(doc, trackViewer);
+    }
 
-    // eslint-disable-next-line
-    //console.log(serializer.serializeToString(doc));
+    // order nodes
+
+    const r = getSupportedGpxElements(doc);
+
+    const q = {
+      wpt: [],
+      rte: [],
+      trk: [],
+    };
+
+    let curr: Node | null;
+    while ((curr = r.iterateNext())) {
+      q[curr.nodeName].push(curr);
+    }
+
+    for (const nodeName of ['wpt', 'rte', 'trk']) {
+      for (const node of q[nodeName]) {
+        doc.documentElement.appendChild(node);
+      }
+    }
+
+    const serializer = new XMLSerializer();
 
     FileSaver.saveAs(
       new Blob([serializer.serializeToString(doc)], {
@@ -346,4 +369,30 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
       }
     }
   }
+}
+
+function addGpx(doc: Document, { trackGpx }: { trackGpx: string | null }) {
+  if (!trackGpx) {
+    return;
+  }
+
+  const domParser = new DOMParser();
+  const gpxDoc: XMLDocument = domParser.parseFromString(trackGpx, 'text/xml');
+
+  const r = getSupportedGpxElements(gpxDoc);
+
+  let curr: Node | null;
+  while ((curr = r.iterateNext())) {
+    doc.documentElement.appendChild(curr.cloneNode(true));
+  }
+}
+
+function getSupportedGpxElements(doc: Document) {
+  return doc.evaluate(
+    '/gpx:gpx/gpx:wpt | /gpx:gpx/gpx:rte | /gpx:gpx/gpx:trk',
+    doc,
+    prefix => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
+    XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
+    null,
+  );
 }

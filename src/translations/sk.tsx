@@ -858,6 +858,7 @@ export default {
       elevationMeasurement: 'meranie výšky a polohy',
       infoPoint: 'body v mape',
       tracking: 'sledovanie',
+      gpx: 'GPX trasu',
     },
     disabledAlert:
       'Aktívne sú iba voľby ktorých objekty sa nachádzajú na mape.',

@@ -858,6 +858,7 @@ export default {
       elevationMeasurement: 'elevation and position measurement',
       infoPoint: 'pins',
       tracking: 'live tracking',
+      gpx: 'GPX track',
     },
     disabledAlert:
       'Only checkboxes having anything in the map to export are enabled.',

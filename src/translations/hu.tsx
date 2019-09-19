@@ -864,6 +864,7 @@ export default {
       elevationMeasurement: 'lemért magasságok és pozíciók',
       infoPoint: 'gombostűk',
       tracking: 'élő nyomkövetés',
+      gpx: 'GPX track', // TODO
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',

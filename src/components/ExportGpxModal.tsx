@@ -24,6 +24,7 @@ const exportableDefinitions = [
   { type: 'elevationMeasurement', icon: 'long-arrow-up' },
   { type: 'infoPoint', icon: 'thumb-tack' },
   { type: 'tracking', icon: 'bullseye' },
+  { type: 'gpx', icon: 'road' },
   // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ] as const;
@@ -143,6 +144,9 @@ const mapStateToProps = (state: RootState) => {
   }
   if (state.tracking.tracks.length) {
     exportables.push('tracking');
+  }
+  if (state.trackViewer.trackGpx) {
+    exportables.push('gpx');
   }
   if (state.changesets.changesets.length) {
     // exportables.push('changesets');
