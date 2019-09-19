@@ -127,7 +127,6 @@ function loadAppState(): void {
 window.addEventListener('message', (e: MessageEvent) => {
   const { data } = e;
   if (data && typeof data === 'object' && typeof data.freemap === 'object') {
-    console.log('OK');
     if (data.freemap.action === 'setEmbedFeatures') {
       store.dispatch(setEmbedFeatures(data.freemap.payload));
     }
@@ -142,8 +141,12 @@ document.addEventListener('keydown', (event: KeyboardEvent) => {
   const state = store.getState();
 
   if (
-    !embed &&
     event.keyCode === 27 /* escape key */ &&
+    !embed &&
+    !event.ctrlKey &&
+    !event.altKey &&
+    !event.metaKey &&
+    !event.isComposing &&
     !(
       (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
       state.gallery.activeImageId ||
