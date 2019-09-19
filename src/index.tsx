@@ -16,6 +16,7 @@ import {
   reloadApp,
   setAppState,
   setEmbedFeatures,
+  setTool,
 } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { mapSetStravaAuth } from 'fm3/actions/mapActions';
@@ -32,7 +33,7 @@ import { storage } from 'fm3/storage';
 
 import 'font-awesome/scss/font-awesome.scss';
 import 'fm3/styles/bootstrap-override.scss';
-import { authInit } from './actions/authActions';
+import { authInit, authCheckLogin } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { AppState } from './types/common';
 
@@ -121,17 +122,37 @@ function loadAppState(): void {
         : null,
     ),
   );
-
-  window.addEventListener('message', (e: MessageEvent) => {
-    const { data } = e;
-    if (data && typeof data === 'object' && typeof data.freemap === 'object') {
-      console.log('OK');
-      if (data.freemap.action === 'setEmbedFeatures') {
-        store.dispatch(setEmbedFeatures(data.freemap.payload));
-      }
-    }
-  });
 }
+
+window.addEventListener('message', (e: MessageEvent) => {
+  const { data } = e;
+  if (data && typeof data === 'object' && typeof data.freemap === 'object') {
+    console.log('OK');
+    if (data.freemap.action === 'setEmbedFeatures') {
+      store.dispatch(setEmbedFeatures(data.freemap.payload));
+    }
+  }
+});
+
+store.dispatch(authCheckLogin());
+
+document.addEventListener('keydown', (event: KeyboardEvent) => {
+  const embed = window.self !== window.top;
+
+  const state = store.getState();
+
+  if (
+    !embed &&
+    event.keyCode === 27 /* escape key */ &&
+    !(
+      (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
+      state.gallery.activeImageId ||
+      state.gallery.showPosition
+    )
+  ) {
+    store.dispatch(setTool(null));
+  }
+});
 
 function checkStravaAuth(): void {
   const img = new Image();

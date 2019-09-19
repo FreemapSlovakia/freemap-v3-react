@@ -70,13 +70,7 @@ import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
 
 import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
-import {
-  setTool,
-  setLocation,
-  Tool,
-  setActiveModal,
-} from 'fm3/actions/mainActions';
-import { authCheckLogin } from 'fm3/actions/authActions';
+import { setLocation, setActiveModal } from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -137,9 +131,6 @@ const MainInt: React.FC<Props> = ({
   showMenu,
   overlayPaneOpacity,
   embedFeatures,
-  onCheckLogin,
-  ignoreEscape,
-  onToolSet,
   onMapRefocus,
   onLocationSet,
   onGpxDrop,
@@ -163,27 +154,8 @@ const MainInt: React.FC<Props> = ({
   );
 
   useEffect(() => {
-    onCheckLogin();
-  }, [onCheckLogin]);
-
-  useEffect(() => {
     setMapLeafletElement(mapRef.current ? mapRef.current.leafletElement : null);
   }, []);
-
-  useEffect(() => {
-    const handler = (event: KeyboardEvent) => {
-      const embed = window.self !== window.top;
-      if (!embed && event.keyCode === 27 /* escape key */ && !ignoreEscape) {
-        onToolSet(null);
-      }
-    };
-
-    document.addEventListener('keydown', handler);
-
-    return () => {
-      document.removeEventListener('keydown', handler);
-    };
-  }, [ignoreEscape, onToolSet]);
 
   const handleMapMoveEnd = useCallback(() => {
     // TODO analyze why this can be null
@@ -429,11 +401,6 @@ const mapStateToProps = (state: RootState) => ({
   progress: !!state.main.progress.length,
   mouseCursor: mouseCursorSelector(state),
   authenticated: !!state.auth.user,
-  ignoreEscape: !!(
-    (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
-    state.gallery.activeImageId ||
-    state.gallery.showPosition
-  ),
   showElevationChart: !!state.elevationChart.elevationProfilePoints,
   showGalleryPicker: showGalleryPickerSelector(state),
   showLoginModal: state.auth.chooseLoginMethod,
@@ -446,17 +413,11 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: Tool | null) {
-    dispatch(setTool(tool));
-  },
   onMapRefocus(changes: Partial<MapViewState>) {
     dispatch(mapRefocus(changes));
   },
   onLocationSet(lat: number, lon: number, accuracy: number) {
     dispatch(setLocation({ lat, lon, accuracy }));
-  },
-  onCheckLogin() {
-    dispatch(authCheckLogin());
   },
   onMapReset() {
     dispatch(mapReset());
