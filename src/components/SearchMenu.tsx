@@ -167,7 +167,7 @@ const SearchMenu: React.FC<Props> = ({
                 inputRef={setInputRef}
                 onFocus={handleInputFocus}
               />
-              <InputGroup.Button>
+              <InputGroup.Button style={{ width: 'auto' }}>
                 <Button
                   type="submit"
                   /* TODO translate */
