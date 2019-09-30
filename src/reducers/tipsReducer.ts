@@ -1,12 +1,7 @@
 import tips from 'fm3/tips/index.json';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import {
-  tipsShow,
-  tipsNext,
-  tipsPrevious,
-  tipsPreventNextTime,
-} from 'fm3/actions/tipsActions';
+import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { authSetUser } from 'fm3/actions/authActions';
 
 export interface TipsState {
@@ -22,21 +17,19 @@ const initialState: TipsState = {
 export const tipsReducer = createReducer<TipsState, RootAction>(initialState)
   .handleAction(tipsShow, (state, action) => ({
     ...state,
-    tip: action.payload,
-  }))
-  .handleAction(tipsNext, (state, action) => ({
-    ...state,
     tip:
-      tips[
-        (ft(action.payload === null ? 'freemap' : action.payload || state.tip) +
-          1) %
-          tips.length
-      ][0],
+      action.payload === null
+        ? null
+        : action.payload === 'next'
+        ? tips[(ft(state.tip) + 1) % tips.length][0]
+        : action.payload === 'prev'
+        ? tips[(ft(state.tip) + tips.length - 1) % tips.length][0]
+        : action.payload,
   }))
-  .handleAction(tipsPrevious, state => ({
-    ...state,
-    tip: tips[(ft(state.tip) + tips.length - 1) % tips.length][0],
-  }))
+  // .handleAction(tipsPrevious, state => ({
+  //   ...state,
+  //   tip: tips[(ft(state.tip) + tips.length - 1) % tips.length][0],
+  // }))
   .handleAction(tipsPreventNextTime, (state, action) => ({
     ...state,
     preventTips: action.payload,

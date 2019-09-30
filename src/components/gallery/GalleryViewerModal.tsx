@@ -76,12 +76,10 @@ class GalleryViewerModal extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    document.addEventListener('keydown', this.handleKeydown);
     document.addEventListener('fullscreenchange', this.handleFullscreenChange);
   }
 
   componentWillUnmount() {
-    document.removeEventListener('keydown', this.handleKeydown);
     document.removeEventListener(
       'fullscreenchange',
       this.handleFullscreenChange,
@@ -112,49 +110,18 @@ class GalleryViewerModal extends React.Component<Props, State> {
     this.props.onEditModelChange(editModel);
   };
 
-  handleKeydown = (evt: KeyboardEvent) => {
-    if (
-      (evt.target &&
-        ['input', 'select', 'textarea'].includes(
-          (evt.target as any).tagName.toLowerCase(),
-        )) ||
-      !this.props.imageIds ||
-      this.props.imageIds.length < 2
-    ) {
-      // nothing
-    } else if (evt.keyCode === 37 /* left key */) {
-      this.handlePreviousClick();
-    } else if (evt.keyCode === 39 /* right key */) {
-      this.handleNextClick();
-    }
-  };
-
   handlePreviousClick = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
     }
-
-    const { imageIds, activeImageId, onImageSelect } = this.props;
-    if (imageIds) {
-      const index = imageIds.findIndex(id => id === activeImageId);
-      if (index > 0) {
-        onImageSelect(imageIds[index - 1]);
-      }
-    }
+    this.props.onImageSelect('prev');
   };
 
   handleNextClick = (e?: React.MouseEvent) => {
     if (e) {
       e.preventDefault();
     }
-
-    const { imageIds, activeImageId, onImageSelect } = this.props;
-    if (imageIds) {
-      const index = imageIds.findIndex(id => id === activeImageId);
-      if (index + 1 < imageIds.length) {
-        onImageSelect(imageIds[index + 1]);
-      }
-    }
+    this.props.onImageSelect('next');
   };
 
   handleIndexChange = (e: React.FormEvent<FormControl>) => {
@@ -537,7 +504,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onShowOnTheMap() {
     dispatch(galleryShowOnTheMap());
   },
-  onImageSelect(id: number) {
+  onImageSelect(id: number | 'prev' | 'next') {
     dispatch(galleryRequestImage(id));
   },
   onCommentChange(comment: string) {

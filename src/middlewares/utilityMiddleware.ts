@@ -3,7 +3,7 @@ import { RootState } from 'fm3/storeCreator';
 import { isActionOf } from 'typesafe-actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { setTool, reloadApp } from 'fm3/actions/mainActions';
-import { tipsPrevious, tipsNext } from 'fm3/actions/tipsActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
 import { storage } from 'fm3/storage';
 
 // TODO to processors
@@ -29,7 +29,7 @@ export const utilityMiddleware: Middleware<{}, RootState, Dispatch> = ({
     if (tool) {
       window.ga('send', 'event', 'Tool', 'setTool', tool);
     }
-  } else if (isActionOf([tipsNext, tipsPrevious], action)) {
+  } else if (isActionOf(tipsShow, action)) {
     const { tip } = getState().tips;
 
     if (tip) {

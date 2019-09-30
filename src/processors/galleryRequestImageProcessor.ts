@@ -5,16 +5,15 @@ import {
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const galleryRequestImageProcessor: Processor<
-  typeof galleryRequestImage
-> = {
+// TODO react only on getState().gallery.activeImageId change
+export const galleryRequestImageProcessor: Processor = {
   actionCreator: galleryRequestImage,
   errorKey: 'gallery.pictureFetchingError',
-  handle: async ({ getState, dispatch, action }) => {
+  handle: async ({ getState, dispatch }) => {
     const { data } = await httpRequest({
       getState,
       method: 'GET',
-      url: `/gallery/pictures/${action.payload}`,
+      url: `/gallery/pictures/${getState().gallery.activeImageId}`,
       expectedStatus: 200,
     });
 

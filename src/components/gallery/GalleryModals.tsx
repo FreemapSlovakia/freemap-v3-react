@@ -14,6 +14,7 @@ import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { Dispatch } from 'redux';
 import { DragEndEvent } from 'leaflet';
+import { showGalleryViewer } from 'fm3/selectors/mainSelectors';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
@@ -40,19 +41,11 @@ class GalleryModals extends React.Component<Props> {
   };
 
   render() {
-    const {
-      activeImageId,
-      isPickingPosition,
-      showFilter,
-      showUploadModal,
-      showPosition,
-    } = this.props;
+    const { showGalleryViewer, showFilter, showUploadModal } = this.props;
 
     return (
       <>
-        {!isPickingPosition && activeImageId && !showPosition && (
-          <GalleryViewerModal />
-        )}
+        {showGalleryViewer && <GalleryViewerModal />}
         {showFilter && <GalleryFilterModal />}
         {showUploadModal && <AsyncGalleryUploadModal />}
       </>
@@ -66,6 +59,7 @@ const mapStateToProps = (state: RootState) => ({
   showFilter: state.gallery.showFilter,
   showUploadModal: state.gallery.showUploadModal,
   showPosition: state.gallery.showPosition,
+  showGalleryViewer: showGalleryViewer(state),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

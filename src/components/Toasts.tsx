@@ -7,7 +7,7 @@ import {
   toastsStopTimeout,
   toastsRestartTimeout,
 } from 'fm3/actions/toastsActions';
-import Toast from 'fm3/components/Toast';
+import { Toast } from 'fm3/components/Toast';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/toasts.scss';

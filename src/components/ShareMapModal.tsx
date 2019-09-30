@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -17,61 +17,58 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
   t: Translator;
 };
 
-export class ShareMapModal extends React.Component<Props> {
-  textarea?: HTMLInputElement;
+export const ShareMapModal: React.FC<Props> = ({ onModalClose, t }) => {
+  const textarea = useRef<HTMLInputElement>();
 
-  setFormControl = (textarea: HTMLInputElement) => {
-    this.textarea = textarea;
+  const setFormControl = useCallback((ele: HTMLInputElement) => {
+    textarea.current = ele;
     setTimeout(() => {
-      if (textarea) {
-        textarea.setSelectionRange(0, 9999);
+      if (textarea.current) {
+        textarea.current.setSelectionRange(0, 9999);
       }
     });
-  };
+  }, []);
 
-  handleCopyClick = () => {
-    if (this.textarea) {
-      this.textarea.focus();
+  const handleCopyClick = useCallback(() => {
+    if (textarea.current) {
+      textarea.current.focus();
       setTimeout(() => {
-        if (this.textarea) {
-          this.textarea.setSelectionRange(0, 9999);
+        if (textarea.current) {
+          textarea.current.setSelectionRange(0, 9999);
         }
       });
       document.execCommand('copy');
     }
-  };
+  }, []);
 
-  render() {
-    const { onModalClose, t } = this.props;
-    return (
-      <Modal show onHide={onModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <p>{t('shareMap.label')}</p>
-          <FormControl
-            inputRef={this.setFormControl}
-            componentClass="textarea"
-            value={window.location.href.replace(/&show=[^&]*/, '')}
-            readOnly
-            rows={6}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.handleCopyClick}>
-            <Glyphicon glyph="copy" /> {t('general.copyCode')}
-          </Button>{' '}
-          <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
-          </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal show onHide={onModalClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <p>{t('shareMap.label')}</p>
+        <FormControl
+          inputRef={setFormControl}
+          componentClass="textarea"
+          value={window.location.href.replace(/&show=[^&]*/, '')}
+          readOnly
+          rows={6}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button onClick={handleCopyClick}>
+          <Glyphicon glyph="copy" /> {t('general.copyCode')}
+        </Button>{' '}
+        <Button onClick={onModalClose}>
+          <Glyphicon glyph="remove" /> {t('general.close')}
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {

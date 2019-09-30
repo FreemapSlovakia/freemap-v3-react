@@ -1,19 +1,15 @@
-import React, { useEffect, useCallback } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import GalleryLayer from 'fm3/components/gallery/GalleryLayer';
 
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
 import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 
 import missingTile from '../images/missing-tile-256x256.png';
 import ScaledTileLayer from './ScaledTileLayer';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+type Props = ReturnType<typeof mapStateToProps>;
 
 const Layers: React.FC<Props> = ({
   mapType,
@@ -23,63 +19,7 @@ const Layers: React.FC<Props> = ({
   galleryDirtySeq,
   overlayOpacity,
   tileFormat,
-  disableKeyboard,
-  onMapTypeChange,
-  onOverlaysChange,
-  embedFeatures,
 }) => {
-  const handleKeydown = useCallback(
-    event => {
-      const embed = window.self !== window.top;
-
-      if (
-        disableKeyboard ||
-        event.ctrlKey ||
-        event.altKey ||
-        event.metaKey ||
-        event.isComposing ||
-        ['input', 'select', 'textarea'].includes(
-          event.target.tagName.toLowerCase(),
-        ) ||
-        (embed && embedFeatures.includes('noMapSwitch'))
-      ) {
-        return;
-      }
-
-      const baseLayer = baseLayers.find(l => l.key === event.key);
-      if (baseLayer) {
-        onMapTypeChange(baseLayer.type);
-      }
-
-      const overlayLayer = overlayLayers.find(l => l.key === event.key);
-      if (overlayLayer && (!overlayLayer.adminOnly || isAdmin)) {
-        const { type } = overlayLayer;
-        const next = new Set(overlays);
-        if (next.has(type)) {
-          next.delete(type);
-        } else {
-          next.add(type);
-        }
-        onOverlaysChange([...next]);
-      }
-    },
-    [
-      disableKeyboard,
-      embedFeatures,
-      isAdmin,
-      onMapTypeChange,
-      onOverlaysChange,
-      overlays,
-    ],
-  );
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeydown);
-    return () => {
-      document.removeEventListener('keydown', handleKeydown);
-    };
-  }, [handleKeydown]);
-
   const getTileLayer = ({
     type,
     url,
@@ -151,33 +91,9 @@ const mapStateToProps = (state: RootState) => ({
   overlays: state.map.overlays,
   mapType: state.map.mapType,
   overlayOpacity: state.map.overlayOpacity,
-  disableKeyboard: !!(
-    state.main.activeModal ||
-    (state.gallery.activeImageId &&
-      !state.gallery.showPosition &&
-      !state.gallery.pickingPositionForId)
-  ),
   galleryFilter: state.gallery.filter,
   galleryDirtySeq: state.gallery.dirtySeq,
   isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-  embedFeatures: state.main.embedFeatures,
 });
 
-const mapDispatchToProps = (
-  dispatch: Dispatch<RootAction>,
-  // props: ReturnType<typeof mapStateToProps>,
-) => ({
-  onMapTypeChange(mapType: string) {
-    // if (props.mapType !== mapType) {
-    dispatch(mapRefocus({ mapType }));
-    // }
-  },
-  onOverlaysChange(overlays: string[]) {
-    dispatch(mapRefocus({ overlays }));
-  },
-});
-
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Layers);
+export default connect(mapStateToProps)(Layers);

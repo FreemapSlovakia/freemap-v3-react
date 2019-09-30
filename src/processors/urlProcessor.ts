@@ -57,7 +57,7 @@ import {
   infoPointDelete,
   infoPointSetAll,
 } from 'fm3/actions/infoPointActions';
-import { tipsNext, tipsPrevious, tipsShow } from 'fm3/actions/tipsActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
 import {
   routePlannerAddMidpoint,
   routePlannerSetFinish,
@@ -125,8 +125,6 @@ export const urlProcessor: Processor = {
     infoPointChangePosition,
     infoPointDelete,
     infoPointSetAll,
-    tipsNext,
-    tipsPrevious,
     tipsShow,
     osmLoadNode,
     osmLoadRelation,

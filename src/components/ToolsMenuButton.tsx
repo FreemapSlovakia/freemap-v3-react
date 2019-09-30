@@ -95,14 +95,19 @@ class ToolsMenuButton extends React.Component<Props, State> {
               {toolDefinitions
                 .filter(({ expertOnly }) => expertMode || !expertOnly)
                 .map(
-                  ({ tool: newTool, icon, msgKey }) =>
+                  ({ tool: newTool, icon, msgKey, kbd }) =>
                     newTool && (
                       <MenuItem
                         key={newTool}
                         onClick={() => this.handleToolSelect(newTool)}
                         active={toolDef && toolDef.tool === newTool}
                       >
-                        <FontAwesomeIcon icon={icon} /> {t(`tools.${msgKey}`)}
+                        <FontAwesomeIcon icon={icon} /> {t(`tools.${msgKey}`)}{' '}
+                        {kbd && (
+                          <>
+                            <kbd>g</kbd> <kbd>{kbd}</kbd>
+                          </>
+                        )}
                       </MenuItem>
                     ),
                 )}

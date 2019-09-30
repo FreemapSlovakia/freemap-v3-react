@@ -16,7 +16,6 @@ import {
   reloadApp,
   setAppState,
   setEmbedFeatures,
-  setTool,
 } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
 import { mapSetStravaAuth } from 'fm3/actions/mapActions';
@@ -26,6 +25,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { history } from 'fm3/historyHolder';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
 import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
+import { attachKeyboardHandler } from 'fm3/keyboardHandler';
 import 'fm3/googleAnalytics';
 import 'fm3/fbLoader';
 import { createReduxStore } from 'fm3/storeCreator';
@@ -135,27 +135,7 @@ window.addEventListener('message', (e: MessageEvent) => {
 
 store.dispatch(authCheckLogin());
 
-document.addEventListener('keydown', (event: KeyboardEvent) => {
-  const embed = window.self !== window.top;
-
-  const state = store.getState();
-
-  if (
-    event.keyCode === 27 /* escape key */ &&
-    !embed &&
-    !event.ctrlKey &&
-    !event.altKey &&
-    !event.metaKey &&
-    !event.isComposing &&
-    !(
-      (state.main.activeModal && state.main.activeModal !== 'settings') || // TODO settings dialog gets also closed
-      state.gallery.activeImageId ||
-      state.gallery.showPosition
-    )
-  ) {
-    store.dispatch(setTool(null));
-  }
-});
+attachKeyboardHandler(store);
 
 function checkStravaAuth(): void {
   const img = new Image();

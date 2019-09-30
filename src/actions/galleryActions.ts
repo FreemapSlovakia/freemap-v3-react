@@ -71,7 +71,7 @@ export const galleryRequestImages = createStandardAction(
 
 export const galleryRequestImage = createStandardAction(
   'GALLERY_REQUEST_IMAGE',
-)<number>();
+)<number | 'next' | 'prev'>();
 
 export const gallerySetImageIds = createStandardAction('GALLERY_SET_IMAGE_IDS')<
   number[]

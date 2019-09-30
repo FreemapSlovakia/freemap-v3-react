@@ -205,7 +205,8 @@ class MoreMenuButton extends React.Component<Props, State> {
                     </MenuItem>
                   )}
                   <MenuItem onClick={this.handleSettingsShowClick}>
-                    <FontAwesomeIcon icon="cog" /> {t('more.settings')}
+                    <FontAwesomeIcon icon="cog" /> {t('more.settings')}{' '}
+                    <kbd>e</kbd> <kbd>s</kbd>
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem onClick={this.handleOpenExternally}>
@@ -214,10 +215,12 @@ class MoreMenuButton extends React.Component<Props, State> {
                     <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
                   <MenuItem onClick={this.handlePdfExportClick}>
-                    <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
+                    <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}{' '}
+                    <kbd>e</kbd> <kbd>p</kbd>
                   </MenuItem>
                   <MenuItem onClick={this.handleGpxExportClick}>
-                    <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
+                    <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}{' '}
+                    <kbd>e</kbd> <kbd>g</kbd>
                   </MenuItem>
                   <MenuItem
                     onClick={this.handleItemClick}
@@ -228,10 +231,12 @@ class MoreMenuButton extends React.Component<Props, State> {
                     {t('more.mapExports')}
                   </MenuItem>
                   <MenuItem onClick={this.handleShareClick}>
-                    <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
+                    <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}{' '}
+                    <kbd>e</kbd> <kbd>r</kbd>
                   </MenuItem>
                   <MenuItem onClick={this.handleEmbedClick}>
-                    <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
+                    <FontAwesomeIcon icon="code" /> {t('more.embedMap')}{' '}
+                    <kbd>e</kbd> <kbd>e</kbd>
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem

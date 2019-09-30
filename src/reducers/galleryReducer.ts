@@ -1,3 +1,4 @@
+import produce from 'immer';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
@@ -123,12 +124,37 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     image: action.payload,
     editModel: null,
   }))
-  .handleAction(galleryRequestImage, (state, action) => ({
-    ...state,
-    activeImageId: action.payload,
-    comment: '',
-    editModel: null,
-  }))
+  .handleAction(galleryRequestImage, (state, action) =>
+    produce(state, draft => {
+      const set = (activeImageId: number) => {
+        Object.assign(draft, {
+          activeImageId,
+          comment: '',
+          editModel: null,
+        });
+      };
+
+      if (action.payload === 'next') {
+        const { imageIds, activeImageId } = draft;
+        if (imageIds) {
+          const index = imageIds.findIndex(id => id === activeImageId);
+          if (index + 1 < imageIds.length) {
+            set(imageIds[index + 1]);
+          }
+        }
+      } else if (action.payload === 'prev') {
+        const { imageIds, activeImageId } = draft;
+        if (imageIds) {
+          const index = imageIds.findIndex(id => id === activeImageId);
+          if (index > 0) {
+            set(imageIds[index - 1]);
+          }
+        }
+      } else {
+        set(action.payload);
+      }
+    }),
+  )
   .handleAction(galleryAddItem, (state, action) => ({
     ...state,
     items: [...state.items, action.payload],

@@ -1,7 +1,7 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { tipsNext, tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { history } from 'fm3/historyHolder';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { storage } from 'fm3/storage';
@@ -60,7 +60,7 @@ export const authInitProcessor: Processor = {
         !getState().tips.preventTips &&
         ['sk', 'cs'].includes(getState().l10n.language)
       ) {
-        dispatch(tipsNext(storage.getItem('tip') || null));
+        dispatch(tipsShow(storage.getItem('tip') || 'freemap'));
         dispatch(setActiveModal('tips'));
       }
     }

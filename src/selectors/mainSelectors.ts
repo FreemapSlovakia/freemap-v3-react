@@ -38,6 +38,11 @@ export const showGalleryPickerSelector = createSelector(
     !selectingHomeLocation,
 );
 
+export const showGalleryViewer = (state: RootState) =>
+  !state.gallery.pickingPositionForId &&
+  state.gallery.activeImageId &&
+  !state.gallery.showPosition;
+
 export const mouseCursorSelector = createSelector(
   selectingHomeLocationSelector,
   toolSelector,

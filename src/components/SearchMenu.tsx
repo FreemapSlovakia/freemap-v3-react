@@ -29,6 +29,7 @@ import {
   InputGroup,
 } from 'react-bootstrap';
 import FontAwesomeIcon from './FontAwesomeIcon';
+import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -128,12 +129,17 @@ const SearchMenu: React.FC<Props> = ({
     }
 
     const handler = (e: KeyboardEvent) => {
-      if (
-        inputRef.current &&
-        (e.keyCode === 114 || ((e.ctrlKey || e.metaKey) && e.keyCode === 70))
-      ) {
-        inputRef.current.focus();
-        e.preventDefault();
+      if (inputRef.current) {
+        if (
+          e.keyCode === KEY_F3 ||
+          ((e.ctrlKey || e.metaKey) && e.keyCode === KEY_F)
+        ) {
+          inputRef.current.focus();
+          e.preventDefault();
+        } else if (e.keyCode === KEY_ESCAPE) {
+          inputRef.current.blur();
+          e.preventDefault();
+        }
       }
     };
 
