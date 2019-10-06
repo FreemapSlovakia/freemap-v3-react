@@ -29,6 +29,8 @@ export const gallerySubmitStarsProcessor: Processor<
       expectedStatus: 204,
     });
 
-    dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
+    if (getState().gallery.activeImageId === id) {
+      dispatch(galleryRequestImage(id));
+    }
   },
 };

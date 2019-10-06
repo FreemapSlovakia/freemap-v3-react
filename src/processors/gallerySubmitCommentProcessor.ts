@@ -9,7 +9,7 @@ export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
   errorKey: 'gallery.commentAddingError',
   handle: async ({ getState, dispatch }) => {
-    const { image } = getState().gallery;
+    const { image, activeImageId } = getState().gallery;
     if (!image) {
       return;
     }
@@ -28,6 +28,8 @@ export const gallerySubmitCommentProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    dispatch(galleryRequestImage(id)); // TODO only if equal to activeImageId
+    if (getState().gallery.activeImageId === id) {
+      dispatch(galleryRequestImage(id));
+    }
   },
 };
