@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import GalleryViewerModal from 'fm3/components/gallery/GalleryViewerModal';
 import GalleryFilterModal from 'fm3/components/gallery/GalleryFilterModal';

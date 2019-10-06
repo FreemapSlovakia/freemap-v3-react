@@ -9,7 +9,7 @@ import {
   mapDetailsSetSubtool,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';

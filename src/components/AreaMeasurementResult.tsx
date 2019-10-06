@@ -11,7 +11,7 @@ import {
 } from 'fm3/actions/areaMeasurementActions';
 
 import { area } from 'fm3/geoutils';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { divIcon } from 'leaflet';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';

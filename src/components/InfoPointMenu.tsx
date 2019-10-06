@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 
 import { infoPointAdd, infoPointDelete } from 'fm3/actions/infoPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';

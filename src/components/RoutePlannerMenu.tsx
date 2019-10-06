@@ -24,7 +24,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';

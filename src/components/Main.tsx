@@ -67,7 +67,7 @@ import AboutModal from 'fm3/components/AboutModal';
 import SupportUsModal from 'fm3/components/SupportUsModal';
 import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
 import { setLocation, setActiveModal } from 'fm3/actions/mainActions';

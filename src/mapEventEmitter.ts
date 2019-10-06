@@ -7,4 +7,4 @@ interface EventTypes {
   mouseMove: [number, number, MouseEvent];
 }
 
-export default new EventEmitter<EventTypes>();
+export const mapEventEmitter = new EventEmitter<EventTypes>();

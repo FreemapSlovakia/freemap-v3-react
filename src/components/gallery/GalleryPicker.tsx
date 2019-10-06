@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Circle } from 'react-leaflet';
 
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { galleryRequestImages } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';

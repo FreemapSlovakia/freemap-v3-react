@@ -12,7 +12,7 @@ import {
 import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
 
 import { distance } from 'fm3/geoutils';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { divIcon } from 'leaflet';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';

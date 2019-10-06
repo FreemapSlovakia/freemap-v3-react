@@ -24,7 +24,7 @@ import {
 import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
-import mapEventEmitter from 'fm3/emitters/mapEventEmitter';
+import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { LatLon } from 'fm3/types/common';
