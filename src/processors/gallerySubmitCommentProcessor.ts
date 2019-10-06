@@ -9,7 +9,7 @@ export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
   errorKey: 'gallery.commentAddingError',
   handle: async ({ getState, dispatch }) => {
-    const { image, activeImageId } = getState().gallery;
+    const { image } = getState().gallery;
     if (!image) {
       return;
     }
