@@ -108,6 +108,7 @@ import MoreMenuButton from './MoreMenuButton';
 import ToolsMenuButton from './ToolsMenuButton';
 import FontAwesomeIcon from './FontAwesomeIcon';
 import { toolDefinitions } from 'fm3/toolDefinitions';
+import { useShareFile } from 'fm3/hooks/shareFileHook';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -223,6 +224,8 @@ const MainInt: React.FC<Props> = ({
     },
     [handlePicturesDrop, handleGpxDrop, onPicturesDrop, authenticated],
   );
+
+  useShareFile(onDrop);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 

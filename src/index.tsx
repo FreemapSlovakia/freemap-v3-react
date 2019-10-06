@@ -6,7 +6,7 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
-import * as OfflinePluginRuntime from 'offline-plugin/runtime';
+import runtime from 'serviceworker-webpack-plugin/lib/runtime';
 
 import { Main } from 'fm3/components/Main';
 import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
@@ -36,6 +36,9 @@ import 'fm3/styles/bootstrap-override.scss';
 import { authInit, authCheckLogin } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { AppState } from './types/common';
+
+import registerEvents from 'serviceworker-webpack-plugin/lib/browser/registerEvents';
+import applyUpdate from 'serviceworker-webpack-plugin/lib/browser/applyUpdate';
 
 setDefaultGetErrorMessage(() => null);
 
@@ -73,14 +76,17 @@ render(
   document.getElementById('app'),
 );
 
-// prevent for development to make hot reloading working
-if (process.env.NODE_ENV) {
-  OfflinePluginRuntime.install({
-    onUpdateReady() {
-      // Tells to new SW to take control immediately
-      OfflinePluginRuntime.applyUpdate();
+if ('serviceWorker' in navigator) {
+  const registration = runtime.register();
+
+  registerEvents(registration, {
+    onInstalled: () => {},
+    onUpdateReady: () => {
+      applyUpdate();
     },
-    onUpdated() {
+    onUpdating: () => {},
+    onUpdateFailed: () => {},
+    onUpdated: () => {
       store.dispatch(
         toastsAdd({
           collapseKey: 'app.update',
@@ -93,9 +99,6 @@ if (process.env.NODE_ENV) {
         }),
       );
     },
-    // TODO
-    // onUpdateFailed() {
-    // },
   });
 }
 

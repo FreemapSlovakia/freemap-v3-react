@@ -8,8 +8,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
-const OfflinePlugin = require('offline-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
+const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -119,6 +119,9 @@ module.exports = {
       tsconfig: path.resolve(__dirname, './tsconfig.json'),
       async: fastDev,
     }),
+    new ServiceWorkerWebpackPlugin({
+      entry: path.join(__dirname, './sw/sw.ts'),
+    }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react
@@ -159,6 +162,22 @@ module.exports = {
         },
       ],
       orientation: 'any',
+      share_target: {
+        action: '/',
+        method: 'POST',
+        enctype: 'multipart/form-data',
+        params: {
+          title: 'title',
+          text: 'text',
+          url: 'url',
+          files: [
+            {
+              name: 'file',
+              accept: ['image/jpeg', 'application/gpx+xml'],
+            },
+          ],
+        },
+      },
     }),
     new CopyWebpackPlugin([
       { from: { glob: 'static', dot: true }, flatten: true },
@@ -182,15 +201,6 @@ module.exports = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-    // new webpack.IgnorePlugin(/^\.\/locale$/, /moment$/)
-    new OfflinePlugin({
-      autoUpdate: true,
-      ServiceWorker: {
-        events: true,
-        minify: true,
-      },
-      AppCache: null, // disable
-    }),
   ].filter(x => x),
   devServer: {
     disableHostCheck: true,
