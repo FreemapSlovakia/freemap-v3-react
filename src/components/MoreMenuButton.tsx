@@ -317,6 +317,8 @@ class MoreMenuButton extends React.Component<Props, State> {
                     mapType={mapType}
                     expertMode={expertMode}
                     onSelect={this.close}
+                    pointTitle={document.title}
+                    pointDescription={document.title}
                   />
                 </>
               ) : submenu === 'language' ? (

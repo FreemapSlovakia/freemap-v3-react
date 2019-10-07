@@ -15,6 +15,7 @@ interface Props extends LatLon {
   placement?: string;
   includePoint?: boolean;
   pointTitle?: string;
+  pointDescription?: string;
   url?: string;
   t: Translator;
   children: JSX.Element | JSX.Element[];
@@ -30,6 +31,7 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
   placement,
   includePoint,
   pointTitle,
+  pointDescription,
   url,
   children,
 }) => {
@@ -79,6 +81,7 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
               expertMode={expertMode}
               includePoint={includePoint}
               pointTitle={pointTitle}
+              pointDescription={pointDescription}
               url={url}
               onSelect={handleMenuItemClick}
             />

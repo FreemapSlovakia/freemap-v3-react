@@ -463,6 +463,7 @@ class GalleryViewerModal extends React.Component<Props, State> {
               placement="top"
               includePoint
               pointTitle={title}
+              pointDescription={description}
               url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
             >
               <FontAwesomeIcon icon="external-link" />

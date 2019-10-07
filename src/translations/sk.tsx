@@ -804,7 +804,9 @@ export default {
     josm: 'Editor JOSM',
     id: 'Editor iD',
     'routing-debug': 'Ladenie navigácie',
-    window: 'Novom okne',
+    window: 'Nové okno',
+    url: 'Zdieľať URL',
+    image: 'Zdieľať fotografiu',
   },
 
   search: {

@@ -19,6 +19,7 @@ interface Props extends LatLon {
   placement?: string;
   includePoint?: boolean;
   pointTitle?: string;
+  pointDescription?: string;
   url?: string;
   t: Translator;
   onSelect?: (where: string) => void;
@@ -33,6 +34,7 @@ const OpenInExternalAppMenuItems: React.FC<Props> = ({
   expertMode,
   includePoint,
   pointTitle,
+  pointDescription,
   url,
   onSelect,
 }) => {
@@ -158,11 +160,63 @@ const OpenInExternalAppMenuItems: React.FC<Props> = ({
             }[mapType] || 'foot'}`,
           );
           break;
+        case 'url':
+          (navigator as any)
+            .share({
+              title: pointTitle,
+              text: pointDescription,
+              url,
+            })
+            .catch(error => console.log('Error sharing', error)); // TODO toast
+          break;
+        case 'image':
+          {
+            const nav = navigator as any;
+
+            const share = async () => {
+              if (!url) {
+                throw new Error('missong url');
+              }
+
+              const response = await fetch(url);
+
+              const filesArray = [
+                new File([await response.blob()], 'picture.jpg', {
+                  type: 'image/jpeg',
+                }),
+              ];
+
+              if (!nav.canShare({ files: filesArray })) {
+                throw new Error("can't share");
+              }
+
+              await nav.share({
+                files: filesArray,
+                title: pointTitle,
+                text: pointDescription,
+              });
+            };
+
+            share().catch(err => {
+              console.log(err); // TODO toast
+            });
+          }
+          break;
         default:
           break;
       }
     },
-    [lat, lon, mapType, zoom, url, includePoint, pointTitle, onSelect],
+    [
+      lat,
+      lon,
+      mapType,
+      zoom,
+      url,
+      includePoint,
+      pointTitle,
+      onSelect,
+      pointDescription,
+    ],
   );
 
   return (
@@ -171,6 +225,24 @@ const OpenInExternalAppMenuItems: React.FC<Props> = ({
         <>
           <MenuItem data-where="window" onClick={handleMenuItemClick}>
             {t('external.window')}
+          </MenuItem>
+          {(navigator as any).share && (
+            <MenuItem data-where="url" onClick={handleMenuItemClick}>
+              {t('external.url')}
+            </MenuItem>
+          )}
+          {(navigator as any).canShare && (
+            <MenuItem data-where="image" onClick={handleMenuItemClick}>
+              {t('external.image')}
+            </MenuItem>
+          )}
+          <MenuItem divider />
+        </>
+      )}
+      {!url && (navigator as any).share && (
+        <>
+          <MenuItem data-where="url" onClick={handleMenuItemClick}>
+            {t('external.url')}
           </MenuItem>
           <MenuItem divider />
         </>

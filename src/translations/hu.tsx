@@ -811,6 +811,8 @@ export default {
     id: 'Szerkesztés iD-vel',
     'routing-debug': 'Útvonaltervezési hibakereső',
     window: 'Új ablakban',
+    url: 'Share URL', // TODO
+    image: 'Share photo', // TODO
   },
 
   search: {

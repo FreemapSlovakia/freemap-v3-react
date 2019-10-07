@@ -799,7 +799,9 @@ export default {
     josm: 'Editor JOSM',
     id: 'Editor iD',
     'routing-debug': 'Ladění navigace',
-    window: 'Novém okně',
+    window: 'Nové okno',
+    url: 'Sdílet URL',
+    image: 'Sdílet fotografii',
   },
 
   search: {

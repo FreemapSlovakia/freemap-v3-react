@@ -41,6 +41,16 @@ export const ShareMapModal: React.FC<Props> = ({ onModalClose, t }) => {
     }
   }, []);
 
+  const handleShareClick = useCallback(() => {
+    (navigator as any)
+      .share({
+        title: document.title,
+        text: document.title,
+        url: window.location.href.replace(/&show=[^&]*/, ''),
+      })
+      .catch(error => console.log('Error sharing', error)); // TODO toast
+  }, []);
+
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
@@ -59,11 +69,19 @@ export const ShareMapModal: React.FC<Props> = ({ onModalClose, t }) => {
         />
       </Modal.Body>
       <Modal.Footer>
+        {(navigator as any).share && (
+          <>
+            <Button onClick={handleShareClick}>
+              <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}
+            </Button>{' '}
+          </>
+        )}
         <Button onClick={handleCopyClick}>
           <Glyphicon glyph="copy" /> {t('general.copyCode')}
         </Button>{' '}
         <Button onClick={onModalClose}>
-          <Glyphicon glyph="remove" /> {t('general.close')}
+          <Glyphicon glyph="remove" />
+          <span className="hidden-xs"> {t('general.close')}</span>
         </Button>
       </Modal.Footer>
     </Modal>

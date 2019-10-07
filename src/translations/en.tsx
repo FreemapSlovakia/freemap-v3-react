@@ -805,6 +805,8 @@ export default {
     id: 'Edit in iD',
     'routing-debug': 'Routing debugger',
     window: 'New window',
+    url: 'Share URL',
+    image: 'Share photo',
   },
 
   search: {
