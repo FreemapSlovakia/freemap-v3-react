@@ -77,7 +77,10 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
       newState.overlays = overlays;
     }
 
-    if (action.payload.gpsTracked || (lat !== undefined && lon !== undefined)) {
+    if (
+      action.payload.gpsTracked !== undefined ||
+      (lat !== undefined && lon !== undefined)
+    ) {
       newState.gpsTracked = !!action.payload.gpsTracked;
     }
 

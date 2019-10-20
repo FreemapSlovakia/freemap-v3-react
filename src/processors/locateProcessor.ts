@@ -58,8 +58,10 @@ export const locateProcessor: Processor = {
           },
           { enableHighAccuracy: true, maximumAge: 0 },
         );
-    } else if (navigator.geolocation && watch) {
+    } else if (navigator.geolocation && typeof watch === 'number') {
+      dispatch(mapRefocus({ gpsTracked: false }));
       navigator.geolocation.clearWatch(watch);
+      watch = undefined;
     }
   },
 };

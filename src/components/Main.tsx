@@ -157,24 +157,20 @@ const MainInt: React.FC<Props> = ({
     setMapLeafletElement(mapRef.current ? mapRef.current.leafletElement : null);
   }, []);
 
-  const handleMapMoveEnd = useCallback(
-    x => {
-      console.log('xxxxxxx', x);
-      // TODO analyze why this can be null
-      if (!mapRef.current) {
-        return;
-      }
+  const handleMapMoveEnd = useCallback(() => {
+    // TODO analyze why this can be null
+    if (!mapRef.current) {
+      return;
+    }
 
-      const map = mapRef.current.leafletElement;
-      const { lat: newLat, lng: newLon } = map.getCenter();
-      const newZoom = map.getZoom();
+    const map = mapRef.current.leafletElement;
+    const { lat: newLat, lng: newLon } = map.getCenter();
+    const newZoom = map.getZoom();
 
-      if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
-        onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
-      }
-    },
-    [onMapRefocus, lat, lon, zoom],
-  );
+    if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
+      onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
+    }
+  }, [onMapRefocus, lat, lon, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (embed) {
