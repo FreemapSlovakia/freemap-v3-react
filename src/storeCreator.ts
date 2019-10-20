@@ -95,6 +95,7 @@ import { searchHighlightProcessor } from './processors/searchHighlightProcessor'
 import { authInitProcessor } from './processors/authInitProcessor';
 import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
+import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -172,6 +173,7 @@ processors.push(
   galleryShowImageGaProcessor,
   galleryShowLayerHintProcessor,
   galleryShowOnTheMapProcessor,
+  gallerySetItemForPositionPickingProcessor,
   gallerySubmitCommentProcessor,
   gallerySubmitStarsProcessor,
   galleryUploadModalProcessor,
