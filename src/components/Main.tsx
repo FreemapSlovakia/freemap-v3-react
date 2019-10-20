@@ -70,7 +70,7 @@ import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
-import { setLocation, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -81,7 +81,7 @@ import TrackingResult from 'fm3/components/tracking/TrackingResult';
 import TrackingMenu from 'fm3/components/tracking/TrackingMenu.tsx';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { LeafletMouseEvent, LocationEvent } from 'leaflet';
+import { LeafletMouseEvent } from 'leaflet';
 
 import fmLogo from '../images/freemap-logo-print.png';
 import { useDropzone } from 'react-dropzone';
@@ -133,7 +133,6 @@ const MainInt: React.FC<Props> = ({
   overlayPaneOpacity,
   embedFeatures,
   onMapRefocus,
-  onLocationSet,
   onGpxDrop,
   onGpxLoadError,
   onPictureUpdated,
@@ -158,26 +157,23 @@ const MainInt: React.FC<Props> = ({
     setMapLeafletElement(mapRef.current ? mapRef.current.leafletElement : null);
   }, []);
 
-  const handleMapMoveEnd = useCallback(() => {
-    // TODO analyze why this can be null
-    if (!mapRef.current) {
-      return;
-    }
+  const handleMapMoveEnd = useCallback(
+    x => {
+      console.log('xxxxxxx', x);
+      // TODO analyze why this can be null
+      if (!mapRef.current) {
+        return;
+      }
 
-    const map = mapRef.current.leafletElement;
-    const { lat: newLat, lng: newLon } = map.getCenter();
-    const newZoom = map.getZoom();
+      const map = mapRef.current.leafletElement;
+      const { lat: newLat, lng: newLon } = map.getCenter();
+      const newZoom = map.getZoom();
 
-    if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
-      onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
-    }
-  }, [onMapRefocus, lat, lon, zoom]);
-
-  const handleLocationFound = useCallback(
-    (e: LocationEvent) => {
-      onLocationSet(e.latlng.lat, e.latlng.lng, e.accuracy);
+      if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
+        onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
+      }
     },
-    [onLocationSet],
+    [onMapRefocus, lat, lon, zoom],
   );
 
   const handleLogoClick = useCallback(() => {
@@ -363,7 +359,6 @@ const MainInt: React.FC<Props> = ({
           onmouseover={handleMapMouseOver}
           onmouseout={handleMapMouseOut}
           onclick={handleMapClick}
-          onlocationfound={handleLocationFound}
           style={{ cursor: mouseCursor }}
         >
           <ScaleControl imperial={false} position="bottomleft" />
@@ -418,9 +413,6 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMapRefocus(changes: Partial<MapViewState>) {
     dispatch(mapRefocus(changes));
-  },
-  onLocationSet(lat: number, lon: number, accuracy: number) {
-    dispatch(setLocation({ lat, lon, accuracy }));
   },
   onMapReset() {
     dispatch(mapReset());

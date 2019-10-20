@@ -17,7 +17,7 @@ export interface MapStateBase extends MapViewState {
 }
 
 export const mapRefocus = createStandardAction('MAP_REFOCUS')<
-  Partial<MapViewState>
+  Partial<MapViewState> & { gpsTracked?: boolean }
 >();
 
 export const mapSetTileFormat = createStandardAction('MAP_SET_TILE_FORMAT')<

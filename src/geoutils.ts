@@ -87,14 +87,7 @@ export function toRad(deg: number): number {
 }
 
 export function getCurrentPosition(): Promise<LatLon> {
-  const options = {
-    enableHighAccuracy: true,
-    timeout: 10000,
-    maximumAge: 0,
-  };
-
   return new Promise((resolve, reject): void => {
-    // resolve({ lat: 48.786170, lon: 19.496098 });
     const onSuccess = (pos: Position): void => {
       resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
     };
@@ -103,7 +96,11 @@ export function getCurrentPosition(): Promise<LatLon> {
       reject(error);
     };
 
-    navigator.geolocation.getCurrentPosition(onSuccess, onError, options);
+    navigator.geolocation.getCurrentPosition(onSuccess, onError, {
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0,
+    });
   });
 }
 

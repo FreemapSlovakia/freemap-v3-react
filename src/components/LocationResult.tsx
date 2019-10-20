@@ -12,7 +12,7 @@ const LocationResult: React.FC<Props> = ({ gpsLocation }) => {
       <Circle
         center={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}
         radius={gpsLocation.accuracy / 2}
-        weight={2}
+        weight={1}
       />
       <RichMarker
         position={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}

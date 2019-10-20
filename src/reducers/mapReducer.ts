@@ -16,6 +16,7 @@ export interface MapState extends MapStateBase {
   stravaAuth: boolean;
   tool: string | null; // TODO enum
   removeGalleryOverlayOnGalleryToolQuit: boolean;
+  gpsTracked: boolean;
 }
 
 const initialState: MapState = {
@@ -30,6 +31,7 @@ const initialState: MapState = {
   stravaAuth: false,
   tool: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
+  gpsTracked: false,
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(initialState)
@@ -41,6 +43,7 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     zoom: initialState.zoom,
     lat: initialState.lat,
     lon: initialState.lon,
+    gpsTracked: false,
   }))
   .handleAction(mapSetTileFormat, (state, action) => ({
     ...state,
@@ -61,10 +64,10 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     if (zoom) {
       newState.zoom = zoom;
     }
-    if (lat) {
+    if (lat !== undefined) {
       newState.lat = lat;
     }
-    if (lon) {
+    if (lon !== undefined) {
       newState.lon = lon;
     }
     if (mapType) {
@@ -72,6 +75,10 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     }
     if (overlays) {
       newState.overlays = overlays;
+    }
+
+    if (action.payload.gpsTracked || (lat !== undefined && lon !== undefined)) {
+      newState.gpsTracked = !!action.payload.gpsTracked;
     }
 
     return newState;

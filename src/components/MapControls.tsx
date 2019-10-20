@@ -22,6 +22,7 @@ export const MapControlsInt: React.FC<Props> = ({
   locate,
   onLocate,
   onMapRefocus,
+  gpsTracked,
   t,
 }) => {
   const leafletElement = getMapLeafletElement();
@@ -87,7 +88,12 @@ export const MapControlsInt: React.FC<Props> = ({
           </Button>
         </ButtonGroup>
         {(!embed || !embedFeatures.includes('noLocateMe')) && (
-          <Button onClick={onLocate} title={t('main.locateMe')} active={locate}>
+          <Button
+            onClick={onLocate}
+            title={t('main.locateMe')}
+            active={locate}
+            bsStyle={gpsTracked ? 'warning' : 'default'}
+          >
             <FontAwesomeIcon icon="dot-circle-o" />
           </Button>
         )}
@@ -114,6 +120,7 @@ const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,
   embedFeatures: state.main.embedFeatures,
   locate: state.main.locate,
+  gpsTracked: state.map.gpsTracked,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
