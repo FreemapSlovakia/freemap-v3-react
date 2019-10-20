@@ -129,6 +129,10 @@ export function usePictureDropHandler(
           : tags.ImageDescription
           ? tags.ImageDescription.description
           : '';
+
+        console.log(tags.DateTimeOriginal);
+        console.log(tags.DateTime);
+
         const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
         const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
         const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
@@ -166,14 +170,7 @@ export function usePictureDropHandler(
             ? tags.DocumentName.description
             : '',
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
-          takenAt: takenAtRaw
-            ? new Date(
-                takenAtRaw.description.replace(
-                  /^(\d+):(\d+):(\d+)/,
-                  '$1-$2-$3',
-                ),
-              )
-            : null,
+          takenAt: parseExifDateTime(takenAtRaw.description),
           tags: keywords,
           errors: [],
         });
@@ -241,4 +238,20 @@ function parse2(m: RegExpExecArray) {
       : parseInt(m[1], 10) + parseFloat(m[2]) / 60,
     m[3] || null,
   ] as const;
+}
+
+function parseExifDateTime(s: string) {
+  const m = /^(\d+):(\d+):(\d+)(?: (\d+)(?::(\d+)(?::(\d+))?)?)?$/.exec(s);
+  return (
+    (m &&
+      new Date(
+        Number(m[1]),
+        Number(m[2]) - 1,
+        Number(m[3]),
+        m[4] ? Number(m[4]) : undefined,
+        m[5] ? Number(m[5]) : undefined,
+        m[6] ? Number(m[6]) : undefined,
+      )) ||
+    null
+  );
 }
