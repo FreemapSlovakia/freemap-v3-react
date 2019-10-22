@@ -63,8 +63,7 @@ export const transportTypeDefs: {
   {
     type: 'foot',
     icon: '!icon-hiking',
-    url: `${EPS_URL}$MODE/v1/foot`,
-    slovakiaOnly: true,
+    url: `${FM_URL}$MODE/v1/foot`,
   },
   {
     type: 'foot-osm',
@@ -74,9 +73,8 @@ export const transportTypeDefs: {
   {
     type: 'foot-stroller',
     icon: 'wheelchair-alt',
-    url: `${EPS_URL}$MODE/v1/foot`,
+    url: `${FM_URL}$MODE/v1/foot`,
     exclude: 'stroller',
-    slovakiaOnly: true,
     expert: true,
   },
   {

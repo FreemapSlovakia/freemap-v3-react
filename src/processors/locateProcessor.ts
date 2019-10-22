@@ -4,7 +4,7 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLng } from 'leaflet';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
-let watch: number;
+let watch: number | undefined;
 
 export const locateProcessor: Processor = {
   actionCreator: toggleLocate,
