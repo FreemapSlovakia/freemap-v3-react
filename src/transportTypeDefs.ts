@@ -22,7 +22,6 @@ export const transportTypeDefs: {
   special?: boolean;
   url: string;
   exclude?: string;
-  slovakiaOnly?: boolean;
   development?: boolean;
   hidden?: boolean;
 }[] = [
@@ -38,8 +37,6 @@ export const transportTypeDefs: {
     icon: 'bus',
     special: true,
     url: `${EPS_URL}$MODE/v1/imhd`,
-    slovakiaOnly: true,
-    development: true,
   },
   { type: 'bike', icon: 'bicycle', url: `${FM_URL}$MODE/v1/bike` },
   {
@@ -57,7 +54,6 @@ export const transportTypeDefs: {
     icon: 'bicycle',
     special: true,
     url: `${EPS_URL}$MODE/v1/bikesharing`,
-    slovakiaOnly: true,
     development: true,
   },
   {

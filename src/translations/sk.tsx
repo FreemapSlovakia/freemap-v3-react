@@ -76,7 +76,7 @@ export default {
       car: 'Auto, vrátane spoplatnených ciest',
       'car-free': 'Auto, mimo spoplatnených ciest',
       bikesharing: 'Bike sharing',
-      imhd: 'MHD',
+      imhd: 'MHD v Bratislave',
       'bike-osm': 'Bicykel',
       bike: 'Cykloturistika',
       'foot-stroller': 'S kočíkom / vozíčkom',
@@ -85,7 +85,6 @@ export default {
       'foot-osm': 'Pešo',
       foot: 'Turistika',
     },
-    slovakiaOnly: 'dostupné len pre Slovensko',
     development: 'vo vývoji',
     mode: {
       route: 'Po poradí',

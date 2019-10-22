@@ -77,7 +77,7 @@ export default {
       car: 'Car',
       'car-free': 'Car (toll free)',
       bikesharing: 'Bike sharing',
-      imhd: 'Public transport',
+      imhd: 'Public transport in Bratislava',
       'bike-osm': 'Bicycle',
       bike: 'Bicycle touring',
       'foot-stroller': 'Stroller / Wheelchair',
@@ -86,7 +86,6 @@ export default {
       'foot-osm': 'Foot',
       foot: 'Hiking',
     },
-    slovakiaOnly: 'available only for Slovaka',
     development: 'in development',
     mode: {
       route: 'Ordered',

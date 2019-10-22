@@ -206,7 +206,7 @@ const RoutePlannerMenu: React.FC<Props> = ({
       >
         {transportTypeDefs
           .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
-          .map(({ type, icon, slovakiaOnly, development }) => (
+          .map(({ type, icon, development }) => (
             <MenuItem
               eventKey={type}
               key={type}
@@ -225,16 +225,6 @@ const RoutePlannerMenu: React.FC<Props> = ({
                   <FontAwesomeIcon
                     icon="flask"
                     title={t('routePlanner.development')}
-                    className="text-warning"
-                  />
-                </>
-              )}
-              {slovakiaOnly && (
-                <>
-                  {' '}
-                  <FontAwesomeIcon
-                    icon="exclamation-triangle"
-                    title={t('routePlanner.slovakiaOnly')}
                     className="text-warning"
                   />
                 </>

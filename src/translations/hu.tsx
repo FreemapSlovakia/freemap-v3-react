@@ -78,7 +78,7 @@ export default {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
       bikesharing: 'Kerékpármegosztás',
-      imhd: 'Tömegközlekedés',
+      imhd: 'Tömegközlekedés (SK/Bratislava)',
       'bike-osm': 'Kerékpár (OSM)', // TODO "Bicycle touring"
       bike: 'Kerékpár',
       'foot-stroller': 'Babakocsi / kerekesszék',
@@ -87,7 +87,6 @@ export default {
       foot: 'Gyaloglás', // TODO "Hiking"
       'foot-osm': 'Gyaloglás (OSM)',
     },
-    slovakiaOnly: 'available only for Slovaka', // TODO
     development: 'fejl. alatt',
     mode: {
       route: 'Megadott sorrendben',
