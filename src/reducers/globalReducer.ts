@@ -19,8 +19,6 @@ export function globalReducer(state: RootState, action: RootAction) {
         return;
       }
 
-      // draft.routePlanner.alternatives
-      // draft.routePlanner.activeAlternativeIndex
       draft.distanceMeasurement.points = [];
 
       const coords: number[][] = [];
