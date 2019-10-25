@@ -65,6 +65,7 @@ export default {
   },
 
   routePlanner: {
+    convertToMeasurement: 'Convert to measurement',
     start: 'Start',
     finish: 'Finish',
     swap: 'Swap start and finish',

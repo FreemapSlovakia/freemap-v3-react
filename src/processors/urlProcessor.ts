@@ -71,6 +71,7 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetMidpoint,
   routePlannerToggleElevationChart,
+  routePlannerConvertToMeasurement,
 } from 'fm3/actions/routePlannerActions';
 import {
   osmLoadNode,
@@ -141,6 +142,7 @@ export const urlProcessor: Processor = {
     routePlannerSetParams,
     routePlannerSetTransportType,
     routePlannerToggleElevationChart,
+    routePlannerConvertToMeasurement,
   ],
   handle: async ({ getState, action }) => {
     const {

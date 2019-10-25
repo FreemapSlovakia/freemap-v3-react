@@ -64,6 +64,7 @@ export default {
   },
 
   routePlanner: {
+    convertToMeasurement: 'Skonvertovať na meranie',
     start: 'Štart',
     finish: 'Cieľ',
     swap: 'Prehodiť štart a cieľ',

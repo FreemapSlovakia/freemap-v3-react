@@ -66,6 +66,7 @@ export default {
   },
 
   routePlanner: {
+    convertToMeasurement: 'Convert to measurement', // TODO translate
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',

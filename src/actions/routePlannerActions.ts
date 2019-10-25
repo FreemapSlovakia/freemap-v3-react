@@ -110,3 +110,7 @@ export const routePlannerToggleElevationChart = createAction(
   'ROUTE_PLANNER_TOGGLE_ELEVATION_CHART',
 );
 export const routePlannerSwapEnds = createAction('ROUTE_PLANNER_SWAP_ENDS');
+
+export const routePlannerConvertToMeasurement = createAction(
+  'ROUTE_PLANNER_CONVERT_TO_MEASUREMENT',
+);

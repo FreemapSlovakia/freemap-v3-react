@@ -19,6 +19,7 @@ import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerSwapEnds,
   routePlannerSetFromCurrentPosition,
+  routePlannerConvertToMeasurement,
 } from 'fm3/actions/routePlannerActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -61,6 +62,7 @@ const RoutePlannerMenu: React.FC<Props> = ({
   onMissingHomeLocation,
   onSetFromCurrentPosition,
   homeLocation,
+  onConvertToMeasurement,
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number) => {
@@ -302,6 +304,17 @@ const RoutePlannerMenu: React.FC<Props> = ({
       >
         <FontAwesomeIcon icon="bar-chart" />
         <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+      </Button>{' '}
+      <Button
+        onClick={onConvertToMeasurement}
+        disabled={!routeFound}
+        title={t('routePlanner.convertToMeasurement')}
+      >
+        <FontAwesomeIcon icon="pencil" />
+        <span className="hidden-xs">
+          {' '}
+          {t('routePlanner.convertToMeasurement')}
+        </span>
       </Button>
     </>
   );
@@ -366,6 +379,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onSetFromCurrentPosition(end: 'start' | 'finish') {
     dispatch(routePlannerSetFromCurrentPosition(end));
+  },
+  onConvertToMeasurement() {
+    dispatch(routePlannerConvertToMeasurement());
   },
 });
 

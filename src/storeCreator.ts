@@ -1,4 +1,6 @@
 import { createStore, applyMiddleware, combineReducers, Store } from 'redux';
+import reduceReducers from 'reduce-reducers';
+
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
 import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
@@ -24,6 +26,7 @@ import { toastsReducer } from './reducers/toastsReducer';
 import { trackingReducer } from './reducers/trackingReducer';
 import { trackViewerReducer } from './reducers/trackViewerReducer';
 import { websocketReducer } from './reducers/websocketReducer';
+import { globalReducer } from './reducers/globalReducer';
 import { StateType } from 'typesafe-actions';
 import { RootAction } from './actions';
 import { exportPdfProcessor } from './processors/pdfExportProcessor';
@@ -120,9 +123,13 @@ const reducers = {
   websocket: websocketReducer,
 };
 
-const rootReducer = combineReducers(reducers);
+const combinedReducers = combineReducers(reducers);
 
-export type RootState = StateType<typeof rootReducer>;
+type CR = typeof combinedReducers;
+
+export type RootState = StateType<CR>;
+
+const rootReducer = reduceReducers<RootState>(combinedReducers, globalReducer);
 
 processors.push(
   errorProcessor,
@@ -199,7 +206,7 @@ processors.push(
 
 export function createReduxStore() {
   const store = createStore(
-    rootReducer,
+    rootReducer as CR,
     applyMiddleware(
       loggerMiddleware,
       errorHandlingMiddleware,

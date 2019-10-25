@@ -44,15 +44,19 @@ const clearResult = {
   timestamp: null,
 };
 
-const initialState: RoutePlannerState = {
-  transportType: null,
+export const cleanState = {
   start: null,
   midpoints: [],
   finish: null,
-  pickMode: 'start',
+  pickMode: 'start' as PickMode,
   itineraryIsVisible: false,
-  mode: 'route',
   ...clearResult,
+};
+
+const initialState: RoutePlannerState = {
+  transportType: null,
+  mode: 'route',
+  ...cleanState,
 };
 
 export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
