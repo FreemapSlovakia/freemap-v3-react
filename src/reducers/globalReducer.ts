@@ -4,8 +4,10 @@ import { lineString } from '@turf/helpers';
 import { cleanState } from './routePlannerReducer';
 import { isActionOf } from 'typesafe-actions';
 import { routePlannerConvertToMeasurement } from 'fm3/actions/routePlannerActions';
+import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
 
-export function globalReducer(state, action) {
+export function globalReducer(state: RootState, action: RootAction) {
   if (isActionOf(routePlannerConvertToMeasurement, action)) {
     return produce(state, draft => {
       const alt =
