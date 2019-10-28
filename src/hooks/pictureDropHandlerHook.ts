@@ -134,28 +134,44 @@ export function usePictureDropHandler(
         console.log(tags.DateTime);
 
         const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
-        const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
-        const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
 
-        const lat =
-          rawLat *
-          (NS[
-            (
-              latRef ||
-              (tags.GPSLatitudeRef || { value: [] }).value[0] ||
-              ''
-            ).toUpperCase()
-          ] || Number.NaN);
+        let lat;
+        if (
+          tags.GPSLatitude &&
+          typeof tags.GPSLatitude.description === 'number'
+        ) {
+          lat = tags.GPSLatitude.description;
+        } else {
+          const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
+          lat =
+            rawLat *
+            (NS[
+              (
+                latRef ||
+                (tags.GPSLatitudeRef || { value: [] }).value[0] ||
+                ''
+              ).toUpperCase()
+            ] || Number.NaN);
+        }
 
-        const lon =
-          rawLon *
-          (EW[
-            (
-              lonRef ||
-              (tags.GPSLongitudeRef || { value: [] }).value[0] ||
-              ''
-            ).toUpperCase()
-          ] || Number.NaN);
+        let lon;
+        if (
+          tags.GPSLongitude &&
+          typeof tags.GPSLongitude.description === 'number'
+        ) {
+          lon = tags.GPSLongitude.description;
+        } else {
+          const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
+          lon =
+            rawLon *
+            (EW[
+              (
+                lonRef ||
+                (tags.GPSLongitudeRef || { value: [] }).value[0] ||
+                ''
+              ).toUpperCase()
+            ] || Number.NaN);
+        }
 
         onItemAdd({
           id,
@@ -170,7 +186,7 @@ export function usePictureDropHandler(
             ? tags.DocumentName.description
             : '',
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
-          takenAt: parseExifDateTime(takenAtRaw.description),
+          takenAt: takenAtRaw && parseExifDateTime(takenAtRaw.description),
           tags: keywords,
           errors: [],
         });
@@ -210,8 +226,15 @@ export function usePictureDropHandler(
 }
 
 // adds support for Olympus and other weirdos
-function adaptGpsCoordinate(x: { description: string; value: string }) {
+function adaptGpsCoordinate(x: {
+  description: string | number;
+  value: string;
+}) {
   if (x) {
+    if (typeof x.description === 'number') {
+      return [x.description];
+    }
+
     // { value: "48,57.686031N", attributes: {}, description: "48.96143385N" }
 
     const { description, value } = x;
@@ -241,6 +264,11 @@ function parse2(m: RegExpExecArray) {
 }
 
 function parseExifDateTime(s: string) {
+  // try ISO
+  if (s && s.match(/\dT\d/)) {
+    return new Date(s);
+  }
+
   const m = /^(\d+):(\d+):(\d+)(?: (\d+)(?::(\d+)(?::(\d+))?)?)?$/.exec(s);
   return (
     (m &&
