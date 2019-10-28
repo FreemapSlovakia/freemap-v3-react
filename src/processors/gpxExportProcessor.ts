@@ -100,8 +100,8 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
       addObjects(doc, objects);
     }
 
-    if (set.has('plannedRoute')) {
-      addPlannedRoute(doc, routePlanner);
+    if (set.has('plannedRoute') || set.has('plannedRouteWithStops')) {
+      addPlannedRoute(doc, routePlanner, set.has('plannedRouteWithStops'));
     }
 
     if (set.has('tracking')) {
@@ -243,39 +243,42 @@ function addObjects(doc: Document, { objects }: ObjectsState) {
 function addPlannedRoute(
   doc: Document,
   { alternatives, start, finish, midpoints }: RoutePlannerState,
+  withStops: boolean,
 ) {
   // TODO add itinerar details and metadata
   // TODO add option to only export selected alternative
 
-  if (start) {
-    const startWptEle = createElement(
-      doc.documentElement,
-      'wpt',
-      undefined,
-      toLatLon(start),
-    );
-    createElement(startWptEle, 'name', 'Štart');
-  }
+  if (withStops) {
+    if (start) {
+      const startWptEle = createElement(
+        doc.documentElement,
+        'wpt',
+        undefined,
+        toLatLon(start),
+      );
+      createElement(startWptEle, 'name', 'Štart');
+    }
 
-  if (finish) {
-    const finishWptEle = createElement(
-      doc.documentElement,
-      'wpt',
-      undefined,
-      toLatLon(finish),
-    );
-    createElement(finishWptEle, 'name', 'Cieľ');
-  }
+    if (finish) {
+      const finishWptEle = createElement(
+        doc.documentElement,
+        'wpt',
+        undefined,
+        toLatLon(finish),
+      );
+      createElement(finishWptEle, 'name', 'Cieľ');
+    }
 
-  midpoints.forEach((midpoint, i: number) => {
-    const midpointWptEle = createElement(
-      doc.documentElement,
-      'wpt',
-      undefined,
-      toLatLon(midpoint),
-    );
-    createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
-  });
+    midpoints.forEach((midpoint, i: number) => {
+      const midpointWptEle = createElement(
+        doc.documentElement,
+        'wpt',
+        undefined,
+        toLatLon(midpoint),
+      );
+      createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
+    });
+  }
 
   alternatives.forEach(({ itinerary }, i: number) => {
     const trkEle = createElement(doc.documentElement, 'trk');

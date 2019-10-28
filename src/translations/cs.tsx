@@ -848,6 +848,7 @@ export default {
     export: 'Exportovat',
     what: {
       plannedRoute: 'vyhledanou trasu',
+      plannedRouteWithStops: 'vyhledanou trasu se zastávkami',
       objects: 'místa',
       pictures: 'fotografie (ve viditelné části mapy)',
       distanceMeasurement: 'měření vzdálenosti',

@@ -859,6 +859,7 @@ export default {
     export: 'Exportálás:',
     what: {
       plannedRoute: 'útvonal',
+      plannedRouteWithStops: 'útvonal (including stops)', // TODO
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
       distanceMeasurement: 'lemért távolságok',

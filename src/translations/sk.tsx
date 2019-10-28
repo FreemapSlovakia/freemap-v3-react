@@ -853,6 +853,7 @@ export default {
     export: 'Exportovať',
     what: {
       plannedRoute: 'vyhľadanú trasu',
+      plannedRouteWithStops: 'vyhľadanú trasu so zastávkami',
       objects: 'miesta',
       pictures: 'fotografie (vo viditeľnej časti mapy)',
       distanceMeasurement: 'meranie vzdialenosti',

@@ -17,6 +17,7 @@ import { RootState } from 'fm3/storeCreator';
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
   { type: 'plannedRoute', icon: 'map-signs' },
+  { type: 'plannedRouteWithStops', icon: 'map-signs' },
   { type: 'objects', icon: 'map-marker' },
   { type: 'pictures', icon: 'picture-o' },
   { type: 'distanceMeasurement', icon: 'arrows-h' },
@@ -123,6 +124,7 @@ const mapStateToProps = (state: RootState) => {
   }
   if (state.routePlanner.alternatives.length) {
     exportables.push('plannedRoute');
+    exportables.push('plannedRouteWithStops');
   }
   if (state.objects.objects.length) {
     exportables.push('objects');

@@ -852,7 +852,8 @@ export default {
   gpxExport: {
     export: 'Export',
     what: {
-      plannedRoute: 'route found',
+      plannedRoute: 'found route',
+      plannedRouteWithStops: 'found route including stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
       distanceMeasurement: 'distance measurement',
