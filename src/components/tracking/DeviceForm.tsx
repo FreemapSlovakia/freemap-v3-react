@@ -11,7 +11,7 @@ import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { EditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
-import { Checkbox } from 'react-bootstrap';
+import { Checkbox, InputGroup } from 'react-bootstrap';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
@@ -78,13 +78,16 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
         </FormGroup>
         <FormGroup>
           <ControlLabel>{t('tracking.device.maxAge')}</ControlLabel>
-          <FormControl
-            type="number"
-            min="0"
-            step="1"
-            value={maxAge}
-            onChange={setMaxAge}
-          />
+          <InputGroup>
+            <FormControl
+              type="number"
+              min="0"
+              step="1"
+              value={maxAge}
+              onChange={setMaxAge}
+            />
+            <InputGroup.Addon>s</InputGroup.Addon>
+          </InputGroup>
         </FormGroup>
         {!!device && (
           <Checkbox onChange={setRegenerateToken} checked={regenerateToken}>
