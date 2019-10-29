@@ -228,7 +228,7 @@ class GalleryViewerModal extends React.Component<Props, State> {
     const sizes = isFullscreen ? undefined : '(min-width: 992px) 868px, 568px';
 
     return (
-      <Modal show onHide={onClose} bsSize="large">
+      <Modal show onHide={onClose} bsSize="large" keyboard={false}>
         <Modal.Header closeButton>
           <Modal.Title>
             {t('gallery.viewer.title')}{' '}

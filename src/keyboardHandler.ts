@@ -1,4 +1,4 @@
-import { KEY_ESCAPE, KEY_LEFT, KEY_RIGHT } from 'keycode-js';
+import { KEY_ESCAPE, KEY_LEFT, KEY_RIGHT, KEY_M, KEY_S } from 'keycode-js';
 import { MyStore } from './storeCreator';
 import {
   setTool,
@@ -9,6 +9,9 @@ import { showGalleryViewer } from './selectors/mainSelectors';
 import {
   galleryRequestImage,
   gallerySetItemForPositionPicking,
+  galleryShowOnTheMap,
+  galleryEditPicture,
+  galleryClear,
 } from './actions/galleryActions';
 import { tipsShow } from './actions/tipsActions';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
@@ -28,17 +31,33 @@ export function attachKeyboardHandler(store: MyStore) {
 
     const state = store.getState();
 
+    if (showGalleryViewer(state) && event.keyCode === KEY_ESCAPE) {
+      if (state.gallery.editModel) {
+        store.dispatch(galleryEditPicture());
+      } else {
+        store.dispatch(galleryClear());
+      }
+      event.preventDefault();
+      return;
+    }
+
     if (event.keyCode === KEY_ESCAPE && !embed) {
       if (state.main.selectingHomeLocation) {
         store.dispatch(setSelectingHomeLocation(false));
+        event.preventDefault();
+        return;
       } else if (state.gallery.pickingPositionForId) {
         store.dispatch(gallerySetItemForPositionPicking(null));
+        event.preventDefault();
+        return;
       } else if (
         !state.main.activeModal &&
         !state.gallery.activeImageId &&
         !state.gallery.showPosition
       ) {
         store.dispatch(setTool(null));
+        event.preventDefault();
+        return;
       }
     }
 
@@ -51,22 +70,42 @@ export function attachKeyboardHandler(store: MyStore) {
       return;
     }
 
+    if (showGalleryViewer(state)) {
+      if (event.keyCode === KEY_S) {
+        store.dispatch(galleryShowOnTheMap());
+        event.preventDefault();
+        return;
+      } else if (!state.gallery.editModel && event.keyCode === KEY_M) {
+        store.dispatch(galleryEditPicture());
+        event.preventDefault();
+        return;
+      }
+    }
+
     if (
       showGalleryViewer(state) &&
       (state.gallery.imageIds && state.gallery.imageIds.length > 1)
     ) {
       if (event.keyCode === KEY_LEFT) {
         store.dispatch(galleryRequestImage('prev'));
+        event.preventDefault();
+        return;
       } else if (event.keyCode === KEY_RIGHT) {
         store.dispatch(galleryRequestImage('next'));
+        event.preventDefault();
+        return;
       }
     }
 
     if (state.main.activeModal === 'tips') {
       if (event.keyCode === KEY_LEFT) {
         store.dispatch(tipsShow('prev'));
+        event.preventDefault();
+        return;
       } else if (event.keyCode === KEY_RIGHT) {
         store.dispatch(tipsShow('next'));
+        event.preventDefault();
+        return;
       }
     }
 
@@ -81,6 +120,8 @@ export function attachKeyboardHandler(store: MyStore) {
       const baseLayer = baseLayers.find(l => l.key === event.key);
       if (baseLayer) {
         store.dispatch(mapRefocus({ mapType: baseLayer.type }));
+        event.preventDefault();
+        return;
       }
 
       const overlayLayer = overlayLayers.find(l => l.key === event.key);
@@ -97,6 +138,8 @@ export function attachKeyboardHandler(store: MyStore) {
           next.add(type);
         }
         store.dispatch(mapRefocus({ overlays: [...next] }));
+        event.preventDefault();
+        return;
       }
     }
 
@@ -123,24 +166,31 @@ export function attachKeyboardHandler(store: MyStore) {
         const toolDefinition = toolDefinitions.find(td => td.kbd === event.key);
         if (toolDefinition && toolDefinition.kbd) {
           store.dispatch(setTool(toolDefinition.tool));
+          event.preventDefault();
+          return;
         }
       } else if (initKey === 'e') {
         switch (event.key) {
           case 's':
             store.dispatch(setActiveModal('settings'));
-            break;
+            event.preventDefault();
+            return;
           case 'g':
             store.dispatch(setActiveModal('export-gpx'));
-            break;
+            event.preventDefault();
+            return;
           case 'p':
             store.dispatch(setActiveModal('export-pdf'));
-            break;
+            event.preventDefault();
+            return;
           case 'e':
             store.dispatch(setActiveModal('embed'));
-            break;
+            event.preventDefault();
+            return;
           case 'r':
             store.dispatch(setActiveModal('share'));
-            break;
+            event.preventDefault();
+            return;
         }
       }
 
