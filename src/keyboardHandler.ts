@@ -1,11 +1,4 @@
-import {
-  KEY_ESCAPE,
-  KEY_LEFT,
-  KEY_RIGHT,
-  KEY_M,
-  KEY_S,
-  KEY_C,
-} from 'keycode-js';
+import { KEY_ESCAPE, KEY_LEFT, KEY_RIGHT, KEY_M, KEY_S } from 'keycode-js';
 import { MyStore } from './storeCreator';
 import {
   setTool,

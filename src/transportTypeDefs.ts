@@ -5,7 +5,6 @@ export type TransportType =
   | 'bikesharing'
   | 'imhd'
   | 'bike'
-  | 'bike-old'
   | 'bike-osm'
   | 'nordic'
   | 'ski'
@@ -43,11 +42,6 @@ export const transportTypeDefs: {
     type: 'bike-osm',
     icon: 'bicycle',
     url: 'https://routing.openstreetmap.de/routed-bike/$MODE/v1/driving',
-  },
-  {
-    type: 'bike-old',
-    icon: 'bicycle',
-    url: `${EPS_URL}$MODE/v1/bike`,
   },
   {
     type: 'bikesharing',
