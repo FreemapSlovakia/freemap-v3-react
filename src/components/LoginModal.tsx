@@ -61,7 +61,7 @@ const LoginModal: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={onClose}>
-          <Glyphicon glyph="remove" /> {t('general.close')}
+          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

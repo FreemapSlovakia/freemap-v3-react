@@ -56,7 +56,7 @@ const TrackViewerUploadModal: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={onClose}>
-          <Glyphicon glyph="remove" /> {t('general.cancel')}
+          <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

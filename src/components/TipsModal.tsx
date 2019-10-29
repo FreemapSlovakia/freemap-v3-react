@@ -104,7 +104,7 @@ export const TipsModal: React.FC<Props> = ({
             {t('tips.prevent')}
           </Checkbox>{' '}
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
           </Button>
         </FormGroup>
       </Modal.Footer>

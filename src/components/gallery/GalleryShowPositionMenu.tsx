@@ -43,7 +43,7 @@ class GalleryShowPositionMenu extends React.Component<Props> {
       <Panel className="fm-toolbar">
         <Button onClick={onClose}>
           <FontAwesomeIcon icon="chevron-left" />
-          <span className="hidden-xs"> {t('general.back')}</span>
+          <span className="hidden-xs"> {t('general.back')}</span> <kbd>Esc</kbd>
         </Button>
       </Panel>
     );

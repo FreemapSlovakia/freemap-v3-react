@@ -90,7 +90,7 @@ export const SupportUsModal: React.FC<Props> = ({ onModalClose, t }) => {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
           </Button>
         </FormGroup>
       </Modal.Footer>

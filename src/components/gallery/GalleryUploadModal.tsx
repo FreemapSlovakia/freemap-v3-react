@@ -150,7 +150,7 @@ const GalleryUploadModal: React.FC<Props> = ({
             : t('gallery.uploadModal.upload')}
         </Button>
         <Button onClick={handleClose} bsStyle="danger">
-          <Glyphicon glyph="remove" /> {t('general.cancel')}
+          <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

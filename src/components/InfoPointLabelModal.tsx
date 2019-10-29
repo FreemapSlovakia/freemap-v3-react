@@ -71,7 +71,7 @@ class InfoPointLabelModal extends React.Component<Props, State> {
               <Glyphicon glyph="floppy-disk" /> {t('general.save')}
             </Button>
             <Button type="button" onClick={onModalClose}>
-              <Glyphicon glyph="remove" /> {t('general.cancel')}
+              <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
             </Button>
           </Modal.Footer>
         </form>

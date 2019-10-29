@@ -55,7 +55,7 @@ const TrackedDevices: React.FC<Props> = ({ onClose, onAdd, devices, t }) => (
         {t('general.add')}
       </Button>
       <Button type="button" onClick={onClose}>
-        {t('general.close')}
+        {t('general.close')} <kbd>Esc</kbd>
       </Button>
     </Modal.Footer>
   </>

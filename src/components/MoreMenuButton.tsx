@@ -274,7 +274,8 @@ class MoreMenuButton extends React.Component<Props, State> {
                     <FontAwesomeIcon icon="book" /> {t('more.help')}
                   </MenuItem>
                   <MenuItem onClick={this.handleBackClick}>
-                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                    <kbd>Esc</kbd>
                   </MenuItem>
                   <MenuItem divider />
                   {['A', 'K', 'T', 'C'].includes(this.props.mapType) && (
@@ -307,7 +308,8 @@ class MoreMenuButton extends React.Component<Props, State> {
                     {t('external.openInExternal')}
                   </MenuItem>
                   <MenuItem onClick={this.handleBackClick}>
-                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                    <kbd>Esc</kbd>
                   </MenuItem>
                   <MenuItem divider />
                   <OpenInExternalAppMenuItems
@@ -327,7 +329,8 @@ class MoreMenuButton extends React.Component<Props, State> {
                     <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv
                   </MenuItem>
                   <MenuItem onClick={this.handleBackClick}>
-                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}
+                    <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                    <kbd>Esc</kbd>
                   </MenuItem>
                   <MenuItem divider />
                   <MenuItem

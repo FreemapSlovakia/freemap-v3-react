@@ -57,7 +57,7 @@ const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices, t }) => {
           {t('general.add')}
         </Button>
         <Button type="button" onClick={onClose}>
-          {t('general.close')}
+          {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>

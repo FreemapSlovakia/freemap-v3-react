@@ -95,7 +95,7 @@ const AccessTokenForm: React.FC<Props> = ({
       <Modal.Footer>
         <Button type="submit">{t('general.save')}</Button>
         <Button type="button" onClick={onCancel}>
-          {t('general.cancel')}
+          {t('general.cancel')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>

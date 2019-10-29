@@ -429,7 +429,10 @@ class GalleryViewerModal extends React.Component<Props, State> {
             <>
               <Button onClick={onEdit} active={!!editModel}>
                 <Glyphicon glyph="edit" />
-                <span className="hidden-xs"> {t('general.modify')}</span>
+                <span className="hidden-xs">
+                  {' '}
+                  {t('general.modify')} <kbd>M</kbd>
+                </span>
               </Button>
               <Button onClick={onDelete} bsStyle="danger">
                 <Glyphicon glyph="trash" />
@@ -439,9 +442,9 @@ class GalleryViewerModal extends React.Component<Props, State> {
           )}
           <Button onClick={onShowOnTheMap}>
             <FontAwesomeIcon icon="dot-circle-o" />
-            <span className="hidden-xs">
+            <span className="hidden-xs hidden-sm">
               {' '}
-              {t('gallery.viewer.showOnTheMap')}
+              {t('gallery.viewer.showOnTheMap')} <kbd>S</kbd>
             </span>
           </Button>
           {document.exitFullscreen && (
@@ -475,7 +478,10 @@ class GalleryViewerModal extends React.Component<Props, State> {
           )}
           <Button onClick={onClose}>
             <Glyphicon glyph="remove" />
-            <span className="hidden-xs"> {t('general.close')}</span>
+            <span className="hidden-xs hidden-sm">
+              {' '}
+              {t('general.close')} <kbd>Esc</kbd>
+            </span>
           </Button>
         </Modal.Footer>
       </Modal>

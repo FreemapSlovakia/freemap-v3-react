@@ -39,7 +39,7 @@ const GalleryPositionPickingMenu: React.FC<Props> = ({
       </Button>{' '}
       <Button onClick={onPositionCancel}>
         <FontAwesomeIcon icon="times" />
-        <span className="hidden-xs"> {t('general.cancel')}</span>
+        <span className="hidden-xs"> {t('general.cancel')}</span> <kbd>Esc</kbd>
       </Button>
     </Panel>
   );

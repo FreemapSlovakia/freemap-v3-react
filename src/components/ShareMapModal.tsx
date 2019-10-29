@@ -81,7 +81,8 @@ export const ShareMapModal: React.FC<Props> = ({ onModalClose, t }) => {
         </Button>{' '}
         <Button onClick={onModalClose}>
           <Glyphicon glyph="remove" />
-          <span className="hidden-xs"> {t('general.close')}</span>
+          <span className="hidden-xs"> {t('general.close')}</span>{' '}
+          <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

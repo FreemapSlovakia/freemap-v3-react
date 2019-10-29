@@ -31,7 +31,7 @@ export const toolDefinitions: ToolDefinition[] = [
     tool: 'changesets',
     icon: 'pencil',
     msgKey: 'changesets',
-    kbd: 'c',
+    kbd: 'x',
     expertOnly: true,
   },
 ];

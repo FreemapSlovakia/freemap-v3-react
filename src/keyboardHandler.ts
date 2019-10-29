@@ -1,9 +1,17 @@
-import { KEY_ESCAPE, KEY_LEFT, KEY_RIGHT, KEY_M, KEY_S } from 'keycode-js';
+import {
+  KEY_ESCAPE,
+  KEY_LEFT,
+  KEY_RIGHT,
+  KEY_M,
+  KEY_S,
+  KEY_C,
+} from 'keycode-js';
 import { MyStore } from './storeCreator';
 import {
   setTool,
   setSelectingHomeLocation,
   setActiveModal,
+  clearMap,
 } from './actions/mainActions';
 import { showGalleryViewer } from './selectors/mainSelectors';
 import {
@@ -163,6 +171,11 @@ export function attachKeyboardHandler(store: MyStore) {
       }, 2000);
     } else if (keyTimer) {
       if (initKey === 'g') {
+        if (event.key === 'c') {
+          store.dispatch(clearMap());
+          event.preventDefault();
+          return;
+        }
         const toolDefinition = toolDefinitions.find(td => td.kbd === event.key);
         if (toolDefinition && toolDefinition.kbd) {
           store.dispatch(setTool(toolDefinition.tool));

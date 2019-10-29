@@ -83,12 +83,14 @@ class ToolsMenuButton extends React.Component<Props, State> {
             <ul>
               {tool && (
                 <MenuItem onClick={() => this.handleToolSelect(null)}>
-                  <FontAwesomeIcon icon="briefcase" /> {t('tools.none')}
+                  <FontAwesomeIcon icon="briefcase" /> {t('tools.none')}{' '}
+                  <kbd>Esc</kbd>
                 </MenuItem>
               )}
 
               <MenuItem onClick={this.handleMapClear}>
-                <FontAwesomeIcon icon="eraser" /> {t('main.clearMap')}
+                <FontAwesomeIcon icon="eraser" /> {t('main.clearMap')}{' '}
+                <kbd>g</kbd> <kbd>c</kbd>
               </MenuItem>
               <MenuItem divider />
 

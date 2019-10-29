@@ -108,7 +108,7 @@ export class ExportGpxModal extends React.Component<Props, State> {
             <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
           </Button>{' '}
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </Modal>

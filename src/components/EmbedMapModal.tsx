@@ -263,7 +263,7 @@ export class EmbedMapModal extends React.Component<Props, State> {
             <Glyphicon glyph="copy" /> {t('general.copyCode')}
           </Button>{' '}
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </Modal>
