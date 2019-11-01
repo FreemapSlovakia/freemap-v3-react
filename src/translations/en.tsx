@@ -851,6 +851,7 @@ export default {
 
   gpxExport: {
     export: 'Export',
+    exportError: 'Error exporting GPX: {err}',
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'found route including stops',

@@ -846,6 +846,7 @@ export default {
 
   gpxExport: {
     export: 'Exportovat',
+    exportError: 'Chyba exportu GPX: {err}',
     what: {
       plannedRoute: 'vyhledanou trasu',
       plannedRouteWithStops: 'vyhledanou trasu se zastávkami',

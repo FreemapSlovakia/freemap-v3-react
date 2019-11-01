@@ -857,6 +857,7 @@ export default {
 
   gpxExport: {
     export: 'Exportálás:',
+    exportError: 'Error exporting GPX: {err}', // TODO
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'útvonal (including stops)', // TODO

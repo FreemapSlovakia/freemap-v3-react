@@ -16,7 +16,7 @@ import { TrackingState } from 'fm3/reducers/trackingReducer';
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
-  errorKey: 'gallery.picturesFetchingError',
+  errorKey: 'gpxExport.exportError',
   handle: async ({ getState, action, dispatch }) => {
     const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
