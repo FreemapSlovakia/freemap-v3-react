@@ -28,7 +28,7 @@ export default {
     fullscreen: 'Na celou obrazovku',
     yes: 'Ano',
     no: 'Ne',
-    masl: 'm.n.m.',
+    masl: 'm n. m.',
     copyCode: 'Zkopírovat kód',
     loading: 'Načítám…',
     ok: 'OK',
@@ -59,7 +59,7 @@ export default {
   },
 
   routePlanner: {
-    convertToMeasurement: 'Skonvertovat na měření',
+    convertToMeasurement: 'Zkonvertovat na měření',
     start: 'Start',
     finish: 'Cíl',
     swap: 'Prohodit start a cíl',
@@ -71,11 +71,11 @@ export default {
     transportType: {
       car: 'Auto, včetně zpoplatněných silnic',
       'car-free': 'Auto, mimo zpoplatněných silnic',
-      bikesharing: 'Bike sharing',
+      bikesharing: 'Sdílené kolo',
       imhd: 'MHD v Bratislavě',
       'bike-osm': 'Kolo',
       bike: 'Cyklouristika',
-      'foot-stroller': 'S kočárkem / vozíčkem',
+      'foot-stroller': 'S kočárkem / Inv. vozík',
       nordic: 'Běžky',
       ski: 'Sjezdové lyžování',
       'foot-osm': 'Pěšky',
@@ -161,7 +161,7 @@ export default {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
           <Fragment>
-            Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
+            Příjezd: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
@@ -173,7 +173,7 @@ export default {
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <Fragment>
-            Příchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
+            Příjezd: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
@@ -185,7 +185,7 @@ export default {
               {total} {numberize(total, ['minut', 'minúta', 'minuty'])}
             </b>
             <br />
-            Do odchodu: <b>{home}</b>, pěšky: <b>{foot}</b>, MHD: <b>{bus}</b>,
+            Do odjezdu: <b>{home}</b>, pěšky: <b>{foot}</b>, MHD: <b>{bus}</b>,
             čekaní:{' '}
             <b>
               {wait} {numberize(wait, ['minut', 'minúta', 'minuty'])}
@@ -197,7 +197,7 @@ export default {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
           <Fragment>
-            o <b>{departure}</b> pěšky{' '}
+            v <b>{departure}</b> pěšky{' '}
             <b>
               {duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}
             </b>{' '}
@@ -205,7 +205,7 @@ export default {
               <b>do cíle</b>
             ) : (
               <Fragment>
-                na <b>{destination}</b>
+                do <b>{destination}</b>
               </Fragment>
             )}
           </Fragment>
@@ -213,7 +213,7 @@ export default {
         // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
           <Fragment>
-            o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b>
+            v <b>{departure}</b> {type} <b>{number}</b> do <b>{destination}</b>
           </Fragment>
         ),
       },
@@ -304,8 +304,8 @@ export default {
     f: {
       firstUploaded: 'od první nahrané',
       lastUploaded: 'od poslední nahrané',
-      firstCaptured: 'od nejstarší vyfocena',
-      lastCaptured: 'od nejnovější vyfocena',
+      firstCaptured: 'od nejstarší vyfocené',
+      lastCaptured: 'od nejnovější vyfocené',
       leastRated: 'od nejmenšího hodnocení',
       mostRated: 'od největšího hodnocení',
     },
@@ -341,10 +341,10 @@ export default {
       rules: `
         <p>Zatáhněte sem fotky, nebo sem klikněte pro jejich výběr.</p>
         <ul>
-          <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je ale omezena velikost souboru na max. 10MB. Větší soubory server odmítne.</li>
+          <li>Nevkládejte příliš malé obrázky (miniatury). Maximální rozměr není omezen, je ale omezena velikost souboru na 10MB. Větší soubory server odmítne.</li>
           <li>Vkládejte pouze fotografie krajiny včetně dokumentačních fotografií. Portréty a makro-fotografie jsou považovány za nevhodný obsah a budou bez varování smazány.</li>
           <li>Zvýšenou pozornost věnujte tomu, abyste nahrávali výlučně vlastní tvorbu.</li>
-          <li>Zaznam fotografie jsou dále šířeny pod licencí CC-BY-SA 2.0.</li>
+          <li>Fotografie jsou dále šířeny pod licencí CC-BY-SA 2.0.</li>
           <li>Provozovatel Freemap.sk se tímto zbavuje jakékoli odpovědnosti a neodpovídá za přímé ani nepřímé škody vzniklé zveřejněním fotografie v galerii. Za fotografii nese plnou odpovědnost osoba, která fotografii na server uložila.</li>
           <li>Provozovatel si vyhrazuje právo upravit popis, název, pozici a tagy fotografie nebo fotografii vymazat, pokud je její obsah nevhodný (porušuje tato pravidla).</li>
           <li>Provozovatel si vyhrazuje právo zrušit účet v případě, že uživatel opakovaně porušuje pravidla galerie zveřejňováním nevhodného obsahu.</li>
@@ -468,7 +468,7 @@ export default {
       overlayOpacity: 'Viditelnost vrstvy:',
       trackViewerEleSmoothing: {
         label:
-          'Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných nadmořské výšky v prohlížeči tras: {value}',
+          'Úroveň vyhlazování při výpočtu celkové nastoupaných / naklesaných metrů v prohlížeči tras: {value}',
         info:
           'Při hodnotě 1 se berou v úvahu všechny nadmořské výšky samostatně. Vyšší hodnoty odpovídají šířce plovoucího okna kterým se vyhlazují nadmořské výšky. ',
       },
@@ -630,7 +630,7 @@ export default {
       115: 'Nákupní centrum',
       116: 'Masáže',
       117: 'Mobilní telefony',
-      118: 'money_lender',
+      118: 'Zastavárna',
       119: 'Motocykly',
       120: 'Hudební nástroje',
       121: 'Noviny',
@@ -639,7 +639,7 @@ export default {
       125: 'Barvy',
       126: 'pawnbroker',
       127: 'Zvířata',
-      128: 'Plody moře',
+      128: 'Mořské plody',
       129: 'Second hand',
       130: 'Obuv',
       131: 'Sportovní potřeby',
@@ -697,14 +697,14 @@ export default {
       184: 'Americký fotbal',
       185: 'Lukostřelba',
       186: 'Atletika',
-      187: 'australian_football',
+      187: 'Australský fotbal',
       188: 'Baseball',
       189: 'Basketball',
       190: 'Plážový volejbal',
       191: 'Bmx',
       192: 'Boules',
       193: 'Bowls',
-      194: 'canadian_football',
+      194: 'Canadian football',
       195: 'Kanoe',
       196: 'Šachy',
       197: 'Lezení',
@@ -716,17 +716,17 @@ export default {
       203: 'Závody psů',
       204: 'Jízda na koni',
       205: 'Fotbal',
-      206: 'gaelic_football',
+      206: 'Galský fotbal',
       207: 'Golf',
       208: 'Gymnastika',
       209: 'Hokej',
       210: 'horseshoes',
       211: 'Dostihy',
-      212: 'ice_stock',
+      212: 'Metaná',
       213: 'korfball',
       214: 'Motorky',
       215: 'Multi',
-      216: 'Orienteering',
+      216: 'Orientační běh',
       217: 'paddle_tennis',
       218: 'Paragliding',
       219: 'pelota',
@@ -775,7 +775,7 @@ export default {
       263: 'Kaštěl',
       264: 'Geomorfologické členění',
       265: 'Vojenský bunkr',
-      266: 'Příchod / Výjezd z dálnice',
+      266: 'Dálniční nájezd / sjezd',
       267: 'Sochy',
       268: 'Komín',
       269: 'Paragliding',
@@ -889,7 +889,7 @@ export default {
     base: {
       A: 'Automapa',
       T: 'Turistická',
-      C: 'Cyklomapy',
+      C: 'Cyklomapa',
       K: 'Lyžařská',
       S: 'Satelitní',
       O: 'OpenStreetMap',
@@ -1002,157 +1002,157 @@ export default {
   },
 
   tracking: {
-    savingError: 'Save error: {err}',
-    loadError: 'Loading error: {err}',
-    deleteError: 'Deleting error: {err}',
-    unauthenticatedError: 'Please log-in to manage your devices.',
+    savingError: 'Chyba ukládání: {err}',
+    loadError: 'Chyba nahrávání: {err}',
+    deleteError: 'Chyba pří mazání: {err}',
+    unauthenticatedError: 'Pro správu zařízení se musíte přihlásit.',
     trackedDevices: {
-      button: 'Watched',
-      modalTitle: 'Watched Devices',
-      desc: 'Manage watched devices to see the position of your friends.',
-      modifyTitle: 'Modify Watched Device',
+      button: 'Sledované',
+      modalTitle: 'Sledovaná zařízení',
+      desc: 'Nastavte sledovaná zařízení abyste mohli sledovat jejich polohu.',
+      modifyTitle: 'Úprava sledovaných zařízení',
       createTitle: ({ name }) => (
         <>
-          Watch Device <i>{name}</i>
+          Sleduj zařízení <i>{name}</i>
         </>
       ),
     },
     accessToken: {
-      token: 'Watch Token',
-      timeFrom: 'From',
-      timeTo: 'To',
-      listingLabel: 'Listing Label',
-      note: 'Note',
+      token: 'Sledovací token',
+      timeFrom: 'Od',
+      timeTo: 'Do',
+      listingLabel: 'Název zařízení',
+      note: 'Poznámka',
     },
     accessTokens: {
       modalTitle: ({ deviceName }) => (
         <>
-          Watch Tokens for <i>{deviceName}</i>
+          Sledovací tokeny pro <i>{deviceName}</i>
         </>
       ),
       desc: ({ deviceName }) => (
         <p>
-          Define watch tokens to share position of your device{' '}
-          <i>{deviceName}</i> with your friends.
+          Vytvořte sledovací tokeny, abyste mohli sdílet polohu {' '}
+          <i>{deviceName}</i> s přáteli.
         </p>
       ),
       createTitle: ({ deviceName }) => (
         <>
-          Add Watch Token for <i>{deviceName}</i>
+          Přidej sledovací token pro <i>{deviceName}</i>
         </>
       ),
       modifyTitle: ({ token, deviceName }) => (
         <>
-          Modify Watch Token <i>{token}</i> for <i>{deviceName}</i>
+          Uprav sledovací token <i>{token}</i> pro <i>{deviceName}</i>
         </>
       ),
     },
     trackedDevice: {
-      token: 'Watch Token',
-      label: 'Label',
-      fromTime: 'Since',
-      maxAge: 'Max Age',
-      maxCount: 'Max Count',
-      splitDistance: 'Split Distance',
-      splitDuration: 'Split Duration',
-      color: 'Color',
-      width: 'Width',
+      token: 'Sledovací token',
+      label: 'Název',
+      fromTime: 'Od',
+      maxAge: 'Maximální doba',
+      maxCount: 'Maximální počet',
+      splitDistance: 'Rozdělit po vzdálenosti',
+      splitDuration: 'Rozdělení po době',
+      color: 'Barva',
+      width: 'Šířka',
     },
     devices: {
-      button: 'My Devices',
-      modalTitle: 'My tracked devices',
-      createTitle: 'Create Tracking Device',
-      watchTokens: 'Watch tokens',
-      watchPrivately: 'Watch privately',
+      button: 'Moje zařízení',
+      modalTitle: 'Moje sledovaná zařízení',
+      createTitle: 'Nové zařízení',
+      watchTokens: 'Sledovací tokeny',
+      watchPrivately: 'Soukromé sledování',
       modifyTitle: ({ name }) => (
         <>
-          Modify Tracking Device <i>{name}</i>
+          Úprava zařízení <i>{name}</i>
         </>
       ),
       desc: () => (
         <>
           <p>
-            Manage your devices so that others can watch your position if you
-            give them watch token (you can create it through{' '}
-            <FontAwesomeIcon icon="key" /> icon).
+            Spravujte svá zařízení, aby vaši polohu mohli sledovat lidé, kterým dáte
+            sledovací token (ten lze vygenerovat tlačítkem {' '}
+            <FontAwesomeIcon icon="key" />).
           </p>
           <p>
-            Enter following URL to your tracker (eg.{' '}
+            Na svém zařízení navštivte toto URL (podporuje např. {' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
               Locus
             </a>{' '}
-            or OsmAnd):{' '}
+            nebo OsmAnd):{' '}
             <code>
               {process.env.API_URL}/tracking/track/<i>token</i>
             </code>{' '}
-            where <i>token</i> is listed in the table below.
+            kde místo <i>token</i> doplňte svůj níže uvedený token.
           </p>
           <p>
-            Endpoint supports HTTP <code>GET</code> or <code>POST</code> with
-            URL-encoded parameters:
+            Jsou podporovány HTTP metody <code>GET</code> nebo <code>POST</code> s
+            témito parametry (URL-encoded):
           </p>
           <ul>
             <li>
-              <code>lat</code> - latitude in degrees (mandatory)
+              <code>lat</code> - zeměpisná šířka (povinná)
             </li>
             <li>
-              <code>lon</code> - longitude in degrees (mandatory)
+              <code>lon</code> - zeměpisná délka (povinná)
             </li>
             <li>
-              <code>time</code>, <code>timestamp</code> - JavaScript parsable
-              datetime or Unix time in s or ms
+              <code>time</code>, <code>timestamp</code> - čas parsovatelný v JavaScriptu nebo 
+              Unixový čas v sekunách nebo milisekundách
             </li>
             <li>
-              <code>alt</code>, <code>altitude</code> - altitude in meters
+              <code>alt</code>, <code>altitude</code> - nadmořská výška v metrech
             </li>
             <li>
-              <code>speed</code> - speed in m/s
+              <code>speed</code> - rychlost v m/s
             </li>
             <li>
-              <code>speedKmh</code> - speed in km/h
+              <code>speedKmh</code> - rychlost v km/h
             </li>
             <li>
-              <code>acc</code> - accuracy in meters
+              <code>acc</code> - přesnost v meterech
             </li>
             <li>
-              <code>hdop</code> - horizontal DOP
+              <code>hdop</code> - horizontální nepřesnost (HDOP)
             </li>
             <li>
-              <code>bearing</code> - bearing in degrees
+              <code>bearing</code> - azimut ve stupních
             </li>
             <li>
-              <code>battery</code> - battery in percents
+              <code>battery</code> - batterie v procentech
             </li>
             <li>
-              <code>gsm_signal</code> - GSM signal in percents
+              <code>gsm_signal</code> - GSM signál v procentech
             </li>
             <li>
-              <code>message</code> - message (note)
+              <code>message</code> - zpráva (poznámka)
             </li>
           </ul>
         </>
       ),
     },
     device: {
-      token: 'Track Token',
-      name: 'Name',
-      maxAge: 'Max Age',
-      maxCount: 'Max Count',
-      regenerateToken: 'Regenerate track token',
+      token: 'Sledovací token',
+      name: 'Název',
+      maxAge: 'Maximální doba',
+      maxCount: 'Maximální počet',
+      regenerateToken: 'Obnovit sledovací token',
     },
     visual: {
-      line: 'Line',
-      points: 'Points',
-      'line+points': 'Line + Points',
+      line: 'Křivka',
+      points: 'Body',
+      'line+points': 'Křivka + body',
     },
     subscribeNotFound: ({ id }) => (
       <>
-        Watch token <i>{id}</i> doesn't exist.
+        Sledovací token <i>{id}</i> neexistuje.
       </>
     ),
     subscribeError: ({ id }) => (
       <>
-        Error watching using token <i>{id}</i>.
+        Chyba sledování s tokenem <i>{id}</i>.
       </>
     ),
   },
@@ -1166,8 +1166,8 @@ export default {
     layersTitle: 'Volitelné vrstvy:',
     layers: {
       contours: 'Vrstevnice',
-      shading: 'Tieňovaný reliéf',
-      hikingTrails: 'Stínovaný reliéf',
+      shading: 'Stínovaný reliéf',
+      hikingTrails: 'Turistické trasy',
       bicycleTrails: 'Cyklotrasy',
       skiTrails: 'Lyžařské trasy',
       horseTrails: 'Jezdecké trasy',
