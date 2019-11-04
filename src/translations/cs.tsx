@@ -38,6 +38,12 @@ export default {
     internalError: `!HTML!${errorMarkup}`,
     appUpdated: 'Je dostupná aktualizce. Obnovit stránku?',
     processorError: 'Chyba aplikace: ${error}',
+    seconds: 'sekundy',
+    minutes: 'minuty',
+    meters: 'metre',
+    createdAt: 'Vytvořeno',
+    actions: 'Akce',
+    add: 'Přidat nové',
   },
 
   tools: {
@@ -1032,7 +1038,7 @@ export default {
       ),
       desc: ({ deviceName }) => (
         <p>
-          Vytvořte sledovací tokeny, abyste mohli sdílet polohu {' '}
+          Vytvořte sledovací tokeny, abyste mohli sdílet polohu{' '}
           <i>{deviceName}</i> s přáteli.
         </p>
       ),
@@ -1072,12 +1078,13 @@ export default {
       desc: () => (
         <>
           <p>
-            Spravujte svá zařízení, aby vaši polohu mohli sledovat lidé, kterým dáte
-            sledovací token (ten lze vygenerovat tlačítkem {' '}
-            <FontAwesomeIcon icon="key" />).
+            Spravujte svá zařízení, aby vaši polohu mohli sledovat lidé, kterým
+            dáte sledovací token (ten lze vygenerovat tlačítkem{' '}
+            <FontAwesomeIcon icon="key" />
+            ).
           </p>
           <p>
-            Na svém zařízení navštivte toto URL (podporuje např. {' '}
+            Na svém zařízení navštivte toto URL (podporuje např.{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
               Locus
             </a>{' '}
@@ -1088,8 +1095,8 @@ export default {
             kde místo <i>token</i> doplňte svůj níže uvedený token.
           </p>
           <p>
-            Jsou podporovány HTTP metody <code>GET</code> nebo <code>POST</code> s
-            témito parametry (URL-encoded):
+            Jsou podporovány HTTP metody <code>GET</code> nebo <code>POST</code>{' '}
+            s témito parametry (URL-encoded):
           </p>
           <ul>
             <li>
@@ -1099,11 +1106,12 @@ export default {
               <code>lon</code> - zeměpisná délka (povinná)
             </li>
             <li>
-              <code>time</code>, <code>timestamp</code> - čas parsovatelný v JavaScriptu nebo 
-              Unixový čas v sekunách nebo milisekundách
+              <code>time</code>, <code>timestamp</code> - čas parsovatelný v
+              JavaScriptu nebo Unixový čas v sekunách nebo milisekundách
             </li>
             <li>
-              <code>alt</code>, <code>altitude</code> - nadmořská výška v metrech
+              <code>alt</code>, <code>altitude</code> - nadmořská výška v
+              metrech
             </li>
             <li>
               <code>speed</code> - rychlost v m/s

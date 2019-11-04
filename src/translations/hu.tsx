@@ -38,13 +38,13 @@ export default {
     back: 'Vissza',
     internalError: `!HTML!${errorMarkup}`,
     appUpdated: 'Új frissítés érhető el. Szeretné frissíteni az oldalt?',
+    processorError: 'Alkalmazáshiba: ${error}',
     seconds: 'másodperc',
     minutes: 'perc',
     meters: 'méter',
     createdAt: 'Létrehozva:',
     actions: 'Műveletek',
     add: 'Új hozzáadása',
-    processorError: 'Alkalmazáshiba: ${error}',
   },
 
   tools: {

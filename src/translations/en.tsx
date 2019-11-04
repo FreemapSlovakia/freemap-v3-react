@@ -37,13 +37,13 @@ export default {
     back: 'Back',
     internalError: `!HTML!${errorMarkup}`,
     appUpdated: 'New update is available. Would you like to refresh the page?',
+    processorError: 'Application error: ${error}',
     seconds: 'seconds',
     minutes: 'minutes',
     meters: 'meters',
     createdAt: 'Created At',
     actions: 'Actions',
     add: 'Add new',
-    processorError: 'Application error: ${error}',
   },
 
   tools: {

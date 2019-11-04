@@ -36,13 +36,13 @@ export default {
     back: 'Späť',
     internalError: `!HTML!${errorMarkup}`,
     appUpdated: 'Je dostupná aktualizácia. Obnoviť stránku?',
+    processorError: 'Chyba aplikácie: ${error}',
     seconds: 'sekundy',
     minutes: 'minúty',
     meters: 'metre',
     createdAt: 'Vytvorené',
     actions: 'Akcie',
     add: 'Pridať nové',
-    processorError: 'Chyba aplikácie: ${error}',
   },
 
   tools: {
