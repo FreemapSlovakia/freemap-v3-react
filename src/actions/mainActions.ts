@@ -1,4 +1,4 @@
-import { createStandardAction, createAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { LatLon, AppState } from 'fm3/types/common';
 
 export type Tool =
@@ -15,26 +15,20 @@ export type Tool =
   | 'map-details'
   | 'tracking';
 
-export const setActiveModal = createStandardAction('SET_ACTIVE_MODAL')<
-  string | null
->();
+export const setActiveModal = createAction('SET_ACTIVE_MODAL')<string | null>();
 
-export const setTool = createStandardAction('SET_TOOL')<Tool | null>();
+export const setTool = createAction('SET_TOOL')<Tool | null>();
 
-export const setHomeLocation = createStandardAction('SET_HOME_LOCATION')<{
+export const setHomeLocation = createAction('SET_HOME_LOCATION')<{
   lat: number;
   lon: number;
 } | null>();
 
-export const startProgress = createStandardAction('START_PROGRESS')<
-  string | number
->();
+export const startProgress = createAction('START_PROGRESS')<string | number>();
 
-export const stopProgress = createStandardAction('STOP_PROGRESS')<
-  string | number
->();
+export const stopProgress = createAction('STOP_PROGRESS')<string | number>();
 
-export const setLocation = createStandardAction('SET_LOCATION')<{
+export const setLocation = createAction('SET_LOCATION')<{
   lat: number;
   lon: number;
   accuracy: number;
@@ -51,27 +45,27 @@ export interface PdfExportOptions {
   area: 'visible' | 'infopoints';
 }
 
-export const setExpertMode = createStandardAction('SET_EXPERT_MODE')<boolean>();
+export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
 
-export const setAppState = createStandardAction('SET_APP_STATE')<AppState>();
+export const setAppState = createAction('SET_APP_STATE')<AppState>();
 
-export const exportGpx = createStandardAction('EXPORT_GPX')<string[]>();
+export const exportGpx = createAction('EXPORT_GPX')<string[]>();
 
-export const exportPdf = createStandardAction('EXPORT_PDF')<PdfExportOptions>();
+export const exportPdf = createAction('EXPORT_PDF')<PdfExportOptions>();
 
-export const clearMap = createAction('CLEAR_MAP');
+export const clearMap = createAction('CLEAR_MAP')();
 
-export const toggleLocate = createAction('LOCATE');
+export const toggleLocate = createAction('LOCATE')();
 
-export const setSelectingHomeLocation = createStandardAction(
+export const setSelectingHomeLocation = createAction(
   'SET_SELECTING_HOME_LOCATION',
 )<boolean>();
 
-export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL');
+export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
-export const reloadApp = createAction('RELOAD_APP');
+export const reloadApp = createAction('RELOAD_APP')();
 
-export const saveSettings = createStandardAction('SAVE_SETTINGS')<{
+export const saveSettings = createAction('SAVE_SETTINGS')<{
   tileFormat: 'png' | 'jpeg';
   homeLocation: LatLon | null;
   overlayOpacity: { [type: string]: number };
@@ -82,10 +76,6 @@ export const saveSettings = createStandardAction('SAVE_SETTINGS')<{
   preventTips: boolean;
 }>();
 
-export const setErrorTicketId = createStandardAction('SET_ERROR_TICKET_ID')<
-  string
->();
+export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<string>();
 
-export const setEmbedFeatures = createStandardAction('SET_EMBED_FEATURES')<
-  string[]
->();
+export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();

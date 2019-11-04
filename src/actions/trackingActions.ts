@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import {
   TrackedDevice,
   Device,
@@ -8,61 +8,57 @@ import {
 } from 'fm3/types/trackingTypes';
 
 export const trackingActions = {
-  setTrackedDevices: createStandardAction('TRACKING_SET_TRACKED_DEVICES')<
+  setTrackedDevices: createAction('TRACKING_SET_TRACKED_DEVICES')<
     TrackedDevice[]
   >(),
 
-  modifyTrackedDevice: createStandardAction('TRACKING_MODIFY_TRACKED_DEVICE')<
+  modifyTrackedDevice: createAction('TRACKING_MODIFY_TRACKED_DEVICE')<
     string | number | null | undefined
   >(),
 
-  deleteTrackedDevice: createStandardAction('TRACKING_DELETE_TRACKED_DEVICE')<
+  deleteTrackedDevice: createAction('TRACKING_DELETE_TRACKED_DEVICE')<
     string | number
   >(),
 
-  saveTrackedDevice: createStandardAction('TRACKING_SAVE_TRACKED_DEVICE')<
+  saveTrackedDevice: createAction('TRACKING_SAVE_TRACKED_DEVICE')<
     TrackedDevice
   >(),
 
-  setDevices: createStandardAction('TRACKING_SET_DEVICES')<Device[]>(),
+  setDevices: createAction('TRACKING_SET_DEVICES')<Device[]>(),
 
-  modifyDevice: createStandardAction('TRACKING_MODIFY_DEVICE')<
+  modifyDevice: createAction('TRACKING_MODIFY_DEVICE')<
     number | undefined | null
   >(),
 
-  deleteDevice: createStandardAction('TRACKING_DELETE_DEVICE')<number>(),
+  deleteDevice: createAction('TRACKING_DELETE_DEVICE')<number>(),
 
-  saveDevice: createStandardAction('TRACKING_SAVE_DEVICE')<EditedDevice>(),
+  saveDevice: createAction('TRACKING_SAVE_DEVICE')<EditedDevice>(),
 
-  loadDevices: createStandardAction('TRACKING_LOAD_DEVICES')<void>(),
+  loadDevices: createAction('TRACKING_LOAD_DEVICES')(),
 
-  setAccessTokens: createStandardAction('TRACKING_SET_ACCESS_TOKENS')<
-    AccessToken[]
-  >(),
+  setAccessTokens: createAction('TRACKING_SET_ACCESS_TOKENS')<AccessToken[]>(),
 
-  modifyAccessToken: createStandardAction('TRACKING_MODIFY_ACCESS_TOKEN')<
+  modifyAccessToken: createAction('TRACKING_MODIFY_ACCESS_TOKEN')<
     number | null | undefined
   >(),
 
-  deleteAccessToken: createStandardAction('TRACKING_DELETE_ACCESS_TOKEN')<
-    number
-  >(),
+  deleteAccessToken: createAction('TRACKING_DELETE_ACCESS_TOKEN')<number>(),
 
-  saveAccessToken: createStandardAction('TRACKING_SAVE_ACCESS_TOKEN')<
+  saveAccessToken: createAction('TRACKING_SAVE_ACCESS_TOKEN')<
     AccessTokenBase
   >(),
 
-  loadAccessTokens: createStandardAction('TRACKING_LOAD_ACCESS_TOKENS')<void>(),
+  loadAccessTokens: createAction('TRACKING_LOAD_ACCESS_TOKENS')(),
 
-  showAccessTokens: createStandardAction('TRACKING_SHOW_ACCESS_TOKENS')<
+  showAccessTokens: createAction('TRACKING_SHOW_ACCESS_TOKENS')<
     number | null | undefined
   >(),
 
-  view: createStandardAction('TRACKING_VIEW')<number>(),
+  view: createAction('TRACKING_VIEW')<number>(),
 
-  setActive: createStandardAction('TRACKING_SET_ACTIVE')<string | number>(),
+  setActive: createAction('TRACKING_SET_ACTIVE')<string | number>(),
 
-  setShowPoints: createStandardAction('TRACKING_SET_SHOW_POINTS')<boolean>(),
+  setShowPoints: createAction('TRACKING_SET_SHOW_POINTS')<boolean>(),
 
-  setShowLine: createStandardAction('TRACKING_SET_SHOW_LINE')<boolean>(),
+  setShowLine: createAction('TRACKING_SET_SHOW_LINE')<boolean>(),
 };

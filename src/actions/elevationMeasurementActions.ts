@@ -1,10 +1,10 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
 
-export const elevationMeasurementSetElevation = createStandardAction(
+export const elevationMeasurementSetElevation = createAction(
   'ELEVATION_MEASUREMENT_SET_ELEVATION',
 )<number | null>();
 
-export const elevationMeasurementSetPoint = createStandardAction(
+export const elevationMeasurementSetPoint = createAction(
   'ELEVATION_MEASUREMENT_SET_POINT',
 )<LatLon | null>();

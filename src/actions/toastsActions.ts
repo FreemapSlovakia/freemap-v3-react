@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { RootAction } from '.';
 
 export interface ToastAction {
@@ -24,40 +24,19 @@ export interface ResolvedToast extends Toast {
   actions: ToastAction[];
 }
 
-export const toastsAdd = createStandardAction('TOASTS_ADD').map(
-  ({
-    message,
-    messageKey,
-    messageParams,
-    actions = [],
-    timeout,
-    style,
-    collapseKey,
-    cancelType,
-  }: Toast) => ({
-    payload: {
-      id: Math.random(),
-      message,
-      messageKey,
-      actions,
-      timeout,
-      style,
-      collapseKey,
-      cancelType,
-      messageParams,
-    },
+export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) =>
+  Object.assign({ actions: [] as ToastAction[] }, toast, {
+    id: Math.random(),
   }),
-);
+)<ResolvedToast>();
 
-export const toastsRemove = createStandardAction('TOASTS_REMOVE')<number>();
+export const toastsRemove = createAction('TOASTS_REMOVE')<number>();
 
-export const toastsStopTimeout = createStandardAction('TOASTS_STOP_TIMEOUT')<
+export const toastsStopTimeout = createAction('TOASTS_STOP_TIMEOUT')<number>();
+
+export const toastsRestartTimeout = createAction('TOASTS_RESTART_TIMEOUT')<
   number
 >();
-
-export const toastsRestartTimeout = createStandardAction(
-  'TOASTS_RESTART_TIMEOUT',
-)<number>();
 
 // helpers
 

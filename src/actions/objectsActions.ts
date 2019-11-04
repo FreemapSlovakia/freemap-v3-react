@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 
 export interface ObjectsResult {
   id: number;
@@ -8,10 +8,8 @@ export interface ObjectsResult {
   typeId: number;
 }
 
-export const objectsSetFilter = createStandardAction('OBJECTS_SET_FILTER')<
-  number
->();
+export const objectsSetFilter = createAction('OBJECTS_SET_FILTER')<number>();
 
-export const objectsSetResult = createStandardAction('OBJECTS_SET_RESULT')<
+export const objectsSetResult = createAction('OBJECTS_SET_RESULT')<
   ObjectsResult[]
 >();

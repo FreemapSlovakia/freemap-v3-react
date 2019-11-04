@@ -1,11 +1,9 @@
-import { createStandardAction, createAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 
-export const osmLoadNode = createStandardAction('OSM_LOAD_NODE')<number>();
+export const osmLoadNode = createAction('OSM_LOAD_NODE')<number>();
 
-export const osmLoadWay = createStandardAction('OSM_LOAD_WAY')<number>();
+export const osmLoadWay = createAction('OSM_LOAD_WAY')<number>();
 
-export const osmLoadRelation = createStandardAction('OSM_LOAD_RELATION')<
-  number
->();
+export const osmLoadRelation = createAction('OSM_LOAD_RELATION')<number>();
 
-export const osmClear = createAction('OSM_CLEAR');
+export const osmClear = createAction('OSM_CLEAR')();

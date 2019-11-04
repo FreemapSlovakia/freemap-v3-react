@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 
 export interface Point {
   lat: number;
@@ -6,18 +6,18 @@ export interface Point {
   id: number;
 }
 
-export const distanceMeasurementAddPoint = createStandardAction(
+export const distanceMeasurementAddPoint = createAction(
   'DISTANCE_MEASUREMENT_ADD_POINT',
 )<{ point: Point; position?: number }>();
 
-export const distanceMeasurementUpdatePoint = createStandardAction(
+export const distanceMeasurementUpdatePoint = createAction(
   'DISTANCE_MEASUREMENT_UPDATE_POINT',
 )<{ index: number; point: Point }>();
 
-export const distanceMeasurementRemovePoint = createStandardAction(
+export const distanceMeasurementRemovePoint = createAction(
   'DISTANCE_MEASUREMENT_REMOVE_POINT',
 )<number>();
 
-export const distanceMeasurementSetPoints = createStandardAction(
+export const distanceMeasurementSetPoints = createAction(
   'DISTANCE_MEASUREMENT_SET_POINTS',
 )<Point[]>();

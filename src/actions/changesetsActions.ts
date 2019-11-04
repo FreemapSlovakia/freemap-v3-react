@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 
 export interface Changeset {
   id: number;
@@ -9,14 +9,12 @@ export interface Changeset {
   centerLon: number;
 }
 
-export const changesetsSet = createStandardAction('CHANGESETS_SET')<
-  Changeset[]
->();
+export const changesetsSet = createAction('CHANGESETS_SET')<Changeset[]>();
 
-export const changesetsSetDays = createStandardAction('CHANGESETS_SET_DAYS')<
+export const changesetsSetDays = createAction('CHANGESETS_SET_DAYS')<
   number | null
 >();
 
-export const changesetsSetAuthorName = createStandardAction(
+export const changesetsSetAuthorName = createAction(
   'CHANGESETS_SET_AUTHOR_NAME',
 )<string | null>();

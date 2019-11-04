@@ -1,6 +1,6 @@
-import { createStandardAction, createAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 
-export const mapReset = createAction('MAP_RESET');
+export const mapReset = createAction('MAP_RESET')();
 
 export interface MapViewState {
   mapType: string;
@@ -16,22 +16,20 @@ export interface MapStateBase extends MapViewState {
   tileFormat: 'jpeg' | 'png';
 }
 
-export const mapRefocus = createStandardAction('MAP_REFOCUS')<
+export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >();
 
-export const mapSetTileFormat = createStandardAction('MAP_SET_TILE_FORMAT')<
+export const mapSetTileFormat = createAction('MAP_SET_TILE_FORMAT')<
   'png' | 'jpeg'
 >();
 
-export const mapSetOverlayOpacity = createStandardAction(
-  'MAP_SET_OVERLAY_OPACITY',
-)<{ [key: string]: number }>();
+export const mapSetOverlayOpacity = createAction('MAP_SET_OVERLAY_OPACITY')<{
+  [key: string]: number;
+}>();
 
-export const mapSetOverlayPaneOpacity = createStandardAction(
+export const mapSetOverlayPaneOpacity = createAction(
   'MAP_SET_OVERLAY_PANE_OPACITY',
 )<number>();
 
-export const mapSetStravaAuth = createStandardAction('MAP_SET_STRAVA_AUTH')<
-  boolean
->();
+export const mapSetStravaAuth = createAction('MAP_SET_STRAVA_AUTH')<boolean>();

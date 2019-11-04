@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { GeoJsonObject } from 'geojson';
 
 export interface SearchResult {
@@ -12,14 +12,12 @@ export interface SearchResult {
   osmType?: string;
 }
 
-export const searchSetQuery = createStandardAction('SEARCH_SET_QUERY')<
-  string
->();
+export const searchSetQuery = createAction('SEARCH_SET_QUERY')<string>();
 
-export const searchSetResults = createStandardAction('SEARCH_SET_RESULTS')<
+export const searchSetResults = createAction('SEARCH_SET_RESULTS')<
   SearchResult[]
 >();
 
-export const searchSelectResult = createStandardAction('SEARCH_SELECT_RESULT')<
+export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<
   SearchResult
 >();

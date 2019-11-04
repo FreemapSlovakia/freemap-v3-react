@@ -1,4 +1,4 @@
-import { createStandardAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 
 interface RpcResponse {
   method: string;
@@ -20,17 +20,17 @@ interface RpcErrorResponse extends RpcResponse {
   };
 }
 
-export const rpcCall = createStandardAction('RPC_CALL')<{
+export const rpcCall = createAction('RPC_CALL')<{
   method: string;
   params: any;
   tag?: any;
 }>();
 
-export const rpcResponse = createStandardAction('RPC_RESPONSE')<
+export const rpcResponse = createAction('RPC_RESPONSE')<
   RpcResultResponse | RpcErrorResponse
 >();
 
-export const rpcEvent = createStandardAction('RPC_EVENT')<{
+export const rpcEvent = createAction('RPC_EVENT')<{
   method: string;
   params: any;
 }>();
