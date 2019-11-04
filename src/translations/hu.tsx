@@ -66,7 +66,7 @@ export default {
   },
 
   routePlanner: {
-    convertToMeasurement: 'Convert to measurement', // TODO translate
+    convertToMeasurement: 'Konvertálás mérésre', // TODO google-translated
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',
@@ -811,8 +811,8 @@ export default {
     id: 'Szerkesztés iD-vel',
     'routing-debug': 'Útvonaltervezési hibakereső',
     window: 'Új ablakban',
-    url: 'Share URL', // TODO
-    image: 'Share photo', // TODO
+    url: 'URL megosztása', // TODO google-translated
+    image: 'Fénykép megosztása', // TODO google-translated
   },
 
   search: {
@@ -857,10 +857,10 @@ export default {
 
   gpxExport: {
     export: 'Exportálás:',
-    exportError: 'Error exporting GPX: {err}', // TODO
+    exportError: 'Hiba a GPX exportálásakor: {err}', // TODO google-translated
     what: {
       plannedRoute: 'útvonal',
-      plannedRouteWithStops: 'útvonal (including stops)', // TODO
+      plannedRouteWithStops: 'útvonal (beleértve a megállásokat)', // TODO google-translated
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
       distanceMeasurement: 'lemért távolságok',
