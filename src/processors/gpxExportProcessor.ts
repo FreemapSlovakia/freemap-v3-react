@@ -384,9 +384,15 @@ function addGpx(doc: Document, { trackGpx }: { trackGpx: string | null }) {
 
   const r = getSupportedGpxElements(gpxDoc);
 
+  const nodes: Node[] = [];
+
   let curr: Node | null;
   while ((curr = r.iterateNext())) {
-    doc.documentElement.appendChild(curr.cloneNode(true));
+    nodes.push(curr);
+  }
+
+  for (const x of nodes) {
+    doc.documentElement.appendChild(x);
   }
 }
 
