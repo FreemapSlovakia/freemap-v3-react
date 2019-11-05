@@ -18,23 +18,27 @@ interface InjectedProps {
 export const withTranslator = <BaseProps extends InjectedProps>(
   BaseComponent: React.ComponentType<BaseProps>,
 ) => {
-  type HocProps = Diff<BaseProps, InjectedProps>;
-
-  class Hoc extends React.Component<InjectedProps> {
-    static displayName = `injectL10n(${BaseComponent.name})`;
-    static readonly WrappedComponent = BaseComponent;
-
-    render() {
-      const { ...restProps } = this.props;
-      return <BaseComponent t={tx} {...(restProps as BaseProps)} />;
-    }
-  }
-
   const mapStateToProps = (state: RootState) => ({
     languageCounter: state.l10n.counter, // force applying english language on load
   });
 
-  return connect<ReturnType<typeof mapStateToProps>, {}, HocProps, RootState>(
-    mapStateToProps,
-  )(Hoc);
+  type HocProps = ReturnType<typeof mapStateToProps>;
+
+  class Hoc extends React.Component<HocProps> {
+    static displayName = `injectL10n(${BaseComponent.name})`;
+    static readonly WrappedComponent = BaseComponent;
+
+    render() {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { languageCounter, ...restProps } = this.props;
+
+      return <BaseComponent t={tx} {...(restProps as BaseProps)} />;
+    }
+  }
+
+  type OwnProps = Diff<BaseProps, InjectedProps>;
+
+  return connect<HocProps, undefined, OwnProps, RootState>(mapStateToProps)(
+    Hoc,
+  );
 };
