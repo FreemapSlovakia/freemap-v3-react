@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { translate, splitAndSubstitute } from 'fm3/stringUtils';
-import { Subtract } from 'utility-types';
+import { Diff } from 'utility-types';
 import { connect } from 'react-redux';
 import { RootState } from './storeCreator';
 
@@ -16,29 +16,29 @@ interface InjectedProps {
 }
 
 export const withTranslator = <BaseProps extends InjectedProps>(
-  _BaseComponent: React.ComponentType<BaseProps>,
+  BaseComponent: React.ComponentType<BaseProps>,
 ) => {
-  // fix for TypeScript issues: https://github.com/piotrwitek/react-redux-typescript-guide/issues/111
-  const BaseComponent = _BaseComponent as React.ComponentType<InjectedProps>;
+  const mapStateToProps = (state: RootState) => ({
+    languageCounter: state.l10n.counter, // force applying english language on load
+  });
 
-  type HocProps = Subtract<BaseProps, InjectedProps>;
-  type TStateProps = ReturnType<typeof mapStateToProps>;
+  type HocProps = ReturnType<typeof mapStateToProps>;
 
   class Hoc extends React.Component<HocProps> {
     static displayName = `injectL10n(${BaseComponent.name})`;
     static readonly WrappedComponent = BaseComponent;
 
     render() {
-      const { ...restProps } = this.props;
-      return <BaseComponent t={tx} {...restProps} />;
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { languageCounter, ...restProps } = this.props;
+
+      return <BaseComponent t={tx} {...(restProps as BaseProps)} />;
     }
   }
 
-  const mapStateToProps = (state: RootState) => ({
-    languageCounter: state.l10n.counter, // force applying english language on load
-  });
+  type OwnProps = Diff<BaseProps, InjectedProps>;
 
-  return connect<TStateProps, {}, HocProps, RootState>(mapStateToProps)(
-    Hoc as any, // see https://github.com/piotrwitek/react-redux-typescript-guide/issues/111#issuecomment-524465225
+  return connect<HocProps, undefined, OwnProps, RootState>(mapStateToProps)(
+    Hoc,
   );
 };
