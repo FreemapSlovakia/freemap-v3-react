@@ -57,10 +57,12 @@ class LGalleryLayer extends LGridLayer {
       throw Error('no context');
     }
 
+    const zk = Math.min(1, 1.1 ** coords.z / 3);
+
     ctx.scale(dpr, dpr);
     ctx.strokeStyle = '#000';
     ctx.fillStyle = '#ff0';
-    ctx.lineWidth = 1.5;
+    ctx.lineWidth = 1.5 * zk; // coords.z > 9 ? 1.5 : 1;
 
     const k = 2 ** coords.z;
 
@@ -97,7 +99,7 @@ class LGalleryLayer extends LGridLayer {
           const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;
 
           ctx.beginPath();
-          ctx.arc(x, y, 4, 0, 2 * Math.PI);
+          ctx.arc(x, y, 4 * zk, 0, 2 * Math.PI);
           ctx.fill();
           ctx.stroke();
         });
