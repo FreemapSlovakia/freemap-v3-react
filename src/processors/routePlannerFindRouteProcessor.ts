@@ -111,17 +111,19 @@ export const routePlannerFindRouteProcessor: Processor = {
     let data: any;
 
     try {
-      data = (await httpRequest({
-        getState,
-        method: 'GET',
-        url: `${ttDef.url.replace(
-          '$MODE',
-          mode === 'route' ? 'route' : 'trip',
-        )}/${allPoints}`,
-        params,
-        expectedStatus: [200, 400],
-        cancelActions: updateRouteTypes,
-      })).data;
+      data = (
+        await httpRequest({
+          getState,
+          method: 'GET',
+          url: `${ttDef.url.replace(
+            '$MODE',
+            mode === 'route' ? 'route' : 'trip',
+          )}/${allPoints}`,
+          params,
+          expectedStatus: [200, 400],
+          cancelActions: updateRouteTypes,
+        })
+      ).data;
     } catch (err) {
       dispatch(
         routePlannerSetResult({

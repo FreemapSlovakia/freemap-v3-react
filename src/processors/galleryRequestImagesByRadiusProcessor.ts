@@ -7,9 +7,7 @@ import { createFilter } from 'fm3/galleryUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const galleryRequestImagesByRadiusProcessor: Processor<
-  typeof galleryRequestImages
-> = {
+export const galleryRequestImagesByRadiusProcessor: Processor<typeof galleryRequestImages> = {
   actionCreator: galleryRequestImages,
   errorKey: 'gallery.picturesFetchingError',
   handle: async ({ getState, dispatch, action }) => {

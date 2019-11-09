@@ -57,7 +57,7 @@ function undefineNaN(val: number): number | undefined {
 
 export function getMapStateDiffFromUrl(
   state1:
-    | Partial<MapViewState> & Pick<MapViewState, 'overlays'>
+    | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>)
     | null
     | undefined,
   state2: MapViewState,

@@ -70,7 +70,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(GalleryResult);
+export default connect(mapStateToProps, mapDispatchToProps)(GalleryResult);

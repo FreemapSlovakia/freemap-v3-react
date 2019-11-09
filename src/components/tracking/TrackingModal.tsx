@@ -60,7 +60,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(TrackingModal);
+export default connect(mapStateToProps, mapDispatchToProps)(TrackingModal);

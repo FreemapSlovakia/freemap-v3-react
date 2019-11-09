@@ -95,7 +95,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(ShareMapModal));
+export default connect(null, mapDispatchToProps)(withTranslator(ShareMapModal));

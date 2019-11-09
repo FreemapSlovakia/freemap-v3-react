@@ -65,7 +65,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(InfoPointResult);
+export default connect(mapStateToProps, mapDispatchToProps)(InfoPointResult);

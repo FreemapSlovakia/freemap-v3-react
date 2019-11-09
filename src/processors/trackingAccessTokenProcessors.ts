@@ -2,9 +2,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const saveAccessTokenProcessor: Processor<
-  typeof trackingActions.saveAccessToken
-> = {
+export const saveAccessTokenProcessor: Processor<typeof trackingActions.saveAccessToken> = {
   actionCreator: trackingActions.saveAccessToken,
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ dispatch, getState, action }) => {
@@ -34,9 +32,7 @@ export const saveAccessTokenProcessor: Processor<
   },
 };
 
-export const loadAccessTokensProcessor: Processor<
-  typeof trackingActions.loadAccessTokens
-> = {
+export const loadAccessTokensProcessor: Processor<typeof trackingActions.loadAccessTokens> = {
   actionCreator: trackingActions.loadAccessTokens,
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ dispatch, getState }) => {
@@ -58,9 +54,7 @@ export const loadAccessTokensProcessor: Processor<
   },
 };
 
-export const deleteAccessTokenProcessor: Processor<
-  typeof trackingActions.deleteAccessToken
-> = {
+export const deleteAccessTokenProcessor: Processor<typeof trackingActions.deleteAccessToken> = {
   actionCreator: trackingActions.deleteAccessToken,
   errorKey: 'tracking.deleteError', // TODO
   handle: async ({ dispatch, getState, action }) => {

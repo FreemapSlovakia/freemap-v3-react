@@ -10,10 +10,8 @@ import {
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 
-export const routePlannerToggleElevationChartProcessor: Processor<
-  | typeof routePlannerToggleElevationChart
-  | typeof routePlannerSetActiveAlternativeIndex
-> = {
+export const routePlannerToggleElevationChartProcessor: Processor<| typeof routePlannerToggleElevationChart
+| typeof routePlannerSetActiveAlternativeIndex> = {
   actionCreator: [
     routePlannerToggleElevationChart,
     routePlannerSetActiveAlternativeIndex,

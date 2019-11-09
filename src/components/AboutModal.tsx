@@ -95,11 +95,8 @@ export const AboutModal: React.FC<Props> = ({ onModalClose }) => {
   );
 };
 
-export default connect(
-  null,
-  (dispatch: Dispatch<RootAction>) => ({
-    onModalClose() {
-      dispatch(setActiveModal(null));
-    },
-  }),
-)(AboutModal);
+export default connect(null, (dispatch: Dispatch<RootAction>) => ({
+  onModalClose() {
+    dispatch(setActiveModal(null));
+  },
+}))(AboutModal);

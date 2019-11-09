@@ -85,7 +85,8 @@ export function attachKeyboardHandler(store: MyStore) {
 
     if (
       showGalleryViewer(state) &&
-      (state.gallery.imageIds && state.gallery.imageIds.length > 1)
+      state.gallery.imageIds &&
+      state.gallery.imageIds.length > 1
     ) {
       if (event.keyCode === KEY_LEFT) {
         store.dispatch(galleryRequestImage('prev'));

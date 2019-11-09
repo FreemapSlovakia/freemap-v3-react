@@ -32,7 +32,7 @@ function splitByVars(input: string, special: boolean): SplitItem[] {
 }
 
 function exec<T>(x: T | (() => T)): T {
-  return typeof x === 'function' ? (x as (() => T))() : x;
+  return typeof x === 'function' ? (x as () => T)() : x;
 }
 
 // for 'foo {a} bar {b} baz' and { a: 'A', b: <Lol /> } returns ['foo A bar ', <Lol />, ' baz']

@@ -5,9 +5,7 @@ import { trackViewerSetData, TrackPoint } from 'fm3/actions/trackViewerActions';
 import { assertType } from 'typescript-is';
 import { FeatureCollection } from 'geojson';
 
-export const trackViewerSetTrackDataProcessor: Processor<
-  typeof trackViewerSetData
-> = {
+export const trackViewerSetTrackDataProcessor: Processor<typeof trackViewerSetData> = {
   actionCreator: trackViewerSetData,
   transform: ({ action }) => {
     if (!action.payload.trackGpx) {

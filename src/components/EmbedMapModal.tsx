@@ -277,7 +277,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(EmbedMapModal));
+export default connect(null, mapDispatchToProps)(withTranslator(EmbedMapModal));

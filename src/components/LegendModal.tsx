@@ -67,7 +67,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  null,
-  mapDispatchToProps,
-)(LegendModalInt);
+export default connect(null, mapDispatchToProps)(LegendModalInt);

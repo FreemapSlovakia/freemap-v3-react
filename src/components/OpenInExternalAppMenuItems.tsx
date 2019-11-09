@@ -88,7 +88,10 @@ const OpenInExternalAppMenuItems: React.FC<Props> = ({
               bottom = bounds.getSouth();
             }
 
-            [['http', 8111], ['https', 8112]].forEach(([proto, port]) => {
+            [
+              ['http', 8111],
+              ['https', 8112],
+            ].forEach(([proto, port]) => {
               axios
                 .get(`${proto}://localhost:${port}/load_and_zoom`, {
                   params: { left, right, top, bottom },

@@ -138,7 +138,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(Changesets);
+export default connect(mapStateToProps, mapDispatchToProps)(Changesets);

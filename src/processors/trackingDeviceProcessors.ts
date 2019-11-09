@@ -2,9 +2,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
-export const saveDeviceProcessor: Processor<
-  typeof trackingActions.saveDevice
-> = {
+export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> = {
   actionCreator: trackingActions.saveDevice,
   errorKey: 'tracking.savingError', // TODO
   handle: async ({ dispatch, getState, action }) => {
@@ -30,9 +28,7 @@ export const saveDeviceProcessor: Processor<
   },
 };
 
-export const loadDevicesProcessor: Processor<
-  typeof trackingActions.loadDevices
-> = {
+export const loadDevicesProcessor: Processor<typeof trackingActions.loadDevices> = {
   actionCreator: trackingActions.loadDevices,
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ dispatch, getState }) => {
@@ -52,9 +48,7 @@ export const loadDevicesProcessor: Processor<
   },
 };
 
-export const deleteDeviceProcessor: Processor<
-  typeof trackingActions.deleteDevice
-> = {
+export const deleteDeviceProcessor: Processor<typeof trackingActions.deleteDevice> = {
   actionCreator: trackingActions.deleteDevice,
   errorKey: 'tracking.deleteError', // TODO
   handle: async ({ dispatch, getState, action }) => {
