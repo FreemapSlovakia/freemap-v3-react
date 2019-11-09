@@ -57,35 +57,49 @@ export const mapDetailsProcessor: Processor = {
       return;
     }
 
-    const [{ data }, { data: data1 }] = await Promise.all([
-      httpRequest({
-        getState,
-        method: 'POST',
-        url: '//overpass-api.de/api/interpreter',
-        data:
-          '[out:json];(' +
-          // + `node(around:33,${userSelectedLat},${userSelectedLon});`
-          `way(around:33,${userSelectedLat},${userSelectedLon})[highway];` +
-          // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
-          ');out geom meta;',
-        expectedStatus: 200,
-      }),
-      { data: { elements: [] } },
-      // axios.post(
-      //   '//overpass-api.de/api/interpreter',
-      //   `[out:json];
-      //     is_in(${userSelectedLat},${userSelectedLon})->.a;
-      //     way(pivot.a);
-      //     out geom meta;
-      //     relation(pivot.a);
-      //     out geom meta;
-      //   `,
-      //   {
-      //     validateStatus: status => status === 200,
-      //     cancelToken: source.token,
-      //   },
-      // ),
-    ]);
+    const { data } = await httpRequest({
+      getState,
+      method: 'POST',
+      url: '//overpass-api.de/api/interpreter',
+      data:
+        '[out:json];(' +
+        // + `node(around:33,${userSelectedLat},${userSelectedLon});`
+        `way(around:33,${userSelectedLat},${userSelectedLon})[highway];` +
+        // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
+        ');out geom meta;',
+      expectedStatus: 200,
+    });
+    const data1 = { elements: [] };
+
+    // const [{ data }, { data: data1 }] = await Promise.all([
+    //   httpRequest({
+    //     getState,
+    //     method: 'POST',
+    //     url: '//overpass-api.de/api/interpreter',
+    //     data:
+    //       '[out:json];(' +
+    //       // + `node(around:33,${userSelectedLat},${userSelectedLon});`
+    //       `way(around:33,${userSelectedLat},${userSelectedLon})[highway];` +
+    //       // + `relation(around:33,${userSelectedLat},${userSelectedLon});`
+    //       ');out geom meta;',
+    //     expectedStatus: 200,
+    //   }),
+    //   { data: { elements: [] } },
+    //   // axios.post(
+    //   //   '//overpass-api.de/api/interpreter',
+    //   //   `[out:json];
+    //   //     is_in(${userSelectedLat},${userSelectedLon})->.a;
+    //   //     way(pivot.a);
+    //   //     out geom meta;
+    //   //     relation(pivot.a);
+    //   //     out geom meta;
+    //   //   `,
+    //   //   {
+    //   //     validateStatus: status => status === 200,
+    //   //     cancelToken: source.token,
+    //   //   },
+    //   // ),
+    // ]);
 
     const oRes = assertType<OverpassResult>(data);
 
