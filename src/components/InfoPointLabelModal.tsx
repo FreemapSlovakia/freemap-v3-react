@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -21,64 +21,61 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface State {
-  editedLabel?: string;
-}
+const InfoPointLabelModal: React.FC<Props> = ({
+  label,
+  onInfoPointChangeLabel,
+  onModalClose,
+  t,
+}) => {
+  const [editedLabel, setEditedLabel] = useState(label);
 
-class InfoPointLabelModal extends React.Component<Props, State> {
-  state: State = {};
+  const saveLabel = useCallback(
+    (e: React.FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      onInfoPointChangeLabel(editedLabel);
+      onModalClose();
+    },
+    [editedLabel, onInfoPointChangeLabel, onModalClose],
+  );
 
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      editedLabel: props.label,
-    };
-  }
+  const handleLocalLabelChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      setEditedLabel((e.target as HTMLInputElement).value);
+    },
+    [],
+  );
 
-  saveLabel = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    this.props.onInfoPointChangeLabel(this.state.editedLabel);
-    this.props.onModalClose();
-  };
-
-  handleLocalLabelChange = (e: React.FormEvent<FormControl>) => {
-    this.setState({ editedLabel: (e.target as HTMLInputElement).value });
-  };
-
-  render() {
-    const { onModalClose, t } = this.props;
-    return (
-      <Modal show onHide={onModalClose}>
-        <form onSubmit={this.saveLabel}>
-          <Modal.Header closeButton>
-            <Modal.Title>{t('infoPoint.edit.title')}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <FormGroup>
-              <ControlLabel>{t('infoPoint.edit.label')}</ControlLabel>
-              <FormControl
-                autoFocus
-                type="text"
-                placeholder={t('infoPoint.edit.example')}
-                value={this.state.editedLabel || ''}
-                onChange={this.handleLocalLabelChange}
-              />
-            </FormGroup>
-            <Alert>{t('infoPoint.edit.hint')}</Alert>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button type="submit" bsStyle="info">
-              <Glyphicon glyph="floppy-disk" /> {t('general.save')}
-            </Button>
-            <Button type="button" onClick={onModalClose}>
-              <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
-            </Button>
-          </Modal.Footer>
-        </form>
-      </Modal>
-    );
-  }
-}
+  return (
+    <Modal show onHide={onModalClose}>
+      <form onSubmit={saveLabel}>
+        <Modal.Header closeButton>
+          <Modal.Title>{t('infoPoint.edit.title')}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <FormGroup>
+            <ControlLabel>{t('infoPoint.edit.label')}</ControlLabel>
+            <FormControl
+              autoFocus
+              type="text"
+              placeholder={t('infoPoint.edit.example')}
+              value={editedLabel || ''}
+              onChange={handleLocalLabelChange}
+            />
+          </FormGroup>
+          <Alert>{t('infoPoint.edit.hint')}</Alert>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button type="submit" bsStyle="info">
+            <Glyphicon glyph="floppy-disk" /> {t('general.save')}
+          </Button>
+          <Button type="button" onClick={onModalClose}>
+            <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   label:

@@ -31,88 +31,69 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-class TrackViewerMenu extends React.Component<Props> {
-  componentDidUpdate(prevProps: Props) {
-    if (prevProps.trackUID === null && this.props.trackUID !== null) {
-      this.props.onShare();
-    }
-  }
-
-  // TODO move to logic
-  shareTrack = () => {
-    if (this.props.trackUID) {
-      this.props.onShare();
-    } else {
-      this.props.onServerUpload();
-    }
-  };
-
-  render() {
-    const {
-      onUpload,
-      hasTrack,
-      elevationChartActive,
-      colorizeTrackBy,
-      onColorizeTrackBy,
-      onShowTrackInfo,
-      trackGeojsonIsSuitableForElevationChart,
-      onToggleElevationChart,
-      t,
-    } = this.props;
-
-    return (
-      <>
-        <Button onClick={() => onUpload()}>
-          <FontAwesomeIcon icon="upload" />
-          <span className="hidden-xs"> {t('trackViewer.upload')}</span>
-        </Button>{' '}
-        <Button
-          active={elevationChartActive}
-          onClick={onToggleElevationChart}
-          disabled={!trackGeojsonIsSuitableForElevationChart}
-        >
-          <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> {t('general.elevationProfile')}</span>
-        </Button>{' '}
-        <DropdownButton
-          id="colorizing_mode"
-          title={
-            <>
-              <FontAwesomeIcon icon="paint-brush" />{' '}
-              {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
-            </>
-          }
-        >
-          {([null, 'elevation', 'steepness'] as const).map(mode => (
-            <MenuItem
-              eventKey={mode}
-              key={mode || 'none'}
-              active={mode === colorizeTrackBy}
-              onClick={() => onColorizeTrackBy(mode)}
-            >
-              {t(`trackViewer.colorizingMode.${mode || 'none'}`)}
-            </MenuItem>
-          ))}
-        </DropdownButton>{' '}
-        <Button
-          onClick={onShowTrackInfo}
-          disabled={!trackGeojsonIsSuitableForElevationChart}
-        >
-          <FontAwesomeIcon icon="info-circle" />
-          <span className="hidden-xs"> {t('trackViewer.moreInfo')}</span>
-        </Button>{' '}
-        <Button onClick={this.shareTrack} disabled={!hasTrack}>
-          <FontAwesomeIcon icon="share-alt" />
-          <span className="hidden-xs"> {t('trackViewer.share')}</span>
-        </Button>
-      </>
-    );
-  }
-}
+const TrackViewerMenu: React.FC<Props> = ({
+  onServerUpload,
+  onUpload,
+  hasTrack,
+  elevationChartActive,
+  colorizeTrackBy,
+  onColorizeTrackBy,
+  onShowTrackInfo,
+  trackGeojsonIsSuitableForElevationChart,
+  onToggleElevationChart,
+  t,
+}) => {
+  return (
+    <>
+      <Button onClick={() => onUpload()}>
+        <FontAwesomeIcon icon="upload" />
+        <span className="hidden-xs"> {t('trackViewer.upload')}</span>
+      </Button>{' '}
+      <Button
+        active={elevationChartActive}
+        onClick={onToggleElevationChart}
+        disabled={!trackGeojsonIsSuitableForElevationChart}
+      >
+        <FontAwesomeIcon icon="bar-chart" />
+        <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+      </Button>{' '}
+      <DropdownButton
+        id="colorizing_mode"
+        title={
+          <>
+            <FontAwesomeIcon icon="paint-brush" />{' '}
+            {t(`trackViewer.colorizingMode.${colorizeTrackBy || 'none'}`)}
+          </>
+        }
+      >
+        {([null, 'elevation', 'steepness'] as const).map(mode => (
+          <MenuItem
+            eventKey={mode}
+            key={mode || 'none'}
+            active={mode === colorizeTrackBy}
+            onClick={() => onColorizeTrackBy(mode)}
+          >
+            {t(`trackViewer.colorizingMode.${mode || 'none'}`)}
+          </MenuItem>
+        ))}
+      </DropdownButton>{' '}
+      <Button
+        onClick={onShowTrackInfo}
+        disabled={!trackGeojsonIsSuitableForElevationChart}
+      >
+        <FontAwesomeIcon icon="info-circle" />
+        <span className="hidden-xs"> {t('trackViewer.moreInfo')}</span>
+      </Button>{' '}
+      <Button onClick={onServerUpload} disabled={!hasTrack}>
+        <FontAwesomeIcon icon="share-alt" />
+        <span className="hidden-xs"> {t('trackViewer.share')}</span>
+      </Button>
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   hasTrack: !!state.trackViewer.trackGeojson,
-  trackUID: state.trackViewer.trackUID,
   elevationChartActive: !!state.elevationChart.trackGeojson,
   colorizeTrackBy: state.trackViewer.colorizeTrackBy,
   trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(state),
@@ -140,9 +121,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onToggleElevationChart() {
     dispatch(trackViewerToggleElevationChart());
-  },
-  onShare() {
-    dispatch(setActiveModal('track-viewer-share'));
   },
 });
 

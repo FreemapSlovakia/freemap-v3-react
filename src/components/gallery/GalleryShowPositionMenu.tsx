@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import Panel from 'react-bootstrap/lib/Panel';
@@ -16,39 +16,42 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-class GalleryShowPositionMenu extends React.Component<Props> {
-  componentDidMount() {
+const GalleryShowPositionMenu: React.FC<Props> = ({
+  onClose,
+  showPosition,
+  t,
+}) => {
+  const handleKeyUp = useCallback(
+    (event: KeyboardEvent) => {
+      if (event.keyCode === 27 /* escape key */) {
+        onClose();
+      }
+    },
+    [onClose],
+  );
+
+  useEffect(() => {
     // can't use keydown because it would close themodal
-    document.addEventListener('keyup', this.handleKeyUp);
+    document.addEventListener('keyup', handleKeyUp);
+
+    return () => {
+      document.removeEventListener('keyup', handleKeyUp);
+    };
+  }, [handleKeyUp]);
+
+  if (!showPosition) {
+    return null;
   }
 
-  componentWillUnmount() {
-    document.removeEventListener('keyup', this.handleKeyUp);
-  }
-
-  handleKeyUp = (event: KeyboardEvent) => {
-    if (event.keyCode === 27 /* escape key */) {
-      this.props.onClose();
-    }
-  };
-
-  render() {
-    const { onClose, showPosition, t } = this.props;
-
-    if (!showPosition) {
-      return null;
-    }
-
-    return (
-      <Panel className="fm-toolbar">
-        <Button onClick={onClose}>
-          <FontAwesomeIcon icon="chevron-left" />
-          <span className="hidden-xs"> {t('general.back')}</span> <kbd>Esc</kbd>
-        </Button>
-      </Panel>
-    );
-  }
-}
+  return (
+    <Panel className="fm-toolbar">
+      <Button onClick={onClose}>
+        <FontAwesomeIcon icon="chevron-left" />
+        <span className="hidden-xs"> {t('general.back')}</span> <kbd>Esc</kbd>
+      </Button>
+    </Panel>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   showPosition: state.gallery.showPosition,
