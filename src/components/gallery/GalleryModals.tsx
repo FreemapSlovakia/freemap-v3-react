@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
@@ -13,45 +13,42 @@ import 'fm3/styles/gallery.scss';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { Dispatch } from 'redux';
-import { DragEndEvent } from 'leaflet';
 import { showGalleryViewer } from 'fm3/selectors/mainSelectors';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-class GalleryModals extends React.Component<Props> {
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.handleMapClick);
-  }
+const GalleryModals: React.FC<Props> = ({
+  showGalleryViewer,
+  showFilter,
+  showUploadModal,
+  onPositionPick,
+  isPickingPosition,
+}) => {
+  const handleMapClick = useCallback(
+    (lat: number, lon: number) => {
+      if (isPickingPosition) {
+        onPositionPick(lat, lon);
+      }
+    },
+    [isPickingPosition, onPositionPick],
+  );
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handleMapClick);
-  }
+  useEffect(() => {
+    mapEventEmitter.on('mapClick', handleMapClick);
+    return () => {
+      mapEventEmitter.removeListener('mapClick', handleMapClick);
+    };
+  }, [handleMapClick]);
 
-  // TODO mode to GalleryMenu to be consistent with other tools
-  handleMapClick = (lat: number, lon: number) => {
-    if (this.props.isPickingPosition) {
-      this.props.onPositionPick(lat, lon);
-    }
-  };
-
-  handlePositionMarkerDragEnd = (e: DragEndEvent) => {
-    const coords = e.target.getLatLng();
-    this.props.onPositionPick(coords.lat, coords.lng);
-  };
-
-  render() {
-    const { showGalleryViewer, showFilter, showUploadModal } = this.props;
-
-    return (
-      <>
-        {showGalleryViewer && <GalleryViewerModal />}
-        {showFilter && <GalleryFilterModal />}
-        {showUploadModal && <AsyncGalleryUploadModal />}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      {showGalleryViewer && <GalleryViewerModal />}
+      {showFilter && <GalleryFilterModal />}
+      {showUploadModal && <AsyncGalleryUploadModal />}
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   activeImageId: state.gallery.activeImageId,

@@ -111,9 +111,11 @@ class TrackViewerResult extends React.Component<Props, State> {
       layer.on('click', e => {
         this.showInfoPoint(e, feature);
       });
+
       layer.on('mouseover', e => {
         this.showInfoPoint(e, feature);
       });
+
       layer.on('mouseout', () => {
         this.setState({
           infoLat: undefined,
@@ -180,6 +182,7 @@ class TrackViewerResult extends React.Component<Props, State> {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
     });
+
     const timeFormat = new Intl.DateTimeFormat(language, {
       hour: 'numeric',
       minute: '2-digit',
@@ -202,6 +205,7 @@ class TrackViewerResult extends React.Component<Props, State> {
             )}
           </Polyline>
         ))}
+
         {colorizeTrackBy &&
           (colorizeTrackBy === 'elevation'
             ? this.getColorLineDataForElevation()
@@ -219,6 +223,7 @@ class TrackViewerResult extends React.Component<Props, State> {
               outlineWidth={0}
             />
           ))}
+
         {colorizeTrackBy === null && (
           <Polyline
             weight={6}
@@ -227,6 +232,7 @@ class TrackViewerResult extends React.Component<Props, State> {
             color="#838"
           />
         )}
+
         {this.getFeatures('Point').map(({ geometry, properties }, i) => (
           <RichMarker
             faIcon="flag"
@@ -250,6 +256,7 @@ class TrackViewerResult extends React.Component<Props, State> {
             )}
           </RichMarker>
         ))}
+
         {startPoints.map((p, i) => (
           <RichMarker
             faIcon="play"

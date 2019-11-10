@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { Popup } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -19,54 +19,62 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-class ElevationMeasurementResult extends React.Component<Props> {
-  handleDragStart = () => {
-    this.props.onElevationClear();
-  };
+const ElevationMeasurementResult: React.FC<Props> = ({
+  point,
+  elevation,
+  language,
+  t,
+  onElevationClear,
+  onPointSet,
+}) => {
+  const handleDragStart = useCallback(() => {
+    onElevationClear();
+  }, [onElevationClear]);
 
-  handleDragEnd = (event: DragEndEvent) => {
-    const { lat, lng: lon } = event.target.getLatLng();
-    this.props.onPointSet({ lat, lon });
-  };
+  const handleDragEnd = useCallback(
+    (event: DragEndEvent) => {
+      const { lat, lng: lon } = event.target.getLatLng();
+      onPointSet({ lat, lon });
+    },
+    [onPointSet],
+  );
 
-  render() {
-    const { point, elevation, language, t } = this.props;
+  const nf1 = useMemo(
+    () =>
+      Intl.NumberFormat(language, {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 1,
+      }),
+    [language],
+  );
 
-    const nf1 = Intl.NumberFormat(language, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 1,
-    });
-
-    return (
-      point && (
-        <RichMarker
-          autoOpenPopup
-          position={{ lat: point.lat, lng: point.lon }}
-          // onDragstart={this.handleDragStart}
-          ondragend={this.handleDragEnd}
-          // ondrag={this.handleDrag}
-          draggable
-        >
-          <Popup closeButton={false} autoClose={false} autoPan={false}>
-            <>
-              {(['D', 'DM', 'DMS'] as const).map(format => (
-                <div key={format}>
-                  {latLonToString(point, language, format)}
-                </div>
-              ))}
-              {typeof elevation === 'number' && (
-                <div>
-                  {t('measurement.elevationLine')} {nf1.format(elevation)}{' '}
-                  {t('general.masl')}
-                </div>
-              )}
-            </>
-          </Popup>
-        </RichMarker>
-      )
-    );
-  }
-}
+  return (
+    point && (
+      <RichMarker
+        autoOpenPopup
+        position={{ lat: point.lat, lng: point.lon }}
+        // onDragstart={handleDragStart}
+        ondragend={handleDragEnd}
+        // ondrag={handleDrag}
+        draggable
+      >
+        <Popup closeButton={false} autoClose={false} autoPan={false}>
+          <>
+            {(['D', 'DM', 'DMS'] as const).map(format => (
+              <div key={format}>{latLonToString(point, language, format)}</div>
+            ))}
+            {typeof elevation === 'number' && (
+              <div>
+                {t('measurement.elevationLine')} {nf1.format(elevation)}{' '}
+                {t('general.masl')}
+              </div>
+            )}
+          </>
+        </Popup>
+      </RichMarker>
+    )
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   elevation: state.elevationMeasurement.elevation,

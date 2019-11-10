@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
@@ -21,53 +21,67 @@ const ONE_DAY = 1000 * 60 * 60 * 24;
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-class Changesets extends React.Component<Props> {
-  opacityOf = (changeset: Changeset, now: Date) => {
-    const { days } = this.props;
-    if (days === null) {
-      return 1;
-    }
-    const changesetAgeInDays =
-      (now.getTime() - changeset.closedAt.getTime()) / ONE_DAY;
-    const freshness = (days - changesetAgeInDays) / days; // <0.0, 1.0>
-    const opacity = freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
-    return opacity;
-  };
+const Changesets: React.FC<Props> = ({
+  changesets,
+  onShowChangesetDetail,
+  language,
+  days,
+}) => {
+  const opacityOf = useCallback(
+    (changeset: Changeset, now: Date) => {
+      if (days === null) {
+        return 1;
+      }
 
-  render() {
-    const { changesets, onShowChangesetDetail } = this.props;
-    const now = new Date();
-    return changesets.map(changeset => {
-      const opacity = this.opacityOf(changeset, now);
-      return (
-        <RichMarker
-          faIcon="pencil"
-          opacity={opacity}
-          key={changeset.id}
-          faIconLeftPadding="2px"
-          position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
-          onclick={() => onShowChangesetDetail(changeset, this.props.language)}
-        >
-          <Tooltip
+      const changesetAgeInDays =
+        (now.getTime() - changeset.closedAt.getTime()) / ONE_DAY;
+
+      const freshness = (days - changesetAgeInDays) / days; // <0.0, 1.0>
+
+      const opacity = freshness * 0.4 + 0.6; // <0.6, 1.0> . markers with opacity below 0.6 are almost invisible
+
+      return opacity;
+    },
+    [days],
+  );
+
+  const now = new Date();
+
+  return (
+    <>
+      {changesets.map(changeset => {
+        const opacity = opacityOf(changeset, now);
+
+        return (
+          <RichMarker
+            faIcon="pencil"
             opacity={opacity}
-            className="compact"
-            offset={new Point(9, -25)}
-            direction="right"
-            permanent
+            key={changeset.id}
+            faIconLeftPadding="2px"
+            position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
+            onclick={() => onShowChangesetDetail(changeset, language)}
           >
-            <div className="shortened">
-              <b>
-                {changeset.userName}
-                {': '}
-              </b>
-              {changeset.description}
-            </div>
-          </Tooltip>
-        </RichMarker>
-      );
-    });
-  }
-}
+            <Tooltip
+              opacity={opacity}
+              className="compact"
+              offset={new Point(9, -25)}
+              direction="right"
+              permanent
+            >
+              <div className="shortened">
+                <b>
+                  {changeset.userName}
+                  {': '}
+                </b>
+                {changeset.description}
+              </div>
+            </Tooltip>
+          </RichMarker>
+        );
+      })}
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,

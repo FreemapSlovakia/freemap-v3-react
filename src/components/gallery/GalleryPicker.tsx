@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import { Circle } from 'react-leaflet';
 
@@ -8,65 +8,61 @@ import { galleryRequestImages } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
+import { LatLon } from 'fm3/types/common';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface State {
-  lat?: number;
-  lon?: number;
-}
+const GalleryPicker: React.FC<Props> = ({ zoom, onImageRequest }) => {
+  const [latLon, setLatLon] = useState<LatLon>();
 
-class GalleryPicker extends React.Component<Props, State> {
-  state: State = {};
+  const handleMapClick = useCallback(
+    (lat: number, lon: number) => {
+      onImageRequest(lat, lon);
+    },
+    [onImageRequest],
+  );
 
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.handleMapClick);
-    mapEventEmitter.on('mouseMove', this.handleMouseMove);
-    mapEventEmitter.on('mouseOut', this.handleMouseOut);
-  }
+  const handleMouseMove = useCallback(
+    (lat: number, lon: number, originalEvent: MouseEvent) => {
+      if (
+        originalEvent.target &&
+        (originalEvent.target as HTMLElement).classList.contains(
+          'leaflet-container',
+        )
+      ) {
+        setLatLon({ lat, lon });
+      } else {
+        setLatLon(undefined);
+      }
+    },
+    [],
+  );
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handleMapClick);
-    mapEventEmitter.removeListener('mouseMove', this.handleMouseMove);
-    mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
-  }
+  const handleMouseOut = useCallback(() => {
+    setLatLon(undefined);
+  }, []);
 
-  handleMapClick = (lat: number, lon: number) => {
-    this.props.onImageRequest(lat, lon);
-  };
+  useEffect(() => {
+    mapEventEmitter.on('mapClick', handleMapClick);
+    mapEventEmitter.on('mouseMove', handleMouseMove);
+    mapEventEmitter.on('mouseOut', handleMouseOut);
+    return () => {
+      mapEventEmitter.removeListener('mapClick', handleMapClick);
+      mapEventEmitter.removeListener('mouseMove', handleMouseMove);
+      mapEventEmitter.removeListener('mouseOut', handleMouseOut);
+    };
+  }, [handleMapClick, handleMouseMove, handleMouseOut]);
 
-  handleMouseMove = (lat: number, lon: number, originalEvent: MouseEvent) => {
-    if (
-      originalEvent.target &&
-      (originalEvent.target as HTMLElement).classList.contains(
-        'leaflet-container',
-      )
-    ) {
-      this.setState({ lat, lon });
-    } else {
-      this.setState({ lat: undefined, lon: undefined });
-    }
-  };
-
-  handleMouseOut = () => {
-    this.setState({ lat: undefined, lon: undefined });
-  };
-
-  render() {
-    const { zoom } = this.props;
-    const { lat, lon } = this.state;
-
-    return lat && lon ? (
-      <Circle
-        interactive={false}
-        center={[lat, lon]}
-        radius={(5000 / 2 ** zoom) * 1000}
-        stroke={false}
-      />
-    ) : null;
-  }
-}
+  return latLon ? (
+    <Circle
+      interactive={false}
+      center={[latLon.lat, latLon.lon]}
+      radius={(5000 / 2 ** zoom) * 1000}
+      stroke={false}
+    />
+  ) : null;
+};
 
 const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,

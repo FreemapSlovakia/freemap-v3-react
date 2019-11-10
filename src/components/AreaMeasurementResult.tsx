@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
 import RichMarker from 'fm3/components/RichMarker';
@@ -16,6 +16,7 @@ import { divIcon } from 'leaflet';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import { LatLon } from 'fm3/types/common';
 
 const circularIcon = divIcon({
   // CircleMarker is not draggable
@@ -28,191 +29,207 @@ const circularIcon = divIcon({
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-interface State {
-  lat?: number;
-  lon?: number;
-}
+const AreaMeasurementResult: React.FC<Props> = ({
+  points,
+  language,
+  onPointAdd,
+  onPointUpdate,
+  onPointRemove,
+  active,
+}) => {
+  const [latLon, setLatLon] = useState<LatLon | undefined>(undefined);
 
-class AreaMeasurementResult extends React.Component<Props, State> {
-  state: State = {};
+  const handleMouseMove = useCallback(
+    (lat: number, lon: number, originalEvent: MouseEvent) => {
+      setLatLon(
+        active &&
+          originalEvent.target &&
+          (originalEvent.target as HTMLElement).classList.contains(
+            'leaflet-container',
+          )
+          ? { lat, lon }
+          : undefined,
+      );
+    },
+    [active],
+  );
 
-  componentDidMount() {
-    mapEventEmitter.on('mouseMove', this.handleMouseMove);
-    mapEventEmitter.on('mouseOut', this.handleMouseOut);
-  }
+  const handleMouseOut = useCallback(() => {
+    setLatLon(undefined);
+  }, []);
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mouseMove', this.handleMouseMove);
-    mapEventEmitter.removeListener('mouseOut', this.handleMouseOut);
-  }
+  useEffect(() => {
+    mapEventEmitter.on('mouseMove', handleMouseMove);
+    mapEventEmitter.on('mouseOut', handleMouseOut);
+    () => {
+      mapEventEmitter.removeListener('mouseMove', handleMouseMove);
+      mapEventEmitter.removeListener('mouseOut', handleMouseOut);
+    };
+  }, [handleMouseMove, handleMouseOut]);
 
-  handlePoiAdd = (lat: number, lon: number, position: number, id0: number) => {
-    handleDragStart();
-    const { points } = this.props;
-    const pos = position ? Math.ceil(position / 2) : points.length;
-    let id;
-    if (id0) {
-      id = id0;
-    } else if (pos === 0) {
-      id = points.length ? points[pos].id - 1 : 0;
-    } else if (pos === points.length) {
-      id = points[pos - 1].id + 1;
-    } else {
-      id = (points[pos - 1].id + points[pos].id) / 2;
-    }
-    this.props.onPointAdd({ lat, lon, id }, pos);
-  };
+  const handlePoiAdd = useCallback(
+    (lat: number, lon: number, position: number, id0: number) => {
+      handleDragStart();
+      const pos: number = position ? Math.ceil(position / 2) : points.length;
 
-  handleMouseMove = (lat: number, lon: number, originalEvent: MouseEvent) => {
-    if (
-      this.props.active &&
-      originalEvent.target &&
-      (originalEvent.target as HTMLElement).classList.contains(
-        'leaflet-container',
-      )
-    ) {
-      this.setState({ lat, lon });
-    } else {
-      this.setState({ lat: undefined, lon: undefined });
-    }
-  };
+      let id: number;
 
-  handleMouseOut = () => {
-    this.setState({ lat: undefined, lon: undefined });
-  };
-
-  handleMeasureMarkerDrag(
-    i: number,
-    { latlng: { lat, lng: lon } }: { latlng: { lat: number; lng: number } },
-    id: number,
-  ) {
-    this.props.onPointUpdate(i, { lat, lon, id });
-  }
-
-  handleMarkerClick(id: number) {
-    this.props.onPointRemove(id);
-  }
-
-  render() {
-    const { points, language } = this.props;
-
-    const ps: Point[] = [];
-    for (let i = 0; i < points.length; i += 1) {
-      ps.push(points[i]);
-      const p1 = points[i];
-      const p2 = points[(i + 1) % points.length];
-      const lat = (p1.lat + p2.lat) / 2;
-      const lon = (p1.lon + p2.lon) / 2;
-      ps.push({
-        lat,
-        lon,
-        id: i + 1 === points.length ? p1.id + 1 : (p1.id + p2.id) / 2,
-      });
-    }
-    const areaSize = points.length >= 3 ? area(points) : NaN;
-    let northmostPoint = points[0];
-    points.forEach(p => {
-      if (northmostPoint.lat < p.lat) {
-        northmostPoint = p;
+      if (id0) {
+        id = id0;
+      } else if (pos === 0) {
+        id = points.length ? points[pos].id - 1 : 0;
+      } else if (pos === points.length) {
+        id = points[pos - 1].id + 1;
+      } else {
+        id = (points[pos - 1].id + points[pos].id) / 2;
       }
-    });
 
-    const nf = Intl.NumberFormat(language, {
-      minimumFractionDigits: 3,
-      maximumFractionDigits: 3,
-    });
+      onPointAdd({ lat, lon, id }, pos);
+    },
+    [onPointAdd, points],
+  );
 
-    return (
-      <>
-        {!Number.isNaN(areaSize) && (
-          <RichMarker
-            autoOpenPopup
-            interactive={false}
-            opacity={0}
-            position={{ lat: northmostPoint.lat, lng: northmostPoint.lon }}
+  const handleMeasureMarkerDrag = useCallback(
+    (
+      i: number,
+      { latlng: { lat, lng: lon } }: { latlng: { lat: number; lng: number } },
+      id: number,
+    ) => {
+      onPointUpdate(i, { lat, lon, id });
+    },
+    [onPointUpdate],
+  );
+
+  const handleMarkerClick = useCallback(
+    (id: number) => {
+      onPointRemove(id);
+    },
+    [onPointRemove],
+  );
+
+  const ps: Point[] = [];
+
+  for (let i = 0; i < points.length; i += 1) {
+    ps.push(points[i]);
+    const p1 = points[i];
+    const p2 = points[(i + 1) % points.length];
+    const lat = (p1.lat + p2.lat) / 2;
+    const lon = (p1.lon + p2.lon) / 2;
+    ps.push({
+      lat,
+      lon,
+      id: i + 1 === points.length ? p1.id + 1 : (p1.id + p2.id) / 2,
+    });
+  }
+
+  const areaSize = points.length >= 3 ? area(points) : NaN;
+  let northmostPoint = points[0];
+
+  for (const p of points) {
+    if (northmostPoint.lat < p.lat) {
+      northmostPoint = p;
+    }
+  }
+
+  const nf = useMemo(
+    () =>
+      Intl.NumberFormat(language, {
+        minimumFractionDigits: 3,
+        maximumFractionDigits: 3,
+      }),
+    [language],
+  );
+
+  return (
+    <>
+      {!Number.isNaN(areaSize) && (
+        <RichMarker
+          autoOpenPopup
+          interactive={false}
+          opacity={0}
+          position={{ lat: northmostPoint.lat, lng: northmostPoint.lon }}
+        >
+          <Popup closeButton={false} autoClose={false} autoPan={false}>
+            <span>
+              <div>
+                {nf.format(areaSize)} m<sup>2</sup>
+              </div>
+              <div>{nf.format(areaSize / 100)} a</div>
+              <div>{nf.format(areaSize / 10000)} ha</div>
+              <div>
+                {nf.format(areaSize / 1000000)} km<sup>2</sup>
+              </div>
+            </span>
+          </Popup>
+        </RichMarker>
+      )}
+
+      {ps.map((p, i) => {
+        return i % 2 ? (
+          <Marker
+            key={`point-${p.id}`}
+            draggable
+            position={{ lat: p.lat, lng: p.lon }}
+            icon={circularIcon}
+            opacity={0.5}
+            ondragstart={e =>
+              handlePoiAdd(
+                e.target.getLatLng().lat,
+                e.target.getLatLng().lng,
+                i,
+                p.id,
+              )
+            }
+          />
+        ) : (
+          <Marker
+            key={`point-${p.id}`}
+            draggable
+            position={{ lat: p.lat, lng: p.lon }}
+            // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+            icon={circularIcon}
+            opacity={1}
+            ondrag={e => handleMeasureMarkerDrag(i / 2, e as any, p.id)}
+            onclick={() => handleMarkerClick(p.id)}
+            ondragstart={handleDragStart}
+            ondragend={handleDragEnd}
           >
-            <Popup closeButton={false} autoClose={false} autoPan={false}>
-              <span>
-                <div>
-                  {nf.format(areaSize)} m<sup>2</sup>
-                </div>
-                <div>{nf.format(areaSize / 100)} a</div>
-                <div>{nf.format(areaSize / 10000)} ha</div>
-                <div>
-                  {nf.format(areaSize / 1000000)} km<sup>2</sup>
-                </div>
-              </span>
-            </Popup>
-          </RichMarker>
-        )}
-
-        {ps.map((p, i) => {
-          return i % 2 ? (
-            <Marker
-              key={`point-${p.id}`}
-              draggable
-              position={{ lat: p.lat, lng: p.lon }}
-              icon={circularIcon}
-              opacity={0.5}
-              ondragstart={e =>
-                this.handlePoiAdd(
-                  e.target.getLatLng().lat,
-                  e.target.getLatLng().lng,
-                  i,
-                  p.id,
-                )
-              }
-            />
-          ) : (
-            <Marker
-              key={`point-${p.id}`}
-              draggable
-              position={{ lat: p.lat, lng: p.lon }}
-              // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-              icon={circularIcon}
-              opacity={1}
-              ondrag={e => this.handleMeasureMarkerDrag(i / 2, e as any, p.id)}
-              onclick={() => this.handleMarkerClick(p.id)}
-              ondragstart={handleDragStart}
-              ondragend={handleDragEnd}
-            >
-              {/*
+            {/*
                 <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
               */}
-            </Marker>
-          );
-        })}
+          </Marker>
+        );
+      })}
 
-        {ps.length > 2 && (
-          <Polygon
-            weight={4}
-            interactive={false}
-            positions={ps
-              .filter((_, i) => i % 2 === 0)
-              .map(({ lat, lon }) => ({ lat, lng: lon }))}
-          />
-        )}
+      {ps.length > 2 && (
+        <Polygon
+          weight={4}
+          interactive={false}
+          positions={ps
+            .filter((_, i) => i % 2 === 0)
+            .map(({ lat, lon }) => ({ lat, lng: lon }))}
+        />
+      )}
 
-        {!!(ps.length && this.state.lat && this.state.lon) && (
-          <Polyline
-            weight={4}
-            interactive={false}
-            dashArray="6,8"
-            positions={[
-              { lat: ps[0].lat, lng: ps[0].lon },
-              { lat: this.state.lat, lng: this.state.lon },
-              ...(ps.length < 3
-                ? []
-                : [{ lat: ps[ps.length - 2].lat, lng: ps[ps.length - 2].lon }]),
-            ]}
-          />
-        )}
-      </>
-    );
-  }
-}
+      {!!(ps.length && latLon) && (
+        <Polyline
+          weight={4}
+          interactive={false}
+          dashArray="6,8"
+          positions={[
+            { lat: ps[0].lat, lng: ps[0].lon },
+            { lat: latLon.lat, lng: latLon.lon },
+            ...(ps.length < 3
+              ? []
+              : [{ lat: ps[ps.length - 2].lat, lng: ps[ps.length - 2].lon }]),
+          ]}
+        />
+      )}
+    </>
+  );
+};
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragStart() {
