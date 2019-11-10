@@ -5,7 +5,7 @@ import {
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import RoadDetails from 'fm3/components/RoadDetails';
+import { RoadDetails } from 'fm3/components/RoadDetails';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { lineString, point, featureCollection } from '@turf/helpers';
 import { Processor } from 'fm3/middlewares/processorMiddleware';

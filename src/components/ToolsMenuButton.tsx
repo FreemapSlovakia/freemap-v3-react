@@ -5,7 +5,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setTool, Tool, clearMap } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -21,7 +21,7 @@ interface State {
   show: boolean;
 }
 
-class ToolsMenuButton extends React.Component<Props, State> {
+class ToolsMenuButtonInt extends React.Component<Props, State> {
   state: State = {
     show: false,
   };
@@ -44,6 +44,7 @@ class ToolsMenuButton extends React.Component<Props, State> {
     this.setState({ show: false });
     this.props.onToolSet(tool);
   }
+
   handleMapClear = () => {
     this.setState({ show: false });
     this.props.onMapClear();
@@ -102,7 +103,7 @@ class ToolsMenuButton extends React.Component<Props, State> {
                       <MenuItem
                         key={newTool}
                         onClick={() => this.handleToolSelect(newTool)}
-                        active={toolDef && toolDef.tool === newTool}
+                        active={toolDef?.tool === newTool}
                       >
                         <FontAwesomeIcon icon={icon} /> {t(`tools.${msgKey}`)}{' '}
                         {kbd && (
@@ -135,7 +136,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const ToolsMenuButton = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ToolsMenuButton));
+)(withTranslator(ToolsMenuButtonInt));

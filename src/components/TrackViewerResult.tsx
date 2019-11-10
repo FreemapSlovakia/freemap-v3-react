@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Tooltip, Polyline } from 'react-leaflet';
-import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
-import RichMarker from 'fm3/components/RichMarker';
-import Hotline from 'fm3/components/Hotline';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { RichMarker } from 'fm3/components/RichMarker';
+import { Hotline } from 'fm3/components/Hotline';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLength from '@turf/length';
@@ -28,7 +28,7 @@ interface GetFeatures {
   (type: 'Point'): Feature<Point, Properties>[];
 }
 
-class TrackViewerResult extends React.Component<Props, State> {
+class TrackViewerResultInt extends React.Component<Props, State> {
   state: State = {};
 
   componentDidUpdate(prevProps: Props) {
@@ -341,4 +341,4 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default connect(mapStateToProps)(TrackViewerResult);
+export const TrackViewerResult = connect(mapStateToProps)(TrackViewerResultInt);

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { lineString } from '@turf/helpers';
@@ -21,7 +21,7 @@ import {
   elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
@@ -35,115 +35,126 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-class MeasurementMenu extends React.Component<Props> {
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.handlePoiAdd);
-  }
+const MeasurementMenuInt: React.FC<Props> = ({
+  onToolSet,
+  tool,
+  routeDefined,
+  elevationChartTrackGeojson,
+  t,
+  onElePointSet,
+  areaPoints,
+  distancePoints,
+  onDistPointAdd,
+  onAreaPointAdd,
+  onElevationChartTrackGeojsonSet,
+  onElevationChartClose,
+}) => {
+  const handlePoiAdd = useCallback(
+    (lat: number, lon: number, position?: number, id0?: number) => {
+      if (tool === 'measure-ele') {
+        onElePointSet({ lat, lon });
+        return;
+      }
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handlePoiAdd);
-  }
+      const points = tool === 'measure-area' ? areaPoints : distancePoints;
 
-  handlePoiAdd = (
-    lat: number,
-    lon: number,
-    position?: number,
-    id0?: number,
-  ) => {
-    if (this.props.tool === 'measure-ele') {
-      this.props.onElePointSet({ lat, lon });
-      return;
-    }
+      const pos = position ? Math.ceil(position / 2) : points.length;
 
-    const points =
-      this.props.tool === 'measure-area'
-        ? this.props.areaPoints
-        : this.props.distancePoints;
-    const pos = position ? Math.ceil(position / 2) : points.length;
-    let id: number;
-    if (id0) {
-      id = id0;
-    } else if (pos === 0) {
-      id = points.length ? points[pos].id - 1 : 0;
-    } else if (pos === points.length) {
-      id = points[pos - 1].id + 1;
-    } else {
-      id = (points[pos - 1].id + points[pos].id) / 2;
-    }
+      let id: number;
 
-    if (this.props.tool === 'measure-dist') {
-      this.props.onDistPointAdd({ lat, lon, id }, pos);
-    }
+      if (id0) {
+        id = id0;
+      } else if (pos === 0) {
+        id = points.length ? points[pos].id - 1 : 0;
+      } else if (pos === points.length) {
+        id = points[pos - 1].id + 1;
+      } else {
+        id = (points[pos - 1].id + points[pos].id) / 2;
+      }
 
-    if (this.props.tool === 'measure-area') {
-      this.props.onAreaPointAdd({ lat, lon, id }, pos);
-    }
-  };
+      if (tool === 'measure-dist') {
+        onDistPointAdd({ lat, lon, id }, pos);
+      }
 
-  toggleElevationChart = () => {
+      if (tool === 'measure-area') {
+        onAreaPointAdd({ lat, lon, id }, pos);
+      }
+    },
+    [
+      tool,
+      areaPoints,
+      distancePoints,
+      onElePointSet,
+      onDistPointAdd,
+      onAreaPointAdd,
+    ],
+  );
+
+  useEffect(() => {
+    mapEventEmitter.on('mapClick', handlePoiAdd);
+    return () => {
+      mapEventEmitter.removeListener('mapClick', handlePoiAdd);
+    };
+  });
+
+  const toggleElevationChart = useCallback(() => {
     // TODO to logic
 
-    const isActive = this.props.elevationChartTrackGeojson;
-    if (isActive) {
-      this.props.onElevationChartClose();
+    if (elevationChartTrackGeojson) {
+      onElevationChartClose();
     } else {
-      this.props.onElevationChartTrackGeojsonSet(
-        lineString(this.props.distancePoints.map(p => [p.lon, p.lat])),
+      onElevationChartTrackGeojsonSet(
+        lineString(distancePoints.map(p => [p.lon, p.lat])),
       );
     }
-  };
+  }, [
+    distancePoints,
+    elevationChartTrackGeojson,
+    onElevationChartClose,
+    onElevationChartTrackGeojsonSet,
+  ]);
 
-  render() {
-    const {
-      onToolSet,
-      tool,
-      routeDefined,
-      elevationChartTrackGeojson,
-      t,
-    } = this.props;
-
-    return (
-      <>
-        <ButtonGroup>
-          <Button
-            onClick={() => onToolSet('measure-dist')}
-            active={tool === 'measure-dist'}
-            title={t('measurement.distance')}
-          >
-            <FontAwesomeIcon icon="arrows-h" />
-            <span className="hidden-xs"> {t('measurement.distance')}</span>
-          </Button>
-          <Button
-            onClick={() => onToolSet('measure-ele')}
-            active={tool === 'measure-ele'}
-            title={t('measurement.elevation')}
-          >
-            <FontAwesomeIcon icon="long-arrow-up" />
-            <span className="hidden-xs"> {t('measurement.elevation')}</span>
-          </Button>
-          <Button
-            onClick={() => onToolSet('measure-area')}
-            active={tool === 'measure-area'}
-            title={t('measurement.area')}
-          >
-            <FontAwesomeIcon icon="square" />
-            <span className="hidden-xs"> {t('measurement.area')}</span>
-          </Button>
-        </ButtonGroup>{' '}
-        {tool === 'measure-dist' && (
-          <Button
-            active={elevationChartTrackGeojson !== null}
-            onClick={this.toggleElevationChart}
-            disabled={!routeDefined}
-          >
-            <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> {t('general.elevationProfile')}</span>
-          </Button>
-        )}
-      </>
-    );
-  }
-}
+  return (
+    <>
+      <ButtonGroup>
+        <Button
+          onClick={() => onToolSet('measure-dist')}
+          active={tool === 'measure-dist'}
+          title={t('measurement.distance')}
+        >
+          <FontAwesomeIcon icon="arrows-h" />
+          <span className="hidden-xs"> {t('measurement.distance')}</span>
+        </Button>
+        <Button
+          onClick={() => onToolSet('measure-ele')}
+          active={tool === 'measure-ele'}
+          title={t('measurement.elevation')}
+        >
+          <FontAwesomeIcon icon="long-arrow-up" />
+          <span className="hidden-xs"> {t('measurement.elevation')}</span>
+        </Button>
+        <Button
+          onClick={() => onToolSet('measure-area')}
+          active={tool === 'measure-area'}
+          title={t('measurement.area')}
+        >
+          <FontAwesomeIcon icon="square" />
+          <span className="hidden-xs"> {t('measurement.area')}</span>
+        </Button>
+      </ButtonGroup>{' '}
+      {tool === 'measure-dist' && (
+        <Button
+          active={elevationChartTrackGeojson !== null}
+          onClick={toggleElevationChart}
+          disabled={!routeDefined}
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+        </Button>
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   tool: state.main.tool,
@@ -174,7 +185,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const MeasurementMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(MeasurementMenu));
+)(withTranslator(MeasurementMenuInt));

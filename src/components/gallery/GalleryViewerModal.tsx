@@ -5,8 +5,9 @@ import ReactStars from 'react-stars';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
-import GalleryEditForm, {
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import {
+  GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
 
@@ -38,7 +39,7 @@ import 'fm3/styles/gallery.scss';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { getType } from 'typesafe-actions';
-import OpenInExternalAppMenuButton from '../OpenInExternalAppMenuButton';
+import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -52,7 +53,7 @@ interface State {
   activeImageId: number | null;
 }
 
-class GalleryViewerModal extends React.Component<Props, State> {
+class GalleryViewerModalInt extends React.Component<Props, State> {
   state: State = {
     loading: true,
     isFullscreen: false,
@@ -555,7 +556,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const GalleryViewerModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(GalleryViewerModal));
+)(withTranslator(GalleryViewerModalInt));

@@ -20,7 +20,11 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const TrackViewerShareModal: React.FC<Props> = ({ onClose, trackUID, t }) => {
+const TrackViewerShareModalInt: React.FC<Props> = ({
+  onClose,
+  trackUID,
+  t,
+}) => {
   const shareURL = trackUID
     ? `${window.location.origin}/?track-uid=${trackUID}`
     : '';
@@ -54,7 +58,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(setActiveModal(null));
   },
 });
-export default connect(
+
+export const TrackViewerShareModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(TrackViewerShareModal));
+)(withTranslator(TrackViewerShareModalInt));

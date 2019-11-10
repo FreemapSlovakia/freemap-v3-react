@@ -48,7 +48,7 @@ export const galleryItemUploadProcessor: Processor = {
         title: item.title,
         description: item.description,
         position: parseCoordinates(item.dirtyPosition),
-        takenAt: item.takenAt && item.takenAt.toISOString(),
+        takenAt: item.takenAt?.toISOString(),
         tags: item.tags,
       }),
     );
@@ -58,7 +58,7 @@ export const galleryItemUploadProcessor: Processor = {
     //   title: item.title,
     //   description: item.description,
     //   position: item.position,
-    //   takenAt: item.takenAt && item.takenAt.toISOString(),
+    //   takenAt: item.takenAt?.toISOString(),
     //   tags: item.tags,
     // })], { type: 'application/json' }));
 

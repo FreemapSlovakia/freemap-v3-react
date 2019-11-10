@@ -12,52 +12,50 @@ export const locateProcessor: Processor = {
     if (getState().main.locate) {
       dispatch(mapRefocus({ gpsTracked: true }));
 
-      watch =
-        navigator.geolocation &&
-        navigator.geolocation.watchPosition(
-          (p: Position) => {
-            if (watch) {
-              navigator.geolocation.clearWatch(watch);
-            }
+      watch = navigator.geolocation?.watchPosition(
+        (p: Position) => {
+          if (watch) {
+            navigator.geolocation.clearWatch(watch);
+          }
 
-            const { latitude, longitude, accuracy } = p.coords;
+          const { latitude, longitude, accuracy } = p.coords;
 
+          dispatch(
+            setLocation({
+              lat: latitude,
+              lon: longitude,
+              accuracy: accuracy,
+            }),
+          );
+
+          const map = getMapLeafletElement();
+          if (!map) {
+            return;
+          }
+
+          const { zoom, gpsTracked } = getState().map;
+
+          // adjust coordinates to prevent additional map micromovement
+          const latLng = map.unproject(
+            map.project(new LatLng(latitude, longitude), zoom).round(),
+            zoom,
+          );
+
+          if (gpsTracked) {
             dispatch(
-              setLocation({
-                lat: latitude,
-                lon: longitude,
-                accuracy: accuracy,
+              mapRefocus({
+                lat: latLng.lat,
+                lon: latLng.lng,
+                gpsTracked: true,
               }),
             );
-
-            const map = getMapLeafletElement();
-            if (!map) {
-              return;
-            }
-
-            const { zoom, gpsTracked } = getState().map;
-
-            // adjust coordinates to prevent additional map micromovement
-            const latLng = map.unproject(
-              map.project(new LatLng(latitude, longitude), zoom).round(),
-              zoom,
-            );
-
-            if (gpsTracked) {
-              dispatch(
-                mapRefocus({
-                  lat: latLng.lat,
-                  lon: latLng.lng,
-                  gpsTracked: true,
-                }),
-              );
-            }
-          },
-          () => {
-            // TODO toast with error
-          },
-          { enableHighAccuracy: true, maximumAge: 0 },
-        );
+          }
+        },
+        () => {
+          // TODO toast with error
+        },
+        { enableHighAccuracy: true, maximumAge: 0 },
+      );
     } else if (navigator.geolocation && typeof watch === 'number') {
       dispatch(mapRefocus({ gpsTracked: false }));
       navigator.geolocation.clearWatch(watch);

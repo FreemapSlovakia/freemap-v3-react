@@ -54,10 +54,10 @@ export const changesetsProcessor: Processor = {
       const arrayOfrawChangesets = Array.from(rawChangesets);
       const changesetsFromThisRequest = arrayOfrawChangesets
         .map(rawChangeset => {
-          const minLat = parseFloat(rawChangeset.getAttribute('min_lat') || '');
-          const maxLat = parseFloat(rawChangeset.getAttribute('max_lat') || '');
-          const minLon = parseFloat(rawChangeset.getAttribute('min_lon') || '');
-          const maxLon = parseFloat(rawChangeset.getAttribute('max_lon') || '');
+          const minLat = parseFloat(rawChangeset.getAttribute('min_lat') ?? '');
+          const maxLat = parseFloat(rawChangeset.getAttribute('max_lat') ?? '');
+          const minLon = parseFloat(rawChangeset.getAttribute('min_lon') ?? '');
+          const maxLon = parseFloat(rawChangeset.getAttribute('max_lon') ?? '');
 
           const descriptionTag = Array.from(
             rawChangeset.getElementsByTagName('tag'),
@@ -68,8 +68,8 @@ export const changesetsProcessor: Processor = {
             id: rawChangeset.getAttribute('id'),
             centerLat: (minLat + maxLat) / 2.0,
             centerLon: (minLon + maxLon) / 2.0,
-            closedAt: new Date(rawChangeset.getAttribute('closed_at') || ''),
-            description: descriptionTag && descriptionTag.getAttribute('v'),
+            closedAt: new Date(rawChangeset.getAttribute('closed_at') ?? ''),
+            description: descriptionTag?.getAttribute('v'),
           };
 
           return changeset;

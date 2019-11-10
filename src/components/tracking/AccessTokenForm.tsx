@@ -7,9 +7,9 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import DateTime from 'fm3/components/DateTime';
+import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { AccessTokenBase } from 'fm3/types/trackingTypes';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
@@ -23,28 +23,22 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const AccessTokenForm: React.FC<Props> = ({
+const AccessTokenFormInt: React.FC<Props> = ({
   onSave,
   onCancel,
   accessToken,
   deviceName,
   t,
 }) => {
-  const [note, setNote] = useTextInputState(
-    (accessToken && accessToken.note) || '',
-  );
+  const [note, setNote] = useTextInputState(accessToken?.note ?? '');
   const [timeFrom, setTimeFrom] = React.useState(
-    accessToken && accessToken.timeFrom
-      ? toDatetimeLocal(accessToken.timeFrom)
-      : '',
+    accessToken?.timeFrom ? toDatetimeLocal(accessToken.timeFrom) : '',
   );
   const [timeTo, setTimeTo] = React.useState(
-    accessToken && accessToken.timeTo
-      ? toDatetimeLocal(accessToken.timeTo)
-      : '',
+    accessToken?.timeTo ? toDatetimeLocal(accessToken.timeTo) : '',
   );
   const [listingLabel, setListingLabel] = useTextInputState(
-    (accessToken && accessToken.listingLabel) || '',
+    accessToken?.listingLabel ?? '',
   );
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -103,11 +97,11 @@ const AccessTokenForm: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  accessToken:
-    state.tracking.modifiedAccessTokenId &&
-    state.tracking.accessTokens.find(
-      accessToken => accessToken.id === state.tracking.modifiedAccessTokenId,
-    ),
+  accessToken: state.tracking.modifiedAccessTokenId
+    ? state.tracking.accessTokens.find(
+        accessToken => accessToken.id === state.tracking.modifiedAccessTokenId,
+      )
+    : undefined,
   deviceName: (
     state.tracking.devices.find(
       device => device.id === state.tracking.accessTokensDeviceId,
@@ -124,7 +118,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const AccessTokenForm = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(AccessTokenForm));
+)(withTranslator(AccessTokenFormInt));

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 
@@ -25,8 +25,12 @@ interface Props {
   };
 }
 
-const DateTime: React.FC<Props> = ({ value, onChange, placeholders }) => {
-  const [, datePart, timePart] = /(.*)T(.*)/.exec(value || '') || ['', '', ''];
+export const DateTime: React.FC<Props> = ({
+  value,
+  onChange,
+  placeholders,
+}) => {
+  const [, datePart, timePart] = /(.*)T(.*)/.exec(value ?? '') || ['', '', ''];
 
   const propagateChange = React.useCallback(
     (date, time) => {
@@ -59,7 +63,7 @@ const DateTime: React.FC<Props> = ({ value, onChange, placeholders }) => {
   return supportsDatetimeLocal ? (
     <FormControl
       type="datetime-local"
-      placeholder={placeholders && placeholders.datetime}
+      placeholder={placeholders?.datetime}
       value={value}
       onChange={handleDatetimeChange}
     />
@@ -70,7 +74,7 @@ const DateTime: React.FC<Props> = ({ value, onChange, placeholders }) => {
       </InputGroup.Addon>
       <FormControl
         type="date"
-        placeholder={(placeholders && placeholders.date) || 'YYY-MM-DD'}
+        placeholder={placeholders?.date ?? 'YYY-MM-DD'}
         value={datePart}
         onChange={handleDateChange}
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
@@ -81,7 +85,7 @@ const DateTime: React.FC<Props> = ({ value, onChange, placeholders }) => {
       </InputGroup.Addon>
       <FormControl
         type="time"
-        placeholder={(placeholders && placeholders.time) || 'HH:MM[:SS]'}
+        placeholder={placeholders?.time ?? 'HH:MM[:SS]'}
         value={timePart}
         onChange={handleTimeChange}
         pattern="[0-9]{2}:[0-9]{2}(:[0-9]{2})?"
@@ -90,5 +94,3 @@ const DateTime: React.FC<Props> = ({ value, onChange, placeholders }) => {
     </InputGroup>
   );
 };
-
-export default DateTime;

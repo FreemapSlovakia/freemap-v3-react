@@ -120,9 +120,7 @@ function loadAppState(): void {
 
   store.dispatch(
     l10nSetChosenLanguage(
-      appState
-        ? appState.language && appState.language.replace(/-.*/, '') // fixing wrong saved language because of bug in older version
-        : null,
+      appState?.language?.replace(/-.*/, '') ?? null, // fixing wrong saved language because of bug in older version
     ),
   );
 }

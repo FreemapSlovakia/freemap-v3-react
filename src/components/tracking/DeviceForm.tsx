@@ -7,7 +7,7 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { EditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState, useCheckboxInputState } from 'fm3/hooks/inputHooks';
@@ -22,14 +22,17 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
-  const [name, setName] = useTextInputState((device && device.name) || '');
+const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
+  const [name, setName] = useTextInputState(device?.name ?? '');
+
   const [maxCount, setMaxCount] = useTextInputState(
-    device && device.maxCount !== null ? device.maxCount.toString() : '',
+    device?.maxCount?.toString() ?? '',
   );
+
   const [maxAge, setMaxAge] = useTextInputState(
-    device && device.maxAge !== null ? device.maxAge.toString() : '',
+    device?.maxAge?.toString() ?? '',
   );
+
   const [regenerateToken, setRegenerateToken] = useCheckboxInputState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -106,11 +109,11 @@ const DeviceForm: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  device:
-    state.tracking.modifiedDeviceId &&
-    state.tracking.devices.find(
-      device => device.id === state.tracking.modifiedDeviceId,
-    ),
+  device: state.tracking.modifiedDeviceId
+    ? state.tracking.devices.find(
+        device => device.id === state.tracking.modifiedDeviceId,
+      )
+    : null,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -122,7 +125,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const DeviceForm = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(DeviceForm));
+)(withTranslator(DeviceFormInt));

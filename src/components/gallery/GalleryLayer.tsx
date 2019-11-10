@@ -118,7 +118,7 @@ interface Props extends GridLayerProps {
   filter: any; // TODO
 }
 
-class GalleryLayer extends GridLayer<Props, LGalleryLayer> {
+class GalleryLayerInt extends GridLayer<Props, LGalleryLayer> {
   createLeafletElement(props: Props) {
     return new LGalleryLayer({ ...props });
   }
@@ -130,4 +130,4 @@ class GalleryLayer extends GridLayer<Props, LGalleryLayer> {
   // }
 }
 
-export default withLeaflet(GalleryLayer);
+export const GalleryLayer = withLeaflet(GalleryLayerInt);

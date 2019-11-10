@@ -13,7 +13,7 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     } else {
       const { trackGeojson } = getState().trackViewer;
 
-      if (trackGeojson && trackGeojson.features[0]) {
+      if (trackGeojson?.features[0]) {
         // this is bit confusing. TrackViewerMenu.props.trackGeojson is actually a feature set of geojsons
         // (thought typically contains only one geojson),
         // while in ElevationChart.props.trackGeojson we use first "real" feature, e.g. LineString

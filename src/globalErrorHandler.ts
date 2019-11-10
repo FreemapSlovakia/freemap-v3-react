@@ -48,10 +48,10 @@ export function sendError(errDetails: ErrorDetails): void {
   // eslint-disable-next-line
   console.error('Application error:', errDetails);
 
-  const state = store && store.getState();
+  const state = store?.getState();
 
   // TODO window.ga was null
-  window.ga && window.ga('send', 'event', 'Error', 'error', errDetails.kind);
+  window.ga?.('send', 'event', 'Error', 'error', errDetails.kind);
 
   axios
     .post(

@@ -12,7 +12,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   setActiveModal,
   exportPdf,
@@ -29,7 +29,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 type State = PdfExportOptions;
 
-export class ExportPdfModal extends React.Component<Props, State> {
+export class ExportPdfModalInt extends React.Component<Props, State> {
   state: State = {
     contours: true,
     shadedRelief: true,
@@ -197,7 +197,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const ExportPdfModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ExportPdfModal));
+)(withTranslator(ExportPdfModalInt));

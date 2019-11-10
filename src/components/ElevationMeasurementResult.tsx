@@ -4,9 +4,9 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import {
   elevationMeasurementSetPoint,
-  elevationMeasurementSetElevation,
+  // elevationMeasurementSetElevation,
 } from 'fm3/actions/elevationMeasurementActions';
-import RichMarker from 'fm3/components/RichMarker';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { latLonToString } from 'fm3/geoutils';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -19,17 +19,17 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const ElevationMeasurementResult: React.FC<Props> = ({
+const ElevationMeasurementResultInt: React.FC<Props> = ({
   point,
   elevation,
   language,
   t,
-  onElevationClear,
+  // onElevationClear,
   onPointSet,
 }) => {
-  const handleDragStart = useCallback(() => {
-    onElevationClear();
-  }, [onElevationClear]);
+  // const handleDragStart = useCallback(() => {
+  //   onElevationClear();
+  // }, [onElevationClear]);
 
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
@@ -86,12 +86,12 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointSet(point: LatLon) {
     dispatch(elevationMeasurementSetPoint(point));
   },
-  onElevationClear() {
-    dispatch(elevationMeasurementSetElevation(null));
-  },
+  // onElevationClear() {
+  //   dispatch(elevationMeasurementSetElevation(null));
+  // },
 });
 
-export default connect(
+export const ElevationMeasurementResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ElevationMeasurementResult));
+)(withTranslator(ElevationMeasurementResultInt));

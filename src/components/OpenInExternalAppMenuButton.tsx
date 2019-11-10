@@ -4,7 +4,7 @@ import Popover from 'react-bootstrap/lib/Popover';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
-import OpenInExternalAppMenuItems from './OpenInExternalAppMenuItems';
+import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
 
 interface Props extends LatLon {
   lat: number;
@@ -21,7 +21,7 @@ interface Props extends LatLon {
   children: JSX.Element | JSX.Element[];
 }
 
-const OpenInExternalAppMenuButton: React.FC<Props> = ({
+const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
   lat,
   lon,
   zoom,
@@ -92,4 +92,6 @@ const OpenInExternalAppMenuButton: React.FC<Props> = ({
   );
 };
 
-export default withTranslator(OpenInExternalAppMenuButton);
+export const OpenInExternalAppMenuButton = withTranslator(
+  OpenInExternalAppMenuButtonInt,
+);

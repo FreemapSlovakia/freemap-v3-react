@@ -1,9 +1,10 @@
 import React from 'react';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import 'fm3/styles/react-tag-autocomplete.css';
 
 import Button from 'react-bootstrap/lib/Button';
-import GalleryEditForm, {
+import {
+  GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
 import { Translator } from 'fm3/l10nInjector';
@@ -25,7 +26,7 @@ interface Props {
   showPreview: boolean;
 }
 
-export default class GalleryUploadItem extends React.Component<Props> {
+export class GalleryUploadItem extends React.Component<Props> {
   handleRemove = () => {
     this.props.onRemove(this.props.id);
   };

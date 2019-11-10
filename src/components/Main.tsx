@@ -12,60 +12,60 @@ import Panel from 'react-bootstrap/lib/Panel';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
-import Layers from 'fm3/components/Layers';
-import Toasts from 'fm3/components/Toasts';
+import { Layers } from 'fm3/components/Layers';
+import { Toasts } from 'fm3/components/Toasts';
 
-import SearchMenu from 'fm3/components/SearchMenu';
-import SearchResults from 'fm3/components/SearchResults';
+import { SearchMenu } from 'fm3/components/SearchMenu';
+import { SearchResults } from 'fm3/components/SearchResults';
 
-import ObjectsMenu from 'fm3/components/ObjectsMenu';
+import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
 import { ObjectsResult } from 'fm3/components/ObjectsResult';
 
-import MeasurementMenu from 'fm3/components/MeasurementMenu';
-import DistanceMeasurementResult from 'fm3/components/DistanceMeasurementResult';
-import AreaMeasurementResult from 'fm3/components/AreaMeasurementResult';
-import ElevationMeasurementResult from 'fm3/components/ElevationMeasurementResult';
-import LocationResult from 'fm3/components/LocationResult';
+import { MeasurementMenu } from 'fm3/components/MeasurementMenu';
+import { DistanceMeasurementResult } from 'fm3/components/DistanceMeasurementResult';
+import { AreaMeasurementResult } from 'fm3/components/AreaMeasurementResult';
+import { ElevationMeasurementResult } from 'fm3/components/ElevationMeasurementResult';
+import { LocationResult } from 'fm3/components/LocationResult';
 
-import RoutePlannerMenu from 'fm3/components/RoutePlannerMenu';
-import RoutePlannerResult from 'fm3/components/RoutePlannerResult';
+import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
+import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 
-import TrackViewerMenu from 'fm3/components/TrackViewerMenu';
-import TrackViewerResult from 'fm3/components/TrackViewerResult';
-import TrackViewerUploadModal from 'fm3/components/TrackViewerUploadModal';
-import TrackViewerShareModal from 'fm3/components/TrackViewerShareModal';
+import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
+import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
+import { TrackViewerUploadModal } from 'fm3/components/TrackViewerUploadModal';
+import { TrackViewerShareModal } from 'fm3/components/TrackViewerShareModal';
 
-import GalleryMenu from 'fm3/components/gallery/GalleryMenu';
-import GalleryResult from 'fm3/components/gallery/GalleryResult';
-import GalleryPicker from 'fm3/components/gallery/GalleryPicker';
-import GalleryPositionPickingMenu from 'fm3/components/gallery/GalleryPositionPickingMenu';
-import GalleryShowPositionMenu from 'fm3/components/gallery/GalleryShowPositionMenu';
+import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
+import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
+import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
+import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
+import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
 
-import Settings from 'fm3/components/Settings';
+import { Settings } from 'fm3/components/Settings';
 import { Copyright } from 'fm3/components/Copyright';
 import { MapControls } from 'fm3/components/MapControls';
-import HomeLocationPickingMenu from 'fm3/components/HomeLocationPickingMenu';
+import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
 
-import AsyncElevationChart from 'fm3/components/AsyncElevationChart';
+import { AsyncElevationChart } from 'fm3/components/AsyncElevationChart';
 
-import InfoPointMenu from 'fm3/components/InfoPointMenu';
-import InfoPointResult from 'fm3/components/InfoPointResult';
-import InfoPointLabelModal from 'fm3/components/InfoPointLabelModal';
+import { InfoPointMenu } from 'fm3/components/InfoPointMenu';
+import { InfoPointResult } from 'fm3/components/InfoPointResult';
+import { InfoPointLabelModal } from 'fm3/components/InfoPointLabelModal';
 
-import ChangesetsMenu from 'fm3/components/ChangesetsMenu';
-import ChangesetsResult from 'fm3/components/ChangesetsResult';
+import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
+import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 
-import MapDetailsMenu from 'fm3/components/MapDetailsMenu';
+import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
 
-import ShareMapModal from 'fm3/components/ShareMapModal';
-import EmbedMapModal from 'fm3/components/EmbedMapModal';
-import ExportGpxModal from 'fm3/components/ExportGpxModal';
-import ExportPdfModal from 'fm3/components/ExportPdfModal';
-import LoginModal from 'fm3/components/LoginModal';
-import TipsModal from 'fm3/components/TipsModal';
-import AboutModal from 'fm3/components/AboutModal';
-import SupportUsModal from 'fm3/components/SupportUsModal';
-import AsyncLegendModal from 'fm3/components/AsyncLegendModal';
+import { ShareMapModal } from 'fm3/components/ShareMapModal';
+import { EmbedMapModal } from 'fm3/components/EmbedMapModal';
+import { ExportGpxModal } from 'fm3/components/ExportGpxModal';
+import { ExportPdfModal } from 'fm3/components/ExportPdfModal';
+import { LoginModal } from 'fm3/components/LoginModal';
+import { TipsModal } from 'fm3/components/TipsModal';
+import { AboutModal } from 'fm3/components/AboutModal';
+import { SupportUsModal } from 'fm3/components/SupportUsModal';
+import { AsyncLegendModal } from 'fm3/components/AsyncLegendModal';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
@@ -76,9 +76,9 @@ import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
-import TrackingModal from 'fm3/components/tracking/TrackingModal';
-import TrackingResult from 'fm3/components/tracking/TrackingResult';
-import TrackingMenu from 'fm3/components/tracking/TrackingMenu.tsx';
+import { TrackingModal } from 'fm3/components/tracking/TrackingModal';
+import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
+import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { LeafletMouseEvent } from 'leaflet';
@@ -103,10 +103,10 @@ import {
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import GalleryModals from './gallery/GalleryModals';
-import MoreMenuButton from './MoreMenuButton';
-import ToolsMenuButton from './ToolsMenuButton';
-import FontAwesomeIcon from './FontAwesomeIcon';
+import { GalleryModals } from './gallery/GalleryModals';
+import { MoreMenuButton } from './MoreMenuButton';
+import { ToolsMenuButton } from './ToolsMenuButton';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 

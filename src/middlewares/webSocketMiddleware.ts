@@ -31,14 +31,14 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
 }) => next => (action: RootAction) => {
   switch (action.type) {
     case getType(wsOpen): {
-      if (ws && ws.readyState !== WebSocket.CLOSED) {
+      if (ws?.readyState !== WebSocket.CLOSED) {
         dispatch(wsInvalidState(action.payload));
         return;
       }
 
       const { user } = getState().auth;
       ws = new WebSocket(
-        `${process.env.API_URL!.replace(/^http/, 'ws')}/ws?pingInterval=30000${
+        `${process.env.API_URL.replace(/^http/, 'ws')}/ws?pingInterval=30000${
           user ? `&authToken=${user.authToken}` : ''
         }`,
       );
@@ -83,7 +83,7 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
       break;
     }
     case getType(wsSend):
-      if (ws && ws.readyState === WebSocket.OPEN) {
+      if (ws?.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(action.payload.message));
       } else {
         dispatch(wsInvalidState(action.payload.tag));
@@ -102,11 +102,15 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
       break;
   }
 
-  const user = getState().auth;
+  const { user } = getState().auth;
 
   const result = next(action);
 
-  if (user !== getState().auth && ws && ws.readyState !== WebSocket.CLOSED) {
+  if (
+    ws &&
+    user !== getState().auth.user &&
+    ws.readyState !== WebSocket.CLOSED
+  ) {
     ws.close();
   }
 

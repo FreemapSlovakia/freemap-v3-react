@@ -42,7 +42,7 @@ function toOverpassFilter(element: string, filter: PoiFilter[]): string {
   return `${element}${filter
     .map(
       ({ keyOperation, key, operation = '=', value }) =>
-        `[${keyOperation || ''}"${key}"${
+        `[${keyOperation ?? ''}"${key}"${
           value === undefined ? '' : `${operation || '='}"${value}"`
         }]`,
     )

@@ -6,10 +6,10 @@ import Table from 'react-bootstrap/lib/Table';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import Device from './Device';
+import { Device } from './Device';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
@@ -20,7 +20,13 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const Devices: React.FC<Props> = ({ onClose, onOpen, onAdd, devices, t }) => {
+const DevicesInt: React.FC<Props> = ({
+  onClose,
+  onOpen,
+  onAdd,
+  devices,
+  t,
+}) => {
   React.useEffect(() => {
     onOpen();
   }, [onOpen]);
@@ -80,7 +86,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const Devices = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(Devices));
+)(withTranslator(DevicesInt));

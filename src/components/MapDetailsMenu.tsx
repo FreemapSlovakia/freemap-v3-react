@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
 
 import {
@@ -20,7 +20,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-class MapDetailsMenu extends React.Component<Props> {
+class MapDetailsMenuInt extends React.Component<Props> {
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.setUserSelectedPosition);
   }
@@ -63,7 +63,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const MapDetailsMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(MapDetailsMenu));
+)(withTranslator(MapDetailsMenuInt));

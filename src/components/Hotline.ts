@@ -13,7 +13,7 @@ interface Props extends PathProps {
   weight?: number; // TODO ingerited from PathProps; should we actually extend from Path?
 }
 
-class Hotline extends Path<Props, LPath> {
+class HotlineInt extends Path<Props, LPath> {
   createLeafletElement(props: Props) {
     return (window['L'] as any).hotline(
       props.positions,
@@ -28,4 +28,4 @@ class Hotline extends Path<Props, LPath> {
   }
 }
 
-export default withLeaflet(Hotline);
+export const Hotline = withLeaflet(HotlineInt);

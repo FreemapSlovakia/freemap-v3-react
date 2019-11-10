@@ -26,7 +26,7 @@ interface State {
   dropdownOpened: boolean;
 }
 
-class ObjectsMenu extends React.Component<Props, State> {
+class ObjectsMenuInt extends React.Component<Props, State> {
   state: State = {
     filter: '',
     dropdownOpened: false,
@@ -138,7 +138,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const ObjectsMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ObjectsMenu));
+)(withTranslator(ObjectsMenuInt));

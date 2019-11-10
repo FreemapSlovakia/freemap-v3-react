@@ -12,7 +12,7 @@ const ptl = (_: Feature, latLng: LatLng) => {
   return marker(latLng, { icon: createMarkerIcon() });
 };
 
-const SearchResults: React.FC<Props> = ({ selectedResult }) => {
+const SearchResultsInt: React.FC<Props> = ({ selectedResult }) => {
   return (
     <>
       {selectedResult && (
@@ -31,4 +31,4 @@ const mapStateToProps = (state: RootState) => ({
   selectedResult: state.search.selectedResult,
 });
 
-export default connect(mapStateToProps)(SearchResults);
+export const SearchResults = connect(mapStateToProps)(SearchResultsInt);

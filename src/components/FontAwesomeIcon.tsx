@@ -10,16 +10,14 @@ interface Props
   className?: string;
 }
 
-const FontAwesomeIcon: React.FC<Props> = ({ icon, ...props }) => {
+export const FontAwesomeIcon: React.FC<Props> = ({ icon, ...props }) => {
   return (
     <i
       {...props}
       className={`fa-fw fa ${
         icon.startsWith('!') ? icon.slice(1) : `fa-${icon}`
-      } ${props.className || ''}`}
+      } ${props.className ?? ''}`}
       aria-hidden="true"
     />
   );
 };
-
-export default FontAwesomeIcon;

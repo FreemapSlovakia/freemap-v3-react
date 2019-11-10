@@ -25,7 +25,7 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
   t: Translator;
 };
 
-const TrackViewerUploadModal: React.FC<Props> = ({
+const TrackViewerUploadModalInt: React.FC<Props> = ({
   onUpload,
   onLoadError,
   onClose,
@@ -85,7 +85,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const TrackViewerUploadModal = connect(
   null,
   mapDispatchToProps,
-)(withTranslator(TrackViewerUploadModal));
+)(withTranslator(TrackViewerUploadModalInt));

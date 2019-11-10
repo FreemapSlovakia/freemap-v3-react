@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   authLoginWithOsm,
   authLoginWithFacebook,
@@ -18,7 +18,7 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
   t: Translator;
 };
 
-const LoginModal: React.FC<Props> = ({
+const LoginModalInt: React.FC<Props> = ({
   onClose,
   onLoginWithFacebook,
   onLoginWithGoogle,
@@ -83,7 +83,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const LoginModal = connect(
   undefined,
   mapDispatchToProps,
-)(withTranslator(LoginModal));
+)(withTranslator(LoginModalInt));

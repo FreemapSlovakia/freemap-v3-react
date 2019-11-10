@@ -25,7 +25,7 @@ interface Props extends LatLon {
   onSelect?: (where: string) => void;
 }
 
-const OpenInExternalAppMenuItems: React.FC<Props> = ({
+const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
   lat,
   lon,
   zoom,
@@ -287,4 +287,6 @@ const OpenInExternalAppMenuItems: React.FC<Props> = ({
   );
 };
 
-export default withTranslator(OpenInExternalAppMenuItems);
+export const OpenInExternalAppMenuItems = withTranslator(
+  OpenInExternalAppMenuItemsInt,
+);

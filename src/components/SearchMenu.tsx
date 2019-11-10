@@ -28,7 +28,7 @@ import {
   MenuItem,
   InputGroup,
 } from 'react-bootstrap';
-import FontAwesomeIcon from './FontAwesomeIcon';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -38,7 +38,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     preventShortcut?: boolean;
   };
 
-const SearchMenu: React.FC<Props> = ({
+const SearchMenuInt: React.FC<Props> = ({
   onResultSelect,
   onRoutePlannerWithStartInit,
   onRoutePlannerWithFinishInit,
@@ -86,7 +86,7 @@ const SearchMenu: React.FC<Props> = ({
       if (found) {
         onResultSelect(found);
       }
-      if (selectedResult && selectedResult.id === eventKey) {
+      if (selectedResult?.id === eventKey) {
         setOpen(false);
       }
     },
@@ -255,7 +255,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const SearchMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(SearchMenu));
+)(withTranslator(SearchMenuInt));

@@ -136,10 +136,7 @@ export function usePictureDropHandler(
         const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
 
         let lat;
-        if (
-          tags.GPSLatitude &&
-          typeof tags.GPSLatitude.description === 'number'
-        ) {
+        if (typeof tags.GPSLatitude?.description === 'number') {
           lat = tags.GPSLatitude.description;
         } else {
           const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
@@ -155,10 +152,7 @@ export function usePictureDropHandler(
         }
 
         let lon;
-        if (
-          tags.GPSLongitude &&
-          typeof tags.GPSLongitude.description === 'number'
-        ) {
+        if (typeof tags.GPSLongitude?.description === 'number') {
           lon = tags.GPSLongitude.description;
         } else {
           const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
@@ -265,7 +259,7 @@ function parse2(m: RegExpExecArray) {
 
 function parseExifDateTime(s: string) {
   // try ISO
-  if (s && s.match(/\dT\d/)) {
+  if (s?.match(/\dT\d/)) {
     return new Date(s);
   }
 

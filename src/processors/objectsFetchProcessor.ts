@@ -39,8 +39,8 @@ export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
 
     const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
       id,
-      lat: (center && center.lat) || lat,
-      lon: (center && center.lon) || lon,
+      lat: center?.lat ?? lat,
+      lon: center?.lon ?? lon,
       tags,
       typeId: action.payload,
     }));

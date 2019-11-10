@@ -19,7 +19,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const Toasts: React.FC<Props> = ({
+const ToastsInt: React.FC<Props> = ({
   toasts,
   onAction,
   onTimeoutStop,
@@ -76,7 +76,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const Toasts = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(Toasts));
+)(withTranslator(ToastsInt));

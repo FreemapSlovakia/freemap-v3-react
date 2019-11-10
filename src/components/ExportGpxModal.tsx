@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/lib/Modal';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportGpx } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -39,7 +39,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const ExportGpxModal: React.FC<Props> = ({
+const ExportGpxModalInt: React.FC<Props> = ({
   onModalClose,
   exportables: initExportables,
   t,
@@ -180,7 +180,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const ExportGpxModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ExportGpxModal));
+)(withTranslator(ExportGpxModalInt));

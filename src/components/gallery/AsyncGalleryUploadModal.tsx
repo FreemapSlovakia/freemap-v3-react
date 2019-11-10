@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import AsyncLoadingIndicator from 'fm3/components/AsyncLoadingIndicator';
+import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 
 const GalleryUploadModal = lazy(() =>
   import(
@@ -7,10 +7,8 @@ const GalleryUploadModal = lazy(() =>
   ),
 );
 
-export default function AsyncGalleryUploadModal() {
-  return (
-    <Suspense fallback={<AsyncLoadingIndicator />}>
-      <GalleryUploadModal />
-    </Suspense>
-  );
-}
+export const AsyncGalleryUploadModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <GalleryUploadModal />
+  </Suspense>
+);

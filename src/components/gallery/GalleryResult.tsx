@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
-import RichMarker from 'fm3/components/RichMarker';
+import { RichMarker } from 'fm3/components/RichMarker';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
@@ -16,7 +16,7 @@ import { DragEndEvent } from 'leaflet';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-class GalleryResult extends React.Component<Props> {
+class GalleryResultInt extends React.Component<Props> {
   componentDidMount() {
     mapEventEmitter.on('mapClick', this.handleMapClick);
   }
@@ -70,4 +70,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GalleryResult);
+export const GalleryResult = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(GalleryResultInt);

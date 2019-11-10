@@ -6,7 +6,7 @@ import Table from 'react-bootstrap/lib/Table';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -19,7 +19,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const AccessTokens: React.FC<Props> = ({
+const AccessTokensInt: React.FC<Props> = ({
   onClose,
   onOpen,
   onAdd,
@@ -96,7 +96,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const AccessTokens = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(AccessTokens));
+)(withTranslator(AccessTokensInt));

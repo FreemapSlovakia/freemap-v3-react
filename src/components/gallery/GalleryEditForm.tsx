@@ -1,5 +1,5 @@
 import React, { useCallback } from 'react';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import 'fm3/styles/react-tag-autocomplete.css';
 
@@ -9,7 +9,7 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Alert from 'react-bootstrap/lib/Alert';
 
-import DateTime from '../DateTime';
+import { DateTime } from '../DateTime';
 import { Translator } from 'fm3/l10nInjector';
 import { GalleryTag } from 'fm3/actions/galleryActions';
 
@@ -30,7 +30,7 @@ interface Props {
   t: Translator;
 }
 
-const GalleryEditForm: React.FC<Props> = ({
+export const GalleryEditForm: React.FC<Props> = ({
   model,
   allTags,
   errors,
@@ -103,12 +103,11 @@ const GalleryEditForm: React.FC<Props> = ({
 
   return (
     <div>
-      {errors &&
-        errors.map(error => (
-          <Alert bsStyle="danger" key={error}>
-            {error.startsWith('~') ? error.slice(1) : t(error)}
-          </Alert>
-        ))}
+      {errors?.map(error => (
+        <Alert bsStyle="danger" key={error}>
+          {error.startsWith('~') ? error.slice(1) : t(error)}
+        </Alert>
+      ))}
       <FormGroup>
         <FormControl
           placeholder={t('gallery.editForm.name')}
@@ -167,5 +166,3 @@ const GalleryEditForm: React.FC<Props> = ({
     </div>
   );
 };
-
-export default GalleryEditForm;

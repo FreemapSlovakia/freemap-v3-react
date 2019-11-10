@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
-import RichMarker from 'fm3/components/RichMarker';
+import { RichMarker } from 'fm3/components/RichMarker';
 
 import {
   areaMeasurementAddPoint,
@@ -29,7 +29,7 @@ const circularIcon = divIcon({
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const AreaMeasurementResult: React.FC<Props> = ({
+const AreaMeasurementResultInt: React.FC<Props> = ({
   points,
   language,
   onPointAdd,
@@ -261,7 +261,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const AreaMeasurementResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(AreaMeasurementResult);
+)(AreaMeasurementResultInt);

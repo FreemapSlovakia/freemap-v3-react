@@ -9,7 +9,7 @@ import {
   Point,
 } from 'fm3/actions/distanceMeasurementActions';
 
-import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 
 import { distance } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
@@ -36,7 +36,7 @@ interface State {
   lon?: number;
 }
 
-class DistanceMeasurementResult extends React.Component<Props, State> {
+class DistanceMeasurementResultInt extends React.Component<Props, State> {
   state: State = {};
 
   componentDidMount() {
@@ -224,7 +224,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const DistanceMeasurementResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(DistanceMeasurementResult);
+)(DistanceMeasurementResultInt);

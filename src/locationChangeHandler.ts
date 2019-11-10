@@ -337,7 +337,7 @@ export const handleLocationChange = (
     dispatch(authLoginClose());
   }
 
-  if ((query.embed || '') !== getState().main.embedFeatures.join(',')) {
+  if ((query.embed ?? '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
         !query.embed || typeof query.embed !== 'string'

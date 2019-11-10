@@ -248,7 +248,7 @@ export const urlProcessor: Processor = {
       );
     }
 
-    if (distanceMeasurement.points && distanceMeasurement.points.length) {
+    if (distanceMeasurement.points?.length) {
       queryParts.push(
         `distance-measurement-points=${distanceMeasurement.points
           .map(point => serializePoint(point))
@@ -256,7 +256,7 @@ export const urlProcessor: Processor = {
       );
     }
 
-    if (areaMeasurement.points && areaMeasurement.points.length) {
+    if (areaMeasurement.points?.length) {
       queryParts.push(
         `area-measurement-points=${areaMeasurement.points
           .map(point => serializePoint(point))

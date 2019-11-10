@@ -22,7 +22,7 @@ class LScaledTileLayer extends LTileLayer {
   createTile(coords: Coords, done: DoneCallback) {
     const img = super.createTile(coords, done) as HTMLImageElement;
 
-    if (this.extraScales && this.extraScales.length) {
+    if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
         .map(es => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
         .join(', ')}`;
@@ -63,7 +63,7 @@ class LScaledTileLayer extends LTileLayer {
 
 type Props = TileLayerProps & { extraScales?: number[] };
 
-class ScaledTileLayer extends GridLayer<Props, LScaledTileLayer> {
+class ScaledTileLayerInt extends GridLayer<Props, LScaledTileLayer> {
   createLeafletElement(props: Props): LScaledTileLayer {
     return new LScaledTileLayer(
       props.url,
@@ -80,4 +80,4 @@ class ScaledTileLayer extends GridLayer<Props, LScaledTileLayer> {
   }
 }
 
-export default withLeaflet(ScaledTileLayer);
+export const ScaledTileLayer = withLeaflet(ScaledTileLayerInt);

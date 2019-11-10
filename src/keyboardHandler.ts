@@ -129,8 +129,7 @@ export function attachKeyboardHandler(store: MyStore) {
       const overlayLayer = overlayLayers.find(l => l.key === event.key);
       if (
         overlayLayer &&
-        (!overlayLayer.adminOnly ||
-          (state.auth.user && state.auth.user.isAdmin))
+        (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
       ) {
         const { type } = overlayLayer;
         const next = new Set(state.map.overlays);
@@ -154,11 +153,13 @@ export function attachKeyboardHandler(store: MyStore) {
     ) {
       if (keyTimer) {
         window.clearTimeout(keyTimer);
+
         keyTimer = null;
         initKey = null;
       }
     } else if (!keyTimer && (event.key === 'g' || event.key === 'e')) {
       initKey = event.key;
+
       keyTimer = window.setTimeout(() => {
         keyTimer = null;
         initKey = null;
@@ -170,8 +171,10 @@ export function attachKeyboardHandler(store: MyStore) {
           event.preventDefault();
           return;
         }
+
         const toolDefinition = toolDefinitions.find(td => td.kbd === event.key);
-        if (toolDefinition && toolDefinition.kbd) {
+
+        if (toolDefinition?.kbd) {
           store.dispatch(setTool(toolDefinition.tool));
           event.preventDefault();
           return;

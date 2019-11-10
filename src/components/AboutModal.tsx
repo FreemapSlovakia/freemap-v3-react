@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
@@ -15,7 +15,7 @@ interface Props {
   onModalClose: () => void;
 }
 
-export const AboutModal: React.FC<Props> = ({ onModalClose }) => {
+export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
@@ -95,8 +95,8 @@ export const AboutModal: React.FC<Props> = ({ onModalClose }) => {
   );
 };
 
-export default connect(null, (dispatch: Dispatch<RootAction>) => ({
+export const AboutModal = connect(null, (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
-}))(AboutModal);
+}))(AboutModalInt);

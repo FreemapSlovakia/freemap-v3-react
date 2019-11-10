@@ -7,10 +7,10 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
-import DateTime from 'fm3/components/DateTime';
+import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
@@ -25,38 +25,38 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const TrackedDeviceForm: React.FC<Props> = ({
+const TrackedDeviceFormInt: React.FC<Props> = ({
   onSave,
   onCancel,
   device,
   t,
 }) => {
-  const [id, setId] = useTextInputState((device && device.id.toString()) || '');
-  const [label, setLabel] = useTextInputState((device && device.label) || '');
-  const [color, setColor] = useTextInputState((device && device.color) || '');
-  const [width, setWidth] = useTextInputState(
-    device && typeof device.width === 'number' ? device.width.toString() : '',
-  );
+  const [id, setId] = useTextInputState(device?.id?.toString() ?? '');
+
+  const [label, setLabel] = useTextInputState(device?.label ?? '');
+
+  const [color, setColor] = useTextInputState(device?.color ?? '');
+
+  const [width, setWidth] = useTextInputState(device?.width?.toString() ?? '');
+
   const [fromTime, setFromTime] = React.useState(
-    device && device.fromTime ? toDatetimeLocal(device.fromTime) : '',
+    device?.fromTime ? toDatetimeLocal(device.fromTime) : '',
   );
+
   const [maxCount, setMaxCount] = useTextInputState(
-    device && typeof device.maxCount === 'number'
-      ? device.maxCount.toString()
-      : '',
+    device?.maxCount?.toString() ?? '',
   );
+
   const [maxAge, setMaxAge] = useTextInputState(
-    device && typeof device.maxAge === 'number' ? device.maxAge.toString() : '',
+    device?.maxAge?.toString() ?? '',
   );
+
   const [splitDistance, setSplitDistance] = useTextInputState(
-    device && typeof device.splitDistance === 'number'
-      ? device.splitDistance.toString()
-      : '',
+    device?.splitDistance?.toString() ?? '',
   );
+
   const [splitDuration, setSplitDuration] = useTextInputState(
-    device && typeof device.splitDuration === 'number'
-      ? device.splitDuration.toString()
-      : '',
+    device?.splitDuration?.toString() ?? '',
   );
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -187,11 +187,11 @@ const TrackedDeviceForm: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  device:
-    state.tracking.modifiedTrackedDeviceId &&
-    state.tracking.trackedDevices.find(
-      device => device.id === state.tracking.modifiedTrackedDeviceId,
-    ),
+  device: state.tracking.modifiedTrackedDeviceId
+    ? state.tracking.trackedDevices.find(
+        device => device.id === state.tracking.modifiedTrackedDeviceId,
+      )
+    : null,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -203,7 +203,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const TrackedDeviceForm = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(TrackedDeviceForm));
+)(withTranslator(TrackedDeviceFormInt));

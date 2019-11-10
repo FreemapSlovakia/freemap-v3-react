@@ -9,7 +9,7 @@ import FormControl from 'react-bootstrap/lib/FormControl';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import {
@@ -29,7 +29,7 @@ interface State {
   authorNameFromProps: string | null;
 }
 
-class ChangesetsMenu extends React.Component<Props> {
+class ChangesetsMenuInt extends React.Component<Props> {
   state: State = {
     authorName: null,
     authorNameFromProps: null,
@@ -103,7 +103,7 @@ class ChangesetsMenu extends React.Component<Props> {
                 type="text"
                 placeholder={t('changesets.allAuthors')}
                 onChange={this.handleAuthorNameChange}
-                value={authorName || ''}
+                value={authorName ?? ''}
               />
               <InputGroup.Button>
                 <Button
@@ -150,7 +150,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const ChangesetsMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ChangesetsMenu));
+)(withTranslator(ChangesetsMenuInt));

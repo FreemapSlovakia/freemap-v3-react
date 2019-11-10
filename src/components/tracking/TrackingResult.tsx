@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { Polyline, Tooltip, Circle } from 'react-leaflet';
-import RichMarker from 'fm3/components/RichMarker';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
 import { TrackPoint } from 'fm3/types/trackingTypes';
@@ -21,7 +21,7 @@ interface State {
 }
 
 // TODO functional component with hooks was causing massive re-rendering
-class TrackingResult extends React.Component<Props, State> {
+class TrackingResultInt extends React.Component<Props, State> {
   clickHandlerMemo: { [id: string]: () => void } = {};
 
   state: State = {
@@ -193,4 +193,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(TrackingResult);
+export const TrackingResult = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(TrackingResultInt);

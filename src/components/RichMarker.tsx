@@ -14,7 +14,10 @@ interface IconProps {
   faIconLeftPadding?: string;
 }
 
-const RichMarker: React.FC<Props> = ({ autoOpenPopup, ...restProps }) => {
+export const RichMarker: React.FC<Props> = ({
+  autoOpenPopup,
+  ...restProps
+}) => {
   const markerRef = useRef<Marker | null>(null);
 
   useEffect(() => {
@@ -27,8 +30,6 @@ const RichMarker: React.FC<Props> = ({ autoOpenPopup, ...restProps }) => {
     <Marker {...restProps} icon={createMarkerIcon(restProps)} ref={markerRef} />
   );
 };
-
-export default RichMarker;
 
 export function createMarkerIcon(props: IconProps = {}) {
   const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = props;

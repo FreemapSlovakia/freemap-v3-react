@@ -24,7 +24,7 @@ import {
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
@@ -36,7 +36,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const RoutePlannerMenu: React.FC<Props> = ({
+const RoutePlannerMenuInt: React.FC<Props> = ({
   pickPointMode,
   transportType,
   onTransportTypeChange,
@@ -275,7 +275,7 @@ const RoutePlannerMenu: React.FC<Props> = ({
                 active={i === activeAlternativeIndex}
                 onClick={() => onAlternativeChange(i)}
               >
-                {transportType === 'imhd' && extra && extra.price
+                {transportType === 'imhd' && extra?.price
                   ? imhdSummary(t, language, extra)
                   : t('routePlanner.summary', {
                       distance: nf.format(distance),
@@ -385,10 +385,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const RoutePlannerMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(RoutePlannerMenu));
+)(withTranslator(RoutePlannerMenuInt));
 
 function imhdSummary(t: Translator, language: string, extra) {
   const dateFormat = new Intl.DateTimeFormat(language, {

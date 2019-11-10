@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import { Polyline, Tooltip, Marker } from 'react-leaflet';
 
-import RichMarker from 'fm3/components/RichMarker';
-import ElevationChartActivePoint from 'fm3/components/ElevationChartActivePoint';
+import { RichMarker } from 'fm3/components/RichMarker';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import {
   routePlannerSetStart,
   routePlannerSetFinish,
@@ -26,7 +26,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const RoutePlannerResult: React.FC<Props> = ({
+const RoutePlannerResultInt: React.FC<Props> = ({
   transportType,
   t,
   language,
@@ -403,10 +403,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const RoutePlannerResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(RoutePlannerResult));
+)(withTranslator(RoutePlannerResultInt));
 
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)

@@ -11,7 +11,7 @@ export const authInitProcessor: Processor = {
   errorKey: 'logIn.verifyError',
   handle: async ({ getState, dispatch }) => {
     try {
-      dispatch(authSetUser(JSON.parse(storage.getItem('user') || '')));
+      dispatch(authSetUser(JSON.parse(storage.getItem('user') ?? '')));
     } catch (e) {
       const authToken = storage.getItem('authToken'); // for compatibility
       if (authToken) {

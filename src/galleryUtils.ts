@@ -15,14 +15,14 @@ export function createFilter({
     userId,
     ratingFrom,
     ratingTo,
-    takenAtFrom: takenAtFrom && takenAtFrom.toISOString(),
-    takenAtTo: takenAtTo && plusDay(takenAtTo).toISOString(),
-    createdAtFrom: createdAtFrom && createdAtFrom.toISOString(),
-    createdAtTo: createdAtTo && plusDay(createdAtTo).toISOString(),
+    takenAtFrom: takenAtFrom?.toISOString(),
+    takenAtTo: plusDay(takenAtTo)?.toISOString(),
+    createdAtFrom: createdAtFrom?.toISOString(),
+    createdAtTo: plusDay(createdAtTo)?.toISOString(),
   };
 }
 
-function plusDay(d: Date): Date {
+function plusDay(d: Date | undefined | null): Date | undefined | null {
   if (!d) {
     return d;
   }

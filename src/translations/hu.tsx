@@ -1,7 +1,7 @@
 /* eslint-disable */
 
 import React, { Fragment } from 'react';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { Badge } from 'react-bootstrap';
 
 const errorMarkup = `

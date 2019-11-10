@@ -2,7 +2,7 @@ import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
 
 import { infoPointAdd, infoPointDelete } from 'fm3/actions/infoPointActions';
@@ -17,7 +17,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const InfoPointMenu: React.FC<Props> = ({
+const InfoPointMenuInt: React.FC<Props> = ({
   onInfoPointAdd,
   onLabelModify,
   isActive,
@@ -68,7 +68,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const InfoPointMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(InfoPointMenu));
+)(withTranslator(InfoPointMenuInt));

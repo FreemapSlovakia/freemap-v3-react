@@ -21,7 +21,7 @@ import { RootAction } from 'fm3/actions';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const GalleryViewerModal: React.FC<Props> = ({
+const GalleryFilterModalInt: React.FC<Props> = ({
   onClose,
   tags,
   users,
@@ -38,7 +38,7 @@ const GalleryViewerModal: React.FC<Props> = ({
   const [ratingTo, setRatingTo] = useState('');
 
   useEffect(() => {
-    setTag(filter.tag || '');
+    setTag(filter.tag ?? '');
 
     setUserId(
       typeof filter.userId === 'number' ? filter.userId.toString() : '',
@@ -299,4 +299,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GalleryViewerModal);
+export const GalleryFilterModal = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(GalleryFilterModalInt);

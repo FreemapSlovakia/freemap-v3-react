@@ -16,7 +16,7 @@ import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Form from 'react-bootstrap/lib/Form';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
@@ -25,7 +25,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const GalleryMenu: React.FC<Props> = ({
+const GalleryMenuInt: React.FC<Props> = ({
   onUpload,
   onFilterShow,
   filterIsActive,
@@ -78,7 +78,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const GalleryMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(GalleryMenu));
+)(withTranslator(GalleryMenuInt));

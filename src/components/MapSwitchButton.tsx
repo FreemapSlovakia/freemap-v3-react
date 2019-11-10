@@ -5,7 +5,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -17,7 +17,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const MapSwitchButton: React.FC<Props> = ({
+const MapSwitchButtonInt: React.FC<Props> = ({
   isAdmin,
   t,
   mapType,
@@ -220,7 +220,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const MapSwitchButton = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(MapSwitchButton));
+)(withTranslator(MapSwitchButtonInt));

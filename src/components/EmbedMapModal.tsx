@@ -11,7 +11,7 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -31,7 +31,7 @@ type State = {
   iframeUrl: string;
 };
 
-export class EmbedMapModal extends React.Component<Props, State> {
+export class EmbedMapModalInt extends React.Component<Props, State> {
   state: State = {
     width: '500',
     height: '300',
@@ -57,7 +57,7 @@ export class EmbedMapModal extends React.Component<Props, State> {
   }
 
   componentDidUpdate() {
-    if (this.iframe && this.iframe.contentWindow) {
+    if (this.iframe?.contentWindow) {
       this.iframe.contentWindow.postMessage(
         {
           freemap: {
@@ -277,4 +277,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(null, mapDispatchToProps)(withTranslator(EmbedMapModal));
+export const EmbedMapModal = connect(
+  null,
+  mapDispatchToProps,
+)(withTranslator(EmbedMapModalInt));

@@ -21,7 +21,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const InfoPointLabelModal: React.FC<Props> = ({
+const InfoPointLabelModalInt: React.FC<Props> = ({
   label,
   onInfoPointChangeLabel,
   onModalClose,
@@ -58,7 +58,7 @@ const InfoPointLabelModal: React.FC<Props> = ({
               autoFocus
               type="text"
               placeholder={t('infoPoint.edit.example')}
-              value={editedLabel || ''}
+              value={editedLabel ?? ''}
               onChange={handleLocalLabelChange}
             />
           </FormGroup>
@@ -93,7 +93,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const InfoPointLabelModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(InfoPointLabelModal));
+)(withTranslator(InfoPointLabelModalInt));

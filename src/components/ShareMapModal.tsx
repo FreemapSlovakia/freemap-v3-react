@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -17,7 +17,7 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
   t: Translator;
 };
 
-export const ShareMapModal: React.FC<Props> = ({ onModalClose, t }) => {
+export const ShareMapModalInt: React.FC<Props> = ({ onModalClose, t }) => {
   const textarea = useRef<HTMLInputElement>();
 
   const setFormControl = useCallback((ele: HTMLInputElement) => {
@@ -95,4 +95,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(null, mapDispatchToProps)(withTranslator(ShareMapModal));
+export const ShareMapModal = connect(
+  null,
+  mapDispatchToProps,
+)(withTranslator(ShareMapModalInt));

@@ -7,8 +7,8 @@ import {
   Popover,
   Button,
 } from 'react-bootstrap';
-import Attribution from './Attribution';
-import FontAwesomeIcon from './FontAwesomeIcon';
+import { Attribution } from './Attribution';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 

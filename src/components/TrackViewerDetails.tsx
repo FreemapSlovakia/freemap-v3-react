@@ -8,7 +8,7 @@ type Props = ReturnType<typeof mapStateToProps> & {
   t: Translator;
 };
 
-const TrackViewerDetails: React.FC<Props> = ({
+const TrackViewerDetailsInt: React.FC<Props> = ({
   startPoints,
   finishPoints,
   trackGeojson,
@@ -166,4 +166,6 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default connect(mapStateToProps)(withTranslator(TrackViewerDetails));
+export const TrackViewerDetails = connect(mapStateToProps)(
+  withTranslator(TrackViewerDetailsInt),
+);

@@ -8,7 +8,7 @@ import Modal from 'react-bootstrap/lib/Modal';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import tips from 'fm3/tips/index.json';
 
@@ -23,7 +23,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-export const TipsModal: React.FC<Props> = ({
+export const TipsModalInt: React.FC<Props> = ({
   tip,
   onPrevious,
   onNext,
@@ -131,7 +131,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const TipsModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(TipsModal));
+)(withTranslator(TipsModalInt));

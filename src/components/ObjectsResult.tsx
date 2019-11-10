@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Popup } from 'react-leaflet';
 
-import RichMarker from 'fm3/components/RichMarker';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { getPoiType } from 'fm3/poiTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';

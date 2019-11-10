@@ -9,7 +9,12 @@ interface Props {
   overlays: string[]; // TODO enum
 }
 
-const Attribution: React.FC<Props> = ({ t, mapType, overlays, imhd }) => {
+export const Attribution: React.FC<Props> = ({
+  t,
+  mapType,
+  overlays,
+  imhd,
+}) => {
   return (
     <ul style={{ padding: '10px 0 0 20px' }}>
       {categorize(
@@ -69,5 +74,3 @@ function categorize(
 
   return Object.keys(res).map(type => ({ type, attributions: res[type] }));
 }
-
-export default Attribution;

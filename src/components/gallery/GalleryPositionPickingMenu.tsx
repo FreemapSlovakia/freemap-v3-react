@@ -10,7 +10,7 @@ import {
 
 import Button from 'react-bootstrap/lib/Button';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -20,7 +20,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const GalleryPositionPickingMenu: React.FC<Props> = ({
+const GalleryPositionPickingMenuInt: React.FC<Props> = ({
   pickingPosition,
   onPositionConfirm,
   onPositionCancel,
@@ -58,7 +58,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const GalleryPositionPickingMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(GalleryPositionPickingMenu));
+)(withTranslator(GalleryPositionPickingMenuInt));

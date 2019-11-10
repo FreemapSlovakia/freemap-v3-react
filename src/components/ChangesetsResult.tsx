@@ -2,7 +2,7 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
-import RichMarker from 'fm3/components/RichMarker';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   changesetsSetAuthorName,
@@ -21,7 +21,7 @@ const ONE_DAY = 1000 * 60 * 60 * 24;
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const Changesets: React.FC<Props> = ({
+const ChangesetsResultInt: React.FC<Props> = ({
   changesets,
   onShowChangesetDetail,
   language,
@@ -152,4 +152,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(Changesets);
+export const ChangesetsResult = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(ChangesetsResultInt);

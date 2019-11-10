@@ -8,7 +8,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
 import {
@@ -19,19 +19,20 @@ import {
   trackViewerSetData,
 } from 'fm3/actions/trackViewerActions';
 
-import 'fm3/styles/trackViewer.scss';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import TrackViewerDetails from './TrackViewerDetails';
+import { TrackViewerDetails } from './TrackViewerDetails';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
+
+import 'fm3/styles/trackViewer.scss';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;
   };
 
-const TrackViewerMenu: React.FC<Props> = ({
+const TrackViewerMenuInt: React.FC<Props> = ({
   onServerUpload,
   onUpload,
   hasTrack,
@@ -124,10 +125,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const TrackViewerMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(TrackViewerMenu));
+)(withTranslator(TrackViewerMenuInt));
 
 function isSuitableForElevationChart(state: RootState) {
   const { trackGeojson } = state.trackViewer;

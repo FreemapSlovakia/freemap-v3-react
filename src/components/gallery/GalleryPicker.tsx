@@ -13,7 +13,7 @@ import { LatLon } from 'fm3/types/common';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const GalleryPicker: React.FC<Props> = ({ zoom, onImageRequest }) => {
+const GalleryPickerInt: React.FC<Props> = ({ zoom, onImageRequest }) => {
   const [latLon, setLatLon] = useState<LatLon>();
 
   const handleMapClick = useCallback(
@@ -74,4 +74,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GalleryPicker);
+export const GalleryPicker = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(GalleryPickerInt);

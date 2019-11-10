@@ -1,8 +1,8 @@
 import React, { useCallback, useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
-import MapSwitchButton from './MapSwitchButton';
-import FontAwesomeIcon from './FontAwesomeIcon';
+import { MapSwitchButton } from './MapSwitchButton';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/storeCreator';
 import { Translator, withTranslator } from 'fm3/l10nInjector';

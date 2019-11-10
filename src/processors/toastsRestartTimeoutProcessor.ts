@@ -13,7 +13,7 @@ export const toastsRestartTimeoutProcessor: Processor<typeof toastsRestartTimeou
       }
 
       const toast = getState().toasts.toasts.find(t => t.id === id);
-      if (toast && typeof toast.timeout === 'number') {
+      if (toast?.timeout != undefined) {
         setupTimeout(id, toast.timeout, tm.dispatch);
       }
     }

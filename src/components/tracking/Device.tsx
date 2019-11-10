@@ -5,10 +5,10 @@ import Button from 'react-bootstrap/lib/Button';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import Tooltip from 'react-bootstrap/lib/Tooltip';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Device } from 'fm3/types/trackingTypes';
+import { Device as DeviceType } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
@@ -16,12 +16,12 @@ import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
-    device: Device;
+    device: DeviceType;
     language: string;
     t: Translator;
   };
 
-const Device: React.FC<Props> = ({
+const DeviceInt: React.FC<Props> = ({
   onDelete,
   onModify,
   device,
@@ -137,7 +137,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const Device = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(Device));
+)(withTranslator(DeviceInt));

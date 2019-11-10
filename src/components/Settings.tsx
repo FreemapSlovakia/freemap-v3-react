@@ -27,7 +27,7 @@ import {
   saveSettings,
 } from 'fm3/actions/mainActions';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { overlayLayers } from 'fm3/mapDefinitions';
@@ -54,7 +54,7 @@ interface State {
   selectedOverlay: string;
 }
 
-class Settings extends React.Component<Props, State> {
+class SettingsInt extends React.Component<Props, State> {
   state: State;
 
   constructor(props: Props) {
@@ -67,8 +67,8 @@ class Settings extends React.Component<Props, State> {
       overlayPaneOpacity: props.overlayPaneOpacity,
       expertMode: props.expertMode,
       eleSmoothingFactor: props.eleSmoothingFactor,
-      name: (props.user && props.user.name) || '',
-      email: (props.user && props.user.email) || '',
+      name: props.user?.name ?? '',
+      email: props.user?.email ?? '',
       preventTips: props.preventTips,
       selectedOverlay: 't',
     };
@@ -173,7 +173,7 @@ class Settings extends React.Component<Props, State> {
         'preventTips',
         'overlayPaneOpacity',
       ] as const).some(prop => this.state[prop] !== this.props[prop]) ||
-      (user && (name !== (user.name || '') || email !== (user.email || ''))) ||
+      (user && (name !== (user.name ?? '') || email !== (user.email ?? ''))) ||
       overlayLayers.some(
         ({ type }) =>
           (overlayOpacity[type] || 1) !==
@@ -433,7 +433,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const Settings = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(Settings));
+)(withTranslator(SettingsInt));

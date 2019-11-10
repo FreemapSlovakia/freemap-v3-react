@@ -1,5 +1,5 @@
 import React, { lazy, Suspense } from 'react';
-import AsyncLoadingIndicator from 'fm3/components/AsyncLoadingIndicator';
+import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 
 const ElevationChart = lazy(() =>
   import(
@@ -7,10 +7,8 @@ const ElevationChart = lazy(() =>
   ),
 );
 
-export default function AsyncElevationChart() {
-  return (
-    <Suspense fallback={<AsyncLoadingIndicator />}>
-      <ElevationChart />
-    </Suspense>
-  );
-}
+export const AsyncElevationChart: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <ElevationChart />
+  </Suspense>
+);

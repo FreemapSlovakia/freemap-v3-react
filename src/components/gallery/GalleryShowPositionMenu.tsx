@@ -6,7 +6,7 @@ import Panel from 'react-bootstrap/lib/Panel';
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import Button from 'react-bootstrap/lib/Button';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -16,7 +16,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const GalleryShowPositionMenu: React.FC<Props> = ({
+const GalleryShowPositionMenuInt: React.FC<Props> = ({
   onClose,
   showPosition,
   t,
@@ -63,7 +63,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const GalleryShowPositionMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(GalleryShowPositionMenu));
+)(withTranslator(GalleryShowPositionMenuInt));

@@ -52,7 +52,7 @@ const ElevationChart: React.FC<Props> = ({
             mode: 'x' as const,
             intersect: false,
             custom(tooltip: any /* dataPoints is missing in the type */) {
-              if (tooltip && tooltip.dataPoints && tooltip.dataPoints.length) {
+              if (tooltip?.dataPoints?.length) {
                 setActivePoint(
                   elevationProfilePoints[tooltip.dataPoints[0].index],
                 );

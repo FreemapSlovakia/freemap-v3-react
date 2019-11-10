@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import Panel from 'react-bootstrap/lib/Panel';
 import Button from 'react-bootstrap/lib/Button';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setSelectingHomeLocation } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
@@ -13,7 +13,7 @@ import { RootAction } from 'fm3/actions';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const HomeLocationPickingMenu: React.FC<Props> = ({
+const HomeLocationPickingMenuInt: React.FC<Props> = ({
   selectingHomeLocation,
   onCancel,
 }) => {
@@ -42,7 +42,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const HomeLocationPickingMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(HomeLocationPickingMenu);
+)(HomeLocationPickingMenuInt);

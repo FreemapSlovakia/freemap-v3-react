@@ -5,7 +5,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
@@ -18,7 +18,7 @@ import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import OpenInExternalAppMenuItems from './OpenInExternalAppMenuItems';
+import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -30,7 +30,7 @@ interface State {
   submenu: string | null;
 }
 
-class MoreMenuButton extends React.Component<Props, State> {
+class MoreMenuButtonInt extends React.Component<Props, State> {
   state: State = {
     show: false,
     submenu: null,
@@ -457,7 +457,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const MoreMenuButton = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(MoreMenuButton));
+)(withTranslator(MoreMenuButtonInt));

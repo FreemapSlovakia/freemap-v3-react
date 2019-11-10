@@ -19,7 +19,7 @@ type Props = ReturnType<typeof mapStateToProps> & {
   };
 };
 
-const RoadDetails: React.FC<Props> = ({ way, mapType, language, t }) => {
+const RoadDetailsInt: React.FC<Props> = ({ way, mapType, language, t }) => {
   const dateFormat = new Intl.DateTimeFormat(language, {
     day: '2-digit',
     month: '2-digit',
@@ -67,4 +67,6 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-export default connect(mapStateToProps)(withTranslator(RoadDetails));
+export const RoadDetails = connect(mapStateToProps)(
+  withTranslator(RoadDetailsInt),
+);

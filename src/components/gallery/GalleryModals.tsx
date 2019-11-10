@@ -3,22 +3,22 @@ import { connect } from 'react-redux';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
-import GalleryViewerModal from 'fm3/components/gallery/GalleryViewerModal';
-import GalleryFilterModal from 'fm3/components/gallery/GalleryFilterModal';
-import AsyncGalleryUploadModal from 'fm3/components/gallery/AsyncGalleryUploadModal';
+import { GalleryViewerModal } from 'fm3/components/gallery/GalleryViewerModal';
+import { GalleryFilterModal } from 'fm3/components/gallery/GalleryFilterModal';
+import { AsyncGalleryUploadModal } from 'fm3/components/gallery/AsyncGalleryUploadModal';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-
-import 'fm3/styles/gallery.scss';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { Dispatch } from 'redux';
 import { showGalleryViewer } from 'fm3/selectors/mainSelectors';
 
+import 'fm3/styles/gallery.scss';
+
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const GalleryModals: React.FC<Props> = ({
+const GalleryModalsInt: React.FC<Props> = ({
   showGalleryViewer,
   showFilter,
   showUploadModal,
@@ -65,4 +65,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(GalleryModals);
+export const GalleryModals = connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(GalleryModalsInt);

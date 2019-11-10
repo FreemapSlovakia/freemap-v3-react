@@ -68,13 +68,11 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
         ? { lat: p.lat, lon: p.lon }
         : null,
       expertMode:
-        p && p.settings && p.settings.expertMode !== undefined
+        p?.settings?.expertMode !== undefined
           ? p.settings.expertMode
           : state.expertMode,
       eleSmoothingFactor:
-        p &&
-        p.settings &&
-        p.settings.trackViewerEleSmoothingFactor !== undefined
+        p?.settings?.trackViewerEleSmoothingFactor !== undefined
           ? p.settings.trackViewerEleSmoothingFactor
           : state.eleSmoothingFactor,
     };

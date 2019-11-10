@@ -7,7 +7,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
 
-import FontAwesomeIcon from 'fm3/components/FontAwesomeIcon';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -16,7 +16,7 @@ type Props = ReturnType<typeof mapDispatchToProps> & {
   t: Translator;
 };
 
-export const SupportUsModal: React.FC<Props> = ({ onModalClose, t }) => {
+export const SupportUsModalInt: React.FC<Props> = ({ onModalClose, t }) => {
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
@@ -104,7 +104,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const SupportUsModal = connect(
   null,
   mapDispatchToProps,
-)(withTranslator(SupportUsModal));
+)(withTranslator(SupportUsModalInt));
