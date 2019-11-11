@@ -18,6 +18,7 @@ function resetRestarter() {
   if (restarter) {
     clearTimeout(restarter);
   }
+
   restarter = window.setTimeout(() => {
     if (ws) {
       ws.close();
@@ -33,20 +34,24 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
     case getType(wsOpen): {
       if (ws?.readyState !== WebSocket.CLOSED) {
         dispatch(wsInvalidState(action.payload));
+
         return;
       }
 
       const { user } = getState().auth;
+
       ws = new WebSocket(
-        `${process.env.API_URL.replace(/^http/, 'ws')}/ws?pingInterval=30000${
+        `${process.env.API_URL?.replace(/^http/, 'ws')}/ws?pingInterval=30000${
           user ? `&authToken=${user.authToken}` : ''
         }`,
       );
+
       dispatch(wsStateChanged({ timestamp: Date.now(), state: ws.readyState }));
 
       ws.addEventListener('open', ({ target }) => {
         if (ws === target) {
           resetRestarter();
+
           dispatch(
             wsStateChanged({
               timestamp: Date.now(),
@@ -61,7 +66,9 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
           if (restarter !== null) {
             window.clearTimeout(restarter);
           }
+
           restarter = null;
+
           dispatch(
             wsStateChanged({
               timestamp: Date.now(),
@@ -75,29 +82,31 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
       ws.addEventListener('message', ({ target, data }) => {
         if (ws === target) {
           resetRestarter();
+
           if (data !== 'ping') {
             dispatch(wsReceived(data));
           }
         }
       });
+
       break;
     }
     case getType(wsSend):
       if (ws?.readyState === WebSocket.OPEN) {
         ws.send(JSON.stringify(action.payload.message));
+        break;
       } else {
         dispatch(wsInvalidState(action.payload.tag));
         return;
       }
-      break;
     case getType(wsClose):
       if (ws && ws.readyState !== WebSocket.CLOSED) {
         ws.close();
+        break;
       } else {
         dispatch(wsInvalidState(action.payload));
         return;
       }
-      break;
     default:
       break;
   }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
@@ -16,46 +16,54 @@ import { DragEndEvent } from 'leaflet';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-class GalleryResultInt extends React.Component<Props> {
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.handleMapClick);
-  }
-
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.handleMapClick);
-  }
-
+const GalleryResultInt: React.FC<Props> = ({
+  pickingPosition,
+  showPosition,
+  image,
+  isPickingPosition,
+  onPositionPick,
+}) => {
   // TODO mode to GalleryMenu to be consistent with other tools
-  handleMapClick = (lat: number, lon: number) => {
-    if (this.props.isPickingPosition) {
-      this.props.onPositionPick(lat, lon);
-    }
-  };
+  const handleMapClick = useCallback(
+    (lat: number, lon: number) => {
+      if (isPickingPosition) {
+        onPositionPick(lat, lon);
+      }
+    },
+    [isPickingPosition, onPositionPick],
+  );
 
-  handlePositionMarkerDragEnd = (e: DragEndEvent) => {
-    const coords = e.target.getLatLng();
-    this.props.onPositionPick(coords.lat, coords.lng);
-  };
+  useEffect(() => {
+    mapEventEmitter.on('mapClick', handleMapClick);
 
-  render() {
-    const { pickingPosition, showPosition, image } = this.props;
+    return () => {
+      mapEventEmitter.removeListener('mapClick', handleMapClick);
+    };
+  }, [handleMapClick]);
 
-    return (
-      <>
-        {pickingPosition && (
-          <RichMarker
-            draggable
-            position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
-            ondragend={this.handlePositionMarkerDragEnd}
-          />
-        )}
-        {showPosition && image && (
-          <RichMarker position={{ lat: image.lat, lng: image.lon }} />
-        )}
-      </>
-    );
-  }
-}
+  const handlePositionMarkerDragEnd = useCallback(
+    (e: DragEndEvent) => {
+      const coords = e.target.getLatLng();
+      onPositionPick(coords.lat, coords.lng);
+    },
+    [onPositionPick],
+  );
+
+  return (
+    <>
+      {pickingPosition && (
+        <RichMarker
+          draggable
+          position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
+          ondragend={handlePositionMarkerDragEnd}
+        />
+      )}
+      {showPosition && image && (
+        <RichMarker position={{ lat: image.lat, lng: image.lon }} />
+      )}
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   image: state.gallery.image,
