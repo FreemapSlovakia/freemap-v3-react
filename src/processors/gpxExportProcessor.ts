@@ -13,6 +13,7 @@ import { InfoPointState } from 'fm3/reducers/infoPointReducer';
 import { ElevationMeasurementState } from 'fm3/reducers/elevationMeasurementReducer';
 import { DistanceMeasurementState } from 'fm3/reducers/distanceMeasurementReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
+import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
@@ -44,7 +45,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
       'http://www.openstreetmap.org/copyright',
     );
     createElement(meta, 'time', new Date().toISOString());
-    createElement(meta, 'keywords', action.payload.join(' '));
+    createElement(meta, 'keywords', action.payload.exportables.join(' '));
 
     const {
       distanceMeasurement,
@@ -57,7 +58,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
       trackViewer,
     } = getState();
 
-    const set = new Set(action.payload);
+    const set = new Set(action.payload.exportables);
     const le = getMapLeafletElement();
 
     if (le && set.has('pictures')) {
@@ -135,12 +136,110 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     const serializer = new XMLSerializer();
 
-    FileSaver.saveAs(
-      new Blob([serializer.serializeToString(doc)], {
-        type: 'application/json',
-      }),
-      'export.gpx',
-    );
+    switch (action.payload.destination) {
+      case 'gdrive':
+        {
+          await loadGapi();
+
+          await new Promise(resolve => {
+            gapi.load('picker', resolve);
+          });
+
+          await new Promise(resolve => {
+            gapi.load('client', resolve);
+          });
+
+          // await new Promise(resolve => {
+          //   gapi.client.load('drive', 'v3', resolve);
+          // });
+
+          const [auth2] = await getAuth2({
+            scope: 'https://www.googleapis.com/auth/drive.file',
+          });
+
+          const result = await auth2.signIn({
+            scope: 'https://www.googleapis.com/auth/drive.file',
+          });
+
+          const ar = result.getAuthResponse();
+
+          const x = await new Promise<any>(resolve => {
+            const pkr = google.picker;
+
+            new pkr.PickerBuilder()
+              .addView(
+                new pkr.DocsView(pkr.ViewId.FOLDERS).setSelectFolderEnabled(
+                  true,
+                ),
+              )
+              .setOAuthToken(ar.access_token)
+              .setDeveloperKey('AIzaSyC90lMoeLp_Rbfpv-eEOoNVpOe25CNXhFc')
+              .setCallback(pickerCallback)
+              .setTitle('Select a folder')
+              .build()
+              .setVisible(true);
+
+            function pickerCallback(data) {
+              switch (data[pkr.Response.ACTION]) {
+                case pkr.Action.PICKED:
+                  resolve(data[pkr.Response.DOCUMENTS][0]);
+                  break;
+                case pkr.Action.CANCEL:
+                  resolve();
+                  break;
+              }
+            }
+          });
+
+          if (!x) {
+            break;
+          }
+
+          const formData = new FormData();
+
+          formData.append(
+            'metadata',
+            new Blob(
+              [
+                JSON.stringify({
+                  name: `freemap-export-${new Date().toISOString()}.gpx`,
+                  mimeType: 'application/gpx+xml',
+                  parents: [x.id],
+                }),
+              ],
+              { type: 'application/json' },
+            ),
+          );
+
+          formData.append(
+            'file',
+            new Blob([serializer.serializeToString(doc)], {
+              type: 'application/gpx+xml',
+            }),
+          );
+
+          await httpRequest({
+            getState,
+            method: 'POST',
+            url:
+              'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id',
+            headers: { Authorization: `Bearer ${ar.access_token}` },
+            data: formData,
+            expectedStatus: 200,
+          });
+        }
+
+        break;
+      case 'download':
+        FileSaver.saveAs(
+          new Blob([serializer.serializeToString(doc)], {
+            type: 'application/gpx+xml',
+          }),
+          `freemap-export-${new Date().toISOString()}.gpx`,
+        );
+
+        break;
+    }
 
     dispatch(setActiveModal(null));
   },
@@ -152,18 +251,23 @@ function addPictures(doc: Document, pictures) {
       lat,
       lon,
     });
+
     if (takenAt) {
       createElement(wptEle, 'time', takenAt);
     }
+
     if (title) {
       createElement(wptEle, 'name', title);
     }
+
     if (description) {
       createElement(wptEle, 'description', description);
     }
+
     const link = createElement(wptEle, 'link', undefined, {
       href: `${process.env.API_URL}/gallery/pictures/${id}/image`,
     });
+
     createElement(link, 'type', 'image/jpeg');
 
     // TODO add tags and author to cmt

@@ -23,7 +23,13 @@
         "transform": "typescript-is/lib/transform-inline/transformer"
       }
     ],
-    "types": ["gapi", "gapi.auth2", "google.analytics", "facebook-js-sdk"]
+    "types": [
+      "gapi",
+      "gapi.auth2",
+      "google.analytics",
+      "facebook-js-sdk",
+      "google.picker"
+    ]
   },
   "include": ["src", "typings"]
 }

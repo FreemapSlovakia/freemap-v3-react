@@ -9,7 +9,11 @@ import Checkbox from 'react-bootstrap/lib/Checkbox';
 import Alert from 'react-bootstrap/lib/Alert';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { setActiveModal, exportGpx } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  exportGpx,
+  Destination,
+} from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
@@ -54,7 +58,13 @@ const ExportGpxModalInt: React.FC<Props> = ({
 
   const handleExportClick = useCallback(() => {
     if (exportables) {
-      onExport(exportables);
+      onExport(exportables, 'download');
+    }
+  }, [onExport, exportables]);
+
+  const handleExportToDriveClick = useCallback(() => {
+    if (exportables) {
+      onExport(exportables, 'gdrive');
     }
   }, [onExport, exportables]);
 
@@ -102,7 +112,13 @@ const ExportGpxModalInt: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleExportClick} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
+          <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
+        </Button>{' '}
+        <Button
+          onClick={handleExportToDriveClick}
+          disabled={!exportables.length}
+        >
+          <FontAwesomeIcon icon="google" /> {t('gpxExport.exportToDrive')}
         </Button>{' '}
         <Button onClick={onModalClose}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
@@ -173,9 +189,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
-  onExport(exportables: string[] | null) {
+  onExport(exportables: string[] | null, destination: Destination) {
     if (exportables) {
-      dispatch(exportGpx(exportables));
+      dispatch(exportGpx({ exportables, destination }));
     }
   },
 });

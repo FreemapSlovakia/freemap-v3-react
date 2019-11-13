@@ -45,11 +45,16 @@ export interface PdfExportOptions {
   area: 'visible' | 'infopoints';
 }
 
+export type Destination = 'download' | 'gdrive';
+
 export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
 
 export const setAppState = createAction('SET_APP_STATE')<AppState>();
 
-export const exportGpx = createAction('EXPORT_GPX')<string[]>();
+export const exportGpx = createAction('EXPORT_GPX')<{
+  exportables: string[];
+  destination: Destination;
+}>();
 
 export const exportPdf = createAction('EXPORT_PDF')<PdfExportOptions>();
 

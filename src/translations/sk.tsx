@@ -850,7 +850,8 @@ export default {
   },
 
   gpxExport: {
-    export: 'Exportovať',
+    export: 'Stiahnúť',
+    exportToDrive: 'Uložiť do Google Drive',
     exportError: 'Chyba exportovania GPX: {err}',
     what: {
       plannedRoute: 'vyhľadanú trasu',

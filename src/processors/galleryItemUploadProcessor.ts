@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   galleryRemoveItem,
@@ -71,7 +70,6 @@ export const galleryItemUploadProcessor: Processor = {
         expectedStatus: 200,
         cancelActions: [galleryHideUploadModal],
       });
-      axios;
 
       dispatch(galleryRemoveItem(item.id));
       dispatch(galleryUpload());
