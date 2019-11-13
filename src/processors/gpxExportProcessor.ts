@@ -153,9 +153,11 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
           //   gapi.client.load('drive', 'v3', resolve);
           // });
 
-          const [auth2] = await getAuth2({
+          await getAuth2({
             scope: 'https://www.googleapis.com/auth/drive.file',
           });
+
+          const auth2 = gapi.auth2.getAuthInstance();
 
           const result = await auth2.signIn({
             scope: 'https://www.googleapis.com/auth/drive.file',

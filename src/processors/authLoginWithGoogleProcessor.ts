@@ -11,7 +11,10 @@ export const authLoginWithGoogleProcessor: Processor = {
   errorKey: 'logIn.logInError',
   handle: async ({ dispatch, getState }) => {
     try {
-      const [auth2] = await getAuth2();
+      await getAuth2({ scope: 'profile email' });
+
+      const auth2 = gapi.auth2.getAuthInstance();
+
       const googleUser = await auth2.signIn();
       const idToken = googleUser.getAuthResponse().id_token;
 

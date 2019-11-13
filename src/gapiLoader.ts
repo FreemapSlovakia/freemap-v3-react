@@ -27,23 +27,22 @@ export function loadGapi(): Promise<undefined> {
 }
 
 export async function getAuth2(
-  cfg: Partial<gapi.auth2.ClientConfig> = {},
-): Promise<[gapi.auth2.GoogleAuth]> {
+  cfg: {
+    scope?: string;
+  } = {},
+) {
   await loadGapi();
 
   await new Promise(resolve => {
-    gapi.load('auth2', () => {
+    gapi.load('client:auth2', () => {
       resolve();
     });
   });
 
-  return [
-    gapi.auth2.init({
-      // eslint-disable-next-line
-      client_id:
-        '120698260366-tt592mqhut3931ct83667sfihdkv69jj.apps.googleusercontent.com',
-      scope: 'profile email',
-      ...cfg,
-    }),
-  ];
+  gapi.client.init({
+    apiKey: 'AIzaSyC90lMoeLp_Rbfpv-eEOoNVpOe25CNXhFc',
+    clientId:
+      '120698260366-tt592mqhut3931ct83667sfihdkv69jj.apps.googleusercontent.com',
+    ...cfg,
+  });
 }
