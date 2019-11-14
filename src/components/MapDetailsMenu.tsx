@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -20,35 +20,39 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-class MapDetailsMenuInt extends React.Component<Props> {
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.setUserSelectedPosition);
-  }
+const MapDetailsMenuInt: React.FC<Props> = ({
+  subtool,
+  onSubtoolChange,
+  onSetUserSelectedPosition,
+  t,
+}) => {
+  const setUserSelectedPosition = useCallback(
+    (lat: number, lon: number) => {
+      if (subtool !== null) {
+        onSetUserSelectedPosition(lat, lon);
+      }
+    },
+    [subtool, onSetUserSelectedPosition],
+  );
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.setUserSelectedPosition);
-  }
+  useEffect(() => {
+    mapEventEmitter.on('mapClick', setUserSelectedPosition);
+    return () => {
+      mapEventEmitter.removeListener('mapClick', setUserSelectedPosition);
+    };
+  }, [setUserSelectedPosition]);
 
-  setUserSelectedPosition = (lat: number, lon: number) => {
-    if (this.props.subtool !== null) {
-      this.props.onSetUserSelectedPosition(lat, lon);
-    }
-  };
-
-  render() {
-    const { subtool, onSubtoolChange, t } = this.props;
-    return (
-      <Button
-        onClick={() => onSubtoolChange('track-info')}
-        active={subtool === 'track-info'}
-        title={t('mapDetails.road')}
-      >
-        <FontAwesomeIcon icon="road" />
-        <span className="hidden-xs"> {t('mapDetails.road')}</span>
-      </Button>
-    );
-  }
-}
+  return (
+    <Button
+      onClick={() => onSubtoolChange('track-info')}
+      active={subtool === 'track-info'}
+      title={t('mapDetails.road')}
+    >
+      <FontAwesomeIcon icon="road" />
+      <span className="hidden-xs"> {t('mapDetails.road')}</span>
+    </Button>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   subtool: state.mapDetails.subtool,

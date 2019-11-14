@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import 'fm3/styles/react-tag-autocomplete.css';
 
@@ -26,55 +26,58 @@ interface Props {
   showPreview: boolean;
 }
 
-export class GalleryUploadItem extends React.Component<Props> {
-  handleRemove = () => {
-    this.props.onRemove(this.props.id);
-  };
+const GalleryUploadItem: React.FC<Props> = ({
+  id,
+  filename,
+  url,
+  disabled,
+  model,
+  allTags,
+  errors,
+  t,
+  showPreview,
+  onRemove,
+  onPositionPick,
+  onModelChange,
+}) => {
+  const handleRemove = useCallback(() => {
+    onRemove(id);
+  }, [id, onRemove]);
 
-  handlePositionPick = () => {
-    this.props.onPositionPick(this.props.id);
-  };
+  const handlePositionPick = useCallback(() => {
+    onPositionPick(id);
+  }, [id, onPositionPick]);
 
-  handleModelChange = (model: PictureModel) => {
-    this.props.onModelChange(this.props.id, model);
-  };
+  const handleModelChange = useCallback(
+    (model: PictureModel) => {
+      onModelChange(id, model);
+    },
+    [id, onModelChange],
+  );
 
-  render() {
-    const {
-      id,
-      filename,
-      url,
-      disabled,
-      model,
-      allTags,
-      errors,
-      t,
-      showPreview,
-    } = this.props;
-    return (
-      <React.Fragment key={id}>
-        {showPreview ? (
-          <img
-            className="gallery-image gallery-image-upload"
-            src={url || spinnerbar}
-            alt={filename}
-          />
-        ) : (
-          <h4>{filename}</h4>
-        )}
-        <fieldset disabled={disabled}>
-          <GalleryEditForm
-            {...{ model, allTags, errors }}
-            t={t}
-            onPositionPick={disabled ? undefined : this.handlePositionPick}
-            onModelChange={this.handleModelChange}
-          />{' '}
-          <Button onClick={this.handleRemove} bsStyle="danger">
-            <FontAwesomeIcon icon="times" /> {t('general.remove')}
-          </Button>
-        </fieldset>
-        <hr />
-      </React.Fragment>
-    );
-  }
-}
+  return (
+    <React.Fragment key={id}>
+      {showPreview ? (
+        <img
+          className="gallery-image gallery-image-upload"
+          src={url || spinnerbar}
+          alt={filename}
+        />
+      ) : (
+        <h4>{filename}</h4>
+      )}
+      <fieldset disabled={disabled}>
+        <GalleryEditForm
+          {...{ model, allTags, errors }}
+          t={t}
+          onPositionPick={disabled ? undefined : handlePositionPick}
+          onModelChange={handleModelChange}
+        />{' '}
+        <Button onClick={handleRemove} bsStyle="danger">
+          <FontAwesomeIcon icon="times" /> {t('general.remove')}
+        </Button>
+      </fieldset>
+      <hr />
+    </React.Fragment>
+  );
+};
