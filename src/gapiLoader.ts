@@ -39,9 +39,11 @@ export async function getAuth2(
 ) {
   await loadGapi();
 
-  await new Promise(resolve => {
-    gapi.load('client:auth2', () => {
-      resolve();
+  await new Promise((resolve, reject) => {
+    gapi.load('client:auth2', {
+      callback: resolve,
+      onerror: reject,
+      ontimeout: reject,
     });
   });
 

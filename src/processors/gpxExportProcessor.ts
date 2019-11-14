@@ -141,8 +141,12 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
         {
           await loadGapi();
 
-          await new Promise(resolve => {
-            gapi.load('picker', resolve);
+          await new Promise((resolve, reject) => {
+            gapi.load('picker', {
+              callback: resolve,
+              onerror: reject,
+              ontimeout: reject,
+            });
           });
 
           // await new Promise(resolve => {
