@@ -145,10 +145,6 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
             gapi.load('picker', resolve);
           });
 
-          await new Promise(resolve => {
-            gapi.load('client', resolve);
-          });
-
           // await new Promise(resolve => {
           //   gapi.client.load('drive', 'v3', resolve);
           // });
@@ -165,7 +161,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
           const ar = result.getAuthResponse();
 
-          const x = await new Promise<any>(resolve => {
+          const folder = await new Promise<any>(resolve => {
             const pkr = google.picker;
 
             new pkr.PickerBuilder()
@@ -193,8 +189,8 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
             }
           });
 
-          if (!x) {
-            break;
+          if (!folder) {
+            return; // don't close export dialog
           }
 
           const formData = new FormData();
@@ -206,7 +202,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
                 JSON.stringify({
                   name: `freemap-export-${new Date().toISOString()}.gpx`,
                   mimeType: 'application/gpx+xml',
-                  parents: [x.id],
+                  parents: [folder.id],
                 }),
               ],
               { type: 'application/json' },
