@@ -4,11 +4,14 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { User } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
+import { loadFb } from 'fm3/fbLoader';
 
 export const authLoginWithFacebookProcessor: Processor = {
   actionCreator: authLoginWithFacebook,
   errorKey: 'logIn.logInError',
   handle: async ({ dispatch, getState }) => {
+    await loadFb();
+
     let response = await new Promise<fb.StatusResponse>(resolve =>
       FB.getLoginStatus(resolve),
     );

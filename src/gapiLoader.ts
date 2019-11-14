@@ -1,26 +1,32 @@
-let gapiPromise;
+let gapiPromise: Promise<undefined>;
 
-export function loadGapi(): Promise<undefined> {
+export function loadGapi() {
   if (gapiPromise) {
     return gapiPromise;
   }
 
   gapiPromise = new Promise((resolve, reject) => {
     const js = document.createElement('script');
+
     js.async = true;
     js.defer = true;
     js.src = 'https://apis.google.com/js/api.js';
+
     js.onload = () => {
       resolve();
     };
+
     js.onerror = () => {
       reject(new Error('error loading script'));
     };
+
     const fjs = document.getElementsByTagName('script')[0];
+
     if (!fjs || !fjs.parentNode) {
-      throw new Error('no script');
+      reject(Error('no script'));
+    } else {
+      fjs.parentNode.insertBefore(js, fjs);
     }
-    fjs.parentNode.insertBefore(js, fjs);
   });
 
   return gapiPromise;
