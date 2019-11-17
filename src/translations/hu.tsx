@@ -119,7 +119,10 @@ export default {
         </b>
       </Fragment>
     ),
-    noHomeAlert: 'Először meg kell adnia a lakóhelyét a beállításoknál.',
+    noHomeAlert: {
+      msg: 'Először meg kell adnia a lakóhelyét a beállításoknál.',
+      setHome: 'Set', // TODO translate
+    },
     showMidpointHint: 'Köztes pont megadásához húzzon el egy útszakaszt.',
     gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
     routeNotFound:
@@ -419,6 +422,9 @@ export default {
     fetchingError: 'Hiba történt a nyomvonal adatainak beolvasásakor: {err}',
     savingError: 'Hiba történt a nyomvonal mentésekor: {err}',
     tooBigError: 'A nyomvonal nagyobb, mint a megengedett {maxSize} MB.',
+    loadingError: 'Error loading file.', // TODO translate
+    onlyOne: 'Only single GPX file expected.', // TODO translate
+    wrongFormat: 'The file must have .gpx extension.', // TODO translate
   },
 
   infoPoint: {
@@ -822,6 +828,7 @@ export default {
     routeFrom: 'Útvonal innen',
     routeTo: 'Útvonal ide',
     fetchingError: 'Keresési hiba: {err}',
+    buttonTitle: 'Search', // TODO translate
   },
 
   shareMap: {
@@ -844,6 +851,7 @@ export default {
     previous: 'Előző tipp',
     next: 'Következő tipp',
     prevent: 'Következő alkalommal ne jelenjék meg',
+    errorLoading: 'Error loading tip.', // TODO translate
   },
 
   supportUs: {

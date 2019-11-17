@@ -31,7 +31,7 @@ const TrackViewerUploadModalInt: React.FC<Props> = ({
   onClose,
   t,
 }) => {
-  const handleGpxDrop = useGpxDropHandler(onUpload, onLoadError);
+  const handleGpxDrop = useGpxDropHandler(onUpload, onLoadError, t);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleGpxDrop,

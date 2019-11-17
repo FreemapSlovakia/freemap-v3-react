@@ -117,7 +117,10 @@ export default {
         </b>
       </Fragment>
     ),
-    noHomeAlert: 'Najprv si musíte nastaviť domovskú polohu.',
+    noHomeAlert: {
+      msg: 'Najprv si musíte nastaviť domovskú polohu.',
+      setHome: 'Nastaviť',
+    },
     showMidpointHint:
       'Pre pridanie prechodného bodu potiahnite úsek cesty na zvolené miesto.',
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
@@ -417,6 +420,9 @@ export default {
     fetchingError: 'Nastala chyba pri získavaní záznamu trasy: {err}',
     savingError: 'Nepodarilo sa uložiť trasu: {err}',
     tooBigError: 'Veľkosť nahraného súboru prevyšuje limit {maxSize} MB.',
+    loadingError: 'Súbor sa nepodarilo načítať.',
+    onlyOne: 'Očakáva sa iba jeden GPX súbor.',
+    wrongFormat: 'Nahraný súbor musí mať príponu .gpx',
   },
 
   infoPoint: {
@@ -816,6 +822,7 @@ export default {
     routeFrom: 'Navigovať odtiaľto',
     routeTo: 'Navigovať sem',
     fetchingError: 'Nastala chyba pri spracovaní výsledkov vyhľadávania: {err}',
+    buttonTitle: 'Hľadať',
   },
 
   shareMap: {
@@ -838,6 +845,7 @@ export default {
     previous: 'Predošlý tip',
     next: 'Ďalší tip',
     prevent: 'Nabudúce nezobrazovať',
+    errorLoading: 'Tip sa nepodarilo načítať.',
   },
 
   supportUs: {

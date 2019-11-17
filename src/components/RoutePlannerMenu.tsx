@@ -359,11 +359,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(
       toastsAdd({
         collapseKey: 'routePlanner.noHomeAlert',
-        messageKey: 'routePlanner.noHomeAlert',
+        messageKey: 'routePlanner.noHomeAlert.msg',
         style: 'warning',
         actions: [
-          { name: 'Nastaviť', action: setActiveModal('settings') }, // TODO translate
-          { name: 'Zavrieť' }, // TODO translate
+          {
+            nameKey: 'routePlanner.noHomeAlert.setHome',
+            action: setActiveModal('settings'),
+          },
+          { nameKey: 'general.close' },
         ],
       }),
     );

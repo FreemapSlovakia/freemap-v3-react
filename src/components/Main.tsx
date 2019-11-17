@@ -191,7 +191,7 @@ const MainInt: React.FC<Props> = ({
     onPictureUpdated,
   );
 
-  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError);
+  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError, t);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {

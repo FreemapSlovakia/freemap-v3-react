@@ -42,7 +42,7 @@ export const TipsModalInt: React.FC<Props> = ({
         setTipText(tipText);
       })
       .catch(() => {
-        setTipText('Tip sa nepodarilo načítať.'); // TODO translate
+        setTipText(t('tips.errorLoading'));
       })
       .then(() => {
         setLoading(false);

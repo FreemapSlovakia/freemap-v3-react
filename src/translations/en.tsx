@@ -118,7 +118,10 @@ export default {
         </b>
       </>
     ),
-    noHomeAlert: 'You need to set your home position in settings first.',
+    noHomeAlert: {
+      msg: 'You need to set your home position in settings first.',
+      setHome: 'Set',
+    },
     showMidpointHint: 'To add a midpoint, drag a route segment.',
     gpsError: 'Error getting your current location.',
     routeNotFound:
@@ -416,6 +419,9 @@ export default {
     savingError: 'Error saving the track: {err}',
     tooBigError:
       'Size of the uploaded track is bigger than the limit {maxSize} MB.',
+    loadingError: 'Error loading file.',
+    onlyOne: 'Only single GPX file expected.',
+    wrongFormat: 'The file must have .gpx extension.',
   },
 
   infoPoint: {
@@ -816,6 +822,7 @@ export default {
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
     fetchingError: 'Searching error: {err}',
+    buttonTitle: 'Search',
   },
 
   shareMap: {
@@ -838,6 +845,7 @@ export default {
     previous: 'Previous tip',
     next: 'Next tip',
     prevent: "Don't show next time",
+    errorLoading: 'Error loading tip.',
   },
 
   supportUs: {

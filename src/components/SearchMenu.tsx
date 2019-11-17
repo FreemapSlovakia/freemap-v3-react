@@ -176,8 +176,7 @@ const SearchMenuInt: React.FC<Props> = ({
               <InputGroup.Button style={{ width: 'auto' }}>
                 <Button
                   type="submit"
-                  /* TODO translate */
-                  title="Search"
+                  title={t('search.buttonTitle')}
                   disabled={!value}
                 >
                   <FontAwesomeIcon icon="search" />
