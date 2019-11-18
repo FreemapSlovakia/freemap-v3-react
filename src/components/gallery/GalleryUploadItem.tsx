@@ -26,7 +26,7 @@ interface Props {
   showPreview: boolean;
 }
 
-const GalleryUploadItem: React.FC<Props> = ({
+export const GalleryUploadItem: React.FC<Props> = ({
   id,
   filename,
   url,
