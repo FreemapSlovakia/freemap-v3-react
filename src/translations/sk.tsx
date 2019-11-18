@@ -857,7 +857,7 @@ export default {
   },
 
   gpxExport: {
-    export: 'Stiahnúť',
+    export: 'Stiahnuť',
     exportToDrive: () => (
       <>
         Uložiť do Google Drive{' '}
