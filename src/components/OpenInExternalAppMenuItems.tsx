@@ -88,26 +88,21 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
               bottom = bounds.getSouth();
             }
 
-            [
-              ['http', 8111],
-              ['https', 8112],
-            ].forEach(([proto, port]) => {
-              axios
-                .get(`${proto}://localhost:${port}/load_and_zoom`, {
-                  params: { left, right, top, bottom },
-                })
-                .then(() => {
-                  if (includePoint) {
-                    axios.get(`${proto}://localhost:${port}/add_node`, {
-                      params: {
-                        lat,
-                        lon,
-                        addtags: `name=${pointTitle}`,
-                      },
-                    });
-                  }
-                });
-            });
+            axios
+              .get(`http://localhost:8111/load_and_zoom`, {
+                params: { left, right, top, bottom },
+              })
+              .then(() => {
+                if (includePoint) {
+                  axios.get(`http://localhost:8111/add_node`, {
+                    params: {
+                      lat,
+                      lon,
+                      addtags: `name=${pointTitle}`,
+                    },
+                  });
+                }
+              });
           }
           break;
         }
