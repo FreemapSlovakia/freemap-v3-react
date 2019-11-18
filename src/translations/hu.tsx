@@ -2,7 +2,6 @@
 
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { Badge } from 'react-bootstrap';
 
 const errorMarkup = `
 <h1>Alkalmazáshiba</h1>

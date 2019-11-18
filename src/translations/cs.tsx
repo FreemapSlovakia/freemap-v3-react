@@ -1,7 +1,6 @@
 /* eslint-disable */
 
 import React, { Fragment } from 'react';
-import { Badge } from 'react-bootstrap';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 const errorMarkup = `<h1>Chyba aplikace</h1>
