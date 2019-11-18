@@ -8,7 +8,7 @@
   <body>
     <script>
       opener.postMessage(
-        { freemap: { action: 'osmAuth', payload: window.location.search } },
+        { freemap: { action: 'dropboxAuth', payload: window.location.hash } },
         location.origin,
       );
       window.close();

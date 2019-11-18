@@ -45,7 +45,7 @@ export interface PdfExportOptions {
   area: 'visible' | 'infopoints';
 }
 
-export type Destination = 'download' | 'gdrive';
+export type Destination = 'download' | 'gdrive' | 'dropbox';
 
 export const setExpertMode = createAction('SET_EXPERT_MODE')<boolean>();
 

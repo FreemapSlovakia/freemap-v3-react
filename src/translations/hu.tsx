@@ -866,6 +866,7 @@ export default {
   gpxExport: {
     export: 'Letöltés', // TODO google-translated
     exportToDrive: 'Mentse a Google Drive-ba', // TODO google-translated
+    exportToDropbox: 'Mentse a Dropbox-ba', // TODO google-translated
     exportError: 'Hiba a GPX exportálásakor: {err}', // TODO google-translated
     what: {
       plannedRoute: 'útvonal',

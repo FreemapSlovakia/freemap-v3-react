@@ -137,6 +137,80 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     const serializer = new XMLSerializer();
 
     switch (action.payload.destination) {
+      case 'dropbox': {
+        const w = window.open(
+          `https://www.dropbox.com/oauth2/authorize?client_id=vnycfeumo6jzg5p&response_type=token&redirect_uri=${encodeURIComponent(
+            `${location.protocol}//${location.host}/dropboxAuthCallback.html`,
+          )}`,
+          'freemap-dropbox',
+          'height=400,width=600',
+        );
+
+        if (!w) {
+          return; // TODO toast
+        }
+
+        const p = new Promise<string | undefined>((resolve, reject) => {
+          const msgListener = (e: MessageEvent) => {
+            if (
+              e.origin === window.location.origin &&
+              typeof e.data === 'object' &&
+              typeof e.data.freemap === 'object' &&
+              e.data.freemap.action === 'dropboxAuth'
+            ) {
+              const { access_token: accessToken, error } = qs.parse(
+                e.data.freemap.payload.slice(1),
+              );
+              if (accessToken) {
+                resolve(
+                  Array.isArray(accessToken) ? accessToken[0] : accessToken,
+                );
+              } else {
+                reject(new Error(`OAuth: ${error}`));
+              }
+
+              w.close();
+            }
+          };
+
+          const timer = window.setInterval(() => {
+            if (w.closed) {
+              window.clearInterval(timer);
+              window.removeEventListener('message', msgListener);
+              resolve();
+            }
+          }, 500);
+
+          window.addEventListener('message', msgListener);
+        });
+
+        const authToken = await p; // TODO handle error (https://www.oauth.com/oauth2-servers/authorization/the-authorization-response/)
+
+        if (authToken === undefined) {
+          return;
+        }
+
+        await httpRequest({
+          getState,
+          method: 'POST',
+          url: 'https://content.dropboxapi.com/2/files/upload',
+          headers: {
+            Authorization: `Bearer ${authToken}`,
+            'Content-Type': 'application/octet-stream',
+            'Dropbox-API-Arg': JSON.stringify({
+              path: `/freemap-export-${new Date().toISOString()}.gpx`,
+            }),
+          },
+          data: new Blob([serializer.serializeToString(doc)], {
+            type: 'application/gpx+xml',
+          }),
+          expectedStatus: 200,
+        });
+
+        // TODO toast
+
+        break;
+      }
       case 'gdrive':
         {
           await loadGapi();
@@ -230,6 +304,8 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
             expectedStatus: 200,
           });
         }
+
+        // TODO toast
 
         break;
       case 'download':

@@ -68,6 +68,12 @@ const ExportGpxModalInt: React.FC<Props> = ({
     }
   }, [onExport, exportables]);
 
+  const handleExportToDropbox = useCallback(() => {
+    if (exportables) {
+      onExport(exportables, 'dropbox');
+    }
+  }, [onExport, exportables]);
+
   const handleCheckboxChange = useCallback(
     (type: string) => {
       if (!exportables) {
@@ -90,7 +96,7 @@ const ExportGpxModalInt: React.FC<Props> = ({
   }
 
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show onHide={onModalClose} bsSize="large">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
@@ -119,6 +125,9 @@ const ExportGpxModalInt: React.FC<Props> = ({
           disabled={!exportables.length}
         >
           <FontAwesomeIcon icon="google" /> {t('gpxExport.exportToDrive')}
+        </Button>{' '}
+        <Button onClick={handleExportToDropbox} disabled={!exportables.length}>
+          <FontAwesomeIcon icon="dropbox" /> {t('gpxExport.exportToDropbox')}
         </Button>{' '}
         <Button onClick={onModalClose}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>

@@ -860,6 +860,7 @@ export default {
   gpxExport: {
     export: 'Download',
     exportToDrive: 'Save to Google Drive',
+    exportToDropbox: 'Save to Dropbox',
     exportError: 'Error exporting GPX: {err}',
     what: {
       plannedRoute: 'found route',

@@ -861,6 +861,7 @@ export default {
   gpxExport: {
     export: 'Stáhnout',
     exportToDrive: 'Uložit do Google Drive',
+    exportToDropbox: 'Uložit do Dropboxu',
     exportError: 'Chyba exportu GPX: {err}',
     what: {
       plannedRoute: 'vyhledanou trasu',

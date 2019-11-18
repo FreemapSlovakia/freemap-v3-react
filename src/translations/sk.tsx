@@ -860,6 +860,7 @@ export default {
   gpxExport: {
     export: 'Stiahnúť',
     exportToDrive: 'Uložiť do Google Drive',
+    exportToDropbox: 'Uložit do Dropboxu',
     exportError: 'Chyba exportovania GPX: {err}',
     what: {
       plannedRoute: 'vyhľadanú trasu',
@@ -874,7 +875,7 @@ export default {
       gpx: 'GPX trasu',
     },
     disabledAlert:
-      'Aktívne sú iba voľby ktorých objekty sa nachádzajú na mape.',
+      'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',
   },
 
   logIn: {
