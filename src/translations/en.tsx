@@ -59,7 +59,7 @@ export default {
     mapDetails: 'Map details',
     tracking: () => (
       <>
-        Live tracking <Badge>BETA</Badge>
+        Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
   },
@@ -859,8 +859,18 @@ export default {
 
   gpxExport: {
     export: 'Download',
-    exportToDrive: 'Save to Google Drive',
-    exportToDropbox: 'Save to Dropbox',
+    exportToDrive: () => (
+      <>
+        Save to Google Drive{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
+    exportToDropbox: () => (
+      <>
+        Save to Dropbox{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
     exportError: 'Error exporting GPX: {err}',
     what: {
       plannedRoute: 'found route',

@@ -58,7 +58,7 @@ export default {
     mapDetails: 'Detaily v mape',
     tracking: () => (
       <>
-        Sledovanie <Badge>BETA</Badge>
+        Sledovanie <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
   },
@@ -859,8 +859,18 @@ export default {
 
   gpxExport: {
     export: 'Stiahnúť',
-    exportToDrive: 'Uložiť do Google Drive',
-    exportToDropbox: 'Uložit do Dropboxu',
+    exportToDrive: () => (
+      <>
+        Uložiť do Google Drive{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
+    exportToDropbox: () => (
+      <>
+        Uložit do Dropboxu{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
     exportError: 'Chyba exportovania GPX: {err}',
     what: {
       plannedRoute: 'vyhľadanú trasu',

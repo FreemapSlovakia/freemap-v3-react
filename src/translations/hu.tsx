@@ -60,7 +60,7 @@ export default {
     mapDetails: 'Térképadatok',
     tracking: () => (
       <>
-        Live tracking <Badge>BETA</Badge>
+        Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
   },
@@ -865,8 +865,20 @@ export default {
 
   gpxExport: {
     export: 'Letöltés', // TODO google-translated
-    exportToDrive: 'Mentse a Google Drive-ba', // TODO google-translated
-    exportToDropbox: 'Mentse a Dropbox-ba', // TODO google-translated
+    exportToDrive: () => (
+      // TODO google-translated
+      <>
+        Mentse a Google Drive-ba{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
+    exportToDropbox: () => (
+      // TODO google-translated
+      <>
+        Mentse a Dropbox-ba{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
     exportError: 'Hiba a GPX exportálásakor: {err}', // TODO google-translated
     what: {
       plannedRoute: 'útvonal',
