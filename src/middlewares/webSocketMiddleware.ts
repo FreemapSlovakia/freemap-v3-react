@@ -32,7 +32,7 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
 }) => next => (action: RootAction) => {
   switch (action.type) {
     case getType(wsOpen): {
-      if (ws?.readyState !== WebSocket.CLOSED) {
+      if (ws && ws.readyState !== WebSocket.CLOSED) {
         dispatch(wsInvalidState(action.payload));
 
         return;
