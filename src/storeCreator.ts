@@ -1,5 +1,6 @@
 import { createStore, applyMiddleware, combineReducers, Store } from 'redux';
 import reduceReducers from 'reduce-reducers';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 import { loggerMiddleware } from './middlewares/loggerMiddleware';
 import { errorHandlingMiddleware } from './middlewares/errorHandlingMiddleware';
@@ -207,13 +208,15 @@ processors.push(
 export function createReduxStore() {
   const store = createStore(
     rootReducer as CR,
-    applyMiddleware(
-      loggerMiddleware,
-      errorHandlingMiddleware,
-      webSocketMiddleware,
-      processorMiddleware,
-      trackingMiddleware,
-      utilityMiddleware,
+    composeWithDevTools(
+      applyMiddleware(
+        loggerMiddleware,
+        errorHandlingMiddleware,
+        webSocketMiddleware,
+        processorMiddleware,
+        trackingMiddleware,
+        utilityMiddleware,
+      ),
     ),
   );
 
