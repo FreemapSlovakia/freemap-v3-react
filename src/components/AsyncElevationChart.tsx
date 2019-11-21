@@ -4,7 +4,7 @@ import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 const ElevationChart = lazy(() =>
   import(
     /* webpackChunkName: "elevationChart" */ 'fm3/components/ElevationChart'
-  ),
+  ).then(({ ElevationChart }) => ({ default: ElevationChart })),
 );
 
 export const AsyncElevationChart: React.FC = () => (

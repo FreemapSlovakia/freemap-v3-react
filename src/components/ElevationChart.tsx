@@ -19,7 +19,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const ElevationChart: React.FC<Props> = ({
+const ElevationChartInt: React.FC<Props> = ({
   elevationProfilePoints,
   setActivePoint,
   removeActivePoint,
@@ -136,7 +136,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const ElevationChart = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(ElevationChart));
+)(withTranslator(ElevationChartInt));

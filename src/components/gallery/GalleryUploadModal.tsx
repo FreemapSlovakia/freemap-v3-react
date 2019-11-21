@@ -34,7 +34,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const GalleryUploadModal: React.FC<Props> = ({
+const GalleryUploadModalInt: React.FC<Props> = ({
   items,
   onPositionPick,
   visible,
@@ -208,7 +208,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export default connect(
+export const GalleryUploadModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(GalleryUploadModal));
+)(withTranslator(GalleryUploadModalInt));
