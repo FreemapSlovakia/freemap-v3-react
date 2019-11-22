@@ -39,7 +39,9 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
   onSelect,
 }) => {
   const handleMenuItemClick = useCallback(
-    ({ target: { dataset } }) => {
+    ({ target }: React.MouseEvent) => {
+      const { dataset } = target as any;
+
       if (onSelect) {
         onSelect(dataset.where);
       }

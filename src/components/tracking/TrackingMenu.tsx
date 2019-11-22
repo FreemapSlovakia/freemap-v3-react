@@ -28,8 +28,8 @@ const TrackingMenuInt: React.FC<Props> = ({
   t,
 }) => {
   const handleVisualSelect = React.useCallback(
-    ({ target: { dataset } }) => {
-      onVisualChange(dataset.visual);
+    ({ target }: React.MouseEvent) => {
+      onVisualChange((target as any).dataset.visual);
     },
     [onVisualChange],
   );

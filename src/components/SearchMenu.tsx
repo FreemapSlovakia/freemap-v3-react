@@ -81,7 +81,7 @@ const SearchMenuInt: React.FC<Props> = ({
   const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
 
   const handleSelect = useCallback(
-    eventKey => {
+    (eventKey: any) => {
       const found = results.find(item => item.id === eventKey);
       if (found) {
         onResultSelect(found);
@@ -105,7 +105,7 @@ const SearchMenuInt: React.FC<Props> = ({
   );
 
   const setInputRef = useCallback(
-    ref => {
+    (ref: HTMLInputElement | null) => {
       inputRef.current = ref;
     },
     [inputRef],

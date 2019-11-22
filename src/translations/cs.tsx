@@ -95,27 +95,27 @@ export default {
     alternative: 'Alternativa',
     // eslint-disable-next-line
     distance: ({ value }) => (
-      <Fragment>
+      <>
         Vzdálenost: <b>{value} km</b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     duration: ({ h, m }) => (
-      <Fragment>
+      <>
         Trvání:{' '}
         <b>
           {h} h {m} m
         </b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
-      <Fragment>
+      <>
         Vzdálenost: <b>{distance} km</b> | Trvání:{' '}
         <b>
           {h} h {m} m
         </b>
-      </Fragment>
+      </>
     ),
     noHomeAlert: {
       msg: 'Nejprve si musíte nastavit výchozí polohu.',
@@ -168,7 +168,7 @@ export default {
       total: {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
-          <Fragment>
+          <>
             Příjezd: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -176,11 +176,11 @@ export default {
                 <b>{n}</b>
               </Fragment>
             ))}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
-          <Fragment>
+          <>
             Příjezd: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -198,13 +198,13 @@ export default {
             <b>
               {wait} {numberize(wait, ['minut', 'minúta', 'minuty'])}
             </b>
-          </Fragment>
+          </>
         ),
       },
       step: {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
-          <Fragment>
+          <>
             v <b>{departure}</b> pěšky{' '}
             <b>
               {duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}
@@ -212,17 +212,17 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cíle</b>
             ) : (
-              <Fragment>
+              <>
                 do <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
-          <Fragment>
+          <>
             v <b>{departure}</b> {type} <b>{number}</b> do <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
       type: {
@@ -236,7 +236,7 @@ export default {
       step: {
         // eslint-disable-next-line
         foot: ({ duration, destination }) => (
-          <Fragment>
+          <>
             pěšky{' '}
             <b>
               {duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}
@@ -244,21 +244,21 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cíle</b>
             ) : (
-              <Fragment>
+              <>
                 na <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
-          <Fragment>
+          <>
             kolem{' '}
             <b>
               {duration} {numberize(duration, ['minut', 'minutu', 'minuty'])}
             </b>{' '}
             na <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
     },

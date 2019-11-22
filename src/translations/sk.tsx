@@ -94,27 +94,27 @@ export default {
     alternative: 'Alternatíva',
     // eslint-disable-next-line
     distance: ({ value }) => (
-      <Fragment>
+      <>
         Vzdialenosť: <b>{value} km</b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     duration: ({ h, m }) => (
-      <Fragment>
+      <>
         Trvanie:{' '}
         <b>
           {h} h {m} m
         </b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
-      <Fragment>
+      <>
         Vzdialenosť: <b>{distance} km</b> | Trvanie:{' '}
         <b>
           {h} h {m} m
         </b>
-      </Fragment>
+      </>
     ),
     noHomeAlert: {
       msg: 'Najprv si musíte nastaviť domovskú polohu.',
@@ -167,7 +167,7 @@ export default {
       total: {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
-          <Fragment>
+          <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -175,11 +175,11 @@ export default {
                 <b>{n}</b>
               </Fragment>
             ))}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
-          <Fragment>
+          <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -197,13 +197,13 @@ export default {
             <b>
               {wait} {numberize(wait, ['minút', 'minúta', 'minúty'])}
             </b>
-          </Fragment>
+          </>
         ),
       },
       step: {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
-          <Fragment>
+          <>
             o <b>{departure}</b> pešo{' '}
             <b>
               {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
@@ -211,17 +211,17 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
-              <Fragment>
+              <>
                 na <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
-          <Fragment>
+          <>
             o <b>{departure}</b> {type} <b>{number}</b> na <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
       type: {
@@ -235,7 +235,7 @@ export default {
       step: {
         // eslint-disable-next-line
         foot: ({ duration, destination }) => (
-          <Fragment>
+          <>
             pešo{' '}
             <b>
               {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
@@ -243,21 +243,21 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
-              <Fragment>
+              <>
                 na <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
-          <Fragment>
+          <>
             bicyklom{' '}
             <b>
               {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
             </b>{' '}
             na <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
     },

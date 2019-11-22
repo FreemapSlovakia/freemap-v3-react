@@ -39,7 +39,7 @@ export const GalleryEditForm: React.FC<Props> = ({
   onModelChange,
 }) => {
   const changeModel = useCallback(
-    (key: keyof PictureModel, value) => {
+    (key: keyof PictureModel, value: any) => {
       onModelChange({ ...model, [key]: value });
     },
     [model, onModelChange],

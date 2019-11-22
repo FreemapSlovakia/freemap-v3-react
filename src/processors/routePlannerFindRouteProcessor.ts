@@ -12,6 +12,7 @@ import {
   routePlannerSetParams,
   Alternative,
   Step,
+  RouteAlternativeExtra,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { storage } from 'fm3/storage';
@@ -30,7 +31,7 @@ interface OsrmStep {
   name: string;
   // weight: number;
   mode: string;
-  extra?: any; // TODO
+  extra?: RouteAlternativeExtra;
   maneuver: {
     type: string;
     modifier?: string;
@@ -53,7 +54,7 @@ interface OsrmRoute {
   // geometry: any;
   // weight: number;
   // weight_name: string;
-  extra?: any; // TODO
+  extra?: RouteAlternativeExtra;
 }
 
 const updateRouteTypes = [

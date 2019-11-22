@@ -20,6 +20,7 @@ import {
   routePlannerSwapEnds,
   routePlannerSetFromCurrentPosition,
   routePlannerConvertToMeasurement,
+  RouteAlternativeExtra,
 } from 'fm3/actions/routePlannerActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -393,7 +394,11 @@ export const RoutePlannerMenu = connect(
   mapDispatchToProps,
 )(withTranslator(RoutePlannerMenuInt));
 
-function imhdSummary(t: Translator, language: string, extra) {
+function imhdSummary(
+  t: Translator,
+  language: string,
+  extra: RouteAlternativeExtra,
+) {
   const dateFormat = new Intl.DateTimeFormat(language, {
     hour: '2-digit',
     minute: '2-digit',

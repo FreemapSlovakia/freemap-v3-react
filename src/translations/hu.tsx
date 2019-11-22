@@ -96,27 +96,27 @@ export default {
     alternative: 'Alternatíva',
     // eslint-disable-next-line
     distance: ({ value }) => (
-      <Fragment>
+      <>
         Távolság: <b>{value} km</b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     duration: ({ h, m }) => (
-      <Fragment>
+      <>
         Időtartam:{' '}
         <b>
           {h} óra {m} perc
         </b>
-      </Fragment>
+      </>
     ),
     // eslint-disable-next-line
     summary: ({ distance, h, m }) => (
-      <Fragment>
+      <>
         Távolság: <b>{distance} km</b> | Időtartam:{' '}
         <b>
           {h} óra {m} perc
         </b>
-      </Fragment>
+      </>
     ),
     noHomeAlert: {
       msg: 'Először meg kell adnia a lakóhelyét a beállításoknál.',
@@ -167,7 +167,7 @@ export default {
       total: {
         // eslint-disable-next-line
         short: ({ arrival, price, numbers }) => (
-          <Fragment>
+          <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -175,11 +175,11 @@ export default {
                 <b>{n}</b>
               </Fragment>
             ))}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
-          <Fragment>
+          <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
             {numbers.map((n, i) => (
               <Fragment key={n}>
@@ -197,13 +197,13 @@ export default {
             <b>
               {wait} {numberize(wait, ['minutes', 'minute'])}
             </b>
-          </Fragment>
+          </>
         ),
       },
       step: {
         // eslint-disable-next-line
         foot: ({ departure, duration, destination }) => (
-          <Fragment>
+          <>
             <b>{departure}</b> sétáljon{' '}
             <b>
               {duration} {numberize(duration, ['minutes', 'minute'])}
@@ -211,17 +211,17 @@ export default {
             {destination === 'TARGET' ? (
               <b>ide:</b>
             ) : (
-              <Fragment>
+              <>
                 ide: <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bus: ({ departure, type, number, destination }) => (
-          <Fragment>
+          <>
             <b>{departure}</b> {type} <b>{number}</b> erre: <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
       type: {
@@ -235,7 +235,7 @@ export default {
       step: {
         // eslint-disable-next-line
         foot: ({ duration, destination }) => (
-          <Fragment>
+          <>
             sétáljon{' '}
             <b>
               {duration} {numberize(duration, ['minutes', 'minute'])}
@@ -243,21 +243,21 @@ export default {
             {destination === 'TARGET' ? (
               <b>a célponthoz</b>
             ) : (
-              <Fragment>
+              <>
                 ide: <b>{destination}</b>
-              </Fragment>
+              </>
             )}
-          </Fragment>
+          </>
         ),
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
-          <Fragment>
+          <>
             kerékpározzék{' '}
             <b>
               {duration} {numberize(duration, ['minutes', 'minte'])}
             </b>{' '}
             ide: <b>{destination}</b>
-          </Fragment>
+          </>
         ),
       },
     },

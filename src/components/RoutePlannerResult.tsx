@@ -13,12 +13,14 @@ import {
   routePlannerRemoveMidpoint,
   routePlannerSetActiveAlternativeIndex,
   Alternative,
+  RouteAlternativeExtra,
+  RouteStepExtra,
 } from 'fm3/actions/routePlannerActions';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
-import { divIcon, DragEndEvent } from 'leaflet';
+import { divIcon, DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { isSpecial } from 'fm3/transportTypeDefs';
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -70,7 +72,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
       maximumFractionDigits: 1,
     });
 
-    return isSpecial(transportType) && extra && extra.numbers ? (
+    return isSpecial(transportType) && extra?.numbers ? (
       <Tooltip direction="top" offset={[0, -36]} permanent>
         <div>{imhdSummary(t, language, extra)}</div>
       </Tooltip>
@@ -100,7 +102,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   }, []);
 
   const maneuverToText = useCallback(
-    (name, { type, modifier }, extra) => {
+    (name: string, { type, modifier }, extra: RouteStepExtra) => {
       const p = 'routePlanner.maneuver';
       return transportType === 'imhd'
         ? imhdStep(t, language, extra)
@@ -127,20 +129,23 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     }
   }, [mode, onFinishSet]);
 
-  const handlePolyMouseMove = useCallback((e, segment, alt) => {
-    if (draggingRef.current) {
-      return;
-    }
-    if (tRef.current) {
-      clearTimeout(tRef.current);
-      tRef.current = undefined;
-    }
+  const handlePolyMouseMove = useCallback(
+    (e: LeafletMouseEvent, segment: number, alt: number) => {
+      if (draggingRef.current) {
+        return;
+      }
+      if (tRef.current) {
+        clearTimeout(tRef.current);
+        tRef.current = undefined;
+      }
 
-    setDragLat(e.latlng.lat);
-    setDragLon(e.latlng.lng);
-    setDragSegment(segment);
-    setDragAlt(alt);
-  }, []);
+      setDragLat(e.latlng.lat);
+      setDragLon(e.latlng.lng);
+      setDragSegment(segment);
+      setDragAlt(alt);
+    },
+    [],
+  );
 
   const resetOnTimeout = useCallback(() => {
     if (tRef.current) {
@@ -335,7 +340,8 @@ const RoutePlannerResultInt: React.FC<Props> = ({
                 onMouseMove={
                   special
                     ? undefined
-                    : e => handlePolyMouseMove(e, routeSlice.legIndex, alt)
+                    : (e: LeafletMouseEvent) =>
+                        handlePolyMouseMove(e, routeSlice.legIndex, alt)
                 }
                 onMouseOut={handlePolyMouseOut}
               />
@@ -458,7 +464,11 @@ function addMissingSegments(alt: Alternative) {
   return { ...alt, itinerary: routeSlices };
 }
 
-function imhdSummary(t: Translator, language: string, extra) {
+function imhdSummary(
+  t: Translator,
+  language: string,
+  extra: RouteAlternativeExtra,
+) {
   const dateFormat = new Intl.DateTimeFormat(language, {
     hour: '2-digit',
     minute: '2-digit',
@@ -490,7 +500,7 @@ function imhdSummary(t: Translator, language: string, extra) {
 function imhdStep(
   t: Translator,
   language: string,
-  { type, destination, departure, duration, number },
+  { type, destination, departure, duration, number }: RouteStepExtra,
 ) {
   const dateFormat = new Intl.DateTimeFormat(language, {
     hour: '2-digit',

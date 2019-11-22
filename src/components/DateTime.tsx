@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import InputGroup from 'react-bootstrap/lib/InputGroup';
@@ -32,30 +32,30 @@ export const DateTime: React.FC<Props> = ({
 }) => {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value ?? '') || ['', '', ''];
 
-  const propagateChange = React.useCallback(
+  const propagateChange = useCallback(
     (date, time) => {
       onChange(date ? `${date}T${time || '00:00:00'}` : '');
     },
     [onChange],
   );
 
-  const handleDateChange = React.useCallback(
-    e => {
-      propagateChange(e.target.value, timePart);
+  const handleDateChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      propagateChange((e.target as any).value, timePart);
     },
     [timePart, propagateChange],
   );
 
-  const handleTimeChange = React.useCallback(
-    e => {
-      propagateChange(datePart, e.target.value);
+  const handleTimeChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      propagateChange(datePart, (e.target as any).value);
     },
     [datePart, propagateChange],
   );
 
-  const handleDatetimeChange = React.useCallback(
-    e => {
-      onChange(e.target.value);
+  const handleDatetimeChange = useCallback(
+    (e: React.FormEvent<FormControl>) => {
+      onChange((e.target as any).value);
     },
     [onChange],
   );

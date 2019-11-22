@@ -147,7 +147,7 @@ const MainInt: React.FC<Props> = ({
   const mapRef = useRef<Map | null>();
 
   const setMap = useCallback(
-    map => {
+    (map: Map | null) => {
       mapRef.current = map;
     },
     [mapRef],

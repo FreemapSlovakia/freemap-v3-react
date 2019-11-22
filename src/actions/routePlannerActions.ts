@@ -17,6 +17,30 @@ export type ManeuerModifier =
   | 'left'
   | 'straight';
 
+export interface RouteAlternativeExtra {
+  duration: {
+    foot: number;
+    bus: number;
+    home: number;
+    wait: number;
+  };
+  price: number;
+  arrival: number;
+  numbers: number[];
+  distance: {
+    foot: number;
+    bus: number;
+  };
+}
+
+export interface RouteStepExtra {
+  type: 'foot' | 'bus';
+  destination: string;
+  departure: number;
+  duration: number;
+  number: number;
+}
+
 export interface Step {
   maneuver: {
     location: LatLon;
@@ -31,14 +55,14 @@ export interface Step {
   mode: SliceMode;
   shapePoints: [number, number][];
   legIndex: number;
-  extra?: any; // TODO
+  extra?: RouteStepExtra;
 }
 
 export interface Alternative {
   itinerary: Step[];
   distance: number;
   duration: number;
-  extra?: any; // TODO
+  extra?: RouteAlternativeExtra;
 }
 
 export const routePlannerSetStart = createAction('ROUTE_PLANNER_SET_START')<{
