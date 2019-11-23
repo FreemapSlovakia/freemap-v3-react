@@ -65,6 +65,7 @@ export default {
   },
 
   routePlanner: {
+    milestones: 'Milestones', // TODO
     convertToMeasurement: 'Konvertálás mérésre', // TODO google-translated
     start: 'Kiindulás',
     finish: 'Úti cél',

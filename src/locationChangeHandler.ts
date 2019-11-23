@@ -81,6 +81,7 @@ export const handleLocationChange = (
               point ? point.split('/').map(coord => parseFloat(coord)) : null,
             )
         : [];
+
     const pointsOk =
       points.length > 0 &&
       points.every(
@@ -99,13 +100,17 @@ export const handleLocationChange = (
         midpoints,
         transportType,
         mode,
+        milestones,
       } = getState().routePlanner;
 
       const latLons = points
         .map(point => (point ? { lat: point[0], lon: point[1] } : null))
         .filter((x): x is LatLon => !!x);
+
       const nextStart = latLons[0];
+
       const nextMidpoints = latLons.slice(1, latLons.length - 1);
+
       const nextFinish =
         latLons.length > 1 ? latLons[latLons.length - 1] : null;
 
@@ -118,9 +123,11 @@ export const handleLocationChange = (
           (midpoint, i) =>
             serializePoint(midpoint) !== serializePoint(nextMidpoints[i]),
         ) ||
-        (mode === 'route' ? undefined : mode) !== query['route-mode']
+        (mode === 'route' ? undefined : mode) !== query['route-mode'] ||
+        (milestones && !query['milestones'])
       ) {
         const routeMode = query['route-mode'];
+
         dispatch(
           routePlannerSetParams({
             start: nextStart,
@@ -131,6 +138,7 @@ export const handleLocationChange = (
               routeMode === 'trip' || routeMode === 'roundtrip'
                 ? routeMode
                 : 'route',
+            milestones: !!query['milestones'],
           }),
         );
       }
@@ -144,6 +152,7 @@ export const handleLocationChange = (
           finish: null,
           midpoints: [],
           transportType: getState().routePlanner.transportType,
+          milestones: !!query['milestones'],
         }),
       );
     }

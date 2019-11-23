@@ -20,6 +20,7 @@ import {
   routePlannerSwapEnds,
   routePlannerSetFromCurrentPosition,
   routePlannerConvertToMeasurement,
+  routePlannerToggleMilestones,
   RouteAlternativeExtra,
 } from 'fm3/actions/routePlannerActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -31,6 +32,7 @@ import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
+import { Checkbox } from 'react-bootstrap';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -64,6 +66,8 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
   onSetFromCurrentPosition,
   homeLocation,
   onConvertToMeasurement,
+  onMilestonesChange,
+  milestones,
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number) => {
@@ -316,12 +320,16 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
           {' '}
           {t('routePlanner.convertToMeasurement')}
         </span>
-      </Button>
+      </Button>{' '}
+      <Checkbox inline onChange={onMilestonesChange} checked={milestones}>
+        {t('routePlanner.milestones')}
+      </Checkbox>
     </>
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
+  milestones: state.routePlanner.milestones,
   pickMode: state.routePlanner.pickMode,
   homeLocation: state.main.homeLocation,
   transportType: state.routePlanner.transportType,
@@ -386,6 +394,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onConvertToMeasurement() {
     dispatch(routePlannerConvertToMeasurement());
+  },
+  onMilestonesChange() {
+    dispatch(routePlannerToggleMilestones(undefined));
   },
 });
 

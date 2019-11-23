@@ -64,6 +64,7 @@ export default {
   },
 
   routePlanner: {
+    milestones: 'Kilometrovník',
     convertToMeasurement: 'Zkonvertovat na měření',
     start: 'Start',
     finish: 'Cíl',

@@ -72,6 +72,7 @@ import {
   routePlannerSetMidpoint,
   routePlannerToggleElevationChart,
   routePlannerConvertToMeasurement,
+  routePlannerToggleMilestones,
 } from 'fm3/actions/routePlannerActions';
 import {
   osmLoadNode,
@@ -143,6 +144,7 @@ export const urlProcessor: Processor = {
     routePlannerSetTransportType,
     routePlannerToggleElevationChart,
     routePlannerConvertToMeasurement,
+    routePlannerToggleMilestones,
   ],
   handle: async ({ getState, action }) => {
     const {
@@ -196,6 +198,10 @@ export const urlProcessor: Processor = {
 
       if (routePlanner.mode !== 'route') {
         queryParts.push(`route-mode=${routePlanner.mode}`);
+      }
+
+      if (routePlanner.milestones) {
+        queryParts.push('milestones=1');
       }
     }
 

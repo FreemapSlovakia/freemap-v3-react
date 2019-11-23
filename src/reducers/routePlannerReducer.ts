@@ -17,6 +17,7 @@ import {
   routePlannerToggleItineraryVisibility,
   routePlannerSetResult,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerToggleMilestones,
   Alternative,
 } from 'fm3/actions/routePlannerActions';
 import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
@@ -36,6 +37,7 @@ export interface RoutePlannerState {
   pickMode: PickMode;
   itineraryIsVisible: boolean;
   mode: RouteMode;
+  milestones: boolean;
 }
 
 const clearResult = {
@@ -56,12 +58,20 @@ export const cleanState = {
 const initialState: RoutePlannerState = {
   transportType: null,
   mode: 'route',
+  milestones: false,
   ...cleanState,
 };
 
 export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   initialState,
 )
+  .handleAction(routePlannerToggleMilestones, (state, action) => {
+    return {
+      ...state,
+      milestones:
+        action.payload === undefined ? !state.milestones : action.payload,
+    };
+  })
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.routePlanner };
   })
@@ -92,6 +102,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     mode: isSpecial(action.payload.transportType)
       ? 'route'
       : action.payload.mode || 'route',
+    milestones: !!action.payload.milestones,
   }))
   .handleAction(routePlannerSetStart, (state, action) => ({
     ...state,

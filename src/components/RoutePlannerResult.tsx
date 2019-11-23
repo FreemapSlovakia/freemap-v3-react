@@ -1,7 +1,13 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, {
+  useState,
+  useEffect,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { Polyline, Tooltip, Marker } from 'react-leaflet';
+import { Polyline, Tooltip, Marker, CircleMarker } from 'react-leaflet';
 
 import { RichMarker } from 'fm3/components/RichMarker';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
@@ -22,6 +28,9 @@ import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { isSpecial } from 'fm3/transportTypeDefs';
+import { lineString, Point, Properties, Feature } from '@turf/helpers';
+import along from '@turf/along';
+import length from '@turf/length';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -45,6 +54,8 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   midpoints,
   finish,
   timestamp,
+  zoom,
+  showMilestones,
 }) => {
   const tRef = useRef<number>();
   const draggingRef = useRef<boolean>();
@@ -67,6 +78,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   function getSummary() {
     const { distance = undefined, duration = undefined, extra = undefined } =
       alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+
     const nf = Intl.NumberFormat(language, {
       minimumFractionDigits: 1,
       maximumFractionDigits: 1,
@@ -252,6 +264,44 @@ const RoutePlannerResultInt: React.FC<Props> = ({
 
   const isRoute = mode === 'route';
 
+  const step =
+    zoom > 13
+      ? 1
+      : zoom > 12
+      ? 2
+      : zoom > 10
+      ? 5
+      : zoom > 9
+      ? 10
+      : zoom > 8
+      ? 20
+      : zoom > 7
+      ? 25
+      : 50;
+
+  const milestones = useMemo(() => {
+    if (!showMilestones || !alternatives[activeAlternativeIndex]) {
+      return [];
+    }
+
+    const points: [number, number][] = [];
+    for (const step of alternatives[activeAlternativeIndex].itinerary) {
+      points.push(
+        ...step.shapePoints.map(([a, b]) => [b, a] as [number, number]),
+      );
+    }
+
+    const line = lineString(points);
+    const len = length(line);
+
+    const milestones: Feature<Point, Properties>[] = [];
+    for (let i = step; i < len; i += step) {
+      milestones.push(along(line, i));
+    }
+
+    return milestones;
+  }, [activeAlternativeIndex, alternatives, step, showMilestones]);
+
   return (
     <>
       {start && (
@@ -371,6 +421,17 @@ const RoutePlannerResultInt: React.FC<Props> = ({
             ))}
           </React.Fragment>
         ))}
+      {milestones.map((ms, i) => (
+        <CircleMarker
+          radius={0}
+          key={i}
+          center={[ms.geometry.coordinates[1], ms.geometry.coordinates[0]]}
+        >
+          <Tooltip className="compact" direction="right" permanent>
+            <div>{(i + 1) * step}</div>
+          </Tooltip>
+        </CircleMarker>
+      ))}
       <ElevationChartActivePoint />
     </>
   );
@@ -385,7 +446,9 @@ const mapStateToProps = (state: RootState) => ({
   transportType: state.routePlanner.transportType,
   mode: state.routePlanner.mode,
   timestamp: state.routePlanner.timestamp,
+  showMilestones: state.routePlanner.milestones,
   language: state.l10n.language,
+  zoom: state.map.zoom,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

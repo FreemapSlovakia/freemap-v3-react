@@ -64,6 +64,7 @@ export default {
   },
 
   routePlanner: {
+    milestones: 'Milestones',
     convertToMeasurement: 'Convert to measurement',
     start: 'Start',
     finish: 'Finish',
