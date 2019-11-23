@@ -53,6 +53,7 @@ export interface LayerDef {
   zIndex?: number; // TODO only overlays
   subdomains?: string;
   strava?: boolean;
+  tms?: boolean;
   extraScales?: number[];
 }
 
@@ -174,6 +175,25 @@ export const baseLayers: LayerDef[] = [
     showOnlyInExpertMode: true,
     attribution: [],
     key: 'h',
+  },
+  {
+    type: 'z',
+    url:
+      'https://earthwatch.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe:ImageryTileService@EPSG:3857@jpg' +
+      '/{z}/{x}/{y}.jpg?connectId=91e57457-aa2d-41ad-a42b-3b63a123f54a',
+    tms: true,
+    minNativeZoom: 1,
+    maxNativeZoom: 22,
+    icon: 'medium',
+    adminOnly: true,
+    attribution: [
+      {
+        type: 'map',
+        name: '©\xa0DigitalGlobe',
+        url: 'https://wiki.openstreetmap.org/wiki/DigitalGlobe',
+      },
+    ],
+    key: 'z',
   },
 ];
 

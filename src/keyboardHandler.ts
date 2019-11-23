@@ -120,7 +120,7 @@ export function attachKeyboardHandler(store: MyStore) {
       (!embed || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
       const baseLayer = baseLayers.find(l => l.key === event.key);
-      if (baseLayer) {
+      if (baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)) {
         store.dispatch(mapRefocus({ mapType: baseLayer.type }));
         event.preventDefault();
         return;

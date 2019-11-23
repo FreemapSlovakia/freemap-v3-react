@@ -28,6 +28,7 @@ const LayersInt: React.FC<Props> = ({
     zIndex = 1,
     subdomains = 'abc',
     extraScales,
+    tms,
   }: LayerDef) => {
     if (type === 'S') {
       return (
@@ -65,6 +66,7 @@ const LayersInt: React.FC<Props> = ({
           subdomains={subdomains}
           errorTileUrl={missingTile}
           extraScales={extraScales}
+          tms={tms}
         />
       )
     );
