@@ -54,13 +54,14 @@ setErrorHandlerStore(store);
 
 loadAppState();
 
+store.dispatch(authInit());
+
 const { location } = history;
 history.listen(location => {
   handleLocationChange(store, location);
 });
 handleLocationChange(store, location);
 
-store.dispatch(authInit());
 attachOsmLoginMessageHandler(store);
 
 store.dispatch(enableUpdatingUrl());

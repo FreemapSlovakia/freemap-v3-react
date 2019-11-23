@@ -544,10 +544,7 @@ function handleGallery(
 
   if (query.show === 'gallery-upload') {
     if (!getState().gallery.showUploadModal) {
-      // TODO fix: timeout to validate authentication first (ugly)
-      window.setTimeout(() => {
-        dispatch(galleryShowUploadModal());
-      }, 1000);
+      dispatch(galleryShowUploadModal());
     }
   } else if (getState().gallery.showUploadModal) {
     dispatch(galleryHideUploadModal());

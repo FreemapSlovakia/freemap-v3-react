@@ -141,6 +141,7 @@ const MainInt: React.FC<Props> = ({
   authenticated,
   language,
   t,
+  isUserValidated,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
 
@@ -307,9 +308,10 @@ const MainInt: React.FC<Props> = ({
 
       {activeModal === 'settings' && <Settings />}
       {activeModal &&
-        ['tracking-my', 'tracking-watched'].includes(activeModal) && (
-          <TrackingModal />
-        )}
+        [
+          ...(isUserValidated ? ['tracking-my'] : []),
+          'tracking-watched',
+        ].includes(activeModal) && <TrackingModal />}
       {activeModal === 'share' && <ShareMapModal />}
       {activeModal === 'embed' && <EmbedMapModal />}
       {activeModal === 'export-gpx' && <ExportGpxModal />}
@@ -404,6 +406,7 @@ const mapStateToProps = (state: RootState) => ({
     !state.gallery.showPosition,
   overlayPaneOpacity: state.map.overlayPaneOpacity,
   language: state.l10n.language,
+  isUserValidated: state.auth.user && !state.auth.user.notValidated,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

@@ -25,6 +25,7 @@ export interface User {
   preventTips?: boolean;
   lat?: number | null;
   lon?: number | null;
+  notValidated?: boolean;
 }
 
 declare global {

@@ -11,22 +11,10 @@ export const authInitProcessor: Processor = {
   errorKey: 'logIn.verifyError',
   handle: async ({ getState, dispatch }) => {
     try {
-      dispatch(authSetUser(JSON.parse(storage.getItem('user') ?? '')));
+      const user = JSON.parse(storage.getItem('user') ?? '');
+      dispatch(authSetUser({ ...user, notValidated: true }));
     } catch (e) {
-      const authToken = storage.getItem('authToken'); // for compatibility
-      if (authToken) {
-        dispatch(
-          authSetUser({
-            authToken,
-            name: '...',
-            email: '...',
-            id: -1,
-            isAdmin: false,
-          }),
-        );
-      }
-    } finally {
-      storage.removeItem('authToken'); // for compatibility
+      // ignore JSON parsing error
     }
 
     const { user } = getState().auth;

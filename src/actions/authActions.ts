@@ -24,4 +24,4 @@ export const authSetUser = createAction('AUTH_SET_USER')<User>();
 
 export const authChooseLoginMethod = createAction('AUTH_CHOOSE_LOGIN_METHOD')();
 
-export const authInit = createAction('AUTH_VERIFY_USER')();
+export const authInit = createAction('AUTH_INIT')();

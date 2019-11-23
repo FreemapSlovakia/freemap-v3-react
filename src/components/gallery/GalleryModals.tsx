@@ -54,7 +54,10 @@ const mapStateToProps = (state: RootState) => ({
   activeImageId: state.gallery.activeImageId,
   isPickingPosition: state.gallery.pickingPositionForId !== null,
   showFilter: state.gallery.showFilter,
-  showUploadModal: state.gallery.showUploadModal,
+  showUploadModal:
+    state.gallery.showUploadModal &&
+    state.auth.user &&
+    !state.auth.user.notValidated,
   showPosition: state.gallery.showPosition,
   showGalleryViewer: showGalleryViewer(state),
 });
