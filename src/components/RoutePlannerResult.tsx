@@ -75,7 +75,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     [],
   );
 
-  function getSummary() {
+  const getSummary = useMemo(() => {
     const { distance = undefined, duration = undefined, extra = undefined } =
       alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
@@ -105,7 +105,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
         </div>
       </Tooltip>
     ) : null;
-  }
+  }, [alternatives, activeAlternativeIndex, language, t, transportType]);
 
   const bringToFront = useCallback(ele => {
     if (ele) {
