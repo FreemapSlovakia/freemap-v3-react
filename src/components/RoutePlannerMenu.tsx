@@ -417,10 +417,13 @@ function imhdSummary(
 
   const { price, arrival, numbers } = extra;
   return t('routePlanner.imhd.total.short', {
-    price: Intl.NumberFormat(language, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(price),
+    price:
+      price === undefined
+        ? undefined
+        : Intl.NumberFormat(language, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(price),
     arrival: dateFormat.format(arrival * 1000),
     numbers,
   });

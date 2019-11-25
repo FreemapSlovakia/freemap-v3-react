@@ -19,26 +19,27 @@ export type ManeuerModifier =
 
 export interface RouteAlternativeExtra {
   duration: {
-    foot: number;
-    bus: number;
-    home: number;
-    wait: number;
+    foot?: number;
+    bus?: number;
+    home?: number;
+    wait?: number;
   };
-  price: number;
+  price?: number;
   arrival: number;
-  numbers: number[];
+  numbers?: number[];
   distance: {
-    foot: number;
-    bus: number;
+    foot?: number;
+    bus?: number;
+    bicycle?: number;
   };
 }
 
 export interface RouteStepExtra {
-  type: 'foot' | 'bus';
+  type: string;
   destination: string;
-  departure: number;
-  duration: number;
-  number: number;
+  departure?: number;
+  duration?: number;
+  number?: number;
 }
 
 export interface Step {

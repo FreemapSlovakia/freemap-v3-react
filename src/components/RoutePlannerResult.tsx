@@ -75,37 +75,40 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     [],
   );
 
-  const getSummary = useMemo(() => {
-    const { distance = undefined, duration = undefined, extra = undefined } =
-      alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+  const getSummary = useMemo(
+    () => () => {
+      const { distance = undefined, duration = undefined, extra = undefined } =
+        alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
-    const nf = Intl.NumberFormat(language, {
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-    });
+      const nf = Intl.NumberFormat(language, {
+        minimumFractionDigits: 1,
+        maximumFractionDigits: 1,
+      });
 
-    return isSpecial(transportType) && extra?.numbers ? (
-      <Tooltip direction="top" offset={[0, -36]} permanent>
-        <div>{imhdSummary(t, language, extra)}</div>
-      </Tooltip>
-    ) : distance ? (
-      <Tooltip direction="top" offset={[0, -36]} permanent>
-        <div>
+      return isSpecial(transportType) && extra?.numbers ? (
+        <Tooltip direction="top" offset={[0, -36]} permanent>
+          <div>{imhdSummary(t, language, extra)}</div>
+        </Tooltip>
+      ) : distance ? (
+        <Tooltip direction="top" offset={[0, -36]} permanent>
           <div>
-            {t('routePlanner.distance', { value: nf.format(distance) })}
-          </div>
-          {duration !== undefined && (
             <div>
-              {t('routePlanner.duration', {
-                h: Math.floor(duration / 60),
-                m: Math.round(duration % 60),
-              })}
+              {t('routePlanner.distance', { value: nf.format(distance) })}
             </div>
-          )}
-        </div>
-      </Tooltip>
-    ) : null;
-  }, [alternatives, activeAlternativeIndex, language, t, transportType]);
+            {duration !== undefined && (
+              <div>
+                {t('routePlanner.duration', {
+                  h: Math.floor(duration / 60),
+                  m: Math.round(duration % 60),
+                })}
+              </div>
+            )}
+          </div>
+        </Tooltip>
+      ) : null;
+    },
+    [alternatives, activeAlternativeIndex, language, t, transportType],
+  );
 
   const bringToFront = useCallback(ele => {
     if (ele) {
@@ -545,16 +548,21 @@ function imhdSummary(
   } = extra;
 
   return t('routePlanner.imhd.total.full', {
-    total: Math.round((foot + bus + home + wait) / 60),
-    foot: Math.round(foot / 60),
-    bus: Math.round(bus / 60),
-    home: Math.round(home / 60),
-    walk: Math.round(foot / 60),
-    wait: Math.round(wait / 60),
-    price: Intl.NumberFormat(language, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    }).format(price),
+    total: Math.round(
+      ((foot ?? 0) + (bus ?? 0) + (home ?? 0) + (wait ?? 0)) / 60,
+    ),
+    foot: Math.round(foot ?? 0 / 60),
+    bus: Math.round(bus ?? 0 / 60),
+    home: Math.round(home ?? 0 / 60),
+    walk: Math.round(foot ?? 0 / 60),
+    wait: Math.round(wait ?? 0 / 60),
+    price:
+      price === undefined
+        ? undefined
+        : Intl.NumberFormat(language, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          }).format(price),
     arrival: dateFormat.format(arrival * 1000),
     numbers,
   });
@@ -573,15 +581,19 @@ function imhdStep(
   return t(`routePlanner.imhd.step.${type === 'foot' ? 'foot' : 'bus'}`, {
     type: t(`routePlanner.imhd.type.${type}`),
     destination,
-    departure: dateFormat.format(departure * 1000),
-    duration: Math.round(duration / 60),
+    departure:
+      departure === undefined ? undefined : dateFormat.format(departure * 1000),
+    duration: duration === undefined ? undefined : Math.round(duration / 60),
     number,
   });
 }
 
-function bikesharingStep(t: Translator, { type, destination, duration }) {
+function bikesharingStep(
+  t: Translator,
+  { type, destination, duration }: RouteStepExtra,
+) {
   return t(`routePlanner.bikesharing.step.${type}`, {
     destination,
-    duration: Math.round(duration / 60),
+    duration: duration === undefined ? undefined : Math.round(duration / 60),
   });
 }

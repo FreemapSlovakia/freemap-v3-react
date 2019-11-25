@@ -13,6 +13,7 @@ import {
   Alternative,
   Step,
   RouteAlternativeExtra,
+  RouteStepExtra,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { storage } from 'fm3/storage';
@@ -31,7 +32,7 @@ interface OsrmStep {
   name: string;
   // weight: number;
   mode: string;
-  extra?: RouteAlternativeExtra;
+  extra?: RouteStepExtra;
   maneuver: {
     type: string;
     modifier?: string;
