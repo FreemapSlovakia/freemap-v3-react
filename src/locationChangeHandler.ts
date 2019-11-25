@@ -566,6 +566,7 @@ function handleInfoPoint(
   query: queryString.ParsedQuery<string>,
 ): void {
   const infoPoint = query['info-point'];
+
   const ips = (!infoPoint
     ? []
     : Array.isArray(infoPoint)
@@ -575,6 +576,8 @@ function handleInfoPoint(
     .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?),?(.*)$/.exec(ip))
     .filter(ipMatch => ipMatch)
     .map(ipMatch => ({
+      // see https://github.com/microsoft/TypeScript/issues/29642
+      /* eslint-disable @typescript-eslint/no-non-null-assertion */
       lat: parseFloat(ipMatch![1]),
       lon: parseFloat(ipMatch![2]),
       label: ipMatch![3] ? decodeURIComponent(ipMatch![3]) : '',
