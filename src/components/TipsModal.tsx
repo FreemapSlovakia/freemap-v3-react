@@ -47,7 +47,7 @@ export const TipsModalInt: React.FC<Props> = ({
       .then(() => {
         setLoading(false);
       });
-  }, [tip]);
+  }, [tip, t]);
 
   const handleNextTimePrevent = useCallback(
     (e: React.FormEvent<Checkbox>) => {
