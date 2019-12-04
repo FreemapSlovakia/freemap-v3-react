@@ -749,7 +749,7 @@ export default class Map extends React.Component<Props, State> {
     }
   };
 
-  coordsInside(pixel) {
+  coordsInside(pixel: [number, number]) {
     const { width, height } = this.state;
 
     if (width === undefined || height === undefined) {
@@ -766,7 +766,13 @@ export default class Map extends React.Component<Props, State> {
     }
 
     const parent = this.containerRef;
+
+    if (!parent) {
+      throw new Error('container is undefined');
+    }
+
     const pos = parentPosition(parent);
+
     const element = document.elementFromPoint(
       pixel[0] + pos.x,
       pixel[1] + pos.y,
@@ -776,14 +782,15 @@ export default class Map extends React.Component<Props, State> {
   }
 
   handleTouchStart = (event: TouchEvent) => {
-    if (!this.containerRef) {
-      return;
-    }
-    if (event.target && parentHasClass(event.target, 'pigeon-drag-block')) {
-      return;
-    }
-    if (event.touches.length === 1) {
+    if (
+      !this.containerRef ||
+      (event.target instanceof Element &&
+        parentHasClass(event.target, 'pigeon-drag-block'))
+    ) {
+      // nothing
+    } else if (event.touches.length === 1) {
       const touch = event.touches[0];
+
       const pixel = getMousePixel(this.containerRef, touch);
 
       if (this.coordsInside(pixel)) {
@@ -797,7 +804,9 @@ export default class Map extends React.Component<Props, State> {
             performanceNow() - this.lastTap < DOUBLE_CLICK_DELAY
           ) {
             event.preventDefault();
+
             const latLngNow = this.pixelToLatLng(this.touchStartPixel[0]);
+
             this.setCenterZoomTarget(
               null,
               Math.max(
@@ -824,10 +833,13 @@ export default class Map extends React.Component<Props, State> {
       }
 
       const t1 = getMousePixel(this.containerRef, event.touches[0]);
+
       const t2 = getMousePixel(this.containerRef, event.touches[1]);
 
       this.touchStartPixel = [t1, t2];
+
       this.touchStartMidPoint = [(t1[0] + t2[0]) / 2, (t1[1] + t2[1]) / 2];
+
       this.touchStartDistance = Math.sqrt(
         Math.pow(t1[0] - t2[0], 2) + Math.pow(t1[1] - t2[1], 2),
       );
@@ -841,6 +853,7 @@ export default class Map extends React.Component<Props, State> {
     }
     if (event.touches.length === 1 && this.touchStartPixel) {
       const touch = event.touches[0];
+
       const pixel = getMousePixel(this.containerRef, touch);
 
       if (this.props.twoFingerDrag) {
@@ -849,6 +862,7 @@ export default class Map extends React.Component<Props, State> {
         }
       } else {
         event.preventDefault();
+
         this.trackMoveEvents(pixel);
 
         this.setState(
@@ -871,6 +885,7 @@ export default class Map extends React.Component<Props, State> {
       event.preventDefault();
 
       const t1 = getMousePixel(this.containerRef, event.touches[0]);
+
       const t2 = getMousePixel(this.containerRef, event.touches[1]);
 
       const midPoint = [(t1[0] + t2[0]) / 2, (t1[1] + t2[1]) / 2];
@@ -929,7 +944,9 @@ export default class Map extends React.Component<Props, State> {
 
     if (this.touchStartPixel) {
       const { zoomSnap, twoFingerDrag, minZoom, maxZoom } = this.props;
+
       const { zoomDelta } = this.state;
+
       const { center, zoom } = this.sendDeltaChange();
 
       if (event.touches.length === 0) {
@@ -940,6 +957,7 @@ export default class Map extends React.Component<Props, State> {
           // the same place we can view it as a click
           // and not prevent default behavior.
           const oldTouchPixel = this.touchStartPixel[0];
+
           const newTouchPixel = getMousePixel(
             this.containerRef,
             event.changedTouches[0],
@@ -955,6 +973,7 @@ export default class Map extends React.Component<Props, State> {
               performanceNow() - this.secondTouchEnd > PINCH_RELEASE_THROW_DELAY
             ) {
               event.preventDefault();
+
               this.throwAfterMoving(newTouchPixel, center, zoom);
             }
           }
@@ -964,10 +983,13 @@ export default class Map extends React.Component<Props, State> {
         }
       } else if (event.touches.length === 1) {
         event.preventDefault();
+
         const touch = getMousePixel(this.containerRef, event.touches[0]);
 
         this.secondTouchEnd = performanceNow();
+
         this.touchStartPixel = [touch];
+
         this.trackMoveEvents(touch);
 
         if (zoomSnap) {
@@ -976,7 +998,7 @@ export default class Map extends React.Component<Props, State> {
             ? this.pixelToLatLng(this.touchStartMidPoint)
             : this.state.center;
 
-          let zoomTarget;
+          let zoomTarget: number;
 
           // do not zoom up/down if we must drag with 2 fingers and didn't change the zoom level
           if (
@@ -1003,14 +1025,17 @@ export default class Map extends React.Component<Props, State> {
     if (!this.containerRef) {
       return;
     }
+
     const pixel = getMousePixel(this.containerRef, event);
 
     if (
       event.button === 0 &&
-      (!event.target || !parentHasClass(event.target, 'pigeon-drag-block')) &&
+      (!(event.target instanceof Element) ||
+        !parentHasClass(event.target, 'pigeon-drag-block')) &&
       this.coordsInside(pixel)
     ) {
       this.stopAnimating();
+
       event.preventDefault();
 
       if (
@@ -1018,6 +1043,7 @@ export default class Map extends React.Component<Props, State> {
         performanceNow() - this.lastClick < DOUBLE_CLICK_DELAY
       ) {
         const latLngNow = this.pixelToLatLng(this.mousePosition || pixel);
+
         this.setCenterZoomTarget(
           null,
           Math.max(
@@ -1031,7 +1057,9 @@ export default class Map extends React.Component<Props, State> {
         this.lastClick = performanceNow();
 
         this.mouseDown = true;
+
         this.dragStart = pixel;
+
         this.trackMoveEvents(pixel);
       }
     }
@@ -1041,10 +1069,12 @@ export default class Map extends React.Component<Props, State> {
     if (!this.containerRef) {
       return;
     }
+
     this.mousePosition = getMousePixel(this.containerRef, event);
 
     if (this.mouseDown && this.dragStart) {
       this.trackMoveEvents(this.mousePosition);
+
       this.setState(
         {
           pixelDelta: [
@@ -1062,6 +1092,7 @@ export default class Map extends React.Component<Props, State> {
       this.mouseDown = false;
       return;
     }
+
     const { pixelDelta } = this.state;
 
     if (this.mouseDown) {
@@ -1071,13 +1102,15 @@ export default class Map extends React.Component<Props, State> {
 
       if (
         this.props.onClick &&
-        (!event.target ||
+        (!(event.target instanceof Element) ||
           !parentHasClass(event.target, 'pigeon-click-block')) &&
         (!pixelDelta ||
           Math.abs(pixelDelta[0]) + Math.abs(pixelDelta[1]) <= CLICK_TOLERANCE)
       ) {
         const latLng = this.pixelToLatLng(pixel);
+
         this.props.onClick({ event, latLng, pixel });
+
         this.setState({ pixelDelta: null }, NOOP);
       } else {
         const { center, zoom } = this.sendDeltaChange();
@@ -1092,7 +1125,7 @@ export default class Map extends React.Component<Props, State> {
     this.moveEvents = [];
   };
 
-  trackMoveEvents = coords => {
+  trackMoveEvents = (coords: [number, number]) => {
     const timestamp = performanceNow();
 
     if (
@@ -1100,6 +1133,7 @@ export default class Map extends React.Component<Props, State> {
       timestamp - this.moveEvents[this.moveEvents.length - 1].timestamp > 40
     ) {
       this.moveEvents.push({ timestamp, coords });
+
       if (this.moveEvents.length > 2) {
         this.moveEvents.shift();
       }
@@ -1158,8 +1192,7 @@ export default class Map extends React.Component<Props, State> {
   sendDeltaChange = () => {
     const { center, zoom, pixelDelta, zoomDelta } = this.state;
 
-    let lat = center[0];
-    let lng = center[1];
+    let [lat, lng] = center;
 
     if (pixelDelta || zoomDelta !== 0) {
       lng = tile2lng(
@@ -1167,11 +1200,13 @@ export default class Map extends React.Component<Props, State> {
           (pixelDelta ? pixelDelta[0] / 256.0 : 0),
         zoom + zoomDelta,
       );
+
       lat = tile2lat(
         lat2tile(center[0], zoom + zoomDelta) -
           (pixelDelta ? pixelDelta[1] / 256.0 : 0),
         zoom + zoomDelta,
       );
+
       this.setCenterZoom([lat, lng], zoom + zoomDelta);
     }
 
@@ -1228,6 +1263,7 @@ export default class Map extends React.Component<Props, State> {
 
       if (!zoomSnap && this._zoomTarget) {
         const stillToAdd = this._zoomTarget - this.state.zoom;
+
         this.zoomAroundMouse(addToZoom + stillToAdd, event);
       } else {
         if (animate) {
@@ -1238,6 +1274,7 @@ export default class Map extends React.Component<Props, State> {
             performanceNow() - this.lastWheel > ANIMATION_TIME
           ) {
             this.lastWheel = performanceNow();
+
             this.zoomAroundMouse(addToZoom, event);
           }
         }
@@ -1255,6 +1292,7 @@ export default class Map extends React.Component<Props, State> {
     if (this.warningClearTimeout) {
       window.clearTimeout(this.warningClearTimeout);
     }
+
     this.warningClearTimeout = window.setTimeout(
       this.clearWarning,
       WARNING_DISPLAY_TIMEOUT,
@@ -1271,7 +1309,9 @@ export default class Map extends React.Component<Props, State> {
     if (!this.containerRef) {
       return;
     }
+
     const { zoom } = this.state;
+
     const { minZoom, maxZoom, zoomSnap } = this.props;
 
     this.mousePosition = getMousePixel(this.containerRef, event);
@@ -1287,10 +1327,12 @@ export default class Map extends React.Component<Props, State> {
     const latLngNow = this.pixelToLatLng(this.mousePosition);
 
     let zoomTarget = zoom + zoomDiff;
+
     if (zoomSnap) {
       zoomTarget =
         zoomDiff < 0 ? Math.floor(zoomTarget) : Math.ceil(zoomTarget);
     }
+
     zoomTarget = Math.max(minZoom, Math.min(zoomTarget, maxZoom));
 
     this.setCenterZoomTarget(null, zoomTarget, false, latLngNow);
@@ -1319,6 +1361,7 @@ export default class Map extends React.Component<Props, State> {
     ];
 
     const tileX = lng2tile(center[1], zoom) + pointDiff[0];
+
     const tileY = lat2tile(center[0], zoom) + pointDiff[1];
 
     return [
@@ -1345,9 +1388,11 @@ export default class Map extends React.Component<Props, State> {
     }
 
     const tileCenterX = lng2tile(center[1], zoom);
+
     const tileCenterY = lat2tile(center[0], zoom);
 
     const tileX = lng2tile(latLng[1], zoom);
+
     const tileY = lat2tile(latLng[0], zoom);
 
     return [
@@ -1373,6 +1418,7 @@ export default class Map extends React.Component<Props, State> {
     }
 
     const pixelBefore = this.latLngToPixel(coords, center, oldZoom);
+
     const pixelAfter = this.latLngToPixel(coords, center, newZoom);
 
     const newCenter = this.pixelToLatLng(
@@ -1411,10 +1457,13 @@ export default class Map extends React.Component<Props, State> {
     }
 
     const roundedZoom = Math.round(zoom + (zoomDelta || 0));
+
     const zoomDiff = zoom + (zoomDelta || 0) - roundedZoom;
 
     const scale = Math.pow(2, zoomDiff);
+
     const scaleWidth = width / scale;
+
     const scaleHeight = height / scale;
 
     const tileCenterX =
@@ -1426,12 +1475,15 @@ export default class Map extends React.Component<Props, State> {
       (pixelDelta ? pixelDelta[1] / 256.0 / scale : 0);
 
     const halfWidth = scaleWidth / 2 / 256.0;
+
     const halfHeight = scaleHeight / 2 / 256.0;
 
     const tileMinX = Math.floor(tileCenterX - halfWidth);
+
     const tileMaxX = Math.floor(tileCenterX + halfWidth);
 
     const tileMinY = Math.floor(tileCenterY - halfHeight);
+
     const tileMaxY = Math.floor(tileCenterY + halfHeight);
 
     return {
@@ -1473,6 +1525,7 @@ export default class Map extends React.Component<Props, State> {
 
     for (let i = 0; i < oldTiles.length; i++) {
       const old = oldTiles[i];
+
       const zoomDiff = old.roundedZoom - roundedZoom;
 
       if (Math.abs(zoomDiff) > 4 || zoomDiff === 0) {
@@ -1480,12 +1533,17 @@ export default class Map extends React.Component<Props, State> {
       }
 
       const pow = 1 / Math.pow(2, zoomDiff);
+
       const xDiff = -(tileMinX - old.tileMinX * pow) * 256;
+
       const yDiff = -(tileMinY - old.tileMinY * pow) * 256;
 
       const xMin = Math.max(old.tileMinX, 0);
+
       const yMin = Math.max(old.tileMinY, 0);
+
       const xMax = Math.min(old.tileMaxX, Math.pow(2, old.roundedZoom) - 1);
+
       const yMax = Math.min(old.tileMaxY, Math.pow(2, old.roundedZoom) - 1);
 
       for (let x = xMin; x <= xMax; x++) {
@@ -1516,8 +1574,11 @@ export default class Map extends React.Component<Props, State> {
     }
 
     const xMin = Math.max(tileMinX, 0);
+
     const yMin = Math.max(tileMinY, 0);
+
     const xMax = Math.min(tileMaxX, Math.pow(2, roundedZoom) - 1);
+
     const yMax = Math.min(tileMaxY, Math.pow(2, roundedZoom) - 1);
 
     for (let x = xMin; x <= xMax; x++) {
@@ -1559,6 +1620,7 @@ export default class Map extends React.Component<Props, State> {
     };
 
     const left = -((tileCenterX - tileMinX) * 256 - scaleWidth / 2);
+
     const top = -((tileCenterY - tileMinY) * 256 - scaleHeight / 2);
 
     const tilesStyle: CSSProperties = {
