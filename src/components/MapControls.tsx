@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import { MapSwitchButton } from './MapSwitchButton';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/storeCreator';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -25,8 +24,6 @@ export const MapControlsInt: React.FC<Props> = ({
   gpsTracked,
   t,
 }) => {
-  const leafletElement = getMapLeafletElement();
-
   const handleZoomInClick = useCallback(() => {
     onMapRefocus({ zoom: zoom + 1 });
   }, [onMapRefocus, zoom]);
@@ -59,10 +56,6 @@ export const MapControlsInt: React.FC<Props> = ({
     };
   }, [forceUpdate, setForceUpdate]);
 
-  if (!leafletElement) {
-    return null;
-  }
-
   const embed = window.self !== window.top;
 
   return (
@@ -75,14 +68,14 @@ export const MapControlsInt: React.FC<Props> = ({
           <Button
             onClick={handleZoomInClick}
             title={t('main.zoomIn')}
-            disabled={zoom >= leafletElement.getMaxZoom()}
+            // disabled={zoom >= leafletElement.getMaxZoom()}
           >
             <FontAwesomeIcon icon="plus" />
           </Button>
           <Button
             onClick={handleZoomOutClick}
             title={t('main.zoomOut')}
-            disabled={zoom <= leafletElement.getMinZoom()}
+            // disabled={zoom <= leafletElement.getMinZoom()}
           >
             <FontAwesomeIcon icon="minus" />
           </Button>

@@ -2,7 +2,8 @@ import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Map, ScaleControl } from 'react-leaflet';
+// import { Map, ScaleControl } from 'react-leaflet';
+import Map from 'fm3/pigeon-maps';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -172,6 +173,13 @@ const MainInt: React.FC<Props> = ({
       onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
     }
   }, [onMapRefocus, lat, lon, zoom]);
+
+  const handleBoundsChanged = useCallback(
+    ({ center, zoom, bounds, initial }) => {
+      onMapRefocus({ lat: center[0], lon: center[1], zoom });
+    },
+    [onMapRefocus],
+  );
 
   const handleLogoClick = useCallback(() => {
     if (embed) {
@@ -345,7 +353,7 @@ const MainInt: React.FC<Props> = ({
           ></div>
         )}
         <input {...getInputProps()} />
-        <Map
+        {/* <Map
           zoomControl={false}
           attributionControl={false}
           maxZoom={20}
@@ -379,9 +387,16 @@ const MainInt: React.FC<Props> = ({
               {showGalleryPicker && <GalleryPicker />}
             </>
           )}
-          {/* TODO should not be extra just because for position picking */}
+          {/ * TODO should not be extra just because for position picking * /}
           <GalleryResult />
-        </Map>
+        </Map> */}
+        <div className="map-container">
+          <Map
+            center={[lat, lon]}
+            zoom={zoom}
+            onBoundsChanged={handleBoundsChanged}
+          ></Map>
+        </div>
       </div>
     </>
   );
