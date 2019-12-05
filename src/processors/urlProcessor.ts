@@ -2,7 +2,7 @@ import { history } from 'fm3/historyHolder';
 import refModals from 'fm3/refModals.json';
 import allTips from 'fm3/tips/index.json';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { setAppState } from 'fm3/actions/mainActions';
+import { setAppState, deleteFeature } from 'fm3/actions/mainActions';
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
 import {
@@ -84,6 +84,7 @@ const tipKeys = allTips.map(([key]) => key);
 
 let lastActionType: string | undefined;
 
+// TODO instead of listing actions implement comparing state values
 export const urlProcessor: Processor = {
   actionCreator: [
     setAppState,
@@ -145,6 +146,7 @@ export const urlProcessor: Processor = {
     routePlannerToggleElevationChart,
     routePlannerConvertToMeasurement,
     routePlannerToggleMilestones,
+    deleteFeature,
   ],
   handle: async ({ getState, action }) => {
     const {

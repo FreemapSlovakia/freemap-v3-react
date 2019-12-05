@@ -84,3 +84,11 @@ export const saveSettings = createAction('SAVE_SETTINGS')<{
 export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<string>();
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
+
+export const deleteFeature = createAction('DELETE_FEATURE')<
+  undefined,
+  | undefined
+  | {
+      tool?: Tool | null;
+    }
+>();

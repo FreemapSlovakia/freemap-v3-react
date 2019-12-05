@@ -5,7 +5,7 @@ import { lineString } from '@turf/helpers';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
-import { setTool, Tool } from 'fm3/actions/mainActions';
+import { setTool, Tool, deleteFeature } from 'fm3/actions/mainActions';
 import {
   distanceMeasurementAddPoint,
   Point as DistancePoint,
@@ -48,6 +48,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
   onAreaPointAdd,
   onElevationChartTrackGeojsonSet,
   onElevationChartClose,
+  onDelete,
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position?: number, id0?: number) => {
@@ -141,6 +142,10 @@ const MeasurementMenuInt: React.FC<Props> = ({
           <FontAwesomeIcon icon="square" />
           <span className="hidden-xs"> {t('measurement.area')}</span>
         </Button>
+        <Button onClick={onDelete} title={t('general.delete')}>
+          <FontAwesomeIcon icon="trash" />
+          <span className="hidden-xs"> {t('general.delete')}</span>
+        </Button>
       </ButtonGroup>{' '}
       {tool === 'measure-dist' && (
         <Button
@@ -182,6 +187,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onElePointSet(point: LatLon) {
     dispatch(elevationMeasurementSetPoint(point));
+  },
+  onDelete() {
+    dispatch(deleteFeature(undefined, undefined));
   },
 });
 

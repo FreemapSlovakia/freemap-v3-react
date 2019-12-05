@@ -15,6 +15,7 @@ import {
   setErrorTicketId,
   setEmbedFeatures,
   toggleLocate,
+  Tool,
 } from 'fm3/actions/mainActions';
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
@@ -26,7 +27,7 @@ interface Location extends LatLon {
 
 export interface MainState {
   activeModal: string | null;
-  tool: string | null;
+  tool: Tool | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
   location: Location | null;

@@ -1,7 +1,7 @@
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
   distanceMeasurementAddPoint,
   distanceMeasurementUpdatePoint,
@@ -14,7 +14,7 @@ export interface DistanceMeasurementState {
   points: Point[];
 }
 
-const initialState: DistanceMeasurementState = {
+export const initialState: DistanceMeasurementState = {
   points: [],
 };
 
@@ -46,4 +46,7 @@ export const distanceMeasurementReducer = createReducer<
   .handleAction(distanceMeasurementSetPoints, (state, action) => ({
     ...state,
     points: action.payload,
-  }));
+  }))
+  .handleAction(deleteFeature, (state, action) =>
+    action?.meta?.tool === 'measure-dist' ? initialState : state,
+  );

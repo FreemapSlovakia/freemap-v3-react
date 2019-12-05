@@ -1,7 +1,7 @@
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
   elevationMeasurementSetElevation,
   elevationMeasurementSetPoint,
@@ -30,4 +30,7 @@ export const elevationMeasurementReducer = createReducer<
     ...state,
     point: action.payload,
     elevation: null,
-  }));
+  }))
+  .handleAction(deleteFeature, (state, action) =>
+    action?.meta?.tool === 'measure-ele' ? initialState : state,
+  );

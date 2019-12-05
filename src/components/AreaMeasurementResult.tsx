@@ -107,29 +107,33 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
     [onPointRemove],
   );
 
-  const ps: Point[] = [];
+  const { northmostPoint, areaSize, ps } = useMemo(() => {
+    const ps: Point[] = [];
 
-  for (let i = 0; i < points.length; i += 1) {
-    ps.push(points[i]);
-    const p1 = points[i];
-    const p2 = points[(i + 1) % points.length];
-    const lat = (p1.lat + p2.lat) / 2;
-    const lon = (p1.lon + p2.lon) / 2;
-    ps.push({
-      lat,
-      lon,
-      id: i + 1 === points.length ? p1.id + 1 : (p1.id + p2.id) / 2,
-    });
-  }
-
-  const areaSize = points.length >= 3 ? area(points) : NaN;
-  let northmostPoint = points[0];
-
-  for (const p of points) {
-    if (northmostPoint.lat < p.lat) {
-      northmostPoint = p;
+    for (let i = 0; i < points.length; i += 1) {
+      ps.push(points[i]);
+      const p1 = points[i];
+      const p2 = points[(i + 1) % points.length];
+      const lat = (p1.lat + p2.lat) / 2;
+      const lon = (p1.lon + p2.lon) / 2;
+      ps.push({
+        lat,
+        lon,
+        id: i + 1 === points.length ? p1.id + 1 : (p1.id + p2.id) / 2,
+      });
     }
-  }
+
+    const areaSize = points.length >= 3 ? area(points) : NaN;
+    let northmostPoint = points[0];
+
+    for (const p of points) {
+      if (northmostPoint.lat < p.lat) {
+        northmostPoint = p;
+      }
+    }
+
+    return { northmostPoint, areaSize, ps };
+  }, [points]);
 
   const nf = useMemo(
     () =>
