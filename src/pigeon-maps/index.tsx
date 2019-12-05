@@ -15,10 +15,6 @@ const DEBOUNCE_DELAY = 60;
 const PINCH_RELEASE_THROW_DELAY = 300;
 const WARNING_DISPLAY_TIMEOUT = 300;
 
-const NOOP = () => {
-  // nothing
-};
-
 function wikimedia(x: number, y: number, z: number, dpr?: number) {
   const retina =
     typeof dpr !== 'undefined'
@@ -669,7 +665,7 @@ export default class Map extends React.Component<Props, State> {
       }
     }
 
-    this.setState({ ...state, center: limitedCenter, zoom }, NOOP);
+    this.setState({ ...state, center: limitedCenter, zoom });
 
     const maybeZoom = this.props.zoom ? this.props.zoom : this.lastZoom;
 
@@ -741,7 +737,7 @@ export default class Map extends React.Component<Props, State> {
       const unloadedCount = Object.keys(lt).filter(k => !lt[k]).length;
 
       if (unloadedCount === 0) {
-        this.setState({ oldTiles: [] }, NOOP);
+        this.setState({ oldTiles: [] });
       }
     }
   };
@@ -862,15 +858,12 @@ export default class Map extends React.Component<Props, State> {
 
         this.trackMoveEvents(pixel);
 
-        this.setState(
-          {
-            pixelDelta: [
-              pixel[0] - this.touchStartPixel[0][0],
-              pixel[1] - this.touchStartPixel[0][1],
-            ],
-          },
-          NOOP,
-        );
+        this.setState({
+          pixelDelta: [
+            pixel[0] - this.touchStartPixel[0][0],
+            pixel[1] - this.touchStartPixel[0][1],
+          ],
+        });
       }
     } else if (event.touches.length === 2 && this.touchStartPixel) {
       const { width, height, zoom } = this.state;
@@ -920,16 +913,13 @@ export default class Map extends React.Component<Props, State> {
         (height / 2 - midPoint[1]) * (scale - 1),
       ];
 
-      this.setState(
-        {
-          zoomDelta: zoomDelta,
-          pixelDelta: [
-            centerDiffDiff[0] + midPointDiff[0] * scale,
-            centerDiffDiff[1] + midPointDiff[1] * scale,
-          ],
-        },
-        NOOP,
-      );
+      this.setState({
+        zoomDelta: zoomDelta,
+        pixelDelta: [
+          centerDiffDiff[0] + midPointDiff[0] * scale,
+          centerDiffDiff[1] + midPointDiff[1] * scale,
+        ],
+      });
     }
   };
 
@@ -1072,15 +1062,12 @@ export default class Map extends React.Component<Props, State> {
     if (this.mouseDown && this.dragStart) {
       this.trackMoveEvents(this.mousePosition);
 
-      this.setState(
-        {
-          pixelDelta: [
-            this.mousePosition[0] - this.dragStart[0],
-            this.mousePosition[1] - this.dragStart[1],
-          ],
-        },
-        NOOP,
-      );
+      this.setState({
+        pixelDelta: [
+          this.mousePosition[0] - this.dragStart[0],
+          this.mousePosition[1] - this.dragStart[1],
+        ],
+      });
     }
   };
 
@@ -1108,7 +1095,7 @@ export default class Map extends React.Component<Props, State> {
 
         this.props.onClick({ event, latLng, pixel });
 
-        this.setState({ pixelDelta: null }, NOOP);
+        this.setState({ pixelDelta: null });
       } else {
         const { center, zoom } = this.sendDeltaChange();
 
@@ -1207,13 +1194,10 @@ export default class Map extends React.Component<Props, State> {
       this.setCenterZoom([lat, lng], zoom + zoomDelta);
     }
 
-    this.setState(
-      {
-        pixelDelta: null,
-        zoomDelta: 0,
-      },
-      NOOP,
-    );
+    this.setState({
+      pixelDelta: null,
+      zoomDelta: 0,
+    });
 
     return {
       center: this.limitCenterAtZoom([lat, lng], zoom + zoomDelta),
