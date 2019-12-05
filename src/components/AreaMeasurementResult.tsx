@@ -112,10 +112,12 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
 
     for (let i = 0; i < points.length; i += 1) {
       ps.push(points[i]);
+
       const p1 = points[i];
       const p2 = points[(i + 1) % points.length];
       const lat = (p1.lat + p2.lat) / 2;
       const lon = (p1.lon + p2.lon) / 2;
+
       ps.push({
         lat,
         lon,

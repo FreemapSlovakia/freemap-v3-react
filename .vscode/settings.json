@@ -17,5 +17,6 @@
     "javascriptreact",
     "typescript",
     "typescriptreact"
-  ]
+  ],
+  "typescript.tsserver.maxTsServerMemory": 4096
 }

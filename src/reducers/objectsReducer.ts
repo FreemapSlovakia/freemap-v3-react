@@ -1,6 +1,6 @@
 import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
-import { clearMap } from 'fm3/actions/mainActions';
+import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import { objectsSetResult, ObjectsResult } from 'fm3/actions/objectsActions';
 
 export interface ObjectsState {
@@ -18,4 +18,7 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
   .handleAction(objectsSetResult, (state, action) => ({
     ...state,
     objects: [...state.objects, ...action.payload],
-  }));
+  }))
+  .handleAction(deleteFeature, (state, action) =>
+    action?.meta?.tool === 'objects' ? initialState : state,
+  );
