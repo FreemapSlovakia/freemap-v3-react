@@ -642,6 +642,8 @@ export default class Map extends React.Component<Props, State> {
   ) => {
     const limitedCenter = this.limitCenterAtZoom(center, zoom);
 
+    const state: any = {};
+
     if (Math.round(this.state.zoom) !== Math.round(zoom)) {
       const tileValues = this.tileValues(this.state);
       const nextValues = this.tileValues({
@@ -653,14 +655,9 @@ export default class Map extends React.Component<Props, State> {
 
       const oldTiles = this.state.oldTiles;
 
-      this.setState(
-        {
-          oldTiles: oldTiles
-            .filter(o => o.roundedZoom !== tileValues.roundedZoom)
-            .concat(tileValues),
-        },
-        NOOP,
-      );
+      state.oldTiles = oldTiles
+        .filter(o => o.roundedZoom !== tileValues.roundedZoom)
+        .concat(tileValues);
 
       this.loadTracker = {};
 
@@ -672,7 +669,7 @@ export default class Map extends React.Component<Props, State> {
       }
     }
 
-    this.setState({ center: limitedCenter, zoom }, NOOP);
+    this.setState({ ...state, center: limitedCenter, zoom }, NOOP);
 
     const maybeZoom = this.props.zoom ? this.props.zoom : this.lastZoom;
 
