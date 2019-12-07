@@ -33,7 +33,9 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
   const saveLabel = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onInfoPointChangeLabel(index, editedLabel);
+      if (index !== null) {
+        onInfoPointChangeLabel(index, editedLabel);
+      }
       onModalClose();
     },
     [editedLabel, onInfoPointChangeLabel, onModalClose, index],
@@ -84,7 +86,10 @@ const mapStateToProps = (state: RootState) => ({
     state.main.selection?.index === null
       ? '???'
       : state.infoPoint.points[state.main.selection?.index].label,
-  index: state.main.selection?.index,
+  index:
+    state.main.selection?.type === 'info-point'
+      ? state.main.selection?.index
+      : null,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
