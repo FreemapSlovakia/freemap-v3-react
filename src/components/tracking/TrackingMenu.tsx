@@ -69,7 +69,6 @@ const TrackingMenuInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  isActive: state.infoPoint.activeIndex !== null,
   visual:
     state.tracking.showLine && state.tracking.showPoints
       ? 'line+points'

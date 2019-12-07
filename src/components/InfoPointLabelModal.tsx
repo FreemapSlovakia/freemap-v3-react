@@ -25,6 +25,7 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
   label,
   onInfoPointChangeLabel,
   onModalClose,
+  index,
   t,
 }) => {
   const [editedLabel, setEditedLabel] = useState(label);
@@ -32,10 +33,10 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
   const saveLabel = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onInfoPointChangeLabel(editedLabel);
+      onInfoPointChangeLabel(index, editedLabel);
       onModalClose();
     },
-    [editedLabel, onInfoPointChangeLabel, onModalClose],
+    [editedLabel, onInfoPointChangeLabel, onModalClose, index],
   );
 
   const handleLocalLabelChange = useCallback(
@@ -79,14 +80,16 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => ({
   label:
-    state.infoPoint.activeIndex === null
+    state.main.selection?.type !== 'info-point' ||
+    state.main.selection?.index === null
       ? '???'
-      : state.infoPoint.points[state.infoPoint.activeIndex].label,
+      : state.infoPoint.points[state.main.selection?.index].label,
+  index: state.main.selection?.index,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onInfoPointChangeLabel(label: string | undefined) {
-    dispatch(infoPointChangeLabel(label));
+  onInfoPointChangeLabel(index: number, label: string | undefined) {
+    dispatch(infoPointChangeLabel({ index, label }));
   },
   onModalClose() {
     dispatch(setActiveModal(null));

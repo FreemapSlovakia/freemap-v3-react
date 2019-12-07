@@ -263,7 +263,7 @@ export const handleLocationChange = (
     const { lat, lon, label } = f2;
     dispatch(infoPointAdd({ lat, lon }));
     if (label) {
-      dispatch(infoPointChangeLabel(label));
+      dispatch(infoPointChangeLabel({ index: 0, label }));
     }
   }
 
