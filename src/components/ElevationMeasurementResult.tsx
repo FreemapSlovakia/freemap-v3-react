@@ -88,6 +88,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       toastsAdd({
         messageKey: 'measurement.elevationInfo',
         messageParams: { point, elevation },
+        timeout: 5000,
+        collapseKey: 'measurementInfo',
       }),
     );
   },

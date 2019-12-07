@@ -253,6 +253,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       toastsAdd({
         messageKey: 'measurement.areaInfo',
         messageParams: { areaSize },
+        timeout: 5000,
+        collapseKey: 'measurementInfo',
       }),
     );
   },
