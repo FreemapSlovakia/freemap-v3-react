@@ -5,10 +5,10 @@ import { Dispatch } from 'redux';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import Button from 'react-bootstrap/lib/Button';
 
-import { infoPointAdd, infoPointDelete } from 'fm3/actions/infoPointActions';
+import { infoPointAdd } from 'fm3/actions/infoPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 
@@ -21,7 +21,6 @@ const InfoPointMenuInt: React.FC<Props> = ({
   onInfoPointAdd,
   onLabelModify,
   isActive,
-  onDelete,
   t,
 }) => {
   const handleInfoPointAdd = useCallback(
@@ -39,21 +38,15 @@ const InfoPointMenuInt: React.FC<Props> = ({
   }, [handleInfoPointAdd]);
 
   return (
-    <>
-      <Button onClick={onLabelModify} disabled={!isActive}>
-        <FontAwesomeIcon icon="tag" />
-        <span className="hidden-xs"> {t('infoPoint.modify')}</span>
-      </Button>{' '}
-      <Button onClick={onDelete} disabled={!isActive}>
-        <FontAwesomeIcon icon="trash-o" />
-        <span className="hidden-xs"> {t('general.delete')}</span>
-      </Button>
-    </>
+    <Button onClick={onLabelModify} disabled={!isActive}>
+      <FontAwesomeIcon icon="tag" />
+      <span className="hidden-xs"> {t('infoPoint.modify')}</span>
+    </Button>
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
-  isActive: state.infoPoint.activeIndex !== null,
+  isActive: state.main.selection?.type === 'info-point',
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -62,9 +55,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onLabelModify() {
     dispatch(setActiveModal('info-point-change-label'));
-  },
-  onDelete() {
-    dispatch(infoPointDelete());
   },
 });
 

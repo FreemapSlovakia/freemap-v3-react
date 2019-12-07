@@ -20,5 +20,12 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
     objects: [...state.objects, ...action.payload],
   }))
   .handleAction(deleteFeature, (state, action) =>
-    action?.meta?.tool === 'objects' ? initialState : state,
+    action?.meta?.selection?.type === 'objects'
+      ? {
+          ...state,
+          objects: state.objects.filter(
+            object => object.id !== action.meta.selection.id,
+          ),
+        }
+      : state,
   );

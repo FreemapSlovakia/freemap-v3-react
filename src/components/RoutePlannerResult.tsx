@@ -26,11 +26,17 @@ import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
-import { divIcon, DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import {
+  divIcon,
+  DragEndEvent,
+  LeafletMouseEvent,
+  LeafletEvent,
+} from 'leaflet';
 import { isSpecial } from 'fm3/transportTypeDefs';
 import { lineString, Point, Properties, Feature } from '@turf/helpers';
 import along from '@turf/along';
 import length from '@turf/length';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -199,7 +205,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   }, []);
 
   const handleFutureDragEnd = useCallback(
-    e => {
+    (e: LeafletEvent) => {
       draggingRef.current = false;
       setDragLat(undefined);
       setDragLon(undefined);
@@ -452,6 +458,7 @@ const mapStateToProps = (state: RootState) => ({
   showMilestones: state.routePlanner.milestones,
   language: state.l10n.language,
   zoom: state.map.zoom,
+  selected: state.main.selection?.type === 'route-planner',
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -472,6 +479,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onAlternativeChange(index: number) {
     dispatch(routePlannerSetActiveAlternativeIndex(index));
+    dispatch(selectFeature({ type: 'route-planner' }));
+  },
+  onSelect() {
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
 });
 

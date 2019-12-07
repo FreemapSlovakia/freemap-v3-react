@@ -23,7 +23,7 @@ import {
   routePlannerToggleMilestones,
   RouteAlternativeExtra,
 } from 'fm3/actions/routePlannerActions';
-import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
@@ -68,7 +68,6 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
   onConvertToMeasurement,
   onMilestonesChange,
   milestones,
-  onDelete,
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number) => {
@@ -324,11 +323,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       </Button>{' '}
       <Checkbox inline onChange={onMilestonesChange} checked={milestones}>
         {t('routePlanner.milestones')}
-      </Checkbox>{' '}
-      <Button onClick={onDelete} title={t('general.delete')}>
-        <FontAwesomeIcon icon="trash" />
-        <span className="hidden-xs"> {t('general.delete')}</span>
-      </Button>
+      </Checkbox>
     </>
   );
 };
@@ -402,9 +397,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onMilestonesChange() {
     dispatch(routePlannerToggleMilestones(undefined));
-  },
-  onDelete() {
-    dispatch(deleteFeature(undefined, undefined));
   },
 });
 

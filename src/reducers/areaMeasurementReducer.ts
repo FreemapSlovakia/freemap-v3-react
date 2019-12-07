@@ -48,5 +48,5 @@ export const areaMeasurementReducer = createReducer<
     points: action.payload,
   }))
   .handleAction(deleteFeature, (state, action) =>
-    action?.meta?.tool === 'measure-area' ? initialState : state,
+    action?.meta?.selection?.type === 'measure-area' ? initialState : state,
   );

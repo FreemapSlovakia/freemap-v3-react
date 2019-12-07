@@ -89,6 +89,42 @@ export const deleteFeature = createAction('DELETE_FEATURE')<
   undefined,
   | undefined
   | {
-      tool?: Tool | null;
+      selection?: Selection | null;
     }
 >();
+
+export type Selection =
+  | InfoPointSelection
+  | DistanceMeasurementSelection
+  | AreaMeasurementSelection
+  | ElevationMeasurementSelection
+  | RoutePlannerSelection
+  | ObjectsSelection;
+
+export interface InfoPointSelection {
+  type: 'info-point';
+  index: number;
+}
+
+export interface DistanceMeasurementSelection {
+  type: 'measure-dist';
+}
+
+export interface AreaMeasurementSelection {
+  type: 'measure-area';
+}
+
+export interface ElevationMeasurementSelection {
+  type: 'measure-ele';
+}
+
+export interface RoutePlannerSelection {
+  type: 'route-planner';
+}
+
+export interface ObjectsSelection {
+  type: 'objects';
+  id: number;
+}
+
+export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();

@@ -1,10 +1,18 @@
-import { KEY_ESCAPE, KEY_LEFT, KEY_RIGHT, KEY_M, KEY_S } from 'keycode-js';
+import {
+  KEY_ESCAPE,
+  KEY_LEFT,
+  KEY_RIGHT,
+  KEY_M,
+  KEY_S,
+  KEY_DELETE,
+} from 'keycode-js';
 import { MyStore } from './storeCreator';
 import {
   setTool,
   setSelectingHomeLocation,
   setActiveModal,
   clearMap,
+  deleteFeature,
 } from './actions/mainActions';
 import { showGalleryViewer } from './selectors/mainSelectors';
 import {
@@ -141,6 +149,19 @@ export function attachKeyboardHandler(store: MyStore) {
         store.dispatch(mapRefocus({ overlays: [...next] }));
         event.preventDefault();
         return;
+      }
+    }
+
+    if (
+      !keyTimer &&
+      !state.main.activeModal &&
+      !state.gallery.activeImageId &&
+      !state.gallery.showPosition &&
+      !state.gallery.pickingPositionForId &&
+      !state.main.selectingHomeLocation
+    ) {
+      if (event.keyCode === KEY_DELETE) {
+        store.dispatch(deleteFeature(undefined, undefined));
       }
     }
 

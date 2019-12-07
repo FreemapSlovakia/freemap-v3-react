@@ -70,7 +70,7 @@ import { AsyncLegendModal } from 'fm3/components/AsyncLegendModal';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -142,6 +142,8 @@ const MainInt: React.FC<Props> = ({
   language,
   t,
   isUserValidated,
+  selection,
+  onDelete,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
 
@@ -292,7 +294,16 @@ const MainInt: React.FC<Props> = ({
               {tool === 'changesets' && <ChangesetsMenu />}
               {tool === 'gallery' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
-              {tool === 'tracking' && <TrackingMenu />}
+              {tool === 'tracking' && <TrackingMenu />}{' '}
+              {selection && (
+                <Button title={t('general.delete')} onClick={onDelete}>
+                  <FontAwesomeIcon icon="trash" />
+                  <span className="hidden-xs">
+                    {' '}
+                    {t('general.delete')} <kbd>Del</kbd>
+                  </span>
+                </Button>
+              )}
             </Panel>
           )}
           <GalleryPositionPickingMenu />
@@ -407,6 +418,7 @@ const mapStateToProps = (state: RootState) => ({
   overlayPaneOpacity: state.map.overlayPaneOpacity,
   language: state.l10n.language,
   isUserValidated: state.auth.user && !state.auth.user.notValidated,
+  selection: state.main.selection,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -441,6 +453,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPictureUpdated(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
     dispatch(galleryMergeItem(item));
   },
+  onDelete() {
+    dispatch(deleteFeature(undefined, undefined));
+  },
 });
 
 export const Main = connect(
@@ -450,7 +465,13 @@ export const Main = connect(
 
 function handleMapClick(e: LeafletMouseEvent) {
   // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-  if (!window.preventMapClick) {
+  const target: any = e.originalEvent?.target;
+
+  if (
+    !window.preventMapClick &&
+    target?.tagName === 'DIV' &&
+    target?.classList.contains('leaflet-container')
+  ) {
     mapEventEmitter.emit('mapClick', e.latlng.lat, e.latlng.lng);
   }
 }

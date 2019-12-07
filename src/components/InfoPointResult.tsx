@@ -2,15 +2,13 @@ import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
-import {
-  infoPointChangePosition,
-  infoPointSetActiveIndex,
-} from 'fm3/actions/infoPointActions';
+import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { Point, DragEndEvent } from 'leaflet';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
@@ -24,10 +22,12 @@ const InfoPointResultInt: React.FC<Props> = ({
 }) => {
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
-      const coords = e.target.getLatLng();
-      onInfoPointPositionChange(coords.lat, coords.lng);
+      if (activeIndex !== null) {
+        const coords = e.target.getLatLng();
+        onInfoPointPositionChange(activeIndex, coords.lat, coords.lng);
+      }
     },
-    [onInfoPointPositionChange],
+    [onInfoPointPositionChange, activeIndex],
   );
 
   return (
@@ -62,15 +62,18 @@ const InfoPointResultInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   points: state.infoPoint.points,
   change: state.infoPoint.change,
-  activeIndex: state.infoPoint.activeIndex,
+  activeIndex:
+    state.main.selection?.type === 'info-point'
+      ? state.main.selection.index
+      : null,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onInfoPointPositionChange(lat: number, lon: number) {
-    dispatch(infoPointChangePosition({ lat, lon }));
+  onInfoPointPositionChange(index: number, lat: number, lon: number) {
+    dispatch(infoPointChangePosition({ index, lat, lon }));
   },
   onSelect(index: number) {
-    dispatch(infoPointSetActiveIndex(index));
+    dispatch(selectFeature({ type: 'info-point', index }));
   },
 });
 

@@ -13,6 +13,7 @@ import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { DragEndEvent } from 'leaflet';
 import { LatLon } from 'fm3/types/common';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -23,14 +24,11 @@ const ElevationMeasurementResultInt: React.FC<Props> = ({
   point,
   elevation,
   language,
-  t,
-  // onElevationClear,
   onPointSet,
+  onSelect,
+  selected,
+  t,
 }) => {
-  // const handleDragStart = useCallback(() => {
-  //   onElevationClear();
-  // }, [onElevationClear]);
-
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
       const { lat, lng: lon } = event.target.getLatLng();
@@ -53,9 +51,10 @@ const ElevationMeasurementResultInt: React.FC<Props> = ({
       <RichMarker
         autoOpenPopup
         position={{ lat: point.lat, lng: point.lon }}
-        // onDragstart={handleDragStart}
+        onclick={onSelect}
+        ondragstart={onSelect}
         ondragend={handleDragEnd}
-        // ondrag={handleDrag}
+        color={selected ? '#65b2ff' : undefined}
         draggable
       >
         <Popup closeButton={false} autoClose={false} autoPan={false}>
@@ -80,15 +79,16 @@ const mapStateToProps = (state: RootState) => ({
   elevation: state.elevationMeasurement.elevation,
   point: state.elevationMeasurement.point,
   language: state.l10n.language,
+  selected: state.main.selection?.type === 'measure-ele',
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointSet(point: LatLon) {
     dispatch(elevationMeasurementSetPoint(point));
   },
-  // onElevationClear() {
-  //   dispatch(elevationMeasurementSetElevation(null));
-  // },
+  onSelect() {
+    dispatch(selectFeature({ type: 'measure-ele' }));
+  },
 });
 
 export const ElevationMeasurementResult = connect(

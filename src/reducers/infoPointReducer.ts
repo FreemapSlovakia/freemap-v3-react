@@ -1,25 +1,22 @@
 import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
   infoPointAdd,
-  infoPointDelete,
   infoPointChangePosition,
   infoPointChangeLabel,
-  infoPointSetActiveIndex,
   infoPointSetAll,
   InfoPoint,
 } from 'fm3/actions/infoPointActions';
+import produce from 'immer';
 
 export interface InfoPointState {
   points: InfoPoint[];
-  activeIndex: null | number;
   change: number;
 }
 
 const initialState: InfoPointState = {
   points: [],
-  activeIndex: null,
   change: 0,
 };
 
@@ -27,41 +24,30 @@ export const infoPointReducer = createReducer<InfoPointState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
-  .handleAction(setTool, (state, action) => ({
-    ...state,
-    activeIndex: action.payload === 'info-point' ? state.activeIndex : null,
-  }))
   .handleAction(infoPointAdd, (state, action) => ({
     ...state,
     points: [...state.points, action.payload],
     change: state.change + 1,
-    activeIndex: state.points.length,
   }))
-  .handleAction(infoPointDelete, state => ({
-    ...state,
-    points: state.points.filter((_, i) => state.activeIndex !== i),
-    change: state.change + 1,
-    activeIndex: null,
-  }))
-  .handleAction(infoPointChangePosition, (state, action) => ({
-    ...state,
-    points: state.points.map((point, i) =>
-      i === state.activeIndex
-        ? { ...point, lat: action.payload.lat, lon: action.payload.lon }
-        : point,
-    ),
-  }))
-  .handleAction(infoPointChangeLabel, (state, action) => ({
-    ...state,
-    points: state.points.map((point, i) =>
-      i === state.activeIndex ? { ...point, label: action.payload } : point,
-    ),
-  }))
-  .handleAction(infoPointSetActiveIndex, (state, action) => ({
-    ...state,
-    activeIndex: state.activeIndex === action.payload ? null : action.payload,
-  }))
+  .handleAction(infoPointChangePosition, (state, action) =>
+    produce(state, draft => {
+      const point = draft.points[action.payload.index];
+      point.lat = action.payload.lat;
+      point.lon = action.payload.lon;
+    }),
+  )
+  .handleAction(infoPointChangeLabel, (state, action) =>
+    produce(state, draft => {
+      draft.points[action.payload.index].label = action.payload.label;
+    }),
+  )
   .handleAction(infoPointSetAll, (state, action) => ({
     ...state,
     points: action.payload,
-  }));
+  }))
+  .handleAction(deleteFeature, (state, action) =>
+    produce(state, draft => {
+      if (action.meta?.selection?.type === 'info-point')
+        draft.points.splice(action.meta.selection.index, 1);
+    }),
+  );

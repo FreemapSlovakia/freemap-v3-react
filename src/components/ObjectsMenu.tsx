@@ -15,9 +15,6 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { Button } from 'react-bootstrap';
-import { deleteFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -84,7 +81,7 @@ class ObjectsMenuInt extends React.Component<Props, State> {
   };
 
   render() {
-    const { t, onDelete } = this.props;
+    const { t } = this.props;
 
     const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
 
@@ -109,11 +106,7 @@ class ObjectsMenuInt extends React.Component<Props, State> {
               this.getGroupMenuItems(pointTypeGroup, i > 0),
             )}
           </Dropdown.Menu>
-        </Dropdown>{' '}
-        <Button onClick={onDelete} title={t('general.delete')}>
-          <FontAwesomeIcon icon="trash" />
-          <span className="hidden-xs"> {t('general.delete')}</span>
-        </Button>
+        </Dropdown>
       </>
     );
   }
@@ -142,9 +135,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
         ],
       }),
     );
-  },
-  onDelete() {
-    dispatch(deleteFeature(undefined, undefined));
   },
 });
 

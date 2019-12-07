@@ -17,6 +17,7 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 const circularIcon = divIcon({
   // CircleMarker is not draggable
@@ -36,6 +37,8 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
   onPointUpdate,
   onPointRemove,
   active,
+  onSelect,
+  selected,
 }) => {
   const [latLon, setLatLon] = useState<LatLon | undefined>(undefined);
 
@@ -212,7 +215,9 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
       {ps.length > 2 && (
         <Polygon
           weight={4}
-          interactive={false}
+          interactive
+          onclick={onSelect}
+          color={selected ? '#65b2ff' : 'blue'}
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
@@ -253,6 +258,7 @@ const mapStateToProps = (state: RootState) => ({
   points: state.areaMeasurement.points,
   active: state.main.tool === 'measure-area',
   language: state.l10n.language,
+  selected: state.main.selection?.type === 'measure-area',
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -264,6 +270,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onPointRemove(i: number) {
     dispatch(areaMeasurementRemovePoint(i));
+  },
+  onSelect() {
+    dispatch(selectFeature({ type: 'measure-area' }));
   },
 });
 

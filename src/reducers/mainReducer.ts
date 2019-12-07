@@ -15,7 +15,10 @@ import {
   setErrorTicketId,
   setEmbedFeatures,
   toggleLocate,
+  selectFeature,
+  deleteFeature,
   Tool,
+  Selection,
 } from 'fm3/actions/mainActions';
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
@@ -38,6 +41,7 @@ export interface MainState {
   errorTicketId: string | null;
   eleSmoothingFactor: number;
   embedFeatures: string[];
+  selection: Selection | null;
 }
 
 const initialState: MainState = {
@@ -53,6 +57,7 @@ const initialState: MainState = {
   errorTicketId: null,
   eleSmoothingFactor: 5,
   embedFeatures: [],
+  selection: null,
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(initialState)
@@ -139,4 +144,13 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(setEmbedFeatures, (state, action) => ({
     ...state,
     embedFeatures: action.payload,
+  }))
+  .handleAction(selectFeature, (state, action) => ({
+    ...state,
+    selection: action.payload,
+    tool: action.payload?.type ?? state.tool,
+  }))
+  .handleAction(deleteFeature, state => ({
+    ...state,
+    selection: null,
   }));
