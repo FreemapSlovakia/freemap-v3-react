@@ -91,6 +91,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(setTool, (state, action) => ({
     ...state,
     tool: action.payload,
+    selection: null,
   }))
   .handleAction(setHomeLocation, (state, action) => ({
     ...state,
