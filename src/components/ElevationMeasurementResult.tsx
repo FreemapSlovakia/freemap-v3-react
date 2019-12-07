@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo } from 'react';
-import { Popup } from 'react-leaflet';
+import React, { useCallback } from 'react';
+import { Tooltip } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import {
@@ -7,13 +7,13 @@ import {
   // elevationMeasurementSetElevation,
 } from 'fm3/actions/elevationMeasurementActions';
 import { RichMarker } from 'fm3/components/RichMarker';
-import { latLonToString } from 'fm3/geoutils';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { DragEndEvent } from 'leaflet';
 import { LatLon } from 'fm3/types/common';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -23,10 +23,10 @@ type Props = ReturnType<typeof mapStateToProps> &
 const ElevationMeasurementResultInt: React.FC<Props> = ({
   point,
   elevation,
-  language,
   onPointSet,
   onSelect,
   selected,
+  onValueShow,
   t,
 }) => {
   const handleDragEnd = useCallback(
@@ -37,14 +37,11 @@ const ElevationMeasurementResultInt: React.FC<Props> = ({
     [onPointSet],
   );
 
-  const nf1 = useMemo(
-    () =>
-      Intl.NumberFormat(language, {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 1,
-      }),
-    [language],
-  );
+  const handleTooltipClick = useCallback(() => {
+    if (point) {
+      onValueShow(point, elevation);
+    }
+  }, [onValueShow, point, elevation]);
 
   return (
     point && (
@@ -57,19 +54,17 @@ const ElevationMeasurementResultInt: React.FC<Props> = ({
         color={selected ? '#65b2ff' : undefined}
         draggable
       >
-        <Popup closeButton={false} autoClose={false} autoPan={false}>
-          <>
-            {(['D', 'DM', 'DMS'] as const).map(format => (
-              <div key={format}>{latLonToString(point, language, format)}</div>
-            ))}
-            {typeof elevation === 'number' && (
-              <div>
-                {t('measurement.elevationLine')} {nf1.format(elevation)}{' '}
-                {t('general.masl')}
-              </div>
-            )}
-          </>
-        </Popup>
+        <Tooltip
+          className="compact"
+          offset={[0, -36]}
+          direction="top"
+          permanent
+          interactive
+        >
+          <div onClick={handleTooltipClick}>
+            {t('measurement.elevationInfo', { point, elevation })}
+          </div>
+        </Tooltip>
       </RichMarker>
     )
   );
@@ -78,7 +73,6 @@ const ElevationMeasurementResultInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   elevation: state.elevationMeasurement.elevation,
   point: state.elevationMeasurement.point,
-  language: state.l10n.language,
   selected: state.main.selection?.type === 'measure-ele',
 });
 
@@ -88,6 +82,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onSelect() {
     dispatch(selectFeature({ type: 'measure-ele' }));
+  },
+  onValueShow(point: LatLon, elevation: number | null) {
+    dispatch(
+      toastsAdd({
+        messageKey: 'measurement.elevationInfo',
+        messageParams: { point, elevation },
+      }),
+    );
   },
 });
 

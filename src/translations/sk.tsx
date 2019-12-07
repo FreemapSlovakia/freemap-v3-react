@@ -2,6 +2,19 @@
 
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { latLonToString } from 'fm3/geoutils';
+
+const nf01 = Intl.NumberFormat('sk', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 1,
+});
+
+const nf33 = Intl.NumberFormat('sk', {
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
+});
+
+const masl = 'm\xa0n.\xa0m.';
 
 const errorMarkup = `<h1>Chyba aplikácie</h1>
 <p>
@@ -26,7 +39,7 @@ export default {
     fullscreen: 'Na celú obrazovku',
     yes: 'Áno',
     no: 'Nie',
-    masl: 'm.n.m.',
+    masl,
     copyCode: 'Skopírovať kód',
     loading: 'Načítavam…',
     ok: 'OK',
@@ -384,8 +397,31 @@ export default {
     distance: 'Vzdialenosť',
     elevation: 'Výška a poloha',
     area: 'Plocha',
-    elevationLine: 'Nadmorská výška:',
     elevationFetchError: 'Nastala chyba pri získavaní výšky bodu: {err}',
+    elevationInfo: ({ elevation, point }) => (
+      <>
+        {(['D', 'DM', 'DMS'] as const).map(format => (
+          <div key={format}>{latLonToString(point, 'sk', format)}</div>
+        ))}
+        {elevation !== null && (
+          <div>
+            Nadmorská výška: {nf01.format(elevation)}&nbsp;{masl}
+          </div>
+        )}
+      </>
+    ),
+    areaInfo: ({ areaSize }) => (
+      <>
+        <div>
+          {nf33.format(areaSize)}&nbsp;m<sup>2</sup>
+        </div>
+        <div>{nf33.format(areaSize / 100)}&nbsp;a</div>
+        <div>{nf33.format(areaSize / 10000)}&nbsp;ha</div>
+        <div>
+          {nf33.format(areaSize / 1000000)}&nbsp;km<sup>2</sup>
+        </div>
+      </>
+    ),
   },
 
   trackViewer: {
@@ -957,7 +993,7 @@ export default {
 
   elevationChart: {
     distance: 'Vzdialenosť [km]',
-    ele: 'Nadm. výška [m.n.m.]',
+    ele: `Nadm. výška [${masl}]`,
     fetchError: 'Nastala chyba pri získavaní výškového profilu: {err}',
   },
 

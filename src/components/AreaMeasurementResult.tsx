@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Marker, Popup, Polygon, Polyline } from 'react-leaflet';
-import { RichMarker } from 'fm3/components/RichMarker';
+import { Marker, Polygon, Polyline, Tooltip } from 'react-leaflet';
 
 import {
   areaMeasurementAddPoint,
@@ -18,6 +17,8 @@ import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 const circularIcon = divIcon({
   // CircleMarker is not draggable
@@ -28,17 +29,20 @@ const circularIcon = divIcon({
 });
 
 type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const AreaMeasurementResultInt: React.FC<Props> = ({
   points,
-  language,
   onPointAdd,
   onPointUpdate,
   onPointRemove,
   active,
   onSelect,
   selected,
+  onValueShow,
+  t,
 }) => {
   const [latLon, setLatLon] = useState<LatLon | undefined>(undefined);
 
@@ -110,7 +114,7 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
     [onPointRemove],
   );
 
-  const { northmostPoint, areaSize, ps } = useMemo(() => {
+  const { areaSize, ps } = useMemo(() => {
     const ps: Point[] = [];
 
     for (let i = 0; i < points.length; i += 1) {
@@ -128,51 +132,15 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
       });
     }
 
-    const areaSize = points.length >= 3 ? area(points) : NaN;
-    let northmostPoint = points[0];
-
-    for (const p of points) {
-      if (northmostPoint.lat < p.lat) {
-        northmostPoint = p;
-      }
-    }
-
-    return { northmostPoint, areaSize, ps };
+    return { areaSize: points.length >= 3 ? area(points) : NaN, ps };
   }, [points]);
 
-  const nf = useMemo(
-    () =>
-      Intl.NumberFormat(language, {
-        minimumFractionDigits: 3,
-        maximumFractionDigits: 3,
-      }),
-    [language],
-  );
+  const handleTooltipClick = useCallback(() => {
+    onValueShow(areaSize);
+  }, [onValueShow, areaSize]);
 
   return (
     <>
-      {!Number.isNaN(areaSize) && (
-        <RichMarker
-          autoOpenPopup
-          interactive={false}
-          opacity={0}
-          position={{ lat: northmostPoint.lat, lng: northmostPoint.lon }}
-        >
-          <Popup closeButton={false} autoClose={false} autoPan={false}>
-            <span>
-              <div>
-                {nf.format(areaSize)} m<sup>2</sup>
-              </div>
-              <div>{nf.format(areaSize / 100)} a</div>
-              <div>{nf.format(areaSize / 10000)} ha</div>
-              <div>
-                {nf.format(areaSize / 1000000)} km<sup>2</sup>
-              </div>
-            </span>
-          </Popup>
-        </RichMarker>
-      )}
-
       {ps.map((p, i) => {
         return i % 2 ? (
           <Marker
@@ -202,13 +170,7 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
             onclick={() => handleMarkerClick(p.id)}
             ondragstart={handleDragStart}
             ondragend={handleDragEnd}
-          >
-            {/*
-                <Tooltip className="compact" offset={[-4, 0]} direction="right" permanent>
-                  <span>{nf.format(dist / 1000)} km</span>
-                </Tooltip>
-              */}
-          </Marker>
+          />
         );
       })}
 
@@ -221,7 +183,20 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
-        />
+        >
+          <Tooltip
+            className="compact"
+            offset={[-4, 0]}
+            direction="center"
+            permanent
+            interactive
+            key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
+          >
+            <div onClick={handleTooltipClick}>
+              {t('measurement.areaInfo', { areaSize })}
+            </div>
+          </Tooltip>
+        </Polygon>
       )}
 
       {!!(ps.length && latLon) && (
@@ -257,7 +232,6 @@ function handleDragEnd() {
 const mapStateToProps = (state: RootState) => ({
   points: state.areaMeasurement.points,
   active: state.main.tool === 'measure-area',
-  language: state.l10n.language,
   selected: state.main.selection?.type === 'measure-area',
 });
 
@@ -274,9 +248,17 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSelect() {
     dispatch(selectFeature({ type: 'measure-area' }));
   },
+  onValueShow(areaSize: number) {
+    dispatch(
+      toastsAdd({
+        messageKey: 'measurement.areaInfo',
+        messageParams: { areaSize },
+      }),
+    );
+  },
 });
 
 export const AreaMeasurementResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(AreaMeasurementResultInt);
+)(withTranslator(AreaMeasurementResultInt));

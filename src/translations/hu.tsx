@@ -2,6 +2,19 @@
 
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { latLonToString } from 'fm3/geoutils';
+
+const nf01 = Intl.NumberFormat('hu', {
+  minimumFractionDigits: 0,
+  maximumFractionDigits: 1,
+});
+
+const nf33 = Intl.NumberFormat('hu', {
+  minimumFractionDigits: 3,
+  maximumFractionDigits: 3,
+});
+
+const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
 const errorMarkup = `
 <h1>Alkalmazáshiba</h1>
@@ -27,7 +40,7 @@ export default {
     fullscreen: 'Teljes képernyő',
     yes: 'Igen',
     no: 'Nem',
-    masl: 'm tszf.',
+    masl,
     copyCode: 'Kód másolása',
     loading: 'Töltés…',
     ok: 'OK',
@@ -385,9 +398,32 @@ export default {
     distance: 'Távolság',
     elevation: 'Magasság és pozíció',
     area: 'Terület',
-    elevationLine: 'Magasság:',
     elevationFetchError:
       'Hiba történt a pont magasságának beolvasásakor: {err}',
+    elevationInfo: ({ elevation, point }) => (
+      <>
+        {(['D', 'DM', 'DMS'] as const).map(format => (
+          <div key={format}>{latLonToString(point, 'hu', format)}</div>
+        ))}
+        {elevation !== null && (
+          <div>
+            Magasság: {nf01.format(elevation)}&nbsp;{masl}
+          </div>
+        )}
+      </>
+    ),
+    areaInfo: ({ areaSize }) => (
+      <>
+        <div>
+          {nf33.format(areaSize)}&nbsp;m<sup>2</sup>
+        </div>
+        <div>{nf33.format(areaSize / 100)}&nbsp;a</div>
+        <div>{nf33.format(areaSize / 10000)}&nbsp;ha</div>
+        <div>
+          {nf33.format(areaSize / 1000000)}&nbsp;km<sup>2</sup>
+        </div>
+      </>
+    ),
   },
 
   trackViewer: {
@@ -965,7 +1001,7 @@ export default {
 
   elevationChart: {
     distance: 'Távolság [km]',
-    ele: 'Magasság [méter a tengerszint fölött]',
+    ele: `Magasság [${masl}]`,
     fetchError: 'Hiba történt a magasságiprofil-adatok lekérésénél: {err}',
   },
 

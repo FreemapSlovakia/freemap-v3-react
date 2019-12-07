@@ -29,7 +29,7 @@ export function formatGpsCoord(
         minimumFractionDigits: 3,
         maximumFractionDigits: 3,
       }).format((a - degrees - minutes / 60) * 3600);
-      return `${cardinal}${degrees}° ${minutes}' ${seconds}"`;
+      return `${cardinal}${degrees}°\xa0${minutes}'\xa0${seconds}"`;
     }
     case 'DM': {
       const degrees = Math.floor(a);
@@ -37,7 +37,7 @@ export function formatGpsCoord(
         minimumFractionDigits: 4,
         maximumFractionDigits: 4,
       }).format((a - degrees) * 60);
-      return `${cardinal}${degrees}° ${minutes}'`;
+      return `${cardinal}${degrees}°\xa0${minutes}'`;
     }
     case 'D': {
       return `${cardinal}${Intl.NumberFormat(language, {
