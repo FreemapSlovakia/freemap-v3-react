@@ -2,152 +2,20 @@ import { history } from 'fm3/historyHolder';
 import refModals from 'fm3/refModals.json';
 import allTips from 'fm3/tips/index.json';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { setAppState, deleteFeature } from 'fm3/actions/mainActions';
-import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
-import {
-  setTool,
-  clearMap,
-  setActiveModal,
-  enableUpdatingUrl,
-} from 'fm3/actions/mainActions';
-import {
-  trackViewerColorizeTrackBy,
-  trackViewerDownloadTrack,
-  trackViewerSetTrackUID,
-} from 'fm3/actions/trackViewerActions';
-import {
-  galleryRequestImage,
-  galleryClear,
-  galleryShowFilter,
-  galleryHideFilter,
-  galleryShowUploadModal,
-  galleryHideUploadModal,
-  gallerySetFilter,
-} from 'fm3/actions/galleryActions';
-import {
-  changesetsSetDays,
-  changesetsSetAuthorName,
-} from 'fm3/actions/changesetsActions';
-import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
-import {
-  authChooseLoginMethod,
-  authLoginClose,
-  authLoginWithFacebook,
-  authLoginWithGoogle,
-  authLoginWithOsm,
-} from 'fm3/actions/authActions';
-import { trackingActions } from 'fm3/actions/trackingActions';
 import { isActionOf } from 'typesafe-actions';
-import {
-  distanceMeasurementUpdatePoint,
-  distanceMeasurementAddPoint,
-  distanceMeasurementRemovePoint,
-} from 'fm3/actions/distanceMeasurementActions';
-import {
-  areaMeasurementUpdatePoint,
-  areaMeasurementAddPoint,
-  areaMeasurementRemovePoint,
-  areaMeasurementSetPoints,
-} from 'fm3/actions/areaMeasurementActions';
-import {
-  infoPointAdd,
-  infoPointChangeLabel,
-  infoPointChangePosition,
-  infoPointDelete,
-  infoPointSetAll,
-} from 'fm3/actions/infoPointActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
-import {
-  routePlannerAddMidpoint,
-  routePlannerSetFinish,
-  routePlannerSetStart,
-  routePlannerSetActiveAlternativeIndex,
-  routePlannerSetMode,
-  routePlannerSwapEnds,
-  routePlannerSetParams,
-  routePlannerSetTransportType,
-  routePlannerSetPickMode,
-  routePlannerRemoveMidpoint,
-  routePlannerSetMidpoint,
-  routePlannerToggleElevationChart,
-  routePlannerConvertToMeasurement,
-  routePlannerToggleMilestones,
-} from 'fm3/actions/routePlannerActions';
-import {
-  osmLoadNode,
-  osmLoadRelation,
-  osmLoadWay,
-} from 'fm3/actions/osmActions';
+import { distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
+import { areaMeasurementUpdatePoint } from 'fm3/actions/areaMeasurementActions';
 
 const tipKeys = allTips.map(([key]) => key);
 
 let lastActionType: string | undefined;
 
-// TODO instead of listing actions implement comparing state values
+let previous: any[] = [];
+
 export const urlProcessor: Processor = {
-  actionCreator: [
-    setAppState,
-    mapRefocus,
-    setTool,
-    clearMap,
-    mapReset,
-    trackViewerSetTrackUID,
-    trackViewerColorizeTrackBy,
-    trackViewerDownloadTrack,
-    galleryRequestImage,
-    galleryClear,
-    galleryShowFilter,
-    galleryHideFilter,
-    galleryShowUploadModal,
-    galleryHideUploadModal,
-    changesetsSetDays,
-    changesetsSetAuthorName,
-    elevationMeasurementSetPoint,
-    gallerySetFilter,
-    setActiveModal,
-    authChooseLoginMethod,
-    authLoginClose,
-    enableUpdatingUrl,
-    trackingActions.setTrackedDevices,
-    trackingActions.saveTrackedDevice,
-    trackingActions.deleteTrackedDevice,
-    trackingActions.setActive,
-    authLoginWithOsm,
-    authLoginWithFacebook,
-    authLoginWithGoogle,
-    areaMeasurementAddPoint,
-    areaMeasurementUpdatePoint,
-    areaMeasurementRemovePoint,
-    areaMeasurementSetPoints,
-    distanceMeasurementAddPoint,
-    distanceMeasurementUpdatePoint,
-    distanceMeasurementRemovePoint,
-    infoPointAdd,
-    infoPointChangeLabel,
-    infoPointChangePosition,
-    infoPointDelete,
-    infoPointSetAll,
-    tipsShow,
-    osmLoadNode,
-    osmLoadRelation,
-    osmLoadWay,
-    routePlannerSetStart,
-    routePlannerSetFinish,
-    routePlannerSetMidpoint,
-    routePlannerAddMidpoint,
-    routePlannerRemoveMidpoint,
-    routePlannerSetActiveAlternativeIndex,
-    routePlannerSetMode,
-    routePlannerSetPickMode,
-    routePlannerSwapEnds,
-    routePlannerSetParams,
-    routePlannerSetTransportType,
-    routePlannerToggleElevationChart,
-    routePlannerConvertToMeasurement,
-    routePlannerToggleMilestones,
-    deleteFeature,
-  ],
+  actionCreator: '*',
   handle: async ({ getState, action }) => {
     const {
       map,
@@ -169,6 +37,53 @@ export const urlProcessor: Processor = {
     if (!main.urlUpdatingEnabled) {
       return;
     }
+
+    const next = [
+      areaMeasurement.points,
+      auth.chooseLoginMethod,
+      changesets.authorName,
+      changesets.days,
+      distanceMeasurement.points,
+      elevationMeasurement.point,
+      gallery.activeImageId,
+      gallery.filter,
+      gallery.showFilter,
+      gallery.showUploadModal,
+      infoPoint.points,
+      main.activeModal,
+      main.embedFeatures,
+      main.tool,
+      main.urlUpdatingEnabled,
+      map.lat,
+      map.lon,
+      map.mapType,
+      map.overlays,
+      routePlanner,
+      routePlanner.finish,
+      routePlanner.midpoints,
+      routePlanner.milestones,
+      routePlanner.mode,
+      routePlanner.start,
+      routePlanner.transportType,
+      tips.tip,
+      tracking.activeTrackId,
+      tracking.trackedDevices,
+      trackViewer.colorizeTrackBy,
+      trackViewer.gpxUrl,
+      trackViewer.osmNodeId,
+      trackViewer.osmRelationId,
+      trackViewer.osmWayId,
+      trackViewer.trackUID,
+    ];
+
+    if (
+      previous.length === next.length &&
+      previous.every((item, i) => next[i] === item)
+    ) {
+      return;
+    }
+
+    previous = next;
 
     const queryParts = [
       `map=${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`,
