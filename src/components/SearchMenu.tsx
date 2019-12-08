@@ -10,7 +10,7 @@ import {
   SearchResult,
   searchSetResults,
 } from 'fm3/actions/searchActions';
-import { setTool } from 'fm3/actions/mainActions';
+import { selectFeature } from 'fm3/actions/mainActions';
 import {
   routePlannerSetStart,
   routePlannerSetFinish,
@@ -225,10 +225,9 @@ const SearchMenuInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  tool: state.main.tool,
   results: state.search.results,
   selectedResult: state.search.selectedResult,
-  inProgress: state.search.inProgress,
+  // inProgress: state.search.inProgress,
   searchSeq: state.search.searchSeq,
 });
 
@@ -241,12 +240,12 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onRoutePlannerWithStartInit(result: SearchResult) {
     const start = { lat: result.lat, lon: result.lon };
-    dispatch(setTool('route-planner'));
+    dispatch(selectFeature({ type: 'route-planner' }));
     dispatch(routePlannerSetStart({ start }));
   },
   onRoutePlannerWithFinishInit(result: SearchResult) {
     const finish = { lat: result.lat, lon: result.lon };
-    dispatch(setTool('route-planner'));
+    dispatch(selectFeature({ type: 'route-planner' }));
     dispatch(routePlannerSetFinish({ finish }));
   },
   onModify() {

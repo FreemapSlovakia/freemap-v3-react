@@ -6,7 +6,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
 import { getType } from 'typesafe-actions';
 
@@ -42,7 +42,7 @@ export const changesetsProcessor: Processor = {
           // eslint-disable-next-line
           display_name: state.changesets.authorName,
         },
-        cancelActions: [changesetsSetAuthorName, setTool, clearMap],
+        cancelActions: [changesetsSetAuthorName, selectFeature, clearMap],
       });
 
       const xml = new DOMParser().parseFromString(
@@ -106,7 +106,10 @@ export const changesetsProcessor: Processor = {
           toastsAdd({
             collapseKey: 'changeset.detail',
             messageKey: 'changesets.notFound',
-            cancelType: [getType(setTool), getType(changesetsSetAuthorName)],
+            cancelType: [
+              getType(selectFeature),
+              getType(changesetsSetAuthorName),
+            ],
             timeout: 5000,
             style: 'info',
           }),

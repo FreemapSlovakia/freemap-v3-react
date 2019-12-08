@@ -5,7 +5,7 @@ import { lineString } from '@turf/helpers';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
-import { setTool, Tool } from 'fm3/actions/mainActions';
+import { selectFeature, Tool } from 'fm3/actions/mainActions';
 import {
   distanceMeasurementAddPoint,
   Point as DistancePoint,
@@ -37,7 +37,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 const MeasurementMenuInt: React.FC<Props> = ({
   onToolSet,
-  tool,
+  selection,
   routeDefined,
   elevationChartTrackGeojson,
   t,
@@ -51,6 +51,8 @@ const MeasurementMenuInt: React.FC<Props> = ({
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position?: number, id0?: number) => {
+      const tool = selection?.type;
+
       if (tool === 'measure-ele') {
         onElePointSet({ lat, lon });
         return;
@@ -81,7 +83,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
       }
     },
     [
-      tool,
+      selection,
       areaPoints,
       distancePoints,
       onElePointSet,
@@ -113,6 +115,8 @@ const MeasurementMenuInt: React.FC<Props> = ({
     onElevationChartClose,
     onElevationChartTrackGeojsonSet,
   ]);
+
+  const tool = selection?.type;
 
   return (
     <>
@@ -157,7 +161,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  tool: state.main.tool,
+  selection: state.main.selection,
   distancePoints: state.distanceMeasurement.points,
   areaPoints: state.areaMeasurement.points,
   routeDefined: state.distanceMeasurement.points.length > 1,
@@ -165,8 +169,8 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: Tool) {
-    dispatch(setTool(tool));
+  onToolSet(tool: Tool | null) {
+    dispatch(selectFeature(tool && { type: tool }));
   },
   onElevationChartTrackGeojsonSet(trackGeojson: GeoJsonObject) {
     dispatch(elevationChartSetTrackGeojson(trackGeojson));

@@ -2,7 +2,7 @@ import { Middleware, Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { isActionOf } from 'typesafe-actions';
 import { authSetUser } from 'fm3/actions/authActions';
-import { setTool, reloadApp } from 'fm3/actions/mainActions';
+import { selectFeature, reloadApp } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { storage } from 'fm3/storage';
 
@@ -21,13 +21,11 @@ export const utilityMiddleware: Middleware<{}, RootState, Dispatch> = ({
     if (user) {
       window.ga('send', 'event', 'Auth', 'setUser', user.id);
     }
-  } else if (isActionOf(setTool, action)) {
-    const {
-      main: { tool },
-    } = getState();
+  } else if (isActionOf(selectFeature, action)) {
+    const { selection } = getState().main;
 
-    if (tool) {
-      window.ga('send', 'event', 'Tool', 'setTool', tool);
+    if (selection) {
+      window.ga('send', 'event', 'Tool', 'setTool', selection.type);
     }
   } else if (isActionOf(tipsShow, action)) {
     const { tip } = getState().tips;

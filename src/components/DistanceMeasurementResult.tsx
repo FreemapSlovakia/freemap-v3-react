@@ -39,7 +39,6 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   onPointAdd,
   onPointUpdate,
   onPointRemove,
-  active,
   onSelect,
   language,
   selected,
@@ -47,12 +46,12 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   const handleMouseMove = useCallback(
     (lat: number, lon: number, originalEvent) => {
       setCoords(
-        active && originalEvent.target.classList.contains('leaflet-container')
+        selected && originalEvent.target.classList.contains('leaflet-container')
           ? { lat, lon }
           : undefined,
       );
     },
-    [active],
+    [selected],
   );
 
   const handleMouseOut = useCallback(() => {
@@ -94,8 +93,8 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   );
 
   const handleMeasureMarkerDrag = useCallback(
-    (i: number, { latlng: { lat, lng: lon } }, id: number) => {
-      onPointUpdate(i, { lat, lon, id });
+    ({ latlng: { lat, lng: lon } }, id: number) => {
+      onPointUpdate({ lat, lon, id });
     },
     [onPointUpdate],
   );
@@ -174,7 +173,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
             // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
             icon={circularIcon}
             opacity={1}
-            onDrag={e => handleMeasureMarkerDrag(i / 2, e as any, p.id)}
+            onDrag={e => handleMeasureMarkerDrag(e as any, p.id)}
             onClick={() => handleMarkerClick(p.id)}
             onDragstart={handleDragStart}
             onDragend={handleDragEnd}
@@ -227,7 +226,6 @@ function handleDragEnd() {
 
 const mapStateToProps = (state: RootState) => ({
   points: state.distanceMeasurement.points,
-  active: state.main.tool === 'measure-dist',
   language: state.l10n.language,
   selected: state.main.selection?.type === 'measure-dist',
 });
@@ -236,8 +234,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointAdd(point: Point, position: number) {
     dispatch(distanceMeasurementAddPoint({ point, position }));
   },
-  onPointUpdate(index: number, point: Point) {
-    dispatch(distanceMeasurementUpdatePoint({ index, point }));
+  onPointUpdate(point: Point) {
+    dispatch(distanceMeasurementUpdatePoint({ point }));
   },
   onPointRemove(id: number) {
     dispatch(distanceMeasurementRemovePoint(id));

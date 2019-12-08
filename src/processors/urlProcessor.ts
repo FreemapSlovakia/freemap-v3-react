@@ -52,7 +52,7 @@ export const urlProcessor: Processor = {
       infoPoint.points,
       main.activeModal,
       main.embedFeatures,
-      main.tool,
+      main.selection?.type,
       main.urlUpdatingEnabled,
       map.lat,
       map.lon,
@@ -90,8 +90,8 @@ export const urlProcessor: Processor = {
       `layers=${map.mapType}${map.overlays.join('')}`,
     ];
 
-    if (main.tool) {
-      queryParts.push(`tool=${main.tool}`);
+    if (main.selection?.type) {
+      queryParts.push(`tool=${main.selection?.type}`);
     }
 
     if (

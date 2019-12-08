@@ -8,7 +8,7 @@ import {
 } from 'keycode-js';
 import { MyStore } from './storeCreator';
 import {
-  setTool,
+  selectFeature,
   setSelectingHomeLocation,
   setActiveModal,
   clearMap,
@@ -64,7 +64,7 @@ export function attachKeyboardHandler(store: MyStore) {
         !state.gallery.activeImageId &&
         !state.gallery.showPosition
       ) {
-        store.dispatch(setTool(null));
+        store.dispatch(selectFeature(null));
         event.preventDefault();
         return;
       }
@@ -196,7 +196,7 @@ export function attachKeyboardHandler(store: MyStore) {
         const toolDefinition = toolDefinitions.find(td => td.kbd === event.key);
 
         if (toolDefinition?.kbd) {
-          store.dispatch(setTool(toolDefinition.tool));
+          store.dispatch(selectFeature({ type: toolDefinition.tool }));
           event.preventDefault();
           return;
         }

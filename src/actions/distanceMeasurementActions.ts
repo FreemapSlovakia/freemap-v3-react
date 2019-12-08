@@ -12,7 +12,7 @@ export const distanceMeasurementAddPoint = createAction(
 
 export const distanceMeasurementUpdatePoint = createAction(
   'DISTANCE_MEASUREMENT_UPDATE_POINT',
-)<{ index: number; point: Point }>();
+)<{ point: Point }>();
 
 export const distanceMeasurementRemovePoint = createAction(
   'DISTANCE_MEASUREMENT_REMOVE_POINT',

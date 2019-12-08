@@ -17,8 +17,6 @@ export type Tool =
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<string | null>();
 
-export const setTool = createAction('SET_TOOL')<Tool | null>();
-
 export const setHomeLocation = createAction('SET_HOME_LOCATION')<{
   lat: number;
   lon: number;
@@ -93,38 +91,37 @@ export const deleteFeature = createAction('DELETE_FEATURE')<
     }
 >();
 
-export type Selection =
-  | InfoPointSelection
-  | DistanceMeasurementSelection
-  | AreaMeasurementSelection
-  | ElevationMeasurementSelection
-  | RoutePlannerSelection
-  | ObjectsSelection;
-
 export interface InfoPointSelection {
   type: 'info-point';
-  index: number;
+  index?: number;
 }
 
 export interface DistanceMeasurementSelection {
   type: 'measure-dist';
-}
-
-export interface AreaMeasurementSelection {
-  type: 'measure-area';
-}
-
-export interface ElevationMeasurementSelection {
-  type: 'measure-ele';
-}
-
-export interface RoutePlannerSelection {
-  type: 'route-planner';
+  index?: number;
 }
 
 export interface ObjectsSelection {
   type: 'objects';
-  id: number;
+  id?: number;
 }
+
+export interface OtherSelection {
+  type:
+    | 'map-details'
+    | 'track-viewer'
+    | 'changesets'
+    | 'gallery'
+    | 'tracking'
+    | 'route-planner'
+    | 'measure-ele'
+    | 'measure-area';
+}
+
+export type Selection =
+  | InfoPointSelection
+  | DistanceMeasurementSelection
+  | ObjectsSelection
+  | OtherSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();

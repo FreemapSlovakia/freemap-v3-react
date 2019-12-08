@@ -1,7 +1,7 @@
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
 import { RootState } from './storeCreator';
 import { RootAction } from './actions';
-import { setActiveModal, clearMap, setTool } from './actions/mainActions';
+import { setActiveModal, clearMap, selectFeature } from './actions/mainActions';
 import { ActionType } from 'typesafe-actions';
 
 export function getAxios(expectedStatus?: number | number[]) {
@@ -54,7 +54,7 @@ export const cancelRegister = new Set<CancelItem>();
 export async function httpRequest({
   getState,
   expectedStatus,
-  cancelActions = [setTool, clearMap, setActiveModal],
+  cancelActions = [selectFeature, clearMap, setActiveModal],
   ...rest
 }: HttpRequestParams) {
   let source: CancelTokenSource | undefined;

@@ -38,7 +38,6 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
   onPointAdd,
   onPointUpdate,
   onPointRemove,
-  active,
   onSelect,
   selected,
   onValueShow,
@@ -49,7 +48,7 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
   const handleMouseMove = useCallback(
     (lat: number, lon: number, originalEvent: MouseEvent) => {
       setLatLon(
-        active &&
+        selected &&
           originalEvent.target &&
           (originalEvent.target as HTMLElement).classList.contains(
             'leaflet-container',
@@ -58,7 +57,7 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
           : undefined,
       );
     },
-    [active],
+    [selected],
   );
 
   const handleMouseOut = useCallback(() => {
@@ -98,11 +97,10 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
 
   const handleMeasureMarkerDrag = useCallback(
     (
-      i: number,
       { latlng: { lat, lng: lon } }: { latlng: { lat: number; lng: number } },
       id: number,
     ) => {
-      onPointUpdate(i, { lat, lon, id });
+      onPointUpdate({ lat, lon, id });
     },
     [onPointUpdate],
   );
@@ -166,7 +164,7 @@ const AreaMeasurementResultInt: React.FC<Props> = ({
             // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
             icon={circularIcon}
             opacity={1}
-            ondrag={e => handleMeasureMarkerDrag(i / 2, e as any, p.id)}
+            ondrag={e => handleMeasureMarkerDrag(e as any, p.id)}
             onclick={() => handleMarkerClick(p.id)}
             ondragstart={handleDragStart}
             ondragend={handleDragEnd}
@@ -231,7 +229,6 @@ function handleDragEnd() {
 
 const mapStateToProps = (state: RootState) => ({
   points: state.areaMeasurement.points,
-  active: state.main.tool === 'measure-area',
   selected: state.main.selection?.type === 'measure-area',
 });
 
@@ -239,8 +236,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointAdd(point: Point, position: number) {
     dispatch(areaMeasurementAddPoint({ point, position }));
   },
-  onPointUpdate(index: number, point: Point) {
-    dispatch(areaMeasurementUpdatePoint({ index, point }));
+  onPointUpdate(point: Point) {
+    dispatch(areaMeasurementUpdatePoint({ point }));
   },
   onPointRemove(i: number) {
     dispatch(areaMeasurementRemovePoint(i));

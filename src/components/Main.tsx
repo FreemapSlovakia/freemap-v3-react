@@ -402,7 +402,7 @@ const mapStateToProps = (state: RootState) => ({
   lat: state.map.lat,
   lon: state.map.lon,
   zoom: state.map.zoom,
-  tool: state.main.tool,
+  tool: state.main.selection?.type,
   embedFeatures: state.main.embedFeatures,
   activeModal: state.main.activeModal,
   progress: !!state.main.progress.length,

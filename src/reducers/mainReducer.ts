@@ -4,7 +4,6 @@ import { RootAction } from 'fm3/actions';
 import {
   setAppState,
   setActiveModal,
-  setTool,
   setHomeLocation,
   startProgress,
   stopProgress,
@@ -17,7 +16,6 @@ import {
   toggleLocate,
   selectFeature,
   deleteFeature,
-  Tool,
   Selection,
 } from 'fm3/actions/mainActions';
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
@@ -30,7 +28,6 @@ interface Location extends LatLon {
 
 export interface MainState {
   activeModal: string | null;
-  tool: Tool | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
   location: Location | null;
@@ -46,7 +43,6 @@ export interface MainState {
 
 const initialState: MainState = {
   activeModal: null,
-  tool: null,
   homeLocation: null,
   progress: [],
   location: null,
@@ -87,11 +83,6 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(setActiveModal, (state, action) => ({
     ...state,
     activeModal: action.payload,
-  }))
-  .handleAction(setTool, (state, action) => ({
-    ...state,
-    tool: action.payload,
-    selection: null,
   }))
   .handleAction(setHomeLocation, (state, action) => ({
     ...state,
@@ -149,7 +140,6 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(selectFeature, (state, action) => ({
     ...state,
     selection: action.payload,
-    tool: action.payload?.type ?? state.tool,
   }))
   .handleAction(deleteFeature, state => ({
     ...state,

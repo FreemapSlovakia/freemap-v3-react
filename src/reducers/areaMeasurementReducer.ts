@@ -34,9 +34,12 @@ export const areaMeasurementReducer = createReducer<
       );
     }),
   )
-  .handleAction(areaMeasurementUpdatePoint, (state, action) =>
+  .handleAction(areaMeasurementUpdatePoint, (state, { payload: { point } }) =>
     produce(state, draft => {
-      draft.points[action.payload.index] = action.payload.point;
+      const p = draft.points.find(p => p.id === point.id);
+      if (p) {
+        Object.assign(p, point);
+      }
     }),
   )
   .handleAction(areaMeasurementRemovePoint, (state, action) => ({

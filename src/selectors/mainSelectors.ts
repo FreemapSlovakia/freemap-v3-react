@@ -1,7 +1,7 @@
 import { RootState } from 'fm3/storeCreator';
 import { createSelector } from 'reselect';
 
-export const toolSelector = (state: RootState) => state.main.tool;
+export const toolSelector = (state: RootState) => state.main.selection?.type;
 
 export const mapOverlaysSelector = (state: RootState) => state.map.overlays;
 
@@ -30,7 +30,7 @@ export const showGalleryPickerSelector = createSelector(
     galleryShowPosition,
     selectingHomeLocation,
   ) =>
-    (tool === null ||
+    (!tool ||
       ['gallery', 'track-viewer', 'objects', 'changesets'].includes(tool)) &&
     mapOverlays.includes('I') &&
     galleryPickingPositionForId === null &&

@@ -1,6 +1,6 @@
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap, setTool } from 'fm3/actions/mainActions';
+import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import {
   mapDetailsSetSubtool,
   mapDetailsSetUserSelectedPosition,
@@ -38,8 +38,8 @@ export const mapDetailsReducer = createReducer<MapDetailsState, RootAction>(
     ...state,
     trackInfoPoints: action.payload,
   }))
-  .handleAction(setTool, (state, action) =>
-    action.payload === 'map-details'
+  .handleAction(selectFeature, (state, action) =>
+    action.payload?.type === 'map-details'
       ? { ...state, subtool: 'track-info' }
       : initialState,
   );

@@ -45,7 +45,7 @@ export function globalReducer(state: RootState, action: RootAction) {
       }
 
       Object.assign(draft.routePlanner, cleanState);
-      draft.main.tool = 'measure-dist';
+      draft.main.selection = { type: 'measure-dist' };
     });
   }
 

@@ -10,7 +10,7 @@ import tips from 'fm3/tips/index.json';
 
 import {
   setActiveModal,
-  setTool,
+  selectFeature,
   setEmbedFeatures,
   Tool,
 } from 'fm3/actions/mainActions';
@@ -159,8 +159,8 @@ export const handleLocationChange = (
   }
 
   const tool = query.tool && typeof query.tool === 'string' ? query.tool : null;
-  if (getState().main.tool !== tool) {
-    dispatch(setTool(tool as Tool));
+  if (getState().main.selection?.type !== tool) {
+    dispatch(selectFeature({ type: tool as Tool }));
   }
 
   const trackUID = query['track-uid'];

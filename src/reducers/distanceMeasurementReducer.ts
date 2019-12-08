@@ -34,10 +34,15 @@ export const distanceMeasurementReducer = createReducer<
       );
     }),
   )
-  .handleAction(distanceMeasurementUpdatePoint, (state, action) =>
-    produce(state, draft => {
-      draft.points[action.payload.index] = action.payload.point;
-    }),
+  .handleAction(
+    distanceMeasurementUpdatePoint,
+    (state, { payload: { point } }) =>
+      produce(state, draft => {
+        const p = draft.points.find(p => p.id === point.id);
+        if (p) {
+          Object.assign(p, point);
+        }
+      }),
   )
   .handleAction(distanceMeasurementRemovePoint, (state, action) => ({
     ...state,

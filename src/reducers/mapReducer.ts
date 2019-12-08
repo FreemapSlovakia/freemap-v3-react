@@ -10,11 +10,11 @@ import {
 } from 'fm3/actions/mapActions';
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
-import { setTool, setAppState } from 'fm3/actions/mainActions';
+import { selectFeature, setAppState, Selection } from 'fm3/actions/mainActions';
 
 export interface MapState extends MapStateBase {
   stravaAuth: boolean;
-  tool: string | null; // TODO enum
+  selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
 }
@@ -29,7 +29,7 @@ const initialState: MapState = {
   overlayPaneOpacity: 0.65,
   tileFormat: 'png',
   stravaAuth: false,
-  tool: null,
+  selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
 };
@@ -107,25 +107,27 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     ...state,
     stravaAuth: action.payload,
   }))
-  .handleAction(setTool, (state, action) => {
-    const currentTool = state.tool;
-    const nextTool = action.payload;
+  .handleAction(selectFeature, (state, action) => {
+    const currentSelection = state.selection;
+    const nextSelection = action.payload;
     let overlays = [...state.overlays];
     let removeGalleryOverlayOnGalleryToolQuit = false;
-    if (nextTool === 'gallery' && !overlays.includes('I')) {
+
+    if (nextSelection?.type === 'gallery' && !overlays.includes('I')) {
       overlays.push('I');
       removeGalleryOverlayOnGalleryToolQuit = true;
     } else if (
-      currentTool === 'gallery' &&
-      nextTool !== 'gallery' &&
+      currentSelection?.type === 'gallery' &&
+      nextSelection?.type !== 'gallery' &&
       state.removeGalleryOverlayOnGalleryToolQuit
     ) {
       overlays = overlays.filter(o => o !== 'I');
     }
+
     return {
       ...state,
       overlays,
-      tool: nextTool,
+      selection: nextSelection,
       removeGalleryOverlayOnGalleryToolQuit,
     };
   });

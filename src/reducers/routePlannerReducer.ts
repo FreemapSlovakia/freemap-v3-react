@@ -4,7 +4,7 @@ import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
 import {
   clearMap,
-  setTool,
+  selectFeature,
   setAppState,
   deleteFeature,
 } from 'fm3/actions/mainActions';
@@ -80,7 +80,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.routePlanner };
   })
-  .handleAction(setTool, state => ({
+  .handleAction(selectFeature, state => ({
     ...state,
     pickMode: !state.start ? 'start' : 'finish',
   }))

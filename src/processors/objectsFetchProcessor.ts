@@ -2,7 +2,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { getPoiType } from 'fm3/poiTypes';
 
 import { objectsSetResult, objectsSetFilter } from 'fm3/actions/objectsActions';
-import { setTool, clearMap } from 'fm3/actions/mainActions';
+import { selectFeature, clearMap } from 'fm3/actions/mainActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
@@ -34,7 +34,7 @@ export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
       url: '//overpass-api.de/api/interpreter',
       data: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
-      cancelActions: [objectsSetFilter, clearMap, setTool],
+      cancelActions: [objectsSetFilter, clearMap, selectFeature],
     });
 
     const result = data.elements.map(({ id, center, tags, lat, lon }) => ({

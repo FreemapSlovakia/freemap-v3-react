@@ -64,7 +64,7 @@ const mapStateToProps = (state: RootState) => ({
   change: state.infoPoint.change,
   activeIndex:
     state.main.selection?.type === 'info-point'
-      ? state.main.selection.index
+      ? state.main.selection.index ?? null
       : null,
 });
 

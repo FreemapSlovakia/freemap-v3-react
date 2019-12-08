@@ -47,7 +47,10 @@ export const infoPointReducer = createReducer<InfoPointState, RootAction>(
   }))
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
-      if (action.meta?.selection?.type === 'info-point')
-        draft.points.splice(action.meta.selection.index, 1);
+      if (
+        action.meta?.selection?.type === 'info-point' &&
+        action.meta.selection?.index != undefined
+      )
+        draft.points.splice(action.meta.selection?.index, 1);
     }),
   );

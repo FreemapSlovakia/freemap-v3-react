@@ -12,7 +12,7 @@ export const areaMeasurementAddPoint = createAction(
 
 export const areaMeasurementUpdatePoint = createAction(
   'AREA_MEASUREMENT_UPDATE_POINT',
-)<{ index: number; point: Point }>();
+)<{ point: Point }>();
 
 export const areaMeasurementRemovePoint = createAction(
   'AREA_MEASUREMENT_REMOVE_POINT',

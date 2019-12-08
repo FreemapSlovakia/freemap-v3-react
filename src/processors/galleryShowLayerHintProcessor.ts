@@ -2,13 +2,13 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryPreventLayerHint } from 'fm3/actions/galleryActions';
 import { storage } from 'fm3/storage';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { setTool } from 'fm3/actions/mainActions';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 export const galleryShowLayerHintProcessor: Processor = {
-  actionCreator: setTool,
+  actionCreator: selectFeature,
   handle: async ({ getState, dispatch }) => {
     if (
-      getState().main.tool === 'gallery' &&
+      getState().main.selection?.type === 'gallery' &&
       !getState().map.overlays.includes('I') &&
       !storage.getItem('galleryPreventLayerHint')
     ) {

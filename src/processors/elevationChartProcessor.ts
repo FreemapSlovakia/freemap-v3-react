@@ -9,7 +9,7 @@ import {
   elevationChartSetTrackGeojson,
   elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
-import { setTool } from 'fm3/actions/mainActions';
+import { selectFeature } from 'fm3/actions/mainActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
@@ -96,7 +96,7 @@ async function resolveElevationProfilePointsViaApi(
     expectedStatus: 200,
     cancelActions: [
       elevationChartSetTrackGeojson,
-      setTool,
+      selectFeature,
       elevationChartClose,
     ],
   });

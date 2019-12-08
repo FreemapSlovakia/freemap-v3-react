@@ -6,7 +6,12 @@ import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { setTool, Tool, clearMap } from 'fm3/actions/mainActions';
+import {
+  selectFeature,
+  Tool,
+  clearMap,
+  Selection,
+} from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -42,7 +47,7 @@ class ToolsMenuButtonInt extends React.Component<Props, State> {
 
   handleToolSelect(tool: Tool | null) {
     this.setState({ show: false });
-    this.props.onToolSet(tool);
+    this.props.onSelectionSet(tool && { type: tool });
   }
 
   handleMapClear = () => {
@@ -123,7 +128,7 @@ class ToolsMenuButtonInt extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  tool: state.main.tool,
+  tool: state.main.selection?.type,
   expertMode: state.main.expertMode,
 });
 
@@ -131,8 +136,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMapClear() {
     dispatch(clearMap());
   },
-  onToolSet(tool: Tool | null) {
-    dispatch(setTool(tool));
+  onSelectionSet(tool: Selection | null) {
+    dispatch(selectFeature(tool));
   },
 });
 
