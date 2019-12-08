@@ -159,8 +159,8 @@ export const handleLocationChange = (
   }
 
   const tool = query.tool && typeof query.tool === 'string' ? query.tool : null;
-  if (getState().main.selection?.type !== tool) {
-    dispatch(selectFeature({ type: tool as Tool }));
+  if ((getState().main.selection?.type ?? null) !== tool) {
+    dispatch(selectFeature(tool ? { type: tool as Tool } : null));
   }
 
   const trackUID = query['track-uid'];
