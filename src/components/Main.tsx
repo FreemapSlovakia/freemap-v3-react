@@ -295,7 +295,8 @@ const MainInt: React.FC<Props> = ({
               {tool === 'gallery' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}{' '}
-              {selection && (
+              {(((selection as any)?.id ?? null) || // TODO ugly detection if something is selected
+                ((selection as any)?.index ?? null) !== null) && (
                 <Button title={t('general.delete')} onClick={onDelete}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">
