@@ -49,7 +49,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
   onTip,
 }) => {
   const [show, setShow] = useState(false);
-  const [submenu, setSubmenu] = useState<string | null>(null);
+  const [submenu, setSubmenu] = useState<any>(null);
 
   const button = useRef<Button | null>(null);
 
@@ -90,15 +90,13 @@ const MoreMenuButtonInt: React.FC<Props> = ({
 
   const handleLegendClick = useMenu(onLegend);
 
-  const handleAutoLanguageClick = useMenu(onLanguageChange, null);
-
-  const handleEnglishClick = useMenu(onLanguageChange, 'en');
-
-  const handleSlovakClick = useMenu(onLanguageChange, 'sk');
-
-  const handleCzechClick = useMenu(onLanguageChange, 'cs');
-
-  const handleHungarianClick = useMenu(onLanguageChange, 'hu');
+  const handleLanguageClick = useCallback(
+    (language: any) => {
+      close();
+      onLanguageChange(language);
+    },
+    [onLanguageChange, close],
+  );
 
   const handleTipSelect = useCallback(
     (tip: any) => {
@@ -107,14 +105,6 @@ const MoreMenuButtonInt: React.FC<Props> = ({
     },
     [onTip, close],
   );
-
-  const handleLanguageClick = useCallback(() => {
-    setSubmenu('language');
-  }, []);
-
-  const handleHelpClick = useCallback(() => {
-    setSubmenu('help');
-  }, []);
 
   const handleBackClick = useCallback(() => {
     setSubmenu(null);
@@ -134,64 +124,64 @@ const MoreMenuButtonInt: React.FC<Props> = ({
         placement="bottom"
         show={show}
         onHide={close}
-        target={() => button.current}
+        target={button.current ?? undefined}
         shouldUpdatePosition
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
             {submenu === null ? (
               <>
-                <MenuItem onClick={handleLanguageClick}>
+                <MenuItem eventKey="language" onSelect={setSubmenu}>
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv{' '}
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
                 {user ? (
-                  <MenuItem onClick={handleLogoutClick}>
+                  <MenuItem onSelect={handleLogoutClick}>
                     <FontAwesomeIcon icon="sign-out" />{' '}
                     {t('more.logOut', { name: user.name })}
                   </MenuItem>
                 ) : (
-                  <MenuItem onClick={handleLoginClick}>
+                  <MenuItem onSelect={handleLoginClick}>
                     <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
                   </MenuItem>
                 )}
-                <MenuItem onClick={handleSettingsShowClick}>
+                <MenuItem onSelect={handleSettingsShowClick}>
                   <FontAwesomeIcon icon="cog" /> {t('more.settings')}{' '}
                   <kbd>e</kbd> <kbd>s</kbd>
                 </MenuItem>
                 <MenuItem divider />
-                <MenuItem onClick={handleOpenExternally}>
+                <MenuItem onSelect={handleOpenExternally}>
                   <FontAwesomeIcon icon="external-link" />{' '}
                   {t('external.openInExternal')}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
-                <MenuItem onClick={handlePdfExportClick}>
+                <MenuItem onSelect={handlePdfExportClick}>
                   <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}{' '}
                   <kbd>e</kbd> <kbd>p</kbd>
                 </MenuItem>
-                <MenuItem onClick={handleGpxExportClick}>
+                <MenuItem onSelect={handleGpxExportClick}>
                   <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}{' '}
                   <kbd>e</kbd> <kbd>g</kbd>
                 </MenuItem>
                 <MenuItem
-                  onClick={close}
+                  onSelect={close}
                   href="http://wiki.freemap.sk/FileDownload"
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="!icon-gps-device" />{' '}
                   {t('more.mapExports')}
                 </MenuItem>
-                <MenuItem onClick={handleShareClick}>
+                <MenuItem onSelect={handleShareClick}>
                   <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}{' '}
                   <kbd>e</kbd> <kbd>r</kbd>
                 </MenuItem>
-                <MenuItem onClick={handleEmbedClick}>
+                <MenuItem onSelect={handleEmbedClick}>
                   <FontAwesomeIcon icon="code" /> {t('more.embedMap')}{' '}
                   <kbd>e</kbd> <kbd>e</kbd>
                 </MenuItem>
                 <MenuItem divider />
                 <MenuItem
-                  onClick={close}
+                  onSelect={close}
                   href="http://wiki.freemap.sk/NahlasenieChyby"
                   target="_blank"
                 >
@@ -199,7 +189,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   {t('more.reportMapError')}
                 </MenuItem>
                 <MenuItem
-                  onClick={close}
+                  onSelect={close}
                   href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
                   target="_blank"
                 >
@@ -208,12 +198,12 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 </MenuItem>
                 <MenuItem divider />
                 {['sk', 'cs'].includes(language) && (
-                  <MenuItem onClick={handleHelpClick}>
+                  <MenuItem eventKey="help" onSelect={setSubmenu}>
                     <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
                     <FontAwesomeIcon icon="chevron-right" />
                   </MenuItem>
                 )}
-                <MenuItem onClick={handleSupportUsClick}>
+                <MenuItem onSelect={handleSupportUsClick}>
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
                   {t('more.supportUs')}{' '}
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
@@ -224,17 +214,17 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 <MenuItem header>
                   <FontAwesomeIcon icon="book" /> {t('more.help')}
                 </MenuItem>
-                <MenuItem onClick={handleBackClick}>
+                <MenuItem onSelect={handleBackClick}>
                   <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
                 {['A', 'K', 'T', 'C'].includes(mapType) && (
-                  <MenuItem onClick={handleLegendClick}>
+                  <MenuItem onSelect={handleLegendClick}>
                     <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
                   </MenuItem>
                 )}
-                <MenuItem onClick={handleAboutClick}>
+                <MenuItem onSelect={handleAboutClick}>
                   <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
                 </MenuItem>
                 <MenuItem divider />
@@ -253,7 +243,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <FontAwesomeIcon icon="external-link" />{' '}
                   {t('external.openInExternal')}
                 </MenuItem>
-                <MenuItem onClick={handleBackClick}>
+                <MenuItem onSelect={handleBackClick}>
                   <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
                   <kbd>Esc</kbd>
                 </MenuItem>
@@ -274,37 +264,42 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 <MenuItem header>
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv
                 </MenuItem>
-                <MenuItem onClick={handleBackClick}>
+                <MenuItem onSelect={handleBackClick}>
                   <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
                 <MenuItem
-                  onClick={handleAutoLanguageClick}
+                  eventKey={null}
+                  onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
                   {t('more.automaticLanguage')}
                 </MenuItem>
                 <MenuItem
-                  onClick={handleEnglishClick}
+                  eventKey="en"
+                  onSelect={handleLanguageClick}
                   active={chosenLanguage === 'en'}
                 >
                   English
                 </MenuItem>
                 <MenuItem
-                  onClick={handleSlovakClick}
+                  eventKey="sk"
+                  onSelect={handleLanguageClick}
                   active={chosenLanguage === 'sk'}
                 >
                   Slovensky
                 </MenuItem>
                 <MenuItem
-                  onClick={handleCzechClick}
+                  eventKey="cs"
+                  onSelect={handleLanguageClick}
                   active={chosenLanguage === 'cs'}
                 >
                   Česky
                 </MenuItem>
                 <MenuItem
-                  onClick={handleHungarianClick}
+                  eventKey="hu"
+                  onSelect={handleLanguageClick}
                   active={chosenLanguage === 'hu'}
                 >
                   Magyar
@@ -315,7 +310,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
           {submenu === null && (
             <div style={{ margin: '4px 18px', fontSize: '18px' }}>
               <a
-                onClick={close}
+                onSelect={close}
                 href="https://www.facebook.com/FreemapSlovakia"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -325,7 +320,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 <FontAwesomeIcon icon="facebook-official" />
               </a>{' '}
               <a
-                onClick={close}
+                onSelect={close}
                 href="https://twitter.com/FreemapSlovakia"
                 target="_blank"
                 rel="noopener noreferrer"
@@ -335,7 +330,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 <FontAwesomeIcon icon="twitter" />
               </a>{' '}
               <a
-                onClick={close}
+                onSelect={close}
                 href="https://github.com/FreemapSlovakia"
                 target="_blank"
                 rel="noopener noreferrer"

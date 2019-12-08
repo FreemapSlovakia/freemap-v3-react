@@ -60,6 +60,7 @@ const TrackViewerMenuInt: React.FC<Props> = ({
       </Button>{' '}
       <DropdownButton
         id="colorizing_mode"
+        onSelect={onColorizeTrackBy}
         title={
           <>
             <FontAwesomeIcon icon="paint-brush" />{' '}
@@ -72,7 +73,6 @@ const TrackViewerMenuInt: React.FC<Props> = ({
             eventKey={mode}
             key={mode || 'none'}
             active={mode === colorizeTrackBy}
-            onClick={() => onColorizeTrackBy(mode)}
           >
             {t(`trackViewer.colorizingMode.${mode || 'none'}`)}
           </MenuItem>
@@ -107,8 +107,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onServerUpload() {
     dispatch(trackViewerUploadTrack());
   },
-  onColorizeTrackBy(approach: ColorizingMode | null) {
-    dispatch(trackViewerColorizeTrackBy(approach));
+  onColorizeTrackBy(approach: any) {
+    dispatch(trackViewerColorizeTrackBy(approach as ColorizingMode | null));
   },
   onShowTrackInfo() {
     dispatch(

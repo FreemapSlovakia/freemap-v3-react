@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { translate, splitAndSubstitute } from 'fm3/stringUtils';
 import { Diff } from 'utility-types';
 import { connect } from 'react-redux';

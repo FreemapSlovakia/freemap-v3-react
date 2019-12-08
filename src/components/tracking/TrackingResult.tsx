@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { Polyline, Tooltip, Circle } from 'react-leaflet';
 import { RichMarker } from 'fm3/components/RichMarker';

@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { baseLayers, overlayLayers, AttributionDef } from 'fm3/mapDefinitions';
 import { Translator } from 'fm3/l10nInjector';
 

@@ -143,5 +143,5 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   }))
   .handleAction(deleteFeature, state => ({
     ...state,
-    selection: null,
+    selection: state.selection ? { type: state.selection.type } : null,
   }));

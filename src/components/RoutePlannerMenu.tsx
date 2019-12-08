@@ -147,11 +147,11 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
           <MenuItem>
             <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
           </MenuItem>
-          <MenuItem onClick={handleStartCurrent}>
+          <MenuItem onSelect={handleStartCurrent}>
             <FontAwesomeIcon icon="bullseye" />{' '}
             {t('routePlanner.point.current')}
           </MenuItem>
-          <MenuItem onClick={handleStartHome}>
+          <MenuItem onSelect={handleStartHome}>
             <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
           </MenuItem>
         </DropdownButton2>
@@ -179,11 +179,11 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                 <FontAwesomeIcon icon="map-marker" />{' '}
                 {t('routePlanner.point.pick')}
               </MenuItem>
-              <MenuItem onClick={handleFinishCurrent}>
+              <MenuItem onSelect={handleFinishCurrent}>
                 <FontAwesomeIcon icon="bullseye" />{' '}
                 {t('routePlanner.point.current')}
               </MenuItem>
-              <MenuItem onClick={handleFinishHome}>
+              <MenuItem onSelect={handleFinishHome}>
                 <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
               </MenuItem>
             </DropdownButton2>
@@ -192,6 +192,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       </ButtonGroup>{' '}
       <DropdownButton
         id="transport-type"
+        onSelect={onTransportTypeChange}
         title={
           activeTransportType ? (
             <>
@@ -219,7 +220,6 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
               key={type}
               title={t(`routePlanner.transportType.${type}`)}
               active={transportType === type}
-              onClick={() => onTransportTypeChange(type)}
             >
               <FontAwesomeIcon icon={icon} />
               {['car', 'bikesharing'].includes(type) && (
@@ -241,6 +241,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       </DropdownButton>{' '}
       <DropdownButton
         id="mode"
+        onSelect={onModeChange}
         title={t(`routePlanner.mode.${mode}`)}
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
@@ -250,7 +251,6 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
             key={mode1}
             title={t(`routePlanner.mode.${mode1}`)}
             active={mode === mode1}
-            onClick={() => onModeChange(mode1)}
           >
             {t(`routePlanner.mode.${mode1}`)}
           </MenuItem>
@@ -261,6 +261,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
           {' '}
           <DropdownButton
             id="transport-type"
+            onSelect={onAlternativeChange}
             title={
               transportType === 'imhd' &&
               activeAlternative.extra &&
@@ -278,7 +279,6 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                 eventKey={i}
                 key={i}
                 active={i === activeAlternativeIndex}
-                onClick={() => onAlternativeChange(i)}
               >
                 {transportType === 'imhd' && extra?.price
                   ? imhdSummary(t, language, extra)
@@ -355,11 +355,11 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onItineraryVisibilityToggle() {
     dispatch(routePlannerToggleItineraryVisibility());
   },
-  onTransportTypeChange(transportType: TransportType) {
-    dispatch(routePlannerSetTransportType(transportType));
+  onTransportTypeChange(transportType: any) {
+    dispatch(routePlannerSetTransportType(transportType as TransportType));
   },
-  onModeChange(mode: 'trip' | 'roundtrip' | 'route') {
-    dispatch(routePlannerSetMode(mode));
+  onModeChange(mode: any) {
+    dispatch(routePlannerSetMode(mode as 'trip' | 'roundtrip' | 'route'));
   },
   onPickPointModeChange(pickMode: 'start' | 'finish') {
     dispatch(routePlannerSetPickMode(pickMode));
@@ -383,8 +383,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToggleElevationChart() {
     dispatch(routePlannerToggleElevationChart());
   },
-  onAlternativeChange(index: number) {
-    dispatch(routePlannerSetActiveAlternativeIndex(index));
+  onAlternativeChange(index: any) {
+    dispatch(routePlannerSetActiveAlternativeIndex(index as number));
   },
   onEndsSwap() {
     dispatch(routePlannerSwapEnds());

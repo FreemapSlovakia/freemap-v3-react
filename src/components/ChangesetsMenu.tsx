@@ -65,13 +65,14 @@ class ChangesetsMenuInt extends React.Component<Props> {
     });
   };
 
+  handleSelect = (d: any) => {
+    if (this.canSearchWithThisAmountOfDays(d)) {
+      this.props.onChangesetsSetDays(d);
+    }
+  };
+
   render() {
-    const {
-      days,
-      onChangesetsSetDays,
-      onChangesetsSetAuthorNameAndRefresh,
-      t,
-    } = this.props;
+    const { days, onChangesetsSetAuthorNameAndRefresh, t } = this.props;
     const { authorName } = this.state;
 
     return (
@@ -80,17 +81,14 @@ class ChangesetsMenuInt extends React.Component<Props> {
           <ButtonGroup>
             <DropdownButton
               id="days"
+              onSelect={this.handleSelect}
               title={t('changesets.olderThanFull', { days })}
             >
               {[3, 7, 14, 30].map(d => (
                 <MenuItem
                   key={d}
+                  eventKey={d}
                   disabled={!this.canSearchWithThisAmountOfDays(d)}
-                  onClick={() =>
-                    this.canSearchWithThisAmountOfDays(d)
-                      ? onChangesetsSetDays(d)
-                      : false
-                  }
                 >
                   {t('changesets.olderThan', { days: d })}
                 </MenuItem>

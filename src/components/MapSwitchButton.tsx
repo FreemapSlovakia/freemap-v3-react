@@ -52,7 +52,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   );
 
   const handleOverlaySelect = useCallback(
-    (e: React.MouseEvent<{}>, overlay: string) => {
+    (overlay: any, e: React.SyntheticEvent<{}>) => {
       const { dataset } = e.target as HTMLElement;
 
       if (dataset && dataset.strava) {
@@ -86,7 +86,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
         placement="top"
         show={show}
         onHide={handleHide}
-        target={() => buttonRef.current}
+        target={buttonRef.current ?? undefined}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
@@ -139,7 +139,8 @@ const MapSwitchButtonInt: React.FC<Props> = ({
               .map(({ type, icon, minZoom, key, strava }) => (
                 <MenuItem
                   key={type}
-                  onClick={e => handleOverlaySelect(e, type)}
+                  eventKey={type}
+                  onSelect={handleOverlaySelect as any}
                 >
                   <FontAwesomeIcon
                     icon={

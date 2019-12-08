@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import * as React from 'react';
+import React from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';

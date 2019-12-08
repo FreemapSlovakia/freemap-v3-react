@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React from 'react';
 import { Tooltip, CircleMarker } from 'react-leaflet';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { TrackPoint } from 'fm3/types/trackingTypes';

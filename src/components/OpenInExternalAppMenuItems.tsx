@@ -134,30 +134,16 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
             window.open(`https://www.google.com/maps/@${lat},${lon},${zoom}z`);
           }
           break;
-        case 'mapy.cz/ophoto':
+        case 'mapy.cz':
           window.open(
             `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
               zoom > 19 ? 19 : zoom
-            }&base=ophoto${
-              includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''
-            }`,
+            }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`,
           );
           break;
         case 'oma.sk':
           window.open(
             `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`,
-          );
-          break;
-        case 'mojamapa.sk':
-          window.open(`https://mojamapa.sk?op=C-${lon}-${lat}`);
-          break;
-        case 'routing-debug':
-          window.open(
-            `https://routing.epsilon.sk/debug.php?lat=${lat}&lon=${lon}&zoom=${zoom}&profil=${{
-              C: 'bike',
-              K: 'ski',
-              A: 'car',
-            }[mapType] || 'foot'}`,
           );
           break;
         case 'url':
@@ -259,11 +245,8 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       <MenuItem data-where="hiking.sk" onClick={handleMenuItemClick}>
         {t('external.hiking_sk')}
       </MenuItem>
-      <MenuItem data-where="mapy.cz/ophoto" onClick={handleMenuItemClick}>
-        {t('external.mapy_cz-aerial')}
-      </MenuItem>
-      <MenuItem data-where="mojamapa.sk" onClick={handleMenuItemClick}>
-        {t('external.mojamapa_sk')}
+      <MenuItem data-where="mapy.cz" onClick={handleMenuItemClick}>
+        {t('external.mapy_cz')}
       </MenuItem>
       <MenuItem divider />
       {expertMode && (
