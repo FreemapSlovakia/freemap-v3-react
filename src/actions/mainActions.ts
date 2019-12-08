@@ -112,6 +112,7 @@ export interface OtherSelection {
     | 'measure-ele'
     | 'measure-dist'
     | 'measure-area';
+  id?: undefined;
 }
 
 export type Selection = InfoPointSelection | ObjectsSelection | OtherSelection;
