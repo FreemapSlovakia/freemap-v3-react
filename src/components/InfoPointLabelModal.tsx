@@ -82,10 +82,10 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => ({
   label:
-    state.main.selection?.type !== 'info-point' ||
-    typeof state.main.selection?.id !== 'number'
-      ? '???'
-      : state.infoPoint.points[state.main.selection?.id].label,
+    state.main.selection?.type === 'info-point' &&
+    state.main.selection?.id !== undefined
+      ? state.infoPoint.points[state.main.selection?.id].label
+      : '???',
   index:
     state.main.selection?.type === 'info-point'
       ? state.main.selection?.id ?? null

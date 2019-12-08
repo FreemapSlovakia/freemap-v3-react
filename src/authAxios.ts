@@ -93,9 +93,5 @@ function createValidateStatus(expectedStatus: number | number[] = 200) {
     return (status: number) => expectedStatus.includes(status);
   }
 
-  if (typeof expectedStatus === 'function') {
-    return expectedStatus;
-  }
-
   throw new Error('invalid expectedStatus');
 }
