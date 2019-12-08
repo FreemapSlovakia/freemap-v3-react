@@ -25,8 +25,6 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-// function useCallback<T extends (...args: any[]) => any>(callback: T, deps: DependencyList): T;
-
 const MoreMenuButtonInt: React.FC<Props> = ({
   user,
   t,
