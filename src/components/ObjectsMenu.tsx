@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -21,96 +21,82 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface State {
-  filter: string;
-  dropdownOpened: boolean;
-}
+const ObjectsMenuInt: React.FC<Props> = ({ t, zoom, onLowZoom, onSearch }) => {
+  const [filter, setFilter] = useState('');
+  const [dropdownOpened, setDropdownOpened] = useState(false);
 
-class ObjectsMenuInt extends React.Component<Props, State> {
-  state: State = {
-    filter: '',
-    dropdownOpened: false,
-  };
+  const handleFilterSet = useCallback((e: React.FormEvent<FormControl>) => {
+    setFilter((e.target as HTMLInputElement).value);
+  }, []);
 
-  getGroupMenuItems = ({ id: gid }: { id: number }, showDivider: boolean) => {
-    const { t } = this.props;
+  const handleToggle = useCallback(() => {
+    setDropdownOpened(!dropdownOpened);
+  }, [dropdownOpened]);
 
-    const items = poiTypes
-      .filter(({ group }) => group === gid)
-      .filter(
-        ({ id }) =>
-          t(`objects.subcategories.${id}`)
-            .toLowerCase()
-            .indexOf(this.state.filter.toLowerCase()) !== -1,
-      )
-      .map(({ group, id, icon }) => (
-        <MenuItem key={id} eventKey={id} onSelect={this.handleSelect}>
-          <img
-            src={require(`../images/mapIcons/${icon}.png`)}
-            alt={`${group}-${icon}`}
-          />{' '}
-          {t(`objects.subcategories.${id}`)}
-        </MenuItem>
-      ));
+  const handleSelect = useCallback(
+    (id: any) => {
+      if (zoom < 12) {
+        onLowZoom();
+      } else {
+        onSearch(id as number);
+      }
+    },
+    [zoom, onLowZoom, onSearch],
+  );
 
-    return items.length === 0 ? null : (
-      <React.Fragment key={gid}>
-        {showDivider && <MenuItem divider />}
-        <MenuItem header>{t(`objects.categories.${gid}`)}</MenuItem>
-        {items}
-      </React.Fragment>
-    );
-  };
+  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
 
-  handleFilterSet = (e: React.FormEvent<FormControl>) => {
-    this.setState({ filter: (e.target as HTMLInputElement).value });
-  };
+  return (
+    <>
+      <Dropdown
+        className="dropdown-long"
+        id="objectsMenuDropdown"
+        onToggle={handleToggle}
+        open={dropdownOpened}
+      >
+        <FormGroup2 bsRole="toggle">
+          <FormControl
+            type="text"
+            placeholder={t('objects.type')}
+            onChange={handleFilterSet}
+            value={filter}
+          />
+        </FormGroup2>
+        <Dropdown.Menu>
+          {poiTypeGroups.map((pointTypeGroup, i) => {
+            const gid = pointTypeGroup.id;
 
-  handleToggle = () => {
-    this.setState(state => ({
-      dropdownOpened: !state.dropdownOpened,
-    }));
-  };
+            const items = poiTypes
+              .filter(({ group }) => group === gid)
+              .filter(
+                ({ id }) =>
+                  t(`objects.subcategories.${id}`)
+                    .toLowerCase()
+                    .indexOf(filter.toLowerCase()) !== -1,
+              )
+              .map(({ group, id, icon }) => (
+                <MenuItem key={id} eventKey={id} onSelect={handleSelect}>
+                  <img
+                    src={require(`../images/mapIcons/${icon}.png`)}
+                    alt={`${group}-${icon}`}
+                  />{' '}
+                  {t(`objects.subcategories.${id}`)}
+                </MenuItem>
+              ));
 
-  handleSelect = (id: any) => {
-    if (this.props.zoom < 12) {
-      this.props.onLowZoom();
-    } else {
-      this.props.onSearch(id as number);
-    }
-  };
-
-  render() {
-    const { t } = this.props;
-
-    const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
-
-    return (
-      <>
-        <Dropdown
-          className="dropdown-long"
-          id="objectsMenuDropdown"
-          onToggle={this.handleToggle}
-          open={this.state.dropdownOpened}
-        >
-          <FormGroup2 bsRole="toggle">
-            <FormControl
-              type="text"
-              placeholder={t('objects.type')}
-              onChange={this.handleFilterSet}
-              value={this.state.filter}
-            />
-          </FormGroup2>
-          <Dropdown.Menu>
-            {poiTypeGroups.map((pointTypeGroup, i) =>
-              this.getGroupMenuItems(pointTypeGroup, i > 0),
-            )}
-          </Dropdown.Menu>
-        </Dropdown>
-      </>
-    );
-  }
-}
+            return items.length === 0 ? null : (
+              <React.Fragment key={gid}>
+                {i > 0 && <MenuItem divider />}
+                <MenuItem header>{t(`objects.categories.${gid}`)}</MenuItem>
+                {items}
+              </React.Fragment>
+            );
+          })}
+        </Dropdown.Menu>
+      </Dropdown>
+    </>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,
