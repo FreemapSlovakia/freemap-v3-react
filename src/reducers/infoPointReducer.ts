@@ -49,8 +49,8 @@ export const infoPointReducer = createReducer<InfoPointState, RootAction>(
     produce(state, draft => {
       if (
         action.meta?.selection?.type === 'info-point' &&
-        action.meta.selection?.index != undefined
+        action.meta.selection?.id != undefined
       )
-        draft.points.splice(action.meta.selection?.index, 1);
+        draft.points.splice(action.meta.selection?.id, 1);
     }),
   );

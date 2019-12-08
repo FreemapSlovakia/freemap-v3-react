@@ -64,7 +64,7 @@ const mapStateToProps = (state: RootState) => ({
   change: state.infoPoint.change,
   activeIndex:
     state.main.selection?.type === 'info-point'
-      ? state.main.selection.index ?? null
+      ? state.main.selection.id ?? null
       : null,
 });
 
@@ -73,7 +73,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(infoPointChangePosition({ index, lat, lon }));
   },
   onSelect(index: number) {
-    dispatch(selectFeature({ type: 'info-point', index }));
+    dispatch(selectFeature({ type: 'info-point', id: index }));
   },
 });
 

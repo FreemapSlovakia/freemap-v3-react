@@ -68,7 +68,9 @@ const mapStateToProps = (state: RootState) => ({
   objects: state.objects.objects,
   language: state.l10n.language,
   activeId:
-    state.main.selection?.type === 'objects' ? state.main.selection.id : null,
+    state.main.selection?.type === 'objects'
+      ? state.main.selection.id ?? null
+      : null,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

@@ -93,12 +93,7 @@ export const deleteFeature = createAction('DELETE_FEATURE')<
 
 export interface InfoPointSelection {
   type: 'info-point';
-  index?: number;
-}
-
-export interface DistanceMeasurementSelection {
-  type: 'measure-dist';
-  index?: number;
+  id?: number;
 }
 
 export interface ObjectsSelection {
@@ -115,13 +110,10 @@ export interface OtherSelection {
     | 'tracking'
     | 'route-planner'
     | 'measure-ele'
+    | 'measure-dist'
     | 'measure-area';
 }
 
-export type Selection =
-  | InfoPointSelection
-  | DistanceMeasurementSelection
-  | ObjectsSelection
-  | OtherSelection;
+export type Selection = InfoPointSelection | ObjectsSelection | OtherSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
