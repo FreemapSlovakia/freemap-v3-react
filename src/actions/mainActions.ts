@@ -83,13 +83,7 @@ export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<string>();
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
-export const deleteFeature = createAction('DELETE_FEATURE')<
-  undefined,
-  | undefined
-  | {
-      selection?: Selection | null;
-    }
->();
+export const deleteFeature = createAction('DELETE_FEATURE')<Selection | null>();
 
 export interface InfoPointSelection {
   type: 'info-point';

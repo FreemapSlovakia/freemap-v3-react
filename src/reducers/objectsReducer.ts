@@ -26,7 +26,7 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
     };
   })
   .handleAction(deleteFeature, (state, action) => {
-    const selection = action.meta?.selection;
+    const selection = action.payload;
     return selection?.type === 'objects'
       ? {
           ...state,

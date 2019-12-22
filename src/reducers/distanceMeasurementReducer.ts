@@ -53,5 +53,5 @@ export const distanceMeasurementReducer = createReducer<
     points: action.payload,
   }))
   .handleAction(deleteFeature, (state, action) =>
-    action?.meta?.selection?.type === 'measure-dist' ? initialState : state,
+    action.payload?.type === 'measure-dist' ? initialState : state,
   );

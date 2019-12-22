@@ -81,7 +81,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(elevationMeasurementSetPoint(point));
   },
   onSelect() {
-    dispatch(selectFeature({ type: 'measure-ele' }));
+    dispatch(selectFeature({ type: 'measure-ele', id: null }));
   },
   onValueShow(point: LatLon, elevation: number | null) {
     dispatch(

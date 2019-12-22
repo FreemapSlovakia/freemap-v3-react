@@ -100,7 +100,6 @@ import { authInitProcessor } from './processors/authInitProcessor';
 import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
-import { deletefeatureTransformer } from './processors/deleteFeatureProcessor';
 
 const reducers = {
   areaMeasurement: areaMeasurementReducer,
@@ -136,7 +135,6 @@ const rootReducer = reduceReducers<RootState>(combinedReducers, globalReducer);
 processors.push(
   errorProcessor,
   cancelProcessor,
-  deletefeatureTransformer,
   authLogoutProcessor,
   searchProcessor,
   searchHighlightProcessor,

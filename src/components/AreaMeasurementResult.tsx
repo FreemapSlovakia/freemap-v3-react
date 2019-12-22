@@ -243,7 +243,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(areaMeasurementRemovePoint(i));
   },
   onSelect() {
-    dispatch(selectFeature({ type: 'measure-area' }));
+    dispatch(selectFeature({ type: 'measure-area', id: null }));
   },
   onValueShow(areaSize: number) {
     dispatch(

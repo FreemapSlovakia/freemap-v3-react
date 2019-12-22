@@ -199,7 +199,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     activeAlternativeIndex: action.payload,
   }))
   .handleAction(deleteFeature, (state, action) =>
-    action?.meta?.selection?.type === 'route-planner'
+    action?.payload?.type === 'route-planner'
       ? {
           ...initialState,
           transportType: state.transportType,

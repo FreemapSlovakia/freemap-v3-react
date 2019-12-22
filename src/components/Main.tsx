@@ -70,7 +70,11 @@ import { AsyncLegendModal } from 'fm3/components/AsyncLegendModal';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
-import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  deleteFeature,
+  Selection,
+} from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -228,6 +232,10 @@ const MainInt: React.FC<Props> = ({
     e.stopPropagation();
   }, []);
 
+  const handleDeleteClick = useCallback(() => {
+    onDelete(selection);
+  }, [onDelete, selection]);
+
   const embedToolDef = embed && toolDefinitions.find(td => td.tool === tool);
 
   return (
@@ -295,8 +303,8 @@ const MainInt: React.FC<Props> = ({
               {tool === 'gallery' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}{' '}
-              {(selection?.id ?? null) !== null && (
-                <Button title={t('general.delete')} onClick={onDelete}>
+              {selection?.id !== undefined && (
+                <Button title={t('general.delete')} onClick={handleDeleteClick}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">
                     {' '}
@@ -453,8 +461,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPictureUpdated(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
     dispatch(galleryMergeItem(item));
   },
-  onDelete() {
-    dispatch(deleteFeature(undefined, undefined));
+  onDelete(selection: Selection | null) {
+    dispatch(deleteFeature(selection));
   },
 });
 

@@ -32,5 +32,5 @@ export const elevationMeasurementReducer = createReducer<
     elevation: null,
   }))
   .handleAction(deleteFeature, (state, action) =>
-    action?.meta?.selection?.type === 'measure-ele' ? initialState : state,
+    action?.payload?.type === 'measure-ele' ? initialState : state,
   );

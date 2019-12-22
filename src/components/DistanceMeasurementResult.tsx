@@ -241,7 +241,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(distanceMeasurementRemovePoint(id));
   },
   onSelect() {
-    dispatch(selectFeature({ type: 'measure-dist' }));
+    dispatch(selectFeature({ type: 'measure-dist', id: null }));
   },
 });
 
