@@ -6,18 +6,28 @@ export interface Point {
   id: number;
 }
 
+export interface Line {
+  type: 'area' | 'distance';
+  points: Point[];
+}
+
 export const distanceMeasurementAddPoint = createAction(
   'DISTANCE_MEASUREMENT_ADD_POINT',
-)<{ point: Point; position?: number }>();
+)<{
+  type?: 'area' | 'distance';
+  index?: number;
+  point: Point;
+  position?: number;
+}>();
 
 export const distanceMeasurementUpdatePoint = createAction(
   'DISTANCE_MEASUREMENT_UPDATE_POINT',
-)<{ point: Point }>();
+)<{ index: number; point: Point }>();
 
 export const distanceMeasurementRemovePoint = createAction(
   'DISTANCE_MEASUREMENT_REMOVE_POINT',
-)<number>();
+)<{ index: number; id: number }>();
 
 export const distanceMeasurementSetPoints = createAction(
-  'DISTANCE_MEASUREMENT_SET_POINTS',
-)<Point[]>();
+  'DISTANCE_MEASUREMENT_SET_LINES',
+)<Line[]>();

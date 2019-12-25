@@ -48,8 +48,10 @@ import {
   changesetsSetAuthorName,
   changesetsSet,
 } from 'fm3/actions/changesetsActions';
-import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
-import { areaMeasurementSetPoints } from 'fm3/actions/areaMeasurementActions';
+import {
+  distanceMeasurementSetPoints,
+  Line,
+} from 'fm3/actions/distanceMeasurementActions';
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
@@ -70,7 +72,9 @@ export const handleLocationChange = (
 ): void => {
   const { getState, dispatch } = store;
 
-  const query = queryString.parse(location.search);
+  const query = queryString.parse(document.location.search); // TODO replace with params
+  const params = new URL(document.location.href)
+    .searchParams as URLSearchParams & Map<string, string>;
 
   {
     const points =
@@ -204,37 +208,31 @@ export const handleLocationChange = (
     dispatch(changesetsSet([]));
   }
 
-  ['distance', 'area'].forEach(type => {
-    const pq = query[`${type}-measurement-points`];
-    if (typeof pq === 'string') {
-      const measurePoints = pq
-        .split(',')
-        .map(point => point.split('/').map(coord => parseFloat(coord)))
-        .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
-      if (
-        serializePoints(measurePoints) !==
-        serializePoints(getState()[`${type}Measurement`].points)
-      ) {
-        dispatch(
-          (type === 'distance'
-            ? distanceMeasurementSetPoints
-            : areaMeasurementSetPoints)(
-            measurePoints.some(
-              ({ lat, lon }) => Number.isNaN(lat) || Number.isNaN(lon),
-            )
-              ? []
-              : measurePoints,
-          ),
-        );
-      }
-    } else if (getState()[`${type}Measurement`].points.length) {
-      dispatch(
-        (type === 'distance'
-          ? distanceMeasurementSetPoints
-          : areaMeasurementSetPoints)([]),
-      );
+  const aa: Line[] = [];
+
+  for (const [key, value] of params) {
+    if (
+      key === 'distance-measurement-points' ||
+      key === 'area-measurement-points'
+    ) {
+      aa.push({
+        type: key === 'distance-measurement-points' ? 'distance' : 'area',
+        points: value
+          .split(',')
+          .map(point => point.split('/').map(coord => parseFloat(coord)))
+          .map((pair, id) => ({ lat: pair[0], lon: pair[1], id })),
+      });
     }
-  });
+  }
+
+  if (
+    aa.map(serializePoints).join(';') !==
+    getState()
+      .distanceMeasurement.lines.map(serializePoints)
+      .join(';')
+  ) {
+    dispatch(distanceMeasurementSetPoints(aa));
+  }
 
   const elvMeasPoint = query['elevation-measurement-point'];
   const emMatch =
@@ -606,8 +604,10 @@ function handleInfoPoint(
   }
 }
 
-function serializePoints(points: LatLon[]): string {
-  return points.map(point => serializePoint(point)).join(',');
+function serializePoints(line: Line): string {
+  return `${line.type}:${line.points
+    .map(point => serializePoint(point))
+    .join(',')}`;
 }
 
 function serializePoint(point: LatLon | null): string {

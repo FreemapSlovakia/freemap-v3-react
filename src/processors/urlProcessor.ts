@@ -6,7 +6,6 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
 import { distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
-import { areaMeasurementUpdatePoint } from 'fm3/actions/areaMeasurementActions';
 
 const tipKeys = allTips.map(([key]) => key);
 
@@ -25,7 +24,6 @@ export const urlProcessor: Processor = {
       infoPoint,
       changesets,
       distanceMeasurement,
-      areaMeasurement,
       elevationMeasurement,
       gallery: { filter: galleryFilter },
       main,
@@ -39,11 +37,10 @@ export const urlProcessor: Processor = {
     }
 
     const next = [
-      areaMeasurement.points,
       auth.chooseLoginMethod,
       changesets.authorName,
       changesets.days,
-      distanceMeasurement.points,
+      distanceMeasurement.lines,
       elevationMeasurement.point,
       gallery.activeImageId,
       gallery.filter,
@@ -171,17 +168,9 @@ export const urlProcessor: Processor = {
       );
     }
 
-    if (distanceMeasurement.points?.length) {
+    for (const line of distanceMeasurement.lines) {
       queryParts.push(
-        `distance-measurement-points=${distanceMeasurement.points
-          .map(point => serializePoint(point))
-          .join(',')}`,
-      );
-    }
-
-    if (areaMeasurement.points?.length) {
-      queryParts.push(
-        `area-measurement-points=${areaMeasurement.points
+        `${line.type}-measurement-points=${line.points
           .map(point => serializePoint(point))
           .join(',')}`,
       );
@@ -315,14 +304,7 @@ export const urlProcessor: Processor = {
     if (window.location.search !== search) {
       const method =
         lastActionType &&
-        isActionOf(
-          [
-            mapRefocus,
-            distanceMeasurementUpdatePoint,
-            areaMeasurementUpdatePoint,
-          ],
-          action,
-        )
+        isActionOf([mapRefocus, distanceMeasurementUpdatePoint], action)
           ? 'replace'
           : 'push';
       history[method]({ pathname: '/', search });

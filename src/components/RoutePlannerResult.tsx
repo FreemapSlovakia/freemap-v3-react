@@ -479,10 +479,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onAlternativeChange(index: number) {
     dispatch(routePlannerSetActiveAlternativeIndex(index));
-    dispatch(selectFeature({ type: 'route-planner', id: null }));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
   onSelect() {
-    dispatch(selectFeature({ type: 'route-planner', id: null }));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
 });
 

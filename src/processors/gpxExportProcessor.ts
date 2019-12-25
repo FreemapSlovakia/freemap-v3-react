@@ -49,7 +49,6 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     const {
       distanceMeasurement,
-      areaMeasurement,
       elevationMeasurement,
       infoPoint,
       objects,
@@ -83,10 +82,6 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     if (set.has('distanceMeasurement')) {
       addADMeasurement(doc, distanceMeasurement);
-    }
-
-    if (set.has('areaMeasurement')) {
-      addADMeasurement(doc, areaMeasurement); // TODO add info about area
     }
 
     if (set.has('elevationMeasurement')) {
@@ -350,14 +345,14 @@ function addPictures(doc: Document, pictures) {
   });
 }
 
-function addADMeasurement(doc: Document, { points }: DistanceMeasurementState) {
-  const trkEle = createElement(doc.documentElement, 'trk');
-  const trksegEle = createElement(trkEle, 'trkseg');
+function addADMeasurement(doc: Document, { lines }: DistanceMeasurementState) {
+  for (const line of lines) {
+    const trkEle = createElement(doc.documentElement, 'trk');
+    const trksegEle = createElement(trkEle, 'trkseg');
 
-  if (points.length) {
-    points.forEach(({ lat, lon }) => {
+    for (const { lat, lon } of line.points) {
       createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
-    });
+    }
   }
 }
 

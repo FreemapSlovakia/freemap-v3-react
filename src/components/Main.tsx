@@ -22,8 +22,7 @@ import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
 import { ObjectsResult } from 'fm3/components/ObjectsResult';
 
 import { MeasurementMenu } from 'fm3/components/MeasurementMenu';
-import { DistanceMeasurementResult } from 'fm3/components/DistanceMeasurementResult';
-import { AreaMeasurementResult } from 'fm3/components/AreaMeasurementResult';
+import { DistanceMeasurementResults } from 'fm3/components/DistanceMeasurementResults';
 import { ElevationMeasurementResult } from 'fm3/components/ElevationMeasurementResult';
 import { LocationResult } from 'fm3/components/LocationResult';
 
@@ -386,9 +385,8 @@ const MainInt: React.FC<Props> = ({
               <SearchResults />
               <ObjectsResult />
               <RoutePlannerResult />
-              <DistanceMeasurementResult />
+              <DistanceMeasurementResults />
               <ElevationMeasurementResult />
-              <AreaMeasurementResult />
               <LocationResult />
               <TrackViewerResult />
               <InfoPointResult />

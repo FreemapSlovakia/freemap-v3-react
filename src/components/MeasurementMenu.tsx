@@ -8,12 +8,9 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
 import {
   distanceMeasurementAddPoint,
-  Point as DistancePoint,
+  Point,
 } from 'fm3/actions/distanceMeasurementActions';
-import {
-  areaMeasurementAddPoint,
-  Point as AreaPoint,
-} from 'fm3/actions/areaMeasurementActions';
+
 import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 
 import {
@@ -38,14 +35,11 @@ type Props = ReturnType<typeof mapStateToProps> &
 const MeasurementMenuInt: React.FC<Props> = ({
   onToolSet,
   selection,
-  routeDefined,
   elevationChartTrackGeojson,
   t,
   onElePointSet,
-  areaPoints,
   distancePoints,
   onDistPointAdd,
-  onAreaPointAdd,
   onElevationChartTrackGeojsonSet,
   onElevationChartClose,
 }) => {
@@ -58,7 +52,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         return;
       }
 
-      const points = tool === 'measure-area' ? areaPoints : distancePoints;
+      const points = distancePoints;
 
       const pos = position ? Math.ceil(position / 2) : points.length;
 
@@ -74,22 +68,14 @@ const MeasurementMenuInt: React.FC<Props> = ({
         id = (points[pos - 1].id + points[pos].id) / 2;
       }
 
-      if (tool === 'measure-dist') {
-        onDistPointAdd({ lat, lon, id }, pos);
-      }
-
-      if (tool === 'measure-area') {
-        onAreaPointAdd({ lat, lon, id }, pos);
-      }
+      onDistPointAdd(
+        tool === 'measure-dist' ? 'distance' : 'area',
+        selection?.id,
+        { lat, lon, id },
+        pos,
+      );
     },
-    [
-      selection,
-      areaPoints,
-      distancePoints,
-      onElePointSet,
-      onDistPointAdd,
-      onAreaPointAdd,
-    ],
+    [selection, distancePoints, onElePointSet, onDistPointAdd],
   );
 
   useEffect(() => {
@@ -150,7 +136,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         <Button
           active={elevationChartTrackGeojson !== null}
           onClick={toggleElevationChart}
-          disabled={!routeDefined}
+          disabled={distancePoints.length > 1}
         >
           <FontAwesomeIcon icon="bar-chart" />
           <span className="hidden-xs"> {t('general.elevationProfile')}</span>
@@ -162,9 +148,12 @@ const MeasurementMenuInt: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => ({
   selection: state.main.selection,
-  distancePoints: state.distanceMeasurement.points,
-  areaPoints: state.areaMeasurement.points,
-  routeDefined: state.distanceMeasurement.points.length > 1,
+  distancePoints:
+    (state.main.selection?.type === 'measure-dist' ||
+      state.main.selection?.type === 'measure-area') &&
+    state.main.selection.id != null
+      ? state.distanceMeasurement.lines[state.main.selection.id].points
+      : [],
   elevationChartTrackGeojson: state.elevationChart.trackGeojson,
 });
 
@@ -178,11 +167,13 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onElevationChartClose() {
     dispatch(elevationChartClose());
   },
-  onAreaPointAdd(point: AreaPoint, position: number) {
-    dispatch(areaMeasurementAddPoint({ point, position }));
-  },
-  onDistPointAdd(point: DistancePoint, position: number) {
-    dispatch(distanceMeasurementAddPoint({ point, position }));
+  onDistPointAdd(
+    type: 'area' | 'distance',
+    index: number | undefined,
+    point: Point,
+    position: number,
+  ) {
+    dispatch(distanceMeasurementAddPoint({ index, point, position, type }));
   },
   onElePointSet(point: LatLon) {
     dispatch(elevationMeasurementSetPoint(point));

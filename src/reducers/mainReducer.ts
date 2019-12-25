@@ -21,6 +21,7 @@ import {
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
+import { distanceMeasurementSetPoints } from 'fm3/actions/distanceMeasurementActions';
 
 interface Location extends LatLon {
   accuracy: number;
@@ -141,7 +142,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     selection: action.payload,
   }))
-  .handleAction(deleteFeature, state => ({
+  .handleAction([distanceMeasurementSetPoints, deleteFeature], state => ({
     ...state,
     selection: state.selection ? { type: state.selection.type } : null,
   }));

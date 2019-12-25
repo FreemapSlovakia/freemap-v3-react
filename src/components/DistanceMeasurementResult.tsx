@@ -31,11 +31,17 @@ const circularIcon = divIcon({
   html: '<div class="circular-leaflet-marker-icon"></div>',
 });
 
+type OwnProps = {
+  index: number;
+};
+
 type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> &
+  OwnProps;
 
 const DistanceMeasurementResultInt: React.FC<Props> = ({
-  points,
+  line,
+  index,
   onPointAdd,
   onPointUpdate,
   onPointRemove,
@@ -43,6 +49,10 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   language,
   selected,
 }) => {
+  const points = line.points;
+
+  const [coords, setCoords] = useState<LatLon | undefined>();
+
   const handleMouseMove = useCallback(
     (lat: number, lon: number, originalEvent) => {
       setCoords(
@@ -59,6 +69,10 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    if (!selected) {
+      return;
+    }
+
     mapEventEmitter.on('mouseMove', handleMouseMove);
     mapEventEmitter.on('mouseOut', handleMouseOut);
 
@@ -66,9 +80,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       mapEventEmitter.removeListener('mouseMove', handleMouseMove);
       mapEventEmitter.removeListener('mouseOut', handleMouseOut);
     };
-  }, [handleMouseMove, handleMouseOut]);
-
-  const [coords, setCoords] = useState<LatLon | undefined>();
+  }, [selected, handleMouseMove, handleMouseOut]);
 
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position: number, id0: number) => {
@@ -87,23 +99,23 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
         id = (points[pos - 1].id + points[pos].id) / 2;
       }
 
-      onPointAdd({ lat, lon, id }, pos);
+      onPointAdd(index, { lat, lon, id }, pos);
     },
-    [points, onPointAdd],
+    [index, points, onPointAdd],
   );
 
   const handleMeasureMarkerDrag = useCallback(
     ({ latlng: { lat, lng: lon } }, id: number) => {
-      onPointUpdate({ lat, lon, id });
+      onPointUpdate(index, { lat, lon, id });
     },
-    [onPointUpdate],
+    [index, onPointUpdate],
   );
 
   const handleMarkerClick = useCallback(
     (id: number) => {
-      onPointRemove(id);
+      onPointRemove(index, id);
     },
-    [onPointRemove],
+    [index, onPointRemove],
   );
 
   let prev: Point | null = null;
@@ -133,20 +145,24 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
     [language],
   );
 
+  const handleSelect = useCallback(() => {
+    onSelect(line.type, index);
+  }, [onSelect, index]);
+
   return (
     <>
       {ps.length > 2 && (
         <Polyline
           weight={4}
           interactive
-          onclick={onSelect}
+          onclick={handleSelect}
           color={selected ? '#65b2ff' : 'blue'}
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
         />
       )}
-      {!!(ps.length && coords) && (
+      {!!(ps.length && coords && selected) && (
         <Polyline
           weight={4}
           interactive={false}
@@ -167,7 +183,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
 
         return i % 2 === 0 ? (
           <Marker
-            key={`95Lp1ukO7F-${p.id}`}
+            key={p.id}
             draggable
             position={{ lat: p.lat, lng: p.lon }}
             // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
@@ -190,7 +206,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
           </Marker>
         ) : (
           <Marker
-            key={`95Lp1ukO7F-${p.id}`}
+            key={p.id}
             draggable
             position={{ lat: p.lat, lng: p.lon }}
             icon={circularIcon}
@@ -224,24 +240,32 @@ function handleDragEnd() {
   });
 }
 
-const mapStateToProps = (state: RootState) => ({
-  points: state.distanceMeasurement.points,
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  line: state.distanceMeasurement.lines[ownProps.index],
   language: state.l10n.language,
-  selected: state.main.selection?.type === 'measure-dist',
+  selected:
+    (state.main.selection?.type === 'measure-dist' ||
+      state.main.selection?.type === 'measure-area') &&
+    ownProps.index === state.main.selection?.id,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPointAdd(point: Point, position: number) {
-    dispatch(distanceMeasurementAddPoint({ point, position }));
+  onPointAdd(index: number, point: Point, position: number) {
+    dispatch(distanceMeasurementAddPoint({ index, point, position }));
   },
-  onPointUpdate(point: Point) {
-    dispatch(distanceMeasurementUpdatePoint({ point }));
+  onPointUpdate(index: number, point: Point) {
+    dispatch(distanceMeasurementUpdatePoint({ index, point }));
   },
-  onPointRemove(id: number) {
-    dispatch(distanceMeasurementRemovePoint(id));
+  onPointRemove(index: number, id: number) {
+    dispatch(distanceMeasurementRemovePoint({ index, id }));
   },
-  onSelect() {
-    dispatch(selectFeature({ type: 'measure-dist', id: null }));
+  onSelect(type: 'area' | 'distance', index: number) {
+    dispatch(
+      selectFeature({
+        type: type === 'area' ? 'measure-area' : 'measure-dist',
+        id: index,
+      }),
+    );
   },
 });
 
