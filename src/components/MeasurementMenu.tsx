@@ -151,9 +151,9 @@ const mapStateToProps = (state: RootState) => ({
   distancePoints:
     (state.main.selection?.type === 'measure-dist' ||
       state.main.selection?.type === 'measure-area') &&
-    state.main.selection.id != null
-      ? state.distanceMeasurement.lines[state.main.selection.id].points
-      : [],
+    state.main.selection.id === undefined
+      ? []
+      : state.distanceMeasurement.lines[state.main.selection.id].points,
   elevationChartTrackGeojson: state.elevationChart.trackGeojson,
 });
 

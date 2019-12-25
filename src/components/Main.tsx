@@ -302,7 +302,10 @@ const MainInt: React.FC<Props> = ({
               {tool === 'gallery' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}{' '}
-              {selection?.id !== undefined && (
+              {(selection?.id !== undefined ||
+                ['route-planner', 'measure-ele'].includes(
+                  selection?.type ?? '',
+                )) && (
                 <Button title={t('general.delete')} onClick={handleDeleteClick}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">

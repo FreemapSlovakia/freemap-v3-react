@@ -72,7 +72,7 @@ export const distanceMeasurementReducer = createReducer<
       if (
         (action.payload?.type === 'measure-dist' ||
           action.payload?.type === 'measure-area') &&
-        action.payload?.id != null
+        action.payload?.id !== undefined
       ) {
         draft.lines.splice(action.payload?.id, 1);
       }
