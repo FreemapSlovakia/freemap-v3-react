@@ -8,7 +8,6 @@ import { webSocketMiddleware } from './middlewares/webSocketMiddleware';
 import * as rpcProcessors from './processors/rpcProcessors';
 import { trackingMiddleware } from './middlewares/trackingMiddleware';
 import { authReducer } from './reducers/authReducer';
-import { areaMeasurementReducer } from './reducers/areaMeasurementReducer';
 import { changesetReducer } from './reducers/changesetsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { distanceMeasurementReducer } from './reducers/distanceMeasurementReducer';
@@ -102,7 +101,6 @@ import { routePlannerSetFromCurrentPositionProcessor } from './processors/routeP
 import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
 
 const reducers = {
-  areaMeasurement: areaMeasurementReducer,
   auth: authReducer,
   changesets: changesetReducer,
   distanceMeasurement: distanceMeasurementReducer,

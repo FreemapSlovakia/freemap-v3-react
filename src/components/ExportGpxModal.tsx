@@ -157,12 +157,12 @@ const mapStateToProps = (state: RootState) => {
     exportables.push('pictures');
   }
 
-  if (state.areaMeasurement.points.length) {
-    exportables.push('areaMeasurement');
+  if (state.distanceMeasurement.lines.some(line => line.type === 'distance')) {
+    exportables.push('distanceMeasurement');
   }
 
-  if (state.distanceMeasurement.points.length) {
-    exportables.push('distanceMeasurement');
+  if (state.distanceMeasurement.lines.some(line => line.type === 'area')) {
+    exportables.push('areaMeasurement');
   }
 
   if (state.elevationMeasurement.point) {

@@ -49,7 +49,6 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     const {
       distanceMeasurement,
-      areaMeasurement,
       elevationMeasurement,
       infoPoint,
       objects,
@@ -82,11 +81,11 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     }
 
     if (set.has('distanceMeasurement')) {
-      addADMeasurement(doc, distanceMeasurement);
+      addADMeasurement(doc, distanceMeasurement, 'distance');
     }
 
     if (set.has('areaMeasurement')) {
-      addADMeasurement(doc, areaMeasurement); // TODO add info about area
+      addADMeasurement(doc, distanceMeasurement, 'area');
     }
 
     if (set.has('elevationMeasurement')) {
@@ -350,14 +349,18 @@ function addPictures(doc: Document, pictures) {
   });
 }
 
-function addADMeasurement(doc: Document, { points }: DistanceMeasurementState) {
-  const trkEle = createElement(doc.documentElement, 'trk');
-  const trksegEle = createElement(trkEle, 'trkseg');
+function addADMeasurement(
+  doc: Document,
+  { lines }: DistanceMeasurementState,
+  type: 'area' | 'distance',
+) {
+  for (const line of lines.filter(line => line.type === type)) {
+    const trkEle = createElement(doc.documentElement, 'trk');
+    const trksegEle = createElement(trkEle, 'trkseg');
 
-  if (points.length) {
-    points.forEach(({ lat, lon }) => {
+    for (const { lat, lon } of line.points) {
       createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
-    });
+    }
   }
 }
 

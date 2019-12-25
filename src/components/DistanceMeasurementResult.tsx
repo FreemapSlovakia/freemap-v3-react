@@ -1,18 +1,15 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
-import { Marker, Tooltip, Polyline } from 'react-leaflet';
+import { Marker, Tooltip, Polyline, Polygon } from 'react-leaflet';
 import { LeafletEvent } from 'leaflet';
-
 import {
   distanceMeasurementAddPoint,
   distanceMeasurementUpdatePoint,
   distanceMeasurementRemovePoint,
   Point,
 } from 'fm3/actions/distanceMeasurementActions';
-
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-
-import { distance } from 'fm3/geoutils';
+import { distance, area } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { divIcon } from 'leaflet';
 import { RootState } from 'fm3/storeCreator';
@@ -20,6 +17,8 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { LatLon } from 'fm3/types/common';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 // const defaultIcon = new L.Icon.Default();
 
@@ -31,18 +30,32 @@ const circularIcon = divIcon({
   html: '<div class="circular-leaflet-marker-icon"></div>',
 });
 
+type OwnProps = {
+  index: number;
+};
+
 type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> &
+  OwnProps & {
+    t: Translator;
+  };
 
 const DistanceMeasurementResultInt: React.FC<Props> = ({
-  points,
+  line,
+  index,
   onPointAdd,
   onPointUpdate,
   onPointRemove,
   onSelect,
+  onValueShow,
   language,
   selected,
+  t,
 }) => {
+  const points = line.points;
+
+  const [coords, setCoords] = useState<LatLon | undefined>();
+
   const handleMouseMove = useCallback(
     (lat: number, lon: number, originalEvent) => {
       setCoords(
@@ -59,6 +72,10 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   }, []);
 
   useEffect(() => {
+    if (!selected) {
+      return;
+    }
+
     mapEventEmitter.on('mouseMove', handleMouseMove);
     mapEventEmitter.on('mouseOut', handleMouseOut);
 
@@ -66,9 +83,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       mapEventEmitter.removeListener('mouseMove', handleMouseMove);
       mapEventEmitter.removeListener('mouseOut', handleMouseOut);
     };
-  }, [handleMouseMove, handleMouseOut]);
-
-  const [coords, setCoords] = useState<LatLon | undefined>();
+  }, [selected, handleMouseMove, handleMouseOut]);
 
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position: number, id0: number) => {
@@ -87,42 +102,27 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
         id = (points[pos - 1].id + points[pos].id) / 2;
       }
 
-      onPointAdd({ lat, lon, id }, pos);
+      onPointAdd(index, { lat, lon, id }, pos);
     },
-    [points, onPointAdd],
+    [index, points, onPointAdd],
   );
 
   const handleMeasureMarkerDrag = useCallback(
     ({ latlng: { lat, lng: lon } }, id: number) => {
-      onPointUpdate({ lat, lon, id });
+      onPointUpdate(index, { lat, lon, id });
     },
-    [onPointUpdate],
+    [index, onPointUpdate],
   );
 
   const handleMarkerClick = useCallback(
     (id: number) => {
-      onPointRemove(id);
+      onPointRemove(index, id);
     },
-    [onPointRemove],
+    [index, onPointRemove],
   );
 
   let prev: Point | null = null;
   let dist = 0;
-
-  const ps: Point[] = [];
-
-  for (let i = 0; i < points.length; i += 1) {
-    ps.push(points[i]);
-
-    if (i < points.length - 1) {
-      const p1 = points[i];
-      const p2 = points[i + 1];
-      const lat = (p1.lat + p2.lat) / 2;
-      const lon = (p1.lon + p2.lon) / 2;
-
-      ps.push({ lat, lon, id: (p1.id + p2.id) / 2 });
-    }
-  }
 
   const nf = useMemo(
     () =>
@@ -133,20 +133,73 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
     [language],
   );
 
+  const handleSelect = useCallback(() => {
+    onSelect(line.type, index);
+  }, [onSelect, index, line]);
+
+  const { areaSize, ps } = useMemo(() => {
+    const ps: Point[] = [];
+
+    for (let i = 0; i < points.length; i += 1) {
+      ps.push(points[i]);
+
+      if (i < points.length - 1) {
+        const p1 = points[i];
+        const p2 = points[i + 1];
+        const lat = (p1.lat + p2.lat) / 2;
+        const lon = (p1.lon + p2.lon) / 2;
+
+        ps.push({ lat, lon, id: (p1.id + p2.id) / 2 });
+      }
+    }
+
+    return { areaSize: points.length >= 3 ? area(points) : NaN, ps };
+  }, [points]);
+
+  const handleTooltipClick = useCallback(() => {
+    onValueShow(areaSize);
+  }, [onValueShow, areaSize]);
+
   return (
     <>
-      {ps.length > 2 && (
+      {ps.length > 2 && line.type === 'distance' && (
         <Polyline
           weight={4}
           interactive
-          onclick={onSelect}
+          onclick={handleSelect}
           color={selected ? '#65b2ff' : 'blue'}
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
         />
       )}
-      {!!(ps.length && coords) && (
+
+      {ps.length > 2 && line.type === 'area' && (
+        <Polygon
+          weight={4}
+          interactive
+          onclick={handleSelect}
+          color={selected ? '#65b2ff' : 'blue'}
+          positions={ps
+            .filter((_, i) => i % 2 === 0)
+            .map(({ lat, lon }) => ({ lat, lng: lon }))}
+        >
+          <Tooltip
+            className="compact"
+            offset={[-4, 0]}
+            direction="center"
+            permanent
+            interactive
+            key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
+          >
+            <div onClick={handleTooltipClick}>
+              {t('measurement.areaInfo', { areaSize })}
+            </div>
+          </Tooltip>
+        </Polygon>
+      )}
+
+      {!!(ps.length && coords && !window.preventMapClick && selected) && (
         <Polyline
           weight={4}
           interactive={false}
@@ -154,9 +207,13 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
           positions={[
             { lat: ps[ps.length - 1].lat, lng: ps[ps.length - 1].lon },
             { lat: coords.lat, lng: coords.lon },
+            ...(line.type === 'distance' || ps.length < 3
+              ? []
+              : [{ lat: ps[0].lat, lng: ps[0].lon }]),
           ]}
         />
       )}
+
       {ps.map((p, i: number) => {
         if (i % 2 === 0) {
           if (prev) {
@@ -167,7 +224,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
 
         return i % 2 === 0 ? (
           <Marker
-            key={`95Lp1ukO7F-${p.id}`}
+            key={p.id}
             draggable
             position={{ lat: p.lat, lng: p.lon }}
             // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
@@ -178,19 +235,21 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
             onDragstart={handleDragStart}
             onDragend={handleDragEnd}
           >
-            <Tooltip
-              key={`${p.id}-${ps.length}`}
-              className="compact"
-              offset={[-4, 0]}
-              direction="right"
-              permanent={i === ps.length - 1}
-            >
-              <span>{nf.format(dist / 1000)} km</span>
-            </Tooltip>
+            {line.type === 'distance' && (
+              <Tooltip
+                key={`${p.id}-${ps.length}`}
+                className="compact"
+                offset={[-4, 0]}
+                direction="right"
+                permanent={i === ps.length - 1}
+              >
+                <span>{nf.format(dist / 1000)} km</span>
+              </Tooltip>
+            )}
           </Marker>
         ) : (
           <Marker
-            key={`95Lp1ukO7F-${p.id}`}
+            key={p.id}
             draggable
             position={{ lat: p.lat, lng: p.lon }}
             icon={circularIcon}
@@ -224,28 +283,46 @@ function handleDragEnd() {
   });
 }
 
-const mapStateToProps = (state: RootState) => ({
-  points: state.distanceMeasurement.points,
+const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
+  line: state.distanceMeasurement.lines[ownProps.index],
   language: state.l10n.language,
-  selected: state.main.selection?.type === 'measure-dist',
+  selected:
+    (state.main.selection?.type === 'measure-dist' ||
+      state.main.selection?.type === 'measure-area') &&
+    ownProps.index === state.main.selection?.id,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPointAdd(point: Point, position: number) {
-    dispatch(distanceMeasurementAddPoint({ point, position }));
+  onPointAdd(index: number, point: Point, position: number) {
+    dispatch(distanceMeasurementAddPoint({ index, point, position }));
   },
-  onPointUpdate(point: Point) {
-    dispatch(distanceMeasurementUpdatePoint({ point }));
+  onPointUpdate(index: number, point: Point) {
+    dispatch(distanceMeasurementUpdatePoint({ index, point }));
   },
-  onPointRemove(id: number) {
-    dispatch(distanceMeasurementRemovePoint(id));
+  onPointRemove(index: number, id: number) {
+    dispatch(distanceMeasurementRemovePoint({ index, id }));
   },
-  onSelect() {
-    dispatch(selectFeature({ type: 'measure-dist', id: null }));
+  onSelect(type: 'area' | 'distance', index: number) {
+    dispatch(
+      selectFeature({
+        type: type === 'area' ? 'measure-area' : 'measure-dist',
+        id: index,
+      }),
+    );
+  },
+  onValueShow(areaSize: number) {
+    dispatch(
+      toastsAdd({
+        messageKey: 'measurement.areaInfo',
+        messageParams: { areaSize },
+        timeout: 5000,
+        collapseKey: 'measurementInfo',
+      }),
+    );
   },
 });
 
 export const DistanceMeasurementResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(DistanceMeasurementResultInt);
+)(withTranslator(DistanceMeasurementResultInt));

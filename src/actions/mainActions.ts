@@ -95,6 +95,11 @@ export interface ObjectsSelection {
   id?: number;
 }
 
+export interface MeasureDistSelection {
+  type: 'measure-dist' | 'measure-area';
+  id?: number;
+}
+
 export interface OtherSelection {
   type:
     | 'map-details'
@@ -103,12 +108,14 @@ export interface OtherSelection {
     | 'gallery'
     | 'tracking'
     | 'route-planner'
-    | 'measure-ele'
-    | 'measure-dist'
-    | 'measure-area';
+    | 'measure-ele';
   id?: undefined;
 }
 
-export type Selection = InfoPointSelection | ObjectsSelection | OtherSelection;
+export type Selection =
+  | InfoPointSelection
+  | ObjectsSelection
+  | OtherSelection
+  | MeasureDistSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
