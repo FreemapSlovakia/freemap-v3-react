@@ -847,6 +847,7 @@ export default {
     oma: 'OMA',
     googleMaps: 'Google térkép',
     hiking_sk: 'hiking.sk',
+    zbgis: 'ZBGIS',
     mapy_cz: 'mapy.cz',
     josm: 'Szerkesztés JOSM-mal',
     id: 'Szerkesztés iD-vel',

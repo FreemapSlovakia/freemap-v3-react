@@ -108,6 +108,11 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
           }
           break;
         }
+        case 'zbgis':
+          window.open(
+            `https://zbgis.skgeodesy.sk/mkzbgis?bm=zbgis&z=${zoom}&c=${lon},${lat}`,
+          );
+          break;
         case 'hiking.sk': {
           const point = CRS.EPSG3857.project({ lat, lng: lon });
           const params: any = {
@@ -244,6 +249,9 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       </MenuItem>
       <MenuItem data-where="hiking.sk" onClick={handleMenuItemClick}>
         {t('external.hiking_sk')}
+      </MenuItem>{' '}
+      <MenuItem data-where="zbgis" onClick={handleMenuItemClick}>
+        {t('external.zbgis')}
       </MenuItem>
       <MenuItem data-where="mapy.cz" onClick={handleMenuItemClick}>
         {t('external.mapy_cz')}

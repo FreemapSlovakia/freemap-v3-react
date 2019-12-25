@@ -841,6 +841,7 @@ export default {
     oma: 'OMA',
     googleMaps: 'Google Mapy',
     hiking_sk: 'Hiking.sk',
+    zbgis: 'ZBGIS',
     mapy_cz: 'Mapy.cz',
     josm: 'Editor JOSM',
     id: 'Editor iD',
