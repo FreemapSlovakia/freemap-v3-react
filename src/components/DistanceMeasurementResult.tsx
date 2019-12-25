@@ -32,12 +32,13 @@ const circularIcon = divIcon({
 
 type OwnProps = {
   index: number;
-  t: Translator;
 };
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> &
-  OwnProps;
+  OwnProps & {
+    t: Translator;
+  };
 
 const DistanceMeasurementResultInt: React.FC<Props> = ({
   line,
