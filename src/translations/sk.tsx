@@ -1239,7 +1239,7 @@ export default {
       <>
         Upozornenia:
         <ul>
-          <li>Exportuje sa outdoorova mapa bez interatívnych prvkov.</li>
+          <li>Exportuje sa outdoorova mapa bez interaktívnych prvkov.</li>
           <li>Export mapy do PDF môže trvať aj desiatky sekúnd.</li>
           <li>
             Pri publikovanej mapy je do nej nutné uviesť jej licenciu:
