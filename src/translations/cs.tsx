@@ -846,7 +846,6 @@ export default {
     mapy_cz: 'Mapy.cz',
     josm: 'Editor JOSM',
     id: 'Editor iD',
-    'routing-debug': 'Ladění navigace',
     window: 'Nové okno',
     url: 'Sdílet URL',
     image: 'Sdílet fotografii',

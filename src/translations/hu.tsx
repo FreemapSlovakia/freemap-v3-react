@@ -851,7 +851,6 @@ export default {
     mapy_cz: 'mapy.cz',
     josm: 'Szerkesztés JOSM-mal',
     id: 'Szerkesztés iD-vel',
-    'routing-debug': 'Útvonaltervezési hibakereső',
     window: 'Új ablakban',
     url: 'URL megosztása', // TODO google-translated
     image: 'Fénykép megosztása', // TODO google-translated

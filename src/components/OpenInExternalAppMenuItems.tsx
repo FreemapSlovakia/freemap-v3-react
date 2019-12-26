@@ -265,12 +265,6 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       <MenuItem data-where="osm.org/id" onClick={handleMenuItemClick}>
         {t('external.id')}
       </MenuItem>
-      {expertMode && <MenuItem divider />}
-      {expertMode && (
-        <MenuItem data-where="routing-debug" onClick={handleMenuItemClick}>
-          {t('external.routing-debug')}
-        </MenuItem>
-      )}
     </>
   );
 };
