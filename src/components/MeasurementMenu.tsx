@@ -136,7 +136,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         <Button
           active={elevationChartTrackGeojson !== null}
           onClick={toggleElevationChart}
-          disabled={distancePoints.length > 1}
+          disabled={distancePoints.length < 2}
         >
           <FontAwesomeIcon icon="bar-chart" />
           <span className="hidden-xs"> {t('general.elevationProfile')}</span>
@@ -149,8 +149,8 @@ const MeasurementMenuInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   selection: state.main.selection,
   distancePoints:
-    (state.main.selection?.type === 'measure-dist' ||
-      state.main.selection?.type === 'measure-area') &&
+    (state.main.selection?.type !== 'measure-dist' &&
+      state.main.selection?.type !== 'measure-area') ||
     state.main.selection.id === undefined
       ? []
       : state.distanceMeasurement.lines[state.main.selection.id].points,
