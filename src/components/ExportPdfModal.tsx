@@ -172,7 +172,7 @@ export class ExportPdfModalInt extends React.Component<Props, State> {
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.handleExportClick}>
-            <FontAwesomeIcon icon="share" /> {t('gpxExport.export')}
+            <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
           </Button>{' '}
           <Button onClick={onModalClose}>
             <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
