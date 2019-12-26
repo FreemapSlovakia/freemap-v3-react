@@ -37,7 +37,6 @@ const MoreMenuButtonInt: React.FC<Props> = ({
   mapType,
   onLogin,
   onLogout,
-  onShare,
   onSettingsShow,
   onGpxExport,
   onPdfExport,
@@ -73,8 +72,6 @@ const MoreMenuButtonInt: React.FC<Props> = ({
   const handleLoginClick = useMenu(onLogin);
 
   const handleLogoutClick = useMenu(onLogout);
-
-  const handleShareClick = useMenu(onShare);
 
   const handleSettingsShowClick = useMenu(onSettingsShow);
 
@@ -160,7 +157,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <kbd>e</kbd> <kbd>p</kbd>
                 </MenuItem>
                 <MenuItem onSelect={handleGpxExportClick}>
-                  <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}{' '}
+                  <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}{' '}
                   <kbd>e</kbd> <kbd>g</kbd>
                 </MenuItem>
                 <MenuItem
@@ -170,10 +167,6 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 >
                   <FontAwesomeIcon icon="!icon-gps-device" />{' '}
                   {t('more.mapExports')}
-                </MenuItem>
-                <MenuItem onSelect={handleShareClick}>
-                  <FontAwesomeIcon icon="share-alt" /> {t('more.shareMap')}{' '}
-                  <kbd>e</kbd> <kbd>r</kbd>
                 </MenuItem>
                 <MenuItem onSelect={handleEmbedClick}>
                   <FontAwesomeIcon icon="code" /> {t('more.embedMap')}{' '}
@@ -367,9 +360,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onPdfExport() {
     dispatch(setActiveModal('export-pdf'));
-  },
-  onShare() {
-    dispatch(setActiveModal('share'));
   },
   onEmbed() {
     dispatch(setActiveModal('embed'));

@@ -218,10 +218,6 @@ export function attachKeyboardHandler(store: MyStore) {
             store.dispatch(setActiveModal('embed'));
             event.preventDefault();
             return;
-          case 'r':
-            store.dispatch(setActiveModal('share'));
-            event.preventDefault();
-            return;
         }
       }
 

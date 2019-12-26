@@ -56,7 +56,6 @@ import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 
 import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
 
-import { ShareMapModal } from 'fm3/components/ShareMapModal';
 import { EmbedMapModal } from 'fm3/components/EmbedMapModal';
 import { ExportGpxModal } from 'fm3/components/ExportGpxModal';
 import { ExportPdfModal } from 'fm3/components/ExportPdfModal';
@@ -333,7 +332,6 @@ const MainInt: React.FC<Props> = ({
           ...(isUserValidated ? ['tracking-my'] : []),
           'tracking-watched',
         ].includes(activeModal) && <TrackingModal />}
-      {activeModal === 'share' && <ShareMapModal />}
       {activeModal === 'embed' && <EmbedMapModal />}
       {activeModal === 'export-gpx' && <ExportGpxModal />}
       {activeModal === 'export-pdf' && <ExportPdfModal />}

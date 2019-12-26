@@ -284,7 +284,6 @@ export default {
     settings: 'Settings',
     gpxExport: 'Export to GPX',
     mapExports: 'Map exports',
-    shareMap: 'Share map',
     embedMap: 'Embed map',
     reportMapError: 'Report map problem',
     reportAppError: 'Report application problem',
@@ -836,7 +835,7 @@ export default {
   },
 
   external: {
-    openInExternal: 'Open in external application',
+    openInExternal: 'Share / Open in external app.',
     osm: 'OpenStreetMap',
     oma: 'OMA',
     googleMaps: 'Google Maps',
@@ -848,6 +847,7 @@ export default {
     window: 'New window',
     url: 'Share URL',
     image: 'Share photo',
+    copy: 'Copy URL',
   },
 
   search: {
@@ -858,10 +858,6 @@ export default {
     routeTo: 'Route to here',
     fetchingError: 'Searching error: {err}',
     buttonTitle: 'Search',
-  },
-
-  shareMap: {
-    label: 'Current map view is available at the following URL:',
   },
 
   embed: {

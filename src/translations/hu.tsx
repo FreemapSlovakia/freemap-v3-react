@@ -285,7 +285,6 @@ export default {
     settings: 'Beállítások',
     gpxExport: 'Exportálás GPX-be',
     mapExports: 'Térkép exportálása',
-    shareMap: 'Térkép megosztása',
     embedMap: 'Térkép beágyazása',
     reportMapError: 'Térképhiba bejelentése',
     reportAppError: 'Alkalmazáshiba bejelentése',
@@ -842,7 +841,7 @@ export default {
   },
 
   external: {
-    openInExternal: 'Megnyitás külső alkalmazásban',
+    openInExternal: 'Részvény / megnyitás külső alkalmazásban', // TODO "share" google translated
     osm: 'OpenStreetMap',
     oma: 'OMA',
     googleMaps: 'Google térkép',
@@ -854,6 +853,7 @@ export default {
     window: 'Új ablakban',
     url: 'URL megosztása', // TODO google-translated
     image: 'Fénykép megosztása', // TODO google-translated
+    copy: 'Copy URL', // TODO
   },
 
   search: {
@@ -864,10 +864,6 @@ export default {
     routeTo: 'Útvonal ide',
     fetchingError: 'Keresési hiba: {err}',
     buttonTitle: 'Search', // TODO translate
-  },
-
-  shareMap: {
-    label: 'A jelenlegi térképnézet URL-je:',
   },
 
   embed: {

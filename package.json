@@ -29,6 +29,7 @@
     "leaflet-hotline": "0.4.0",
     "local-storage-fallback": "4.1.1",
     "pica": "5.1.0",
+    "popup-centered": "1.2.0",
     "query-string": "6.9.0",
     "react": "16.12.0",
     "react-bootstrap": "0.33.1",

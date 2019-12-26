@@ -99,7 +99,7 @@ const ExportGpxModalInt: React.FC<Props> = ({
     <Modal show onHide={onModalClose} bsSize="large">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="share" /> {t('more.gpxExport')}
+          <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

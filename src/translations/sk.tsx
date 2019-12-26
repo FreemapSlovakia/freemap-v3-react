@@ -285,7 +285,6 @@ export default {
     settings: 'Nastavenia',
     gpxExport: 'Exportovať do GPX',
     mapExports: 'Exporty mapy',
-    shareMap: 'Zdieľať mapu',
     embedMap: 'Vložiť do webstránky',
     reportMapError: 'Nahlásiť chybu zobrazenia v mape',
     reportAppError: 'Nahlásiť chybu v portáli',
@@ -836,7 +835,7 @@ export default {
   },
 
   external: {
-    openInExternal: 'Otvoriť v externej aplikácii',
+    openInExternal: 'Zdieľať / otvoriť v ext. aplikácii',
     osm: 'OpenStreetMap',
     oma: 'OMA',
     googleMaps: 'Google Mapy',
@@ -848,6 +847,7 @@ export default {
     window: 'Nové okno',
     url: 'Zdieľať URL',
     image: 'Zdieľať fotografiu',
+    copy: 'Kopírovať URL',
   },
 
   search: {
@@ -858,10 +858,6 @@ export default {
     routeTo: 'Navigovať sem',
     fetchingError: 'Nastala chyba pri spracovaní výsledkov vyhľadávania: {err}',
     buttonTitle: 'Hľadať',
-  },
-
-  shareMap: {
-    label: 'Zvolený pohľad na mapu je dostupný na tejto adrese:',
   },
 
   embed: {

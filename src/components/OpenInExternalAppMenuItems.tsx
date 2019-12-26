@@ -9,6 +9,9 @@ import qs from 'query-string';
 import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
 import { point } from '@turf/helpers';
+import { loadFb } from 'fm3/fbLoader';
+import popupCentered from 'popup-centered';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 interface Props extends LatLon {
   lat: number;
@@ -47,6 +50,32 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       switch (where) {
         case 'window':
           window.open(url);
+          break;
+        case 'facebook': {
+          const { href } = location;
+
+          loadFb().then(() => {
+            FB.ui({
+              method: 'share',
+              hashtag: '#openstreetmap',
+              href,
+            });
+          });
+          break;
+        }
+        case 'twitter':
+          popupCentered(
+            `https://twitter.com/intent/tweet?url=${encodeURIComponent(
+              location.href,
+            )}`,
+            'twitter',
+            575,
+            280,
+          );
+          break;
+        case 'copy':
+          navigator.clipboard.writeText(location.href);
+          // TODO success toast
           break;
         case 'osm.org':
           if (includePoint) {
@@ -208,34 +237,47 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
     ],
   );
 
+  const hasShare = 'share' in navigator;
+  const hasClipboard = navigator.clipboard?.writeText;
+
   return (
     <>
       {url && (
         <>
           <MenuItem eventKey="window" onSelect={handleMenuItemSelect}>
-            {t('external.window')}
+            <FontAwesomeIcon icon="window-maximize" /> {t('external.window')}
           </MenuItem>
-          {(navigator as any).share && (
+          {hasShare && (
             <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
-              {t('external.url')}
+              <FontAwesomeIcon icon="link" /> {t('external.url')}
             </MenuItem>
           )}
           {(navigator as any).canShare && (
             <MenuItem eventKey="image" onSelect={handleMenuItemSelect}>
-              {t('external.image')}
+              <FontAwesomeIcon icon="share-alt" /> {t('external.image')}
             </MenuItem>
           )}
           <MenuItem divider />
         </>
       )}
-      {!url && (navigator as any).share && (
-        <>
-          <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
-            {t('external.url')}
-          </MenuItem>
-          <MenuItem divider />
-        </>
+      {!url && hasClipboard && (
+        <MenuItem eventKey="copy" onSelect={handleMenuItemSelect}>
+          <FontAwesomeIcon icon="clipboard" /> {t('external.copy')}
+        </MenuItem>
       )}
+      {!url && hasShare && (
+        <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
+          <FontAwesomeIcon icon="link" /> {t('external.url')}
+        </MenuItem>
+      )}
+      {!url && (hasClipboard || hasShare) && <MenuItem divider />}
+      <MenuItem eventKey="facebook" onSelect={handleMenuItemSelect}>
+        <FontAwesomeIcon icon="facebook-official" /> Facebook
+      </MenuItem>
+      <MenuItem eventKey="twitter" onSelect={handleMenuItemSelect}>
+        <FontAwesomeIcon icon="twitter" /> Twitter
+      </MenuItem>
+      <MenuItem divider />
       <MenuItem eventKey="osm.org" onSelect={handleMenuItemSelect}>
         {t('external.osm')}
       </MenuItem>
