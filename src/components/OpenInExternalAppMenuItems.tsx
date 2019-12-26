@@ -38,8 +38,8 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
   url,
   onSelect,
 }) => {
-  const handleMenuItemClick = useCallback(
-    (where: string) => {
+  const handleMenuItemSelect = useCallback(
+    (where: any) => {
       if (onSelect) {
         onSelect(where);
       }
@@ -212,16 +212,16 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
     <>
       {url && (
         <>
-          <MenuItem eventKey="window" onSelect={handleMenuItemClick}>
+          <MenuItem eventKey="window" onSelect={handleMenuItemSelect}>
             {t('external.window')}
           </MenuItem>
           {(navigator as any).share && (
-            <MenuItem eventKey="url" onSelect={handleMenuItemClick}>
+            <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
               {t('external.url')}
             </MenuItem>
           )}
           {(navigator as any).canShare && (
-            <MenuItem eventKey="image" onSelect={handleMenuItemClick}>
+            <MenuItem eventKey="image" onSelect={handleMenuItemSelect}>
               {t('external.image')}
             </MenuItem>
           )}
@@ -230,37 +230,37 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       )}
       {!url && (navigator as any).share && (
         <>
-          <MenuItem eventKey="url" onSelect={handleMenuItemClick}>
+          <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
             {t('external.url')}
           </MenuItem>
           <MenuItem divider />
         </>
       )}
-      <MenuItem eventKey="osm.org" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="osm.org" onSelect={handleMenuItemSelect}>
         {t('external.osm')}
       </MenuItem>
-      <MenuItem eventKey="oma.sk" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="oma.sk" onSelect={handleMenuItemSelect}>
         {t('external.oma')}
       </MenuItem>
-      <MenuItem eventKey="google" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="google" onSelect={handleMenuItemSelect}>
         {t('external.googleMaps')}
       </MenuItem>
-      <MenuItem eventKey="hiking.sk" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="hiking.sk" onSelect={handleMenuItemSelect}>
         {t('external.hiking_sk')}
       </MenuItem>{' '}
-      <MenuItem eventKey="zbgis" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="zbgis" onSelect={handleMenuItemSelect}>
         {t('external.zbgis')}
       </MenuItem>
-      <MenuItem eventKey="mapy.cz" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="mapy.cz" onSelect={handleMenuItemSelect}>
         {t('external.mapy_cz')}
       </MenuItem>
       <MenuItem divider />
       {expertMode && (
-        <MenuItem eventKey="josm" onSelect={handleMenuItemClick}>
+        <MenuItem eventKey="josm" onSelect={handleMenuItemSelect}>
           {t('external.josm')}
         </MenuItem>
       )}
-      <MenuItem eventKey="osm.org/id" onSelect={handleMenuItemClick}>
+      <MenuItem eventKey="osm.org/id" onSelect={handleMenuItemSelect}>
         {t('external.id')}
       </MenuItem>
     </>
