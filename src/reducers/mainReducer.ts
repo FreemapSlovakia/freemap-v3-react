@@ -17,6 +17,7 @@ import {
   selectFeature,
   deleteFeature,
   Selection,
+  clearMap,
 } from 'fm3/actions/mainActions';
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
@@ -58,6 +59,12 @@ const initialState: MainState = {
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(initialState)
+  .handleAction(clearMap, state => {
+    return {
+      ...state,
+      selection: state.selection ? { type: state.selection.type } : null,
+    };
+  })
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.main };
   })
