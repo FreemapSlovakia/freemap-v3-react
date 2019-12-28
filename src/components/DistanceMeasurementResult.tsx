@@ -169,9 +169,9 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       {ps.length > 2 && line.type === 'distance' && (
         <Polyline
           weight={4}
+          color={selected ? '#65b2ff' : 'blue'}
           interactive
           onclick={handleSelect}
-          color={selected ? '#65b2ff' : 'blue'}
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
@@ -181,9 +181,9 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       {ps.length > 1 && line.type === 'area' && (
         <Polygon
           weight={4}
+          color={selected ? '#65b2ff' : 'blue'}
           interactive
           onclick={handleSelect}
-          color={selected ? '#65b2ff' : 'blue'}
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
@@ -208,7 +208,6 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       {!!(ps.length > 2 && coords && !window.preventMapClick && selected) && (
         <Polyline
           weight={4}
-          interactive={false}
           dashArray="6,8"
           positions={[
             {
