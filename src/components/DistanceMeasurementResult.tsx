@@ -140,21 +140,25 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   const { areaSize, ps } = useMemo(() => {
     const ps: Point[] = [];
 
-    for (let i = 0; i < points.length; i += 1) {
+    for (let i = 0; i < points.length; i++) {
       ps.push(points[i]);
 
-      if (i < points.length - 1) {
+      if (i < points.length - 1 || line.type === 'area') {
         const p1 = points[i];
-        const p2 = points[i + 1];
+        const p2 = points[(i + 1) % points.length];
         const lat = (p1.lat + p2.lat) / 2;
         const lon = (p1.lon + p2.lon) / 2;
 
-        ps.push({ lat, lon, id: (p1.id + p2.id) / 2 });
+        ps.push({
+          lat,
+          lon,
+          id: points.length - 1 === i ? points.length * 2 : (p1.id + p2.id) / 2,
+        });
       }
     }
 
     return { areaSize: points.length >= 3 ? area(points) : NaN, ps };
-  }, [points]);
+  }, [points, line.type]);
 
   const handleTooltipClick = useCallback(() => {
     onValueShow(areaSize);
@@ -174,7 +178,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
         />
       )}
 
-      {ps.length > 2 && line.type === 'area' && (
+      {ps.length > 1 && line.type === 'area' && (
         <Polygon
           weight={4}
           interactive
@@ -184,28 +188,33 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
         >
-          <Tooltip
-            className="compact"
-            offset={[-4, 0]}
-            direction="center"
-            permanent
-            interactive
-            key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
-          >
-            <div onClick={handleTooltipClick}>
-              {t('measurement.areaInfo', { areaSize })}
-            </div>
-          </Tooltip>
+          {ps.length > 4 && (
+            <Tooltip
+              className="compact"
+              offset={[-4, 0]}
+              direction="center"
+              permanent
+              interactive
+              key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
+            >
+              <div onClick={handleTooltipClick}>
+                {t('measurement.areaInfo', { areaSize })}
+              </div>
+            </Tooltip>
+          )}
         </Polygon>
       )}
 
-      {!!(ps.length && coords && !window.preventMapClick && selected) && (
+      {!!(ps.length > 2 && coords && !window.preventMapClick && selected) && (
         <Polyline
           weight={4}
           interactive={false}
           dashArray="6,8"
           positions={[
-            { lat: ps[ps.length - 1].lat, lng: ps[ps.length - 1].lon },
+            {
+              lat: ps[ps.length - (line.type === 'area' ? 2 : 1)].lat,
+              lng: ps[ps.length - (line.type === 'area' ? 2 : 1)].lon,
+            },
             { lat: coords.lat, lng: coords.lon },
             ...(line.type === 'distance' || ps.length < 3
               ? []
