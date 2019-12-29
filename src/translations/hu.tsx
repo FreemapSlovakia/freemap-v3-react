@@ -60,7 +60,7 @@ export default {
   },
 
   tools: {
-    none: 'Zárja be az eszközt', // TODO google-translated
+    none: 'Eszköz bezárása',
     tools: 'Eszközök',
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
@@ -78,8 +78,8 @@ export default {
   },
 
   routePlanner: {
-    milestones: 'Milestones', // TODO
-    convertToMeasurement: 'Konvertálás mérésre', // TODO google-translated
+    milestones: 'Távolságszelvények',
+    convertToMeasurement: 'Átalakítás távolságméréssé',
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',
@@ -93,12 +93,12 @@ export default {
       'car-free': 'Gépkocsi (útdíj nélkül)',
       bikesharing: 'Kerékpármegosztás',
       imhd: 'Tömegközlekedés (SK/Bratislava)',
-      'bike-osm': 'Kerékpár (OSM)', // TODO "Bicycle touring"
-      bike: 'Kerékpár',
+      'bike-osm': 'Kerékpár (OSM)',
+      bike: 'Kerékpártúrázás',
       'foot-stroller': 'Babakocsi / kerekesszék',
       nordic: 'Sífutás',
       ski: 'Alpesi sí',
-      foot: 'Gyaloglás', // TODO "Hiking"
+      foot: 'Gyaloglás',
       'foot-osm': 'Gyaloglás (OSM)',
     },
     development: 'fejl. alatt',
@@ -134,7 +134,7 @@ export default {
     ),
     noHomeAlert: {
       msg: 'Először meg kell adnia a lakóhelyét a beállításoknál.',
-      setHome: 'Set', // TODO translate
+      setHome: 'Megadás',
     },
     showMidpointHint: 'Köztes pont megadásához húzzon el egy útszakaszt.',
     gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
@@ -457,9 +457,9 @@ export default {
     fetchingError: 'Hiba történt a nyomvonal adatainak beolvasásakor: {err}',
     savingError: 'Hiba történt a nyomvonal mentésekor: {err}',
     tooBigError: 'A nyomvonal nagyobb, mint a megengedett {maxSize} MB.',
-    loadingError: 'Error loading file.', // TODO translate
-    onlyOne: 'Only single GPX file expected.', // TODO translate
-    wrongFormat: 'The file must have .gpx extension.', // TODO translate
+    loadingError: 'Hiba történt a fájl betöltésekor.',
+    onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
+    wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
   },
 
   infoPoint: {
@@ -841,7 +841,7 @@ export default {
   },
 
   external: {
-    openInExternal: 'Részvény / megnyitás külső alkalmazásban', // TODO "share" google translated
+    openInExternal: 'Megosztás / megnyitás külső alkalmazásban',
     osm: 'OpenStreetMap',
     oma: 'OMA',
     googleMaps: 'Google térkép',
@@ -851,9 +851,9 @@ export default {
     josm: 'Szerkesztés JOSM-mal',
     id: 'Szerkesztés iD-vel',
     window: 'Új ablakban',
-    url: 'URL megosztása', // TODO google-translated
-    image: 'Fénykép megosztása', // TODO google-translated
-    copy: 'Copy URL', // TODO
+    url: 'URL megosztása',
+    image: 'Fénykép megosztása',
+    copy: 'URL másolása',
   },
 
   search: {
@@ -863,7 +863,7 @@ export default {
     routeFrom: 'Útvonal innen',
     routeTo: 'Útvonal ide',
     fetchingError: 'Keresési hiba: {err}',
-    buttonTitle: 'Search', // TODO translate
+    buttonTitle: 'Keresés',
   },
 
   embed: {
@@ -882,7 +882,7 @@ export default {
     previous: 'Előző tipp',
     next: 'Következő tipp',
     prevent: 'Következő alkalommal ne jelenjék meg',
-    errorLoading: 'Error loading tip.', // TODO translate
+    errorLoading: 'Hiba történt a tipp betöltésekor.',
   },
 
   supportUs: {
@@ -895,25 +895,23 @@ export default {
   },
 
   gpxExport: {
-    export: 'Letöltés', // TODO google-translated
+    export: 'Letöltés',
     exportToDrive: () => (
-      // TODO google-translated
       <>
-        Mentse a Google Drive-ba{' '}
+        Mentés Google Drive-ra{' '}
         <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
     exportToDropbox: () => (
-      // TODO google-translated
       <>
-        Mentse a Dropbox-ba{' '}
+        Mentés Dropbox-ba{' '}
         <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
-    exportError: 'Hiba a GPX exportálásakor: {err}', // TODO google-translated
+    exportError: 'Hiba a GPX exportálásakor: {err}',
     what: {
       plannedRoute: 'útvonal',
-      plannedRouteWithStops: 'útvonal (beleértve a megállásokat)', // TODO google-translated
+      plannedRouteWithStops: 'útvonal (megállásokkal)',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
       distanceMeasurement: 'lemért távolságok',
@@ -921,7 +919,7 @@ export default {
       elevationMeasurement: 'lemért magasságok és pozíciók',
       infoPoint: 'gombostűk',
       tracking: 'élő nyomkövetés',
-      gpx: 'GPX track', // TODO
+      gpx: 'GPX-nyomvonal',
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
