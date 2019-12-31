@@ -23,7 +23,7 @@ export const toolDefinitions: ToolDefinition[] = [
     msgKey: 'measurement',
     kbd: 'd',
   },
-  { tool: 'track-viewer', icon: 'road', msgKey: 'trackViewer', kbd: 't' },
+  { tool: 'track-viewer', icon: 'road', msgKey: 'trackViewer', kbd: 'g' },
   { tool: 'map-details', icon: 'info', msgKey: 'mapDetails', kbd: 'i' },
   { tool: 'tracking', icon: 'bullseye', msgKey: 'tracking', kbd: 'l' },
   {
