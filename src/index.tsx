@@ -81,12 +81,12 @@ if ('serviceWorker' in navigator) {
   const registration = runtime.register();
 
   registerEvents(registration, {
-    onInstalled: () => {},
+    // onInstalled: () => {},
     onUpdateReady: () => {
       applyUpdate();
     },
-    onUpdating: () => {},
-    onUpdateFailed: () => {},
+    // onUpdating: () => {},
+    // onUpdateFailed: () => {},
     onUpdated: () => {
       store.dispatch(
         toastsAdd({
