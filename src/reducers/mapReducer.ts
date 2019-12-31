@@ -26,7 +26,7 @@ const initialState: MapState = {
   zoom: 8,
   overlays: [],
   overlayOpacity: {},
-  overlayPaneOpacity: 0.65,
+  overlayPaneOpacity: 0.75,
   tileFormat: 'png',
   stravaAuth: false,
   selection: null,
