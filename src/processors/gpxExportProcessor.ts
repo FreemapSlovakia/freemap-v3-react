@@ -350,9 +350,17 @@ function addADMeasurement(
 ) {
   for (const line of lines.filter(line => line.type === type)) {
     const trkEle = createElement(doc.documentElement, 'trk');
+
+    if (line.label) {
+      createElement(trkEle, 'name', line.label);
+    }
+
     const trksegEle = createElement(trkEle, 'trkseg');
 
-    for (const { lat, lon } of line.points) {
+    const points =
+      type === 'distance' ? line.points : [...line.points, line.points[0]];
+
+    for (const { lat, lon } of points) {
       createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
     }
   }
@@ -369,6 +377,7 @@ function addInfoPoint(doc: Document, { points }: InfoPointState) {
         lon,
       }),
     );
+
     if (label) {
       createElement(wptEle, 'name', label);
     }
