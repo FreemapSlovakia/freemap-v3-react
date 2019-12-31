@@ -77,18 +77,20 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  label:
-    state.main.selection?.id === undefined
-      ? '???'
-      : state.main.selection?.type === 'info-point'
-      ? state.infoPoint.points[state.main.selection.id].label
-      : ['measure-dist', 'measure-area'].includes(
-          state.main.selection?.type ?? '',
-        )
-      ? state.distanceMeasurement.lines[state.main.selection.id].label
-      : '???',
-});
+const mapStateToProps = (state: RootState) => {
+  const { selection } = state.main;
+
+  return {
+    label:
+      selection?.type === 'info-point' && selection.id !== undefined
+        ? state.infoPoint.points[selection.id].label
+        : (selection?.type === 'measure-dist' ||
+            selection?.type === 'measure-area') &&
+          selection.id !== undefined
+        ? state.distanceMeasurement.lines[selection.id].label
+        : '???',
+  };
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onInfoPointChangeLabel(label: string | undefined) {
