@@ -257,7 +257,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
               </Tooltip>
             )}
           </Marker>
-        ) : (
+        ) : selected ? (
           <Marker
             key={p.id}
             draggable
@@ -273,7 +273,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
               )
             }
           />
-        );
+        ) : null;
       })}
 
       <ElevationChartActivePoint />
