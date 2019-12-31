@@ -391,7 +391,7 @@ export default {
   },
 
   measurement: {
-    distance: 'Linestring',
+    distance: 'Line',
     elevation: 'Point',
     area: 'Polygon',
     elevationFetchError: 'Error fetching point elevation: {err}',
@@ -915,10 +915,9 @@ export default {
       plannedRouteWithStops: 'found route including stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
-      distanceMeasurement: 'distance measurement',
-      areaMeasurement: 'area measurement',
-      elevationMeasurement: 'elevation and position measurement',
-      infoPoint: 'pins',
+      distanceMeasurement: 'drawing - lines',
+      areaMeasurement: 'drawing - polygons',
+      infoPoint: 'drawing - points',
       tracking: 'live tracking',
       gpx: 'GPX track',
     },

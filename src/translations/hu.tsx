@@ -921,10 +921,9 @@ export default {
       plannedRouteWithStops: 'útvonal (megállásokkal)',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
-      distanceMeasurement: 'lemért távolságok',
-      areaMeasurement: 'lemért területek',
-      elevationMeasurement: 'lemért magasságok és pozíciók',
-      infoPoint: 'gombostűk',
+      distanceMeasurement: 'drawing - lines', // TODO translate
+      areaMeasurement: 'drawing - polygons', // TODO translate
+      infoPoint: 'drawing - points', // TODO translate
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
     },
