@@ -4,13 +4,13 @@ import { LatLon, AppState } from 'fm3/types/common';
 export type Tool =
   | 'objects'
   | 'route-planner'
-  | 'measure-dist'
-  | 'measure-area'
+  | 'draw-lines'
+  | 'draw-polygons'
   | 'route-planner'
   | 'track-viewer'
-  | 'info-point'
+  | 'draw-points'
   | 'changesets'
-  | 'gallery'
+  | 'photos'
   | 'map-details'
   | 'tracking';
 
@@ -85,7 +85,7 @@ export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 export const deleteFeature = createAction('DELETE_FEATURE')<Selection | null>();
 
 export interface InfoPointSelection {
-  type: 'info-point';
+  type: 'draw-points';
   id?: number;
 }
 
@@ -95,7 +95,7 @@ export interface ObjectsSelection {
 }
 
 export interface MeasureDistSelection {
-  type: 'measure-dist' | 'measure-area';
+  type: 'draw-lines' | 'draw-polygons';
   id?: number;
 }
 
@@ -104,7 +104,7 @@ export interface OtherSelection {
     | 'map-details'
     | 'track-viewer'
     | 'changesets'
-    | 'gallery'
+    | 'photos'
     | 'tracking'
     | 'route-planner';
   id?: undefined;

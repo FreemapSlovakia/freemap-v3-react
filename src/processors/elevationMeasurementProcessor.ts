@@ -21,7 +21,7 @@ export const elevationMeasurementProcessor: Processor = {
 
     const { id } = selection;
 
-    if (selection?.type === 'measure-area') {
+    if (selection?.type === 'draw-polygons') {
       const { points } = getState().distanceMeasurement.lines[id];
 
       dispatch(
@@ -40,11 +40,7 @@ export const elevationMeasurementProcessor: Processor = {
           cancelType: getType(selectFeature),
         }),
       );
-
-      return;
-    }
-
-    if (selection?.type === 'measure-dist') {
+    } else if (selection?.type === 'draw-lines') {
       const { points } = getState().distanceMeasurement.lines[id];
 
       dispatch(
@@ -60,36 +56,30 @@ export const elevationMeasurementProcessor: Processor = {
           cancelType: getType(selectFeature),
         }),
       );
+    } else if (selection?.type === 'draw-points') {
+      const point = getState().infoPoint.points[id];
 
-      return;
+      const { data } = await httpRequest({
+        getState,
+        method: 'GET',
+        url: '/geotools/elevation',
+        params: {
+          coordinates: `${point.lat},${point.lon}`,
+        },
+        cancelActions: [infoPointMeasure, clearMap],
+      });
+
+      const [elevation] = assertType<[number]>(data);
+
+      dispatch(
+        toastsAdd({
+          messageKey: 'measurement.elevationInfo',
+          messageParams: { point, elevation },
+          timeout: 5000,
+          collapseKey: 'measurementInfo',
+          cancelType: getType(selectFeature),
+        }),
+      );
     }
-
-    if (selection?.type !== 'info-point') {
-      return;
-    }
-
-    const point = getState().infoPoint.points[id];
-
-    const { data } = await httpRequest({
-      getState,
-      method: 'GET',
-      url: '/geotools/elevation',
-      params: {
-        coordinates: `${point.lat},${point.lon}`,
-      },
-      cancelActions: [infoPointMeasure, clearMap],
-    });
-
-    const [elevation] = assertType<[number]>(data);
-
-    dispatch(
-      toastsAdd({
-        messageKey: 'measurement.elevationInfo',
-        messageParams: { point, elevation },
-        timeout: 5000,
-        collapseKey: 'measurementInfo',
-        cancelType: getType(selectFeature),
-      }),
-    );
   },
 };

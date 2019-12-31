@@ -82,10 +82,10 @@ const mapStateToProps = (state: RootState) => {
 
   return {
     label:
-      selection?.type === 'info-point' && selection.id !== undefined
+      selection?.type === 'draw-points' && selection.id !== undefined
         ? state.infoPoint.points[selection.id].label
-        : (selection?.type === 'measure-dist' ||
-            selection?.type === 'measure-area') &&
+        : (selection?.type === 'draw-lines' ||
+            selection?.type === 'draw-polygons') &&
           selection.id !== undefined
         ? state.distanceMeasurement.lines[selection.id].label
         : '???',

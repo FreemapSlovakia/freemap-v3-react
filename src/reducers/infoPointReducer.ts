@@ -42,7 +42,7 @@ export const infoPointReducer = createReducer<InfoPointState, RootAction>(
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
       if (
-        action.payload?.type === 'info-point' &&
+        action.payload?.type === 'draw-points' &&
         action.payload?.id != undefined
       )
         draft.points.splice(action.payload?.id, 1);

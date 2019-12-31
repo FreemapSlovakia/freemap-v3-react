@@ -157,7 +157,19 @@ export const handleLocationChange = (
     }
   }
 
-  const tool = query.tool && typeof query.tool === 'string' ? query.tool : null;
+  const tool =
+    !query.tool || typeof query.tool !== 'string'
+      ? null
+      : query.tool === 'info-point'
+      ? 'draw-points'
+      : query.tool === 'measure-area'
+      ? 'draw-polygons'
+      : query.tool === 'measure-dist'
+      ? 'draw-lines'
+      : query.tool === 'gallery'
+      ? 'photos'
+      : query.tool; // TODO set to null if unknown
+
   if ((getState().main.selection?.type ?? null) !== tool) {
     dispatch(selectFeature(tool ? { type: tool as Tool } : null));
   }

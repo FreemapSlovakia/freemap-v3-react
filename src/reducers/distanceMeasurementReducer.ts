@@ -70,8 +70,8 @@ export const distanceMeasurementReducer = createReducer<
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
       if (
-        (action.payload?.type === 'measure-dist' ||
-          action.payload?.type === 'measure-area') &&
+        (action.payload?.type === 'draw-lines' ||
+          action.payload?.type === 'draw-polygons') &&
         action.payload?.id !== undefined
       ) {
         draft.lines.splice(action.payload?.id, 1);

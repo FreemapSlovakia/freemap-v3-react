@@ -63,7 +63,7 @@ export default {
     tools: 'Nástroje',
     routePlanner: 'Vyhledávač tras',
     objects: 'Objekty (POI)',
-    gallery: 'Fotografie',
+    photos: 'Fotografie',
     measurement: 'Kreslení a měření',
     trackViewer: 'Prohlížeč tras (GPX)',
     infoPoint: 'Body v mapě',

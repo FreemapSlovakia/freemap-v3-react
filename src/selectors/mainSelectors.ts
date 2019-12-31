@@ -31,7 +31,7 @@ export const showGalleryPickerSelector = createSelector(
     selectingHomeLocation,
   ) =>
     (!tool ||
-      ['gallery', 'track-viewer', 'objects', 'changesets'].includes(tool)) &&
+      ['photos', 'track-viewer', 'objects', 'changesets'].includes(tool)) &&
     mapOverlays.includes('I') &&
     galleryPickingPositionForId === null &&
     !galleryShowPosition &&
@@ -53,11 +53,11 @@ export const mouseCursorSelector = createSelector(
       return 'crosshair';
     }
     switch (tool) {
-      case 'measure-dist':
-      case 'measure-area':
+      case 'draw-lines':
+      case 'draw-polygons':
       case 'map-details':
       case 'route-planner':
-      case 'info-point':
+      case 'draw-points':
         return routePlannerPickMode ? 'crosshair' : 'auto';
       default:
         return showGalleryPicker ? 'crosshair' : 'auto';

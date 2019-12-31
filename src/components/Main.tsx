@@ -290,12 +290,12 @@ const MainInt: React.FC<Props> = ({
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {tool &&
-                ['measure-dist', 'info-point', 'measure-area'].includes(
+                ['draw-lines', 'draw-points', 'draw-polygons'].includes(
                   tool,
                 ) && <MeasurementMenu />}
               {tool === 'track-viewer' && <TrackViewerMenu />}
               {tool === 'changesets' && <ChangesetsMenu />}
-              {tool === 'gallery' && <GalleryMenu />}
+              {tool === 'photos' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}{' '}
               {(selection?.id !== undefined ||
@@ -334,7 +334,7 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'about' && <AboutModal />}
       {activeModal === 'supportUs' && <SupportUsModal />}
       {activeModal === 'legend' && <AsyncLegendModal />}
-      {activeModal === 'info-point-change-label' && <InfoPointLabelModal />}
+      {activeModal === 'edit-label' && <InfoPointLabelModal />}
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
       {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
       {showLoginModal && <LoginModal />}

@@ -60,7 +60,7 @@ export function globalReducer(state: RootState, action: RootAction) {
       });
 
       draft.main.selection = {
-        type: 'measure-dist',
+        type: 'draw-lines',
         id: draft.distanceMeasurement.lines.length - 1,
       };
 
@@ -74,8 +74,8 @@ export function globalReducer(state: RootState, action: RootAction) {
       draft.main.selection = {
         type:
           draft.distanceMeasurement.lines[index].type === 'area'
-            ? 'measure-area'
-            : 'measure-dist',
+            ? 'draw-polygons'
+            : 'draw-lines',
         id: index,
       };
     });
@@ -89,15 +89,15 @@ export function globalReducer(state: RootState, action: RootAction) {
       draft.main.selection = {
         type:
           draft.distanceMeasurement.lines[action.payload.index].type === 'area'
-            ? 'measure-area'
-            : 'measure-dist',
+            ? 'draw-polygons'
+            : 'draw-lines',
         id: action.payload.index,
       };
     });
   } else if (isActionOf(infoPointAdd, action)) {
     return produce(state, draft => {
       draft.main.selection = {
-        type: 'info-point',
+        type: 'draw-points',
         id: draft.infoPoint.points.length - 1,
       };
     });
@@ -105,14 +105,14 @@ export function globalReducer(state: RootState, action: RootAction) {
     return produce(state, draft => {
       const selection = draft.main.selection;
       if (
-        (selection?.type === 'measure-area' ||
-          selection?.type === 'measure-dist') &&
+        (selection?.type === 'draw-polygons' ||
+          selection?.type === 'draw-lines') &&
         selection?.id !== undefined
       ) {
         draft.distanceMeasurement.lines[selection.id].label =
           action.payload.label;
       } else if (
-        selection?.type === 'info-point' &&
+        selection?.type === 'draw-points' &&
         selection?.id !== undefined
       ) {
         draft.infoPoint.points[selection.id].label = action.payload.label;

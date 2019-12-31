@@ -52,8 +52,8 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   const toolDef = toolDefinitions.find(
     t =>
       t.tool ===
-      (['measure-area', 'info-point'].includes(tool ?? '')
-        ? 'measure-dist'
+      (tool === 'draw-polygons' || tool === 'draw-points'
+        ? 'draw-lines'
         : tool),
   ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 

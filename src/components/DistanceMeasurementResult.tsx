@@ -297,8 +297,8 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
   line: state.distanceMeasurement.lines[ownProps.index],
   language: state.l10n.language,
   selected:
-    (state.main.selection?.type === 'measure-dist' ||
-      state.main.selection?.type === 'measure-area') &&
+    (state.main.selection?.type === 'draw-lines' ||
+      state.main.selection?.type === 'draw-polygons') &&
     ownProps.index === state.main.selection?.id,
 });
 
@@ -315,7 +315,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSelect(type: 'area' | 'distance', index: number) {
     dispatch(
       selectFeature({
-        type: type === 'area' ? 'measure-area' : 'measure-dist',
+        type: type === 'area' ? 'draw-polygons' : 'draw-lines',
         id: index,
       }),
     );

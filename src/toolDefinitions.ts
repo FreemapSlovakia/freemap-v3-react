@@ -16,9 +16,9 @@ export const toolDefinitions: ToolDefinition[] = [
     kbd: 'r',
   },
   { tool: 'objects', icon: 'map-marker', msgKey: 'objects', kbd: 'o' },
-  { tool: 'gallery', icon: 'picture-o', msgKey: 'gallery', kbd: 'p' },
+  { tool: 'photos', icon: 'picture-o', msgKey: 'photos', kbd: 'p' },
   {
-    tool: 'measure-dist',
+    tool: 'draw-lines',
     icon: 'object-ungroup',
     msgKey: 'measurement',
     kbd: 'd',

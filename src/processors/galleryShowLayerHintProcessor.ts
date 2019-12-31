@@ -8,7 +8,7 @@ export const galleryShowLayerHintProcessor: Processor = {
   actionCreator: selectFeature,
   handle: async ({ getState, dispatch }) => {
     if (
-      getState().main.selection?.type === 'gallery' &&
+      getState().main.selection?.type === 'photos' &&
       !getState().map.overlays.includes('I') &&
       !storage.getItem('galleryPreventLayerHint')
     ) {

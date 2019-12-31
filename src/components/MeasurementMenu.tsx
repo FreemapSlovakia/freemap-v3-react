@@ -48,7 +48,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
     (lat: number, lon: number, position?: number, id0?: number) => {
       const tool = selection?.type;
 
-      if (tool === 'info-point') {
+      if (tool === 'draw-points') {
         onInfoPointAdd(lat, lon);
         return;
       }
@@ -70,7 +70,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
       }
 
       onDistPointAdd(
-        tool === 'measure-dist' ? 'distance' : 'area',
+        tool === 'draw-lines' ? 'distance' : 'area',
         selection?.id,
         { lat, lon, id },
         pos,
@@ -111,24 +111,24 @@ const MeasurementMenuInt: React.FC<Props> = ({
     <>
       <ButtonGroup>
         <Button
-          onClick={() => onToolSet('measure-dist')}
-          active={tool === 'measure-dist'}
+          onClick={() => onToolSet('draw-lines')}
+          active={tool === 'draw-lines'}
           title={t('measurement.distance')}
         >
           <FontAwesomeIcon icon="arrows-h" />
           <span className="hidden-xs"> {t('measurement.distance')}</span>
         </Button>
         <Button
-          onClick={() => onToolSet('info-point')}
-          active={tool === 'info-point'}
+          onClick={() => onToolSet('draw-points')}
+          active={tool === 'draw-points'}
           title={t('measurement.elevation')}
         >
           <FontAwesomeIcon icon="map-marker" />
           <span className="hidden-xs"> {t('measurement.elevation')}</span>
         </Button>
         <Button
-          onClick={() => onToolSet('measure-area')}
-          active={tool === 'measure-area'}
+          onClick={() => onToolSet('draw-polygons')}
+          active={tool === 'draw-polygons'}
           title={t('measurement.area')}
         >
           <FontAwesomeIcon icon="square-o" />
@@ -143,7 +143,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         <FontAwesomeIcon icon="!icon-ruler" />
         <span className="hidden-xs"> {t('infoPoint.measure')}</span>
       </Button>{' '}
-      {tool === 'measure-dist' && (
+      {tool === 'draw-lines' && (
         <Button
           active={elevationChartTrackGeojson !== null}
           onClick={toggleElevationChart}
@@ -160,8 +160,8 @@ const MeasurementMenuInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   selection: state.main.selection,
   distancePoints:
-    (state.main.selection?.type !== 'measure-dist' &&
-      state.main.selection?.type !== 'measure-area') ||
+    (state.main.selection?.type !== 'draw-lines' &&
+      state.main.selection?.type !== 'draw-polygons') ||
     state.main.selection.id === undefined
       ? []
       : state.distanceMeasurement.lines[state.main.selection.id].points,
@@ -190,7 +190,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(infoPointAdd({ lat, lon, label: '' }));
   },
   onLabelModify() {
-    dispatch(setActiveModal('info-point-change-label'));
+    dispatch(setActiveModal('edit-label'));
   },
   onMeasure() {
     dispatch(infoPointMeasure());

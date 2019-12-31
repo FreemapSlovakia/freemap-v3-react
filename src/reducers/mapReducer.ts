@@ -113,12 +113,12 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     let overlays = [...state.overlays];
     let removeGalleryOverlayOnGalleryToolQuit = false;
 
-    if (nextSelection?.type === 'gallery' && !overlays.includes('I')) {
+    if (nextSelection?.type === 'photos' && !overlays.includes('I')) {
       overlays.push('I');
       removeGalleryOverlayOnGalleryToolQuit = true;
     } else if (
-      currentSelection?.type === 'gallery' &&
-      nextSelection?.type !== 'gallery' &&
+      currentSelection?.type === 'photos' &&
+      nextSelection?.type !== 'photos' &&
       state.removeGalleryOverlayOnGalleryToolQuit
     ) {
       overlays = overlays.filter(o => o !== 'I');

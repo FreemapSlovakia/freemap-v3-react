@@ -64,7 +64,7 @@ export default {
     tools: 'Eszközök',
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
-    gallery: 'Fényképek',
+    photos: 'Fényképek',
     measurement: 'Rajz és mérés', // TODO google translated ("draw and measure")
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     infoPoint: 'Gombostűk',

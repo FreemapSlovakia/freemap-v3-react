@@ -63,7 +63,7 @@ export default {
     tools: 'Tools',
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
-    gallery: 'Photos',
+    photos: 'Photos',
     measurement: 'Drawing and measurement',
     trackViewer: 'Track viewer (GPX)',
     infoPoint: 'Pins',
