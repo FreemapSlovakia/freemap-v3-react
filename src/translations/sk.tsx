@@ -65,7 +65,6 @@ export default {
     photos: 'Fotografie',
     measurement: 'Kreslenie a meranie',
     trackViewer: 'Prehliadač trás (GPX)',
-    infoPoint: 'Body v mape',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: () => (
@@ -469,10 +468,9 @@ export default {
   infoPoint: {
     modify: 'Zmeniť popis',
     edit: {
-      title: 'Zmeniť popis infobodu',
-      label: 'Popis infobodu:',
-      example: 'Tu sa stretneme',
-      hint: 'Ak nechcete aby mal infobod popis, nechajte pole popisu prázdne.',
+      title: 'Zmeniť popis',
+      label: 'Popis:',
+      hint: 'Ak chcete popis odstrániť, nechajte pole popisu prázdne.',
     },
     measure: 'Merať',
   },

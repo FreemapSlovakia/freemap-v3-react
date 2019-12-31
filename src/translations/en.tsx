@@ -66,7 +66,6 @@ export default {
     photos: 'Photos',
     measurement: 'Drawing and measurement',
     trackViewer: 'Track viewer (GPX)',
-    infoPoint: 'Pins',
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: () => (
@@ -468,10 +467,9 @@ export default {
   infoPoint: {
     modify: 'Change label',
     edit: {
-      title: 'Change pin label',
-      label: 'Pin description:',
-      example: 'We will meet here.',
-      hint: 'For pin without a label leave its description empty.',
+      title: 'Change label',
+      label: 'Label:',
+      hint: 'To remove label leave its field empty.',
     },
     measure: 'Measure',
   },

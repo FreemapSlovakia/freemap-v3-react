@@ -67,7 +67,6 @@ export default {
     photos: 'Fényképek',
     measurement: 'Rajz és mérés', // TODO google translated ("draw and measure")
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
-    infoPoint: 'Gombostűk',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: () => (
@@ -469,12 +468,11 @@ export default {
   },
 
   infoPoint: {
-    modify: 'Felirat módosítása',
+    modify: 'Change label', // TODO translate
     edit: {
-      title: 'Gombostű feliratának módosítása',
-      label: 'Gombostű leírása:',
-      example: 'Itt találkozunk',
-      hint: 'Felirat nélküli gombostűhöz hagyja üresen a leírását.',
+      title: 'Change label', // TODO translate
+      label: 'Label:', // TODO translate
+      hint: 'To remove label leave its field empty.', // TODO translate
     },
     measure: 'Intézkedés', // TODO google translated
   },

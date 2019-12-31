@@ -57,7 +57,6 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
             <FormControl
               autoFocus
               type="text"
-              placeholder={t('infoPoint.edit.example')}
               value={editedLabel ?? ''}
               onChange={handleLocalLabelChange}
             />
