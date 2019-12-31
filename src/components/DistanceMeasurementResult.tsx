@@ -9,7 +9,7 @@ import {
   Point,
 } from 'fm3/actions/distanceMeasurementActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { distance, area } from 'fm3/geoutils';
+import { distance } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { divIcon } from 'leaflet';
 import { RootState } from 'fm3/storeCreator';
@@ -17,8 +17,6 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { LatLon } from 'fm3/types/common';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 
 // const defaultIcon = new L.Icon.Default();
 
@@ -36,9 +34,7 @@ type OwnProps = {
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> &
-  OwnProps & {
-    t: Translator;
-  };
+  OwnProps;
 
 const DistanceMeasurementResultInt: React.FC<Props> = ({
   line,
@@ -47,14 +43,18 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
   onPointUpdate,
   onPointRemove,
   onSelect,
-  onValueShow,
   language,
   selected,
-  t,
 }) => {
   const points = line.points;
 
   const [coords, setCoords] = useState<LatLon | undefined>();
+
+  useEffect(() => {
+    if (!selected) {
+      setCoords(undefined);
+    }
+  }, [selected]);
 
   const handleMouseMove = useCallback(
     (lat: number, lon: number, originalEvent) => {
@@ -137,7 +137,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
     onSelect(line.type, index);
   }, [onSelect, index, line]);
 
-  const { areaSize, ps } = useMemo(() => {
+  const ps = useMemo(() => {
     const ps: Point[] = [];
 
     for (let i = 0; i < points.length; i++) {
@@ -157,12 +157,8 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       }
     }
 
-    return { areaSize: points.length >= 3 ? area(points) : NaN, ps };
+    return ps;
   }, [points, line.type]);
-
-  const handleTooltipClick = useCallback(() => {
-    onValueShow(areaSize);
-  }, [onValueShow, areaSize]);
 
   return (
     <>
@@ -175,7 +171,14 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
-        />
+          key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
+        >
+          {line.label && (
+            <Tooltip className="compact" permanent>
+              <span>{line.label}</span>
+            </Tooltip>
+          )}
+        </Polyline>
       )}
 
       {ps.length > 1 && line.type === 'area' && (
@@ -188,7 +191,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
         >
-          {ps.length > 4 && (
+          {line.label && ps.length > 4 && (
             <Tooltip
               className="compact"
               offset={[-4, 0]}
@@ -197,18 +200,17 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
               interactive
               key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
             >
-              <div onClick={handleTooltipClick}>
-                {t('measurement.areaInfo', { areaSize })}
-              </div>
+              <span>{line.label}</span>
             </Tooltip>
           )}
         </Polygon>
       )}
 
-      {!!(ps.length > 2 && coords && !window.preventMapClick && selected) && (
+      {!!(ps.length > 2 && coords && !window.preventMapClick) && (
         <Polyline
           weight={4}
           dashArray="6,8"
+          interactive={false}
           positions={[
             {
               lat: ps[ps.length - (line.type === 'area' ? 2 : 1)].lat,
@@ -238,10 +240,10 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
             // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
             icon={circularIcon}
             opacity={1}
-            onDrag={e => handleMeasureMarkerDrag(e as any, p.id)}
-            onClick={() => handleMarkerClick(p.id)}
-            onDragstart={handleDragStart}
-            onDragend={handleDragEnd}
+            ondrag={e => handleMeasureMarkerDrag(e as any, p.id)}
+            onclick={() => handleMarkerClick(p.id)}
+            ondragstart={handleDragStart}
+            ondragend={handleDragEnd}
           >
             {line.type === 'distance' && (
               <Tooltip
@@ -318,19 +320,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       }),
     );
   },
-  onValueShow(areaSize: number) {
-    dispatch(
-      toastsAdd({
-        messageKey: 'measurement.areaInfo',
-        messageParams: { areaSize },
-        timeout: 5000,
-        collapseKey: 'measurementInfo',
-      }),
-    );
-  },
 });
 
 export const DistanceMeasurementResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(DistanceMeasurementResultInt));
+)(DistanceMeasurementResultInt);

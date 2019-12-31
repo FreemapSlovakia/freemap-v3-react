@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
@@ -30,24 +30,30 @@ const InfoPointResultInt: React.FC<Props> = ({
     [onInfoPointPositionChange, activeIndex],
   );
 
+  const onSelects = useMemo(() => {
+    return new Array(points.length).fill(0).map((_, i) => () => {
+      onSelect(i);
+    });
+  }, [points.length, onSelect]);
+
   return (
     <>
       {points.map(({ lat, lon, label }, i) => (
         <RichMarker
           key={`${change}-${i}`}
-          faIcon="info"
           faIconLeftPadding="2px"
+          ondragstart={onSelects[i]}
           ondragend={handleDragEnd}
           position={{ lat, lng: lon }}
-          onclick={() => onSelect(i)}
+          onclick={onSelects[i]}
           color={activeIndex === i ? '#65b2ff' : undefined}
-          draggable={activeIndex === i}
+          draggable
         >
           {label && (
             <Tooltip
               className="compact"
-              offset={new Point(11, -25)}
-              direction="right"
+              offset={new Point(0, -36)}
+              direction="top"
               permanent
             >
               <span>{label}</span>

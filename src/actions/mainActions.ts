@@ -5,7 +5,6 @@ export type Tool =
   | 'objects'
   | 'route-planner'
   | 'measure-dist'
-  | 'measure-ele'
   | 'measure-area'
   | 'route-planner'
   | 'track-viewer'
@@ -107,8 +106,7 @@ export interface OtherSelection {
     | 'changesets'
     | 'gallery'
     | 'tracking'
-    | 'route-planner'
-    | 'measure-ele';
+    | 'route-planner';
   id?: undefined;
 }
 

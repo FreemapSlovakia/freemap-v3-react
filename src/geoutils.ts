@@ -1,4 +1,3 @@
-import geojsonArea from '@mapbox/geojson-area';
 import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common';
 import { Feature } from 'geojson';
@@ -101,13 +100,6 @@ export function getCurrentPosition(): Promise<LatLon> {
       timeout: 10000,
       maximumAge: 0,
     });
-  });
-}
-
-export function area(points: LatLon[]): number {
-  return geojsonArea.geometry({
-    type: 'Polygon',
-    coordinates: [[...points, points[0]].map(({ lat, lon }) => [lon, lat])],
   });
 }
 

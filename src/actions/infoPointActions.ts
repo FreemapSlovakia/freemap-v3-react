@@ -13,10 +13,11 @@ export const infoPointChangePosition = createAction(
 )<{ index: number; lat: number; lon: number }>();
 
 export const infoPointChangeLabel = createAction('INFO_POINT_CHANGE_LABEL')<{
-  index: number;
   label: string | undefined;
 }>();
 
 export const infoPointSetAll = createAction('INFO_POINT_SET_ALL')<
   InfoPoint[]
 >();
+
+export const infoPointMeasure = createAction('INFO_POINT_MEASURE')();

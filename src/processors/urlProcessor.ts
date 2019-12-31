@@ -24,7 +24,6 @@ export const urlProcessor: Processor = {
       infoPoint,
       changesets,
       distanceMeasurement,
-      elevationMeasurement,
       gallery: { filter: galleryFilter },
       main,
       tips,
@@ -41,7 +40,6 @@ export const urlProcessor: Processor = {
       changesets.authorName,
       changesets.days,
       distanceMeasurement.lines,
-      elevationMeasurement.point,
       gallery.activeImageId,
       gallery.filter,
       gallery.showFilter,
@@ -161,8 +159,8 @@ export const urlProcessor: Processor = {
       queryParts.push(
         ...infoPoint.points.map(
           point =>
-            `info-point=${serializePoint(point)}${
-              point.label ? `,${encodeURIComponent(point.label)}` : ''
+            `point=${serializePoint(point)}${
+              point.label ? `;${encodeURIComponent(point.label)}` : ''
             }`,
         ),
       );
@@ -170,17 +168,9 @@ export const urlProcessor: Processor = {
 
     for (const line of distanceMeasurement.lines) {
       queryParts.push(
-        `${line.type}-measurement-points=${line.points
+        `${line.type === 'area' ? 'polygon' : 'line'}=${line.points
           .map(point => serializePoint(point))
-          .join(',')}`,
-      );
-    }
-
-    if (elevationMeasurement.point) {
-      queryParts.push(
-        `elevation-measurement-point=${serializePoint(
-          elevationMeasurement.point,
-        )}`,
+          .join(',')}${line.label ? `;${encodeURIComponent(line.label)}` : ''}`,
       );
     }
 

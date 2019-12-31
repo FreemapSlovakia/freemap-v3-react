@@ -62,9 +62,16 @@ export function attachKeyboardHandler(store: MyStore) {
       } else if (
         !state.main.activeModal &&
         !state.gallery.activeImageId &&
-        !state.gallery.showPosition
+        !state.gallery.showPosition &&
+        state.main.selection
       ) {
-        store.dispatch(selectFeature(null));
+        store.dispatch(
+          selectFeature(
+            state.main.selection.id === undefined
+              ? null
+              : { type: state.main.selection.type },
+          ),
+        );
         event.preventDefault();
         return;
       }

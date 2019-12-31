@@ -26,7 +26,6 @@ const exportableDefinitions = [
   { type: 'pictures', icon: 'picture-o' },
   { type: 'distanceMeasurement', icon: 'arrows-h' },
   { type: 'areaMeasurement', icon: 'square' },
-  { type: 'elevationMeasurement', icon: 'long-arrow-up' },
   { type: 'infoPoint', icon: 'thumb-tack' },
   { type: 'tracking', icon: 'bullseye' },
   { type: 'gpx', icon: 'road' },
@@ -163,10 +162,6 @@ const mapStateToProps = (state: RootState) => {
 
   if (state.distanceMeasurement.lines.some(line => line.type === 'area')) {
     exportables.push('areaMeasurement');
-  }
-
-  if (state.elevationMeasurement.point) {
-    exportables.push('elevationMeasurement');
   }
 
   if (state.infoPoint.points.length) {

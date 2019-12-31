@@ -62,9 +62,9 @@ export default {
     none: 'Zavřít nástroj',
     tools: 'Nástroje',
     routePlanner: 'Vyhledávač tras',
-    objects: 'Místa',
+    objects: 'Objekty (POI)',
     gallery: 'Fotografie',
-    measurement: 'Měření',
+    measurement: 'Kreslení a měření',
     trackViewer: 'Prohlížeč tras (GPX)',
     infoPoint: 'Body v mapě',
     changesets: 'Změny mapě',
@@ -78,7 +78,7 @@ export default {
 
   routePlanner: {
     milestones: 'Kilometrovník',
-    convertToMeasurement: 'Zkonvertovat na měření',
+    convertToMeasurement: 'Zkonvertovat na kreslení',
     start: 'Start',
     finish: 'Cíl',
     swap: 'Prohodit start a cíl',
@@ -394,9 +394,9 @@ export default {
   },
 
   measurement: {
-    distance: 'Vzdálenost',
-    elevation: 'Výška a poloha',
-    area: 'Plocha',
+    distance: 'Čára',
+    elevation: 'Bod',
+    area: 'Polygon',
     elevationFetchError: 'Nastala chyba při získávání výšky bodu: {err}',
     elevationInfo: ({ elevation, point }) => (
       <>
@@ -410,16 +410,22 @@ export default {
         )}
       </>
     ),
-    areaInfo: ({ areaSize }) => (
+    areaInfo: ({ area }) => (
       <>
         <div>
-          {nf33.format(areaSize)}&nbsp;m<sup>2</sup>
+          {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
-        <div>{nf33.format(areaSize / 100)}&nbsp;a</div>
-        <div>{nf33.format(areaSize / 10000)}&nbsp;ha</div>
+        <div>{nf33.format(area / 100)}&nbsp;a</div>
+        <div>{nf33.format(area / 10000)}&nbsp;ha</div>
         <div>
-          {nf33.format(areaSize / 1000000)}&nbsp;km<sup>2</sup>
+          {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
         </div>
+      </>
+    ),
+    distanceInfo: ({ length }) => (
+      <>
+        <div>{nf33.format(length * 1000)}&nbsp;m</div>
+        <div>{nf33.format(length)}&nbsp;km</div>
       </>
     ),
   },
@@ -469,6 +475,7 @@ export default {
       example: 'Zde se setkáme',
       hint: 'Pokud nechcete aby měl infobod popis, nechte pole popisu prázdné.',
     },
+    measure: 'Měřit',
   },
 
   settings: {

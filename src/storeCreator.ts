@@ -11,7 +11,6 @@ import { authReducer } from './reducers/authReducer';
 import { changesetReducer } from './reducers/changesetsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { distanceMeasurementReducer } from './reducers/distanceMeasurementReducer';
-import { elevationMeasurementReducer } from './reducers/elevationMeasurementReducer';
 import { galleryReducer } from './reducers/galleryReducer';
 import { infoPointReducer } from './reducers/infoPointReducer';
 import { l10nReducer } from './reducers/l10nReducer';
@@ -105,7 +104,6 @@ const reducers = {
   changesets: changesetReducer,
   distanceMeasurement: distanceMeasurementReducer,
   elevationChart: elevationChartReducer,
-  elevationMeasurement: elevationMeasurementReducer,
   gallery: galleryReducer,
   infoPoint: infoPointReducer,
   l10n: l10nReducer,

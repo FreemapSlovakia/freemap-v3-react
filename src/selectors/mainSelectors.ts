@@ -54,7 +54,6 @@ export const mouseCursorSelector = createSelector(
     }
     switch (tool) {
       case 'measure-dist':
-      case 'measure-ele':
       case 'measure-area':
       case 'map-details':
       case 'route-planner':

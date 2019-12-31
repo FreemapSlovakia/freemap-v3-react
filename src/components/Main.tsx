@@ -23,7 +23,6 @@ import { ObjectsResult } from 'fm3/components/ObjectsResult';
 
 import { MeasurementMenu } from 'fm3/components/MeasurementMenu';
 import { DistanceMeasurementResults } from 'fm3/components/DistanceMeasurementResults';
-import { ElevationMeasurementResult } from 'fm3/components/ElevationMeasurementResult';
 import { LocationResult } from 'fm3/components/LocationResult';
 
 import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
@@ -47,7 +46,6 @@ import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu'
 
 import { AsyncElevationChart } from 'fm3/components/AsyncElevationChart';
 
-import { InfoPointMenu } from 'fm3/components/InfoPointMenu';
 import { InfoPointResult } from 'fm3/components/InfoPointResult';
 import { InfoPointLabelModal } from 'fm3/components/InfoPointLabelModal';
 
@@ -292,19 +290,16 @@ const MainInt: React.FC<Props> = ({
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {tool &&
-                ['measure-dist', 'measure-ele', 'measure-area'].includes(
+                ['measure-dist', 'info-point', 'measure-area'].includes(
                   tool,
                 ) && <MeasurementMenu />}
               {tool === 'track-viewer' && <TrackViewerMenu />}
-              {tool === 'info-point' && <InfoPointMenu />}
               {tool === 'changesets' && <ChangesetsMenu />}
               {tool === 'gallery' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}{' '}
               {(selection?.id !== undefined ||
-                ['route-planner', 'measure-ele'].includes(
-                  selection?.type ?? '',
-                )) && (
+                ['route-planner'].includes(selection?.type ?? '')) && (
                 <Button title={t('general.delete')} onClick={handleDeleteClick}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">
@@ -387,7 +382,6 @@ const MainInt: React.FC<Props> = ({
               <ObjectsResult />
               <RoutePlannerResult />
               <DistanceMeasurementResults />
-              <ElevationMeasurementResult />
               <LocationResult />
               <TrackViewerResult />
               <InfoPointResult />

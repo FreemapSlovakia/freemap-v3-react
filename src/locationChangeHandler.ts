@@ -28,11 +28,7 @@ import {
   osmLoadRelation,
   osmClear,
 } from 'fm3/actions/osmActions';
-import {
-  infoPointAdd,
-  infoPointChangeLabel,
-  infoPointSetAll,
-} from 'fm3/actions/infoPointActions';
+import { infoPointAdd, infoPointSetAll } from 'fm3/actions/infoPointActions';
 import {
   galleryRequestImage,
   gallerySetFilter,
@@ -52,7 +48,6 @@ import {
   distanceMeasurementSetPoints,
   Line,
 } from 'fm3/actions/distanceMeasurementActions';
-import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
@@ -213,14 +208,21 @@ export const handleLocationChange = (
   for (const [key, value] of params) {
     if (
       key === 'distance-measurement-points' ||
-      key === 'area-measurement-points'
+      key === 'area-measurement-points' ||
+      key === 'line' ||
+      key === 'polygon'
     ) {
+      const [line, label] = value.split(';');
       aa.push({
-        type: key === 'distance-measurement-points' ? 'distance' : 'area',
-        points: value
+        type:
+          key === 'distance-measurement-points' || key === 'line'
+            ? 'distance'
+            : 'area',
+        points: line
           .split(',')
-          .map(point => point.split('/').map(coord => parseFloat(coord)))
+          .map(point => point.split('/').map(coord => parseFloat(coord))) // TODO validate for NaNs
           .map((pair, id) => ({ lat: pair[0], lon: pair[1], id })),
+        label,
       });
     }
   }
@@ -234,22 +236,6 @@ export const handleLocationChange = (
     dispatch(distanceMeasurementSetPoints(aa));
   }
 
-  const elvMeasPoint = query['elevation-measurement-point'];
-  const emMatch =
-    typeof elvMeasPoint === 'string' &&
-    /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)$/.exec(elvMeasPoint);
-  if (emMatch) {
-    const point = { lat: parseFloat(emMatch[1]), lon: parseFloat(emMatch[2]) };
-    if (
-      serializePoint(point) !==
-      serializePoint(getState().elevationMeasurement.point)
-    ) {
-      dispatch(elevationMeasurementSetPoint(point));
-    }
-  } else if (getState().elevationMeasurement.point) {
-    dispatch(elevationMeasurementSetPoint(null));
-  }
-
   const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
   if (transformed) {
     const { lat, lon } = transformed;
@@ -259,10 +245,7 @@ export const handleLocationChange = (
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
   if (f2) {
     const { lat, lon, label } = f2;
-    dispatch(infoPointAdd({ lat, lon }));
-    if (label) {
-      dispatch(infoPointChangeLabel({ index: 0, label }));
-    }
+    dispatch(infoPointAdd({ lat, lon, label }));
   }
 
   const gpxUrl = query['gpx-url'] || query.load; /* backward compatibility */
@@ -563,7 +546,9 @@ function handleInfoPoint(
   dispatch: Dispatch,
   query: queryString.ParsedQuery<string>,
 ): void {
-  const infoPoint = query['info-point'];
+  const infoPoint = query['point'] || query['info-point'] /* compatibility */;
+
+  const emp = query['elevation-measurement-point']; // for compatibility
 
   const ips = (!infoPoint
     ? []
@@ -571,7 +556,8 @@ function handleInfoPoint(
     ? infoPoint
     : [infoPoint]
   )
-    .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?),?(.*)$/.exec(ip))
+    .concat(typeof emp === 'string' ? [emp] : [])
+    .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility
     .filter(ipMatch => ipMatch)
     .map(ipMatch => ({
       // see https://github.com/microsoft/TypeScript/issues/29642

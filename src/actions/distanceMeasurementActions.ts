@@ -8,6 +8,7 @@ export interface Point {
 
 export interface Line {
   type: 'area' | 'distance';
+  label?: string;
   points: Point[];
 }
 

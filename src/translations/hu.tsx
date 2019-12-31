@@ -65,7 +65,7 @@ export default {
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
     gallery: 'Fényképek',
-    measurement: 'Mérés',
+    measurement: 'Rajz és mérés', // TODO google translated ("draw and measure")
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     infoPoint: 'Gombostűk',
     changesets: 'Térkép változásai',
@@ -79,7 +79,7 @@ export default {
 
   routePlanner: {
     milestones: 'Távolságszelvények',
-    convertToMeasurement: 'Átalakítás távolságméréssé',
+    convertToMeasurement: 'Konvertálás rajzra', // TODO google translated ("convert to drawing")
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',
@@ -394,9 +394,9 @@ export default {
   },
 
   measurement: {
-    distance: 'Távolság',
-    elevation: 'Magasság és pozíció',
-    area: 'Terület',
+    distance: 'Vonal', // TODO google-translated
+    elevation: 'Pont',
+    area: 'Sokszög', // TODO google-translated
     elevationFetchError:
       'Hiba történt a pont magasságának beolvasásakor: {err}',
     elevationInfo: ({ elevation, point }) => (
@@ -411,16 +411,22 @@ export default {
         )}
       </>
     ),
-    areaInfo: ({ areaSize }) => (
+    areaInfo: ({ area }) => (
       <>
         <div>
-          {nf33.format(areaSize)}&nbsp;m<sup>2</sup>
+          {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
-        <div>{nf33.format(areaSize / 100)}&nbsp;a</div>
-        <div>{nf33.format(areaSize / 10000)}&nbsp;ha</div>
+        <div>{nf33.format(area / 100)}&nbsp;a</div>
+        <div>{nf33.format(area / 10000)}&nbsp;ha</div>
         <div>
-          {nf33.format(areaSize / 1000000)}&nbsp;km<sup>2</sup>
+          {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
         </div>
+      </>
+    ),
+    distanceInfo: ({ length }) => (
+      <>
+        <div>{nf33.format(length * 1000)}&nbsp;m</div>
+        <div>{nf33.format(length)}&nbsp;km</div>
       </>
     ),
   },
@@ -470,6 +476,7 @@ export default {
       example: 'Itt találkozunk',
       hint: 'Felirat nélküli gombostűhöz hagyja üresen a leírását.',
     },
+    measure: 'Intézkedés', // TODO google translated
   },
 
   settings: {

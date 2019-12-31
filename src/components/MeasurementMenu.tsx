@@ -11,8 +11,6 @@ import {
   Point,
 } from 'fm3/actions/distanceMeasurementActions';
 
-import { elevationMeasurementSetPoint } from 'fm3/actions/elevationMeasurementActions';
-
 import {
   elevationChartSetTrackGeojson,
   elevationChartClose,
@@ -24,8 +22,9 @@ import Button from 'react-bootstrap/lib/Button';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { LatLon } from 'fm3/types/common';
 import { GeoJsonObject } from 'geojson';
+import { infoPointAdd, infoPointMeasure } from 'fm3/actions/infoPointActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -37,18 +36,20 @@ const MeasurementMenuInt: React.FC<Props> = ({
   selection,
   elevationChartTrackGeojson,
   t,
-  onElePointSet,
+  onInfoPointAdd,
   distancePoints,
   onDistPointAdd,
   onElevationChartTrackGeojsonSet,
   onElevationChartClose,
+  onLabelModify,
+  onMeasure,
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position?: number, id0?: number) => {
       const tool = selection?.type;
 
-      if (tool === 'measure-ele') {
-        onElePointSet({ lat, lon });
+      if (tool === 'info-point') {
+        onInfoPointAdd(lat, lon);
         return;
       }
 
@@ -75,7 +76,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         pos,
       );
     },
-    [selection, distancePoints, onElePointSet, onDistPointAdd],
+    [selection, distancePoints, onInfoPointAdd, onDistPointAdd],
   );
 
   useEffect(() => {
@@ -104,6 +105,8 @@ const MeasurementMenuInt: React.FC<Props> = ({
 
   const tool = selection?.type;
 
+  const isActive = selection?.id !== undefined;
+
   return (
     <>
       <ButtonGroup>
@@ -116,11 +119,11 @@ const MeasurementMenuInt: React.FC<Props> = ({
           <span className="hidden-xs"> {t('measurement.distance')}</span>
         </Button>
         <Button
-          onClick={() => onToolSet('measure-ele')}
-          active={tool === 'measure-ele'}
+          onClick={() => onToolSet('info-point')}
+          active={tool === 'info-point'}
           title={t('measurement.elevation')}
         >
-          <FontAwesomeIcon icon="long-arrow-up" />
+          <FontAwesomeIcon icon="map-marker" />
           <span className="hidden-xs"> {t('measurement.elevation')}</span>
         </Button>
         <Button
@@ -128,10 +131,18 @@ const MeasurementMenuInt: React.FC<Props> = ({
           active={tool === 'measure-area'}
           title={t('measurement.area')}
         >
-          <FontAwesomeIcon icon="square" />
+          <FontAwesomeIcon icon="square-o" />
           <span className="hidden-xs"> {t('measurement.area')}</span>
         </Button>
       </ButtonGroup>{' '}
+      <Button onClick={onLabelModify} disabled={!isActive}>
+        <FontAwesomeIcon icon="tag" />
+        <span className="hidden-xs"> {t('infoPoint.modify')}</span>
+      </Button>{' '}
+      <Button onClick={onMeasure} disabled={!isActive}>
+        <FontAwesomeIcon icon="!icon-ruler" />
+        <span className="hidden-xs"> {t('infoPoint.measure')}</span>
+      </Button>{' '}
       {tool === 'measure-dist' && (
         <Button
           active={elevationChartTrackGeojson !== null}
@@ -175,8 +186,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   ) {
     dispatch(distanceMeasurementAddPoint({ index, point, position, type }));
   },
-  onElePointSet(point: LatLon) {
-    dispatch(elevationMeasurementSetPoint(point));
+  onInfoPointAdd(lat: number, lon: number) {
+    dispatch(infoPointAdd({ lat, lon, label: '' }));
+  },
+  onLabelModify() {
+    dispatch(setActiveModal('info-point-change-label'));
+  },
+  onMeasure() {
+    dispatch(infoPointMeasure());
   },
 });
 

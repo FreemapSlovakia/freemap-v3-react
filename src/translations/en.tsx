@@ -64,7 +64,7 @@ export default {
     routePlanner: 'Route finder',
     objects: 'Objects (POIs)',
     gallery: 'Photos',
-    measurement: 'Measurement',
+    measurement: 'Drawing and measurement',
     trackViewer: 'Track viewer (GPX)',
     infoPoint: 'Pins',
     changesets: 'Map changes',
@@ -78,7 +78,7 @@ export default {
 
   routePlanner: {
     milestones: 'Milestones',
-    convertToMeasurement: 'Convert to measurement',
+    convertToMeasurement: 'Convert to drawing',
     start: 'Start',
     finish: 'Finish',
     swap: 'Swap start and finish',
@@ -391,9 +391,9 @@ export default {
   },
 
   measurement: {
-    distance: 'Distance',
-    elevation: 'Elevation and position',
-    area: 'Area',
+    distance: 'Linestring',
+    elevation: 'Point',
+    area: 'Polygon',
     elevationFetchError: 'Error fetching point elevation: {err}',
     elevationInfo: ({ elevation, point }) => (
       <>
@@ -407,16 +407,22 @@ export default {
         )}
       </>
     ),
-    areaInfo: ({ areaSize }) => (
+    areaInfo: ({ area }) => (
       <>
         <div>
-          {nf33.format(areaSize)}&nbsp;m<sup>2</sup>
+          {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
-        <div>{nf33.format(areaSize / 100)}&nbsp;a</div>
-        <div>{nf33.format(areaSize / 10000)}&nbsp;ha</div>
+        <div>{nf33.format(area / 100)}&nbsp;a</div>
+        <div>{nf33.format(area / 10000)}&nbsp;ha</div>
         <div>
-          {nf33.format(areaSize / 1000000)}&nbsp;km<sup>2</sup>
+          {nf33.format(area / 1000000)}&nbsp;km<sup>2</sup>
         </div>
+      </>
+    ),
+    distanceInfo: ({ length }) => (
+      <>
+        <div>{nf33.format(length * 1000)}&nbsp;m</div>
+        <div>{nf33.format(length)}&nbsp;km</div>
       </>
     ),
   },
@@ -467,6 +473,7 @@ export default {
       example: 'We will meet here.',
       hint: 'For pin without a label leave its description empty.',
     },
+    measure: 'Measure',
   },
 
   settings: {

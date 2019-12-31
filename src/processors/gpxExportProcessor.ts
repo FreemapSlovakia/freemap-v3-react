@@ -10,7 +10,6 @@ import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { LatLon } from 'fm3/types/common';
 import { ObjectsState } from 'fm3/reducers/objectsReducer';
 import { InfoPointState } from 'fm3/reducers/infoPointReducer';
-import { ElevationMeasurementState } from 'fm3/reducers/elevationMeasurementReducer';
 import { DistanceMeasurementState } from 'fm3/reducers/distanceMeasurementReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
@@ -49,7 +48,6 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     const {
       distanceMeasurement,
-      elevationMeasurement,
       infoPoint,
       objects,
       routePlanner,
@@ -86,10 +84,6 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     if (set.has('areaMeasurement')) {
       addADMeasurement(doc, distanceMeasurement, 'area');
-    }
-
-    if (set.has('elevationMeasurement')) {
-      addElevationMeasurement(doc, elevationMeasurement);
     }
 
     if (set.has('infoPoint')) {
@@ -360,26 +354,6 @@ function addADMeasurement(
 
     for (const { lat, lon } of line.points) {
       createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
-    }
-  }
-}
-
-function addElevationMeasurement(
-  doc: Document,
-  { point, elevation }: ElevationMeasurementState,
-) {
-  if (point) {
-    const wptEle = createElement(
-      doc.documentElement,
-      'wpt',
-      undefined,
-      toLatLon({
-        lat: point.lat,
-        lon: point.lon,
-      }),
-    );
-    if (elevation !== null) {
-      createElement(wptEle, 'ele', elevation.toString());
     }
   }
 }

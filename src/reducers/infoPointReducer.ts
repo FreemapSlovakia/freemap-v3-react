@@ -4,7 +4,6 @@ import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
   infoPointAdd,
   infoPointChangePosition,
-  infoPointChangeLabel,
   infoPointSetAll,
   InfoPoint,
 } from 'fm3/actions/infoPointActions';
@@ -34,11 +33,6 @@ export const infoPointReducer = createReducer<InfoPointState, RootAction>(
       const point = draft.points[action.payload.index];
       point.lat = action.payload.lat;
       point.lon = action.payload.lon;
-    }),
-  )
-  .handleAction(infoPointChangeLabel, (state, action) =>
-    produce(state, draft => {
-      draft.points[action.payload.index].label = action.payload.label;
     }),
   )
   .handleAction(infoPointSetAll, (state, action) => ({

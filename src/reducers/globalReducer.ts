@@ -12,6 +12,10 @@ import {
   Point,
 } from 'fm3/actions/distanceMeasurementActions';
 import { cleanState } from './routePlannerReducer';
+import {
+  infoPointAdd,
+  infoPointChangeLabel,
+} from 'fm3/actions/infoPointActions';
 
 export function globalReducer(state: RootState, action: RootAction) {
   if (isActionOf(routePlannerConvertToMeasurement, action)) {
@@ -89,6 +93,30 @@ export function globalReducer(state: RootState, action: RootAction) {
             : 'measure-dist',
         id: action.payload.index,
       };
+    });
+  } else if (isActionOf(infoPointAdd, action)) {
+    return produce(state, draft => {
+      draft.main.selection = {
+        type: 'info-point',
+        id: draft.infoPoint.points.length - 1,
+      };
+    });
+  } else if (isActionOf(infoPointChangeLabel, action)) {
+    return produce(state, draft => {
+      const selection = draft.main.selection;
+      if (
+        (selection?.type === 'measure-area' ||
+          selection?.type === 'measure-dist') &&
+        selection?.id !== undefined
+      ) {
+        draft.distanceMeasurement.lines[selection.id].label =
+          action.payload.label;
+      } else if (
+        selection?.type === 'info-point' &&
+        selection?.id !== undefined
+      ) {
+        draft.infoPoint.points[selection.id].label = action.payload.label;
+      }
     });
   }
 
