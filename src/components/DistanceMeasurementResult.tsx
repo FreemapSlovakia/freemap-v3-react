@@ -165,7 +165,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       {ps.length > 2 && line.type === 'distance' && (
         <Polyline
           weight={4}
-          color={selected ? '#65b2ff' : 'blue'}
+          color={selected ? '#65b2ff' : '#007bff'}
           interactive
           onclick={handleSelect}
           positions={ps
@@ -184,7 +184,7 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
       {ps.length > 1 && line.type === 'area' && (
         <Polygon
           weight={4}
-          color={selected ? '#65b2ff' : 'blue'}
+          color={selected ? '#65b2ff' : '#007bff'}
           interactive
           onclick={handleSelect}
           positions={ps
@@ -224,57 +224,58 @@ const DistanceMeasurementResultInt: React.FC<Props> = ({
         />
       )}
 
-      {ps.map((p, i: number) => {
-        if (i % 2 === 0) {
-          if (prev) {
-            dist += distance(p.lat, p.lon, prev.lat, prev.lon);
-          }
-          prev = p;
-        }
-
-        return i % 2 === 0 ? (
-          <Marker
-            key={p.id}
-            draggable
-            position={{ lat: p.lat, lng: p.lon }}
-            // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-            icon={circularIcon}
-            opacity={1}
-            ondrag={e => handleMeasureMarkerDrag(e as any, p.id)}
-            onclick={() => handleMarkerClick(p.id)}
-            ondragstart={handleDragStart}
-            ondragend={handleDragEnd}
-          >
-            {line.type === 'distance' && (
-              <Tooltip
-                key={`${p.id}-${ps.length}`}
-                className="compact"
-                offset={[-4, 0]}
-                direction="right"
-                permanent={i === ps.length - 1}
-              >
-                <span>{nf.format(dist / 1000)} km</span>
-              </Tooltip>
-            )}
-          </Marker>
-        ) : selected ? (
-          <Marker
-            key={p.id}
-            draggable
-            position={{ lat: p.lat, lng: p.lon }}
-            icon={circularIcon}
-            opacity={0.5}
-            onDragstart={(e: LeafletEvent) =>
-              handlePoiAdd(
-                e.target.getLatLng().lat,
-                e.target.getLatLng().lng,
-                i,
-                p.id,
-              )
+      {selected &&
+        ps.map((p, i: number) => {
+          if (i % 2 === 0) {
+            if (prev) {
+              dist += distance(p.lat, p.lon, prev.lat, prev.lon);
             }
-          />
-        ) : null;
-      })}
+            prev = p;
+          }
+
+          return i % 2 === 0 ? (
+            <Marker
+              key={p.id}
+              draggable
+              position={{ lat: p.lat, lng: p.lon }}
+              // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
+              icon={circularIcon}
+              opacity={1}
+              ondrag={e => handleMeasureMarkerDrag(e as any, p.id)}
+              onclick={() => handleMarkerClick(p.id)}
+              ondragstart={handleDragStart}
+              ondragend={handleDragEnd}
+            >
+              {line.type === 'distance' && (
+                <Tooltip
+                  key={`${p.id}-${ps.length}`}
+                  className="compact"
+                  offset={[-4, 0]}
+                  direction="right"
+                  permanent={i === ps.length - 1}
+                >
+                  <span>{nf.format(dist / 1000)} km</span>
+                </Tooltip>
+              )}
+            </Marker>
+          ) : (
+            <Marker
+              key={p.id}
+              draggable
+              position={{ lat: p.lat, lng: p.lon }}
+              icon={circularIcon}
+              opacity={0.5}
+              onDragstart={(e: LeafletEvent) =>
+                handlePoiAdd(
+                  e.target.getLatLng().lat,
+                  e.target.getLatLng().lng,
+                  i,
+                  p.id,
+                )
+              }
+            />
+          );
+        })}
 
       <ElevationChartActivePoint />
     </>
