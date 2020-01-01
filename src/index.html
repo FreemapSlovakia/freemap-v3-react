@@ -58,15 +58,14 @@
       window.TrackJS &&
         TrackJS.install({
           token: '47a813b67baf4f97bace2d8359f76833',
-          // for more configuration options, see https://docs.trackjs.com
         });
     </script>
 
-    <script
+    <!-- <script
       data-ad-client="ca-pub-2465248996193624"
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
-    ></script>
+    ></script> -->
 
     <% for (const css of htmlWebpackPlugin.files.chunks.main.css) { %>
     <link rel="stylesheet" href="<%= css %>" />
