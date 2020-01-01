@@ -52,6 +52,16 @@
     <link rel="shortcut icon" href="favicon.ico" type="image/x-icon" />
     <link rel="apple-touch-icon" href="<%= require('./images/logo.jpg') %>" />
 
+    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+
+    <script>
+      window.TrackJS &&
+        TrackJS.install({
+          token: '47a813b67baf4f97bace2d8359f76833',
+          // for more configuration options, see https://docs.trackjs.com
+        });
+    </script>
+
     <script
       data-ad-client="ca-pub-2465248996193624"
       async

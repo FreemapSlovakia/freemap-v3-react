@@ -130,9 +130,6 @@ export function usePictureDropHandler(
           ? tags.ImageDescription.description
           : '';
 
-        console.log(tags.DateTimeOriginal);
-        console.log(tags.DateTime);
-
         const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
 
         let lat;

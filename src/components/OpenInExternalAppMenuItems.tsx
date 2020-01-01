@@ -185,7 +185,9 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
               text: pointDescription,
               url,
             })
-            .catch(error => console.log('Error sharing', error)); // TODO toast
+            .catch(error => {
+              console.error(error);
+            }); // TODO toast
           break;
         case 'image':
           {
@@ -216,7 +218,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
             };
 
             share().catch(err => {
-              console.log(err); // TODO toast
+              console.error(err); // TODO toast
             });
           }
           break;

@@ -45,8 +45,11 @@ interface ErrorDetails {
 }
 
 export function sendError(errDetails: ErrorDetails): void {
-  // eslint-disable-next-line
   console.error('Application error:', errDetails);
+
+  if (errDetails.error) {
+    window.TrackJS?.console.error(errDetails.error);
+  }
 
   const state = store?.getState();
 

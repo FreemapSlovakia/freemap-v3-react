@@ -28,7 +28,8 @@
       "gapi.auth2",
       "google.analytics",
       "facebook-js-sdk",
-      "google.picker"
+      "google.picker",
+      "trackjs"
     ]
   },
   "include": ["src", "typings"]
