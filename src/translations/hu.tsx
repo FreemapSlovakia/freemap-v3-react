@@ -57,7 +57,7 @@ export default {
     createdAt: 'Létrehozva:',
     actions: 'Műveletek',
     add: 'Új hozzáadása',
-    clear: 'Megtisztítása', // TODO google-translated
+    clear: 'Törlés',
   },
 
   tools: {
@@ -66,7 +66,7 @@ export default {
     routePlanner: 'Útvonaltervező',
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
-    measurement: 'Rajz és mérés', // TODO google translated ("draw and measure")
+    measurement: 'Rajzolás és mérés',
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
@@ -79,7 +79,7 @@ export default {
 
   routePlanner: {
     milestones: 'Távolságszelvények',
-    convertToMeasurement: 'Konvertálás rajzra', // TODO google translated ("convert to drawing")
+    ToMeasurement: 'Átalakítás rajzzá',
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',
@@ -394,9 +394,9 @@ export default {
   },
 
   measurement: {
-    distance: 'Vonal', // TODO google-translated
-    elevation: 'Pont',
-    area: 'Sokszög', // TODO google-translated
+    distance: 'Távolság',
+    elevation: 'Magasság',
+    area: 'Terület',
     elevationFetchError:
       'Hiba történt a pont magasságának beolvasásakor: {err}',
     elevationInfo: ({ elevation, point }) => (
@@ -469,13 +469,13 @@ export default {
   },
 
   drawing: {
-    modify: 'Change label', // TODO translate
+    modify: 'Felirat módosítása',
     edit: {
-      title: 'Change label', // TODO translate
-      label: 'Label:', // TODO translate
-      hint: 'To remove label leave its field empty.', // TODO translate
+      title: 'Felirat módosítása',
+      label: 'Felirat:',
+      hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
     },
-    measure: 'Intézkedés', // TODO google translated
+    measure: 'Mérés!',
   },
 
   settings: {
@@ -920,9 +920,9 @@ export default {
       plannedRouteWithStops: 'útvonal (megállásokkal)',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
-      drawingLines: 'drawing - lines', // TODO translate
-      areaMeasurement: 'drawing - polygons', // TODO translate
-      drawingPoints: 'drawing - points', // TODO translate
+      drawingLines: 'rajzolás – vonalak',
+      areaMeasurement: 'rajzolás – sokszögek',
+      drawingPoints: 'rajzolás – pontok',
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
     },
