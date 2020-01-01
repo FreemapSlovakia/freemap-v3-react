@@ -76,7 +76,10 @@
     <div id="app"></div>
     <script>
       var fm_seh = function(e) {
+        console.error(e);
+
         var app = document.getElementById('app');
+
         if (!app.children || !app.children.length) {
           app.innerHTML = `
             <div style="margin: 20px; padding: 20px; border: 6px solid red">
