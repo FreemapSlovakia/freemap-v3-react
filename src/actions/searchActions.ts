@@ -18,6 +18,6 @@ export const searchSetResults = createAction('SEARCH_SET_RESULTS')<
   SearchResult[]
 >();
 
-export const searchSelectResult = createAction('SEARCH_SELECT_RESULT')<
-  SearchResult
->();
+export const searchSelectResult = createAction(
+  'SEARCH_SELECT_RESULT',
+)<SearchResult | null>();

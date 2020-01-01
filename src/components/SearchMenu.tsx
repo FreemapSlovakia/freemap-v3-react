@@ -1,4 +1,10 @@
-import React, { useCallback, useState, useEffect, useRef } from 'react';
+import React, {
+  useCallback,
+  useState,
+  useEffect,
+  useRef,
+  MouseEvent,
+} from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import Button from 'react-bootstrap/lib/Button';
@@ -154,6 +160,15 @@ const SearchMenuInt: React.FC<Props> = ({
     ((e.target as any) as HTMLInputElement).select();
   }, []);
 
+  const handleClearClick = useCallback(
+    (e: MouseEvent<Button>) => {
+      e.stopPropagation();
+      onResultSelect(null);
+      setValue('');
+    },
+    [onResultSelect],
+  );
+
   return (
     <span style={{ display: hidden ? 'none' : 'inline' }}>
       <Form inline onSubmit={handleSearch}>
@@ -174,6 +189,15 @@ const SearchMenuInt: React.FC<Props> = ({
                 onFocus={handleInputFocus}
               />
               <InputGroup.Button style={{ width: 'auto' }}>
+                {!!selectedResult && (
+                  <Button
+                    type="button"
+                    // title={t('general.clear')}
+                    onClick={handleClearClick}
+                  >
+                    <FontAwesomeIcon icon="times" />
+                  </Button>
+                )}
                 <Button
                   type="submit"
                   title={t('search.buttonTitle')}
@@ -235,7 +259,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onDoSearch(query: string) {
     dispatch(searchSetQuery(query));
   },
-  onResultSelect(result: SearchResult) {
+  onResultSelect(result: SearchResult | null) {
     dispatch(searchSelectResult(result));
   },
   onRoutePlannerWithStartInit(result: SearchResult) {

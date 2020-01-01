@@ -94,14 +94,17 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
       draft.osmNodeId = null;
       draft.osmWayId = null;
       draft.osmRelationId = null;
-      if (action.payload.osmType === 'node') {
-        draft.osmNodeId = action.payload.id;
-      }
-      if (action.payload.osmType === 'way') {
-        draft.osmWayId = action.payload.id;
-      }
-      if (action.payload.osmType === 'relation') {
-        draft.osmRelationId = action.payload.id;
+
+      switch (action.payload?.osmType) {
+        case 'node':
+          draft.osmNodeId = action.payload.id;
+          break;
+        case 'way':
+          draft.osmWayId = action.payload.id;
+          break;
+        case 'relation':
+          draft.osmRelationId = action.payload.id;
+          break;
       }
     }),
   );
