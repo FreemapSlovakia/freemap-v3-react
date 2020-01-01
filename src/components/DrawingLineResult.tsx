@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline, Polygon } from 'react-leaflet';
 import { LeafletEvent } from 'leaflet';
 import {
-  distanceMeasurementAddPoint,
-  distanceMeasurementUpdatePoint,
-  distanceMeasurementRemovePoint,
+  drawingLineAddPoint,
+  drawingLineUpdatePoint,
+  drawingLineRemovePoint,
   Point,
-} from 'fm3/actions/distanceMeasurementActions';
+} from 'fm3/actions/drawingActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { distance } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
@@ -36,7 +36,7 @@ type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> &
   OwnProps;
 
-const DistanceMeasurementResultInt: React.FC<Props> = ({
+const DrawingLineResultInt: React.FC<Props> = ({
   line,
   index,
   onPointAdd,
@@ -295,7 +295,7 @@ function handleDragEnd() {
 }
 
 const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  line: state.distanceMeasurement.lines[ownProps.index],
+  line: state.drawingLines.lines[ownProps.index],
   language: state.l10n.language,
   selected:
     (state.main.selection?.type === 'draw-lines' ||
@@ -305,13 +305,13 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointAdd(index: number, point: Point, position: number) {
-    dispatch(distanceMeasurementAddPoint({ index, point, position }));
+    dispatch(drawingLineAddPoint({ index, point, position }));
   },
   onPointUpdate(index: number, point: Point) {
-    dispatch(distanceMeasurementUpdatePoint({ index, point }));
+    dispatch(drawingLineUpdatePoint({ index, point }));
   },
   onPointRemove(index: number, id: number) {
-    dispatch(distanceMeasurementRemovePoint({ index, id }));
+    dispatch(drawingLineRemovePoint({ index, id }));
   },
   onSelect(type: 'area' | 'distance', index: number) {
     dispatch(
@@ -323,7 +323,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export const DistanceMeasurementResult = connect(
+export const DrawingLineResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(DistanceMeasurementResultInt);
+)(DrawingLineResultInt);

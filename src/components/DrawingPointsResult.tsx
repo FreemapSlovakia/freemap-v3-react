@@ -2,7 +2,7 @@ import React, { useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
-import { infoPointChangePosition } from 'fm3/actions/infoPointActions';
+import { drawingPointChangePosition } from 'fm3/actions/drawingPointActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
@@ -13,21 +13,21 @@ import { selectFeature } from 'fm3/actions/mainActions';
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
 
-const InfoPointResultInt: React.FC<Props> = ({
+const DrawingPointsResultInt: React.FC<Props> = ({
   points,
   change,
   onSelect,
   activeIndex,
-  onInfoPointPositionChange,
+  onDrawingPointPositionChange,
 }) => {
   const handleDragEnd = useCallback(
     (e: DragEndEvent) => {
       if (activeIndex !== null) {
         const coords = e.target.getLatLng();
-        onInfoPointPositionChange(activeIndex, coords.lat, coords.lng);
+        onDrawingPointPositionChange(activeIndex, coords.lat, coords.lng);
       }
     },
-    [onInfoPointPositionChange, activeIndex],
+    [onDrawingPointPositionChange, activeIndex],
   );
 
   const onSelects = useMemo(() => {
@@ -66,8 +66,8 @@ const InfoPointResultInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  points: state.infoPoint.points,
-  change: state.infoPoint.change,
+  points: state.drawingPoints.points,
+  change: state.drawingPoints.change,
   activeIndex:
     state.main.selection?.type === 'draw-points'
       ? state.main.selection.id ?? null
@@ -75,15 +75,15 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onInfoPointPositionChange(index: number, lat: number, lon: number) {
-    dispatch(infoPointChangePosition({ index, lat, lon }));
+  onDrawingPointPositionChange(index: number, lat: number, lon: number) {
+    dispatch(drawingPointChangePosition({ index, lat, lon }));
   },
   onSelect(index: number) {
     dispatch(selectFeature({ type: 'draw-points', id: index }));
   },
 });
 
-export const InfoPointResult = connect(
+export const DrawingPointsResult = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(InfoPointResultInt);
+)(DrawingPointsResultInt);

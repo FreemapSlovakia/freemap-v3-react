@@ -467,7 +467,7 @@ export default {
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
   },
 
-  infoPoint: {
+  drawing: {
     modify: 'Change label', // TODO translate
     edit: {
       title: 'Change label', // TODO translate
@@ -919,9 +919,9 @@ export default {
       plannedRouteWithStops: 'útvonal (megállásokkal)',
       objects: 'érdekes pontok (POI-k)',
       pictures: 'fényképek (a látható térképterületen)',
-      distanceMeasurement: 'drawing - lines', // TODO translate
+      drawingLines: 'drawing - lines', // TODO translate
       areaMeasurement: 'drawing - polygons', // TODO translate
-      infoPoint: 'drawing - points', // TODO translate
+      drawingPoints: 'drawing - points', // TODO translate
       tracking: 'élő nyomkövetés',
       gpx: 'GPX-nyomvonal',
     },

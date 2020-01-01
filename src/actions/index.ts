@@ -3,9 +3,9 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import * as main from 'fm3/actions/mainActions';
 import * as ws from 'fm3/actions/websocketActions';
 import * as rpc from 'fm3/actions/rpcActions';
-import * as distanceMeasuremnet from 'fm3/actions/distanceMeasurementActions';
+import * as drawing from 'fm3/actions/drawingActions';
 import * as auth from 'fm3/actions/authActions';
-import * as infoPoint from 'fm3/actions/infoPointActions';
+import * as drawingPoints from 'fm3/actions/drawingPointActions';
 import * as changesets from 'fm3/actions/changesetsActions';
 import * as elevationChart from 'fm3/actions/elevationChartActions';
 import * as gallery from 'fm3/actions/galleryActions';
@@ -25,9 +25,9 @@ export const actions = {
   main,
   ws,
   rpc,
-  distanceMeasuremnet,
+  distanceMeasuremnet: drawing,
   auth,
-  infoPoint,
+  drawingPoints,
   changesets,
   elevationChart,
   gallery,

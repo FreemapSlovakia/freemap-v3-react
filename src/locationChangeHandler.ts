@@ -28,7 +28,10 @@ import {
   osmLoadRelation,
   osmClear,
 } from 'fm3/actions/osmActions';
-import { infoPointAdd, infoPointSetAll } from 'fm3/actions/infoPointActions';
+import {
+  drawingPointAdd,
+  drawingPointSetAll,
+} from 'fm3/actions/drawingPointActions';
 import {
   galleryRequestImage,
   gallerySetFilter,
@@ -44,10 +47,7 @@ import {
   changesetsSetAuthorName,
   changesetsSet,
 } from 'fm3/actions/changesetsActions';
-import {
-  distanceMeasurementSetPoints,
-  Line,
-} from 'fm3/actions/distanceMeasurementActions';
+import { drawingLineSetPoints, Line } from 'fm3/actions/drawingActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
@@ -242,22 +242,22 @@ export const handleLocationChange = (
   if (
     aa.map(serializePoints).join(';') !==
     getState()
-      .distanceMeasurement.lines.map(serializePoints)
+      .drawingLines.lines.map(serializePoints)
       .join(';')
   ) {
-    dispatch(distanceMeasurementSetPoints(aa));
+    dispatch(drawingLineSetPoints(aa));
   }
 
   const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
   if (transformed) {
     const { lat, lon } = transformed;
-    dispatch(infoPointAdd({ lat, lon }));
+    dispatch(drawingPointAdd({ lat, lon }));
   }
 
   const f2 = getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(location);
   if (f2) {
     const { lat, lon, label } = f2;
-    dispatch(infoPointAdd({ lat, lon, label }));
+    dispatch(drawingPointAdd({ lat, lon, label }));
   }
 
   const gpxUrl = query['gpx-url'] || query.load; /* backward compatibility */
@@ -558,15 +558,16 @@ function handleInfoPoint(
   dispatch: Dispatch,
   query: queryString.ParsedQuery<string>,
 ): void {
-  const infoPoint = query['point'] || query['info-point'] /* compatibility */;
+  const drawingPoint =
+      query['point'] || query['info-point'] /* compatibility */;
 
   const emp = query['elevation-measurement-point']; // for compatibility
 
-  const ips = (!infoPoint
+  const ips = (!drawingPoint
     ? []
-    : Array.isArray(infoPoint)
-    ? infoPoint
-    : [infoPoint]
+    : Array.isArray(drawingPoint)
+    ? drawingPoint
+    : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
     .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility
@@ -592,13 +593,13 @@ function handleInfoPoint(
       .sort()
       .join('\n') !==
     getState()
-      .infoPoint.points.map(
+      .drawingPoints.points.map(
         ({ lat, lon, label }) => `${serializePoint({ lat, lon })},${label}`,
       )
       .sort()
       .join('\n')
   ) {
-    dispatch(infoPointSetAll(ips));
+    dispatch(drawingPointSetAll(ips));
   }
 }
 

@@ -9,8 +9,8 @@ import qs from 'query-string';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { LatLon } from 'fm3/types/common';
 import { ObjectsState } from 'fm3/reducers/objectsReducer';
-import { InfoPointState } from 'fm3/reducers/infoPointReducer';
-import { DistanceMeasurementState } from 'fm3/reducers/distanceMeasurementReducer';
+import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
+import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 
@@ -47,8 +47,8 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     createElement(meta, 'keywords', action.payload.exportables.join(' '));
 
     const {
-      distanceMeasurement,
-      infoPoint,
+      drawingLines,
+      drawingPoints,
       objects,
       routePlanner,
       tracking,
@@ -78,16 +78,16 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
       addPictures(doc, data);
     }
 
-    if (set.has('distanceMeasurement')) {
-      addADMeasurement(doc, distanceMeasurement, 'distance');
+    if (set.has('drawingLines')) {
+      addADMeasurement(doc, drawingLines, 'distance');
     }
 
     if (set.has('areaMeasurement')) {
-      addADMeasurement(doc, distanceMeasurement, 'area');
+      addADMeasurement(doc, drawingLines, 'area');
     }
 
-    if (set.has('infoPoint')) {
-      addInfoPoint(doc, infoPoint);
+    if (set.has('drawingPoints')) {
+      addInfoPoint(doc, drawingPoints);
     }
 
     if (set.has('objects')) {
@@ -345,7 +345,7 @@ function addPictures(doc: Document, pictures) {
 
 function addADMeasurement(
   doc: Document,
-  { lines }: DistanceMeasurementState,
+  { lines }: DrawingLinesState,
   type: 'area' | 'distance',
 ) {
   for (const line of lines.filter(line => line.type === type)) {
@@ -366,7 +366,7 @@ function addADMeasurement(
   }
 }
 
-function addInfoPoint(doc: Document, { points }: InfoPointState) {
+function addInfoPoint(doc: Document, { points }: DrawingPointsState) {
   points.forEach(({ lat, lon, label }) => {
     const wptEle = createElement(
       doc.documentElement,

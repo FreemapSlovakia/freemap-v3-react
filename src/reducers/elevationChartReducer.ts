@@ -1,9 +1,9 @@
 import { RootAction } from 'fm3/actions';
 import {
-  distanceMeasurementAddPoint,
-  distanceMeasurementUpdatePoint,
-  distanceMeasurementRemovePoint,
-} from 'fm3/actions/distanceMeasurementActions';
+  drawingLineAddPoint,
+  drawingLineUpdatePoint,
+  drawingLineRemovePoint,
+} from 'fm3/actions/drawingActions';
 import {
   elevationChartRemoveActivePoint,
   elevationChartSetActivePoint,
@@ -57,9 +57,9 @@ export const elevationChartReducer = createReducer<
   }))
   .handleAction(selectFeature, setInitialState)
   .handleAction(routePlannerSetResult, setInitialState)
-  .handleAction(distanceMeasurementAddPoint, setInitialState)
-  .handleAction(distanceMeasurementUpdatePoint, setInitialState)
-  .handleAction(distanceMeasurementRemovePoint, setInitialState)
+  .handleAction(drawingLineAddPoint, setInitialState)
+  .handleAction(drawingLineUpdatePoint, setInitialState)
+  .handleAction(drawingLineRemovePoint, setInitialState)
   .handleAction(elevationChartClose, setInitialState);
 
 function setInitialState() {

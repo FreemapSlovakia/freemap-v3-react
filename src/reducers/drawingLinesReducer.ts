@@ -3,27 +3,26 @@ import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
-  distanceMeasurementAddPoint,
-  distanceMeasurementUpdatePoint,
-  distanceMeasurementRemovePoint,
-  distanceMeasurementSetPoints,
+  drawingLineAddPoint,
+  drawingLineUpdatePoint,
+  drawingLineRemovePoint,
+  drawingLineSetPoints,
   Line,
-} from 'fm3/actions/distanceMeasurementActions';
+} from 'fm3/actions/drawingActions';
 
-export interface DistanceMeasurementState {
+export interface DrawingLinesState {
   lines: Line[];
 }
 
-export const initialState: DistanceMeasurementState = {
+export const initialState: DrawingLinesState = {
   lines: [],
 };
 
-export const distanceMeasurementReducer = createReducer<
-  DistanceMeasurementState,
-  RootAction
->(initialState)
+export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
+  initialState,
+)
   .handleAction(clearMap, () => initialState)
-  .handleAction(distanceMeasurementAddPoint, (state, action) =>
+  .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, draft => {
       let line: Line;
 
@@ -48,7 +47,7 @@ export const distanceMeasurementReducer = createReducer<
     }),
   )
   .handleAction(
-    distanceMeasurementUpdatePoint,
+    drawingLineUpdatePoint,
     (state, { payload: { index, point } }) =>
       produce(state, draft => {
         const p = draft.lines[index].points.find(pt => pt.id === point.id);
@@ -57,13 +56,13 @@ export const distanceMeasurementReducer = createReducer<
         }
       }),
   )
-  .handleAction(distanceMeasurementRemovePoint, (state, action) =>
+  .handleAction(drawingLineRemovePoint, (state, action) =>
     produce(state, draft => {
       const line = draft.lines[action.payload.index];
       line.points = line.points.filter(point => point.id !== action.payload.id);
     }),
   )
-  .handleAction(distanceMeasurementSetPoints, (state, action) => ({
+  .handleAction(drawingLineSetPoints, (state, action) => ({
     ...state,
     lines: action.payload,
   }))

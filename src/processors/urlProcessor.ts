@@ -5,7 +5,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
-import { distanceMeasurementUpdatePoint } from 'fm3/actions/distanceMeasurementActions';
+import { drawingLineUpdatePoint } from 'fm3/actions/drawingActions';
 
 const tipKeys = allTips.map(([key]) => key);
 
@@ -21,9 +21,9 @@ export const urlProcessor: Processor = {
       routePlanner,
       trackViewer,
       gallery,
-      infoPoint,
+      drawingPoints,
       changesets,
-      distanceMeasurement,
+      drawingLines,
       gallery: { filter: galleryFilter },
       main,
       tips,
@@ -39,12 +39,12 @@ export const urlProcessor: Processor = {
       auth.chooseLoginMethod,
       changesets.authorName,
       changesets.days,
-      distanceMeasurement.lines,
+      drawingLines.lines,
       gallery.activeImageId,
       gallery.filter,
       gallery.showFilter,
       gallery.showUploadModal,
-      infoPoint.points,
+      drawingPoints.points,
       main.activeModal,
       main.embedFeatures,
       main.selection?.type,
@@ -155,9 +155,9 @@ export const urlProcessor: Processor = {
       );
     }
 
-    if (infoPoint.points.length) {
+    if (drawingPoints.points.length) {
       queryParts.push(
-        ...infoPoint.points.map(
+        ...drawingPoints.points.map(
           point =>
             `point=${serializePoint(point)}${
               point.label ? `;${encodeURIComponent(point.label)}` : ''
@@ -166,7 +166,7 @@ export const urlProcessor: Processor = {
       );
     }
 
-    for (const line of distanceMeasurement.lines) {
+    for (const line of drawingLines.lines) {
       queryParts.push(
         `${line.type === 'area' ? 'polygon' : 'line'}=${line.points
           .map(point => serializePoint(point))
@@ -294,7 +294,7 @@ export const urlProcessor: Processor = {
     if (window.location.search !== search) {
       const method =
         lastActionType &&
-        isActionOf([mapRefocus, distanceMeasurementUpdatePoint], action)
+        isActionOf([mapRefocus, drawingLineUpdatePoint], action)
           ? 'replace'
           : 'push';
       history[method]({ pathname: '/', search });

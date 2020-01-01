@@ -185,7 +185,7 @@ export class ExportPdfModalInt extends React.Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
-  hasInfopoints: state.infoPoint.points.length > 1,
+  hasInfopoints: state.drawingPoints.points.length > 1,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

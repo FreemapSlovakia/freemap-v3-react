@@ -22,7 +22,7 @@ import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
 import { ObjectsResult } from 'fm3/components/ObjectsResult';
 
 import { MeasurementMenu } from 'fm3/components/MeasurementMenu';
-import { DistanceMeasurementResults } from 'fm3/components/DistanceMeasurementResults';
+import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
 import { LocationResult } from 'fm3/components/LocationResult';
 
 import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
@@ -46,8 +46,8 @@ import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu'
 
 import { AsyncElevationChart } from 'fm3/components/AsyncElevationChart';
 
-import { InfoPointResult } from 'fm3/components/InfoPointResult';
-import { InfoPointLabelModal } from 'fm3/components/InfoPointLabelModal';
+import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
+import { DrawingEditLabelModal } from 'fm3/components/DrawingEditLabelModal';
 
 import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
@@ -334,7 +334,7 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'about' && <AboutModal />}
       {activeModal === 'supportUs' && <SupportUsModal />}
       {activeModal === 'legend' && <AsyncLegendModal />}
-      {activeModal === 'edit-label' && <InfoPointLabelModal />}
+      {activeModal === 'edit-label' && <DrawingEditLabelModal />}
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
       {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
       {showLoginModal && <LoginModal />}
@@ -381,10 +381,10 @@ const MainInt: React.FC<Props> = ({
               <SearchResults />
               <ObjectsResult />
               <RoutePlannerResult />
-              <DistanceMeasurementResults />
+              <DrawingLinesResult />
               <LocationResult />
               <TrackViewerResult />
-              <InfoPointResult />
+              <DrawingPointsResult />
               <ChangesetsResult />
               <TrackingResult />
               {showElevationChart && <AsyncElevationChart />}

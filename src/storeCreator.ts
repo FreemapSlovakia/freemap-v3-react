@@ -10,9 +10,9 @@ import { trackingMiddleware } from './middlewares/trackingMiddleware';
 import { authReducer } from './reducers/authReducer';
 import { changesetReducer } from './reducers/changesetsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
-import { distanceMeasurementReducer } from './reducers/distanceMeasurementReducer';
+import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { galleryReducer } from './reducers/galleryReducer';
-import { infoPointReducer } from './reducers/infoPointReducer';
+import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { l10nReducer } from './reducers/l10nReducer';
 import { mainReducer } from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
@@ -102,10 +102,10 @@ import { gallerySetItemForPositionPickingProcessor } from './processors/galleryS
 const reducers = {
   auth: authReducer,
   changesets: changesetReducer,
-  distanceMeasurement: distanceMeasurementReducer,
+  drawingLines: drawingLinesReducer,
+  drawingPoints: drawingPointsReducer,
   elevationChart: elevationChartReducer,
   gallery: galleryReducer,
-  infoPoint: infoPointReducer,
   l10n: l10nReducer,
   main: mainReducer,
   mapDetails: mapDetailsReducer,

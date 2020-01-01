@@ -6,10 +6,7 @@ import { lineString } from '@turf/helpers';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
-import {
-  distanceMeasurementAddPoint,
-  Point,
-} from 'fm3/actions/distanceMeasurementActions';
+import { drawingLineAddPoint, Point } from 'fm3/actions/drawingActions';
 
 import {
   elevationChartSetTrackGeojson,
@@ -23,7 +20,10 @@ import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { GeoJsonObject } from 'geojson';
-import { infoPointAdd, infoPointMeasure } from 'fm3/actions/infoPointActions';
+import {
+  drawingPointAdd,
+  drawingPointMeasure,
+} from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -137,11 +137,11 @@ const MeasurementMenuInt: React.FC<Props> = ({
       </ButtonGroup>{' '}
       <Button onClick={onLabelModify} disabled={!isActive}>
         <FontAwesomeIcon icon="tag" />
-        <span className="hidden-xs"> {t('infoPoint.modify')}</span>
+        <span className="hidden-xs"> {t('drawing.modify')}</span>
       </Button>{' '}
       <Button onClick={onMeasure} disabled={!isActive}>
         <FontAwesomeIcon icon="!icon-ruler" />
-        <span className="hidden-xs"> {t('infoPoint.measure')}</span>
+        <span className="hidden-xs"> {t('drawing.measure')}</span>
       </Button>{' '}
       {tool === 'draw-lines' && (
         <Button
@@ -164,7 +164,7 @@ const mapStateToProps = (state: RootState) => ({
       state.main.selection?.type !== 'draw-polygons') ||
     state.main.selection.id === undefined
       ? []
-      : state.distanceMeasurement.lines[state.main.selection.id].points,
+      : state.drawingLines.lines[state.main.selection.id].points,
   elevationChartTrackGeojson: state.elevationChart.trackGeojson,
 });
 
@@ -184,16 +184,16 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     point: Point,
     position: number,
   ) {
-    dispatch(distanceMeasurementAddPoint({ index, point, position, type }));
+    dispatch(drawingLineAddPoint({ index, point, position, type }));
   },
   onInfoPointAdd(lat: number, lon: number) {
-    dispatch(infoPointAdd({ lat, lon, label: '' }));
+    dispatch(drawingPointAdd({ lat, lon, label: '' }));
   },
   onLabelModify() {
     dispatch(setActiveModal('edit-label'));
   },
   onMeasure() {
-    dispatch(infoPointMeasure());
+    dispatch(drawingPointMeasure());
   },
 });
 

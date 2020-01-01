@@ -10,7 +10,7 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
-import { infoPointChangeLabel } from 'fm3/actions/infoPointActions';
+import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -21,9 +21,9 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const InfoPointLabelModalInt: React.FC<Props> = ({
+const DrawingEditLabelModalInt: React.FC<Props> = ({
   label,
-  onInfoPointChangeLabel,
+  onSave,
   onModalClose,
   t,
 }) => {
@@ -32,10 +32,10 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
   const saveLabel = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onInfoPointChangeLabel(editedLabel);
+      onSave(editedLabel);
       onModalClose();
     },
-    [editedLabel, onInfoPointChangeLabel, onModalClose],
+    [editedLabel, onSave, onModalClose],
   );
 
   const handleLocalLabelChange = useCallback(
@@ -49,11 +49,11 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
     <Modal show onHide={onModalClose}>
       <form onSubmit={saveLabel}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('infoPoint.edit.title')}</Modal.Title>
+          <Modal.Title>{t('drawing.edit.title')}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{t('infoPoint.edit.label')}</ControlLabel>
+            <ControlLabel>{t('drawing.edit.label')}</ControlLabel>
             <FormControl
               autoFocus
               type="text"
@@ -61,7 +61,7 @@ const InfoPointLabelModalInt: React.FC<Props> = ({
               onChange={handleLocalLabelChange}
             />
           </FormGroup>
-          <Alert>{t('infoPoint.edit.hint')}</Alert>
+          <Alert>{t('drawing.edit.hint')}</Alert>
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit" bsStyle="info">
@@ -82,25 +82,25 @@ const mapStateToProps = (state: RootState) => {
   return {
     label:
       selection?.type === 'draw-points' && selection.id !== undefined
-        ? state.infoPoint.points[selection.id].label
+        ? state.drawingPoints.points[selection.id].label
         : (selection?.type === 'draw-lines' ||
             selection?.type === 'draw-polygons') &&
           selection.id !== undefined
-        ? state.distanceMeasurement.lines[selection.id].label
+        ? state.drawingLines.lines[selection.id].label
         : '???',
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onInfoPointChangeLabel(label: string | undefined) {
-    dispatch(infoPointChangeLabel({ label }));
+  onSave(label: string | undefined) {
+    dispatch(drawingChangeLabel({ label }));
   },
   onModalClose() {
     dispatch(setActiveModal(null));
   },
 });
 
-export const InfoPointLabelModal = connect(
+export const DrawingEditLabelModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(InfoPointLabelModalInt));
+)(withTranslator(DrawingEditLabelModalInt));

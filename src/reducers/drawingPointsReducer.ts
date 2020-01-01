@@ -2,40 +2,41 @@ import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
 import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
-  infoPointAdd,
-  infoPointChangePosition,
-  infoPointSetAll,
-  InfoPoint,
-} from 'fm3/actions/infoPointActions';
+  drawingPointAdd,
+  drawingPointChangePosition,
+  drawingPointSetAll,
+  DrawingPoint,
+} from 'fm3/actions/drawingPointActions';
 import produce from 'immer';
 
-export interface InfoPointState {
-  points: InfoPoint[];
+export interface DrawingPointsState {
+  points: DrawingPoint[];
   change: number;
 }
 
-const initialState: InfoPointState = {
+const initialState: DrawingPointsState = {
   points: [],
   change: 0,
 };
 
-export const infoPointReducer = createReducer<InfoPointState, RootAction>(
-  initialState,
-)
+export const drawingPointsReducer = createReducer<
+  DrawingPointsState,
+  RootAction
+>(initialState)
   .handleAction(clearMap, () => initialState)
-  .handleAction(infoPointAdd, (state, action) => ({
+  .handleAction(drawingPointAdd, (state, action) => ({
     ...state,
     points: [...state.points, action.payload],
     change: state.change + 1,
   }))
-  .handleAction(infoPointChangePosition, (state, action) =>
+  .handleAction(drawingPointChangePosition, (state, action) =>
     produce(state, draft => {
       const point = draft.points[action.payload.index];
       point.lat = action.payload.lat;
       point.lon = action.payload.lon;
     }),
   )
-  .handleAction(infoPointSetAll, (state, action) => ({
+  .handleAction(drawingPointSetAll, (state, action) => ({
     ...state,
     points: action.payload,
   }))

@@ -6,16 +6,16 @@ import { routePlannerConvertToMeasurement } from 'fm3/actions/routePlannerAction
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import {
-  distanceMeasurementAddPoint,
-  distanceMeasurementUpdatePoint,
-  distanceMeasurementRemovePoint,
+  drawingLineAddPoint,
+  drawingLineUpdatePoint,
+  drawingLineRemovePoint,
   Point,
-} from 'fm3/actions/distanceMeasurementActions';
+} from 'fm3/actions/drawingActions';
 import { cleanState } from './routePlannerReducer';
 import {
-  infoPointAdd,
-  infoPointChangeLabel,
-} from 'fm3/actions/infoPointActions';
+  drawingPointAdd,
+  drawingChangeLabel,
+} from 'fm3/actions/drawingPointActions';
 
 export function globalReducer(state: RootState, action: RootAction) {
   if (isActionOf(routePlannerConvertToMeasurement, action)) {
@@ -54,54 +54,50 @@ export function globalReducer(state: RootState, action: RootAction) {
         id++;
       }
 
-      draft.distanceMeasurement.lines.push({
+      draft.drawingLines.lines.push({
         type: 'distance',
         points,
       });
 
       draft.main.selection = {
         type: 'draw-lines',
-        id: draft.distanceMeasurement.lines.length - 1,
+        id: draft.drawingLines.lines.length - 1,
       };
 
       Object.assign(draft.routePlanner, cleanState);
     });
-  } else if (isActionOf(distanceMeasurementAddPoint, action)) {
+  } else if (isActionOf(drawingLineAddPoint, action)) {
     return produce(state, draft => {
-      const index =
-        action.payload.index ?? draft.distanceMeasurement.lines.length - 1;
+      const index = action.payload.index ?? draft.drawingLines.lines.length - 1;
 
       draft.main.selection = {
         type:
-          draft.distanceMeasurement.lines[index].type === 'area'
+          draft.drawingLines.lines[index].type === 'area'
             ? 'draw-polygons'
             : 'draw-lines',
         id: index,
       };
     });
   } else if (
-    isActionOf(
-      [distanceMeasurementUpdatePoint, distanceMeasurementRemovePoint],
-      action,
-    )
+    isActionOf([drawingLineUpdatePoint, drawingLineRemovePoint], action)
   ) {
     return produce(state, draft => {
       draft.main.selection = {
         type:
-          draft.distanceMeasurement.lines[action.payload.index].type === 'area'
+          draft.drawingLines.lines[action.payload.index].type === 'area'
             ? 'draw-polygons'
             : 'draw-lines',
         id: action.payload.index,
       };
     });
-  } else if (isActionOf(infoPointAdd, action)) {
+  } else if (isActionOf(drawingPointAdd, action)) {
     return produce(state, draft => {
       draft.main.selection = {
         type: 'draw-points',
-        id: draft.infoPoint.points.length - 1,
+        id: draft.drawingPoints.points.length - 1,
       };
     });
-  } else if (isActionOf(infoPointChangeLabel, action)) {
+  } else if (isActionOf(drawingChangeLabel, action)) {
     return produce(state, draft => {
       const selection = draft.main.selection;
       if (
@@ -109,13 +105,12 @@ export function globalReducer(state: RootState, action: RootAction) {
           selection?.type === 'draw-lines') &&
         selection?.id !== undefined
       ) {
-        draft.distanceMeasurement.lines[selection.id].label =
-          action.payload.label;
+        draft.drawingLines.lines[selection.id].label = action.payload.label;
       } else if (
         selection?.type === 'draw-points' &&
         selection?.id !== undefined
       ) {
-        draft.infoPoint.points[selection.id].label = action.payload.label;
+        draft.drawingPoints.points[selection.id].label = action.payload.label;
       }
     });
   }

@@ -465,7 +465,7 @@ export default {
     wrongFormat: 'Nahraný súbor musí mať príponu .gpx',
   },
 
-  infoPoint: {
+  drawing: {
     modify: 'Zmeniť popis',
     edit: {
       title: 'Zmeniť popis',
@@ -913,9 +913,9 @@ export default {
       plannedRouteWithStops: 'vyhľadanú trasu so zastávkami',
       objects: 'objekty (POI)',
       pictures: 'fotografie (vo viditeľnej časti mapy)',
-      distanceMeasurement: 'kreslenie - čiary',
+      drawingLines: 'kreslenie - čiary',
       areaMeasurement: 'kreslenie - polygóny',
-      infoPoint: 'kreslenie - body',
+      drawingPoints: 'kreslenie - body',
       tracking: 'sledovanie',
       gpx: 'GPX trasu',
     },

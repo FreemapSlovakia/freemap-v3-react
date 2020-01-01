@@ -24,9 +24,9 @@ const exportableDefinitions = [
   { type: 'plannedRouteWithStops', icon: 'map-signs' },
   { type: 'objects', icon: 'map-marker' },
   { type: 'pictures', icon: 'picture-o' },
-  { type: 'distanceMeasurement', icon: 'arrows-h' },
+  { type: 'drawingLines', icon: 'arrows-h' },
   { type: 'areaMeasurement', icon: 'square-o' },
-  { type: 'infoPoint', icon: 'map-marker' },
+  { type: 'drawingPoints', icon: 'map-marker' },
   { type: 'tracking', icon: 'bullseye' },
   { type: 'gpx', icon: 'road' },
   // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
@@ -156,16 +156,16 @@ const mapStateToProps = (state: RootState) => {
     exportables.push('pictures');
   }
 
-  if (state.distanceMeasurement.lines.some(line => line.type === 'distance')) {
-    exportables.push('distanceMeasurement');
+  if (state.drawingLines.lines.some(line => line.type === 'distance')) {
+    exportables.push('drawingLines');
   }
 
-  if (state.distanceMeasurement.lines.some(line => line.type === 'area')) {
+  if (state.drawingLines.lines.some(line => line.type === 'area')) {
     exportables.push('areaMeasurement');
   }
 
-  if (state.infoPoint.points.length) {
-    exportables.push('infoPoint');
+  if (state.drawingPoints.points.length) {
+    exportables.push('drawingPoints');
   }
 
   if (state.tracking.tracks.length) {

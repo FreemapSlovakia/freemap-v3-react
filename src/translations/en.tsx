@@ -464,7 +464,7 @@ export default {
     wrongFormat: 'The file must have .gpx extension.',
   },
 
-  infoPoint: {
+  drawing: {
     modify: 'Change label',
     edit: {
       title: 'Change label',
@@ -913,9 +913,9 @@ export default {
       plannedRouteWithStops: 'found route including stops',
       objects: 'objects (POIs)',
       pictures: 'photos (in the visible map area)',
-      distanceMeasurement: 'drawing - lines',
+      drawingLines: 'drawing - lines',
       areaMeasurement: 'drawing - polygons',
-      infoPoint: 'drawing - points',
+      drawingPoints: 'drawing - points',
       tracking: 'live tracking',
       gpx: 'GPX track',
     },

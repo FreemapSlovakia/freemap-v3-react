@@ -2,15 +2,15 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { RootState } from 'fm3/storeCreator';
-import { DistanceMeasurementResult } from './DistanceMeasurementResult';
+import { DrawingLineResult } from './DrawingLineResult';
 
 type Props = ReturnType<typeof mapStateToProps>;
 
-const DistanceMeasurementResultsInt: React.FC<Props> = ({ lines }) => {
+const DrawingLinesResultInt: React.FC<Props> = ({ lines }) => {
   return (
     <>
       {lines.map((_, i) => (
-        <DistanceMeasurementResult key={i} index={i} />
+        <DrawingLineResult key={i} index={i} />
       ))}
 
       <ElevationChartActivePoint />
@@ -19,9 +19,9 @@ const DistanceMeasurementResultsInt: React.FC<Props> = ({ lines }) => {
 };
 
 const mapStateToProps = (state: RootState) => ({
-  lines: state.distanceMeasurement.lines,
+  lines: state.drawingLines.lines,
 });
 
-export const DistanceMeasurementResults = connect(mapStateToProps)(
-  DistanceMeasurementResultsInt,
+export const DrawingLinesResult = connect(mapStateToProps)(
+  DrawingLinesResultInt,
 );

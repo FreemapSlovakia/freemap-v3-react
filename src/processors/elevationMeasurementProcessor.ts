@@ -2,7 +2,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
-import { infoPointMeasure } from 'fm3/actions/infoPointActions';
+import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
 import area from '@turf/area';
@@ -10,7 +10,7 @@ import length from '@turf/length';
 import { polygon, lineString } from '@turf/helpers';
 
 export const elevationMeasurementProcessor: Processor = {
-  actionCreator: infoPointMeasure,
+  actionCreator: drawingPointMeasure,
   errorKey: 'measurement.elevationFetchError',
   handle: async ({ getState, dispatch }) => {
     const { selection } = getState().main;
@@ -22,7 +22,7 @@ export const elevationMeasurementProcessor: Processor = {
     const { id } = selection;
 
     if (selection?.type === 'draw-polygons') {
-      const { points } = getState().distanceMeasurement.lines[id];
+      const { points } = getState().drawingLines.lines[id];
 
       dispatch(
         toastsAdd({
@@ -41,7 +41,7 @@ export const elevationMeasurementProcessor: Processor = {
         }),
       );
     } else if (selection?.type === 'draw-lines') {
-      const { points } = getState().distanceMeasurement.lines[id];
+      const { points } = getState().drawingLines.lines[id];
 
       dispatch(
         toastsAdd({
@@ -57,7 +57,7 @@ export const elevationMeasurementProcessor: Processor = {
         }),
       );
     } else if (selection?.type === 'draw-points') {
-      const point = getState().infoPoint.points[id];
+      const point = getState().drawingPoints.points[id];
 
       const { data } = await httpRequest({
         getState,
@@ -66,7 +66,7 @@ export const elevationMeasurementProcessor: Processor = {
         params: {
           coordinates: `${point.lat},${point.lon}`,
         },
-        cancelActions: [infoPointMeasure, clearMap],
+        cancelActions: [drawingPointMeasure, clearMap],
       });
 
       const [elevation] = assertType<[number]>(data);
