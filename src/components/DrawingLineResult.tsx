@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Marker, Tooltip, Polyline, Polygon } from 'react-leaflet';
-import { LeafletEvent } from 'leaflet';
+import { LeafletEvent, DomEvent } from 'leaflet';
 import {
   drawingLineAddPoint,
   drawingLineUpdatePoint,
@@ -17,6 +17,7 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { LatLon } from 'fm3/types/common';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 // const defaultIcon = new L.Icon.Default();
 
@@ -49,26 +50,41 @@ const DrawingLineResultInt: React.FC<Props> = ({
   const points = line.points;
 
   const [coords, setCoords] = useState<LatLon | undefined>();
+  const [touching, setTouching] = useState(false);
+
+  const removeCoords = !!coords && (!selected || touching);
 
   useEffect(() => {
-    if (!selected) {
+    if (removeCoords) {
       setCoords(undefined);
     }
-  }, [selected]);
+  }, [removeCoords]);
 
   const handleMouseMove = useCallback(
     (lat: number, lon: number, originalEvent) => {
+      if (touching) {
+        return;
+      }
+
       setCoords(
-        selected && originalEvent.target.classList.contains('leaflet-container')
+        originalEvent.target.classList.contains('leaflet-container')
           ? { lat, lon }
           : undefined,
       );
     },
-    [selected],
+    [touching],
   );
 
   const handleMouseOut = useCallback(() => {
     setCoords(undefined);
+  }, []);
+
+  const handleTouchStart = useCallback(() => {
+    setTouching(true);
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    setTouching(false);
   }, []);
 
   useEffect(() => {
@@ -79,11 +95,29 @@ const DrawingLineResultInt: React.FC<Props> = ({
     mapEventEmitter.on('mouseMove', handleMouseMove);
     mapEventEmitter.on('mouseOut', handleMouseOut);
 
+    const mapContainer = getMapLeafletElement()?.getContainer();
+
+    if (mapContainer) {
+      DomEvent.on(mapContainer, 'touchstart', handleTouchStart);
+      DomEvent.on(mapContainer, 'touchend', handleTouchEnd);
+    }
+
     return () => {
       mapEventEmitter.removeListener('mouseMove', handleMouseMove);
       mapEventEmitter.removeListener('mouseOut', handleMouseOut);
+
+      if (mapContainer) {
+        DomEvent.off(mapContainer, 'touchstart', handleTouchStart);
+        DomEvent.off(mapContainer, 'touchend', handleTouchEnd);
+      }
     };
-  }, [selected, handleMouseMove, handleMouseOut]);
+  }, [
+    selected,
+    handleMouseMove,
+    handleMouseOut,
+    handleTouchStart,
+    handleTouchEnd,
+  ]);
 
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position: number, id0: number) => {
