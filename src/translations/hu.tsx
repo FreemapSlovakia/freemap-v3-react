@@ -79,7 +79,7 @@ export default {
 
   routePlanner: {
     milestones: 'Távolságszelvények',
-    ToMeasurement: 'Átalakítás rajzzá',
+    convertToMeasurement: 'Átalakítás rajzzá',
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',
