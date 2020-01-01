@@ -57,6 +57,7 @@ export default {
     createdAt: 'Létrehozva:',
     actions: 'Műveletek',
     add: 'Új hozzáadása',
+    clear: 'Megtisztítása', // TODO google-translated
   },
 
   tools: {

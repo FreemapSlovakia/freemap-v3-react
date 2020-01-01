@@ -56,6 +56,7 @@ export default {
     createdAt: 'Created At',
     actions: 'Actions',
     add: 'Add new',
+    clear: 'Clear',
   },
 
   tools: {

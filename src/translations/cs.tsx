@@ -56,6 +56,7 @@ export default {
     createdAt: 'Vytvořeno',
     actions: 'Akce',
     add: 'Přidat nové',
+    clear: 'Vyčistit',
   },
 
   tools: {

@@ -192,7 +192,7 @@ const SearchMenuInt: React.FC<Props> = ({
                 {!!selectedResult && (
                   <Button
                     type="button"
-                    // title={t('general.clear')}
+                    title={t('general.clear')}
                     onClick={handleClearClick}
                   >
                     <FontAwesomeIcon icon="times" />
