@@ -219,7 +219,7 @@ export const handleLocationChange = (
     dispatch(changesetsSet([]));
   }
 
-  const aa: Line[] = [];
+  const lines: Line[] = [];
 
   for (const [key, value] of params) {
     if (
@@ -229,27 +229,36 @@ export const handleLocationChange = (
       key === 'polygon'
     ) {
       const [line, label] = value.split(';');
-      aa.push({
-        type:
-          key === 'distance-measurement-points' || key === 'line'
-            ? 'distance'
-            : 'area',
-        points: line
-          .split(',')
-          .map(point => point.split('/').map(coord => parseFloat(coord))) // TODO validate for NaNs
-          .map((pair, id) => ({ lat: pair[0], lon: pair[1], id })),
-        label,
-      });
+
+      const points = line
+        .split(',')
+        .map(point => point.split('/').map(coord => parseFloat(coord)))
+        .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
+
+      if (
+        points.every(
+          point => !Number.isNaN(point.lat) && !Number.isNaN(point.lon),
+        )
+      ) {
+        lines.push({
+          type:
+            key === 'distance-measurement-points' || key === 'line'
+              ? 'distance'
+              : 'area',
+          points,
+          label,
+        });
+      }
     }
   }
 
   if (
-    aa.map(serializePoints).join(';') !==
+    lines.map(serializePoints).join(';') !==
     getState()
       .drawingLines.lines.map(serializePoints)
       .join(';')
   ) {
-    dispatch(drawingLineSetPoints(aa));
+    dispatch(drawingLineSetPoints(lines));
   }
 
   const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);

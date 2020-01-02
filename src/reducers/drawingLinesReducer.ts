@@ -28,11 +28,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   .handleAction(clearMap, () => initialState)
   .handleAction(selectFeature, state => ({
     ...state,
-    lines: state.lines.filter(
-      line =>
-        (line.type === 'distance' && line.points.length > 1) ||
-        (line.type === 'area' && line.points.length > 2),
-    ),
+    lines: state.lines.filter(linefilter),
   }))
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, draft => {
@@ -76,7 +72,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   )
   .handleAction(drawingLineSetPoints, (state, action) => ({
     ...state,
-    lines: action.payload,
+    lines: action.payload.filter(linefilter),
   }))
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
@@ -89,3 +85,10 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
       }
     }),
   );
+
+function linefilter(line) {
+  return (
+    (line.type === 'distance' && line.points.length > 1) ||
+    (line.type === 'area' && line.points.length > 2)
+  );
+}
