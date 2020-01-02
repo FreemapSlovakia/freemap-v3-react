@@ -64,18 +64,20 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       cancelActions: [clearMap, searchSetQuery],
     });
 
-    const results = data.map(d => {
-      return {
-        id: d.osm_id,
-        label: d.display_name,
-        geojson: d.geojson,
-        lat: d.lat,
-        lon: d.lon,
-        class: d.class,
-        type: d.type,
-        osmType: d.osm_type,
-      };
-    });
+    const results = data
+      .filter(item => item.osm_id && item.geojson && item.osm_type)
+      .map(item => {
+        return {
+          id: item.osm_id,
+          label: item.display_name,
+          geojson: item.geojson,
+          lat: item.lat,
+          lon: item.lon,
+          class: item.class,
+          type: item.type,
+          osmType: item.osm_type,
+        };
+      });
 
     dispatch(searchSetResults(results));
   },
