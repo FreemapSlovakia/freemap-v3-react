@@ -78,6 +78,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
         ref={buttonRef}
         onClick={handleButtonClick}
         title={t('mapLayers.layers')}
+        bsStyle="primary"
       >
         <FontAwesomeIcon icon="map-o" />
       </Button>

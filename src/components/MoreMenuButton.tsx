@@ -113,7 +113,12 @@ const MoreMenuButtonInt: React.FC<Props> = ({
 
   return (
     <>
-      <Button ref={button} onClick={handleButtonClick} title={t('more.more')}>
+      <Button
+        ref={button}
+        onClick={handleButtonClick}
+        title={t('more.more')}
+        bsStyle="primary"
+      >
         <FontAwesomeIcon icon="bars" />
       </Button>
       <Overlay
