@@ -103,12 +103,19 @@
       };
 
       window.addEventListener('error', fm_seh);
+
       window.addEventListener('load', function() {
+        console.log('Page loaded.');
         window.removeEventListener('error', fm_seh);
         delete fm_seh;
       });
+
+      console.log('Pre-entry.');
     </script>
     <script src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
+    <script>
+      console.log('Post-entry.');
+    </script>
     <script async src="https://www.google-analytics.com/analytics.js"></script>
     <noscript>
       Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.
