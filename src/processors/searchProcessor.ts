@@ -65,14 +65,17 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
     });
 
     const results = data
-      .filter(item => item.osm_id && item.geojson && item.osm_type)
+      .filter(
+        item =>
+          item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,
+      )
       .map(item => {
         return {
           id: item.osm_id,
           label: item.display_name,
           geojson: item.geojson,
-          lat: item.lat,
-          lon: item.lon,
+          lat: Number.parseFloat(item.lat),
+          lon: Number.parseFloat(item.lon),
           class: item.class,
           type: item.type,
           osmType: item.osm_type,
