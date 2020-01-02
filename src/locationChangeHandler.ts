@@ -84,9 +84,13 @@ export const handleLocationChange = (
     const pointsOk =
       points.length > 0 &&
       points.every(
-        (point, i) => point !== null || i === 0 || i === points.length - 1,
+        (point, i) =>
+          (point !== null || i === 0 || i === points.length - 1) &&
+          (point === null ||
+            (point.length === 2 &&
+              !Number.isNaN(point[0]) &&
+              !Number.isNaN(point[1]))),
       );
-    // || points.length === 2 && !Number.isNaN(point[0]) && !Number.isNaN(point[1]));
 
     if (
       typeof query.transport === 'string' &&

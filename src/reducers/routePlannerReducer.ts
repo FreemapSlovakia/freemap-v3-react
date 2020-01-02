@@ -37,7 +37,7 @@ export interface RoutePlannerState {
   timestamp: number | null;
   transportType: TransportType | null;
   start: LatLon | null;
-  midpoints: Array<LatLon>;
+  midpoints: LatLon[];
   finish: LatLon | null;
   pickMode: PickMode;
   itineraryIsVisible: boolean;
