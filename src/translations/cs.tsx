@@ -474,7 +474,7 @@ export default {
       label: 'Popis:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
     },
-    measure: 'Měřit',
+    measure: 'Odměřit',
   },
 
   settings: {

@@ -472,7 +472,7 @@ export default {
       label: 'Label:',
       hint: 'To remove label leave its field empty.',
     },
-    measure: 'Measure',
+    measure: 'Measure out',
   },
 
   settings: {

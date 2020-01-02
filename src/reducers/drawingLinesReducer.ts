@@ -1,7 +1,11 @@
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
+import {
+  clearMap,
+  deleteFeature,
+  selectFeature,
+} from 'fm3/actions/mainActions';
 import {
   drawingLineAddPoint,
   drawingLineUpdatePoint,
@@ -22,6 +26,14 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
+  .handleAction(selectFeature, state => ({
+    ...state,
+    lines: state.lines.filter(
+      line =>
+        (line.type === 'distance' && line.points.length > 1) ||
+        (line.type === 'area' && line.points.length > 2),
+    ),
+  }))
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, draft => {
       let line: Line;

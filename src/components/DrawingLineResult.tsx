@@ -240,7 +240,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
         </Polygon>
       )}
 
-      {!!(ps.length > 2 && coords && !window.preventMapClick) && (
+      {!!(ps.length > 0 && coords && !window.preventMapClick) && (
         <Polyline
           weight={4}
           dashArray="6,8"

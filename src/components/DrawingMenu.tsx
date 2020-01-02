@@ -31,13 +31,13 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const MeasurementMenuInt: React.FC<Props> = ({
+const DrawingMenuInt: React.FC<Props> = ({
   onToolSet,
   selection,
   elevationChartTrackGeojson,
   t,
   onInfoPointAdd,
-  distancePoints,
+  linePoints,
   onDistPointAdd,
   onElevationChartTrackGeojsonSet,
   onElevationChartClose,
@@ -53,7 +53,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         return;
       }
 
-      const points = distancePoints;
+      const points = linePoints;
 
       const pos = position ? Math.ceil(position / 2) : points.length;
 
@@ -76,7 +76,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         pos,
       );
     },
-    [selection, distancePoints, onInfoPointAdd, onDistPointAdd],
+    [selection, linePoints, onInfoPointAdd, onDistPointAdd],
   );
 
   useEffect(() => {
@@ -93,11 +93,11 @@ const MeasurementMenuInt: React.FC<Props> = ({
       onElevationChartClose();
     } else {
       onElevationChartTrackGeojsonSet(
-        lineString(distancePoints.map(p => [p.lon, p.lat])),
+        lineString(linePoints.map(p => [p.lon, p.lat])),
       );
     }
   }, [
-    distancePoints,
+    linePoints,
     elevationChartTrackGeojson,
     onElevationChartClose,
     onElevationChartTrackGeojsonSet,
@@ -105,7 +105,11 @@ const MeasurementMenuInt: React.FC<Props> = ({
 
   const tool = selection?.type;
 
-  const isActive = selection?.id !== undefined;
+  const isActive =
+    selection?.id !== undefined &&
+    (tool === 'draw-points' ||
+      (tool === 'draw-lines' && linePoints.length > 1) ||
+      (tool === 'draw-polygons' && linePoints.length > 2));
 
   return (
     <>
@@ -147,7 +151,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
         <Button
           active={elevationChartTrackGeojson !== null}
           onClick={toggleElevationChart}
-          disabled={distancePoints.length < 2}
+          disabled={linePoints.length < 2}
         >
           <FontAwesomeIcon icon="bar-chart" />
           <span className="hidden-xs"> {t('general.elevationProfile')}</span>
@@ -159,7 +163,7 @@ const MeasurementMenuInt: React.FC<Props> = ({
 
 const mapStateToProps = (state: RootState) => ({
   selection: state.main.selection,
-  distancePoints:
+  linePoints:
     (state.main.selection?.type !== 'draw-lines' &&
       state.main.selection?.type !== 'draw-polygons') ||
     state.main.selection.id === undefined
@@ -197,7 +201,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
 });
 
-export const MeasurementMenu = connect(
+export const DrawingMenu = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(withTranslator(MeasurementMenuInt));
+)(withTranslator(DrawingMenuInt));

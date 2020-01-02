@@ -21,7 +21,7 @@ import { SearchResults } from 'fm3/components/SearchResults';
 import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
 import { ObjectsResult } from 'fm3/components/ObjectsResult';
 
-import { MeasurementMenu } from 'fm3/components/MeasurementMenu';
+import { DrawingMenu } from 'fm3/components/DrawingMenu';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
 import { LocationResult } from 'fm3/components/LocationResult';
 
@@ -292,7 +292,7 @@ const MainInt: React.FC<Props> = ({
               {tool &&
                 ['draw-lines', 'draw-points', 'draw-polygons'].includes(
                   tool,
-                ) && <MeasurementMenu />}
+                ) && <DrawingMenu />}
               {tool === 'track-viewer' && <TrackViewerMenu />}
               {tool === 'changesets' && <ChangesetsMenu />}
               {tool === 'photos' && <GalleryMenu />}
