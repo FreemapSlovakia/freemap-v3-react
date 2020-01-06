@@ -23,7 +23,6 @@ export interface TrackingState {
   tracks: Track[];
   showLine: boolean;
   showPoints: boolean;
-  activeTrackId: null | string | number;
 }
 
 const initialState: TrackingState = {
@@ -37,7 +36,6 @@ const initialState: TrackingState = {
   tracks: [],
   showLine: true,
   showPoints: true,
-  activeTrackId: null,
 };
 
 export const trackingReducer = createReducer<TrackingState, RootAction>(
@@ -105,11 +103,6 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       }
     }),
   )
-  .handleAction(trackingActions.setActive, (state, action) => ({
-    ...state,
-    activeTrackId:
-      state.activeTrackId === action.payload ? null : action.payload,
-  }))
   .handleAction(trackingActions.setShowPoints, (state, action) => ({
     ...state,
     showPoints: action.payload,

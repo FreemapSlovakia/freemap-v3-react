@@ -13,6 +13,7 @@ import {
   drawingLineSetPoints,
   Line,
 } from 'fm3/actions/drawingActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface DrawingLinesState {
   lines: Line[];
@@ -77,14 +78,17 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
       if (
-        (action.payload?.type === 'draw-lines' ||
-          action.payload?.type === 'draw-polygons') &&
-        action.payload?.id !== undefined
+        (action.payload.type === 'draw-lines' ||
+          action.payload.type === 'draw-polygons') &&
+        action.payload.id !== undefined
       ) {
-        draft.lines.splice(action.payload?.id, 1);
+        draft.lines.splice(action.payload.id, 1);
       }
     }),
-  );
+  )
+  .handleAction(mapsDataLoaded, (_state, action) => {
+    return { lines: action.payload.lines };
+  });
 
 function linefilter(line) {
   return (

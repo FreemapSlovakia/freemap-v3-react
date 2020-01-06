@@ -7,7 +7,7 @@ import Tooltip from 'react-bootstrap/lib/Tooltip';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal, selectFeature } from 'fm3/actions/mainActions';
 import { Device as DeviceType } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
@@ -132,7 +132,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onView(id: number) {
     dispatch(trackingActions.view(id));
-    dispatch(trackingActions.setActive(id));
+    dispatch(selectFeature({ type: 'tracking', id }));
     dispatch(setActiveModal(null));
   },
 });

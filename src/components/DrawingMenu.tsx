@@ -71,7 +71,9 @@ const DrawingMenuInt: React.FC<Props> = ({
 
       onDistPointAdd(
         tool === 'draw-lines' ? 'distance' : 'area',
-        selection?.id,
+        selection?.type === 'draw-lines' || selection?.type === 'draw-polygons'
+          ? selection?.id
+          : undefined,
         { lat, lon, id },
         pos,
       );

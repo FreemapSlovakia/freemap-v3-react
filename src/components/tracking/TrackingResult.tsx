@@ -2,7 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Polyline, Tooltip, Circle } from 'react-leaflet';
 import { RichMarker } from 'fm3/components/RichMarker';
-import { trackingActions } from 'fm3/actions/trackingActions';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import {
@@ -12,6 +11,7 @@ import {
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps>;
@@ -182,14 +182,17 @@ const mapStateToProps = (state: RootState) => {
     })),
     showLine: state.tracking.showLine,
     showPoints: state.tracking.showPoints,
-    activeTrackId: state.tracking.activeTrackId,
+    activeTrackId:
+      state.main.selection?.type === 'tracking'
+        ? state.main.selection?.id
+        : undefined,
     language: state.l10n.language,
   };
 };
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onFocus(id: string | number) {
-    dispatch(trackingActions.setActive(id));
+    dispatch(selectFeature({ type: 'tracking', id }));
   },
 });
 

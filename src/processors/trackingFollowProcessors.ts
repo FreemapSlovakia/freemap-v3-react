@@ -1,9 +1,9 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { isActionOf } from 'typesafe-actions';
-import { trackingActions } from 'fm3/actions/trackingActions';
 import { Track } from 'fm3/types/trackingTypes';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { trackingTrackSelector } from 'fm3/selectors/mainSelectors';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 let prevTrack: Track | undefined;
 
@@ -17,7 +17,8 @@ export const trackingFollowProcessor: Processor = {
 
     if (
       track &&
-      !isActionOf(trackingActions.setActive, action) &&
+      (!isActionOf(selectFeature, action) ||
+        action.payload?.type !== 'tracking') &&
       differs &&
       track.trackPoints.length
     ) {

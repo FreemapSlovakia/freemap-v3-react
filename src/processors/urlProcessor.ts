@@ -48,6 +48,7 @@ export const urlProcessor: Processor = {
       main.activeModal,
       main.embedFeatures,
       main.selection?.type,
+      main.selection?.id,
       main.urlUpdatingEnabled,
       map.lat,
       map.lon,
@@ -61,7 +62,6 @@ export const urlProcessor: Processor = {
       routePlanner.start,
       routePlanner.transportType,
       tips.tip,
-      tracking.activeTrackId,
       tracking.trackedDevices,
       trackViewer.colorizeTrackBy,
       trackViewer.gpxUrl,
@@ -285,8 +285,11 @@ export const urlProcessor: Processor = {
       queryParts.push(parts.join('/'));
     }
 
-    if (tracking.activeTrackId) {
-      queryParts.push(`follow=${encodeURIComponent(tracking.activeTrackId)}`);
+    if (
+      main.selection?.type === 'tracking' &&
+      main.selection?.id !== undefined
+    ) {
+      queryParts.push(`follow=${encodeURIComponent(main.selection?.id)}`);
     }
 
     const search = `?${queryParts.join('&')}`;

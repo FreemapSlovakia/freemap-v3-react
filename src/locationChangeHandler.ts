@@ -429,7 +429,8 @@ export const handleLocationChange = (
     });
   }
 
-  const { trackedDevices, activeTrackId } = getState().tracking;
+  const { trackedDevices } = getState().tracking;
+
   outer: for (const newTd of parsed) {
     for (const trackedDevice of trackedDevices) {
       if (trackedDevicesEquals(trackedDevice, newTd)) {
@@ -444,8 +445,11 @@ export const handleLocationChange = (
   const fq = query.follow;
   if (typeof fq === 'string') {
     const follow = /^\d+$/.test(fq) ? Number.parseInt(fq) : fq;
-    if (activeTrackId != follow) {
-      dispatch(trackingActions.setActive(follow));
+    const { selection } = getState().main;
+    if (
+      (selection?.type === 'tracking' ? selection?.id : undefined) !== follow
+    ) {
+      dispatch(selectFeature({ type: 'tracking', id: follow }));
     }
   }
 };

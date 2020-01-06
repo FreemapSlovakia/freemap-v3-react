@@ -71,7 +71,7 @@ export const trackingTracksSelector = (state: RootState) =>
   state.tracking.tracks;
 
 export const trackingActiveTrackIdSelector = (state: RootState) =>
-  state.tracking.activeTrackId;
+  state.main.selection?.type === 'tracking' && state.main.selection?.id;
 
 export const trackingTrackSelector = createSelector(
   trackingTracksSelector,

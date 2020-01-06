@@ -26,11 +26,12 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
     };
   })
   .handleAction(deleteFeature, (state, action) => {
-    const selection = action.payload;
-    return selection?.type === 'objects'
+    return action.payload.type === 'objects'
       ? {
           ...state,
-          objects: state.objects.filter(object => object.id !== selection?.id),
+          objects: state.objects.filter(
+            object => object.id !== action.payload.id,
+          ),
         }
       : state;
   });

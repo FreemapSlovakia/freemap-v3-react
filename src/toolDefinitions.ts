@@ -33,4 +33,5 @@ export const toolDefinitions: ToolDefinition[] = [
     kbd: 'x',
     expertOnly: true,
   },
+  { tool: 'maps', icon: 'map', msgKey: 'maps', kbd: 'm' },
 ];

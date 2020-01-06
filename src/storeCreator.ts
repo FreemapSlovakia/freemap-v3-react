@@ -13,6 +13,7 @@ import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { galleryReducer } from './reducers/galleryReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
+import { mapsReducer } from './reducers/mapsReducer';
 import { l10nReducer } from './reducers/l10nReducer';
 import { mainReducer } from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
@@ -98,6 +99,10 @@ import { authInitProcessor } from './processors/authInitProcessor';
 import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
+import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
+import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
+import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
+import { mapsCreateProcessor } from './processors/mapsCreateProcessor';
 
 const reducers = {
   auth: authReducer,
@@ -118,6 +123,7 @@ const reducers = {
   tracking: trackingReducer,
   trackViewer: trackViewerReducer,
   websocket: websocketReducer,
+  maps: mapsReducer,
 };
 
 const combinedReducers = combineReducers(reducers);
@@ -194,6 +200,10 @@ processors.push(
   trackingDeviceProcessors.saveDeviceProcessor,
   trackingDeviceProcessors.deleteDeviceProcessor,
   trackingFollowProcessor,
+  mapsLoadListProcessor,
+  mapsLoadProcessor,
+  mapsDeleteProcessor,
+  mapsCreateProcessor,
   rpcProcessors.rpcCallProcessor,
   rpcProcessors.rpcWsStateProcessor,
   rpcProcessors.wsReceivedProcessor,
