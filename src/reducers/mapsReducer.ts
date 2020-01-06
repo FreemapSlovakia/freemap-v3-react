@@ -1,19 +1,24 @@
 import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
 import { MapMeta, mapsSetList } from 'fm3/actions/mapsActions';
-import { selectFeature, deleteFeature } from 'fm3/actions/mainActions';
+import {
+  selectFeature,
+  deleteFeature,
+  clearMap,
+} from 'fm3/actions/mainActions';
 
 export interface MapsState {
   maps: MapMeta[];
-  id: null | number;
+  id: undefined | number;
 }
 
 const initialState: MapsState = {
   maps: [],
-  id: null,
+  id: undefined,
 };
 
 export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
+  .handleAction(clearMap, () => initialState)
   .handleAction(mapsSetList, (state, action) => ({
     ...state,
     maps: action.payload,
@@ -26,7 +31,7 @@ export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
   }))
   .handleAction(deleteFeature, (state, action) => ({
     ...state,
-    id: null,
+    id: undefined,
     maps:
       action.payload.type === 'maps'
         ? state.maps.filter(map => map.id !== action.payload.id)

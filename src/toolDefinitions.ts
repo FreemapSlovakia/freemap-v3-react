@@ -9,6 +9,7 @@ export type ToolDefinition = {
 };
 
 export const toolDefinitions: ToolDefinition[] = [
+  { tool: 'maps', icon: 'map', msgKey: 'maps', kbd: 'm' },
   {
     tool: 'route-planner',
     icon: 'map-signs',
@@ -33,5 +34,4 @@ export const toolDefinitions: ToolDefinition[] = [
     kbd: 'x',
     expertOnly: true,
   },
-  { tool: 'maps', icon: 'map', msgKey: 'maps', kbd: 'm' },
 ];
