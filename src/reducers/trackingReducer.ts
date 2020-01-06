@@ -8,7 +8,11 @@ import {
   AccessToken,
 } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
-import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  clearMap,
+  deleteFeature,
+} from 'fm3/actions/mainActions';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
 
@@ -166,4 +170,11 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     }
 
     return state;
-  });
+  })
+  .handleAction(deleteFeature, (state, action) => ({
+    ...state,
+    trackedDevices:
+      action.payload.type === 'tracking'
+        ? state.trackedDevices.filter(td => td.id !== action.payload.id)
+        : state.trackedDevices,
+  }));
