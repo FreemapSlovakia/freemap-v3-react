@@ -50,7 +50,9 @@ class ChangesetsMenuInt extends React.Component<Props> {
     if (this.state.authorName) {
       return true;
     }
+
     const { zoom } = this.props;
+
     return (
       (amountOfDays === 3 && zoom >= 9) ||
       (amountOfDays === 7 && zoom >= 10) ||
@@ -71,13 +73,21 @@ class ChangesetsMenuInt extends React.Component<Props> {
     }
   };
 
+  handleSubmit = (e: React.FormEvent<Form>) => {
+    e.preventDefault();
+    this.props.onChangesetsSetAuthorNameAndRefresh(
+      this.props.days,
+      this.state.authorName,
+    );
+  };
+
   render() {
-    const { days, onChangesetsSetAuthorNameAndRefresh, t } = this.props;
+    const { days, t } = this.props;
     const { authorName } = this.state;
 
     return (
       <>
-        <Form inline>
+        <Form inline onSubmit={this.handleSubmit}>
           <ButtonGroup>
             <DropdownButton
               id="days"
@@ -114,10 +124,8 @@ class ChangesetsMenuInt extends React.Component<Props> {
             </InputGroup>
           </FormGroup>{' '}
           <Button
+            type="submit"
             disabled={!this.canSearchWithThisAmountOfDays(days)}
-            onClick={() =>
-              onChangesetsSetAuthorNameAndRefresh(days, authorName)
-            }
             title={t('changesets.download')}
           >
             <FontAwesomeIcon icon="refresh" />

@@ -201,13 +201,17 @@ export const handleLocationChange = (
   if (typeof changesetsDay === 'string') {
     const urlDays = parseInt(changesetsDay, 10);
     const reduxDays = getState().changesets.days;
-    if (reduxDays !== urlDays) {
+    const daysDiff = reduxDays !== urlDays;
+    if (daysDiff) {
       dispatch(changesetsSetDays(urlDays));
     }
 
     const reduxAuthor = getState().changesets.authorName;
     const urlAuthor = query['changesets-author'];
-    if (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor) {
+    if (
+      daysDiff ||
+      (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor)
+    ) {
       // we need timeout otherwise map bounds can't be read
       window.setTimeout(() => {
         dispatch(changesetsSetAuthorName(urlAuthor));
