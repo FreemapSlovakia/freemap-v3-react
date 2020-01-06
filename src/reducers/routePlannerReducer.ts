@@ -204,6 +204,8 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
           ...initialState,
           transportType: state.transportType,
           mode: state.mode,
+          milestones: state.milestones,
+          pickMode: state.pickMode,
         }
       : state,
   );

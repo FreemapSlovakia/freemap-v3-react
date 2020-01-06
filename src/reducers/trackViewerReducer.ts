@@ -1,6 +1,6 @@
 import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap, setAppState } from 'fm3/actions/mainActions';
+import { clearMap, setAppState, deleteFeature } from 'fm3/actions/mainActions';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
@@ -89,6 +89,16 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
     ...state,
     osmRelationId: action.payload,
   }))
+  .handleAction(deleteFeature, (state, action) =>
+    action.payload.type === 'map-details' ||
+    action.payload.type === 'track-viewer'
+      ? {
+          ...initialState,
+          colorizeTrackBy: state.colorizeTrackBy,
+          eleSmoothingFactor: state.eleSmoothingFactor,
+        }
+      : state,
+  )
   .handleAction(searchSelectResult, (state, action) =>
     produce(state, draft => {
       draft.osmNodeId = null;

@@ -145,6 +145,7 @@ const MainInt: React.FC<Props> = ({
   isUserValidated,
   selection,
   onDelete,
+  canDelete,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
 
@@ -302,8 +303,7 @@ const MainInt: React.FC<Props> = ({
               {tool === 'map-details' && <MapDetailsMenu />}
               {tool === 'tracking' && <TrackingMenu />}
               {tool === 'maps' && <MapsMenu />}{' '}
-              {(selection?.id !== undefined ||
-                ['route-planner'].includes(selection?.type ?? '')) && (
+              {canDelete && (
                 <Button title={t('general.delete')} onClick={handleDeleteClick}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">
@@ -424,6 +424,17 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
   isUserValidated: state.auth.user && !state.auth.user.notValidated,
   selection: state.main.selection,
+  canDelete:
+    state.main.selection?.id !== undefined ||
+    (state.main.selection?.type === 'route-planner' &&
+      (state.routePlanner.start ||
+        state.routePlanner.finish ||
+        state.routePlanner.midpoints.length > 0)) ||
+    ((state.main.selection?.type === 'map-details' ||
+      state.main.selection?.type === 'track-viewer') &&
+      state.trackViewer.trackGeojson) ||
+    (state.main.selection?.type === 'changesets' &&
+      state.changesets.changesets.length > 0),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
