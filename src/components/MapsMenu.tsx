@@ -10,7 +10,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { mapsCreate, mapsRename } from 'fm3/actions/mapsActions';
+import { mapsCreate, mapsRename, mapsSave } from 'fm3/actions/mapsActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
@@ -22,6 +22,7 @@ const MapsMenuInt: React.FC<Props> = ({
   onSelect,
   onRename,
   onCreate,
+  onSave,
   maps,
   id,
   t,
@@ -38,11 +39,15 @@ const MapsMenuInt: React.FC<Props> = ({
       ))}
     </DropdownButton>{' '}
     <Button onClick={onCreate}>
-      <FontAwesomeIcon icon="eye" />
+      <FontAwesomeIcon icon="plus" />
       <span className="hidden-md hidden-sm hidden-xs"> {t('maps.create')}</span>
     </Button>{' '}
+    <Button onClick={onSave}>
+      <FontAwesomeIcon icon="floppy-o" />
+      <span className="hidden-md hidden-sm hidden-xs"> {t('maps.save')}</span>
+    </Button>{' '}
     <Button onClick={onRename}>
-      <FontAwesomeIcon icon="mobile" />
+      <FontAwesomeIcon icon="pencil" />
       <span className="hidden-md hidden-sm hidden-xs"> {t('maps.rename')}</span>
     </Button>
   </>
@@ -62,6 +67,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onCreate() {
     dispatch(mapsCreate());
+  },
+  onSave() {
+    dispatch(mapsSave());
   },
 });
 

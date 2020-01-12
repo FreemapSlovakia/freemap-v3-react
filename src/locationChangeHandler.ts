@@ -1,4 +1,5 @@
 import queryString, { ParsedQuery } from 'query-string';
+import { history } from 'fm3/historyHolder';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 import {
@@ -47,7 +48,7 @@ import {
   changesetsSetAuthorName,
   changesetsSet,
 } from 'fm3/actions/changesetsActions';
-import { drawingLineSetPoints, Line } from 'fm3/actions/drawingActions';
+import { drawingLineSetLines, Line } from 'fm3/actions/drawingActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
@@ -67,9 +68,13 @@ export const handleLocationChange = (
 ): void => {
   const { getState, dispatch } = store;
 
-  const query = queryString.parse(document.location.search); // TODO replace with params
-  const params = new URL(document.location.href)
-    .searchParams as URLSearchParams & Map<string, string>;
+  const search = history.location.state || '';
+  // const search = document.location.search;
+
+  const query = queryString.parse(search); // TODO replace with params
+
+  const params = new URLSearchParams(search) as URLSearchParams &
+    Map<string, string>;
 
   {
     const points =
@@ -262,7 +267,7 @@ export const handleLocationChange = (
       .drawingLines.lines.map(serializePoints)
       .join(';')
   ) {
-    dispatch(drawingLineSetPoints(lines));
+    dispatch(drawingLineSetLines(lines));
   }
 
   const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);

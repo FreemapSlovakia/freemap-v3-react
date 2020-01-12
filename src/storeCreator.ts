@@ -103,6 +103,8 @@ import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
 import { mapsLoadProcessor } from './processors/mapsLoadProcessor';
 import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
 import { mapsCreateProcessor } from './processors/mapsCreateProcessor';
+import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
+import { mapsRenameProcessor } from './processors/mapsRenameProcessor';
 
 const reducers = {
   auth: authReducer,
@@ -193,20 +195,16 @@ processors.push(
   routePlannerSetupTransportTypeProcessor,
   routePlannerToggleElevationChartProcessor,
   routePlannerSetFromCurrentPositionProcessor,
-  trackingAccessTokenProcessors.loadAccessTokensProcessor,
-  trackingAccessTokenProcessors.saveAccessTokenProcessor,
-  trackingAccessTokenProcessors.deleteAccessTokenProcessor,
-  trackingDeviceProcessors.loadDevicesProcessor,
-  trackingDeviceProcessors.saveDeviceProcessor,
-  trackingDeviceProcessors.deleteDeviceProcessor,
+  ...Object.values(trackingAccessTokenProcessors),
+  ...Object.values(trackingDeviceProcessors),
   trackingFollowProcessor,
   mapsLoadListProcessor,
   mapsLoadProcessor,
   mapsDeleteProcessor,
   mapsCreateProcessor,
-  rpcProcessors.rpcCallProcessor,
-  rpcProcessors.rpcWsStateProcessor,
-  rpcProcessors.wsReceivedProcessor,
+  mapsSaveProcessor,
+  mapsRenameProcessor,
+  ...Object.values(rpcProcessors),
   exportPdfProcessor,
   urlProcessor,
 );

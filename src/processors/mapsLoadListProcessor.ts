@@ -1,13 +1,16 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsSetList } from 'fm3/actions/mapsActions';
+import { mapsLoadList, mapsSetList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { isActionOf } from 'typesafe-actions';
 
-export const mapsLoadListProcessor: Processor<typeof selectFeature> = {
-  actionCreator: selectFeature,
+export const mapsLoadListProcessor: Processor<
+  typeof selectFeature | typeof mapsLoadList
+> = {
+  actionCreator: [selectFeature, mapsLoadList],
   errorKey: 'maps.fetchError',
   handle: async ({ getState, dispatch, action }) => {
-    if (action.payload?.type === 'maps') {
+    if (isActionOf(mapsLoadList, action) || action.payload?.type === 'maps') {
       const { data } = await httpRequest({
         getState,
         method: 'GET',

@@ -1,26 +1,18 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsCreate } from 'fm3/actions/mapsActions';
+import { mapsSave } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { selectFeature } from 'fm3/actions/mainActions';
 
-export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
-  actionCreator: mapsCreate,
-  errorKey: 'maps.createError',
+export const mapsSaveProcessor: Processor<typeof mapsSave> = {
+  actionCreator: mapsSave,
+  errorKey: 'maps.saveError',
   handle: async ({ getState, dispatch }) => {
-    const name = window.prompt('Name?');
-
-    if (name === null) {
-      return;
-    }
-
     const { data } = await httpRequest({
       getState,
-      method: 'POST',
-      url: '/maps/',
-      expectedStatus: 200,
+      method: 'PATCH',
+      url: `/maps/${getState().maps.id}`,
+      expectedStatus: 204,
       data: {
-        name,
-        public: true, // TODO
         data: {
           lines: getState().drawingLines.lines,
         },

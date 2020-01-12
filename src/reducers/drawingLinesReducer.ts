@@ -10,7 +10,7 @@ import {
   drawingLineAddPoint,
   drawingLineUpdatePoint,
   drawingLineRemovePoint,
-  drawingLineSetPoints,
+  drawingLineSetLines,
   Line,
 } from 'fm3/actions/drawingActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
@@ -71,7 +71,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
       line.points = line.points.filter(point => point.id !== action.payload.id);
     }),
   )
-  .handleAction(drawingLineSetPoints, (state, action) => ({
+  .handleAction(drawingLineSetLines, (state, action) => ({
     ...state,
     lines: action.payload.filter(linefilter),
   }))
