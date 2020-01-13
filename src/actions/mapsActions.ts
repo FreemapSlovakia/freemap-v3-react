@@ -11,6 +11,8 @@ export type MapData = {
   lines: Line[];
 };
 
+export const mapsLoad = createAction('MAPS_LOAD')<number | undefined>();
+
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();
 
 export const mapsSetList = createAction('MAPS_SET_LIST')<MapMeta[]>();

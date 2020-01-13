@@ -1,7 +1,6 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsCreate } from 'fm3/actions/mapsActions';
+import { mapsCreate, mapsLoad } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { selectFeature } from 'fm3/actions/mainActions';
 
 export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
   actionCreator: mapsCreate,
@@ -27,6 +26,6 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
       },
     });
 
-    dispatch(selectFeature({ type: 'maps', id: data.id }));
+    dispatch(mapsLoad(data.id));
   },
 };

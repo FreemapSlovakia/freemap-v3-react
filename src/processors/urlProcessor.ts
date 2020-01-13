@@ -29,6 +29,7 @@ export const urlProcessor: Processor = {
       tips,
       auth,
       tracking,
+      maps,
     } = getState();
 
     if (!main.urlUpdatingEnabled) {
@@ -69,6 +70,7 @@ export const urlProcessor: Processor = {
       trackViewer.osmRelationId,
       trackViewer.osmWayId,
       trackViewer.trackUID,
+      maps.id,
     ];
 
     if (
@@ -89,12 +91,22 @@ export const urlProcessor: Processor = {
       queryParts.push(['tool', main.selection?.type]);
     }
 
+    const isMap = maps.id !== undefined;
+
+    if (maps.id !== undefined) {
+      queryParts.push(['id', maps.id]);
+    }
+
+    const historyParts: [string, string | number | boolean][] = isMap
+      ? []
+      : queryParts;
+
     if (
       routePlanner.start ||
       routePlanner.finish ||
       routePlanner.midpoints.length
     ) {
-      queryParts.push([
+      historyParts.push([
         'points',
         `${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
           .map(point => serializePoint(point))
@@ -102,57 +114,57 @@ export const urlProcessor: Processor = {
       ]);
 
       if (routePlanner.transportType) {
-        queryParts.push(['transport', routePlanner.transportType]);
+        historyParts.push(['transport', routePlanner.transportType]);
       }
 
       if (routePlanner.mode !== 'route') {
-        queryParts.push(['route-mode', routePlanner.mode]);
+        historyParts.push(['route-mode', routePlanner.mode]);
       }
 
       if (routePlanner.milestones) {
-        queryParts.push(['milestones', 1]);
+        historyParts.push(['milestones', 1]);
       }
     }
 
     if (trackViewer.trackUID) {
-      queryParts.push(['track-uid', trackViewer.trackUID]);
+      historyParts.push(['track-uid', trackViewer.trackUID]);
     }
 
     if (trackViewer.gpxUrl) {
-      queryParts.push(['gpx-url', trackViewer.gpxUrl]);
+      historyParts.push(['gpx-url', trackViewer.gpxUrl]);
     }
 
     if (trackViewer.osmNodeId) {
-      queryParts.push(['osm-node', trackViewer.osmNodeId]);
+      historyParts.push(['osm-node', trackViewer.osmNodeId]);
     }
 
     if (trackViewer.osmWayId) {
-      queryParts.push(['osm-way', trackViewer.osmWayId]);
+      historyParts.push(['osm-way', trackViewer.osmWayId]);
     }
 
     if (trackViewer.osmRelationId) {
-      queryParts.push(['osm-relation', trackViewer.osmRelationId]);
+      historyParts.push(['osm-relation', trackViewer.osmRelationId]);
     }
 
     if (trackViewer.colorizeTrackBy) {
-      queryParts.push(['track-colorize-by', trackViewer.colorizeTrackBy]);
+      historyParts.push(['track-colorize-by', trackViewer.colorizeTrackBy]);
     }
 
     if (gallery.activeImageId) {
-      queryParts.push(['image', gallery.activeImageId]);
+      historyParts.push(['image', gallery.activeImageId]);
     }
 
     if (changesets.days) {
-      queryParts.push(['changesets-days', changesets.days]);
+      historyParts.push(['changesets-days', changesets.days]);
     }
 
     if (changesets.authorName) {
-      queryParts.push(['changesets-author', changesets.authorName]);
+      historyParts.push(['changesets-author', changesets.authorName]);
     }
 
     if (drawingPoints.points.length) {
       for (const point of drawingPoints.points) {
-        queryParts.push([
+        historyParts.push([
           'point',
           `${serializePoint(point)}${point.label ? `;${point.label}` : ''}`,
         ]);
@@ -160,7 +172,7 @@ export const urlProcessor: Processor = {
     }
 
     for (const line of drawingLines.lines) {
-      queryParts.push([
+      historyParts.push([
         line.type === 'area' ? 'polygon' : 'line',
         `${line.points.map(point => serializePoint(point)).join(',')}${
           line.label ? `;${line.label}` : ''
@@ -169,71 +181,71 @@ export const urlProcessor: Processor = {
     }
 
     if (galleryFilter.userId) {
-      queryParts.push(['gallery-user-id', galleryFilter.userId]);
+      historyParts.push(['gallery-user-id', galleryFilter.userId]);
     }
 
     if (galleryFilter.tag) {
-      queryParts.push(['gallery-tag', galleryFilter.tag]);
+      historyParts.push(['gallery-tag', galleryFilter.tag]);
     }
 
     if (galleryFilter.ratingFrom) {
-      queryParts.push(['gallery-rating-from', galleryFilter.ratingFrom]);
+      historyParts.push(['gallery-rating-from', galleryFilter.ratingFrom]);
     }
 
     if (galleryFilter.ratingTo) {
-      queryParts.push(['gallery-rating-to', galleryFilter.ratingTo]);
+      historyParts.push(['gallery-rating-to', galleryFilter.ratingTo]);
     }
 
     if (galleryFilter.takenAtFrom) {
-      queryParts.push([
+      historyParts.push([
         'gallery-taken-at-from',
-        galleryFilter.takenAtFrom.toISOString().replace(/T.*/, ''),
+        dateToString(galleryFilter.takenAtFrom),
       ]);
     }
 
     if (galleryFilter.takenAtTo) {
-      queryParts.push([
+      historyParts.push([
         'gallery-taken-at-to',
-        galleryFilter.takenAtTo.toISOString().replace(/T.*/, ''),
+        dateToString(galleryFilter.takenAtTo),
       ]);
     }
 
     if (galleryFilter.createdAtFrom) {
-      queryParts.push([
+      historyParts.push([
         'gallery-created-at-from',
-        galleryFilter.createdAtFrom.toISOString().replace(/T.*/, ''),
+        dateToString(galleryFilter.createdAtFrom),
       ]);
     }
 
     if (galleryFilter.createdAtTo) {
-      queryParts.push([
+      historyParts.push([
         'gallery-created-at-to',
-        galleryFilter.createdAtTo.toISOString().replace(/T.*/, ''),
+        dateToString(galleryFilter.createdAtTo),
       ]);
     }
 
     if (main.activeModal && refModals.includes(main.activeModal)) {
-      queryParts.push(['show', main.activeModal]);
+      historyParts.push(['show', main.activeModal]);
     }
 
     if (gallery.showFilter) {
-      queryParts.push(['show', 'gallery-filter']);
+      historyParts.push(['show', 'gallery-filter']);
     }
 
     if (gallery.showUploadModal) {
-      queryParts.push(['show', 'gallery-upload']);
+      historyParts.push(['show', 'gallery-upload']);
     }
 
     if (auth.chooseLoginMethod) {
-      queryParts.push(['show', 'login']);
+      historyParts.push(['show', 'login']);
     }
 
     if (main.activeModal === 'tips' && tips.tip && tipKeys.includes(tips.tip)) {
-      queryParts.push(['tip', tips.tip]);
+      historyParts.push(['tip', tips.tip]);
     }
 
     if (main.embedFeatures.length) {
-      queryParts.push(['embed', main.embedFeatures.join(',')]);
+      historyParts.push(['embed', main.embedFeatures.join(',')]);
     }
 
     for (const {
@@ -281,35 +293,35 @@ export const urlProcessor: Processor = {
         parts.push(`l:${encodeURIComponent(label.replace(/\//g, '_'))}`);
       }
 
-      queryParts.push(['track', parts.join('/')]);
+      historyParts.push(['track', parts.join('/')]);
     }
 
     if (
       main.selection?.type === 'tracking' &&
       main.selection?.id !== undefined
     ) {
-      queryParts.push(['follow', main.selection?.id]);
+      historyParts.push(['follow', main.selection?.id]);
     }
 
-    const search = `?${queryParts
-      .map(
-        qp =>
-          `${encodeURIComponent(qp[0])}=${encodeURIComponent(qp[1])
-            // FIXME replacing is nonstandard
-            .replace(/%2F/g, '/')}`,
-      )
-      .join('&')}`;
+    const state = isMap ? serializeQuery(historyParts) : undefined;
 
-    // if (window.location.search !== search) {
-    if (history.location.state !== search) {
+    const search = serializeQuery(queryParts);
+
+    if (
+      (isMap && state !== history.location.state) ||
+      search !== window.location.search
+    ) {
       const method =
         lastActionType &&
         isActionOf([mapRefocus, drawingLineUpdatePoint], action)
           ? 'replace'
           : 'push';
 
-      // history[method]({ pathname: '/', search });
-      history[method]({ pathname: '/', state: search });
+      history[method]({
+        pathname: '/',
+        search: search,
+        state: state,
+      });
 
       lastActionType = action.type;
     }
@@ -318,4 +330,19 @@ export const urlProcessor: Processor = {
 
 function serializePoint(point: LatLon | null) {
   return point ? `${point.lat.toFixed(6)}/${point.lon.toFixed(6)}` : '';
+}
+
+function dateToString(d: Date) {
+  return d.toISOString().replace(/T.*/, '');
+}
+
+function serializeQuery(parts: [string, string | number | boolean][]) {
+  return `?${parts
+    .map(
+      qp =>
+        `${encodeURIComponent(qp[0])}=${encodeURIComponent(qp[1])
+          // FIXME replacing is nonstandard
+          .replace(/%2F/g, '/')}`,
+    )
+    .join('&')}`;
 }

@@ -1,13 +1,12 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapsSave } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { selectFeature } from 'fm3/actions/mainActions';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   errorKey: 'maps.saveError',
-  handle: async ({ getState, dispatch }) => {
-    const { data } = await httpRequest({
+  handle: async ({ getState }) => {
+    await httpRequest({
       getState,
       method: 'PATCH',
       url: `/maps/${getState().maps.id}`,
@@ -18,7 +17,5 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
         },
       },
     });
-
-    dispatch(selectFeature({ type: 'maps', id: data.id }));
   },
 };

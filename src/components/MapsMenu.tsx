@@ -10,8 +10,12 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { mapsCreate, mapsRename, mapsSave } from 'fm3/actions/mapsActions';
-import { selectFeature } from 'fm3/actions/mainActions';
+import {
+  mapsCreate,
+  mapsRename,
+  mapsSave,
+  mapsLoad,
+} from 'fm3/actions/mapsActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -60,7 +64,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSelect(id: any) {
-    dispatch(selectFeature({ type: 'maps', id }));
+    dispatch(mapsLoad(id));
   },
   onRename() {
     dispatch(mapsRename());

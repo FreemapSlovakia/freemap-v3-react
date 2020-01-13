@@ -28,7 +28,6 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   expertMode,
   onSelect,
   onMapClear,
-  activeMapId,
 }) => {
   const [show, setShow] = useState(false);
 
@@ -47,15 +46,10 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
       const tool = tool0 as Tool | null;
 
       setShow(false);
-      onSelect(
-        tool === 'maps'
-          ? { type: 'maps', id: activeMapId }
-          : tool
-          ? { type: tool }
-          : null,
-      );
+
+      onSelect(tool ? { type: tool } : null);
     },
-    [onSelect, activeMapId],
+    [onSelect],
   );
 
   const handleMapClear = useCallback(() => {
@@ -139,7 +133,6 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   tool: state.main.selection?.type,
   expertMode: state.main.expertMode,
-  activeMapId: state.maps.id,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

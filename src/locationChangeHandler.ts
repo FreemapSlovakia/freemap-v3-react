@@ -59,6 +59,7 @@ import { TrackedDevice } from './types/trackingTypes';
 import { LatLon } from './types/common';
 import { Dispatch } from 'redux';
 import { isTransportType } from './transportTypeDefs';
+import { mapsLoad } from './actions/mapsActions';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -68,13 +69,30 @@ export const handleLocationChange = (
 ): void => {
   const { getState, dispatch } = store;
 
-  const search = history.location.state || '';
-  // const search = document.location.search;
+  const search = document.location.search;
 
-  const query = queryString.parse(search); // TODO replace with params
+  const state = history.location.state;
 
-  const params = new URLSearchParams(search) as URLSearchParams &
-    Map<string, string>;
+  const parsed = queryString.parse(search);
+
+  const id =
+    typeof parsed.id === 'string' ? parseInt(parsed.id, 10) : undefined;
+
+  if (id !== getState().maps.id) {
+    dispatch(mapsLoad(id));
+  }
+
+  const query =
+    id === undefined
+      ? parsed
+      : {
+          ...parsed,
+          ...queryString.parse(state),
+        };
+
+  const params = new URLSearchParams(
+    id === undefined ? search : state,
+  ) as URLSearchParams & Map<string, string>;
 
   {
     const points =
@@ -373,7 +391,7 @@ export const handleLocationChange = (
 
   const { track } = query;
   const trackings = !track ? [] : Array.isArray(track) ? track : [track];
-  const parsed: TrackedDevice[] = [];
+  const parsedTd: TrackedDevice[] = [];
 
   for (const tracking of trackings) {
     const [id0, ...parts] = tracking.split('/');
@@ -425,7 +443,7 @@ export const handleLocationChange = (
       }
     }
 
-    parsed.push({
+    parsedTd.push({
       id,
       fromTime,
       maxAge,
@@ -440,13 +458,13 @@ export const handleLocationChange = (
 
   const { trackedDevices } = getState().tracking;
 
-  outer: for (const newTd of parsed) {
+  outer: for (const newTd of parsedTd) {
     for (const trackedDevice of trackedDevices) {
       if (trackedDevicesEquals(trackedDevice, newTd)) {
         continue outer;
       }
     }
-    dispatch(trackingActions.setTrackedDevices(parsed));
+    dispatch(trackingActions.setTrackedDevices(parsedTd));
     break;
   }
 
