@@ -87,7 +87,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     }),
   )
   .handleAction(mapsDataLoaded, (_state, action) => {
-    return { lines: action.payload.lines };
+    return { lines: action.payload.lines ?? [] };
   });
 
 function linefilter(line) {

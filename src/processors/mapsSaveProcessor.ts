@@ -14,6 +14,7 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       data: {
         data: {
           lines: getState().drawingLines.lines,
+          points: getState().drawingPoints.points,
         },
       },
     });

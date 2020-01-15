@@ -95,11 +95,6 @@ export interface ObjectsSelection {
   id?: number;
 }
 
-export interface MapsSelection {
-  type: 'maps';
-  id?: number;
-}
-
 export interface MeasureDistSelection {
   type: 'draw-lines' | 'draw-polygons';
   id?: number;
@@ -107,6 +102,7 @@ export interface MeasureDistSelection {
 
 export interface OtherSelection {
   type:
+    | 'maps'
     | 'map-details'
     | 'track-viewer'
     | 'changesets'
@@ -125,7 +121,6 @@ export type Selection =
   | ObjectsSelection
   | OtherSelection
   | MeasureDistSelection
-  | TrackingSelection
-  | MapsSelection;
+  | TrackingSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();

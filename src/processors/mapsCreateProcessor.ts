@@ -1,5 +1,5 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsCreate, mapsLoad } from 'fm3/actions/mapsActions';
+import { mapsCreate, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 
 export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
@@ -22,10 +22,12 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
         public: true, // TODO
         data: {
           lines: getState().drawingLines.lines,
+          points: getState().drawingPoints.points,
         },
       },
     });
 
-    dispatch(mapsLoad(data.id));
+    dispatch(mapsLoadList());
+    dispatch(mapsLoad(data.id)); // TODO skip loading in this case
   },
 };

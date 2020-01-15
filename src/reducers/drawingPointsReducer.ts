@@ -8,6 +8,7 @@ import {
   DrawingPoint,
 } from 'fm3/actions/drawingPointActions';
 import produce from 'immer';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];
@@ -48,4 +49,7 @@ export const drawingPointsReducer = createReducer<
       )
         draft.points.splice(action.payload.id, 1);
     }),
-  );
+  )
+  .handleAction(mapsDataLoaded, (_state, action) => {
+    return { ...initialState, points: action.payload.points ?? [] };
+  });

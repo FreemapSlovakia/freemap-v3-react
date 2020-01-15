@@ -1,5 +1,5 @@
 import { createAction } from 'typesafe-actions';
-import { Line } from './drawingActions';
+import { Line, Point } from './drawingActions';
 
 export type MapMeta = {
   id: number;
@@ -8,7 +8,8 @@ export type MapMeta = {
 };
 
 export type MapData = {
-  lines: Line[];
+  lines: Line[] | undefined;
+  points: Point[] | undefined;
 };
 
 export const mapsLoad = createAction('MAPS_LOAD')<number | undefined>();

@@ -16,6 +16,7 @@ import {
   mapsSave,
   mapsLoad,
 } from 'fm3/actions/mapsActions';
+import { deleteFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -27,6 +28,7 @@ const MapsMenuInt: React.FC<Props> = ({
   onRename,
   onCreate,
   onSave,
+  onDelete,
   maps,
   id,
   t,
@@ -34,26 +36,58 @@ const MapsMenuInt: React.FC<Props> = ({
   <>
     <DropdownButton
       id="maps-dropdown"
-      title={maps.find(map => map.id === id)?.name ?? ''}
+      title={maps.find(map => map.id === id)?.name ?? t('maps.noMap')}
     >
+      <MenuItem eventKey={undefined} onSelect={onSelect}>
+        {t('maps.noMap')}
+      </MenuItem>
+
       {maps.map(map => (
         <MenuItem key={map.id} eventKey={map.id} onSelect={onSelect}>
           {map.name}
         </MenuItem>
       ))}
-    </DropdownButton>{' '}
+    </DropdownButton>
+    {id !== undefined && (
+      <>
+        {' '}
+        <Button onClick={onSave}>
+          <FontAwesomeIcon icon="floppy-o" />
+          <span className="hidden-md hidden-sm hidden-xs">
+            {' '}
+            {t('maps.save')}
+          </span>
+        </Button>
+      </>
+    )}{' '}
     <Button onClick={onCreate}>
       <FontAwesomeIcon icon="plus" />
       <span className="hidden-md hidden-sm hidden-xs"> {t('maps.create')}</span>
-    </Button>{' '}
-    <Button onClick={onSave}>
-      <FontAwesomeIcon icon="floppy-o" />
-      <span className="hidden-md hidden-sm hidden-xs"> {t('maps.save')}</span>
-    </Button>{' '}
-    <Button onClick={onRename}>
-      <FontAwesomeIcon icon="pencil" />
-      <span className="hidden-md hidden-sm hidden-xs"> {t('maps.rename')}</span>
     </Button>
+    {id !== undefined && (
+      <>
+        {' '}
+        <Button onClick={onRename}>
+          <FontAwesomeIcon icon="pencil" />
+          <span className="hidden-md hidden-sm hidden-xs">
+            {' '}
+            {t('maps.rename')}
+          </span>
+        </Button>
+      </>
+    )}
+    {id !== undefined && (
+      <>
+        {' '}
+        <Button onClick={onDelete}>
+          <FontAwesomeIcon icon="trash" />
+          <span className="hidden-md hidden-sm hidden-xs">
+            {' '}
+            {t('maps.delete')} <kbd>Del</kbd>
+          </span>
+        </Button>
+      </>
+    )}
   </>
 );
 
@@ -74,6 +108,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onSave() {
     dispatch(mapsSave());
+  },
+  onDelete() {
+    dispatch(deleteFeature({ type: 'maps' }));
   },
 });
 
