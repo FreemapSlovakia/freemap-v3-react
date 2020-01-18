@@ -30,13 +30,16 @@ export const trackViewerSetTrackDataProcessor: Processor<typeof trackViewerSetDa
         const startLonlat = coords[0];
         let startTime: Date | undefined;
         let finishTime: Date | undefined;
+
         const times = assertType<string[] | undefined>(
           feature.properties && feature.properties.coordTimes,
         );
+
         if (times) {
           startTime = new Date(times[0]);
           finishTime = new Date(times[times.length - 1]);
         }
+
         startPoints.push({
           lat: startLonlat[1],
           lon: startLonlat[0],
@@ -45,6 +48,7 @@ export const trackViewerSetTrackDataProcessor: Processor<typeof trackViewerSetDa
         });
 
         const finishLonLat = coords[coords.length - 1];
+
         finishPoints.push({
           lat: finishLonLat[1],
           lon: finishLonLat[0],
