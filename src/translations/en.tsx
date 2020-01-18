@@ -90,7 +90,7 @@ export default {
     transportType: {
       car: 'Car',
       'car-free': 'Car (toll free)',
-      bikesharing: 'Bike sharing',
+      bikesharing: 'Bike sharing in Bratislava (Whitebikes)',
       imhd: 'Public transport in Bratislava',
       'bike-osm': 'Bicycle',
       bike: 'Bicycle touring',

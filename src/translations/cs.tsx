@@ -90,7 +90,7 @@ export default {
     transportType: {
       car: 'Auto, včetně zpoplatněných silnic',
       'car-free': 'Auto, mimo zpoplatněných silnic',
-      bikesharing: 'Sdílené kolo',
+      bikesharing: 'Sdílené kolo v Bratislavě (Whitebikes)',
       imhd: 'MHD v Bratislavě',
       'bike-osm': 'Kolo',
       bike: 'Cyklouristika',

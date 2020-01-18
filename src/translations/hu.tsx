@@ -91,7 +91,7 @@ export default {
     transportType: {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
-      bikesharing: 'Kerékpármegosztás',
+      bikesharing: 'Kerékpármegosztás (Whitebikes in SK/Bratislava)', // TODO
       imhd: 'Tömegközlekedés (SK/Bratislava)',
       'bike-osm': 'Kerékpár (OSM)',
       bike: 'Kerékpártúrázás',
