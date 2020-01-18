@@ -69,7 +69,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onUpload(trackGpx: string) {
     dispatch(trackViewerSetTrackUID(null));
-    dispatch(trackViewerSetData({ trackGpx }));
+    dispatch(trackViewerSetData({ trackGpx, focus: true }));
     dispatch(setActiveModal(null));
     dispatch(elevationChartClose());
   },

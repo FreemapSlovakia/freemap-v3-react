@@ -432,7 +432,7 @@ export default {
   trackViewer: {
     upload: 'Nahrať',
     moreInfo: 'Viac info',
-    share: 'Zdieľať',
+    share: 'Uložiť na server',
     colorizingMode: {
       none: 'Neaktívne',
       elevation: 'Nadmorská výška',
@@ -454,10 +454,7 @@ export default {
       title: 'Nahrať trasu',
       drop: 'Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.',
     },
-    shareModal: {
-      title: 'Zdieľať trasu',
-      description: 'Trasa je dostupná na nasledovnej adrese:',
-    },
+    shareToast: 'Trasa bola uložená na server a môžete ju zdieľať.',
     fetchingError: 'Nastala chyba pri získavaní záznamu trasy: {err}',
     savingError: 'Nepodarilo sa uložiť trasu: {err}',
     tooBigError: 'Veľkosť nahraného súboru prevyšuje limit {maxSize} MB.',

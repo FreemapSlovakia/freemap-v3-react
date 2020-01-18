@@ -15,6 +15,7 @@ export const trackViewerSetData = createAction('TRACK_VIEWER_SET_TRACK_DATA')<{
   trackGeojson?: FeatureCollection;
   startPoints?: TrackPoint[];
   finishPoints?: TrackPoint[];
+  focus?: boolean;
 }>();
 
 export const trackViewerSetTrackUID = createAction(
