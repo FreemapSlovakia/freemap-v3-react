@@ -1,4 +1,8 @@
-import { searchSetResults, searchSetQuery } from 'fm3/actions/searchActions';
+import {
+  searchSetResults,
+  searchSetQuery,
+  searchSelectResult,
+} from 'fm3/actions/searchActions';
 import { clearMap } from 'fm3/actions/mainActions';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -10,11 +14,12 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 export const searchProcessor: Processor<typeof searchSetQuery> = {
   actionCreator: searchSetQuery,
   errorKey: 'search.fetchingError',
-  handle: async ({ dispatch, getState }) => {
-    const {
-      search: { query },
-      // l10n: { language },
-    } = getState();
+  handle: async ({ dispatch, getState, action }) => {
+    const { query } = action.payload;
+    // const {
+    //   search: { query },
+    //   // l10n: { language },
+    // } = getState();
 
     if (!query) {
       return;
@@ -58,7 +63,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
         polygon_geojson: 1,
         limit: 20,
         'accept-language': getState().l10n.language,
-        viewbox: bbox,
+        viewbox: action.payload.fromUrl ? undefined : bbox,
       },
       expectedStatus: 200,
       cancelActions: [clearMap, searchSetQuery],
@@ -83,5 +88,9 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       });
 
     dispatch(searchSetResults(results));
+
+    if (action.payload.fromUrl && results.length) {
+      dispatch(searchSelectResult(results[0]));
+    }
   },
 };

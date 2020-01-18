@@ -257,7 +257,7 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onDoSearch(query: string) {
-    dispatch(searchSetQuery(query));
+    dispatch(searchSetQuery({ query }));
   },
   onResultSelect(result: SearchResult | null) {
     dispatch(searchSelectResult(result));
