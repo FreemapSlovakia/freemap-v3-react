@@ -121,9 +121,6 @@ export function usePictureDropHandler(
         const id = nextId;
         nextId += 1;
 
-        const NS = { S: -1, N: 1 };
-        const EW = { W: -1, E: 1 };
-
         const description = tags.description
           ? tags.description.description
           : tags.ImageDescription
@@ -132,37 +129,33 @@ export function usePictureDropHandler(
 
         const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
 
-        let lat;
-        if (typeof tags.GPSLatitude?.description === 'number') {
-          lat = tags.GPSLatitude.description;
-        } else {
-          const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
-          lat =
-            rawLat *
-            (NS[
-              (
-                latRef ||
-                (tags.GPSLatitudeRef || { value: [] }).value[0] ||
-                ''
-              ).toUpperCase()
-            ] || Number.NaN);
-        }
+        const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
 
-        let lon;
-        if (typeof tags.GPSLongitude?.description === 'number') {
-          lon = tags.GPSLongitude.description;
-        } else {
-          const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
-          lon =
-            rawLon *
-            (EW[
-              (
-                lonRef ||
-                (tags.GPSLongitudeRef || { value: [] }).value[0] ||
-                ''
-              ).toUpperCase()
-            ] || Number.NaN);
-        }
+        const NS = { S: -1, N: 1 };
+
+        const lat =
+          rawLat *
+          (NS[
+            (
+              latRef ||
+              (tags.GPSLatitudeRef || { value: [] }).value[0] ||
+              ''
+            ).toUpperCase()
+          ] || Number.NaN);
+
+        const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
+
+        const EW = { W: -1, E: 1 };
+
+        const lon =
+          rawLon *
+          (EW[
+            (
+              lonRef ||
+              (tags.GPSLongitudeRef || { value: [] }).value[0] ||
+              ''
+            ).toUpperCase()
+          ] || Number.NaN);
 
         onItemAdd({
           id,
