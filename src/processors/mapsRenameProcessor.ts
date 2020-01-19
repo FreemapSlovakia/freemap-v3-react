@@ -8,7 +8,7 @@ export const mapsRenameProcessor: Processor<typeof mapsRename> = {
   errorKey: 'maps.renameError',
   handle: async ({ getState, dispatch }) => {
     const name = window.prompt(
-      translate(window.translations as any, 'maps.namePrompt'),
+      translate(window.translations, 'maps.namePrompt') as string,
     );
 
     if (name === null) {
