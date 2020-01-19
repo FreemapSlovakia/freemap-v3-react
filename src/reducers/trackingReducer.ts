@@ -8,9 +8,14 @@ import {
   AccessToken,
 } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
-import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  clearMap,
+  deleteFeature,
+} from 'fm3/actions/mainActions';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface TrackingState {
   devices: Device[];
@@ -23,7 +28,6 @@ export interface TrackingState {
   tracks: Track[];
   showLine: boolean;
   showPoints: boolean;
-  activeTrackId: null | string | number;
 }
 
 const initialState: TrackingState = {
@@ -37,7 +41,6 @@ const initialState: TrackingState = {
   tracks: [],
   showLine: true,
   showPoints: true,
-  activeTrackId: null,
 };
 
 export const trackingReducer = createReducer<TrackingState, RootAction>(
@@ -105,11 +108,6 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       }
     }),
   )
-  .handleAction(trackingActions.setActive, (state, action) => ({
-    ...state,
-    activeTrackId:
-      state.activeTrackId === action.payload ? null : action.payload,
-  }))
   .handleAction(trackingActions.setShowPoints, (state, action) => ({
     ...state,
     showPoints: action.payload,
@@ -173,4 +171,19 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     }
 
     return state;
+  })
+  .handleAction(deleteFeature, (state, action) => ({
+    ...state,
+    trackedDevices:
+      action.payload.type === 'tracking'
+        ? state.trackedDevices.filter(td => td.id !== action.payload.id)
+        : state.trackedDevices,
+  }))
+  .handleAction(mapsDataLoaded, (state, { payload: { tracking } }) => {
+    return {
+      ...state,
+      trackedDevices: tracking?.trackedDevices ?? initialState.trackedDevices,
+      showLine: tracking?.showLine ?? initialState.showLine,
+      showPoints: tracking?.showPoints ?? initialState.showPoints,
+    };
   });

@@ -6,7 +6,12 @@ import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { selectFeature, Tool, clearMap } from 'fm3/actions/mainActions';
+import {
+  selectFeature,
+  Tool,
+  clearMap,
+  Selection,
+} from 'fm3/actions/mainActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
@@ -21,7 +26,7 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   t,
   tool,
   expertMode,
-  onToolSet,
+  onSelect,
   onMapClear,
 }) => {
   const [show, setShow] = useState(false);
@@ -37,11 +42,14 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   }, []);
 
   const handleToolSelect = useCallback(
-    (tool: any) => {
+    (tool0: any) => {
+      const tool = tool0 as Tool | null;
+
       setShow(false);
-      onToolSet(tool as Tool | null);
+
+      onSelect(tool ? { type: tool } : null);
     },
-    [onToolSet],
+    [onSelect],
   );
 
   const handleMapClear = useCallback(() => {
@@ -131,8 +139,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMapClear() {
     dispatch(clearMap());
   },
-  onToolSet(tool: Tool | null) {
-    dispatch(selectFeature(tool ? { type: tool } : null));
+  onSelect(selection: Selection | null) {
+    dispatch(selectFeature(selection));
   },
 });
 

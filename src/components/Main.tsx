@@ -108,6 +108,7 @@ import { ToolsMenuButton } from './ToolsMenuButton';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
+import { MapsMenu } from './MapsMenu';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -143,6 +144,7 @@ const MainInt: React.FC<Props> = ({
   isUserValidated,
   selection,
   onDelete,
+  canDelete,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
 
@@ -228,7 +230,9 @@ const MainInt: React.FC<Props> = ({
   }, []);
 
   const handleDeleteClick = useCallback(() => {
-    onDelete(selection);
+    if (selection) {
+      onDelete(selection);
+    }
   }, [onDelete, selection]);
 
   const embedToolDef = embed && toolDefinitions.find(td => td.tool === tool);
@@ -296,9 +300,9 @@ const MainInt: React.FC<Props> = ({
               {tool === 'changesets' && <ChangesetsMenu />}
               {tool === 'photos' && <GalleryMenu />}
               {tool === 'map-details' && <MapDetailsMenu />}
-              {tool === 'tracking' && <TrackingMenu />}{' '}
-              {(selection?.id !== undefined ||
-                ['route-planner'].includes(selection?.type ?? '')) && (
+              {tool === 'tracking' && <TrackingMenu />}
+              {tool === 'maps' && <MapsMenu />}{' '}
+              {canDelete && (
                 <Button title={t('general.delete')} onClick={handleDeleteClick}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">
@@ -418,6 +422,17 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
   isUserValidated: state.auth.user && !state.auth.user.notValidated,
   selection: state.main.selection,
+  canDelete:
+    state.main.selection?.id !== undefined ||
+    (state.main.selection?.type === 'route-planner' &&
+      (state.routePlanner.start ||
+        state.routePlanner.finish ||
+        state.routePlanner.midpoints.length > 0)) ||
+    ((state.main.selection?.type === 'map-details' ||
+      state.main.selection?.type === 'track-viewer') &&
+      state.trackViewer.trackGeojson) ||
+    (state.main.selection?.type === 'changesets' &&
+      state.changesets.changesets.length > 0),
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -452,7 +467,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPictureUpdated(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
     dispatch(galleryMergeItem(item));
   },
-  onDelete(selection: Selection | null) {
+  onDelete(selection: Selection) {
     dispatch(deleteFeature(selection));
   },
 });

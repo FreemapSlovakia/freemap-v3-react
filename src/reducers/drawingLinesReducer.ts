@@ -10,9 +10,10 @@ import {
   drawingLineAddPoint,
   drawingLineUpdatePoint,
   drawingLineRemovePoint,
-  drawingLineSetPoints,
+  drawingLineSetLines,
   Line,
-} from 'fm3/actions/drawingActions';
+} from 'fm3/actions/drawingLineActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface DrawingLinesState {
   lines: Line[];
@@ -70,23 +71,26 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
       line.points = line.points.filter(point => point.id !== action.payload.id);
     }),
   )
-  .handleAction(drawingLineSetPoints, (state, action) => ({
+  .handleAction(drawingLineSetLines, (state, action) => ({
     ...state,
     lines: action.payload.filter(linefilter),
   }))
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
       if (
-        (action.payload?.type === 'draw-lines' ||
-          action.payload?.type === 'draw-polygons') &&
-        action.payload?.id !== undefined
+        (action.payload.type === 'draw-lines' ||
+          action.payload.type === 'draw-polygons') &&
+        action.payload.id !== undefined
       ) {
-        draft.lines.splice(action.payload?.id, 1);
+        draft.lines.splice(action.payload.id, 1);
       }
     }),
-  );
+  )
+  .handleAction(mapsDataLoaded, (_state, action) => {
+    return { lines: action.payload.lines ?? initialState.lines };
+  });
 
-function linefilter(line) {
+function linefilter(line: Line) {
   return (
     (line.type === 'distance' && line.points.length > 1) ||
     (line.type === 'area' && line.points.length > 2)

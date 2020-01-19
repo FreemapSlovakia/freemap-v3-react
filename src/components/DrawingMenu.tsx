@@ -6,7 +6,7 @@ import { lineString } from '@turf/helpers';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
-import { drawingLineAddPoint, Point } from 'fm3/actions/drawingActions';
+import { drawingLineAddPoint, Point } from 'fm3/actions/drawingLineActions';
 
 import {
   elevationChartSetTrackGeojson,
@@ -71,7 +71,9 @@ const DrawingMenuInt: React.FC<Props> = ({
 
       onDistPointAdd(
         tool === 'draw-lines' ? 'distance' : 'area',
-        selection?.id,
+        selection?.type === 'draw-lines' || selection?.type === 'draw-polygons'
+          ? selection?.id
+          : undefined,
         { lat, lon, id },
         pos,
       );

@@ -42,6 +42,7 @@ import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { parseCoordinates } from 'fm3/coordinatesParser';
 import { latLonToString } from 'fm3/geoutils';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface GalleryState {
   imageIds: number[] | null;
@@ -331,7 +332,13 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
   .handleAction(gallerySavePicture, state => ({
     ...state,
     saveErrors: state.editModel ? getErrors(state.editModel) : [],
-  }));
+  }))
+  .handleAction(mapsDataLoaded, (state, action) => {
+    return {
+      ...state,
+      filter: action.payload.galleryFilter ?? initialState.filter,
+    };
+  });
 
 function getErrors(item: GalleryItem | PictureModel) {
   const errors: string[] = [];

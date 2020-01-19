@@ -12,7 +12,8 @@ export type Tool =
   | 'changesets'
   | 'photos'
   | 'map-details'
-  | 'tracking';
+  | 'tracking'
+  | 'maps';
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<string | null>();
 
@@ -82,7 +83,7 @@ export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<string>();
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
-export const deleteFeature = createAction('DELETE_FEATURE')<Selection | null>();
+export const deleteFeature = createAction('DELETE_FEATURE')<Selection>();
 
 export interface InfoPointSelection {
   type: 'draw-points';
@@ -101,19 +102,25 @@ export interface MeasureDistSelection {
 
 export interface OtherSelection {
   type:
+    | 'maps'
     | 'map-details'
     | 'track-viewer'
     | 'changesets'
     | 'photos'
-    | 'tracking'
     | 'route-planner';
   id?: undefined;
+}
+
+export interface TrackingSelection {
+  type: 'tracking';
+  id?: string | number;
 }
 
 export type Selection =
   | InfoPointSelection
   | ObjectsSelection
   | OtherSelection
-  | MeasureDistSelection;
+  | MeasureDistSelection
+  | TrackingSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();

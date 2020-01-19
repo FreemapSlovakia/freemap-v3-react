@@ -7,7 +7,7 @@ import {
   drawingLineUpdatePoint,
   drawingLineRemovePoint,
   Point,
-} from 'fm3/actions/drawingActions';
+} from 'fm3/actions/drawingLineActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { distance } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';

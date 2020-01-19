@@ -3,7 +3,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import * as main from 'fm3/actions/mainActions';
 import * as ws from 'fm3/actions/websocketActions';
 import * as rpc from 'fm3/actions/rpcActions';
-import * as drawing from 'fm3/actions/drawingActions';
+import * as drawing from 'fm3/actions/drawingLineActions';
 import * as auth from 'fm3/actions/authActions';
 import * as drawingPoints from 'fm3/actions/drawingPointActions';
 import * as changesets from 'fm3/actions/changesetsActions';
@@ -19,6 +19,7 @@ import * as search from 'fm3/actions/searchActions';
 import * as tips from 'fm3/actions/tipsActions';
 import * as toasts from 'fm3/actions/toastsActions';
 import * as trackViewer from 'fm3/actions/trackViewerActions';
+import * as maps from 'fm3/actions/mapsActions';
 
 export const actions = {
   tracking: trackingActions,
@@ -41,6 +42,7 @@ export const actions = {
   tips,
   toasts,
   trackViewer,
+  maps,
 };
 
 export type RootAction = ActionType<typeof actions> & { meta?: any };

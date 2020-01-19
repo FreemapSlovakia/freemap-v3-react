@@ -1267,6 +1267,15 @@ export default {
       </>
     ),
   },
+
+  maps: {
+    noMap: 'Žádná mapa',
+    create: 'Uložit jako…',
+    save: 'Uložit',
+    rename: 'Přejmenovat',
+    delete: 'Smazat',
+    namePrompt: 'Název mapy:',
+  },
 };
 
 function numberize(n: number, words: [string, string, string]) {

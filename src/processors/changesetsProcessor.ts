@@ -28,7 +28,7 @@ export const changesetsProcessor: Processor = {
     const toTime = null;
     const bbox = le.getBounds().toBBoxString();
 
-    loadChangesets(toTime, []);
+    await loadChangesets(toTime, []);
 
     async function loadChangesets(toTime0, changesetsFromPreviousRequest) {
       const { data } = await httpRequest({

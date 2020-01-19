@@ -10,7 +10,7 @@ import {
   drawingLineUpdatePoint,
   drawingLineRemovePoint,
   Point,
-} from 'fm3/actions/drawingActions';
+} from 'fm3/actions/drawingLineActions';
 import { cleanState } from './routePlannerReducer';
 import {
   drawingPointAdd,

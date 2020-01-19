@@ -8,6 +8,7 @@ import {
   DrawingPoint,
 } from 'fm3/actions/drawingPointActions';
 import produce from 'immer';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];
@@ -43,9 +44,15 @@ export const drawingPointsReducer = createReducer<
   .handleAction(deleteFeature, (state, action) =>
     produce(state, draft => {
       if (
-        action.payload?.type === 'draw-points' &&
-        action.payload?.id != undefined
+        action.payload.type === 'draw-points' &&
+        action.payload.id !== undefined
       )
-        draft.points.splice(action.payload?.id, 1);
+        draft.points.splice(action.payload.id, 1);
     }),
-  );
+  )
+  .handleAction(mapsDataLoaded, (_state, action) => {
+    return {
+      ...initialState,
+      points: action.payload.points ?? initialState.points,
+    };
+  });

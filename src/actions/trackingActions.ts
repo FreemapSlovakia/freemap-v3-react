@@ -56,8 +56,6 @@ export const trackingActions = {
 
   view: createAction('TRACKING_VIEW')<number>(),
 
-  setActive: createAction('TRACKING_SET_ACTIVE')<string | number>(),
-
   setShowPoints: createAction('TRACKING_SET_SHOW_POINTS')<boolean>(),
 
   setShowLine: createAction('TRACKING_SET_SHOW_LINE')<boolean>(),

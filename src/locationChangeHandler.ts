@@ -1,4 +1,5 @@
 import queryString, { ParsedQuery } from 'query-string';
+import { history } from 'fm3/historyHolder';
 
 import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
 import {
@@ -47,7 +48,7 @@ import {
   changesetsSetAuthorName,
   changesetsSet,
 } from 'fm3/actions/changesetsActions';
-import { drawingLineSetPoints, Line } from 'fm3/actions/drawingActions';
+import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';
@@ -58,6 +59,7 @@ import { TrackedDevice } from './types/trackingTypes';
 import { LatLon } from './types/common';
 import { Dispatch } from 'redux';
 import { isTransportType } from './transportTypeDefs';
+import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
 
 const tipKeys = tips.map(([key]) => key);
@@ -68,9 +70,31 @@ export const handleLocationChange = (
 ): void => {
   const { getState, dispatch } = store;
 
-  const query = queryString.parse(document.location.search); // TODO replace with params
-  const params = new URL(document.location.href)
-    .searchParams as URLSearchParams & Map<string, string>;
+  const search = document.location.search;
+
+  const state =
+    typeof history.location.state === 'string' ? history.location.state : '{}';
+
+  const parsed = queryString.parse(search);
+
+  const id =
+    typeof parsed.id === 'string' ? parseInt(parsed.id, 10) : undefined;
+
+  if (id !== getState().maps.id) {
+    dispatch(mapsLoad(id));
+  }
+
+  const query =
+    id === undefined
+      ? parsed
+      : {
+          ...parsed,
+          ...queryString.parse(state),
+        };
+
+  const params = new URLSearchParams(
+    id === undefined ? search : state,
+  ) as URLSearchParams & Map<string, string>;
 
   {
     const points =
@@ -202,13 +226,17 @@ export const handleLocationChange = (
   if (typeof changesetsDay === 'string') {
     const urlDays = parseInt(changesetsDay, 10);
     const reduxDays = getState().changesets.days;
-    if (reduxDays !== urlDays) {
+    const daysDiff = reduxDays !== urlDays;
+    if (daysDiff) {
       dispatch(changesetsSetDays(urlDays));
     }
 
     const reduxAuthor = getState().changesets.authorName;
     const urlAuthor = query['changesets-author'];
-    if (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor) {
+    if (
+      daysDiff ||
+      (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor)
+    ) {
       // we need timeout otherwise map bounds can't be read
       window.setTimeout(() => {
         dispatch(changesetsSetAuthorName(urlAuthor));
@@ -259,7 +287,7 @@ export const handleLocationChange = (
       .drawingLines.lines.map(serializePoints)
       .join(';')
   ) {
-    dispatch(drawingLineSetPoints(lines));
+    dispatch(drawingLineSetLines(lines));
   }
 
   const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
@@ -365,7 +393,7 @@ export const handleLocationChange = (
 
   const { track } = query;
   const trackings = !track ? [] : Array.isArray(track) ? track : [track];
-  const parsed: TrackedDevice[] = [];
+  const parsedTd: TrackedDevice[] = [];
 
   for (const tracking of trackings) {
     const [id0, ...parts] = tracking.split('/');
@@ -417,7 +445,7 @@ export const handleLocationChange = (
       }
     }
 
-    parsed.push({
+    parsedTd.push({
       id,
       fromTime,
       maxAge,
@@ -430,14 +458,15 @@ export const handleLocationChange = (
     });
   }
 
-  const { trackedDevices, activeTrackId } = getState().tracking;
-  outer: for (const newTd of parsed) {
+  const { trackedDevices } = getState().tracking;
+
+  outer: for (const newTd of parsedTd) {
     for (const trackedDevice of trackedDevices) {
       if (trackedDevicesEquals(trackedDevice, newTd)) {
         continue outer;
       }
     }
-    dispatch(trackingActions.setTrackedDevices(parsed));
+    dispatch(trackingActions.setTrackedDevices(parsedTd));
     break;
   }
 
@@ -445,8 +474,11 @@ export const handleLocationChange = (
   const fq = query.follow;
   if (typeof fq === 'string') {
     const follow = /^\d+$/.test(fq) ? Number.parseInt(fq) : fq;
-    if (activeTrackId != follow) {
-      dispatch(trackingActions.setActive(follow));
+    const { selection } = getState().main;
+    if (
+      (selection?.type === 'tracking' ? selection?.id : undefined) !== follow
+    ) {
+      dispatch(selectFeature({ type: 'tracking', id: follow }));
     }
   }
 };

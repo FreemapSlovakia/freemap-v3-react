@@ -73,6 +73,11 @@ export default {
         Sledovanie <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
+    maps: () => (
+      <>
+        Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
   },
 
   routePlanner: {
@@ -1269,6 +1274,15 @@ export default {
         </ul>{' '}
       </>
     ),
+  },
+
+  maps: {
+    noMap: 'Žiadna mapa',
+    create: 'Uložiť ako…',
+    save: 'Uložiť',
+    rename: 'Premenovať',
+    delete: 'Zmazať',
+    namePrompt: 'Názov mapy:',
   },
 };
 

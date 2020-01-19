@@ -2,6 +2,7 @@ import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
 import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import { objectsSetResult, ObjectsResult } from 'fm3/actions/objectsActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface ObjectsState {
   objects: ObjectsResult[];
@@ -26,11 +27,18 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
     };
   })
   .handleAction(deleteFeature, (state, action) => {
-    const selection = action.payload;
-    return selection?.type === 'objects'
+    return action.payload.type === 'objects'
       ? {
           ...state,
-          objects: state.objects.filter(object => object.id !== selection?.id),
+          objects: state.objects.filter(
+            object => object.id !== action.payload.id,
+          ),
         }
       : state;
+  })
+  .handleAction(mapsDataLoaded, (state, action) => {
+    return {
+      ...state,
+      objects: action.payload.objects ?? initialState.objects,
+    };
   });

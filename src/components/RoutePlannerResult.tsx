@@ -62,6 +62,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   timestamp,
   zoom,
   showMilestones,
+  onSelect,
 }) => {
   const tRef = useRef<number>();
   const draggingRef = useRef<boolean>();
@@ -141,14 +142,17 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   );
 
   const handleStartPointClick = useCallback(() => {
-    // prevent default
-  }, []);
+    // also prevent default
+
+    onSelect();
+  }, [onSelect]);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
       onFinishSet(null);
     }
-  }, [mode, onFinishSet]);
+    onSelect();
+  }, [mode, onFinishSet, onSelect]);
 
   const handlePolyMouseMove = useCallback(
     (e: LeafletMouseEvent, segment: number, alt: number) => {
@@ -464,18 +468,23 @@ const mapStateToProps = (state: RootState) => ({
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onStartSet(start: LatLon | null) {
     dispatch(routePlannerSetStart({ start, move: true }));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
   onFinishSet(finish: LatLon | null) {
     dispatch(routePlannerSetFinish({ finish, move: true }));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
   onAddMidpoint(position: number, midpoint: LatLon) {
     dispatch(routePlannerAddMidpoint({ midpoint, position }));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
   onMidpointSet(position: number, midpoint: LatLon) {
     dispatch(routePlannerSetMidpoint({ position, midpoint }));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
   onRemoveMidpoint(position: number) {
     dispatch(routePlannerRemoveMidpoint(position));
+    dispatch(selectFeature({ type: 'route-planner' }));
   },
   onAlternativeChange(index: number) {
     dispatch(routePlannerSetActiveAlternativeIndex(index));

@@ -168,7 +168,10 @@ export function attachKeyboardHandler(store: MyStore) {
       !state.main.selectingHomeLocation
     ) {
       if (event.keyCode === KEY_DELETE) {
-        store.dispatch(deleteFeature(store.getState().main.selection));
+        const { selection } = store.getState().main;
+        if (selection) {
+          store.dispatch(deleteFeature(selection));
+        }
       }
     }
 

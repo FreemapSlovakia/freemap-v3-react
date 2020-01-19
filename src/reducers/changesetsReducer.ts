@@ -37,7 +37,5 @@ export const changesetReducer = createReducer<ChangesetsState, RootAction>(
     authorName: action.payload,
   }))
   .handleAction(deleteFeature, (state, action) =>
-    action.payload?.type === 'changesets'
-      ? { ...state, changesets: [] }
-      : state,
+    action.payload.type === 'changesets' ? initialState : state,
   );

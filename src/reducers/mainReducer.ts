@@ -22,7 +22,7 @@ import {
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
-import { drawingLineSetPoints } from 'fm3/actions/drawingActions';
+import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
 
 interface Location extends LatLon {
   accuracy: number;
@@ -149,7 +149,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     selection: action.payload,
   }))
-  .handleAction([drawingLineSetPoints, deleteFeature], state => ({
+  .handleAction([drawingLineSetLines, deleteFeature], state => ({
     ...state,
     selection: state.selection ? { type: state.selection.type } : null,
   }));
