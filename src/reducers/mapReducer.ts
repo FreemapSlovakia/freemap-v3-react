@@ -11,6 +11,7 @@ import {
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { selectFeature, setAppState, Selection } from 'fm3/actions/mainActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface MapState extends MapStateBase {
   stravaAuth: boolean;
@@ -129,5 +130,15 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
       overlays,
       selection: nextSelection,
       removeGalleryOverlayOnGalleryToolQuit,
+    };
+  })
+  .handleAction(mapsDataLoaded, (state, { payload: { map } }) => {
+    return {
+      ...state,
+      lat: map?.lat ?? state.lat,
+      lon: map?.lon ?? state.lon,
+      zoom: map?.zoom ?? state.zoom,
+      mapType: map?.mapType ?? state.mapType,
+      overlays: map?.overlays ?? state.overlays,
     };
   });

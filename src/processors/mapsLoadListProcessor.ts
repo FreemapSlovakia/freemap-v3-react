@@ -11,14 +11,18 @@ export const mapsLoadListProcessor: Processor<
   errorKey: 'maps.fetchError',
   handle: async ({ getState, dispatch, action }) => {
     if (isActionOf(mapsLoadList, action) || action.payload?.type === 'maps') {
-      const { data } = await httpRequest({
-        getState,
-        method: 'GET',
-        url: '/maps/',
-        expectedStatus: 200,
-      });
+      if (getState().auth.user) {
+        const { data } = await httpRequest({
+          getState,
+          method: 'GET',
+          url: '/maps/',
+          expectedStatus: 200,
+        });
 
-      dispatch(mapsSetList(data));
+        dispatch(mapsSetList(data));
+      } else {
+        dispatch(mapsSetList([]));
+      }
     }
   },
 };

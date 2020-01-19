@@ -6,6 +6,7 @@ import { ObjectsResult } from './objectsActions';
 import { GalleryFilter } from './galleryActions';
 import { DrawingPoint } from './drawingPointActions';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
+import { MapState } from 'fm3/reducers/mapReducer';
 
 export type MapMeta = {
   id: number;
@@ -30,9 +31,14 @@ export type MapData = {
   >;
   galleryFilter?: GalleryFilter;
   trackViewer?: TrackViewerState;
+  map?: Pick<MapState, 'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays'>;
 };
 
-export const mapsLoad = createAction('MAPS_LOAD')<number | undefined>();
+export const mapsLoad = createAction('MAPS_LOAD')<{
+  id?: number | undefined;
+  ignoreMap?: boolean;
+  ignoreLayers?: boolean;
+}>();
 
 export const mapsLoadList = createAction('MAPS_LOAD_LIST')();
 

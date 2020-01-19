@@ -5,16 +5,29 @@ import { httpRequest } from 'fm3/authAxios';
 export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
   actionCreator: mapsLoad,
   errorKey: 'maps.fetchError',
-  handle: async ({ getState, dispatch, action }) => {
-    if (action.payload !== undefined) {
+  handle: async ({ getState, dispatch, action: { payload } }) => {
+    if (payload.id !== undefined) {
       const { data } = await httpRequest({
         getState,
         method: 'GET',
-        url: `/maps/${action.payload}`,
+        url: `/maps/${payload.id}`,
         expectedStatus: 200,
       });
 
-      dispatch(mapsDataLoaded(data.data));
+      const map = data.data;
+
+      if (payload.ignoreMap) {
+        delete map.map.lat;
+        delete map.map.lon;
+        delete map.map.zoom;
+      }
+
+      if (payload.ignoreLayers) {
+        delete map.map.mapType;
+        delete map.map.overlays;
+      }
+
+      dispatch(mapsDataLoaded(map));
     }
   },
 };

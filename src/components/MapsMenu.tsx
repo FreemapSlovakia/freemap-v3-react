@@ -32,11 +32,13 @@ const MapsMenuInt: React.FC<Props> = ({
   maps,
   id,
   t,
+  authenticated,
 }) => (
   <>
     <DropdownButton
       id="maps-dropdown"
       title={maps.find(map => map.id === id)?.name ?? t('maps.noMap')}
+      disabled={!authenticated}
     >
       <MenuItem eventKey={undefined} onSelect={onSelect}>
         {t('maps.noMap')}
@@ -48,7 +50,7 @@ const MapsMenuInt: React.FC<Props> = ({
         </MenuItem>
       ))}
     </DropdownButton>
-    {id !== undefined && (
+    {authenticated && id !== undefined && (
       <>
         {' '}
         <Button onClick={onSave}>
@@ -60,11 +62,11 @@ const MapsMenuInt: React.FC<Props> = ({
         </Button>
       </>
     )}{' '}
-    <Button onClick={onCreate}>
+    <Button onClick={onCreate} disabled={!authenticated}>
       <FontAwesomeIcon icon="plus" />
       <span className="hidden-md hidden-sm hidden-xs"> {t('maps.create')}</span>
     </Button>
-    {id !== undefined && (
+    {authenticated && id !== undefined && (
       <>
         {' '}
         <Button onClick={onRename}>
@@ -76,7 +78,7 @@ const MapsMenuInt: React.FC<Props> = ({
         </Button>
       </>
     )}
-    {id !== undefined && (
+    {authenticated && id !== undefined && (
       <>
         {' '}
         <Button onClick={onDelete}>
@@ -94,11 +96,12 @@ const MapsMenuInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   maps: state.maps.maps,
   id: state.maps.id,
+  authenticated: !!state.auth.user,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSelect(id: any) {
-    dispatch(mapsLoad(id));
+    dispatch(mapsLoad({ id }));
   },
   onRename() {
     dispatch(mapsRename());

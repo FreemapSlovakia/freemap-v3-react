@@ -75,6 +75,12 @@ export default {
         Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
+    // TODO google-translated
+    maps: () => (
+      <>
+        Saját térképek <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
   },
 
   routePlanner: {

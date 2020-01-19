@@ -19,5 +19,5 @@ export const mapsReducer = createReducer<MapsState, RootAction>(initialState)
   }))
   .handleAction(mapsLoad, (state, action) => ({
     ...state,
-    id: action.payload,
+    id: action.payload.id,
   }));

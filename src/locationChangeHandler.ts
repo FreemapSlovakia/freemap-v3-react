@@ -75,20 +75,28 @@ export const handleLocationChange = (
   const state =
     typeof history.location.state === 'string' ? history.location.state : '{}';
 
-  const parsed = queryString.parse(search);
+  const parsedQuery = queryString.parse(search);
 
   const id =
-    typeof parsed.id === 'string' ? parseInt(parsed.id, 10) : undefined;
+    typeof parsedQuery.id === 'string'
+      ? parseInt(parsedQuery.id, 10)
+      : undefined;
 
   if (id !== getState().maps.id) {
-    dispatch(mapsLoad(id));
+    dispatch(
+      mapsLoad({
+        id,
+        ignoreMap: 'map' in parsedQuery,
+        ignoreLayers: 'layers' in parsedQuery,
+      }),
+    );
   }
 
   const query =
     id === undefined
-      ? parsed
+      ? parsedQuery
       : {
-          ...parsed,
+          ...parsedQuery,
           ...queryString.parse(state),
         };
 
@@ -239,7 +247,7 @@ export const handleLocationChange = (
     ) {
       // we need timeout otherwise map bounds can't be read
       window.setTimeout(() => {
-        dispatch(changesetsSetAuthorName(urlAuthor));
+        dispatch(changesetsSetAuthorName(urlAuthor as any)); // FIXME
       }, 1000);
     }
   } else if (getState().changesets.changesets.length) {

@@ -74,6 +74,11 @@ export default {
         Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
+    maps: () => (
+      <>
+        My maps <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
   },
 
   routePlanner: {

@@ -29,6 +29,6 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
     });
 
     dispatch(mapsLoadList());
-    dispatch(mapsLoad(data.id)); // TODO skip loading in this case
+    dispatch(mapsLoad({ id: data.id })); // TODO skip loading in this case
   },
 };

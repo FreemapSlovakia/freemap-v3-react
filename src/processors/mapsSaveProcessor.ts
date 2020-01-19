@@ -26,6 +26,7 @@ export function getMapDataFromState(state: RootState): MapData {
     objects,
     gallery,
     trackViewer,
+    map,
   } = state;
 
   return {
@@ -48,5 +49,12 @@ export function getMapDataFromState(state: RootState): MapData {
     objects: objects.objects,
     galleryFilter: gallery.filter,
     trackViewer,
+    map: {
+      mapType: map.mapType,
+      lat: map.lat,
+      lon: map.lon,
+      zoom: map.zoom,
+      overlays: map.overlays,
+    },
   };
 }

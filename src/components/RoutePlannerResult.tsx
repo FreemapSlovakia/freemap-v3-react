@@ -465,6 +465,7 @@ const mapStateToProps = (state: RootState) => ({
   selected: state.main.selection?.type === 'route-planner',
 });
 
+// TODO instead of calling dispatch(selectFeature({ type: 'route-planner' })) implement selecting feature in globalReducer
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onStartSet(start: LatLon | null) {
     dispatch(routePlannerSetStart({ start, move: true }));

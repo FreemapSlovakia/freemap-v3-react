@@ -18,7 +18,7 @@ export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
       expectedStatus: 204,
     });
 
-    dispatch(mapsLoad(undefined));
+    dispatch(mapsLoad({}));
     dispatch(mapsLoadList());
   },
 };

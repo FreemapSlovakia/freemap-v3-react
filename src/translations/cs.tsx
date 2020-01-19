@@ -74,6 +74,11 @@ export default {
         Sledování <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
+    maps: () => (
+      <>
+        Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
+      </>
+    ),
   },
 
   routePlanner: {
