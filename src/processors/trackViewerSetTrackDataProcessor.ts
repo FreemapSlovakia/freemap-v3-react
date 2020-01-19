@@ -4,6 +4,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { trackViewerSetData, TrackPoint } from 'fm3/actions/trackViewerActions';
 import { assertType } from 'typescript-is';
 import { FeatureCollection } from 'geojson';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { geoJSON } from 'leaflet';
 
 export const trackViewerSetTrackDataProcessor: Processor<typeof trackViewerSetData> = {
   actionCreator: trackViewerSetData,
@@ -19,6 +21,14 @@ export const trackViewerSetTrackDataProcessor: Processor<typeof trackViewerSetDa
     );
 
     const trackGeojson = assertType<FeatureCollection>(toGeoJSON.gpx(gpxAsXml));
+
+    if (action.payload.focus) {
+      const geojsonBounds = geoJSON(trackGeojson).getBounds();
+      const le = getMapLeafletElement();
+      if (le && geojsonBounds.isValid()) {
+        le.fitBounds(geojsonBounds);
+      }
+    }
 
     const startPoints: TrackPoint[] = []; // TODO
     const finishPoints: TrackPoint[] = []; // TODO

@@ -90,7 +90,7 @@ export default {
     transportType: {
       car: 'Car',
       'car-free': 'Car (toll free)',
-      bikesharing: 'Bike sharing',
+      bikesharing: 'Bike sharing in Bratislava (Whitebikes)',
       imhd: 'Public transport in Bratislava',
       'bike-osm': 'Bicycle',
       bike: 'Bicycle touring',
@@ -430,7 +430,7 @@ export default {
   trackViewer: {
     upload: 'Upload',
     moreInfo: 'More info',
-    share: 'Share',
+    share: 'Save on server',
     colorizingMode: {
       none: 'Inactive',
       elevation: 'Elevation',
@@ -452,10 +452,7 @@ export default {
       title: 'Upload the track',
       drop: 'Drop your .gpx file here or click here to select it.',
     },
-    shareModal: {
-      title: 'Share the track',
-      description: 'Track is available at the following address:',
-    },
+    shareToast: 'The track has been saved to the server and can be shared.',
     fetchingError: 'Error fetching track data: {err}',
     savingError: 'Error saving the track: {err}',
     tooBigError:

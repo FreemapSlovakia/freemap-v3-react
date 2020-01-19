@@ -60,6 +60,7 @@ import { LatLon } from './types/common';
 import { Dispatch } from 'redux';
 import { isTransportType } from './transportTypeDefs';
 import { mapsLoad } from './actions/mapsActions';
+import { searchSetQuery } from './actions/searchActions';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -645,6 +646,10 @@ function handleInfoPoint(
       .join('\n')
   ) {
     dispatch(drawingPointSetAll(ips));
+  }
+
+  if (typeof query.q === 'string') {
+    dispatch(searchSetQuery({ query: query.q, fromUrl: true }));
   }
 }
 

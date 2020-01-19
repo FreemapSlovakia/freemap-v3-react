@@ -91,7 +91,7 @@ export default {
     transportType: {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
-      bikesharing: 'Kerékpármegosztás',
+      bikesharing: 'Kerékpármegosztás (Whitebikes in SK/Bratislava)', // TODO
       imhd: 'Tömegközlekedés (SK/Bratislava)',
       'bike-osm': 'Kerékpár (OSM)',
       bike: 'Kerékpártúrázás',
@@ -434,7 +434,7 @@ export default {
   trackViewer: {
     upload: 'Feltöltés',
     moreInfo: 'További információ',
-    share: 'Megosztás',
+    share: 'Mentés a szerverre', // TODO google translated
     colorizingMode: {
       none: 'Inaktív',
       elevation: 'Magasság',
@@ -456,10 +456,7 @@ export default {
       title: 'A nyomvonal feltöltése',
       drop: 'Húzza ide a .gpx fájlt vagy kattintson ide a kijelöléséhez.',
     },
-    shareModal: {
-      title: 'Nyomvonal megosztása',
-      description: 'A nyomvonal a következő címen érhető el:',
-    },
+    shareToast: 'Az útvonal mentésre került a kiszolgálóra, és megosztható.', // TODO google translated
     fetchingError: 'Hiba történt a nyomvonal adatainak beolvasásakor: {err}',
     savingError: 'Hiba történt a nyomvonal mentésekor: {err}',
     tooBigError: 'A nyomvonal nagyobb, mint a megengedett {maxSize} MB.',

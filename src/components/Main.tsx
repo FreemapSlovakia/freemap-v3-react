@@ -31,7 +31,6 @@ import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
 import { TrackViewerUploadModal } from 'fm3/components/TrackViewerUploadModal';
-import { TrackViewerShareModal } from 'fm3/components/TrackViewerShareModal';
 
 import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
@@ -340,7 +339,6 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'legend' && <AsyncLegendModal />}
       {activeModal === 'edit-label' && <DrawingEditLabelModal />}
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
-      {activeModal === 'track-viewer-share' && <TrackViewerShareModal />}
       {showLoginModal && <LoginModal />}
       <GalleryModals />
 

@@ -104,8 +104,8 @@ const RoutePlannerResultInt: React.FC<Props> = ({
             {duration !== undefined && (
               <div>
                 {t('routePlanner.duration', {
-                  h: Math.floor(duration / 60),
-                  m: Math.round(duration % 60),
+                  h: Math.floor(Math.round(duration) / 60),
+                  m: Math.round(duration) % 60,
                 })}
               </div>
             )}

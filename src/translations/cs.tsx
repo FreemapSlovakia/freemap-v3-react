@@ -90,7 +90,7 @@ export default {
     transportType: {
       car: 'Auto, včetně zpoplatněných silnic',
       'car-free': 'Auto, mimo zpoplatněných silnic',
-      bikesharing: 'Sdílené kolo',
+      bikesharing: 'Sdílené kolo v Bratislavě (Whitebikes)',
       imhd: 'MHD v Bratislavě',
       'bike-osm': 'Kolo',
       bike: 'Cyklouristika',
@@ -433,7 +433,7 @@ export default {
   trackViewer: {
     upload: 'Nahrát',
     moreInfo: 'Více info',
-    share: 'Sdílet',
+    share: 'Uložit na server',
     colorizingMode: {
       none: 'Neaktivní',
       elevation: 'Nadmořská výška',
@@ -455,10 +455,7 @@ export default {
       title: 'Nahrát trasu',
       drop: 'Přetáhněte sem .gpx soubor, nebo sem klikněte pro jeho výběr.',
     },
-    shareModal: {
-      title: 'Sdílet trasu',
-      description: 'Trasa je dostupná na následující adrese:',
-    },
+    shareToast: 'Trasa byla uložena na server a můžete ji sdílet.',
     fetchingError: 'Nastala chyba při získávání záznamu trasy: {err}',
     savingError: 'Nepodařilo se uložit trasu: {err}',
     tooBigError: 'Velikost nahraného souboru přesahuje limit {maxsize} MB.',

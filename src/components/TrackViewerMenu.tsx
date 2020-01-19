@@ -86,7 +86,7 @@ const TrackViewerMenuInt: React.FC<Props> = ({
         <span className="hidden-xs"> {t('trackViewer.moreInfo')}</span>
       </Button>{' '}
       <Button onClick={onServerUpload} disabled={!hasTrack}>
-        <FontAwesomeIcon icon="share-alt" />
+        <FontAwesomeIcon icon="cloud-upload" />
         <span className="hidden-xs"> {t('trackViewer.share')}</span>
       </Button>
     </>

@@ -12,7 +12,10 @@ export interface SearchResult {
   osmType?: string;
 }
 
-export const searchSetQuery = createAction('SEARCH_SET_QUERY')<string>();
+export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{
+  query: string;
+  fromUrl?: boolean;
+}>();
 
 export const searchSetResults = createAction('SEARCH_SET_RESULTS')<
   SearchResult[]

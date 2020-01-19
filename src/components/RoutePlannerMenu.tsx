@@ -269,8 +269,8 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                 ? imhdSummary(t, language, activeAlternative.extra)
                 : t('routePlanner.summary', {
                     distance: nf.format(activeAlternative.distance),
-                    h: Math.floor(activeAlternative.duration / 60),
-                    m: Math.round(activeAlternative.duration % 60),
+                    h: Math.floor(Math.round(activeAlternative.duration) / 60),
+                    m: Math.round(activeAlternative.duration) % 60,
                   })
             }
           >
@@ -284,8 +284,8 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                   ? imhdSummary(t, language, extra)
                   : t('routePlanner.summary', {
                       distance: nf.format(distance),
-                      h: Math.floor(duration / 60),
-                      m: Math.round(duration % 60),
+                      h: Math.floor(Math.round(duration) / 60),
+                      m: Math.round(duration) % 60,
                     })}
               </MenuItem>
             ))}

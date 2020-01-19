@@ -4,7 +4,6 @@ import { Tooltip, Polyline } from 'react-leaflet';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { Hotline } from 'fm3/components/Hotline';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import turfLineSlice from '@turf/line-slice';
 import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
@@ -12,7 +11,7 @@ import { point, Feature, Properties, LineString, Point } from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
-import { geoJSON, Point as LPoint } from 'leaflet';
+import { Point as LPoint } from 'leaflet';
 import { RootState } from 'fm3/storeCreator';
 
 type Props = ReturnType<typeof mapStateToProps>;
@@ -30,25 +29,6 @@ interface GetFeatures {
 
 class TrackViewerResultInt extends React.Component<Props, State> {
   state: State = {};
-
-  componentDidUpdate(prevProps: Props) {
-    const { trackGeojson } = this.props;
-    if (!trackGeojson) {
-      return;
-    }
-
-    // TODO to logic
-    if (
-      trackGeojson &&
-      JSON.stringify(prevProps.trackGeojson) !== JSON.stringify(trackGeojson)
-    ) {
-      const geojsonBounds = geoJSON(trackGeojson).getBounds();
-      const le = getMapLeafletElement();
-      if (le && geojsonBounds.isValid()) {
-        le.fitBounds(geojsonBounds);
-      }
-    }
-  }
 
   getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
     turfFlatten(this.props.trackGeojson as any).features.filter(

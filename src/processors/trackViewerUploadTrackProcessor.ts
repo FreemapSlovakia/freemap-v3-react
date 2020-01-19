@@ -6,7 +6,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
-import { setActiveModal } from 'fm3/actions/mainActions';
 
 export const trackViewerUploadTrackProcessor: Processor = {
   actionCreator: trackViewerUploadTrack,
@@ -51,6 +50,13 @@ export const trackViewerUploadTrackProcessor: Processor = {
       dispatch(trackViewerSetTrackUID(assertType<{ uid: string }>(data).uid));
     }
 
-    dispatch(setActiveModal('track-viewer-share'));
+    dispatch(
+      toastsAdd({
+        messageKey: 'trackViewer.shareToast',
+        style: 'info',
+        collapseKey: 'trackViewer.shareToast',
+        timeout: 5000,
+      }),
+    );
   },
 };
