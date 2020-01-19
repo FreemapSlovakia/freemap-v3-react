@@ -1283,6 +1283,13 @@ export default {
     rename: 'Premenovať',
     delete: 'Zmazať',
     namePrompt: 'Názov mapy:',
+    deleteConfirm: 'Naozaj si prajete vymazať túto mapu?',
+    fetchError: 'Nastala chyba pri načítavani mapy: {err}',
+    fetchListError: 'Nastala chyba pri načítavani máp: {err}',
+    deleteError: 'Nastala chyba pri mazaní mapy: {err}',
+    renameError: 'Nastala chyba pri premenovávani mapy: {err}',
+    createError: 'Nastala chyba pri ukladaní mapy: {err}',
+    saveError: 'Nastala chyba pri ukladaní mapy: {err}',
   },
 };
 

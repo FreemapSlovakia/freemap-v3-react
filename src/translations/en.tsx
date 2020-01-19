@@ -1284,6 +1284,13 @@ export default {
     rename: 'Rename',
     delete: 'Delete',
     namePrompt: 'Map name:',
+    deleteConfirm: 'Are you sure to delete this map?',
+    fetchError: 'Error loading map: {err}',
+    fetchListError: 'Error loading maps: {err}',
+    deleteError: 'Error deleting map: {err}',
+    renameError: 'Error renaming map: {err}',
+    createError: 'Error saving map: {err}',
+    saveError: 'Error saving map: {err}',
   },
 };
 

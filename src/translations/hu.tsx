@@ -1297,6 +1297,13 @@ export default {
     rename: 'átnevezés',
     delete: 'Törlés',
     namePrompt: 'Térkép neve:',
+    deleteConfirm: 'Are you sure to delete this map?', // TODO translate
+    fetchError: 'Error loading map: {err}', // TODO translate
+    fetchListError: 'Error loading maps: {err}', // TODO translate
+    deleteError: 'Error deleting map: {err}', // TODO translate
+    renameError: 'Error renaming map: {err}', // TODO translate
+    createError: 'Error saving map: {err}', // TODO translate
+    saveError: 'Error saving map: {err}', // TODO translate
   },
 };
 

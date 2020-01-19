@@ -8,7 +8,7 @@ export const mapsLoadListProcessor: Processor<
   typeof selectFeature | typeof mapsLoadList
 > = {
   actionCreator: [selectFeature, mapsLoadList],
-  errorKey: 'maps.fetchError',
+  errorKey: 'maps.fetchListError',
   handle: async ({ getState, dispatch, action }) => {
     if (isActionOf(mapsLoadList, action) || action.payload?.type === 'maps') {
       if (getState().auth.user) {

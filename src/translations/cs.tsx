@@ -1280,6 +1280,13 @@ export default {
     rename: 'Přejmenovat',
     delete: 'Smazat',
     namePrompt: 'Název mapy:',
+    deleteConfirm: 'Opravdu si přejete smazat tuto mapu?',
+    fetchError: 'Nastala chyba při nahrávání mapy: {err}',
+    fetchListError: 'Nastala chyba při nahrávání map: {err}',
+    deleteError: 'Nastala chyba při mazání mapy: {err}',
+    renameError: 'Nastala chyba při přejmenování mapy: {err}',
+    createError: 'Nastala chyba při ukládání mapy: {err}',
+    saveError: 'Nastala chyba při ukládání mapy: {err}',
   },
 };
 
