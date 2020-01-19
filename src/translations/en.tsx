@@ -1271,6 +1271,15 @@ export default {
       </>
     ),
   },
+
+  maps: {
+    noMap: 'No map',
+    create: 'Save as…',
+    save: 'Save',
+    rename: 'Rename',
+    delete: 'Delete',
+    namePrompt: 'Map name:',
+  },
 };
 
 function numberize(n: number, words: [string, string]) {

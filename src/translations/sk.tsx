@@ -1275,12 +1275,14 @@ export default {
       </>
     ),
   },
+
   maps: {
     noMap: 'Žiadna mapa',
     create: 'Uložiť ako…',
     save: 'Uložiť',
     rename: 'Premenovať',
     delete: 'Zmazať',
+    namePrompt: 'Názov mapy:',
   },
 };
 

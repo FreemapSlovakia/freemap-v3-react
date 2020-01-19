@@ -1,5 +1,11 @@
 import { createAction } from 'typesafe-actions';
-import { Line, Point } from './drawingActions';
+import { Line } from './drawingLineActions';
+import { TrackingState } from 'fm3/reducers/trackingReducer';
+import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
+import { ObjectsResult } from './objectsActions';
+import { GalleryFilter } from './galleryActions';
+import { DrawingPoint } from './drawingPointActions';
+import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
 
 export type MapMeta = {
   id: number;
@@ -8,8 +14,22 @@ export type MapMeta = {
 };
 
 export type MapData = {
-  lines: Line[] | undefined;
-  points: Point[] | undefined;
+  lines?: Line[];
+  points?: DrawingPoint[];
+  objects?: ObjectsResult[];
+  tracking?: Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>;
+  routePlanner?: Pick<
+    RoutePlannerState,
+    | 'transportType'
+    | 'start'
+    | 'midpoints'
+    | 'finish'
+    | 'pickMode'
+    | 'mode'
+    | 'milestones'
+  >;
+  galleryFilter?: GalleryFilter;
+  trackViewer?: TrackViewerState;
 };
 
 export const mapsLoad = createAction('MAPS_LOAD')<number | undefined>();

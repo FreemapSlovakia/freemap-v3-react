@@ -22,6 +22,7 @@ import { httpRequest } from 'fm3/authAxios';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 interface OsrmStep {
   distance: number;
@@ -68,6 +69,7 @@ const updateRouteTypes = [
   routePlannerSetTransportType,
   routePlannerSetMode,
   routePlannerSetParams,
+  mapsDataLoaded,
 ];
 
 export const routePlannerFindRouteProcessor: Processor = {

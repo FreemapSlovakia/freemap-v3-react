@@ -1282,6 +1282,16 @@ export default {
       </>
     ),
   },
+
+  // TODO google-translated
+  maps: {
+    noMap: 'Nincs térkép',
+    create: 'Mentés másként…',
+    save: 'Mentés',
+    rename: 'átnevezés',
+    delete: 'Törlés',
+    namePrompt: 'Térkép neve:',
+  },
 };
 
 function numberize(n, words) {

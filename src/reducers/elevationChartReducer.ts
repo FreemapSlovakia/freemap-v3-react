@@ -3,7 +3,7 @@ import {
   drawingLineAddPoint,
   drawingLineUpdatePoint,
   drawingLineRemovePoint,
-} from 'fm3/actions/drawingActions';
+} from 'fm3/actions/drawingLineActions';
 import {
   elevationChartRemoveActivePoint,
   elevationChartSetActivePoint,

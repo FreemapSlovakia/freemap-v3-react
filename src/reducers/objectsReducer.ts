@@ -2,6 +2,7 @@ import { RootAction } from 'fm3/actions';
 import { createReducer } from 'typesafe-actions';
 import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import { objectsSetResult, ObjectsResult } from 'fm3/actions/objectsActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface ObjectsState {
   objects: ObjectsResult[];
@@ -34,4 +35,10 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
           ),
         }
       : state;
+  })
+  .handleAction(mapsDataLoaded, (state, action) => {
+    return {
+      ...state,
+      objects: action.payload.objects ?? initialState.objects,
+    };
   });

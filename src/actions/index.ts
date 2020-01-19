@@ -3,7 +3,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import * as main from 'fm3/actions/mainActions';
 import * as ws from 'fm3/actions/websocketActions';
 import * as rpc from 'fm3/actions/rpcActions';
-import * as drawing from 'fm3/actions/drawingActions';
+import * as drawing from 'fm3/actions/drawingLineActions';
 import * as auth from 'fm3/actions/authActions';
 import * as drawingPoints from 'fm3/actions/drawingPointActions';
 import * as changesets from 'fm3/actions/changesetsActions';

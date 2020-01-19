@@ -51,5 +51,8 @@ export const drawingPointsReducer = createReducer<
     }),
   )
   .handleAction(mapsDataLoaded, (_state, action) => {
-    return { ...initialState, points: action.payload.points ?? [] };
+    return {
+      ...initialState,
+      points: action.payload.points ?? initialState.points,
+    };
   });

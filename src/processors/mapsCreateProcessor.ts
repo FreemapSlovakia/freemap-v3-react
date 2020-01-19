@@ -1,12 +1,16 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapsCreate, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
+import { getMapDataFromState } from './mapsSaveProcessor';
+import { translate } from 'fm3/stringUtils';
 
 export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
   actionCreator: mapsCreate,
   errorKey: 'maps.createError',
   handle: async ({ getState, dispatch }) => {
-    const name = window.prompt('Name?');
+    const name = window.prompt(
+      translate(window.translations as any, 'maps.namePrompt'),
+    );
 
     if (name === null) {
       return;
@@ -20,10 +24,7 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
       data: {
         name,
         public: true, // TODO
-        data: {
-          lines: getState().drawingLines.lines,
-          points: getState().drawingPoints.points,
-        },
+        data: getMapDataFromState(getState()),
       },
     });
 

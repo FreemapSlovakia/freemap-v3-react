@@ -5,7 +5,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
-import { drawingLineUpdatePoint } from 'fm3/actions/drawingActions';
+import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
 
 const tipKeys = allTips.map(([key]) => key);
 

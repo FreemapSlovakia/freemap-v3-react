@@ -15,6 +15,7 @@ import {
 } from 'fm3/actions/mainActions';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface TrackingState {
   devices: Device[];
@@ -177,4 +178,12 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       action.payload.type === 'tracking'
         ? state.trackedDevices.filter(td => td.id !== action.payload.id)
         : state.trackedDevices,
-  }));
+  }))
+  .handleAction(mapsDataLoaded, (state, { payload: { tracking } }) => {
+    return {
+      ...state,
+      trackedDevices: tracking?.trackedDevices ?? initialState.trackedDevices,
+      showLine: tracking?.showLine ?? initialState.showLine,
+      showPoints: tracking?.showPoints ?? initialState.showPoints,
+    };
+  });

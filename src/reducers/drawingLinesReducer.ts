@@ -12,7 +12,7 @@ import {
   drawingLineRemovePoint,
   drawingLineSetLines,
   Line,
-} from 'fm3/actions/drawingActions';
+} from 'fm3/actions/drawingLineActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface DrawingLinesState {
@@ -87,10 +87,10 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     }),
   )
   .handleAction(mapsDataLoaded, (_state, action) => {
-    return { lines: action.payload.lines ?? [] };
+    return { lines: action.payload.lines ?? initialState.lines };
   });
 
-function linefilter(line) {
+function linefilter(line: Line) {
   return (
     (line.type === 'distance' && line.points.length > 1) ||
     (line.type === 'area' && line.points.length > 2)

@@ -67,14 +67,20 @@ export function translate(
   if (!translations) {
     return '…';
   }
+
   let curr: Translations = translations;
+
   const keys = key.split('.');
+
   for (;;) {
     const part = keys.shift();
+
     if (part === undefined) {
       return dflt;
     }
+
     const item = curr[part];
+
     if (typeof item === 'string' || typeof item === 'function') {
       if (keys.length) {
         // throw new Error(
@@ -89,6 +95,7 @@ export function translate(
       // );
       return key;
     }
+
     curr = item;
   }
 }

@@ -18,6 +18,7 @@ import {
 import { FeatureCollection } from 'geojson';
 import produce from 'immer';
 import { searchSelectResult } from 'fm3/actions/searchActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface TrackViewerState {
   trackGeojson: FeatureCollection | null;
@@ -117,4 +118,7 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
           break;
       }
     }),
-  );
+  )
+  .handleAction(mapsDataLoaded, (_state, { payload: { trackViewer } }) => {
+    return trackViewer ?? initialState;
+  });

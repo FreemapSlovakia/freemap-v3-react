@@ -26,6 +26,7 @@ import {
   Alternative,
 } from 'fm3/actions/routePlannerActions';
 import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
 
@@ -208,4 +209,16 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
           pickMode: state.pickMode,
         }
       : state,
-  );
+  )
+  .handleAction(mapsDataLoaded, (_state, { payload: { routePlanner } }) => {
+    return {
+      ...initialState,
+      transportType: routePlanner?.transportType ?? initialState.transportType,
+      start: routePlanner?.start ?? initialState.start,
+      midpoints: routePlanner?.midpoints ?? initialState.midpoints,
+      finish: routePlanner?.finish ?? initialState.finish,
+      pickMode: routePlanner?.pickMode ?? initialState.pickMode,
+      mode: routePlanner?.mode ?? initialState.mode,
+      milestones: routePlanner?.milestones ?? initialState.milestones,
+    };
+  });

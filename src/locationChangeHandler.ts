@@ -48,7 +48,7 @@ import {
   changesetsSetAuthorName,
   changesetsSet,
 } from 'fm3/actions/changesetsActions';
-import { drawingLineSetLines, Line } from 'fm3/actions/drawingActions';
+import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import { trackingActions } from './actions/trackingActions';

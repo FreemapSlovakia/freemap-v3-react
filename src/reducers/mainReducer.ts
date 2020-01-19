@@ -22,7 +22,7 @@ import {
 import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
-import { drawingLineSetLines } from 'fm3/actions/drawingActions';
+import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
 
 interface Location extends LatLon {
   accuracy: number;

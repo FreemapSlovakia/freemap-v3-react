@@ -6,7 +6,7 @@ import { lineString } from '@turf/helpers';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
-import { drawingLineAddPoint, Point } from 'fm3/actions/drawingActions';
+import { drawingLineAddPoint, Point } from 'fm3/actions/drawingLineActions';
 
 import {
   elevationChartSetTrackGeojson,
