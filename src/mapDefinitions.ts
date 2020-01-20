@@ -206,7 +206,7 @@ export const overlayLayers: LayerDef[] = [
     ],
   },
   {
-    type: 'n',
+    type: 'l',
     icon: 'tree',
     url: '//tiles.freemap.sk/nlc2017/{z}/{x}/{y}.png',
     attribution: [NLC_ATTR],
@@ -279,9 +279,9 @@ export const overlayLayers: LayerDef[] = [
     zIndex: 2,
   },
   ...[
-    ['1', '1', ''],
-    ['2', '2', 'h'],
-    ['3', '3', 'c'],
+    ['n1', '1', ''],
+    ['n2', '2', 'h'],
+    ['n3', '3', 'c'],
   ].map(([type, key, suffix]) => ({
     type,
     icon: 'font',

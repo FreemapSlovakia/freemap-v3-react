@@ -45,7 +45,7 @@ export function getMapStateFromUrl(
 
   const base = layers.charAt(0);
   const mapType = baseLetters.includes(base) ? base : undefined;
-  const ovl = layers.substring(1).replace(/s\D|s$/, 's0');
+  const ovl = layers.slice(1);
   const overlays = overlayLetters.filter(x => ovl.includes(x));
 
   return { lat, lon, zoom, mapType, overlays };
