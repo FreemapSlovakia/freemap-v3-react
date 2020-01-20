@@ -76,6 +76,8 @@
     <div id="app"></div>
     <script>
       var fm_seh = function(e) {
+        e.preventDefault();
+
         console.error('Startup error.', e);
 
         var app = document.getElementById('app');
