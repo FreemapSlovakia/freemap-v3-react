@@ -173,7 +173,7 @@ export const urlProcessor: Processor = {
 
     for (const line of drawingLines.lines) {
       historyParts.push([
-        line.type === 'area' ? 'polygon' : 'line',
+        line.type === 'polygon' ? 'polygon' : 'line',
         `${line.points.map(point => serializePoint(point)).join(',')}${
           line.label ? `;${line.label}` : ''
         }`,

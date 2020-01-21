@@ -57,6 +57,7 @@ export default {
     actions: 'Akce',
     add: 'Přidat nové',
     clear: 'Vyčistit',
+    convertToDrawing: 'Zkonvertovat na kreslení',
   },
 
   tools: {
@@ -83,7 +84,6 @@ export default {
 
   routePlanner: {
     milestones: 'Kilometrovník',
-    convertToMeasurement: 'Zkonvertovat na kreslení',
     start: 'Start',
     finish: 'Cíl',
     swap: 'Prohodit start a cíl',

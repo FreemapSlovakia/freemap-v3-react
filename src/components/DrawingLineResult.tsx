@@ -177,7 +177,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
     for (let i = 0; i < points.length; i++) {
       ps.push(points[i]);
 
-      if (i < points.length - 1 || line.type === 'area') {
+      if (i < points.length - 1 || line.type === 'polygon') {
         const p1 = points[i];
         const p2 = points[(i + 1) % points.length];
         const lat = (p1.lat + p2.lat) / 2;
@@ -196,7 +196,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
 
   return (
     <>
-      {ps.length > 2 && line.type === 'distance' && (
+      {ps.length > 2 && line.type === 'line' && (
         <Polyline
           weight={4}
           color={selected ? '#65b2ff' : '#007bff'}
@@ -215,7 +215,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
         </Polyline>
       )}
 
-      {ps.length > 1 && line.type === 'area' && (
+      {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           weight={4}
           color={selected ? '#65b2ff' : '#007bff'}
@@ -247,11 +247,11 @@ const DrawingLineResultInt: React.FC<Props> = ({
           interactive={false}
           positions={[
             {
-              lat: ps[ps.length - (line.type === 'area' ? 2 : 1)].lat,
-              lng: ps[ps.length - (line.type === 'area' ? 2 : 1)].lon,
+              lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
+              lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
             },
             { lat: coords.lat, lng: coords.lon },
-            ...(line.type === 'distance' || ps.length < 3
+            ...(line.type === 'line' || ps.length < 3
               ? []
               : [{ lat: ps[0].lat, lng: ps[0].lon }]),
           ]}
@@ -280,7 +280,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
               ondragstart={handleDragStart}
               ondragend={handleDragEnd}
             >
-              {line.type === 'distance' && (
+              {line.type === 'line' && (
                 <Tooltip
                   key={`${p.id}-${ps.length}`}
                   className="compact"
@@ -347,10 +347,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointRemove(index: number, id: number) {
     dispatch(drawingLineRemovePoint({ index, id }));
   },
-  onSelect(type: 'area' | 'distance', index: number) {
+  onSelect(type: 'polygon' | 'line', index: number) {
     dispatch(
       selectFeature({
-        type: type === 'area' ? 'draw-polygons' : 'draw-lines',
+        type: type === 'polygon' ? 'draw-polygons' : 'draw-lines',
         id: index,
       }),
     );

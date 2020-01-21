@@ -124,3 +124,5 @@ export type Selection =
   | TrackingSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
+
+export const convertToDrawing = createAction('CONVERT_TO_MEASUREMENT')();

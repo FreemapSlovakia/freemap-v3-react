@@ -57,6 +57,7 @@ export default {
     actions: 'Actions',
     add: 'Add new',
     clear: 'Clear',
+    convertToDrawing: 'Convert to drawing',
   },
 
   tools: {
@@ -83,7 +84,6 @@ export default {
 
   routePlanner: {
     milestones: 'Milestones',
-    convertToMeasurement: 'Convert to drawing',
     start: 'Start',
     finish: 'Finish',
     swap: 'Swap start and finish',

@@ -79,11 +79,11 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     }
 
     if (set.has('drawingLines')) {
-      addADMeasurement(doc, drawingLines, 'distance');
+      addADMeasurement(doc, drawingLines, 'line');
     }
 
     if (set.has('areaMeasurement')) {
-      addADMeasurement(doc, drawingLines, 'area');
+      addADMeasurement(doc, drawingLines, 'polygon');
     }
 
     if (set.has('drawingPoints')) {
@@ -346,7 +346,7 @@ function addPictures(doc: Document, pictures) {
 function addADMeasurement(
   doc: Document,
   { lines }: DrawingLinesState,
-  type: 'area' | 'distance',
+  type: 'polygon' | 'line',
 ) {
   for (const line of lines.filter(line => line.type === type)) {
     const trkEle = createElement(doc.documentElement, 'trk');
@@ -358,7 +358,7 @@ function addADMeasurement(
     const trksegEle = createElement(trkEle, 'trkseg');
 
     const points =
-      type === 'distance' ? line.points : [...line.points, line.points[0]];
+      type === 'line' ? line.points : [...line.points, line.points[0]];
 
     for (const { lat, lon } of points) {
       createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));

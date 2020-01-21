@@ -19,11 +19,10 @@ import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerSwapEnds,
   routePlannerSetFromCurrentPosition,
-  routePlannerConvertToMeasurement,
   routePlannerToggleMilestones,
   RouteAlternativeExtra,
 } from 'fm3/actions/routePlannerActions';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal, convertToDrawing } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
@@ -313,13 +312,10 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       <Button
         onClick={onConvertToMeasurement}
         disabled={!routeFound}
-        title={t('routePlanner.convertToMeasurement')}
+        title={t('general.convertToDrawing')}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs">
-          {' '}
-          {t('routePlanner.convertToMeasurement')}
-        </span>
+        <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
       </Button>{' '}
       <Checkbox inline onChange={onMilestonesChange} checked={milestones}>
         {t('routePlanner.milestones')}
@@ -393,7 +389,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(routePlannerSetFromCurrentPosition(end));
   },
   onConvertToMeasurement() {
-    dispatch(routePlannerConvertToMeasurement());
+    dispatch(convertToDrawing());
   },
   onMilestonesChange() {
     dispatch(routePlannerToggleMilestones(undefined));

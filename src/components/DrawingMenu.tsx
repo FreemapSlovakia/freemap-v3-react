@@ -70,7 +70,7 @@ const DrawingMenuInt: React.FC<Props> = ({
       }
 
       onDistPointAdd(
-        tool === 'draw-lines' ? 'distance' : 'area',
+        tool === 'draw-lines' ? 'line' : 'polygon',
         selection?.type === 'draw-lines' || selection?.type === 'draw-polygons'
           ? selection?.id
           : undefined,
@@ -185,7 +185,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(elevationChartClose());
   },
   onDistPointAdd(
-    type: 'area' | 'distance',
+    type: 'polygon' | 'line',
     index: number | undefined,
     point: Point,
     position: number,

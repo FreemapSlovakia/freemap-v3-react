@@ -87,12 +87,23 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     }),
   )
   .handleAction(mapsDataLoaded, (_state, action) => {
-    return { lines: action.payload.lines ?? initialState.lines };
+    return {
+      lines: (action.payload.lines ?? initialState.lines).map(line => ({
+        ...line,
+        type:
+          // compatibility
+          line.type === 'area'
+            ? 'polygon'
+            : line.type === 'distance'
+            ? 'line'
+            : line.type,
+      })),
+    };
   });
 
 function linefilter(line: Line) {
   return (
-    (line.type === 'distance' && line.points.length > 1) ||
-    (line.type === 'area' && line.points.length > 2)
+    (line.type === 'line' && line.points.length > 1) ||
+    (line.type === 'polygon' && line.points.length > 2)
   );
 }

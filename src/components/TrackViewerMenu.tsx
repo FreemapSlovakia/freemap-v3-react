@@ -10,7 +10,11 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
-import { setActiveModal, clearMap } from 'fm3/actions/mainActions';
+import {
+  setActiveModal,
+  clearMap,
+  convertToDrawing,
+} from 'fm3/actions/mainActions';
 import {
   trackViewerUploadTrack,
   trackViewerColorizeTrackBy,
@@ -42,6 +46,7 @@ const TrackViewerMenuInt: React.FC<Props> = ({
   onShowTrackInfo,
   trackGeojsonIsSuitableForElevationChart,
   onToggleElevationChart,
+  onConvertToMeasurement,
   t,
 }) => {
   return (
@@ -88,6 +93,14 @@ const TrackViewerMenuInt: React.FC<Props> = ({
       <Button onClick={onServerUpload} disabled={!hasTrack}>
         <FontAwesomeIcon icon="cloud-upload" />
         <span className="hidden-xs"> {t('trackViewer.share')}</span>
+      </Button>{' '}
+      <Button
+        onClick={onConvertToMeasurement}
+        disabled={!hasTrack}
+        title={t('general.convertToDrawing')}
+      >
+        <FontAwesomeIcon icon="pencil" />
+        <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
       </Button>
     </>
   );
@@ -122,6 +135,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onToggleElevationChart() {
     dispatch(trackViewerToggleElevationChart());
+  },
+  onConvertToMeasurement() {
+    dispatch(convertToDrawing());
   },
 });
 

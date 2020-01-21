@@ -280,8 +280,8 @@ export const handleLocationChange = (
         lines.push({
           type:
             key === 'distance-measurement-points' || key === 'line'
-              ? 'distance'
-              : 'area',
+              ? 'line'
+              : 'polygon',
           points,
           label,
         });

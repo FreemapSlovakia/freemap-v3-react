@@ -58,6 +58,7 @@ export default {
     actions: 'Műveletek',
     add: 'Új hozzáadása',
     clear: 'Törlés',
+    convertToDrawing: 'Átalakítás rajzzá',
   },
 
   tools: {
@@ -85,7 +86,6 @@ export default {
 
   routePlanner: {
     milestones: 'Távolságszelvények',
-    convertToMeasurement: 'Átalakítás rajzzá',
     start: 'Kiindulás',
     finish: 'Úti cél',
     swap: 'Kiindulási pont és cél felcserélése',

@@ -7,13 +7,13 @@ export interface Point {
 }
 
 export interface Line {
-  type: 'area' | 'distance';
+  type: 'polygon' | 'line';
   label?: string;
   points: Point[];
 }
 
 export const drawingLineAddPoint = createAction('DRAWING_LINE_ADD_POINT')<{
-  type?: 'area' | 'distance';
+  type?: 'polygon' | 'line';
   index?: number;
   point: Point;
   position?: number;

@@ -11,17 +11,28 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import Dropdown from 'react-bootstrap/lib/Dropdown';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
+import Button from 'react-bootstrap/lib/Button';
+
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import { convertToDrawing } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;
   };
 
-const ObjectsMenuInt: React.FC<Props> = ({ t, zoom, onLowZoom, onSearch }) => {
+const ObjectsMenuInt: React.FC<Props> = ({
+  t,
+  zoom,
+  onLowZoom,
+  onSearch,
+  hasObjects,
+  onConvertToMeasurement,
+}) => {
   const [filter, setFilter] = useState('');
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
@@ -93,13 +104,22 @@ const ObjectsMenuInt: React.FC<Props> = ({ t, zoom, onLowZoom, onSearch }) => {
             );
           })}
         </Dropdown.Menu>
-      </Dropdown>
+      </Dropdown>{' '}
+      <Button
+        onClick={onConvertToMeasurement}
+        disabled={!hasObjects}
+        title={t('general.convertToDrawing')}
+      >
+        <FontAwesomeIcon icon="pencil" />
+        <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
+      </Button>
     </>
   );
 };
 
 const mapStateToProps = (state: RootState) => ({
   zoom: state.map.zoom,
+  hasObjects: state.objects.objects.length > 0,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
@@ -121,6 +141,9 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
         ],
       }),
     );
+  },
+  onConvertToMeasurement() {
+    dispatch(convertToDrawing());
   },
 });
 

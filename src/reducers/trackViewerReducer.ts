@@ -35,19 +35,23 @@ export interface TrackViewerState {
   eleSmoothingFactor?: number;
 }
 
-const initialState: TrackViewerState = {
+export const cleanState = {
   trackGeojson: null,
   trackGpx: null,
   trackUID: null,
   startPoints: [],
   finishPoints: [],
-  colorizeTrackBy: null,
-  gpxUrl: null, // TODO to separate reducer (?)
-
   osmNodeId: null,
   osmWayId: null,
   osmRelationId: null,
-  eleSmoothingFactor: undefined,
+  gpxUrl: null, // TODO to separate reducer (?)
+};
+
+const initialState: TrackViewerState = {
+  colorizeTrackBy: null,
+  eleSmoothingFactor: undefined, // TODO to settings reducer
+
+  ...cleanState,
 };
 
 export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(

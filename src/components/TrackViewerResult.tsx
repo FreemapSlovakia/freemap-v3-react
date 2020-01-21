@@ -32,7 +32,7 @@ class TrackViewerResultInt extends React.Component<Props, State> {
 
   getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
     turfFlatten(this.props.trackGeojson as any).features.filter(
-      f => f && f.geometry && f.geometry.type === type,
+      f => f.geometry?.type === type,
     ) as any;
 
   getColorLineDataForElevation = () =>

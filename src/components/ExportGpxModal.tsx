@@ -156,11 +156,11 @@ const mapStateToProps = (state: RootState) => {
     exportables.push('pictures');
   }
 
-  if (state.drawingLines.lines.some(line => line.type === 'distance')) {
+  if (state.drawingLines.lines.some(line => line.type === 'line')) {
     exportables.push('drawingLines');
   }
 
-  if (state.drawingLines.lines.some(line => line.type === 'area')) {
+  if (state.drawingLines.lines.some(line => line.type === 'polygon')) {
     exportables.push('areaMeasurement');
   }
 
