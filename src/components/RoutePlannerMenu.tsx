@@ -129,6 +129,10 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
 
   const DropdownButton2 = DropdownButton as any; // because active is missing
 
+  const stopPropagation = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+  }, []);
+
   return (
     <>
       <ButtonGroup>
@@ -233,6 +237,19 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                     title={t('routePlanner.development')}
                     className="text-warning"
                   />
+                </>
+              )}
+              {type === 'bikesharing' && (
+                <>
+                  {' '}
+                  <a
+                    href="http://routing.epsilon.sk/bikesharing.php"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    onClick={stopPropagation}
+                  >
+                    <FontAwesomeIcon icon="info-circle" />
+                  </a>
                 </>
               )}
             </MenuItem>
