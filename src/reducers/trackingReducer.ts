@@ -159,12 +159,15 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     if (action.payload.method === 'tracking.addPoint') {
       // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
       const { token, deviceId, ts, ...rest } = action.payload.params;
+
       return produce(state, draft => {
         let track = draft.tracks.find(t => t.id === token || deviceId);
+
         if (!track) {
           track = { id: token || deviceId, trackPoints: [] };
           draft.tracks.push(track);
         }
+
         track.trackPoints.push({ ts: new Date(ts), ...rest });
         // TODO apply limits from trackedDevices
       });

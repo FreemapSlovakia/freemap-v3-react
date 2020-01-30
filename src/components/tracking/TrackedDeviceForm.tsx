@@ -19,6 +19,7 @@ import { Dispatch } from 'redux';
 import { InputGroup } from 'react-bootstrap';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import { selectFeature } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -200,6 +201,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   },
   onSave(device: TrackedDevice) {
     dispatch(trackingActions.saveTrackedDevice(device));
+    dispatch(selectFeature({ type: 'tracking', id: device.id }));
   },
 });
 
