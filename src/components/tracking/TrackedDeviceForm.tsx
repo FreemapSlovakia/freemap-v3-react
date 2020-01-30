@@ -30,6 +30,7 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
   onSave,
   onCancel,
   device,
+  forceNew,
   t,
 }) => {
   const [id, setId] = useTextInputState(device?.id?.toString() ?? '');
@@ -83,7 +84,7 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
-          {device
+          {device && !forceNew
             ? t('tracking.trackedDevices.modifyTitle', {
                 name: device.label || device.id,
               })
@@ -178,22 +179,35 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">OK</Button>
+        <Button type="submit">{t('general.save')}</Button>
         <Button type="button" onClick={onCancel}>
-          Cancel
+          {t('general.cancel')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>
   );
 };
 
-const mapStateToProps = (state: RootState) => ({
-  device: state.tracking.modifiedTrackedDeviceId
-    ? state.tracking.trackedDevices.find(
-        device => device.id === state.tracking.modifiedTrackedDeviceId,
-      ) ?? { id: state.tracking.modifiedTrackedDeviceId }
-    : null,
-});
+const mapStateToProps = (state: RootState) => {
+  let device: TrackedDevice | undefined;
+  let forceNew = false;
+
+  if (state.tracking.modifiedTrackedDeviceId != null) {
+    device = state.tracking.trackedDevices.find(
+      device => device.id === state.tracking.modifiedTrackedDeviceId,
+    );
+
+    if (!device) {
+      device = { id: state.tracking.modifiedTrackedDeviceId };
+      forceNew = true;
+    }
+  }
+
+  return {
+    device,
+    forceNew,
+  };
+};
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onCancel() {

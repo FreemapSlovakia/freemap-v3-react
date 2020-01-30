@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch, bindActionCreators } from 'redux';
+import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -62,6 +62,7 @@ const AccessTokenInt: React.FC<Props> = ({
           onClick={handleCopyClick}
           bsSize="xs"
           title={t('external.copy')}
+          type="button"
         >
           <FontAwesomeIcon icon="clipboard" />
         </Button>
@@ -113,7 +114,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onDelete(id: number) {
     dispatch(trackingActions.deleteAccessToken(id));
   },
-  onView(id: number) {
+  onView(id: string) {
     dispatch(setActiveModal('tracking-watched'));
     dispatch(trackingActions.modifyTrackedDevice(id));
   },
