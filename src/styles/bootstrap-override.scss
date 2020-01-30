@@ -32,13 +32,16 @@
   cursor: pointer;
 }
 
-.modal.dynamic {
-  display: flex !important;
+@media (min-width: 768px) {
+  .modal.dynamic {
+    display: flex !important;
 
-  .modal-dialog {
-    max-width: 100%;
-    width: auto !important;
-    display: inline-block;
+    .modal-dialog {
+      min-width: 600px;
+      max-width: 100%;
+      width: auto !important;
+      display: inline-block;
+    }
   }
 }
 

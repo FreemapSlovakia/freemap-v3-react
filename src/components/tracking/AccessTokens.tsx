@@ -43,7 +43,7 @@ const AccessTokensInt: React.FC<Props> = ({
         <Alert bsStyle="info">
           {t('tracking.accessTokens.desc', { deviceName })}
         </Alert>
-        <Table striped bordered>
+        <Table striped bordered responsive>
           <thead>
             <tr>
               <th>{t('tracking.accessToken.token')}</th>

@@ -27,7 +27,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 const TrackingModalInt: React.FC<Props> = ({ onClose, view }) => {
   return (
-    <Modal onHide={onClose} show bsSize="large">
+    <Modal onHide={onClose} show className="dynamic">
       {view === 'devices' && <Devices />}
       {view === 'deviceForm' && <DeviceForm />}
       {view === 'accessTokens' && <AccessTokens />}

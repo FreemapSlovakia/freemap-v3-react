@@ -250,13 +250,21 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
           />
           <br />
           <p>{t('embed.example')}</p>
-          <iframe
-            title="Freemap.sk"
-            style={{ width: `${width}px`, height: `${height}px`, border: '0' }}
-            src={this.state.iframeUrl}
-            allowFullScreen
-            ref={this.setIframe}
-          />
+          <div style={{ overflowX: 'auto' }}>
+            <iframe
+              title="Freemap.sk"
+              style={{
+                width: `${width}px`,
+                height: `${height}px`,
+                border: '0',
+                display: 'block',
+                margin: '0 auto',
+              }}
+              src={this.state.iframeUrl}
+              allowFullScreen
+              ref={this.setIframe}
+            />
+          </div>
         </Modal.Body>
         <Modal.Footer>
           <Button onClick={this.handleCopyClick}>

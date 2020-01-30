@@ -30,7 +30,7 @@ const TrackedDevicesInt: React.FC<Props> = ({ onClose, onAdd, devices, t }) => (
     </Modal.Header>
     <Modal.Body>
       <Alert bsStyle="info">{t('tracking.trackedDevices.desc')}</Alert>
-      <Table striped bordered>
+      <Table striped bordered responsive>
         <thead>
           <tr>
             <th>{t('tracking.trackedDevice.token')}</th>

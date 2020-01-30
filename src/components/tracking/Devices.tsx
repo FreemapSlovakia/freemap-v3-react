@@ -40,7 +40,7 @@ const DevicesInt: React.FC<Props> = ({
       </Modal.Header>
       <Modal.Body>
         <Alert bsStyle="info">{t('tracking.devices.desc')}</Alert>
-        <Table striped bordered>
+        <Table striped bordered responsive>
           <thead>
             <tr>
               <th>{t('tracking.device.name')}</th>
