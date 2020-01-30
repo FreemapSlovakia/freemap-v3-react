@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
@@ -7,7 +7,7 @@ import Tooltip from 'react-bootstrap/lib/Tooltip';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { setActiveModal, selectFeature } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { Device as DeviceType } from 'fm3/types/trackingTypes';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
@@ -38,19 +38,19 @@ const DeviceInt: React.FC<Props> = ({
     minute: '2-digit',
   });
 
-  const handleModify = React.useCallback(() => {
+  const handleModify = useCallback(() => {
     onModify(device.id);
   }, [device.id, onModify]);
 
-  const handleDelete = React.useCallback(() => {
+  const handleDelete = useCallback(() => {
     onDelete(device.id);
   }, [device.id, onDelete]);
 
-  const handleShowAccessTokens = React.useCallback(() => {
+  const handleShowAccessTokens = useCallback(() => {
     onShowAccessTokens(device.id);
   }, [device.id, onShowAccessTokens]);
 
-  const handleView = React.useCallback(() => {
+  const handleView = useCallback(() => {
     onView(device.id);
   }, [device.id, onView]);
 
@@ -74,7 +74,11 @@ const DeviceInt: React.FC<Props> = ({
         </OverlayTrigger>
       </td>
       <td>{device.maxCount}</td>
-      <td>{device.maxAge}</td>
+      <td>
+        {typeof device.maxAge === 'number'
+          ? `${device.maxAge / 60} ${t('general.minutes')}`
+          : ''}
+      </td>
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>
         <Button
@@ -131,9 +135,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(trackingActions.showAccessTokens(id));
   },
   onView(id: number) {
-    dispatch(trackingActions.view(id));
-    dispatch(selectFeature({ type: 'tracking', id }));
-    dispatch(setActiveModal(null));
+    dispatch(setActiveModal('tracking-watched'));
+    dispatch(trackingActions.modifyTrackedDevice(id));
   },
 });
 

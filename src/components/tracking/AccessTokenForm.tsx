@@ -31,15 +31,18 @@ const AccessTokenFormInt: React.FC<Props> = ({
   t,
 }) => {
   const [note, setNote] = useTextInputState(accessToken?.note ?? '');
+
   const [timeFrom, setTimeFrom] = React.useState(
     accessToken?.timeFrom ? toDatetimeLocal(accessToken.timeFrom) : '',
   );
+
   const [timeTo, setTimeTo] = React.useState(
     accessToken?.timeTo ? toDatetimeLocal(accessToken.timeTo) : '',
   );
-  const [listingLabel, setListingLabel] = useTextInputState(
-    accessToken?.listingLabel ?? '',
-  );
+
+  // const [listingLabel, setListingLabel] = useTextInputState(
+  //   accessToken?.listingLabel ?? '',
+  // );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -47,7 +50,7 @@ const AccessTokenFormInt: React.FC<Props> = ({
       note: note.trim() || null,
       timeFrom: timeFrom === '' ? null : new Date(timeFrom),
       timeTo: timeTo === '' ? null : new Date(timeTo),
-      listingLabel: listingLabel.trim() || null,
+      listingLabel: null, // listingLabel.trim() || null,
     });
   };
 
@@ -73,14 +76,14 @@ const AccessTokenFormInt: React.FC<Props> = ({
           <ControlLabel>{t('tracking.accessToken.timeTo')}</ControlLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
-        <FormGroup>
+        {/* <FormGroup>
           <ControlLabel>{t('tracking.accessToken.listingLabel')}</ControlLabel>
           <FormControl
             value={listingLabel}
             onChange={setListingLabel}
             maxLength={255}
           />
-        </FormGroup>
+        </FormGroup> */}
         <FormGroup>
           <ControlLabel>{t('tracking.accessToken.note')}</ControlLabel>
           <FormControl value={note} onChange={setNote} maxLength={255} />

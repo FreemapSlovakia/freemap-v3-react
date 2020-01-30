@@ -1138,6 +1138,7 @@ export default {
       createTitle: 'Követendő készülék létrehozása',
       watchTokens: 'Kódok megtekintése',
       watchPrivately: 'Privát figyelés',
+      watch: 'Figyelés',
       modifyTitle: ({ name }) => (
         <>
           A(z) <i>{name}</i> készülék követésének módosítása

@@ -855,7 +855,7 @@ export default {
     window: 'Nové okno',
     url: 'Zdieľať URL',
     image: 'Zdieľať fotografiu',
-    copy: 'Kopírovať URL',
+    copy: 'Kopírovať URL', // TODO move to general
   },
 
   search: {
@@ -1131,6 +1131,7 @@ export default {
       createTitle: 'Pridať zariadenie',
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
+      watch: 'Sledovať',
       modifyTitle: ({ name }: { name: string }) => (
         <>
           Upraviť zariadenie <i>{name}</i>

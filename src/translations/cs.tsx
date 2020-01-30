@@ -1127,7 +1127,8 @@ export default {
       modalTitle: 'Moje sledovaná zařízení',
       createTitle: 'Nové zařízení',
       watchTokens: 'Sledovací tokeny',
-      watchPrivately: 'Soukromé sledování',
+      watchPrivately: 'Sledovat soukromě',
+      watch: 'Sledovat',
       modifyTitle: ({ name }) => (
         <>
           Úprava zařízení <i>{name}</i>

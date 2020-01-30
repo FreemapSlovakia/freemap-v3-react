@@ -48,7 +48,7 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
   );
 
   const [maxAge, setMaxAge] = useTextInputState(
-    device?.maxAge?.toString() ?? '',
+    typeof device?.maxAge === 'number' ? (device?.maxAge / 60).toString() : '',
   );
 
   const [splitDistance, setSplitDistance] = useTextInputState(
@@ -67,7 +67,7 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
       label: label.trim() || null,
       color: color.trim() || null,
       fromTime: fromTime === '' ? null : new Date(fromTime),
-      maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
+      maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
       width: width === '' ? null : Number.parseInt(width, 10),
       splitDistance:
@@ -132,7 +132,7 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Addon>{t('general.seconds')}</InputGroup.Addon>
+            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
           </InputGroup>
         </FormGroup>
         <FormGroup>
@@ -190,7 +190,7 @@ const mapStateToProps = (state: RootState) => ({
   device: state.tracking.modifiedTrackedDeviceId
     ? state.tracking.trackedDevices.find(
         device => device.id === state.tracking.modifiedTrackedDeviceId,
-      )
+      ) ?? { id: state.tracking.modifiedTrackedDeviceId }
     : null,
 });
 

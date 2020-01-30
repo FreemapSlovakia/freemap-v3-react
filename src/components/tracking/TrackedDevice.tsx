@@ -56,7 +56,11 @@ const TrackedDeviceInt: React.FC<Props> = ({
       </td>
       <td>{device.label}</td>
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
-      <td>{device.maxAge}</td>
+      <td>
+        {typeof device.maxAge === 'number'
+          ? `${device.maxAge / 60} ${t('general.minutes')}`
+          : ''}
+      </td>
       <td>{device.maxCount}</td>
       <td>{device.splitDistance}</td>
       <td>{device.splitDuration}</td>

@@ -50,7 +50,7 @@ const AccessTokensInt: React.FC<Props> = ({
               <th>{t('general.createdAt')}</th>
               <th>{t('tracking.accessToken.timeFrom')}</th>
               <th>{t('tracking.accessToken.timeTo')}</th>
-              <th>{t('tracking.accessToken.listingLabel')}</th>
+              {/* <th>{t('tracking.accessToken.listingLabel')}</th> */}
               <th>{t('tracking.accessToken.note')}</th>
               <th>{t('general.actions')}</th>
             </tr>

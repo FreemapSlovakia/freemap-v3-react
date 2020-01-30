@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import React from 'react';
+import React, { useCallback } from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 
@@ -10,6 +10,7 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch, bindActionCreators } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -20,6 +21,7 @@ type Props = ReturnType<typeof mapStateToProps> &
 const AccessTokenInt: React.FC<Props> = ({
   onDelete,
   onModify,
+  onView,
   accessToken,
   language,
   t,
@@ -32,33 +34,52 @@ const AccessTokenInt: React.FC<Props> = ({
     minute: '2-digit',
   });
 
-  const handleModify = React.useCallback(() => {
+  const handleModify = useCallback(() => {
     onModify(accessToken.id);
   }, [accessToken.id, onModify]);
 
-  const handleDelete = React.useCallback(() => {
+  const handleDelete = useCallback(() => {
     onDelete(accessToken.id);
   }, [accessToken.id, onDelete]);
+
+  const handleCopyClick = useCallback(() => {
+    navigator.clipboard.writeText(
+      `${location.origin}/?track=${encodeURIComponent(
+        accessToken.token,
+      )}&follow=${encodeURIComponent(accessToken.token)}`,
+    );
+  }, [accessToken.token]);
+
+  const handleView = useCallback(() => {
+    onView(accessToken.token);
+  }, [accessToken.token, onView]);
 
   return (
     <tr>
       <td>
-        <a
-          href={`/?track=${encodeURIComponent(
-            accessToken.token,
-          )}&follow=${encodeURIComponent(accessToken.token)}`}
-          target="_blank"
-          rel="noopener noreferrer"
+        {accessToken.token}{' '}
+        <Button
+          onClick={handleCopyClick}
+          bsSize="xs"
+          title={t('external.copy')}
         >
-          {accessToken.token}
-        </a>
+          <FontAwesomeIcon icon="clipboard" />
+        </Button>
       </td>
       <td>{dateFormat.format(accessToken.createdAt)}</td>
       <td>{accessToken.timeFrom && dateFormat.format(accessToken.timeFrom)}</td>
       <td>{accessToken.timeTo && dateFormat.format(accessToken.timeTo)}</td>
-      <td>{accessToken.listingLabel}</td>
+      {/* <td>{accessToken.listingLabel}</td> */}
       <td>{accessToken.note}</td>
       <td>
+        <Button
+          bsSize="small"
+          type="button"
+          onClick={handleView}
+          title={t('tracking.devices.watch')}
+        >
+          <FontAwesomeIcon icon="eye" />
+        </Button>{' '}
         <Button
           bsSize="small"
           type="button"
@@ -85,14 +106,18 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) =>
-  bindActionCreators(
-    {
-      onModify: trackingActions.modifyAccessToken,
-      onDelete: trackingActions.deleteAccessToken,
-    },
-    dispatch,
-  );
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
+  onModify(id: number) {
+    dispatch(trackingActions.modifyAccessToken(id));
+  },
+  onDelete(id: number) {
+    dispatch(trackingActions.deleteAccessToken(id));
+  },
+  onView(id: number) {
+    dispatch(setActiveModal('tracking-watched'));
+    dispatch(trackingActions.modifyTrackedDevice(id));
+  },
+});
 
 export const AccessToken = connect(
   mapStateToProps,

@@ -1131,6 +1131,7 @@ export default {
       createTitle: 'Create Tracking Device',
       watchTokens: 'Watch tokens',
       watchPrivately: 'Watch privately',
+      watch: 'Watch',
       modifyTitle: ({ name }) => (
         <>
           Modify Tracking Device <i>{name}</i>

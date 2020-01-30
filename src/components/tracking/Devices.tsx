@@ -46,7 +46,7 @@ const DevicesInt: React.FC<Props> = ({
               <th>{t('tracking.device.name')}</th>
               <th>{t('tracking.device.token')}</th>
               <th>{t('tracking.device.maxCount')}</th>
-              <th>{t('tracking.device.maxAge')} [s]</th>
+              <th>{t('tracking.device.maxAge')}</th>
               <th>{t('general.createdAt')}</th>
               <th>{t('general.actions')}</th>
             </tr>

@@ -30,7 +30,7 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   );
 
   const [maxAge, setMaxAge] = useTextInputState(
-    device?.maxAge?.toString() ?? '',
+    typeof device?.maxAge === 'number' ? (device?.maxAge / 60).toString() : '',
   );
 
   const [regenerateToken, setRegenerateToken] = useCheckboxInputState(false);
@@ -40,7 +40,7 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
     onSave({
       name: name.trim(),
       maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-      maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10),
+      maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
       regenerateToken,
     });
   };
@@ -89,7 +89,7 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Addon>s</InputGroup.Addon>
+            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
           </InputGroup>
         </FormGroup>
         {!!device && (
