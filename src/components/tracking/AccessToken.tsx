@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import React, { useCallback } from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
+import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
@@ -11,6 +12,7 @@ import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { Tooltip } from 'react-bootstrap';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -57,15 +59,30 @@ const AccessTokenInt: React.FC<Props> = ({
   return (
     <tr>
       <td>
-        {accessToken.token}{' '}
-        <Button
-          onClick={handleCopyClick}
-          bsSize="xs"
-          title={t('external.copy')}
-          type="button"
+        <OverlayTrigger
+          trigger={['hover', 'focus']}
+          placement="right"
+          overlay={
+            <Tooltip id={accessToken.token}>
+              <span style={{ overflowWrap: 'break-word' }}>
+                {location.origin}/?track={encodeURIComponent(accessToken.token)}
+                &amp;follow={encodeURIComponent(accessToken.token)}
+              </span>
+            </Tooltip>
+          }
         >
-          <FontAwesomeIcon icon="clipboard" />
-        </Button>
+          <span>
+            {accessToken.token}{' '}
+            <Button
+              onClick={handleCopyClick}
+              bsSize="xs"
+              title={t('external.copy')}
+              type="button"
+            >
+              <FontAwesomeIcon icon="clipboard" />
+            </Button>
+          </span>
+        </OverlayTrigger>
       </td>
       <td>{dateFormat.format(accessToken.createdAt)}</td>
       <td>{accessToken.timeFrom && dateFormat.format(accessToken.timeFrom)}</td>

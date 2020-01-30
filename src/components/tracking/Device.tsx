@@ -54,11 +54,16 @@ const DeviceInt: React.FC<Props> = ({
     onView(device.id);
   }, [device.id, onView]);
 
+  const handleCopyClick = useCallback(() => {
+    navigator.clipboard.writeText(
+      `${process.env.API_URL}/tracking/track/${device.token}`,
+    );
+  }, [device.token]);
+
   return (
     <tr>
       <td>{device.name}</td>
       <td>
-        {device.token}
         <OverlayTrigger
           trigger={['hover', 'focus']}
           placement="right"
@@ -70,7 +75,17 @@ const DeviceInt: React.FC<Props> = ({
             </Tooltip>
           }
         >
-          <FontAwesomeIcon icon="question-circle-o" />
+          <span>
+            {device.token}{' '}
+            <Button
+              onClick={handleCopyClick}
+              bsSize="xs"
+              title={t('external.copy')}
+              type="button"
+            >
+              <FontAwesomeIcon icon="clipboard" />
+            </Button>
+          </span>
         </OverlayTrigger>
       </td>
       <td>{device.maxCount}</td>
