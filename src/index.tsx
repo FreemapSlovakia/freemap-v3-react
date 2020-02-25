@@ -1,4 +1,4 @@
-import { setDefaultGetErrorMessage } from 'typescript-is';
+import { setDefaultGetErrorObject } from 'typescript-is';
 import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
 import 'fullscreen-api-polyfill';
 
@@ -40,7 +40,7 @@ import { AppState } from './types/common';
 import registerEvents from 'serviceworker-webpack-plugin/lib/browser/registerEvents';
 import applyUpdate from 'serviceworker-webpack-plugin/lib/browser/applyUpdate';
 
-setDefaultGetErrorMessage(() => null);
+setDefaultGetErrorObject(() => null);
 
 if (window.location.search === '?reset-local-storage') {
   storage.clear();

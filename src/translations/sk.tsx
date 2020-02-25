@@ -320,6 +320,16 @@ export default {
       </div>
     ),
     copyright: 'Licencia',
+    p2: () => (
+      <>
+        Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie
+        informácie a tlačivá nájdete na{' '}
+        <a href="http://wiki.freemap.sk/dvepercenta">
+          wiki.freemap.sk/dvepercenta
+        </a>
+        .
+      </>
+    ),
   },
 
   gallery: {

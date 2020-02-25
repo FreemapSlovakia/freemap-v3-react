@@ -256,10 +256,10 @@ const MainInt: React.FC<Props> = ({
       <Toasts />
 
       <div className="header">
-        {process.env.DEPLOYMENT === 'next' && showInfoBar && (
+        {showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
-            {t('main.devInfo')}
+            {t('main.p2')}
           </div>
         )}
         <div className="menus">
