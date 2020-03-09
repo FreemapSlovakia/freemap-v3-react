@@ -76,10 +76,9 @@ export default {
         Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
-    // TODO google-translated
     maps: () => (
       <>
-        Saját térképek <FontAwesomeIcon icon="flask" className="text-warning" />
+        Saját térképeim <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
   },
@@ -440,7 +439,7 @@ export default {
   trackViewer: {
     upload: 'Feltöltés',
     moreInfo: 'További információ',
-    share: 'Mentés a szerverre', // TODO google translated
+    share: 'Mentés a kiszolgálóra',
     colorizingMode: {
       none: 'Inaktív',
       elevation: 'Magasság',
@@ -462,7 +461,7 @@ export default {
       title: 'A nyomvonal feltöltése',
       drop: 'Húzza ide a .gpx fájlt vagy kattintson ide a kijelöléséhez.',
     },
-    shareToast: 'Az útvonal mentésre került a kiszolgálóra, és megosztható.', // TODO google translated
+    shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.',
     fetchingError: 'Hiba történt a nyomvonal adatainak beolvasásakor: {err}',
     savingError: 'Hiba történt a nyomvonal mentésekor: {err}',
     tooBigError: 'A nyomvonal nagyobb, mint a megengedett {maxSize} MB.',
@@ -1290,21 +1289,20 @@ export default {
     ),
   },
 
-  // TODO google-translated
   maps: {
     noMap: 'Nincs térkép',
     create: 'Mentés másként…',
     save: 'Mentés',
-    rename: 'átnevezés',
+    rename: 'Átnevezés',
     delete: 'Törlés',
     namePrompt: 'Térkép neve:',
-    deleteConfirm: 'Are you sure to delete this map?', // TODO translate
-    fetchError: 'Error loading map: {err}', // TODO translate
-    fetchListError: 'Error loading maps: {err}', // TODO translate
-    deleteError: 'Error deleting map: {err}', // TODO translate
-    renameError: 'Error renaming map: {err}', // TODO translate
-    createError: 'Error saving map: {err}', // TODO translate
-    saveError: 'Error saving map: {err}', // TODO translate
+    deleteConfirm: 'Biztosan törli ezt a térképet?',
+    fetchError: 'Hiba történt a térkép betöltéskor: {err}',
+    fetchListError: 'Hiba történt a térképek betöltéskor: {err}',
+    deleteError: 'Hiba történt a térkép törlésekor: {err}',
+    renameError: 'Hiba történt a térkép átnevezésekor: {err}',
+    createError: 'Hiba történt a térkép mentésekor: {err}',
+    saveError: 'Hiba történt a térkép mentésekor: {err}',
   },
 };
 
