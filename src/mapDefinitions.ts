@@ -176,6 +176,25 @@ export const baseLayers: LayerDef[] = [
     attribution: [],
     key: 'h',
   },
+  {
+    type: 'z',
+    url:
+      'https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe:ImageryTileService@EPSG:3857@jpg/{z}/{x}/{y}.jpg' +
+      '?connectId=fa014fbc-6cbe-4b6f-b0ca-fbfb8d1e5b7d&foo=premium',
+    tms: true,
+    minNativeZoom: 1,
+    maxNativeZoom: 22,
+    icon: 'medium',
+    adminOnly: true,
+    attribution: [
+      {
+        type: 'map',
+        name: '©\xa0DigitalGlobe',
+        url: 'https://wiki.openstreetmap.org/wiki/DigitalGlobe',
+      },
+    ],
+    key: 'z',
+  },
 ];
 
 if (!process.env.NODE_ENV) {
