@@ -1241,7 +1241,7 @@ export default {
     area: 'Exportovať oblasť:',
     areas: {
       visible: 'Viditeľnú oblasť mapy',
-      pinned: 'Plochu ohraničenú bodmi v mape',
+      pinned: 'Plochu obsahujúcu označený polygón (kreslenie)',
     },
     layersTitle: 'Voliteľné vrstvy:',
     layers: {

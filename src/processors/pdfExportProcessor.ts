@@ -33,12 +33,18 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       e = bounds.getEast();
       s = bounds.getSouth();
     } else {
-      // infopoints
-      for (const { lat, lon } of getState().drawingPoints.points) {
-        w = Math.min(w === undefined ? 1000 : w, lon);
-        n = Math.max(n === undefined ? -1000 : n, lat);
-        e = Math.max(e === undefined ? -1000 : e, lon);
-        s = Math.min(s === undefined ? 1000 : s, lat);
+      const { selection } = getState().main;
+
+      if (selection?.type === 'draw-polygons' && selection.id !== undefined) {
+        // selected polygon
+
+        for (const { lat, lon } of getState().drawingLines.lines[selection.id]
+          .points) {
+          w = Math.min(w === undefined ? 1000 : w, lon);
+          n = Math.max(n === undefined ? -1000 : n, lat);
+          e = Math.max(e === undefined ? -1000 : e, lon);
+          s = Math.min(s === undefined ? 1000 : s, lat);
+        }
       }
     }
 

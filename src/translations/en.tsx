@@ -1229,7 +1229,7 @@ export default {
     area: 'Export area:',
     areas: {
       visible: 'Visible area of the map',
-      pinned: 'Area surrounded by pins',
+      pinned: 'Area containing selected polygon (drawing)',
     },
     layersTitle: 'Optional layers:',
     layers: {

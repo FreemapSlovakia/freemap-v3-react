@@ -78,7 +78,8 @@ export default {
     ),
     maps: () => (
       <>
-        Saját térképeim <FontAwesomeIcon icon="flask" className="text-warning" />
+        Saját térképeim{' '}
+        <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
     ),
   },
@@ -1237,7 +1238,7 @@ export default {
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
-      pinned: 'Gombostűkkel kijelölt terület',
+      pinned: 'A kiválasztott sokszöget tartalmazó terület (rajz)', // TODO google translated
     },
     layersTitle: 'Választható rétegek:',
     layers: {

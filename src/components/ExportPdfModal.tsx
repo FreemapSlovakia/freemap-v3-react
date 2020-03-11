@@ -86,7 +86,7 @@ export class ExportPdfModalInt extends React.Component<Props, State> {
   };
 
   render() {
-    const { onModalClose, t, language, hasInfopoints } = this.props;
+    const { onModalClose, t, language, canExportByPolygon } = this.props;
     const nf = Intl.NumberFormat(language, {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
@@ -112,10 +112,9 @@ export class ExportPdfModalInt extends React.Component<Props, State> {
             <Button
               active={this.state.area === 'infopoints'}
               onClick={() => this.setState({ area: 'infopoints' })}
-              disabled={!hasInfopoints}
+              disabled={!canExportByPolygon}
             >
-              {t('pdfExport.areas.pinned')}{' '}
-              <FontAwesomeIcon icon="thumb-tack" />
+              {t('pdfExport.areas.pinned')} <FontAwesomeIcon icon="square-o" />
             </Button>
           </ButtonGroup>
           <hr />
@@ -185,7 +184,9 @@ export class ExportPdfModalInt extends React.Component<Props, State> {
 
 const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
-  hasInfopoints: state.drawingPoints.points.length > 1,
+  canExportByPolygon:
+    state.main.selection?.type === 'draw-polygons' &&
+    state.main.selection.id !== undefined,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
