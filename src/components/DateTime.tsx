@@ -90,6 +90,7 @@ export const DateTime: React.FC<Props> = ({
         onChange={handleTimeChange}
         pattern="[0-9]{2}:[0-9]{2}(:[0-9]{2})?"
         required={!!datePart}
+        step="1"
       />
     </InputGroup>
   );
