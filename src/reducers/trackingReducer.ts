@@ -124,12 +124,14 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       action.payload.method === 'tracking.subscribe' &&
       action.payload.type === 'result'
     ) {
+      const tid = action.payload.params.token || action.payload.params.deviceId;
+
       return {
         ...state,
         tracks: [
-          ...state.tracks,
+          ...state.tracks.filter(({ id }) => id !== tid),
           {
-            id: action.payload.params.token || action.payload.params.deviceId,
+            id: tid,
             trackPoints: action.payload.result.map(tp => ({
               ...tp,
               ts: new Date(tp.ts),
