@@ -51,7 +51,7 @@ export const trackingMiddleware: Middleware<{}, RootState, Dispatch> = ({
   const { state, timestamp } = getState().websocket;
 
   if (prevState === state && prevTrackedDevices === trackedDevices) {
-    return;
+    return result;
   }
 
   if (trackedDevices.length === 0 && reopenTs) {

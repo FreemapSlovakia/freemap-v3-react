@@ -117,7 +117,7 @@ export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
 
   if (
     ws &&
-    user !== getState().auth.user &&
+    user?.id !== getState().auth.user?.id &&
     ws.readyState !== WebSocket.CLOSED
   ) {
     ws.close();

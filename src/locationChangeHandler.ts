@@ -495,7 +495,7 @@ export const handleLocationChange = (
 function trackedDevicesEquals(td1: TrackedDevice, td2: TrackedDevice): boolean {
   return (
     td1.id === td2.id &&
-    td1.fromTime === td2.fromTime &&
+    td1.fromTime?.getTime() === td2.fromTime?.getTime() &&
     td1.maxAge === td2.maxAge &&
     td1.maxCount === td2.maxCount &&
     td1.label === td2.label
