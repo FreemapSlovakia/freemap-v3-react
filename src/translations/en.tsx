@@ -1146,6 +1146,7 @@ export default {
             give them watch token (you can create it through{' '}
             <FontAwesomeIcon icon="key" /> icon).
           </p>
+          <hr />
           <p>
             Enter following URL to your tracker (eg.{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
@@ -1200,6 +1201,16 @@ export default {
               <code>message</code> - message (note)
             </li>
           </ul>
+          <hr />
+          <p>
+            In the case of tracker TK102B, configure it's address to{' '}
+            <code>
+              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
+                /:\d+$/,
+                ':3030',
+              )}
+            </code>
+          </p>
         </>
       ),
     },
@@ -1208,7 +1219,8 @@ export default {
       name: 'Name',
       maxAge: 'Max Age',
       maxCount: 'Max Count',
-      regenerateToken: 'Regenerate track token',
+      regenerateToken: 'Regenerate',
+      generatedToken: 'will be generated on save',
     },
     visual: {
       line: 'Line',

@@ -1153,6 +1153,7 @@ export default {
             nekik egy figyelési kódot (amelyet a <FontAwesomeIcon icon="key" />{' '}
             ikonnal hozhat létre).
           </p>
+          <hr />
           <p>
             Adja meg az alábbi webcímet a nyomon követő alkalmazásában (pl.{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
@@ -1209,6 +1210,16 @@ export default {
               <code>message</code> - üzenet (megjegyzés)
             </li>
           </ul>
+          <hr />
+          <p>
+            In the case of tracker TK102B, configure it's address to{' '}
+            <code>
+              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
+                /:\d+$/,
+                ':3030',
+              )}
+            </code>
+          </p>
         </>
       ),
     },
@@ -1217,7 +1228,8 @@ export default {
       name: 'Név',
       maxAge: 'Legmagasabb kor',
       maxCount: 'Legmagasabb szám',
-      regenerateToken: 'Követési kód újragenerálása',
+      regenerateToken: 'Regenerate', // TODO translate
+      generatedToken: 'will be generated on save', // TODO translate
     },
     visual: {
       line: 'Vonal',

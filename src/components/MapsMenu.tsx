@@ -39,13 +39,12 @@ const MapsMenuInt: React.FC<Props> = ({
       id="maps-dropdown"
       title={maps.find(map => map.id === id)?.name ?? t('maps.noMap')}
       disabled={!authenticated}
+      onSelect={onSelect}
     >
-      <MenuItem eventKey={undefined} onSelect={onSelect}>
-        {t('maps.noMap')}
-      </MenuItem>
+      <MenuItem eventKey={undefined}>{t('maps.noMap')}</MenuItem>
 
       {maps.map(map => (
-        <MenuItem key={map.id} eventKey={map.id} onSelect={onSelect}>
+        <MenuItem key={map.id} eventKey={map.id}>
           {map.name}
         </MenuItem>
       ))}

@@ -1144,6 +1144,7 @@ export default {
             <FontAwesomeIcon icon="key" />
             ).
           </p>
+          <hr />
           <p>
             Na svém zařízení navštivte toto URL (podporuje např.{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
@@ -1199,6 +1200,16 @@ export default {
               <code>message</code> - zpráva (poznámka)
             </li>
           </ul>
+          <hr />
+          <p>
+            V případě trackeru TK102B, nakonfigurujte jej na adresu{' '}
+            <code>
+              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
+                /:\d+$/,
+                ':3030',
+              )}
+            </code>
+          </p>
         </>
       ),
     },
@@ -1207,7 +1218,8 @@ export default {
       name: 'Název',
       maxAge: 'Maximální doba',
       maxCount: 'Maximální počet',
-      regenerateToken: 'Obnovit sledovací token',
+      regenerateToken: 'Obnovit',
+      generatedToken: 'bude vygenerován po uložení',
     },
     visual: {
       line: 'Křivka',

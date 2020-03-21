@@ -1156,6 +1156,7 @@ export default {
             pozíciu, ak k nim vytvoríte sledovacie tokeny, pomocou tlačidla{' '}
             <FontAwesomeIcon icon="key" />.
           </p>
+          <hr />
           <p>
             Do vášho trackera (napríklad{' '}
             <a href="https://docs.locusmap.eu/doku.php?id=manual:user_guide:functions:live_tracking">
@@ -1212,6 +1213,16 @@ export default {
               <code>message</code> - správa (poznámka)
             </li>
           </ul>
+          <hr />
+          <p>
+            V prípade trackera TK102B, nakonfigurujte ho na adresu{' '}
+            <code>
+              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
+                /:\d+$/,
+                ':3030',
+              )}
+            </code>
+          </p>
         </>
       ),
     },
@@ -1220,7 +1231,8 @@ export default {
       name: 'Názov',
       maxAge: 'Najstaršia pozícia',
       maxCount: 'Maximálny počet pozícií',
-      regenerateToken: 'Vygenerovať nový token',
+      regenerateToken: 'Obnoviť',
+      generatedToken: 'bude vygenerovaný po uložení',
     },
     visual: {
       line: 'Spojnica',
