@@ -60,7 +60,7 @@ export const deleteAccessTokenProcessor: Processor<typeof trackingActions.delete
   handle: async ({ dispatch, getState, action }) => {
     await httpRequest({
       getState,
-      method: 'GET',
+      method: 'DELETE',
       url: `/tracking/access-tokens/${encodeURIComponent(action.payload)}`,
     });
 
