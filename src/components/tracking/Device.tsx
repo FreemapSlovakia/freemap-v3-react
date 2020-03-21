@@ -13,6 +13,8 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { getType } from 'typesafe-actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -64,29 +66,38 @@ const DeviceInt: React.FC<Props> = ({
     <tr>
       <td>{device.name}</td>
       <td>
-        <OverlayTrigger
-          trigger={['hover', 'focus']}
-          placement="right"
-          overlay={
-            <Tooltip id={device.token}>
-              <span style={{ overflowWrap: 'break-word' }}>
-                {process.env.API_URL}/tracking/track/{device.token}
-              </span>
-            </Tooltip>
-          }
-        >
-          <span>
-            {device.token}{' '}
-            <Button
-              onClick={handleCopyClick}
-              bsSize="xs"
-              title={t('external.copy')}
-              type="button"
+        {device.token}
+        {!device.token.includes(':') && (
+          <>
+            {' '}
+            <OverlayTrigger
+              trigger={['hover', 'focus']}
+              placement="right"
+              overlay={
+                <Tooltip id={device.token}>
+                  <span style={{ overflowWrap: 'break-word' }}>
+                    {process.env.API_URL}/tracking/track/{device.token}
+                  </span>
+                </Tooltip>
+              }
             >
-              <FontAwesomeIcon icon="clipboard" />
-            </Button>
-          </span>
-        </OverlayTrigger>
+              <span>
+                {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? (
+                  <Button
+                    onClick={handleCopyClick}
+                    bsSize="xs"
+                    title={t('external.copy')}
+                    type="button"
+                  >
+                    <FontAwesomeIcon icon="clipboard" />
+                  </Button>
+                ) : (
+                  <FontAwesomeIcon icon="mobile" />
+                )}
+              </span>
+            </OverlayTrigger>
+          </>
+        )}
       </td>
       <td>{device.maxCount}</td>
       <td>
@@ -144,7 +155,27 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(trackingActions.modifyDevice(id));
   },
   onDelete(id: number) {
-    dispatch(trackingActions.deleteDevice(id));
+    dispatch(
+      toastsAdd({
+        collapseKey: 'tracking.deleteDevice',
+        messageKey: 'tracking.devices.delete',
+        style: 'warning',
+        cancelType: [
+          getType(trackingActions.modifyDevice),
+          getType(trackingActions.modifyTrackedDevice),
+          getType(trackingActions.showAccessTokens),
+          getType(setActiveModal),
+        ],
+        actions: [
+          {
+            nameKey: 'general.yes',
+            action: trackingActions.deleteDevice(id),
+            style: 'danger',
+          },
+          { nameKey: 'general.no' },
+        ],
+      }),
+    );
   },
   onShowAccessTokens(id: number | null | undefined) {
     dispatch(trackingActions.showAccessTokens(id));

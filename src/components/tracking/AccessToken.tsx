@@ -13,6 +13,8 @@ import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Tooltip } from 'react-bootstrap';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { getType } from 'typesafe-actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -129,7 +131,26 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(trackingActions.modifyAccessToken(id));
   },
   onDelete(id: number) {
-    dispatch(trackingActions.deleteAccessToken(id));
+    dispatch(
+      toastsAdd({
+        collapseKey: 'tracking.deleteAccessToken',
+        messageKey: 'tracking.accessToken.delete',
+        style: 'warning',
+        cancelType: [
+          getType(trackingActions.modifyAccessToken),
+          getType(trackingActions.showAccessTokens),
+          getType(setActiveModal),
+        ],
+        actions: [
+          {
+            nameKey: 'general.yes',
+            action: trackingActions.deleteAccessToken(id),
+            style: 'danger',
+          },
+          { nameKey: 'general.no' },
+        ],
+      }),
+    );
   },
   onView(id: string) {
     dispatch(setActiveModal('tracking-watched'));

@@ -1100,6 +1100,7 @@ export default {
       timeTo: 'Do',
       listingLabel: 'Popisok v zozname',
       note: 'Poznámka',
+      delete: 'Zmazať token sledovania?',
     },
     accessTokens: {
       modalTitle: ({ deviceName }) => (
@@ -1142,6 +1143,7 @@ export default {
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
       watch: 'Sledovať',
+      delete: 'Zmazať zariadenie?',
       modifyTitle: ({ name }: { name: string }) => (
         <>
           Upraviť zariadenie <i>{name}</i>

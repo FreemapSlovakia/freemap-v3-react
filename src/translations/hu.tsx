@@ -1096,6 +1096,7 @@ export default {
       timeTo: 'Eddig',
       listingLabel: 'Felsorolási felirat',
       note: 'Megjegyzés',
+      delete: 'Delete access token?',
     },
     accessTokens: {
       modalTitle: ({ deviceName }) => (
@@ -1139,6 +1140,7 @@ export default {
       watchTokens: 'Kódok megtekintése',
       watchPrivately: 'Privát figyelés',
       watch: 'Figyelés',
+      delete: 'Delete device?', // TODO translate
       modifyTitle: ({ name }) => (
         <>
           A(z) <i>{name}</i> készülék követésének módosítása

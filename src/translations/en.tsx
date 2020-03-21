@@ -1090,6 +1090,7 @@ export default {
       timeTo: 'To',
       listingLabel: 'Listing Label',
       note: 'Note',
+      delete: 'Delete access token?',
     },
     accessTokens: {
       modalTitle: ({ deviceName }) => (
@@ -1132,6 +1133,7 @@ export default {
       watchTokens: 'Watch tokens',
       watchPrivately: 'Watch privately',
       watch: 'Watch',
+      delete: 'Delete device?',
       modifyTitle: ({ name }) => (
         <>
           Modify Tracking Device <i>{name}</i>
