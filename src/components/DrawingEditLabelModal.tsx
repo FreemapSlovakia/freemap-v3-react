@@ -82,11 +82,11 @@ const mapStateToProps = (state: RootState) => {
   return {
     label:
       selection?.type === 'draw-points' && selection.id !== undefined
-        ? state.drawingPoints.points[selection.id].label
+        ? state.drawingPoints.points[selection.id]?.label ?? '???'
         : (selection?.type === 'draw-lines' ||
             selection?.type === 'draw-polygons') &&
           selection.id !== undefined
-        ? state.drawingLines.lines[selection.id].label
+        ? state.drawingLines.lines[selection.id]?.label ?? '???'
         : '???',
   };
 };
