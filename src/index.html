@@ -59,10 +59,11 @@
         TrackJS.install({
           token: '47a813b67baf4f97bace2d8359f76833',
           onError: function(payload) {
+            // prettier-ignore
             return (
               window.self !== window.top &&
               !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker/.test(
-                payload.message,
+                payload.message
               )
             );
           },
