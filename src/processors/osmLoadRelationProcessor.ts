@@ -1,7 +1,6 @@
 import { lineString, point, Feature, featureCollection } from '@turf/helpers';
 
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { toNodes, toWays, ensureElement, ensureNotNull } from 'fm3/osmUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -18,46 +17,42 @@ export const osmLoadRelationProcessor: Processor = {
         getState().trackViewer.osmRelationId
       }/full`,
       expectedStatus: 200,
-      responseType: 'document',
     });
 
-    if (!(data instanceof Document)) {
-      throw new Error('not a document');
+    const nodes: any = {};
+    const ways: any = {};
+
+    for (const item of data.elements) {
+      if (item.type === 'node') {
+        nodes[item.id] = [item.lon, item.lat];
+      } else if (item.type === 'way') {
+        ways[item.id] = item.nodes.map(ref => nodes[ref]);
+      }
     }
 
-    const nodes = toNodes(data);
-
-    const ways = toWays(data, nodes);
+    const relations = data.elements.filter(el => el.type === 'relation');
 
     const features: Feature[] = [];
 
-    const relationRes = data.evaluate(
-      '/osm/relation/member',
-      data,
-      null,
-      XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
-      null,
-    );
+    for (const relation of relations) {
+      for (const member of relation.members) {
+        const { ref, type } = member;
 
-    let x: Element | null;
-    while ((x = ensureElement(relationRes.iterateNext()))) {
-      const type = ensureNotNull(x.getAttribute('type'));
-      const ref = ensureNotNull(x.getAttribute('ref'));
-
-      switch (type) {
-        case 'node':
-          if (nodes[ref]) {
-            features.push(point(nodes[ref]));
-          }
-          break;
-        case 'way':
-          if (ways[ref]) {
-            features.push(lineString(ways[ref]));
-          }
-          break;
-        case 'relation':
-        default:
-          break;
+        switch (type) {
+          case 'node':
+            if (nodes[ref]) {
+              features.push(point(nodes[ref]));
+            }
+            break;
+          case 'way':
+            if (ways[ref]) {
+              features.push(lineString(ways[ref]));
+            }
+            break;
+          case 'relation':
+          default:
+            break;
+        }
       }
     }
 

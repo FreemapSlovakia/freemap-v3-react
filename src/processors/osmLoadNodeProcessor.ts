@@ -1,7 +1,6 @@
 import { point } from '@turf/helpers';
 
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { toNodes } from 'fm3/osmUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadNode } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -16,15 +15,12 @@ export const osmLoadNodeProcessor: Processor = {
       url: `//api.openstreetmap.org/api/0.6/node/${
         getState().trackViewer.osmNodeId
       }`,
-      responseType: 'document',
       expectedStatus: 200,
     });
 
-    if (!(data instanceof Document)) {
-      throw new Error('not a document');
-    }
-
-    const nodes = toNodes(data);
+    const nodes = data.elements
+      .filter(el => el.type === 'node')
+      .map(node => [node.lon, node.lat]);
 
     dispatch(
       trackViewerSetData({

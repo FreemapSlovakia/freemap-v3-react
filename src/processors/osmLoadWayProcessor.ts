@@ -17,14 +17,18 @@ export const osmLoadWayProcessor: Processor = {
         getState().trackViewer.osmWayId
       }/full`,
       expectedStatus: 200,
-      responseType: 'document',
     });
 
-    if (!(data instanceof Document)) {
-      throw new Error('not a document');
-    }
+    const nodes: any = {};
+    const ways: any = {};
 
-    const ways = toWays(data, toNodes(data));
+    for (const item of data.elements) {
+      if (item.type === 'node') {
+        nodes[item.id] = [item.lon, item.lat];
+      } else if (item.type === 'way') {
+        ways[item.id] = item.nodes.map(ref => nodes[ref]);
+      }
+    }
 
     dispatch(
       trackViewerSetData({
