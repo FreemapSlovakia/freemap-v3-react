@@ -1207,8 +1207,9 @@ export default {
             <code>
               {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
                 /:\d+$/,
-                ':3030',
+                '',
               )}
+              :3030
             </code>
           </p>
         </>
