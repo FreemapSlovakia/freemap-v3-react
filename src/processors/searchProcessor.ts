@@ -71,10 +71,10 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
     const results = data
       .filter(
-        item =>
+        (item) =>
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,
       )
-      .map(item => {
+      .map((item) => {
         return {
           id: item.osm_id,
           label: item.display_name,

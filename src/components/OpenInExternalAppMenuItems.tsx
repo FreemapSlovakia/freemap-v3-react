@@ -185,7 +185,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
               text: pointDescription,
               url,
             })
-            .catch(error => {
+            .catch((error) => {
               console.error(error);
             }); // TODO toast
           break;
@@ -217,7 +217,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
               });
             };
 
-            share().catch(err => {
+            share().catch((err) => {
               console.error(err); // TODO toast
             });
           }

@@ -109,8 +109,8 @@ export const handleLocationChange = (
       typeof query.points === 'string'
         ? query.points
             .split(',')
-            .map(point =>
-              point ? point.split('/').map(coord => parseFloat(coord)) : null,
+            .map((point) =>
+              point ? point.split('/').map((coord) => parseFloat(coord)) : null,
             )
         : [];
 
@@ -140,7 +140,7 @@ export const handleLocationChange = (
       } = getState().routePlanner;
 
       const latLons = points
-        .map(point => (point ? { lat: point[0], lon: point[1] } : null))
+        .map((point) => (point ? { lat: point[0], lon: point[1] } : null))
         .filter((x): x is LatLon => !!x);
 
       const nextStart = latLons[0];
@@ -269,12 +269,12 @@ export const handleLocationChange = (
 
       const points = line
         .split(',')
-        .map(point => point.split('/').map(coord => parseFloat(coord)))
+        .map((point) => point.split('/').map((coord) => parseFloat(coord)))
         .map((pair, id) => ({ lat: pair[0], lon: pair[1], id }));
 
       if (
         points.every(
-          point => !Number.isNaN(point.lat) && !Number.isNaN(point.lon),
+          (point) => !Number.isNaN(point.lat) && !Number.isNaN(point.lon),
         )
       ) {
         lines.push({
@@ -291,9 +291,7 @@ export const handleLocationChange = (
 
   if (
     lines.map(serializePoints).join(';') !==
-    getState()
-      .drawingLines.lines.map(serializePoints)
-      .join(';')
+    getState().drawingLines.lines.map(serializePoints).join(';')
   ) {
     dispatch(drawingLineSetLines(lines));
   }
@@ -613,7 +611,7 @@ function handleInfoPoint(
   query: queryString.ParsedQuery<string>,
 ): void {
   const drawingPoint =
-      query['point'] || query['info-point'] /* compatibility */;
+    query['point'] || query['info-point']; /* compatibility */
 
   const emp = query['elevation-measurement-point']; // for compatibility
 
@@ -624,9 +622,9 @@ function handleInfoPoint(
     : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
-    .map(ip => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility
-    .filter(ipMatch => ipMatch)
-    .map(ipMatch => ({
+    .map((ip) => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility
+    .filter((ipMatch) => ipMatch)
+    .map((ipMatch) => ({
       // see https://github.com/microsoft/TypeScript/issues/29642
       /* eslint-disable @typescript-eslint/no-non-null-assertion */
       lat: parseFloat(ipMatch![1]),
@@ -663,7 +661,7 @@ function handleInfoPoint(
 
 function serializePoints(line: Line): string {
   return `${line.type}:${line.points
-    .map(point => serializePoint(point))
+    .map((point) => serializePoint(point))
     .join(',')}`;
 }
 

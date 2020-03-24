@@ -15,7 +15,8 @@
   padding-right: 12px;
 
   a {
-    &, &:hover {
+    &,
+    &:hover {
       text-decoration: underline;
     }
   }

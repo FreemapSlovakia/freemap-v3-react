@@ -27,12 +27,12 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
-  .handleAction(selectFeature, state => ({
+  .handleAction(selectFeature, (state) => ({
     ...state,
     lines: state.lines.filter(linefilter),
   }))
   .handleAction(drawingLineAddPoint, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       let line: Line;
 
       if (action.payload.index == null) {
@@ -58,17 +58,19 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   .handleAction(
     drawingLineUpdatePoint,
     (state, { payload: { index, point } }) =>
-      produce(state, draft => {
-        const p = draft.lines[index].points.find(pt => pt.id === point.id);
+      produce(state, (draft) => {
+        const p = draft.lines[index].points.find((pt) => pt.id === point.id);
         if (p) {
           Object.assign(p, point);
         }
       }),
   )
   .handleAction(drawingLineRemovePoint, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       const line = draft.lines[action.payload.index];
-      line.points = line.points.filter(point => point.id !== action.payload.id);
+      line.points = line.points.filter(
+        (point) => point.id !== action.payload.id,
+      );
     }),
   )
   .handleAction(drawingLineSetLines, (state, action) => ({
@@ -76,7 +78,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     lines: action.payload.filter(linefilter),
   }))
   .handleAction(deleteFeature, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       if (
         (action.payload.type === 'draw-lines' ||
           action.payload.type === 'draw-polygons') &&
@@ -88,7 +90,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   )
   .handleAction(mapsDataLoaded, (_state, action) => {
     return {
-      lines: (action.payload.lines ?? initialState.lines).map(line => ({
+      lines: (action.payload.lines ?? initialState.lines).map((line) => ({
         ...line,
         type:
           // compatibility

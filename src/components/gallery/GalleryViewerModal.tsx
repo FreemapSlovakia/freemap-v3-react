@@ -99,7 +99,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
   };
 
   handleFullscreenChange = () => {
-    this.setState(state => ({
+    this.setState((state) => ({
       isFullscreen: document.fullscreenElement === this.fullscreenElement,
       imgKey: state.imgKey + 1,
     }));
@@ -186,7 +186,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
     } = this.props;
 
     const index = imageIds
-      ? imageIds.findIndex(id => id === activeImageId)
+      ? imageIds.findIndex((id) => id === activeImageId)
       : -1;
 
     const {
@@ -349,7 +349,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                 {description && ` ｜ ${description}`}
                 {tags && tags.length > 0 && ' ｜ '}
                 {tags &&
-                  tags.map(tag => (
+                  tags.map((tag) => (
                     <React.Fragment key={tag}>
                       {' '}
                       <Label>{tag}</Label>
@@ -378,7 +378,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                     <hr />
                     <h5>{t('gallery.viewer.comments')}</h5>
                     {comments &&
-                      comments.map(c => (
+                      comments.map((c) => (
                         <p key={c.id}>
                           {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
                           {c.comment}

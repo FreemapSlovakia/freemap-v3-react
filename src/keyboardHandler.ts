@@ -134,14 +134,14 @@ export function attachKeyboardHandler(store: MyStore) {
         state.gallery.pickingPositionForId) &&
       (!embed || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
-      const baseLayer = baseLayers.find(l => l.key === event.key);
+      const baseLayer = baseLayers.find((l) => l.key === event.key);
       if (baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)) {
         store.dispatch(mapRefocus({ mapType: baseLayer.type }));
         event.preventDefault();
         return;
       }
 
-      const overlayLayer = overlayLayers.find(l => l.key === event.key);
+      const overlayLayer = overlayLayers.find((l) => l.key === event.key);
       if (
         overlayLayer &&
         (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
@@ -203,7 +203,9 @@ export function attachKeyboardHandler(store: MyStore) {
           return;
         }
 
-        const toolDefinition = toolDefinitions.find(td => td.kbd === event.key);
+        const toolDefinition = toolDefinitions.find(
+          (td) => td.kbd === event.key,
+        );
 
         if (toolDefinition?.kbd) {
           store.dispatch(selectFeature({ type: toolDefinition.tool }));

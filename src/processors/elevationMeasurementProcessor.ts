@@ -30,7 +30,7 @@ export const elevationMeasurementProcessor: Processor = {
           messageParams: {
             area: area(
               polygon(
-                [[...points, points[0]].map(point => [point.lon, point.lat])],
+                [[...points, points[0]].map((point) => [point.lon, point.lat])],
                 {},
               ),
             ),
@@ -48,7 +48,7 @@ export const elevationMeasurementProcessor: Processor = {
           messageKey: 'measurement.distanceInfo',
           messageParams: {
             length: length(
-              lineString(points.map(point => [point.lon, point.lat])),
+              lineString(points.map((point) => [point.lon, point.lat])),
             ),
           },
           timeout: 5000,

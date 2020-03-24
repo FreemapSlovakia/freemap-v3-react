@@ -205,7 +205,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
-          key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
+          key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}
         >
           {line.label && (
             <Tooltip className="compact" permanent>
@@ -232,7 +232,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
               direction="center"
               permanent
               interactive
-              key={ps.map(p => `${p.lat},${p.lon}`).join(',')}
+              key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}
             >
               <span>{line.label}</span>
             </Tooltip>
@@ -275,7 +275,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
               // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
               icon={circularIcon}
               opacity={1}
-              ondrag={e => handleMeasureMarkerDrag(e as any, p.id)}
+              ondrag={(e) => handleMeasureMarkerDrag(e as any, p.id)}
               onclick={() => handleMarkerClick(p.id)}
               ondragstart={handleDragStart}
               ondragend={handleDragEnd}

@@ -261,7 +261,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
         title={t(`routePlanner.mode.${mode}`)}
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
-        {(['route', 'trip', 'roundtrip'] as const).map(mode1 => (
+        {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
           <MenuItem
             eventKey={mode1}
             key={mode1}

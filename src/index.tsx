@@ -57,7 +57,7 @@ loadAppState();
 store.dispatch(authInit());
 
 const { location } = history;
-history.listen(location => {
+history.listen((location) => {
   handleLocationChange(store, location);
 });
 handleLocationChange(store, location);

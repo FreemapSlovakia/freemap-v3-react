@@ -78,11 +78,11 @@ const LayersInt: React.FC<Props> = ({
         ...baseLayers
           .filter(({ type }) => type === mapType)
           .filter(({ adminOnly }) => isAdmin || !adminOnly)
-          .map(item => getTileLayer(item)),
+          .map((item) => getTileLayer(item)),
         ...overlayLayers
           .filter(({ type }) => overlays.includes(type))
           .filter(({ adminOnly }) => isAdmin || !adminOnly)
-          .map(item => getTileLayer(item)),
+          .map((item) => getTileLayer(item)),
       ]}
     </>
   );

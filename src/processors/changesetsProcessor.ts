@@ -23,8 +23,9 @@ export const changesetsProcessor: Processor = {
 
     const t = new Date();
     t.setDate(t.getDate() - state.changesets.days);
-    const fromTime = `${t.getFullYear()}/${t.getMonth() +
-      1}/${t.getDate()}T00:00:00+00:00`;
+    const fromTime = `${t.getFullYear()}/${
+      t.getMonth() + 1
+    }/${t.getDate()}T00:00:00+00:00`;
     const toTime = null;
     const bbox = le.getBounds().toBBoxString();
 
@@ -53,7 +54,7 @@ export const changesetsProcessor: Processor = {
       const rawChangesets = xml.getElementsByTagName('changeset');
       const arrayOfrawChangesets = Array.from(rawChangesets);
       const changesetsFromThisRequest = arrayOfrawChangesets
-        .map(rawChangeset => {
+        .map((rawChangeset) => {
           const minLat = parseFloat(rawChangeset.getAttribute('min_lat') ?? '');
           const maxLat = parseFloat(rawChangeset.getAttribute('max_lat') ?? '');
           const minLon = parseFloat(rawChangeset.getAttribute('min_lon') ?? '');
@@ -61,7 +62,7 @@ export const changesetsProcessor: Processor = {
 
           const descriptionTag = Array.from(
             rawChangeset.getElementsByTagName('tag'),
-          ).find(tag => tag.getAttribute('k') === 'comment');
+          ).find((tag) => tag.getAttribute('k') === 'comment');
 
           const changeset = {
             userName: rawChangeset.getAttribute('user'),
@@ -75,7 +76,7 @@ export const changesetsProcessor: Processor = {
           return changeset;
         })
         .filter(
-          changeset =>
+          (changeset) =>
             changeset.centerLat > 47.63617 &&
             changeset.centerLat < 49.66746 &&
             changeset.centerLon > 16.69965 &&
@@ -83,9 +84,9 @@ export const changesetsProcessor: Processor = {
         );
 
       const allChangesetsSoFar = [...changesetsFromPreviousRequest];
-      const allChangesetSoFarIDs = allChangesetsSoFar.map(ch => ch.id);
+      const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
 
-      changesetsFromThisRequest.forEach(ch => {
+      changesetsFromThisRequest.forEach((ch) => {
         if (allChangesetSoFarIDs.indexOf(ch.id) < 0) {
           // occasionally the changeset may already be here from previous ajax request
           allChangesetsSoFar.push(ch);

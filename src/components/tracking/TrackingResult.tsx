@@ -56,7 +56,7 @@ class TrackingResultInt extends React.Component<Props, State> {
       maximumFractionDigits: 1,
     });
 
-    return tracks.map(track => {
+    return tracks.map((track) => {
       const color = track.color || '#7239a8';
       const width = track.width || 4;
 
@@ -174,9 +174,9 @@ function toLatLon(x: TrackPoint) {
 }
 
 const mapStateToProps = (state: RootState) => {
-  const tdMap = new Map(state.tracking.trackedDevices.map(td => [td.id, td]));
+  const tdMap = new Map(state.tracking.trackedDevices.map((td) => [td.id, td]));
   return {
-    tracks: state.tracking.tracks.map(track => ({
+    tracks: state.tracking.tracks.map((track) => ({
       ...track,
       ...(tdMap.get(track.id) || {}),
     })),

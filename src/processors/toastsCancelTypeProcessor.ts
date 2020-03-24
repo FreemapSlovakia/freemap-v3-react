@@ -25,7 +25,7 @@ function matches(
     return value === test;
   }
   if (Array.isArray(test)) {
-    return test.some(p => matches(value, p));
+    return test.some((p) => matches(value, p));
   }
   if (test instanceof RegExp) {
     return test.test(value);

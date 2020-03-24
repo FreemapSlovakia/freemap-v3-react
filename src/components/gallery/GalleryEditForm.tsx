@@ -81,10 +81,8 @@ export const GalleryEditForm: React.FC<Props> = ({
 
   const handleTagAdded = useCallback(
     ({ name }: Tag) => {
-      const fixed = name
-        .toLowerCase()
-        .trim()
-        .replace(/ {2,}/g, ' ');
+      const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
+
       if (!model.tags.includes(fixed)) {
         changeModel('tags', [...model.tags, fixed]);
       }
@@ -103,7 +101,7 @@ export const GalleryEditForm: React.FC<Props> = ({
 
   return (
     <div>
-      {errors?.map(error => (
+      {errors?.map((error) => (
         <Alert bsStyle="danger" key={error}>
           {error.startsWith('~') ? error.slice(1) : t(error)}
         </Alert>
@@ -156,7 +154,7 @@ export const GalleryEditForm: React.FC<Props> = ({
       <FormGroup>
         <ReactTags
           placeholder={t('gallery.editForm.tags')}
-          tags={model.tags.map(tag => ({ id: tag, name: tag }))}
+          tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}
           handleAddition={handleTagAdded}
           handleDelete={handleTagDeleted}

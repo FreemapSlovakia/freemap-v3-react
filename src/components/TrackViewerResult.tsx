@@ -32,28 +32,28 @@ class TrackViewerResultInt extends React.Component<Props, State> {
 
   getFeatures: GetFeatures = (type: 'LineString' | 'Point') =>
     turfFlatten(this.props.trackGeojson as any).features.filter(
-      f => f.geometry?.type === type,
+      (f) => f.geometry?.type === type,
     ) as any;
 
   getColorLineDataForElevation = () =>
-    this.getFeatures('LineString').map(feature => {
+    this.getFeatures('LineString').map((feature) => {
       const smoothed = smoothElevations(
         getCoords(feature),
         this.props.eleSmoothingFactor,
       );
 
-      const eles = smoothed.map(coord => coord[2]);
+      const eles = smoothed.map((coord) => coord[2]);
       const maxEle = Math.max(...eles);
       const minEle = Math.min(...eles);
 
-      return smoothed.map(coord => {
+      return smoothed.map((coord) => {
         const color = (coord[2] - minEle) / (maxEle - minEle);
         return [coord[1], coord[0], color || 0] as const;
       });
     });
 
   getColorLineDataForSteepness = () =>
-    this.getFeatures('LineString').map(feature => {
+    this.getFeatures('LineString').map((feature) => {
       const smoothed = smoothElevations(
         getCoords(feature),
         this.props.eleSmoothingFactor,
@@ -61,7 +61,7 @@ class TrackViewerResultInt extends React.Component<Props, State> {
 
       let prevCoord = smoothed[0];
 
-      return smoothed.map(coord => {
+      return smoothed.map((coord) => {
         const [lon, lat, ele] = coord;
         const d = distance(lat, lon, prevCoord[1], prevCoord[0]);
         let angle = 0;
@@ -88,11 +88,11 @@ class TrackViewerResultInt extends React.Component<Props, State> {
     }
 
     if (feature.geometry.type === 'LineString') {
-      layer.on('click', e => {
+      layer.on('click', (e) => {
         this.showInfoPoint(e, feature);
       });
 
-      layer.on('mouseover', e => {
+      layer.on('mouseover', (e) => {
         this.showInfoPoint(e, feature);
       });
 
@@ -150,7 +150,7 @@ class TrackViewerResultInt extends React.Component<Props, State> {
       (JSON.stringify(trackGeojson) + displayingElevationChart).length
     }`; // otherwise GeoJSON will still display the first data
 
-    const xxx = this.getFeatures('LineString').map(feature => ({
+    const xxx = this.getFeatures('LineString').map((feature) => ({
       name: feature.properties && feature.properties.name,
       lineData: feature.geometry.coordinates.map(([lng, lat]) => ({
         lat,

@@ -46,37 +46,37 @@ export class ExportPdfModalInt extends React.Component<Props, State> {
   };
 
   handleContoursChange = () => {
-    this.setState(s => ({
+    this.setState((s) => ({
       contours: !s.contours,
     }));
   };
 
   handleShadedReliefChange = () => {
-    this.setState(s => ({
+    this.setState((s) => ({
       shadedRelief: !s.shadedRelief,
     }));
   };
 
   handleHikingTrailsChange = () => {
-    this.setState(s => ({
+    this.setState((s) => ({
       hikingTrails: !s.hikingTrails,
     }));
   };
 
   handleBicycleTrailsChange = () => {
-    this.setState(s => ({
+    this.setState((s) => ({
       bicycleTrails: !s.bicycleTrails,
     }));
   };
 
   handleSkiTrailsChange = () => {
-    this.setState(s => ({
+    this.setState((s) => ({
       skiTrails: !s.skiTrails,
     }));
   };
 
   handleHorseTrailsChange = () => {
-    this.setState(s => ({
+    this.setState((s) => ({
       horseTrails: !s.horseTrails,
     }));
   };

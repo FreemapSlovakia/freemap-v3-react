@@ -59,7 +59,7 @@ const initialState: MainState = {
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(initialState)
-  .handleAction(clearMap, state => {
+  .handleAction(clearMap, (state) => {
     return {
       ...state,
       selection: state.selection ? { type: state.selection.type } : null,
@@ -87,7 +87,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
           : state.eleSmoothingFactor,
     };
   })
-  .handleAction(authLogout, state => ({ ...state, homeLocation: null }))
+  .handleAction(authLogout, (state) => ({ ...state, homeLocation: null }))
   .handleAction(setActiveModal, (state, action) => ({
     ...state,
     activeModal: action.payload,
@@ -102,7 +102,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   }))
   .handleAction(stopProgress, (state, action) => ({
     ...state,
-    progress: state.progress.filter(pid => pid !== action.payload),
+    progress: state.progress.filter((pid) => pid !== action.payload),
   }))
   .handleAction(setLocation, (state, action) => ({
     ...state,
@@ -112,7 +112,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
       accuracy: action.payload.accuracy,
     },
   }))
-  .handleAction(toggleLocate, state => ({
+  .handleAction(toggleLocate, (state) => ({
     ...state,
     locate: !state.locate,
     location: null,
@@ -125,11 +125,11 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     selectingHomeLocation: action.payload,
   }))
-  .handleAction(tipsShow, state => ({
+  .handleAction(tipsShow, (state) => ({
     ...state,
     activeModal: 'tips',
   }))
-  .handleAction(enableUpdatingUrl, state => ({
+  .handleAction(enableUpdatingUrl, (state) => ({
     ...state,
     urlUpdatingEnabled: true,
   }))
@@ -149,7 +149,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     selection: action.payload,
   }))
-  .handleAction([drawingLineSetLines, deleteFeature], state => ({
+  .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
     selection: state.selection ? { type: state.selection.type } : null,
   }));

@@ -17,11 +17,11 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
 )
   .handleAction(clearMap, () => initialState)
   .handleAction(objectsSetResult, (state, action) => {
-    const newIds = new Set(action.payload.map(obj => obj.id));
+    const newIds = new Set(action.payload.map((obj) => obj.id));
     return {
       ...state,
       objects: [
-        ...state.objects.filter(obj => !newIds.has(obj.id)),
+        ...state.objects.filter((obj) => !newIds.has(obj.id)),
         ...action.payload,
       ],
     };
@@ -31,7 +31,7 @@ export const objectsReducer = createReducer<ObjectsState, RootAction>(
       ? {
           ...state,
           objects: state.objects.filter(
-            object => object.id !== action.payload.id,
+            (object) => object.id !== action.payload.id,
           ),
         }
       : state;

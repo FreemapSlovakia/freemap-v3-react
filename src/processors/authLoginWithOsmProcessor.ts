@@ -15,8 +15,9 @@ export const authLoginWithOsmProcessor: Processor = {
     const w = window.open(
       '',
       'osm-login',
-      `width=600,height=550,left=${window.screen.width / 2 -
-        600 / 2},top=${window.screen.height / 2 - 550 / 2}`,
+      `width=600,height=550,left=${window.screen.width / 2 - 600 / 2},top=${
+        window.screen.height / 2 - 550 / 2
+      }`,
     );
 
     if (!w) {

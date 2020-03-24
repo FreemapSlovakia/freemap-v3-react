@@ -12,12 +12,12 @@ export const authLoginWithFacebookProcessor: Processor = {
   handle: async ({ dispatch, getState }) => {
     await loadFb();
 
-    let response = await new Promise<fb.StatusResponse>(resolve =>
+    let response = await new Promise<fb.StatusResponse>((resolve) =>
       FB.getLoginStatus(resolve),
     );
 
     if (response.status !== 'connected') {
-      response = await new Promise<fb.StatusResponse>(resolve => {
+      response = await new Promise<fb.StatusResponse>((resolve) => {
         FB.login(resolve, { scope: 'email' });
       });
 

@@ -47,7 +47,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
-  .handleAction(setActiveModal, state => ({
+  .handleAction(setActiveModal, (state) => ({
     ...state,
     devices: [],
     accessTokens: [],
@@ -89,7 +89,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     ...state,
     trackedDevices: [
       ...state.trackedDevices.filter(
-        d => d.id !== state.modifiedTrackedDeviceId,
+        (d) => d.id !== state.modifiedTrackedDeviceId,
       ),
       action.payload,
     ],
@@ -97,11 +97,11 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
   }))
   .handleAction(trackingActions.deleteTrackedDevice, (state, action) => ({
     ...state,
-    trackedDevices: state.trackedDevices.filter(d => d.id !== action.payload),
+    trackedDevices: state.trackedDevices.filter((d) => d.id !== action.payload),
   }))
   .handleAction(trackingActions.view, (state, action) =>
-    produce(state, draft => {
-      if (!draft.trackedDevices.find(d => d.id === action.payload)) {
+    produce(state, (draft) => {
+      if (!draft.trackedDevices.find((d) => d.id === action.payload)) {
         draft.trackedDevices.push({
           id: action.payload,
         });
@@ -132,7 +132,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
           ...state.tracks.filter(({ id }) => id !== tid),
           {
             id: tid,
-            trackPoints: action.payload.result.map(tp => ({
+            trackPoints: action.payload.result.map((tp) => ({
               ...tp,
               ts: new Date(tp.ts),
             })),
@@ -148,7 +148,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       return {
         ...state,
         tracks: state.tracks.filter(
-          track =>
+          (track) =>
             track.id !== action.payload.params.token ||
             action.payload.params.deviceId,
         ),
@@ -162,8 +162,8 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
       const { token, deviceId, ts, ...rest } = action.payload.params;
 
-      return produce(state, draft => {
-        let track = draft.tracks.find(t => t.id === token || deviceId);
+      return produce(state, (draft) => {
+        let track = draft.tracks.find((t) => t.id === token || deviceId);
 
         if (!track) {
           track = { id: token || deviceId, trackPoints: [] };
@@ -181,7 +181,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     ...state,
     trackedDevices:
       action.payload.type === 'tracking'
-        ? state.trackedDevices.filter(td => td.id !== action.payload.id)
+        ? state.trackedDevices.filter((td) => td.id !== action.payload.id)
         : state.trackedDevices,
   }))
   .handleAction(mapsDataLoaded, (state, { payload: { tracking } }) => {

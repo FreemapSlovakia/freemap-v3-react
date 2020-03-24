@@ -165,7 +165,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
       enableSearch && 'search',
       !enableMapSwitch && 'noMapSwitch',
       !enableLocateMe && 'noLocateMe',
-    ].filter(x => x);
+    ].filter((x) => x);
   };
 
   getUrl = (url: string) => {

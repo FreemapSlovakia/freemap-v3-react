@@ -5,7 +5,7 @@ import { MyStore } from './storeCreator';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {
   // OSM Login handler
-  window.addEventListener('message', e => {
+  window.addEventListener('message', (e) => {
     if (
       e.origin !== window.location.origin ||
       typeof e.data !== 'object' ||

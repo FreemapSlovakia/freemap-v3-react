@@ -13,7 +13,7 @@ let reopenTs: number | undefined;
 export const trackingMiddleware: Middleware<{}, RootState, Dispatch> = ({
   dispatch,
   getState,
-}) => next => (action: RootAction) => {
+}) => (next) => (action: RootAction) => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

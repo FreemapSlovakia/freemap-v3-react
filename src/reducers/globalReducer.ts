@@ -22,7 +22,7 @@ import turfFlatten from '@turf/flatten';
 export function globalReducer(state: RootState, action: RootAction) {
   if (isActionOf(convertToDrawing, action)) {
     if (state.main.selection?.type === 'route-planner') {
-      return produce(state, draft => {
+      return produce(state, (draft) => {
         const alt =
           draft.routePlanner.alternatives[
             draft.routePlanner.activeAlternativeIndex
@@ -70,7 +70,7 @@ export function globalReducer(state: RootState, action: RootAction) {
         Object.assign(draft.routePlanner, routePlannerCleanState);
       });
     } else if (state.main.selection?.type === 'objects') {
-      return produce(state, draft => {
+      return produce(state, (draft) => {
         for (const object of draft.objects.objects) {
           draft.drawingPoints.points.push({
             lat: object.lat,
@@ -84,7 +84,7 @@ export function globalReducer(state: RootState, action: RootAction) {
         draft.objects.objects = [];
       });
     } else if (state.main.selection?.type === 'track-viewer') {
-      return produce(state, draft => {
+      return produce(state, (draft) => {
         if (!draft.trackViewer.trackGeojson) {
           return;
         }
@@ -130,7 +130,7 @@ export function globalReducer(state: RootState, action: RootAction) {
       });
     }
   } else if (isActionOf(drawingLineAddPoint, action)) {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       const index = action.payload.index ?? draft.drawingLines.lines.length - 1;
 
       draft.main.selection = {
@@ -144,7 +144,7 @@ export function globalReducer(state: RootState, action: RootAction) {
   } else if (
     isActionOf([drawingLineUpdatePoint, drawingLineRemovePoint], action)
   ) {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       draft.main.selection = {
         type:
           draft.drawingLines.lines[action.payload.index].type === 'polygon'
@@ -154,14 +154,14 @@ export function globalReducer(state: RootState, action: RootAction) {
       };
     });
   } else if (isActionOf(drawingPointAdd, action)) {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       draft.main.selection = {
         type: 'draw-points',
         id: draft.drawingPoints.points.length - 1,
       };
     });
   } else if (isActionOf(drawingChangeLabel, action)) {
-    return produce(state, draft => {
+    return produce(state, (draft) => {
       const selection = draft.main.selection;
       if (
         (selection?.type === 'draw-polygons' ||

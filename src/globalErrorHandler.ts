@@ -23,7 +23,7 @@ export function setStore(s: MyStore) {
   };
 };
 
-window.addEventListener('error', evt => {
+window.addEventListener('error', (evt) => {
   sendError({
     kind: 'global',
     message: evt.message,
@@ -71,7 +71,7 @@ export function sendError(errDetails: ErrorDetails): void {
         },
       },
       {
-        validateStatus: status => status === 200,
+        validateStatus: (status) => status === 200,
       },
     )
     .then(

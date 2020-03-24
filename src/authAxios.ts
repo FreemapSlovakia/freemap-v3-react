@@ -22,7 +22,7 @@ export function getAuthAxios(
 ) {
   const instance = getAxios(expectedStatus);
 
-  instance.interceptors.request.use(cfg => {
+  instance.interceptors.request.use((cfg) => {
     const { user } = getState().auth;
     return !user
       ? cfg

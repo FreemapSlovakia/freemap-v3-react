@@ -72,5 +72,5 @@ function categorize(
     }
   }
 
-  return Object.keys(res).map(type => ({ type, attributions: res[type] }));
+  return Object.keys(res).map((type) => ({ type, attributions: res[type] }));
 }

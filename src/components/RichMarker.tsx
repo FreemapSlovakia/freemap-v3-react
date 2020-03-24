@@ -69,8 +69,9 @@ export function createMarkerIcon(props: IconProps = {}) {
     html:
       html +
       (faIcon
-        ? `<div class="fa-icon-inside-leaflet-icon-holder"><i class="fa fa-${faIcon}" style="color: ${color}; padding-left: ${faIconLeftPadding ||
-            0}" /></div>`
+        ? `<div class="fa-icon-inside-leaflet-icon-holder"><i class="fa fa-${faIcon}" style="color: ${color}; padding-left: ${
+            faIconLeftPadding || 0
+          }" /></div>`
         : ''),
   });
 }

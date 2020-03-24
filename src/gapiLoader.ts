@@ -39,7 +39,7 @@ export async function getAuth2(
 ) {
   await loadGapi();
 
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     gapi.load('client:auth2', () => {
       resolve();
     });

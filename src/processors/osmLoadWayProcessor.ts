@@ -25,7 +25,7 @@ export const osmLoadWayProcessor: Processor = {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
-        ways[item.id] = item.nodes.map(ref => nodes[ref]);
+        ways[item.id] = item.nodes.map((ref) => nodes[ref]);
       }
     }
 
@@ -33,7 +33,7 @@ export const osmLoadWayProcessor: Processor = {
       trackViewerSetData({
         trackGeojson: {
           type: 'FeatureCollection',
-          features: Object.keys(ways).map(id => lineString(ways[id])),
+          features: Object.keys(ways).map((id) => lineString(ways[id])),
         },
         startPoints: [],
         finishPoints: [],

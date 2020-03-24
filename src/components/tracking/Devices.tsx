@@ -52,7 +52,7 @@ const DevicesInt: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {devices.map(device => (
+            {devices.map((device) => (
               <Device key={device.id} device={device} />
             ))}
           </tbody>

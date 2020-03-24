@@ -56,7 +56,7 @@ const AccessTokensInt: React.FC<Props> = ({
             </tr>
           </thead>
           <tbody>
-            {accessTokens.map(accessToken => (
+            {accessTokens.map((accessToken) => (
               <AccessToken key={accessToken.id} accessToken={accessToken} />
             ))}
           </tbody>
@@ -79,7 +79,7 @@ const mapStateToProps = (state: RootState) => ({
   language: state.l10n.language,
   deviceName: (
     state.tracking.devices.find(
-      device => device.id === state.tracking.accessTokensDeviceId,
+      (device) => device.id === state.tracking.accessTokensDeviceId,
     ) || { name: '???' }
   ).name,
 });

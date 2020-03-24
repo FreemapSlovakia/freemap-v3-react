@@ -202,7 +202,7 @@ module.exports = {
       /intl\/locale-data\/jsonp$/,
       /(sk|cs|en)\.tsx/,
     ),
-  ].filter(x => x),
+  ].filter((x) => x),
   devServer: {
     disableHostCheck: true,
   },

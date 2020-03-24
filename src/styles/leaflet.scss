@@ -12,7 +12,8 @@
 
   .fa-icon-inside-leaflet-icon-holder {
     position: absolute;
-    width: 100%;left: 50%;
+    width: 100%;
+    left: 50%;
     margin-left: -50%;
     top: 6px;
     text-align: center;
@@ -46,7 +47,8 @@ a.leaflet-control-layers-toggle {
 
 // default canvas z-index is 100 which makes svg outline overlap canvas hotline
 .leaflet-map-pane {
-  canvas, svg {
+  canvas,
+  svg {
     z-index: 200;
   }
 }

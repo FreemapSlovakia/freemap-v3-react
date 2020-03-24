@@ -24,7 +24,7 @@ export const galleryRequestImagesByOrderProcessor: Processor<typeof galleryList>
       expectedStatus: 200,
     });
 
-    const ids = data.map(item => item.id);
+    const ids = data.map((item) => item.id);
     dispatch(gallerySetImageIds(ids));
     if (ids.length) {
       dispatch(galleryRequestImage(ids[0]));

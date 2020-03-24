@@ -407,7 +407,7 @@ export default {
       'Hiba történt a pont magasságának beolvasásakor: {err}',
     elevationInfo: ({ elevation, point }) => (
       <>
-        {(['D', 'DM', 'DMS'] as const).map(format => (
+        {(['D', 'DM', 'DMS'] as const).map((format) => (
           <div key={format}>{latLonToString(point, 'hu', format)}</div>
         ))}
         {elevation !== null && (

@@ -58,7 +58,7 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   }, [onMapClear]);
 
   const toolDef = toolDefinitions.find(
-    t =>
+    (t) =>
       t.tool ===
       (tool === 'draw-polygons' || tool === 'draw-points'
         ? 'draw-lines'

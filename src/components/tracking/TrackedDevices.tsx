@@ -44,7 +44,7 @@ const TrackedDevicesInt: React.FC<Props> = ({ onClose, onAdd, devices, t }) => (
           </tr>
         </thead>
         <tbody>
-          {devices.map(device => (
+          {devices.map((device) => (
             <TrackedDevice key={device.id} device={device} />
           ))}
         </tbody>

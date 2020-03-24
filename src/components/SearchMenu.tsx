@@ -88,7 +88,7 @@ const SearchMenuInt: React.FC<Props> = ({
 
   const handleSelect = useCallback(
     (eventKey: any) => {
-      const found = results.find(item => item.id === eventKey);
+      const found = results.find((item) => item.id === eventKey);
       if (found) {
         onResultSelect(found);
       }
@@ -209,7 +209,7 @@ const SearchMenuInt: React.FC<Props> = ({
             </InputGroup>
           </FormGroup2>
           <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
-            {results.map(result => (
+            {results.map((result) => (
               <MenuItem
                 key={result.id}
                 eventKey={result.id}

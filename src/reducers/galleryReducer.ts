@@ -105,7 +105,7 @@ const initialState: GalleryState = {
 export const galleryReducer = createReducer<GalleryState, RootAction>(
   initialState,
 )
-  .handleAction(clearMap, state => ({
+  .handleAction(clearMap, (state) => ({
     ...initialState,
     dirtySeq: state.dirtySeq,
   }))
@@ -113,7 +113,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     imageIds: action.payload,
   }))
-  .handleAction(galleryClear, state => ({
+  .handleAction(galleryClear, (state) => ({
     ...state,
     imageIds: null,
     image: null,
@@ -126,7 +126,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     editModel: null,
   }))
   .handleAction(galleryRequestImage, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       const set = (activeImageId: number) => {
         Object.assign(draft, {
           activeImageId,
@@ -138,7 +138,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       if (action.payload === 'next') {
         const { imageIds, activeImageId } = draft;
         if (imageIds) {
-          const index = imageIds.findIndex(id => id === activeImageId);
+          const index = imageIds.findIndex((id) => id === activeImageId);
           if (index + 1 < imageIds.length) {
             set(imageIds[index + 1]);
           }
@@ -146,7 +146,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       } else if (action.payload === 'prev') {
         const { imageIds, activeImageId } = draft;
         if (imageIds) {
-          const index = imageIds.findIndex(id => id === activeImageId);
+          const index = imageIds.findIndex((id) => id === activeImageId);
           if (index > 0) {
             set(imageIds[index - 1]);
           }
@@ -166,13 +166,13 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
   }))
   .handleAction(galleryMergeItem, (state, action) => ({
     ...state,
-    items: state.items.map(item =>
+    items: state.items.map((item) =>
       item.id === action.payload.id ? { ...item, ...action.payload } : item,
     ),
   }))
   .handleAction(gallerySetItemError, (state, action) => ({
     ...state,
-    items: state.items.map(item =>
+    items: state.items.map((item) =>
       item.id === action.payload.id
         ? { ...item, errors: [action.payload.error] }
         : item,
@@ -182,7 +182,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     pickingPosition: action.payload,
   }))
-  .handleAction(galleryConfirmPickedPosition, state => {
+  .handleAction(galleryConfirmPickedPosition, (state) => {
     const s = {
       ...state,
       pickingPositionForId: null,
@@ -200,7 +200,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
           : state.editModel.dirtyPosition, // TODO language
       };
     } else {
-      s.items = state.items.map(item =>
+      s.items = state.items.map((item) =>
         item.id === state.pickingPositionForId
           ? {
               ...item,
@@ -231,13 +231,13 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
           : null,
     };
   })
-  .handleAction(galleryUpload, state => {
+  .handleAction(galleryUpload, (state) => {
     const items =
       state.uploadingId === null
-        ? state.items.map(item => ({ ...item, errors: getErrors(item) }))
+        ? state.items.map((item) => ({ ...item, errors: getErrors(item) }))
         : state.items;
 
-    const next = items.find(item => !item.errors || item.errors.length === 0);
+    const next = items.find((item) => !item.errors || item.errors.length === 0);
 
     return {
       ...state,
@@ -253,7 +253,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     users: action.payload,
   }))
-  .handleAction(gallerySetLayerDirty, state => ({
+  .handleAction(gallerySetLayerDirty, (state) => ({
     ...state,
     dirtySeq: state.dirtySeq + 1,
   }))
@@ -261,11 +261,11 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     comment: action.payload,
   }))
-  .handleAction(galleryShowFilter, state => ({
+  .handleAction(galleryShowFilter, (state) => ({
     ...state,
     showFilter: true,
   }))
-  .handleAction(galleryHideFilter, state => ({
+  .handleAction(galleryHideFilter, (state) => ({
     ...state,
     showFilter: false,
   }))
@@ -274,17 +274,17 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     filter: action.payload,
     showFilter: false,
   }))
-  .handleAction(galleryShowUploadModal, state => ({
+  .handleAction(galleryShowUploadModal, (state) => ({
     ...state,
     showUploadModal: true,
   }))
-  .handleAction(galleryHideUploadModal, state => ({
+  .handleAction(galleryHideUploadModal, (state) => ({
     ...state,
     showUploadModal: false,
     items: [],
     pickingPositionForId: null,
   }))
-  .handleAction(galleryEditPicture, state => {
+  .handleAction(galleryEditPicture, (state) => {
     const position = state.image
       ? { lat: state.image.lat, lon: state.image.lon }
       : null;
@@ -313,15 +313,15 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     editModel: action.payload,
   }))
-  .handleAction(galleryShowOnTheMap, state => ({
+  .handleAction(galleryShowOnTheMap, (state) => ({
     ...state,
     showPosition: true,
   }))
-  .handleAction(galleryCancelShowOnTheMap, state => ({
+  .handleAction(galleryCancelShowOnTheMap, (state) => ({
     ...state,
     showPosition: false,
   }))
-  .handleAction(galleryToggleShowPreview, state => ({
+  .handleAction(galleryToggleShowPreview, (state) => ({
     ...state,
     showPreview: !state.showPreview,
   }))
@@ -329,7 +329,7 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
     ...state,
     language: action.payload,
   }))
-  .handleAction(gallerySavePicture, state => ({
+  .handleAction(gallerySavePicture, (state) => ({
     ...state,
     saveErrors: state.editModel ? getErrors(state.editModel) : [],
   }))

@@ -73,7 +73,7 @@ const TrackViewerMenuInt: React.FC<Props> = ({
           </>
         }
       >
-        {([null, 'elevation', 'steepness'] as const).map(mode => (
+        {([null, 'elevation', 'steepness'] as const).map((mode) => (
           <MenuItem
             eventKey={mode}
             key={mode || 'none'}

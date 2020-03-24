@@ -7,7 +7,7 @@ export const errorHandlingMiddleware: Middleware<
   {},
   RootState,
   Dispatch<RootAction>
-> = () => next => action => {
+> = () => (next) => (action) => {
   try {
     // TODO
     // if (action.type === at.UNHANDLED_LOGIC_ERROR) {

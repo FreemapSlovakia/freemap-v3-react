@@ -58,7 +58,7 @@
       window.TrackJS &&
         TrackJS.install({
           token: '47a813b67baf4f97bace2d8359f76833',
-          onError: function(payload) {
+          onError: function (payload) {
             // prettier-ignore
             return (
               window.self !== window.top &&
@@ -75,8 +75,7 @@
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
     ></script> -->
-
-    <% for (const css of htmlWebpackPlugin.files.chunks.main.css) { %>
+    <% for (const css of htmlWebpackPlugin.files.css) { %>
     <link rel="stylesheet" href="<%= css %>" />
     <% } %>
   </head>
@@ -84,7 +83,7 @@
   <body>
     <div id="app"></div>
     <script>
-      var fm_seh = function(e) {
+      var fm_seh = function (e) {
         e.preventDefault();
 
         console.error('Startup error.', e);
@@ -115,7 +114,7 @@
 
       window.addEventListener('error', fm_seh);
 
-      window.addEventListener('load', function() {
+      window.addEventListener('load', function () {
         console.log('Page loaded.');
         window.removeEventListener('error', fm_seh);
         delete fm_seh;
@@ -123,7 +122,9 @@
 
       console.log('Pre-entry.');
     </script>
-    <script src="<%= htmlWebpackPlugin.files.chunks.main.entry %>"></script>
+    <% for (const js of htmlWebpackPlugin.files.js) { %>
+    <script src="<%= js %>"></script>
+    <% } %>
     <script>
       console.log('Post-entry.');
     </script>

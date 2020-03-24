@@ -414,7 +414,7 @@ export default {
     elevationFetchError: 'Nastala chyba pri získavaní výšky bodu: {err}',
     elevationInfo: ({ elevation, point }) => (
       <>
-        {(['D', 'DM', 'DMS'] as const).map(format => (
+        {(['D', 'DM', 'DMS'] as const).map((format) => (
           <div key={format}>{latLonToString(point, 'sk', format)}</div>
         ))}
         {elevation !== null && (

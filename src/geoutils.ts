@@ -119,7 +119,7 @@ export function smoothElevations(
   return coords.map((lonLatEle, i) => {
     const floatingWindow = coords
       .slice(i, i + eleSmoothingFactor)
-      .filter(e => e)
+      .filter((e) => e)
       .sort();
     let floatingWindowWithoutExtremes = floatingWindow;
     if (eleSmoothingFactor >= 5) {
@@ -131,7 +131,7 @@ export function smoothElevations(
     }
 
     let eleSum = 0;
-    floatingWindowWithoutExtremes.forEach(lle => {
+    floatingWindowWithoutExtremes.forEach((lle) => {
       eleSum += lle[2];
     });
 

@@ -81,11 +81,11 @@ export const transportTypeDefs: {
 ];
 
 const specials = transportTypeDefs
-  .filter(def => def.special)
-  .map(def => def.type);
+  .filter((def) => def.special)
+  .map((def) => def.type);
 
 export function isTransportType(candidate: string): candidate is TransportType {
-  return !!transportTypeDefs.find(def => def.type === candidate);
+  return !!transportTypeDefs.find((def) => def.type === candidate);
 }
 
 export function isSpecial(transportType: TransportType | null) {

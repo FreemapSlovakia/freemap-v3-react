@@ -81,11 +81,11 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.routePlanner };
   })
-  .handleAction(selectFeature, state => ({
+  .handleAction(selectFeature, (state) => ({
     ...state,
     pickMode: !state.start ? 'start' : 'finish',
   }))
-  .handleAction(clearMap, state => ({
+  .handleAction(clearMap, (state) => ({
     ...initialState,
     transportType: state.transportType,
     mode: state.mode,
@@ -144,14 +144,14 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
           pickMode: state.start ? 'finish' : 'start',
         },
   )
-  .handleAction(routePlannerSwapEnds, state => ({
+  .handleAction(routePlannerSwapEnds, (state) => ({
     ...state,
     start: state.finish,
     finish: state.start,
     midpoints: [...state.midpoints].reverse(),
   }))
   .handleAction(routePlannerAddMidpoint, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       draft.midpoints.splice(
         action.payload.position,
         0,
@@ -160,12 +160,12 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     }),
   )
   .handleAction(routePlannerSetMidpoint, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       draft.midpoints[action.payload.position] = action.payload.midpoint;
     }),
   )
   .handleAction(routePlannerRemoveMidpoint, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       draft.midpoints.splice(action.payload, 1);
     }),
   )
@@ -184,7 +184,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     pickMode: action.payload,
   }))
-  .handleAction(routePlannerToggleItineraryVisibility, state => ({
+  .handleAction(routePlannerToggleItineraryVisibility, (state) => ({
     ...state,
     itineraryIsVisible: !state.itineraryIsVisible,
   }))

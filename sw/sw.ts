@@ -17,12 +17,12 @@ const cacheName = process.env.NODE_ENV && new Date().toISOString();
 
 let assetsToCache = [...assets, './'];
 
-assetsToCache = assetsToCache.map(path => {
+assetsToCache = assetsToCache.map((path) => {
   return new URL(path, self.location.href).toString();
 });
 
 // When the service worker is first added to a computer.
-self.addEventListener('install', event => {
+self.addEventListener('install', (event) => {
   // Perform install steps.
   if (DEBUG) {
     console.log('[SW] Install event');
@@ -33,7 +33,7 @@ self.addEventListener('install', event => {
     event.waitUntil(
       self.caches
         .open(cacheName)
-        .then(cache => {
+        .then((cache) => {
           return cache.addAll(assetsToCache);
         })
         .then(() => {
@@ -41,7 +41,7 @@ self.addEventListener('install', event => {
             console.log('Cached assets: main', assetsToCache);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           console.error(error);
           throw error;
         }),
@@ -50,7 +50,7 @@ self.addEventListener('install', event => {
 });
 
 // After the install event.
-self.addEventListener('activate', event => {
+self.addEventListener('activate', (event) => {
   if (DEBUG) {
     console.log('[SW] Activate event');
   }
@@ -58,9 +58,9 @@ self.addEventListener('activate', event => {
   if (cacheName) {
     // Clean the caches
     event.waitUntil(
-      self.caches.keys().then(cacheNames =>
+      self.caches.keys().then((cacheNames) =>
         Promise.all(
-          cacheNames.map(cn =>
+          cacheNames.map((cn) =>
             // Delete the caches that are not the current one.
             cn.indexOf(cacheName) === 0 ? null : self.caches.delete(cn),
           ),
@@ -70,7 +70,7 @@ self.addEventListener('activate', event => {
   }
 });
 
-self.addEventListener('message', event => {
+self.addEventListener('message', (event) => {
   switch (event.data.action) {
     case 'skipWaiting':
       if (self.skipWaiting) {
@@ -83,7 +83,7 @@ self.addEventListener('message', event => {
   }
 });
 
-self.addEventListener('fetch', event => {
+self.addEventListener('fetch', (event) => {
   const request = event.request;
 
   const requestUrl = new URL(request.url);
@@ -113,7 +113,7 @@ self.addEventListener('fetch', event => {
     return;
   }
 
-  const resource = self.caches.match(request).then(response => {
+  const resource = self.caches.match(request).then((response) => {
     if (response) {
       if (DEBUG) {
         console.log(`[SW] fetch URL ${requestUrl.href} from cache`);
@@ -124,7 +124,7 @@ self.addEventListener('fetch', event => {
 
     // Load and cache known assets.
     return fetch(request)
-      .then(responseNetwork => {
+      .then((responseNetwork) => {
         if (!responseNetwork || !responseNetwork.ok) {
           if (DEBUG) {
             console.log(
@@ -145,7 +145,7 @@ self.addEventListener('fetch', event => {
 
         self.caches
           .open(cacheName)
-          .then(cache => cache.put(request, responseCache))
+          .then((cache) => cache.put(request, responseCache))
           .then(() => {
             if (DEBUG) {
               console.log(`[SW] Cache asset: ${requestUrl.href}`);

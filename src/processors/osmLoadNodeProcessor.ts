@@ -19,14 +19,14 @@ export const osmLoadNodeProcessor: Processor = {
     });
 
     const nodes = data.elements
-      .filter(el => el.type === 'node')
-      .map(node => [node.lon, node.lat]);
+      .filter((el) => el.type === 'node')
+      .map((node) => [node.lon, node.lat]);
 
     dispatch(
       trackViewerSetData({
         trackGeojson: {
           type: 'FeatureCollection',
-          features: Object.keys(nodes).map(id => point(nodes[id])),
+          features: Object.keys(nodes).map((id) => point(nodes[id])),
         },
         startPoints: [],
         finishPoints: [],

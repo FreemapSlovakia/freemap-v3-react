@@ -73,7 +73,7 @@ class LGalleryLayer extends LGridLayer {
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,
           ...(this._options ? createFilter(this._options.filter) : {}),
         },
-        validateStatus: status => status === 200,
+        validateStatus: (status) => status === 200,
       })
       .then(({ data }) => {
         const s = new Set();
@@ -106,7 +106,7 @@ class LGalleryLayer extends LGridLayer {
 
         done(undefined, tile);
       })
-      .catch(err => {
+      .catch((err) => {
         done(err);
       });
 

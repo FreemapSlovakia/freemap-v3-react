@@ -194,7 +194,7 @@ const mapStateToProps = (state: RootState) => {
 
   if (state.tracking.modifiedTrackedDeviceId != null) {
     device = state.tracking.trackedDevices.find(
-      device => device.id === state.tracking.modifiedTrackedDeviceId,
+      (device) => device.id === state.tracking.modifiedTrackedDeviceId,
     );
 
     if (!device) {

@@ -26,11 +26,11 @@ export const osmLoadRelationProcessor: Processor = {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
-        ways[item.id] = item.nodes.map(ref => nodes[ref]);
+        ways[item.id] = item.nodes.map((ref) => nodes[ref]);
       }
     }
 
-    const relations = data.elements.filter(el => el.type === 'relation');
+    const relations = data.elements.filter((el) => el.type === 'relation');
 
     const features: Feature[] = [];
 

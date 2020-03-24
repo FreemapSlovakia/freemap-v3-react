@@ -128,7 +128,7 @@ class SettingsInt extends React.Component<Props, State> {
   };
 
   handleOverlayOpacityChange = (newOpacity: number) => {
-    this.setState(state => ({
+    this.setState((state) => ({
       overlayOpacity: {
         ...state.overlayOpacity,
         [state.selectedOverlay]: newOpacity,
@@ -172,7 +172,7 @@ class SettingsInt extends React.Component<Props, State> {
         'eleSmoothingFactor',
         'preventTips',
         'overlayPaneOpacity',
-      ] as const).some(prop => this.state[prop] !== this.props[prop]) ||
+      ] as const).some((prop) => this.state[prop] !== this.props[prop]) ||
       (user && (name !== (user.name ?? '') || email !== (user.email ?? ''))) ||
       overlayLayers.some(
         ({ type }) =>
@@ -251,7 +251,7 @@ class SettingsInt extends React.Component<Props, State> {
                     max={1}
                     step={0.05}
                     tooltip={false}
-                    onChange={newValue =>
+                    onChange={(newValue) =>
                       this.setState({ overlayPaneOpacity: newValue })
                     }
                   />
@@ -313,7 +313,7 @@ class SettingsInt extends React.Component<Props, State> {
                         max={10}
                         step={1}
                         tooltip={false}
-                        onChange={newValue =>
+                        onChange={(newValue) =>
                           this.setState({ eleSmoothingFactor: newValue })
                         }
                       />

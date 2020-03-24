@@ -28,10 +28,10 @@ interface OverpassResult {
 }
 
 const mappings = {
-  way: element =>
+  way: (element) =>
     lineString(element.geometry.map(({ lat, lon }) => [lon, lat])),
-  node: element => point([element.lon, element.lat]),
-  relation: element => ({
+  node: (element) => point([element.lon, element.lat]),
+  relation: (element) => ({
     type: 'Feature',
     geometry: {
       type: 'GeometryCollection',
@@ -39,7 +39,7 @@ const mappings = {
         .filter(({ type }) =>
           ['way', 'node' /* TODO , 'relation' */].includes(type),
         )
-        .map(member =>
+        .map((member) =>
           member.type === 'way'
             ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat]))
             : point([member.lon, member.lat]),
@@ -106,10 +106,10 @@ export const mapDetailsProcessor: Processor = {
     const elements = [...(oRes.elements || []), ...(data1.elements || [])];
     if (elements.length > 0) {
       const geojson = featureCollection(
-        elements.map(element => mappings[element.type](element) as any), // TODO fix type
+        elements.map((element) => mappings[element.type](element) as any), // TODO fix type
       );
 
-      (oRes.elements || []).forEach(element => {
+      (oRes.elements || []).forEach((element) => {
         dispatch(
           toastsAdd({
             // collapseKey: 'mapDetails.trackInfo.detail',

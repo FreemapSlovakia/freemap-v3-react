@@ -95,7 +95,7 @@ const DrawingMenuInt: React.FC<Props> = ({
       onElevationChartClose();
     } else {
       onElevationChartTrackGeojsonSet(
-        lineString(linePoints.map(p => [p.lon, p.lat])),
+        lineString(linePoints.map((p) => [p.lon, p.lat])),
       );
     }
   }, [

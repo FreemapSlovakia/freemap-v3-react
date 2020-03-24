@@ -24,7 +24,7 @@ class LScaledTileLayer extends LTileLayer {
 
     if (this.extraScales?.length) {
       img.srcset = `${img.src}, ${this.extraScales
-        .map(es => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
+        .map((es) => `${img.src}@${es}x ${es}x`) // TODO add support for extensions
         .join(', ')}`;
     }
 

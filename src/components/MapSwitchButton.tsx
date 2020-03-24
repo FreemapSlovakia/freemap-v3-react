@@ -210,7 +210,7 @@ const mapStateToProps = (state: RootState) => ({
   overlays: state.map.overlays,
   expertMode: state.main.expertMode,
   pictureFilterIsActive: Object.keys(state.gallery.filter).some(
-    key => state.gallery.filter[key],
+    (key) => state.gallery.filter[key],
   ),
   isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
   stravaAuth: state.map.stravaAuth,

@@ -67,14 +67,14 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   );
 
   const onSelect = useCallback(
-    type => {
+    (type) => {
       setType(type);
     },
     [setType],
   );
 
   const handleRegenerateTokenClick = useCallback(() => {
-    setRegenerateToken(rt => !rt);
+    setRegenerateToken((rt) => !rt);
   }, [setRegenerateToken]);
 
   return (
@@ -183,7 +183,7 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
 const mapStateToProps = (state: RootState) => ({
   device: state.tracking.modifiedDeviceId
     ? state.tracking.devices.find(
-        device => device.id === state.tracking.modifiedDeviceId,
+        (device) => device.id === state.tracking.modifiedDeviceId,
       )
     : null,
 });

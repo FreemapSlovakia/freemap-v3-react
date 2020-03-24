@@ -69,7 +69,7 @@ const ElevationChartInt: React.FC<Props> = ({
               {
                 type: 'linear',
                 ticks: {
-                  callback: label => nf1.format(label / 1000),
+                  callback: (label) => nf1.format(label / 1000),
                   max: distance,
                 },
                 scaleLabel: {
@@ -81,7 +81,7 @@ const ElevationChartInt: React.FC<Props> = ({
             yAxes: [
               {
                 ticks: {
-                  callback: label => nf0.format(label),
+                  callback: (label) => nf0.format(label),
                 },
                 scaleLabel: {
                   display: true,
@@ -92,7 +92,7 @@ const ElevationChartInt: React.FC<Props> = ({
           },
         }}
         data={{
-          labels: elevationProfilePoints.map(p =>
+          labels: elevationProfilePoints.map((p) =>
             nf1.format(p.distance / 1000),
           ),
           datasets: [
@@ -104,7 +104,7 @@ const ElevationChartInt: React.FC<Props> = ({
               pointBorderWidth: 0,
               pointHoverRadius: 0,
               pointRadius: 0,
-              data: elevationProfilePoints.map(p => ({
+              data: elevationProfilePoints.map((p) => ({
                 x: p.distance,
                 y: p.ele,
               })),

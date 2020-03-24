@@ -109,7 +109,7 @@ export const urlProcessor: Processor = {
       historyParts.push([
         'points',
         `${[routePlanner.start, ...routePlanner.midpoints, routePlanner.finish]
-          .map(point => serializePoint(point))
+          .map((point) => serializePoint(point))
           .join(',')}`,
       ]);
 
@@ -174,7 +174,7 @@ export const urlProcessor: Processor = {
     for (const line of drawingLines.lines) {
       historyParts.push([
         line.type,
-        `${line.points.map(point => serializePoint(point)).join(',')}${
+        `${line.points.map((point) => serializePoint(point)).join(',')}${
           line.label ? `;${line.label}` : ''
         }`,
       ]);
@@ -339,7 +339,7 @@ function dateToString(d: Date) {
 function serializeQuery(parts: [string, string | number | boolean][]) {
   return `?${parts
     .map(
-      qp =>
+      (qp) =>
         `${encodeURIComponent(qp[0])}=${encodeURIComponent(qp[1])
           // FIXME replacing is nonstandard
           .replace(/%2F/g, '/')}`,

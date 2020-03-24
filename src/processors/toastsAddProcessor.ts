@@ -11,7 +11,7 @@ export const toastsAddProcessor: Processor<typeof toastsAdd> = {
 
     if (collapseKey) {
       const toast = getState().toasts.toasts.find(
-        t => t.collapseKey === collapseKey,
+        (t) => t.collapseKey === collapseKey,
       );
       if (toast) {
         removeTimeout(toast.id);

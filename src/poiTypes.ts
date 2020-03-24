@@ -1,7 +1,7 @@
 import categories from './categories.json';
 import subcategories from './subcategories.json';
 
-export const poiTypeGroups = categories.map(c => ({
+export const poiTypeGroups = categories.map((c) => ({
   id: c.id,
   icon: c.filename,
 }));
@@ -14,7 +14,7 @@ interface PoiFilter {
 }
 
 const poiTypeGroupsMap = new Map<number, { id: number; icon: string }>();
-poiTypeGroups.forEach(group => poiTypeGroupsMap.set(group.id, group));
+poiTypeGroups.forEach((group) => poiTypeGroupsMap.set(group.id, group));
 
 export const poiTypes = subcategories.map(
   ({ id, filename, categoryId, filter }) => {
@@ -25,14 +25,14 @@ export const poiTypes = subcategories.map(
       group: categoryId,
       filter,
       overpassFilter: `(${['node', 'way', 'relation']
-        .map(element => toOverpassFilter(element, filter))
+        .map((element) => toOverpassFilter(element, filter))
         .join('')})`,
     };
   },
 );
 
 const poiTypesMap = new Map<number, typeof poiTypes[0]>();
-poiTypes.forEach(pt => poiTypesMap.set(pt.id, pt));
+poiTypes.forEach((pt) => poiTypesMap.set(pt.id, pt));
 
 export function getPoiType(id: number) {
   return poiTypesMap.get(id);

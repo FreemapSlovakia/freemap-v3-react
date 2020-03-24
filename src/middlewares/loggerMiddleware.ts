@@ -6,7 +6,7 @@ export const loggerMiddleware: Middleware<
   {},
   RootState,
   Dispatch<RootAction>
-> = ({ getState }) => next => (action: RootAction) => {
+> = ({ getState }) => (next) => (action: RootAction) => {
   console.debug('Action', action); // TODO make switchable
   const result = next(action);
   console.debug('State', getState()); // TODO make switchable

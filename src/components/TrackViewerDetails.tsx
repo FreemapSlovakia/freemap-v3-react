@@ -94,7 +94,7 @@ const TrackViewerDetailsInt: React.FC<Props> = ({
   const smoothed = smoothElevations(geometry.coordinates, eleSmoothingFactor);
   let [prevCoord] = smoothed;
 
-  smoothed.forEach(coord => {
+  smoothed.forEach((coord) => {
     const distanceFromPrevPointInMeters = distance(
       coord[1],
       coord[0],

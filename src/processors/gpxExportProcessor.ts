@@ -208,7 +208,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
         {
           await loadGapi();
 
-          await new Promise(resolve => {
+          await new Promise((resolve) => {
             gapi.load('picker', () => {
               resolve();
             });
@@ -230,7 +230,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
           const ar = result.getAuthResponse();
 
-          const folder = await new Promise<any>(resolve => {
+          const folder = await new Promise<any>((resolve) => {
             const pkr = google.picker;
 
             new pkr.PickerBuilder()
@@ -348,7 +348,7 @@ function addADMeasurement(
   { lines }: DrawingLinesState,
   type: 'polygon' | 'line',
 ) {
-  for (const line of lines.filter(line => line.type === type)) {
+  for (const line of lines.filter((line) => line.type === type)) {
     const trkEle = createElement(doc.documentElement, 'trk');
 
     if (line.label) {
@@ -468,8 +468,8 @@ function toLatLon(latLon: LatLon) {
 export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
 function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
-  const tdMap = new Map(trackedDevices.map(td => [td.id, td]));
-  const tracks1 = tracks.map(track => ({
+  const tdMap = new Map(trackedDevices.map((td) => [td.id, td]));
+  const tracks1 = tracks.map((track) => ({
     ...track,
     ...(tdMap.get(track.id) || {}),
   }));
@@ -566,7 +566,7 @@ function getSupportedGpxElements(doc: Document) {
   return doc.evaluate(
     '/gpx:gpx/gpx:wpt | /gpx:gpx/gpx:rte | /gpx:gpx/gpx:trk',
     doc,
-    prefix => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
+    (prefix) => (prefix === 'gpx' ? GPX_NS : null), // TODO add support also for 1.0
     XPathResult.UNORDERED_NODE_ITERATOR_TYPE,
     null,
   );

@@ -22,7 +22,7 @@ export const galleryRequestImageProcessor: Processor = {
         ...data,
         createdAt: new Date(data.createdAt),
         takenAt: data.takenAt && new Date(data.takenAt),
-        comments: data.comments.map(comment => ({
+        comments: data.comments.map((comment) => ({
           ...comment,
           createdAt: new Date(comment.createdAt),
         })),

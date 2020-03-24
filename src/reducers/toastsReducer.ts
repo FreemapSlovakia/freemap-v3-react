@@ -20,12 +20,12 @@ export const toastsReducer = createReducer<ToastsState, RootAction>(
   .handleAction(toastsAdd, (state, action) => {
     const { collapseKey } = action.payload;
     if (collapseKey) {
-      const toast = state.toasts.find(t => t.collapseKey === collapseKey);
+      const toast = state.toasts.find((t) => t.collapseKey === collapseKey);
       if (toast) {
         return {
           ...state,
           toasts: [
-            ...state.toasts.filter(t => t.id !== toast.id),
+            ...state.toasts.filter((t) => t.id !== toast.id),
             action.payload,
           ],
         };

@@ -31,7 +31,7 @@ export const drawingPointsReducer = createReducer<
     change: state.change + 1,
   }))
   .handleAction(drawingPointChangePosition, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       const point = draft.points[action.payload.index];
       point.lat = action.payload.lat;
       point.lon = action.payload.lon;
@@ -42,7 +42,7 @@ export const drawingPointsReducer = createReducer<
     points: action.payload,
   }))
   .handleAction(deleteFeature, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       if (
         action.payload.type === 'draw-points' &&
         action.payload.id !== undefined

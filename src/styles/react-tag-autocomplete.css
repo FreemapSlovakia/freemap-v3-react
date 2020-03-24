@@ -22,10 +22,10 @@
  *     </div>
  *   </div>
  */
- .react-tags {
+.react-tags {
   position: relative;
   padding: 6px 0 0 6px;
-  border: 1px solid #D1D1D1;
+  border: 1px solid #d1d1d1;
   border-radius: 1px;
 
   /* shared font styles */
@@ -37,7 +37,7 @@
 }
 
 .react-tags.is-focused {
-  border-color: #B1B1B1;
+  border-color: #b1b1b1;
 }
 
 .react-tags__selected {
@@ -49,9 +49,9 @@
   box-sizing: border-box;
   margin: 0 6px 6px 0;
   padding: 6px 8px;
-  border: 1px solid #D1D1D1;
+  border: 1px solid #d1d1d1;
   border-radius: 2px;
-  background: #F1F1F1;
+  background: #f1f1f1;
 
   /* match the font styles */
   font-size: inherit;
@@ -60,13 +60,13 @@
 
 .react-tags__selected-tag:after {
   content: '\2715';
-  color: #AAA;
+  color: #aaa;
   margin-left: 8px;
 }
 
 .react-tags__selected-tag:hover,
 .react-tags__selected-tag:focus {
-  border-color: #B1B1B1;
+  border-color: #b1b1b1;
 }
 
 .react-tags__search {
@@ -81,12 +81,10 @@
 }
 
 @media screen and (min-width: 30em) {
-
   .react-tags__search {
     /* this will become the offsetParent for suggestions */
     position: relative;
   }
-
 }
 
 .react-tags__search input {
@@ -116,11 +114,9 @@
 }
 
 @media screen and (min-width: 30em) {
-
   .react-tags__suggestions {
     width: 240px;
   }
-
 }
 
 .react-tags__suggestions ul {
@@ -128,7 +124,7 @@
   padding: 0;
   list-style: none;
   background: white;
-  border: 1px solid #D1D1D1;
+  border: 1px solid #d1d1d1;
   border-radius: 2px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
 }

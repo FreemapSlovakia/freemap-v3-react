@@ -33,7 +33,7 @@ export const processors: Processor[] = [];
 export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
   getState,
   dispatch,
-}) => next => (action: Action) => {
+}) => (next) => (action: Action) => {
   const prevState = getState();
 
   let a: Action = action;
@@ -43,7 +43,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
       transform &&
       (actionType === '*' ||
         (Array.isArray(actionType) &&
-          actionType.some(ac => isActionOf(ac, a))) ||
+          actionType.some((ac) => isActionOf(ac, a))) ||
         isActionOf(actionType, a))
     ) {
       const a1 = transform({ getState, dispatch, action: a, prevState });
@@ -62,7 +62,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
       handle &&
       (actionType === '*' ||
         (Array.isArray(actionType) &&
-          actionType.some(ac => isActionOf(ac, a))) ||
+          actionType.some((ac) => isActionOf(ac, a))) ||
         isActionOf(actionType, a))
     ) {
       const p = handle({ getState, dispatch, action: a, prevState });
@@ -70,7 +70,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
         promises.push(
           errorKey === undefined
             ? p
-            : p.catch(err => {
+            : p.catch((err) => {
                 console.error(err);
                 dispatchAxiosErrorAsToast(dispatch, errorKey, err);
               }),
@@ -81,11 +81,11 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
 
   let isDone = false;
   const p = Promise.all(promises).then(
-    res => {
+    (res) => {
       isDone = true;
       return res;
     },
-    err => {
+    (err) => {
       isDone = true;
       throw err;
     },
@@ -102,7 +102,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
       () => {
         dispatch(stopProgress(pid));
       },
-      error => {
+      (error) => {
         dispatch(stopProgress(pid));
 
         sendError({ kind: 'processor', error, action });

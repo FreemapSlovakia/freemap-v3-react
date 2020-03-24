@@ -42,7 +42,7 @@ export function splitAndSubstitute(
   params: { [k: string]: any } = {},
 ) {
   const x = splitByVars(input, true)
-    .map(part =>
+    .map((part) =>
       typeof part === 'string' ? part : exec(params[part.variable]),
     )
     .reduce(

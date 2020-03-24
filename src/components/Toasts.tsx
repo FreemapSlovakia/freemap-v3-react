@@ -39,7 +39,7 @@ const ToastsInt: React.FC<Props> = ({
             }
             style={style}
             onAction={onAction}
-            actions={actions.map(action => ({
+            actions={actions.map((action) => ({
               ...action,
               name: action.nameKey ? t(action.nameKey) : action.name,
             }))}
@@ -62,7 +62,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(toastsRemove(id));
     if (action) {
       if (Array.isArray(action)) {
-        action.forEach(a => dispatch(a));
+        action.forEach((a) => dispatch(a));
       } else {
         dispatch(action);
       }

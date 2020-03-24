@@ -94,7 +94,7 @@ class ChangesetsMenuInt extends React.Component<Props> {
               onSelect={this.handleSelect}
               title={t('changesets.olderThanFull', { days })}
             >
-              {[3, 7, 14, 30].map(d => (
+              {[3, 7, 14, 30].map((d) => (
                 <MenuItem
                   key={d}
                   eventKey={d}

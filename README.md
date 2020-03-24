@@ -4,14 +4,14 @@ Next version of web portal maintained by [Slovak OpenStreetMap community](https:
 
 Features:
 
-* maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country ski map)
-* picture gallery
-* various tools (searching, measurement, route planning, changesets, ...)
+- maps rendered specifically for Slovakia (map of touristic trails, map of cycle routes and cross-country ski map)
+- picture gallery
+- various tools (searching, measurement, route planning, changesets, ...)
 
 ## Requirements
 
-* Node 8
-* [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
+- Node 8
+- [Freemap API Server](https://github.com/FreemapSlovakia/freemap-v3-nodejs-backend)
 
 ## Compiling and running in development mode
 
@@ -19,15 +19,15 @@ Features:
 
 1. Install the necessary libs:
 
-    ```bash
-    npm i
-    ```
+   ```bash
+   npm i
+   ```
 
 1. Run webserver which also compiles the source files on change:
 
-    ```bash
-    npm run livereload
-    ```
+   ```bash
+   npm run livereload
+   ```
 
 1. Install [development CA certificate](./ssl/Freemap_CA.crt) to your browser.
 
@@ -37,9 +37,9 @@ Features:
 
 Set `DEPLOYMENT` to:
 
-* `dev` (default) for `local.freemap.sk`
-* `next` for `next.freemap.sk`
-* `www` for `www.freemap.sk`
+- `dev` (default) for `local.freemap.sk`
+- `next` for `next.freemap.sk`
+- `www` for `www.freemap.sk`
 
 ```bash
 npm i

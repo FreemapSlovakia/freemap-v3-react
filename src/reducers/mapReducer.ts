@@ -39,7 +39,7 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.map };
   })
-  .handleAction(mapReset, state => ({
+  .handleAction(mapReset, (state) => ({
     ...state,
     zoom: initialState.zoom,
     lat: initialState.lat,
@@ -122,7 +122,7 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
       nextSelection?.type !== 'photos' &&
       state.removeGalleryOverlayOnGalleryToolQuit
     ) {
-      overlays = overlays.filter(o => o !== 'I');
+      overlays = overlays.filter((o) => o !== 'I');
     }
 
     return {

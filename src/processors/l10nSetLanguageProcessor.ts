@@ -11,8 +11,8 @@ export const l10nSetLanguageProcessor: Processor = {
     const language =
       chosenLanguage ||
       [...(navigator.languages || []), navigator.language]
-        .map(lang => simplify(lang))
-        .find(lang => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
+        .map((lang) => simplify(lang))
+        .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
       'en';
 
     const translations = await import(

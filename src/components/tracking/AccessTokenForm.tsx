@@ -102,12 +102,13 @@ const AccessTokenFormInt: React.FC<Props> = ({
 const mapStateToProps = (state: RootState) => ({
   accessToken: state.tracking.modifiedAccessTokenId
     ? state.tracking.accessTokens.find(
-        accessToken => accessToken.id === state.tracking.modifiedAccessTokenId,
+        (accessToken) =>
+          accessToken.id === state.tracking.modifiedAccessTokenId,
       )
     : undefined,
   deviceName: (
     state.tracking.devices.find(
-      device => device.id === state.tracking.accessTokensDeviceId,
+      (device) => device.id === state.tracking.accessTokensDeviceId,
     ) || { name: '???' }
   ).name,
 });

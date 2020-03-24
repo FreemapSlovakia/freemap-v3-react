@@ -90,7 +90,7 @@ export const routePlannerFindRouteProcessor: Processor = {
 
     const allPoints = [
       [start.lon, start.lat].join(','),
-      ...midpoints.map(mp => [mp.lon, mp.lat].join(',')),
+      ...midpoints.map((mp) => [mp.lon, mp.lat].join(',')),
       [finish.lon, finish.lat].join(','),
     ].join(';');
 
@@ -209,7 +209,7 @@ export const routePlannerFindRouteProcessor: Processor = {
                 type,
                 modifier,
                 mode: m,
-                shapePoints: geometry.coordinates.map(lonlat =>
+                shapePoints: geometry.coordinates.map((lonlat) =>
                   lonlat.reverse(),
                 ),
                 legIndex,

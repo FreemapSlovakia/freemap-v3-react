@@ -11,7 +11,7 @@ export function createElement(
     elem.textContent = text;
   }
 
-  Object.keys(attributes).forEach(key =>
+  Object.keys(attributes).forEach((key) =>
     addAttribute(elem, key, attributes[key]),
   );
 

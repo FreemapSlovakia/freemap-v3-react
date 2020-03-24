@@ -200,7 +200,7 @@ const MainInt: React.FC<Props> = ({
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const pictureFiles = acceptedFiles.filter(
-        file => file.type === 'image/jpeg',
+        (file) => file.type === 'image/jpeg',
       );
 
       if (pictureFiles.length) {
@@ -210,7 +210,7 @@ const MainInt: React.FC<Props> = ({
         }
       }
 
-      const gpxFiles = acceptedFiles.filter(file =>
+      const gpxFiles = acceptedFiles.filter((file) =>
         file.name.toLowerCase().endsWith('.gpx'),
       );
 
@@ -235,7 +235,7 @@ const MainInt: React.FC<Props> = ({
     }
   }, [onDelete, selection]);
 
-  const embedToolDef = embed && toolDefinitions.find(td => td.tool === tool);
+  const embedToolDef = embed && toolDefinitions.find((td) => td.tool === tool);
 
   return (
     <>

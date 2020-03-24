@@ -10,7 +10,7 @@ import { storage } from 'fm3/storage';
 
 export const utilityMiddleware: Middleware<{}, RootState, Dispatch> = ({
   getState,
-}) => next => action => {
+}) => (next) => (action) => {
   const result = next(action);
 
   if (isActionOf(authSetUser, action)) {

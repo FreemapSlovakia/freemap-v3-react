@@ -117,7 +117,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     [alternatives, activeAlternativeIndex, language, t, transportType],
   );
 
-  const bringToFront = useCallback(ele => {
+  const bringToFront = useCallback((ele) => {
     if (ele) {
       ele.leafletElement.bringToFront();
     }
@@ -260,7 +260,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   );
 
   const handleMidpointClick = useCallback(
-    position => {
+    (position) => {
       onRemoveMidpoint(position);
     },
     [onRemoveMidpoint],
@@ -325,7 +325,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           color="#409a40"
           draggable
           ondragstart={handleDragStart}
-          ondragend={e => handleRouteMarkerDragEnd('start', null, e)}
+          ondragend={(e) => handleRouteMarkerDragEnd('start', null, e)}
           position={{ lat: start.lat, lng: start.lon }}
           onclick={handleStartPointClick}
         >
@@ -348,7 +348,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
         <RichMarker
           draggable
           ondragstart={handleDragStart}
-          ondragend={e => handleRouteMarkerDragEnd('midpoint', i, e)}
+          ondragend={(e) => handleRouteMarkerDragEnd('midpoint', i, e)}
           onclick={() => handleMidpointClick(i)}
           key={`midpoint-${i}`}
           zIndexOffset={9}
@@ -364,7 +364,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           zIndexOffset={10}
           draggable
           ondragstart={handleDragStart}
-          ondragend={e => handleRouteMarkerDragEnd('finish', null, e)}
+          ondragend={(e) => handleRouteMarkerDragEnd('finish', null, e)}
           position={{ lat: finish.lat, lng: finish.lon }}
           onclick={handleEndPointClick}
         >

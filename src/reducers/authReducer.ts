@@ -33,24 +33,24 @@ export const authReducer = createReducer<AuthState, RootAction>(initialState)
       notValidated: action.payload.notValidated,
     },
   }))
-  .handleAction(authLogout, state => ({ ...state, user: null }))
-  .handleAction(authChooseLoginMethod, state => ({
+  .handleAction(authLogout, (state) => ({ ...state, user: null }))
+  .handleAction(authChooseLoginMethod, (state) => ({
     ...state,
     chooseLoginMethod: true,
   }))
-  .handleAction(authLoginClose, state => ({
+  .handleAction(authLoginClose, (state) => ({
     ...state,
     chooseLoginMethod: false,
   }))
-  .handleAction(authLoginWithFacebook, state => ({
+  .handleAction(authLoginWithFacebook, (state) => ({
     ...state,
     chooseLoginMethod: false,
   }))
-  .handleAction(authLoginWithGoogle, state => ({
+  .handleAction(authLoginWithGoogle, (state) => ({
     ...state,
     chooseLoginMethod: false,
   }))
-  .handleAction(authLoginWithOsm, state => ({
+  .handleAction(authLoginWithOsm, (state) => ({
     ...state,
     chooseLoginMethod: false,
   }));

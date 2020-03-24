@@ -105,7 +105,7 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
       : state,
   )
   .handleAction(searchSelectResult, (state, action) =>
-    produce(state, draft => {
+    produce(state, (draft) => {
       draft.osmNodeId = null;
       draft.osmWayId = null;
       draft.osmRelationId = null;

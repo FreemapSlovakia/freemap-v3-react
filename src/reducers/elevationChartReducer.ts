@@ -47,7 +47,7 @@ export const elevationChartReducer = createReducer<
     ...state,
     activePoint: action.payload,
   }))
-  .handleAction(elevationChartRemoveActivePoint, state => ({
+  .handleAction(elevationChartRemoveActivePoint, (state) => ({
     ...state,
     activePoint: null,
   }))

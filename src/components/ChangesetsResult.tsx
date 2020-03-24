@@ -50,7 +50,7 @@ const ChangesetsResultInt: React.FC<Props> = ({
 
   return (
     <>
-      {changesets.map(changeset => {
+      {changesets.map((changeset) => {
         const opacity = opacityOf(changeset, now);
 
         return (
