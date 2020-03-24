@@ -290,7 +290,7 @@ export default {
     logIn: 'Bejelentkezés',
     settings: 'Beállítások',
     gpxExport: 'Exportálás GPX-be',
-    mapExports: 'Térkép exportálása',
+    mapExports: 'Térkép a GPS-készülékek számára', // TODO google-translated
     embedMap: 'Térkép beágyazása',
     reportMapError: 'Térképhiba bejelentése',
     reportAppError: 'Alkalmazáshiba bejelentése',
@@ -304,7 +304,7 @@ export default {
     twitter: 'Freemap a Twitteren',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
-    pdfExport: 'Exportálás PDF-be (nyomtatáshoz)',
+    pdfExport: 'Térkép exportálása', // TODO google-translated
   },
 
   main: {
@@ -1140,7 +1140,7 @@ export default {
       watchTokens: 'Kódok megtekintése',
       watchPrivately: 'Privát figyelés',
       watch: 'Figyelés',
-      delete: 'Delete device?', // TODO translate
+      delete: 'Törli az eszközt?', // TODO google-translated
       modifyTitle: ({ name }) => (
         <>
           A(z) <i>{name}</i> készülék követésének módosítása
@@ -1229,8 +1229,8 @@ export default {
       name: 'Név',
       maxAge: 'Legmagasabb kor',
       maxCount: 'Legmagasabb szám',
-      regenerateToken: 'Regenerate', // TODO translate
-      generatedToken: 'will be generated on save', // TODO translate
+      regenerateToken: 'Regenerátum', // TODO google-translated
+      generatedToken: 'mentéskor generálódik', // TODO google-translated
     },
     visual: {
       line: 'Vonal',
@@ -1253,8 +1253,9 @@ export default {
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
-      pinned: 'A kiválasztott sokszöget tartalmazó terület (rajz)', // TODO google translated
+      pinned: 'A kiválasztott sokszöget tartalmazó terület (rajz)', // TODO google-translated
     },
+    format: 'Formátum:', // TODO google-translated
     layersTitle: 'Választható rétegek:',
     layers: {
       contours: 'Szintvonalak',

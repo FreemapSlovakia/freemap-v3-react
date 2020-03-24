@@ -289,7 +289,7 @@ export default {
     logIn: 'Prihlásenie',
     settings: 'Nastavenia',
     gpxExport: 'Exportovať do GPX',
-    mapExports: 'Exporty mapy',
+    mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
     reportMapError: 'Nahlásiť chybu zobrazenia v mape',
     reportAppError: 'Nahlásiť chybu v portáli',
@@ -303,7 +303,7 @@ export default {
     twitter: 'Freemap na Twitteri',
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
-    pdfExport: 'Exportovať do PDF (pre tlač)',
+    pdfExport: 'Exportovať mapu',
   },
 
   main: {
@@ -1258,6 +1258,7 @@ export default {
       visible: 'Viditeľnú oblasť mapy',
       pinned: 'Plochu obsahujúcu označený polygón (kreslenie)',
     },
+    format: 'Formát:',
     layersTitle: 'Voliteľné vrstvy:',
     layers: {
       contours: 'Vrstevnice',

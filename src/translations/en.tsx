@@ -288,7 +288,7 @@ export default {
     logIn: 'Log in',
     settings: 'Settings',
     gpxExport: 'Export to GPX',
-    mapExports: 'Map exports',
+    mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
     reportMapError: 'Report map problem',
     reportAppError: 'Report application problem',
@@ -302,7 +302,7 @@ export default {
     twitter: 'Freemap on Twitter',
     github: 'Freemap on GitHub',
     automaticLanguage: 'Automatic',
-    pdfExport: 'Export to PDF (for printing)',
+    pdfExport: 'Export map',
   },
 
   main: {
@@ -1246,6 +1246,7 @@ export default {
       visible: 'Visible area of the map',
       pinned: 'Area containing selected polygon (drawing)',
     },
+    format: 'Format:',
     layersTitle: 'Optional layers:',
     layers: {
       contours: 'Contours',

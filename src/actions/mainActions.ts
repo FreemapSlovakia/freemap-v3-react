@@ -41,6 +41,7 @@ export interface PdfExportOptions {
   horseTrails: boolean;
   scale: number;
   area: 'visible' | 'infopoints';
+  format: 'png' | 'jpeg' | 'svg' | 'pdf';
 }
 
 export type Destination = 'download' | 'gdrive' | 'dropbox';

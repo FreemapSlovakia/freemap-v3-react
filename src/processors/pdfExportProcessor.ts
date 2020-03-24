@@ -13,6 +13,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
     const {
       scale,
       area,
+      format,
       shadedRelief,
       contours,
       hikingTrails,
@@ -49,8 +50,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
     }
 
     window.open(
-      `https://outdoor.tiles.freemap.sk/pdf?zoom=${getState().map.zoom}` +
-        `&bbox=${w},${s},${e},${n}&scale=${scale}` +
+      `https://outdoor.tiles.freemap.sk/export?zoom=${getState().map.zoom}` +
+        `&bbox=${w},${s},${e},${n}&format=${format}&scale=${scale}` +
         `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&horseTrails=${horseTrails}&shading=${shadedRelief}&contours=${contours}`,
     );
     dispatch(setActiveModal(null));

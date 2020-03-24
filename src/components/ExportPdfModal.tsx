@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -27,159 +27,168 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-type State = PdfExportOptions;
+function ExportPdfModalInt({
+  onExport,
+  onModalClose,
+  t,
+  language,
+  canExportByPolygon,
+}: Props) {
+  const [area, setArea] = useState('visible');
 
-export class ExportPdfModalInt extends React.Component<Props, State> {
-  state: State = {
-    contours: true,
-    shadedRelief: true,
-    hikingTrails: true,
-    bicycleTrails: true,
-    skiTrails: true,
-    horseTrails: true,
-    scale: 1,
-    area: 'visible',
-  };
+  const [scale, setScale] = useState(1);
 
-  handleExportClick = () => {
-    this.props.onExport(this.state);
-  };
+  const [format, setFormat] = useState('jpeg');
 
-  handleContoursChange = () => {
-    this.setState((s) => ({
-      contours: !s.contours,
-    }));
-  };
+  const [contours, setContours] = useState(true);
 
-  handleShadedReliefChange = () => {
-    this.setState((s) => ({
-      shadedRelief: !s.shadedRelief,
-    }));
-  };
+  const [shadedRelief, setShadedRelief] = useState(true);
 
-  handleHikingTrailsChange = () => {
-    this.setState((s) => ({
-      hikingTrails: !s.hikingTrails,
-    }));
-  };
+  const [hikingTrails, setHikingTrails] = useState(true);
 
-  handleBicycleTrailsChange = () => {
-    this.setState((s) => ({
-      bicycleTrails: !s.bicycleTrails,
-    }));
-  };
+  const [bicycleTrails, setBicycleTrails] = useState(true);
 
-  handleSkiTrailsChange = () => {
-    this.setState((s) => ({
-      skiTrails: !s.skiTrails,
-    }));
-  };
+  const [skiTrails, setSkiTrails] = useState(true);
 
-  handleHorseTrailsChange = () => {
-    this.setState((s) => ({
-      horseTrails: !s.horseTrails,
-    }));
-  };
+  const [horseTrails, setHorseTrails] = useState(true);
 
-  handleScaleChange = (scale: number) => {
-    this.setState({ scale });
-  };
+  const nf = useMemo(
+    () =>
+      Intl.NumberFormat(language, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }),
+    [language],
+  );
 
-  render() {
-    const { onModalClose, t, language, canExportByPolygon } = this.props;
-    const nf = Intl.NumberFormat(language, {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-
-    return (
-      <Modal show onHide={onModalClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            <FontAwesomeIcon icon="file-pdf-o" /> {t('pdfExport.title')}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Alert bsStyle="warning">{t('pdfExport.alert')}</Alert>
-          <p>{t('pdfExport.area')}</p>
-          <ButtonGroup>
-            <Button
-              active={this.state.area === 'visible'}
-              onClick={() => this.setState({ area: 'visible' })}
-            >
-              {t('pdfExport.areas.visible')}
-            </Button>
-            <Button
-              active={this.state.area === 'infopoints'}
-              onClick={() => this.setState({ area: 'infopoints' })}
-              disabled={!canExportByPolygon}
-            >
-              {t('pdfExport.areas.pinned')} <FontAwesomeIcon icon="square-o" />
-            </Button>
-          </ButtonGroup>
-          <hr />
-          <p>{t('pdfExport.layersTitle')}</p>
-          <Checkbox
-            checked={this.state.contours}
-            onChange={this.handleContoursChange}
+  return (
+    <Modal show onHide={onModalClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          <FontAwesomeIcon icon="file-pdf-o" /> {t('pdfExport.title')}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Alert bsStyle="warning">{t('pdfExport.alert')}</Alert>
+        <p>{t('pdfExport.area')}</p>
+        <ButtonGroup>
+          <Button
+            active={area === 'visible'}
+            onClick={() => setArea('visible')}
           >
-            {t('pdfExport.layers.contours')}
-          </Checkbox>
-          <Checkbox
-            checked={this.state.shadedRelief}
-            onChange={this.handleShadedReliefChange}
-          >
-            {t('pdfExport.layers.shading')}
-          </Checkbox>
-          <Checkbox
-            checked={this.state.hikingTrails}
-            onChange={this.handleHikingTrailsChange}
-          >
-            {t('pdfExport.layers.hikingTrails')}
-          </Checkbox>
-          <Checkbox
-            checked={this.state.bicycleTrails}
-            onChange={this.handleBicycleTrailsChange}
-          >
-            {t('pdfExport.layers.bicycleTrails')}
-          </Checkbox>
-          <Checkbox
-            checked={this.state.skiTrails}
-            onChange={this.handleSkiTrailsChange}
-          >
-            {t('pdfExport.layers.skiTrails')}
-          </Checkbox>
-          <Checkbox
-            checked={this.state.horseTrails}
-            onChange={this.handleHorseTrailsChange}
-          >
-            {t('pdfExport.layers.horseTrails')}
-          </Checkbox>
-          <hr />
-          <p>
-            {' '}
-            {t('pdfExport.mapScale')} {nf.format(this.state.scale)}
-          </p>
-          <Slider
-            value={this.state.scale}
-            min={0.1}
-            max={5}
-            step={0.05}
-            tooltip={false}
-            onChange={this.handleScaleChange}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button onClick={this.handleExportClick}>
-            <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
-          </Button>{' '}
-          <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+            {t('pdfExport.areas.visible')}
           </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+          <Button
+            active={area === 'infopoints'}
+            onClick={() => setArea('infopoints')}
+            disabled={!canExportByPolygon}
+          >
+            {t('pdfExport.areas.pinned')} <FontAwesomeIcon icon="square-o" />
+          </Button>
+        </ButtonGroup>
+        <hr />
+        <p>{t('pdfExport.format')}</p>
+        <ButtonGroup>
+          <Button onClick={() => setFormat('jpeg')} active={format === 'jpeg'}>
+            JPEG
+          </Button>
+          <Button onClick={() => setFormat('png')} active={format === 'png'}>
+            PNG
+          </Button>
+          <Button onClick={() => setFormat('pdf')} active={format === 'pdf'}>
+            PDF
+          </Button>
+          <Button onClick={() => setFormat('svg')} active={format === 'svg'}>
+            SVG
+          </Button>
+        </ButtonGroup>
+        <hr />
+        <p>{t('pdfExport.layersTitle')}</p>
+        <Checkbox
+          checked={contours}
+          onChange={() => {
+            setContours((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.contours')}
+        </Checkbox>
+        <Checkbox
+          checked={shadedRelief}
+          onChange={() => setShadedRelief((b) => !b)}
+        >
+          {t('pdfExport.layers.shading')}
+        </Checkbox>
+        <Checkbox
+          checked={hikingTrails}
+          onChange={() => {
+            setHikingTrails((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.hikingTrails')}
+        </Checkbox>
+        <Checkbox
+          checked={bicycleTrails}
+          onChange={() => {
+            setBicycleTrails((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.bicycleTrails')}
+        </Checkbox>
+        <Checkbox
+          checked={skiTrails}
+          onChange={() => {
+            setSkiTrails((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.skiTrails')}
+        </Checkbox>
+        <Checkbox
+          checked={horseTrails}
+          onChange={() => {
+            setHorseTrails((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.horseTrails')}
+        </Checkbox>
+        <hr />
+        <p>
+          {t('pdfExport.mapScale')} {nf.format(scale)}
+        </p>
+        <Slider
+          value={scale}
+          min={0.1}
+          max={5}
+          step={0.05}
+          tooltip={false}
+          onChange={(scale: number) => {
+            setScale(scale);
+          }}
+        />
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          onClick={() => {
+            onExport({
+              area: area as any,
+              scale,
+              format: format as any,
+              contours,
+              shadedRelief,
+              hikingTrails,
+              bicycleTrails,
+              skiTrails,
+              horseTrails,
+            });
+          }}
+        >
+          <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
+        </Button>{' '}
+        <Button onClick={onModalClose}>
+          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
 
 const mapStateToProps = (state: RootState) => ({
