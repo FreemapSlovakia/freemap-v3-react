@@ -156,8 +156,8 @@ function ExportPdfModalInt({
         </p>
         <Slider
           value={scale}
-          min={0.1}
-          max={5}
+          min={0.5}
+          max={8}
           step={0.05}
           tooltip={false}
           onChange={(scale: number) => {
