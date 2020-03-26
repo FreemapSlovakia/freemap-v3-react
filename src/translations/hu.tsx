@@ -1249,7 +1249,6 @@ export default {
     ),
   },
   pdfExport: {
-    title: 'Exportálás PDF-be',
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
@@ -1273,10 +1272,7 @@ export default {
           <li>
             A szabadtéri térkép fog exportáltatni interaktív funkciók nélkül.
           </li>
-          <li>
-            A térkép PDF-be történő exportálása több tucat másodpercet is
-            igénybe vehet.
-          </li>
+          <li>A térkép exportálása több tucat másodpercet is igénybe vehet.</li>
           <li>
             Megosztás előtt a térképet lássa el a következő szerzői jogi
             közleménnyel:

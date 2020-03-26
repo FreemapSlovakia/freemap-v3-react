@@ -1240,7 +1240,6 @@ export default {
     ),
   },
   pdfExport: {
-    title: 'Export to PDF',
     area: 'Export area:',
     areas: {
       visible: 'Visible area of the map',
@@ -1264,7 +1263,7 @@ export default {
           <li>
             Exported will be outdoor map without any interactive features.
           </li>
-          <li>Export of the map to PDF may last tens of seconds.</li>
+          <li>Export of the map may last tens of seconds.</li>
           <li>
             Before sharing exported map accompain it with the following
             attribution:

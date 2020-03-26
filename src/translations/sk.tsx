@@ -1252,7 +1252,6 @@ export default {
     ),
   },
   pdfExport: {
-    title: 'Exportovať do PDF',
     area: 'Exportovať oblasť:',
     areas: {
       visible: 'Viditeľnú oblasť mapy',
@@ -1274,7 +1273,7 @@ export default {
         Upozornenia:
         <ul>
           <li>Exportuje sa outdoorova mapa bez interaktívnych prvkov.</li>
-          <li>Export mapy do PDF môže trvať aj desiatky sekúnd.</li>
+          <li>Export mapy môže trvať aj desiatky sekúnd.</li>
           <li>
             Pri publikovaní mapy je nutné uviesť jej licenciu:
             <br />

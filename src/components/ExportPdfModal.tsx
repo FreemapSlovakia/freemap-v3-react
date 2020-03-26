@@ -65,7 +65,7 @@ function ExportPdfModalInt({
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="file-pdf-o" /> {t('pdfExport.title')}
+          <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
