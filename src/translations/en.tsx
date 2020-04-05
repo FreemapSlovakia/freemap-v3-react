@@ -1240,6 +1240,16 @@ export default {
     ),
   },
   pdfExport: {
+    exportError: 'Error exporting map: {err}',
+    exporting: 'Please wait, exporting map…',
+    exported: ({ url }) => (
+      <>
+        Map export has finished.{' '}
+        <a href={url} target="_blank">
+          Open.
+        </a>
+      </>
+    ),
     area: 'Export area:',
     areas: {
       visible: 'Visible area of the map',

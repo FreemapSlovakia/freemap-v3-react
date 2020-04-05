@@ -1252,6 +1252,16 @@ export default {
     ),
   },
   pdfExport: {
+    exportError: 'Chyba exportovania mapy: {err}',
+    exporting: 'Prosím počkajte, mapa sa exportuje…',
+    exported: ({ url }) => (
+      <>
+        Export mapy je dokončený.{' '}
+        <a href={url} target="_blank">
+          Otvoriť.
+        </a>
+      </>
+    ),
     area: 'Exportovať oblasť:',
     areas: {
       visible: 'Viditeľnú oblasť mapy',

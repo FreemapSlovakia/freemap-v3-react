@@ -1249,6 +1249,7 @@ export default {
     ),
   },
   pdfExport: {
+    exportError: 'Error exporting map: {err}', // TODO translate
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
