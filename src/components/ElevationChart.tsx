@@ -69,7 +69,7 @@ const ElevationChartInt: React.FC<Props> = ({
               {
                 type: 'linear',
                 ticks: {
-                  callback: (label) => nf1.format(label / 1000),
+                  callback: (label: number) => nf1.format(label / 1000),
                   max: distance,
                 },
                 scaleLabel: {
@@ -81,7 +81,7 @@ const ElevationChartInt: React.FC<Props> = ({
             yAxes: [
               {
                 ticks: {
-                  callback: (label) => nf0.format(label),
+                  callback: (label: number) => nf0.format(label),
                 },
                 scaleLabel: {
                   display: true,

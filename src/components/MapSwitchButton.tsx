@@ -91,55 +91,57 @@ const MapSwitchButtonInt: React.FC<Props> = ({
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
-            {// TODO base and overlay layers have too much duplicate code
-            baseLayers
-              .filter(
-                ({ showOnlyInExpertMode }) =>
-                  !showOnlyInExpertMode || expertMode,
-              )
-              .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map(({ type, icon, minZoom, key }) => (
-                <MenuItem key={type} onClick={() => handleMapSelect(type)}>
-                  <FontAwesomeIcon
-                    icon={mapType === type ? 'check-circle-o' : 'circle-o'}
-                  />{' '}
-                  <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
-                  <span
-                    style={{
-                      textDecoration:
-                        minZoom !== undefined && zoom < minZoom
-                          ? 'line-through'
-                          : 'none',
-                    }}
-                  >
-                    {t(`mapLayers.base.${type}`)}
-                  </span>
-                  {type === 'X' && (
-                    <>
-                      {' '}
-                      <FontAwesomeIcon
-                        icon="star"
-                        style={{ color: 'gold' }}
-                        title="featured"
-                      />{' '}
-                    </>
-                  )}
-                  {key && ' '}
-                  {key && <kbd>{key}</kbd>}
-                  {minZoom !== undefined && zoom < minZoom && (
-                    <>
-                      {' '}
-                      <FontAwesomeIcon
-                        icon="exclamation-triangle"
-                        title={t('mapLayers.minZoomWarning', {
-                          minZoom: minZoom.toString(),
-                        })}
-                        className="text-warning"
-                      />
-                    </>
-                  )}
-                </MenuItem>
-              ))}
+            {
+              // TODO base and overlay layers have too much duplicate code
+              baseLayers
+                .filter(
+                  ({ showOnlyInExpertMode }) =>
+                    !showOnlyInExpertMode || expertMode,
+                )
+                .filter(({ adminOnly }) => isAdmin || !adminOnly)
+                .map(({ type, icon, minZoom, key }) => (
+                  <MenuItem key={type} onClick={() => handleMapSelect(type)}>
+                    <FontAwesomeIcon
+                      icon={mapType === type ? 'check-circle-o' : 'circle-o'}
+                    />{' '}
+                    <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                    <span
+                      style={{
+                        textDecoration:
+                          minZoom !== undefined && zoom < minZoom
+                            ? 'line-through'
+                            : 'none',
+                      }}
+                    >
+                      {t(`mapLayers.base.${type}`)}
+                    </span>
+                    {type === 'X' && (
+                      <>
+                        {' '}
+                        <FontAwesomeIcon
+                          icon="star"
+                          style={{ color: 'gold' }}
+                          title="featured"
+                        />{' '}
+                      </>
+                    )}
+                    {key && ' '}
+                    {key && <kbd>{key}</kbd>}
+                    {minZoom !== undefined && zoom < minZoom && (
+                      <>
+                        {' '}
+                        <FontAwesomeIcon
+                          icon="exclamation-triangle"
+                          title={t('mapLayers.minZoomWarning', {
+                            minZoom: minZoom.toString(),
+                          })}
+                          className="text-warning"
+                        />
+                      </>
+                    )}
+                  </MenuItem>
+                ))
+            }
             <MenuItem divider />
             {overlayLayers
               .filter(
