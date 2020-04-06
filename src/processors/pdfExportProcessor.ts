@@ -1,9 +1,24 @@
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { httpRequest } from 'fm3/authAxios';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import {
+  lineString,
+  point,
+  polygon,
+  featureCollection,
+  Feature,
+  Geometry,
+} from '@turf/helpers';
+
+const mapExportUrl =
+  process.env.MAP_EXPORT_URL || 'https://outdoor.tiles.freemap.sk';
 
 export const exportPdfProcessor: Processor<typeof exportPdf> = {
   actionCreator: exportPdf,
+  errorKey: 'pdfExport.exportError',
+  collapseKey: 'pdfExport.export',
   handle: async ({ dispatch, getState, action }) => {
     const le = getMapLeafletElement();
     if (!le) {
@@ -20,6 +35,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       bicycleTrails,
       skiTrails,
       horseTrails,
+      drawing,
+      plannedRoute,
     } = action.payload;
 
     let w: number | undefined = undefined;
@@ -49,11 +66,110 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       }
     }
 
-    window.open(
-      `https://outdoor.tiles.freemap.sk/export?zoom=${getState().map.zoom}` +
-        `&bbox=${w},${s},${e},${n}&format=${format}&scale=${scale}` +
-        `&hikingTrails=${hikingTrails}&bicycleTrails=${bicycleTrails}&skiTrails=${skiTrails}&horseTrails=${horseTrails}&shading=${shadedRelief}&contours=${contours}`,
-    );
+    const features: Feature<Geometry>[] = [];
+
+    if (drawing) {
+      for (const line of getState().drawingLines.lines) {
+        features.push(
+          line.type === 'line'
+            ? lineString(
+                line.points.map((point) => [point.lon, point.lat]),
+                { name: line.label },
+              )
+            : polygon(
+                [
+                  [
+                    ...line.points.map((point) => [point.lon, point.lat]),
+                    [line.points[0].lon, line.points[0].lat],
+                  ],
+                ],
+                { name: line.label },
+              ),
+        );
+      }
+
+      for (const p of getState().drawingPoints.points) {
+        features.push(point([p.lon, p.lat], { name: p.label }));
+      }
+    }
+
+    if (plannedRoute) {
+      const { alternatives, activeAlternativeIndex } = getState().routePlanner;
+
+      const alt = alternatives[activeAlternativeIndex];
+
+      if (alt) {
+        const coords: number[][] = [];
+
+        for (const step of alt.itinerary) {
+          coords.push(...step.shapePoints.map(([lat, lon]) => [lon, lat]));
+        }
+
+        features.push(lineString(coords, { name: '' }));
+      }
+    }
+
+    const { data } = await httpRequest({
+      getState,
+      method: 'POST',
+      url: `${mapExportUrl}/export`,
+      data: {
+        bbox: [w, s, e, n],
+        zoom: getState().map.zoom,
+        format,
+        scale,
+        features: {
+          shading: shadedRelief,
+          contours,
+          hikingTrails,
+          bicycleTrails,
+          skiTrails,
+          horseTrails,
+        },
+        geojson: features.length ? featureCollection(features) : undefined,
+      },
+      expectedStatus: 200,
+    });
+
     dispatch(setActiveModal(null));
+
+    dispatch(
+      toastsAdd({
+        collapseKey: 'pdfExport.export',
+        messageKey: 'pdfExport.exporting',
+        style: 'info',
+      }),
+    );
+
+    for (let i = 0; ; i++) {
+      try {
+        await httpRequest({
+          getState,
+          method: 'HEAD',
+          url: `${mapExportUrl}/export`,
+          params: {
+            token: data.token,
+          },
+          expectedStatus: 200,
+        });
+
+        break;
+      } catch (err) {
+        if (err.response || i > 10) {
+          throw err;
+        }
+      }
+    }
+
+    dispatch(
+      toastsAdd({
+        collapseKey: 'pdfExport.export',
+        messageKey: 'pdfExport.exported',
+        messageParams: {
+          url: `${mapExportUrl}/export?token=${data.token}`,
+        },
+        style: 'info',
+      }),
+    );
   },
 };

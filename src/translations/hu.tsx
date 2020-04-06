@@ -1249,6 +1249,7 @@ export default {
     ),
   },
   pdfExport: {
+    exportError: 'Error exporting map: {err}', // TODO translate
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
@@ -1269,9 +1270,7 @@ export default {
       <>
         Megjegyzések:
         <ul>
-          <li>
-            A szabadtéri térkép fog exportáltatni interaktív funkciók nélkül.
-          </li>
+          <li>A új szabadtéri térkép fog exportáltatni.</li>
           <li>A térkép exportálása több tucat másodpercet is igénybe vehet.</li>
           <li>
             Megosztás előtt a térképet lássa el a következő szerzői jogi

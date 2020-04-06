@@ -69,11 +69,11 @@ export const baseLayers: LayerDef[] = [
     key: 'x',
   },
   ...[
-    ['A', 'car'],
-    ['T', '!icon-hiking'],
-    ['C', 'bicycle'],
-    ['K', '!icon-skier-skiing'],
-  ].map(([type, icon]) => ({
+    ['A', 'car', true] as const,
+    ['T', '!icon-hiking', false] as const,
+    ['C', 'bicycle', false] as const,
+    ['K', '!icon-skier-skiing', true] as const,
+  ].map(([type, icon, showOnlyInExpertMode]) => ({
     type,
     icon,
     url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
@@ -82,6 +82,7 @@ export const baseLayers: LayerDef[] = [
     minZoom: 8,
     maxNativeZoom: 16,
     key: type.toLowerCase(),
+    showOnlyInExpertMode,
   })),
   {
     type: 'S',
@@ -243,7 +244,7 @@ export const overlayLayers: LayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 16,
     key: type === 'both' ? 'H' : undefined,
-    showOnlyInExpertMode: true,
+    showOnlyInExpertMode: type !== 'both',
     zIndex: 2,
     strava: true,
   })),

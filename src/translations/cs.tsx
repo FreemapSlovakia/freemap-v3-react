@@ -946,7 +946,7 @@ export default {
 
   mapLayers: {
     missingStravaAuth:
-      'Prosím přihlašte se nejprve na strava.com/heatmap a následně obnovte tuto stránku.',
+      'Prosím přihlašte se nejprve na strava.com/heatmap (klikněte na vykřičník) a následně obnovte tuto stránku.',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     minZoomWarning: 'Dostupné až od přiblížení {minZoom}',
@@ -1239,6 +1239,16 @@ export default {
     ),
   },
   pdfExport: {
+    exportError: 'Chyba exportu mapy: {err}',
+    exporting: 'Prosím počkejte, mapa se exportuje…',
+    exported: ({ url }) => (
+      <>
+        Export mapy je dokončen.{' '}
+        <a href={url} target="_blank">
+          Otevřít.
+        </a>
+      </>
+    ),
     area: 'Exportovat oblast:',
     areas: {
       visible: 'Viditelnou oblast mapy',
@@ -1259,7 +1269,7 @@ export default {
       <>
         Upozornění:
         <ul>
-          <li>Exportuje se outdoorová mapa bez interaktívnych prvků.</li>
+          <li>Exportuje se nová outdoorová mapa.</li>
           <li>Export mapy může trvat i desítky sekund.</li>
           <li>
             Při publikované mapy je do ní nutno uvést její licenci:

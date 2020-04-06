@@ -8,12 +8,15 @@ export function dispatchAxiosErrorAsToast(
   messageKey: string,
   err?: any,
   params: { [key: string]: any } = {},
+  collapseKey?: string,
 ) {
   if (axios.isCancel(err)) {
     return;
   }
+
   return dispatch(
     toastsAdd({
+      collapseKey,
       messageKey,
       messageParams: {
         ...params,

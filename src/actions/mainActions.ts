@@ -39,6 +39,8 @@ export interface PdfExportOptions {
   bicycleTrails: boolean;
   skiTrails: boolean;
   horseTrails: boolean;
+  drawing: boolean;
+  plannedRoute: boolean;
   scale: number;
   area: 'visible' | 'infopoints';
   format: 'png' | 'jpeg' | 'svg' | 'pdf';
