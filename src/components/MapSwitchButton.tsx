@@ -114,6 +114,16 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                   >
                     {t(`mapLayers.base.${type}`)}
                   </span>
+                  {type === 'X' && (
+                    <>
+                      {' '}
+                      <FontAwesomeIcon
+                        icon="star"
+                        style={{ color: 'gold' }}
+                        title="featured"
+                      />{' '}
+                    </>
+                  )}
                   {key && ' '}
                   {key && <kbd>{key}</kbd>}
                   {minZoom !== undefined && zoom < minZoom && (
