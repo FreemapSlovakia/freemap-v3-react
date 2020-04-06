@@ -955,7 +955,7 @@ export default {
 
   mapLayers: {
     missingStravaAuth:
-      'Prosím prihláste sa najprv na strava.com/heatmap a následne obnovte túto stránku.',
+      'Prosím prihláste sa najprv na strava.com/heatmap (kliknite na výkričník) a následne obnovte túto stránku.',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
     minZoomWarning: 'Dostupné až od priblíženia {minZoom}',
@@ -1282,7 +1282,7 @@ export default {
       <>
         Upozornenia:
         <ul>
-          <li>Exportuje sa outdoorova mapa bez interaktívnych prvkov.</li>
+          <li>Exportuje sa nová outdoorova mapa.</li>
           <li>Export mapy môže trvať aj desiatky sekúnd.</li>
           <li>
             Pri publikovaní mapy je nutné uviesť jej licenciu:

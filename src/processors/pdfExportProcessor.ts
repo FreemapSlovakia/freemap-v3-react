@@ -35,6 +35,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       bicycleTrails,
       skiTrails,
       horseTrails,
+      drawing,
+      plannedRoute,
     } = action.payload;
 
     let w: number | undefined = undefined;
@@ -64,26 +66,47 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       }
     }
 
-    const features: Feature<Geometry>[] = getState().drawingLines.lines.map(
-      (line) =>
-        line.type === 'line'
-          ? lineString(
-              line.points.map((point) => [point.lon, point.lat]),
-              { name: line.label },
-            )
-          : polygon(
-              [
-                [
-                  ...line.points.map((point) => [point.lon, point.lat]),
-                  [line.points[0].lon, line.points[0].lat],
-                ],
-              ],
-              { name: line.label },
-            ),
-    );
+    const features: Feature<Geometry>[] = [];
 
-    for (const p of getState().drawingPoints.points) {
-      features.push(point([p.lon, p.lat], { name: p.label }));
+    if (drawing) {
+      for (const line of getState().drawingLines.lines) {
+        features.push(
+          line.type === 'line'
+            ? lineString(
+                line.points.map((point) => [point.lon, point.lat]),
+                { name: line.label },
+              )
+            : polygon(
+                [
+                  [
+                    ...line.points.map((point) => [point.lon, point.lat]),
+                    [line.points[0].lon, line.points[0].lat],
+                  ],
+                ],
+                { name: line.label },
+              ),
+        );
+      }
+
+      for (const p of getState().drawingPoints.points) {
+        features.push(point([p.lon, p.lat], { name: p.label }));
+      }
+    }
+
+    if (plannedRoute) {
+      const { alternatives, activeAlternativeIndex } = getState().routePlanner;
+
+      const alt = alternatives[activeAlternativeIndex];
+
+      if (alt) {
+        const coords: number[][] = [];
+
+        for (const step of alt.itinerary) {
+          coords.push(...step.shapePoints.map(([lat, lon]) => [lon, lat]));
+        }
+
+        features.push(lineString(coords, { name: '' }));
+      }
     }
 
     const { data } = await httpRequest({

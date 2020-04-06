@@ -945,7 +945,7 @@ export default {
 
   mapLayers: {
     missingStravaAuth:
-      'Please log-in on strava.com/heatmap first and then reload this page.',
+      'Please log-in on strava.com/heatmap first (click on the exclamation mark) and then reload this page.',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
     minZoomWarning: 'Accessible from zoom {minZoom}',
@@ -1270,9 +1270,7 @@ export default {
       <>
         Notes:
         <ul>
-          <li>
-            Exported will be outdoor map without any interactive features.
-          </li>
+          <li>Exported will be new outdoor map.</li>
           <li>Export of the map may last tens of seconds.</li>
           <li>
             Before sharing exported map accompain it with the following

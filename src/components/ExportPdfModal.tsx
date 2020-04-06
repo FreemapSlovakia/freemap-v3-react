@@ -52,6 +52,10 @@ function ExportPdfModalInt({
 
   const [horseTrails, setHorseTrails] = useState(true);
 
+  const [drawing, setDrawing] = useState(true);
+
+  const [plannedRoute, setPlannedRoute] = useState(true);
+
   const nf = useMemo(
     () =>
       Intl.NumberFormat(language, {
@@ -150,6 +154,22 @@ function ExportPdfModalInt({
         >
           {t('pdfExport.layers.horseTrails')}
         </Checkbox>
+        <Checkbox
+          checked={drawing}
+          onChange={() => {
+            setDrawing((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.drawing')}
+        </Checkbox>
+        <Checkbox
+          checked={plannedRoute}
+          onChange={() => {
+            setPlannedRoute((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.plannedRoute')}
+        </Checkbox>
         <hr />
         <p>
           {t('pdfExport.mapScale')} {nf.format(scale)}
@@ -178,6 +198,8 @@ function ExportPdfModalInt({
               bicycleTrails,
               skiTrails,
               horseTrails,
+              drawing,
+              plannedRoute,
             });
           }}
         >
