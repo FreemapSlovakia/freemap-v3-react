@@ -56,6 +56,8 @@ function ExportPdfModalInt({
 
   const [plannedRoute, setPlannedRoute] = useState(true);
 
+  const [track, setTrack] = useState(true);
+
   const nf = useMemo(
     () =>
       Intl.NumberFormat(language, {
@@ -170,6 +172,14 @@ function ExportPdfModalInt({
         >
           {t('pdfExport.layers.plannedRoute')}
         </Checkbox>
+        <Checkbox
+          checked={track}
+          onChange={() => {
+            setTrack((b) => !b);
+          }}
+        >
+          {t('pdfExport.layers.track')}
+        </Checkbox>
         <hr />
         <p>
           {t('pdfExport.mapScale')} {nf.format(scale)}
@@ -200,10 +210,11 @@ function ExportPdfModalInt({
               horseTrails,
               drawing,
               plannedRoute,
+              track,
             });
           }}
         >
-          <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
+          <FontAwesomeIcon icon="download" /> {t('pdfExport.export')}
         </Button>{' '}
         <Button onClick={onModalClose}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>

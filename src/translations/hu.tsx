@@ -1249,6 +1249,7 @@ export default {
     ),
   },
   pdfExport: {
+    export: 'Export', // TODO translate
     exportError: 'Error exporting map: {err}', // TODO translate
     area: 'Exportálandó terület:',
     areas: {
@@ -1264,6 +1265,9 @@ export default {
       bicycleTrails: 'Kerékpáros útvonalak',
       skiTrails: 'Síútvonalak',
       horseTrails: 'Lovaglóútvonalak',
+      drawing: 'Drawing', // TODO translate
+      plannedRoute: 'Found route', // TODO translate
+      track: 'GPX track', // TODO translate
     },
     mapScale: 'Méretarány:',
     alert: () => (

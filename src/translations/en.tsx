@@ -1240,6 +1240,7 @@ export default {
     ),
   },
   pdfExport: {
+    export: 'Export',
     exportError: 'Error exporting map: {err}',
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
@@ -1264,6 +1265,9 @@ export default {
       bicycleTrails: 'Bicycle trails',
       skiTrails: 'Ski trails',
       horseTrails: 'Horse trails',
+      drawing: 'Drawing',
+      plannedRoute: 'Found route',
+      track: 'GPX track',
     },
     mapScale: 'Map scale:',
     alert: () => (

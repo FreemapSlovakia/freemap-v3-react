@@ -37,6 +37,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       horseTrails,
       drawing,
       plannedRoute,
+      track,
     } = action.payload;
 
     let w: number | undefined = undefined;
@@ -106,6 +107,14 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         }
 
         features.push(lineString(coords, { name: '' }));
+      }
+    }
+
+    if (track) {
+      const { trackGeojson } = getState().trackViewer;
+
+      if (trackGeojson && trackGeojson.type === 'FeatureCollection') {
+        features.push(...(trackGeojson.features as any));
       }
     }
 

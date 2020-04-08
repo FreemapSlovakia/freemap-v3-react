@@ -1239,6 +1239,7 @@ export default {
     ),
   },
   pdfExport: {
+    export: 'Exportovat',
     exportError: 'Chyba exportu mapy: {err}',
     exporting: 'Prosím počkejte, mapa se exportuje…',
     exported: ({ url }) => (
@@ -1263,6 +1264,9 @@ export default {
       bicycleTrails: 'Cyklotrasy',
       skiTrails: 'Lyžařské trasy',
       horseTrails: 'Jezdecké trasy',
+      drawing: 'Kreslení',
+      plannedRoute: 'Vyhledanou trasu',
+      track: 'GPX trasu',
     },
     mapScale: 'Měřítko mapy:',
     alert: () => (

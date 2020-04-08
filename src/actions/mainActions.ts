@@ -41,6 +41,7 @@ export interface PdfExportOptions {
   horseTrails: boolean;
   drawing: boolean;
   plannedRoute: boolean;
+  track: boolean;
   scale: number;
   area: 'visible' | 'infopoints';
   format: 'png' | 'jpeg' | 'svg' | 'pdf';
