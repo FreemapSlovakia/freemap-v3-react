@@ -143,7 +143,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     );
   },
   onConvertToMeasurement() {
-    dispatch(convertToDrawing());
+    dispatch(convertToDrawing(undefined));
   },
 });
 
