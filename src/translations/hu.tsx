@@ -59,6 +59,8 @@ export default {
     add: 'Új hozzáadása',
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
+    simplifyPrompt:
+      'Please enter simplification factor. Set to zero for no simplification.', // TODO translate
   },
 
   tools: {

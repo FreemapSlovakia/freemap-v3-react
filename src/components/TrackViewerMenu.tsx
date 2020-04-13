@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -46,9 +46,17 @@ const TrackViewerMenuInt: React.FC<Props> = ({
   onShowTrackInfo,
   trackGeojsonIsSuitableForElevationChart,
   onToggleElevationChart,
-  onConvertToMeasurement,
+  onConvertToDrawing,
   t,
 }) => {
+  const handleConvertToDrawing = useCallback(() => {
+    const tolerance = window.prompt(t('general.simplifyPrompt'), '50');
+
+    if (tolerance !== null) {
+      onConvertToDrawing(Number(tolerance));
+    }
+  }, [onConvertToDrawing, t]);
+
   return (
     <>
       <Button onClick={() => onUpload()}>
@@ -95,7 +103,7 @@ const TrackViewerMenuInt: React.FC<Props> = ({
         <span className="hidden-xs"> {t('trackViewer.share')}</span>
       </Button>{' '}
       <Button
-        onClick={onConvertToMeasurement}
+        onClick={handleConvertToDrawing}
         disabled={!hasTrack}
         title={t('general.convertToDrawing')}
       >
@@ -136,8 +144,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToggleElevationChart() {
     dispatch(trackViewerToggleElevationChart());
   },
-  onConvertToMeasurement() {
-    dispatch(convertToDrawing());
+  onConvertToDrawing(tolerance: number | undefined) {
+    dispatch(convertToDrawing(tolerance));
   },
 });
 

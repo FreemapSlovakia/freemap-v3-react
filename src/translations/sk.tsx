@@ -57,6 +57,8 @@ export default {
     add: 'Pridať nové',
     clear: 'Vyčistiť',
     convertToDrawing: 'Skonvertovať na kreslenie',
+    simplifyPrompt:
+      'Prosím zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
   },
 
   tools: {

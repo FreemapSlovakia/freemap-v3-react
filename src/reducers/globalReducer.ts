@@ -44,10 +44,17 @@ export function globalReducer(state: RootState, action: RootAction) {
 
         let id = 0;
 
-        for (const p of simplify(lineString(coords), {
-          mutate: true,
-          tolerance: 0.0005,
-        }).geometry.coordinates) {
+        const ls = lineString(coords);
+
+        if (action.payload !== undefined) {
+          simplify(ls, {
+            mutate: true,
+            highQuality: true,
+            tolerance: action.payload / 100000,
+          });
+        }
+
+        for (const p of ls.geometry.coordinates) {
           points.push({
             lat: p[0],
             lon: p[1],
@@ -94,10 +101,14 @@ export function globalReducer(state: RootState, action: RootAction) {
         );
 
         for (const feature of features) {
-          const { geometry } = simplify(feature, {
-            mutate: false,
-            tolerance: 0.0005,
-          });
+          const { geometry } =
+            action.payload === undefined
+              ? feature
+              : simplify(feature, {
+                  mutate: false,
+                  highQuality: true,
+                  tolerance: action.payload / 100000,
+                });
 
           if (geometry?.type === 'Point') {
             draft.drawingPoints.points.push({

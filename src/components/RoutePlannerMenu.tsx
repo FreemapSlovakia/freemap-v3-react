@@ -64,7 +64,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
   onMissingHomeLocation,
   onSetFromCurrentPosition,
   homeLocation,
-  onConvertToMeasurement,
+  onConvertToDrawing,
   onMilestonesChange,
   milestones,
 }) => {
@@ -132,6 +132,14 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
   const stopPropagation = useCallback((e: React.MouseEvent) => {
     e.stopPropagation();
   }, []);
+
+  const handleConvertToDrawing = useCallback(() => {
+    const tolerance = window.prompt(t('general.simplifyPrompt'), '50');
+
+    if (tolerance !== null) {
+      onConvertToDrawing(Number(tolerance));
+    }
+  }, [onConvertToDrawing, t]);
 
   return (
     <>
@@ -327,7 +335,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
         <span className="hidden-xs"> {t('general.elevationProfile')}</span>
       </Button>{' '}
       <Button
-        onClick={onConvertToMeasurement}
+        onClick={handleConvertToDrawing}
         disabled={!routeFound}
         title={t('general.convertToDrawing')}
       >
@@ -405,8 +413,8 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSetFromCurrentPosition(end: 'start' | 'finish') {
     dispatch(routePlannerSetFromCurrentPosition(end));
   },
-  onConvertToMeasurement() {
-    dispatch(convertToDrawing());
+  onConvertToDrawing(tolerance: number | undefined) {
+    dispatch(convertToDrawing(tolerance));
   },
   onMilestonesChange() {
     dispatch(routePlannerToggleMilestones(undefined));

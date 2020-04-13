@@ -58,6 +58,8 @@ export default {
     add: 'Add new',
     clear: 'Clear',
     convertToDrawing: 'Convert to drawing',
+    simplifyPrompt:
+      'Please enter simplification factor. Set to zero for no simplification.',
   },
 
   tools: {
