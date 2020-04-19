@@ -43,7 +43,7 @@ export interface PdfExportOptions {
   plannedRoute: boolean;
   track: boolean;
   scale: number;
-  area: 'visible' | 'infopoints';
+  area: 'visible' | 'selected';
   format: 'png' | 'jpeg' | 'svg' | 'pdf';
 }
 
@@ -89,7 +89,7 @@ export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
 export const deleteFeature = createAction('DELETE_FEATURE')<Selection>();
 
-export interface InfoPointSelection {
+export interface DrawPointSelection {
   type: 'draw-points';
   id?: number;
 }
@@ -99,7 +99,7 @@ export interface ObjectsSelection {
   id?: number;
 }
 
-export interface MeasureDistSelection {
+export interface DrawLinePolySelection {
   type: 'draw-lines' | 'draw-polygons';
   id?: number;
 }
@@ -121,10 +121,10 @@ export interface TrackingSelection {
 }
 
 export type Selection =
-  | InfoPointSelection
+  | DrawPointSelection
   | ObjectsSelection
   | OtherSelection
-  | MeasureDistSelection
+  | DrawLinePolySelection
   | TrackingSelection;
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();

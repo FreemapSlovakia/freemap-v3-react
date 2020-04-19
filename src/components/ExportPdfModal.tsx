@@ -85,8 +85,8 @@ function ExportPdfModalInt({
             {t('pdfExport.areas.visible')}
           </Button>
           <Button
-            active={area === 'infopoints'}
-            onClick={() => setArea('infopoints')}
+            active={area === 'selected'}
+            onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
           >
             {t('pdfExport.areas.pinned')} <FontAwesomeIcon icon="square-o" />

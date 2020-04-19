@@ -76,7 +76,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         const line = lines[i];
 
         if (
-          area === 'infopoints' &&
+          area === 'selected' &&
           selection?.type === 'draw-polygons' &&
           selection.id === i
         ) {
