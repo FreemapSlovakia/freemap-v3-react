@@ -40,6 +40,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       track,
     } = action.payload;
 
+    const { selection } = getState().main;
+
     let w: number | undefined = undefined;
     let n: number | undefined = undefined;
     let e: number | undefined = undefined;
@@ -52,8 +54,6 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       e = bounds.getEast();
       s = bounds.getSouth();
     } else {
-      const { selection } = getState().main;
-
       if (selection?.type === 'draw-polygons' && selection.id !== undefined) {
         // selected polygon
 
@@ -70,7 +70,19 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
     const features: Feature<Geometry>[] = [];
 
     if (drawing) {
-      for (const line of getState().drawingLines.lines) {
+      const { lines } = getState().drawingLines;
+
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+
+        if (
+          area === 'infopoints' &&
+          selection?.type === 'draw-polygons' &&
+          selection.id === i
+        ) {
+          continue;
+        }
+
         features.push(
           line.type === 'line'
             ? lineString(
