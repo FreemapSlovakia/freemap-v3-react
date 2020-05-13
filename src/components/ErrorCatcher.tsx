@@ -6,6 +6,7 @@ import { RootState } from 'fm3/storeCreator';
 
 type Props = ReturnType<typeof mapStateToProps> & {
   t: Translator;
+  children: JSX.Element | JSX.Element[];
 };
 
 interface State {

@@ -1,8 +1,7 @@
 import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
 import { RootState } from './storeCreator';
-import { RootAction } from './actions';
 import { setActiveModal, clearMap, selectFeature } from './actions/mainActions';
-import { ActionType } from 'typesafe-actions';
+import { ActionCreator } from 'typesafe-actions';
 
 export function getAxios(expectedStatus?: number | number[]) {
   const cfg: AxiosRequestConfig = {
@@ -41,11 +40,11 @@ export function getAuthAxios(
 interface HttpRequestParams extends Omit<AxiosRequestConfig, 'cancelToken'> {
   getState: () => RootState;
   expectedStatus?: number | number[];
-  cancelActions?: ActionType<RootAction>[];
+  cancelActions?: ActionCreator<string>[];
 }
 
 interface CancelItem {
-  cancelActions: ActionType<RootAction>[];
+  cancelActions: ActionCreator<string>[];
   source: CancelTokenSource;
 }
 

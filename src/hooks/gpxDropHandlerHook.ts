@@ -1,5 +1,6 @@
 import { useCallback } from 'react';
 import { Translator } from 'fm3/l10nInjector';
+import { FileRejection } from 'react-dropzone';
 
 export function useGpxDropHandler(
   onDrop: (gpx: string) => void,
@@ -7,8 +8,8 @@ export function useGpxDropHandler(
   t: Translator,
 ) {
   return useCallback(
-    (acceptedFiles: File[], rejectedFiles: File[] = []) => {
-      if (rejectedFiles.length) {
+    (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {
+      if (fileRejections.length) {
         onLoadError(t('trackViewer.wrongFormat'));
         return;
       }

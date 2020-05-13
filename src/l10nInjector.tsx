@@ -32,7 +32,7 @@ export const withTranslator = <BaseProps extends InjectedProps>(
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { languageCounter, ...restProps } = this.props;
 
-      return <BaseComponent t={tx} {...(restProps as BaseProps)} />;
+      return <BaseComponent {...(restProps as BaseProps)} t={tx} />;
     }
   }
 
