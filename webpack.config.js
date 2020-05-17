@@ -181,9 +181,15 @@ module.exports = {
         },
       },
     }),
-    new CopyWebpackPlugin([
-      { from: { glob: 'static', dot: true }, flatten: true },
-    ]),
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: '*',
+          globOptions: { glob: 'static', dot: true },
+          flatten: true,
+        },
+      ],
+    }),
     prod &&
       new MiniCssExtractPlugin({
         // Options similar to the same options in webpackOptions.output
