@@ -3,7 +3,6 @@ import {
   MapStateBase,
   mapRefocus,
   mapReset,
-  mapSetTileFormat,
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
   mapSetStravaAuth,
@@ -28,7 +27,6 @@ const initialState: MapState = {
   overlays: [],
   overlayOpacity: {},
   overlayPaneOpacity: 0.75,
-  tileFormat: 'png',
   stravaAuth: false,
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
@@ -45,10 +43,6 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     lat: initialState.lat,
     lon: initialState.lon,
     gpsTracked: false,
-  }))
-  .handleAction(mapSetTileFormat, (state, action) => ({
-    ...state,
-    tileFormat: action.payload,
   }))
   .handleAction(mapSetOverlayOpacity, (state, action) => ({
     ...state,
@@ -92,7 +86,6 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     return settings
       ? {
           ...state,
-          tileFormat: settings.tileFormat || state.tileFormat,
           overlayOpacity:
             settings.overlayOpacity === undefined
               ? state.overlayOpacity

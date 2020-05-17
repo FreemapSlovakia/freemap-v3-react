@@ -18,7 +18,6 @@ const LayersInt: React.FC<Props> = ({
   galleryFilter,
   galleryDirtySeq,
   overlayOpacity,
-  tileFormat,
 }) => {
   const getTileLayer = ({
     type,
@@ -57,7 +56,7 @@ const LayersInt: React.FC<Props> = ({
       !!url && (
         <ScaledTileLayer
           key={type}
-          url={url.replace('{tileFormat}', tileFormat)}
+          url={url}
           minZoom={minZoom}
           maxZoom={20}
           maxNativeZoom={maxNativeZoom}
@@ -89,7 +88,6 @@ const LayersInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  tileFormat: state.map.tileFormat,
   overlays: state.map.overlays,
   mapType: state.map.mapType,
   overlayOpacity: state.map.overlayOpacity,

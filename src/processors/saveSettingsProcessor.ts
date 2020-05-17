@@ -1,5 +1,4 @@
 import {
-  mapSetTileFormat,
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
 } from 'fm3/actions/mapActions';
@@ -21,7 +20,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   errorKey: 'settings.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const {
-      tileFormat,
       homeLocation,
       overlayOpacity,
       overlayPaneOpacity,
@@ -45,7 +43,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
             name: user.name,
             email: user.email,
             settings: {
-              tileFormat,
               overlayOpacity,
               overlayPaneOpacity,
               expertMode,
@@ -67,7 +64,6 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
       );
     }
 
-    dispatch(mapSetTileFormat(tileFormat));
     dispatch(setHomeLocation(homeLocation));
     dispatch(mapSetOverlayOpacity(overlayOpacity));
     dispatch(mapSetOverlayPaneOpacity(overlayPaneOpacity));

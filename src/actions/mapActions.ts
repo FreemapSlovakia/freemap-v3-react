@@ -13,15 +13,10 @@ export interface MapViewState {
 export interface MapStateBase extends MapViewState {
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
-  tileFormat: 'jpeg' | 'png';
 }
 
 export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }
->();
-
-export const mapSetTileFormat = createAction('MAP_SET_TILE_FORMAT')<
-  'png' | 'jpeg'
 >();
 
 export const mapSetOverlayOpacity = createAction('MAP_SET_OVERLAY_OPACITY')<{

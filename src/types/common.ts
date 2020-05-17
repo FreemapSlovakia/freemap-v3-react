@@ -18,7 +18,6 @@ export interface User {
   settings?: {
     expertMode?: boolean;
     trackViewerEleSmoothingFactor?: number;
-    tileFormat?: 'png' | 'jpeg';
     overlayOpacity?: { [type: string]: number };
     overlayPaneOpacity?: number;
   };

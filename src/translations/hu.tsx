@@ -491,12 +491,6 @@ export default {
       expert: 'Szakértő',
     },
     map: {
-      imgFormat: {
-        label: 'Az autós, túrázós és kerékpáros térkép csempéinek formátuma:',
-        hint:
-          'A térkép jobban néz ki PNG formátumban, de ehhez kb. 4× több adatot kell letölteni, mint a JPEG-nél. ' +
-          'Lassú internetkapcsolat esetén a JPEG-et ajánljuk.',
-      },
       overlayPaneOpacity: 'Saját vonalak átlátszatlansága:',
       homeLocation: {
         label: 'Lakóhely:',

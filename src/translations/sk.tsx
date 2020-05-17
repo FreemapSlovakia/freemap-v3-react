@@ -498,12 +498,6 @@ export default {
       expert: 'Expert',
     },
     map: {
-      imgFormat: {
-        label: 'Formát dlaždíc pre automapu, turistickú a cyklistickú mapu:',
-        hint:
-          'Mapové dlaždice vyzerajú lepšie v PNG formáte, ale sú asi 4x väčšie než JPEG dlaždice. ' +
-          'Pri pomalom internete preto odporúčame zvoliť JPEG.',
-      },
       overlayPaneOpacity: 'Viditeľnosť čiar na mape:',
       homeLocation: {
         label: 'Domovská poloha:',

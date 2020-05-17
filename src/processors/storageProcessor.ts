@@ -25,7 +25,6 @@ export const storageProcessor: Processor = {
         overlays: mapState.overlays,
         overlayOpacity: mapState.overlayOpacity,
         overlayPaneOpacity: mapState.overlayPaneOpacity,
-        tileFormat: mapState.tileFormat,
       },
       trackViewer: {
         eleSmoothingFactor: state.main.eleSmoothingFactor,

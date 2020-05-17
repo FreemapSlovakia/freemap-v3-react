@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
 import Tabs from 'react-bootstrap/lib/Tabs';
@@ -42,7 +41,6 @@ type Props = ReturnType<typeof mapStateToProps> &
   };
 
 interface State {
-  tileFormat: 'jpeg' | 'png';
   homeLocation: LatLon | null;
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
@@ -61,7 +59,6 @@ class SettingsInt extends React.Component<Props, State> {
     super(props);
 
     this.state = {
-      tileFormat: props.tileFormat,
       homeLocation: props.homeLocation,
       overlayOpacity: props.overlayOpacity,
       overlayPaneOpacity: props.overlayPaneOpacity,
@@ -91,7 +88,6 @@ class SettingsInt extends React.Component<Props, State> {
     e.preventDefault();
 
     this.props.onSave(
-      this.state.tileFormat,
       this.state.homeLocation,
       this.state.overlayOpacity,
       this.state.overlayPaneOpacity,
@@ -153,7 +149,6 @@ class SettingsInt extends React.Component<Props, State> {
     } = this.props;
     const {
       homeLocation,
-      tileFormat,
       expertMode,
       overlayOpacity,
       overlayPaneOpacity,
@@ -166,7 +161,6 @@ class SettingsInt extends React.Component<Props, State> {
 
     const userMadeChanges =
       ([
-        'tileFormat',
         'homeLocation',
         'expertMode',
         'eleSmoothingFactor',
@@ -220,25 +214,6 @@ class SettingsInt extends React.Component<Props, State> {
             </Checkbox>
             <Tabs id="setting-tabs">
               <Tab title={t('settings.tab.map')} eventKey={1}>
-                <p>{t('settings.map.imgFormat.label')}</p>
-                <ButtonGroup>
-                  <Button
-                    active={tileFormat === 'png'}
-                    onClick={() => this.setState({ tileFormat: 'png' })}
-                  >
-                    PNG
-                  </Button>
-                  <Button
-                    active={tileFormat === 'jpeg'}
-                    onClick={() => this.setState({ tileFormat: 'jpeg' })}
-                  >
-                    JPEG
-                  </Button>
-                </ButtonGroup>
-                <br />
-                <br />
-                <Alert>{t('settings.map.imgFormat.hint')}</Alert>
-                <hr />
                 <div>
                   <p>
                     {t('settings.map.overlayPaneOpacity')}{' '}
@@ -386,7 +361,6 @@ class SettingsInt extends React.Component<Props, State> {
 }
 
 const mapStateToProps = (state: RootState) => ({
-  tileFormat: state.map.tileFormat,
   homeLocation: state.main.homeLocation,
   overlayOpacity: state.map.overlayOpacity,
   overlayPaneOpacity: state.map.overlayPaneOpacity,
@@ -400,7 +374,6 @@ const mapStateToProps = (state: RootState) => ({
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onSave(
-    tileFormat: 'jpeg' | 'png',
     homeLocation: LatLon | null,
     overlayOpacity: { [type: string]: number },
     overlayPaneOpacity: number,
@@ -411,7 +384,6 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   ) {
     dispatch(
       saveSettings({
-        tileFormat,
         homeLocation,
         overlayOpacity,
         overlayPaneOpacity,

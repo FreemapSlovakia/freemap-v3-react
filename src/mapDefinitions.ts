@@ -76,7 +76,7 @@ export const baseLayers: LayerDef[] = [
   ].map(([type, icon, showOnlyInExpertMode]) => ({
     type,
     icon,
-    url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.{tileFormat}`,
+    url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
     subdomains: 'abcd',
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,

@@ -73,7 +73,6 @@ export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 export const reloadApp = createAction('RELOAD_APP')();
 
 export const saveSettings = createAction('SAVE_SETTINGS')<{
-  tileFormat: 'png' | 'jpeg';
   homeLocation: LatLon | null;
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;

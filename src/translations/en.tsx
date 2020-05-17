@@ -487,12 +487,6 @@ export default {
       expert: 'Expert',
     },
     map: {
-      imgFormat: {
-        label: 'Tile format for car, hiking and bicycle map:',
-        hint:
-          'Map looks better if PNG format is used but it requires to download app. 4x more data than for JPEG. ' +
-          'On slow internet connection we recommend to select JPEG.',
-      },
       overlayPaneOpacity: 'Map line features opacity:',
       homeLocation: {
         label: 'Home location:',
