@@ -146,7 +146,7 @@ const MainInt: React.FC<Props> = ({
   onDelete,
   canDelete,
 }) => {
-  const [showInfoBar, setShowInfoBar] = useState<boolean>(true);
+  const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
   const mapRef = useRef<Map | null>();
 
