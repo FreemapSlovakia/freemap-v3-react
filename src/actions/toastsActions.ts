@@ -15,27 +15,28 @@ export interface Toast {
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
   actions?: ToastAction[];
-  collapseKey?: string;
+  id?: string;
   cancelType?: string | string[] | RegExp;
 }
 
 export interface ResolvedToast extends Toast {
-  id: number;
   actions: ToastAction[];
+  id: string;
 }
 
 export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) =>
-  Object.assign({ actions: [] as ToastAction[] }, toast, {
-    id: Math.random(),
-  }),
+  Object.assign(
+    { actions: [] as ToastAction[], id: Math.random().toString(36).slice(2) },
+    toast,
+  ),
 )<ResolvedToast>();
 
-export const toastsRemove = createAction('TOASTS_REMOVE')<number>();
+export const toastsRemove = createAction('TOASTS_REMOVE')<string>();
 
-export const toastsStopTimeout = createAction('TOASTS_STOP_TIMEOUT')<number>();
+export const toastsStopTimeout = createAction('TOASTS_STOP_TIMEOUT')<string>();
 
 export const toastsRestartTimeout = createAction('TOASTS_RESTART_TIMEOUT')<
-  number
+  string
 >();
 
 // helpers

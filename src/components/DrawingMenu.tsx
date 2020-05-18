@@ -42,12 +42,10 @@ const DrawingMenuInt: React.FC<Props> = ({
   onElevationChartTrackGeojsonSet,
   onElevationChartClose,
   onLabelModify,
-  onMeasure,
 }) => {
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position?: number, id0?: number) => {
       const tool = selection?.type;
-
       if (tool === 'draw-points') {
         onInfoPointAdd(lat, lon);
         return;
@@ -78,7 +76,13 @@ const DrawingMenuInt: React.FC<Props> = ({
         pos,
       );
     },
-    [selection, linePoints, onInfoPointAdd, onDistPointAdd],
+    [
+      selection?.id,
+      selection?.type,
+      linePoints,
+      onInfoPointAdd,
+      onDistPointAdd,
+    ],
   );
 
   useEffect(() => {
@@ -140,24 +144,27 @@ const DrawingMenuInt: React.FC<Props> = ({
           <FontAwesomeIcon icon="square-o" />
           <span className="hidden-xs"> {t('measurement.area')}</span>
         </Button>
-      </ButtonGroup>{' '}
-      <Button onClick={onLabelModify} disabled={!isActive}>
-        <FontAwesomeIcon icon="tag" />
-        <span className="hidden-xs"> {t('drawing.modify')}</span>
-      </Button>{' '}
-      <Button onClick={onMeasure} disabled={!isActive}>
-        <FontAwesomeIcon icon="!icon-ruler" />
-        <span className="hidden-xs"> {t('drawing.measure')}</span>
-      </Button>{' '}
-      {tool === 'draw-lines' && (
-        <Button
-          active={elevationChartTrackGeojson !== null}
-          onClick={toggleElevationChart}
-          disabled={linePoints.length < 2}
-        >
-          <FontAwesomeIcon icon="bar-chart" />
-          <span className="hidden-xs"> {t('general.elevationProfile')}</span>
-        </Button>
+      </ButtonGroup>
+      {isActive && (
+        <>
+          {' '}
+          <Button onClick={onLabelModify} disabled={!isActive}>
+            <FontAwesomeIcon icon="tag" />
+            <span className="hidden-xs"> {t('drawing.modify')}</span>
+          </Button>
+        </>
+      )}
+      {tool === 'draw-lines' && linePoints.length >= 2 && (
+        <>
+          {' '}
+          <Button
+            active={elevationChartTrackGeojson !== null}
+            onClick={toggleElevationChart}
+          >
+            <FontAwesomeIcon icon="bar-chart" />
+            <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+          </Button>
+        </>
       )}
     </>
   );
@@ -191,15 +198,14 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     position: number,
   ) {
     dispatch(drawingLineAddPoint({ index, point, position, type }));
+    dispatch(drawingPointMeasure(true));
   },
   onInfoPointAdd(lat: number, lon: number) {
     dispatch(drawingPointAdd({ lat, lon, label: '' }));
+    dispatch(drawingPointMeasure(true));
   },
   onLabelModify() {
     dispatch(setActiveModal('edit-label'));
-  },
-  onMeasure() {
-    dispatch(drawingPointMeasure());
   },
 });
 

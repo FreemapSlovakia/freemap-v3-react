@@ -21,7 +21,7 @@ export const galleryItemUploadProcessor: Processor = {
       if (getState().gallery.items.length === 0) {
         dispatch(
           toastsAdd({
-            collapseKey: 'gallery.upload',
+            id: 'gallery.upload',
             messageKey: 'gallery.uploadModal.success',
             timeout: 5000,
             style: 'info',

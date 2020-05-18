@@ -40,7 +40,7 @@ export const authLoginWithFacebookProcessor: Processor = {
 
     dispatch(
       toastsAdd({
-        collapseKey: 'login',
+        id: 'login',
         messageKey: 'logIn.success',
         style: 'info',
         timeout: 5000,

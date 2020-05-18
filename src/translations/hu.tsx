@@ -420,7 +420,9 @@ export default {
       </>
     ),
     areaInfo: ({ area }) => (
+      // TODO translate
       <>
+        Area:
         <div>
           {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
@@ -432,7 +434,9 @@ export default {
       </>
     ),
     distanceInfo: ({ length }) => (
+      // TODO translate
       <>
+        Length:
         <div>{nf33.format(length * 1000)}&nbsp;m</div>
         <div>{nf33.format(length)}&nbsp;km</div>
       </>
@@ -480,7 +484,6 @@ export default {
       label: 'Felirat:',
       hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
     },
-    measure: 'Mérés!',
   },
 
   settings: {

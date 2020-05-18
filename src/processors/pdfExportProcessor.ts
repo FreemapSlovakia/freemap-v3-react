@@ -18,7 +18,7 @@ const mapExportUrl =
 export const exportPdfProcessor: Processor<typeof exportPdf> = {
   actionCreator: exportPdf,
   errorKey: 'pdfExport.exportError',
-  collapseKey: 'pdfExport.export',
+  id: 'pdfExport.export',
   handle: async ({ dispatch, getState, action }) => {
     const le = getMapLeafletElement();
     if (!le) {
@@ -156,7 +156,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
 
     dispatch(
       toastsAdd({
-        collapseKey: 'pdfExport.export',
+        id: 'pdfExport.export',
         messageKey: 'pdfExport.exporting',
         style: 'info',
       }),
@@ -184,7 +184,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
 
     dispatch(
       toastsAdd({
-        collapseKey: 'pdfExport.export',
+        id: 'pdfExport.export',
         messageKey: 'pdfExport.exported',
         messageParams: {
           url: `${mapExportUrl}/export?token=${data.token}`,

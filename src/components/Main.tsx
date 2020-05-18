@@ -451,7 +451,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onGpxLoadError(message: string) {
     dispatch(
       toastsAdd({
-        collapseKey: 'trackViewer.loadError',
+        id: 'trackViewer.loadError',
         message,
         style: 'danger',
         timeout: 5000,

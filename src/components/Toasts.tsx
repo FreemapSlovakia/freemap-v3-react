@@ -57,7 +57,7 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onAction(id: number, action?: RootAction | RootAction[]) {
+  onAction(id: string, action?: RootAction | RootAction[]) {
     // TODO use some action flag to indicate that we want the action to close the toast
     dispatch(toastsRemove(id));
     if (action) {
@@ -68,10 +68,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
       }
     }
   },
-  onTimeoutStop(id: number) {
+  onTimeoutStop(id: string) {
     dispatch(toastsStopTimeout(id));
   },
-  onTimeoutRestart(id: number) {
+  onTimeoutRestart(id: string) {
     dispatch(toastsRestartTimeout(id));
   },
 });

@@ -3,12 +3,12 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
 export const timeoutMap = new Map<
-  number,
+  string,
   { timeoutId: number; dispatch: Dispatch<RootAction> }
 >();
 
 export function setupTimeout(
-  id: number,
+  id: string,
   timeout: number,
   dispatch: Dispatch<RootAction>,
 ) {
@@ -23,7 +23,7 @@ export function setupTimeout(
   });
 }
 
-export function removeTimeout(id: number) {
+export function removeTimeout(id: string) {
   const tm = timeoutMap.get(id);
   if (tm) {
     timeoutMap.delete(id);

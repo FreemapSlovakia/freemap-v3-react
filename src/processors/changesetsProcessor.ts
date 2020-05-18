@@ -105,7 +105,7 @@ export const changesetsProcessor: Processor = {
       if (allChangesetsSoFar.length === 0) {
         dispatch(
           toastsAdd({
-            collapseKey: 'changeset.detail',
+            id: 'changeset.detail',
             messageKey: 'changesets.notFound',
             cancelType: [
               getType(selectFeature),

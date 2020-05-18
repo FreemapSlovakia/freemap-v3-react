@@ -419,6 +419,7 @@ export default {
     ),
     areaInfo: ({ area }) => (
       <>
+        Plocha:
         <div>
           {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
@@ -431,6 +432,7 @@ export default {
     ),
     distanceInfo: ({ length }) => (
       <>
+        Délka:
         <div>{nf33.format(length * 1000)}&nbsp;m</div>
         <div>{nf33.format(length)}&nbsp;km</div>
       </>
@@ -478,7 +480,6 @@ export default {
       label: 'Popis:',
       hint: 'Pokud chcete popis odstránit, nechte pole popisu prázdné.',
     },
-    measure: 'Odměřit',
   },
 
   settings: {

@@ -530,7 +530,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onDelete() {
     dispatch(
       toastsAdd({
-        collapseKey: 'gallery.deletePicture',
+        id: 'gallery.deletePicture',
         messageKey: 'gallery.viewer.deletePrompt',
         style: 'warning',
         cancelType: [getType(galleryClear), getType(galleryRequestImage)],

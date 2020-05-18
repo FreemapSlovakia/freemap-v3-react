@@ -54,7 +54,7 @@ export const trackViewerUploadTrackProcessor: Processor = {
       toastsAdd({
         messageKey: 'trackViewer.shareToast',
         style: 'info',
-        collapseKey: 'trackViewer.shareToast',
+        id: 'trackViewer.shareToast',
         timeout: 5000,
       }),
     );

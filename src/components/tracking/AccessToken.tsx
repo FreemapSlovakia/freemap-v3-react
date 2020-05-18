@@ -133,7 +133,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onDelete(id: number) {
     dispatch(
       toastsAdd({
-        collapseKey: 'tracking.deleteAccessToken',
+        id: 'tracking.deleteAccessToken',
         messageKey: 'tracking.accessToken.delete',
         style: 'warning',
         cancelType: [

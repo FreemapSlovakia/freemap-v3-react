@@ -134,7 +134,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onShowTrackInfo() {
     dispatch(
       toastsAdd({
-        collapseKey: 'trackViewer.trackInfo',
+        id: 'trackViewer.trackInfo',
         message: <TrackViewerDetails />, // TODO only string
         cancelType: [getType(clearMap), getType(trackViewerSetData)],
         style: 'info',

@@ -14,7 +14,7 @@ export const galleryShowLayerHintProcessor: Processor = {
     ) {
       dispatch(
         toastsAdd({
-          collapseKey: 'gallery.showLayerHint',
+          id: 'gallery.showLayerHint',
           messageKey: 'gallery.layerHint',
           style: 'info',
           actions: [

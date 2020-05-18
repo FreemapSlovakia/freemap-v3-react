@@ -8,9 +8,9 @@ import { RootAction } from 'fm3/actions';
 import { ResolvedToast } from 'fm3/actions/toastsActions';
 
 interface Props extends ResolvedToast {
-  onAction: (id: number, action?: RootAction | RootAction[]) => void;
-  onTimeoutStop: (id: number) => void;
-  onTimeoutRestart: (id: number) => void;
+  onAction: (id: string, action?: RootAction | RootAction[]) => void;
+  onTimeoutStop: (id: string) => void;
+  onTimeoutRestart: (id: string) => void;
 }
 
 export const Toast: React.FC<Props> = ({

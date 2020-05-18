@@ -416,6 +416,7 @@ export default {
     ),
     areaInfo: ({ area }) => (
       <>
+        Area:
         <div>
           {nf33.format(area)}&nbsp;m<sup>2</sup>
         </div>
@@ -428,6 +429,7 @@ export default {
     ),
     distanceInfo: ({ length }) => (
       <>
+        Length:
         <div>{nf33.format(length * 1000)}&nbsp;m</div>
         <div>{nf33.format(length)}&nbsp;km</div>
       </>
@@ -476,7 +478,6 @@ export default {
       label: 'Label:',
       hint: 'To remove label leave its field empty.',
     },
-    measure: 'Measure out',
   },
 
   settings: {

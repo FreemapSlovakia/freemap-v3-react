@@ -18,19 +18,20 @@ export const toastsReducer = createReducer<ToastsState, RootAction>(
   initialState,
 )
   .handleAction(toastsAdd, (state, action) => {
-    const { collapseKey } = action.payload;
-    if (collapseKey) {
-      const toast = state.toasts.find((t) => t.collapseKey === collapseKey);
-      if (toast) {
-        return {
-          ...state,
-          toasts: [
-            ...state.toasts.filter((t) => t.id !== toast.id),
-            action.payload,
-          ],
-        };
-      }
+    const { id } = action.payload;
+
+    const toast = state.toasts.find((t) => t.id === id);
+
+    if (toast) {
+      return {
+        ...state,
+        toasts: [
+          ...state.toasts.filter((t) => t.id !== toast.id),
+          action.payload,
+        ],
+      };
     }
+
     return { ...state, toasts: [...state.toasts, action.payload] };
   })
   .handleAction(toastsRemove, (state, action) => ({

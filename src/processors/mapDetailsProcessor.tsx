@@ -112,7 +112,7 @@ export const mapDetailsProcessor: Processor = {
       (oRes.elements || []).forEach((element) => {
         dispatch(
           toastsAdd({
-            // collapseKey: 'mapDetails.trackInfo.detail',
+            // id: 'mapDetails.trackInfo.detail',
             message: <RoadDetails way={element} />,
             cancelType: getType(mapDetailsSetUserSelectedPosition),
             style: 'info',
@@ -132,7 +132,7 @@ export const mapDetailsProcessor: Processor = {
     } else {
       dispatch(
         toastsAdd({
-          collapseKey: 'mapDetails.trackInfo.detail',
+          id: 'mapDetails.trackInfo.detail',
           messageKey: 'mapDetails.notFound',
           cancelType: getType(mapDetailsSetUserSelectedPosition),
           timeout: 5000,

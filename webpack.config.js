@@ -184,8 +184,8 @@ module.exports = {
     new CopyWebpackPlugin({
       patterns: [
         {
-          from: '*',
-          globOptions: { glob: 'static', dot: true },
+          from: 'static/**',
+          globOptions: { dot: true },
           flatten: true,
         },
       ],

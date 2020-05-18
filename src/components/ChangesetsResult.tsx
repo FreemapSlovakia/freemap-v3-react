@@ -144,7 +144,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 
     dispatch(
       toastsAdd({
-        collapseKey: 'changeset.detail',
+        id: 'changeset.detail',
         message,
         cancelType: getType(changesetsSetAuthorName),
         style: 'info',

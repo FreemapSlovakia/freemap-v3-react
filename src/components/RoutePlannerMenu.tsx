@@ -388,7 +388,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onMissingHomeLocation() {
     dispatch(
       toastsAdd({
-        collapseKey: 'routePlanner.noHomeAlert',
+        id: 'routePlanner.noHomeAlert',
         messageKey: 'routePlanner.noHomeAlert.msg',
         style: 'warning',
         actions: [

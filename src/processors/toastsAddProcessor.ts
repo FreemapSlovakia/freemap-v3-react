@@ -6,16 +6,13 @@ export const toastsAddProcessor: Processor<typeof toastsAdd> = {
   actionCreator: toastsAdd,
   handle: async ({ dispatch, getState, action }) => {
     const {
-      payload: { timeout, id, collapseKey },
+      payload: { timeout, id },
     } = action;
 
-    if (collapseKey) {
-      const toast = getState().toasts.toasts.find(
-        (t) => t.collapseKey === collapseKey,
-      );
-      if (toast) {
-        removeTimeout(toast.id);
-      }
+    const toast = getState().toasts.toasts.find((t) => t.id === id);
+
+    if (toast) {
+      removeTimeout(toast.id);
     }
 
     if (typeof timeout === 'number') {

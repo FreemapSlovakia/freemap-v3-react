@@ -152,7 +152,7 @@ export const routePlannerFindRouteProcessor: Processor = {
       if (showHint) {
         dispatch(
           toastsAdd({
-            collapseKey: 'routePlanner.showMidpointHint',
+            id: 'routePlanner.showMidpointHint',
             messageKey: 'routePlanner.showMidpointHint',
             style: 'info',
             actions: [
@@ -251,7 +251,7 @@ export const routePlannerFindRouteProcessor: Processor = {
       );
       dispatch(
         toastsAdd({
-          collapseKey: 'routePlanner.routeNotFound',
+          id: 'routePlanner.routeNotFound',
           messageKey: 'routePlanner.routeNotFound',
           style: 'warning',
           timeout: 5000,

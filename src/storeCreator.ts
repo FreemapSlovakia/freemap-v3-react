@@ -45,7 +45,7 @@ import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
 import { locateProcessor } from './processors/locateProcessor';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
 import { gpxExportProcessor } from './processors/gpxExportProcessor';
-import { elevationMeasurementProcessor } from './processors/elevationMeasurementProcessor';
+import { measurementProcessor } from './processors/measurementProcessor';
 import { mapDetailsProcessor } from './processors/mapDetailsProcessor';
 import { changesetsProcessor } from './processors/changesetsProcessor';
 import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
@@ -146,7 +146,7 @@ processors.push(
   locateProcessor,
   saveSettingsProcessor,
   gpxExportProcessor,
-  elevationMeasurementProcessor,
+  measurementProcessor,
   mapDetailsProcessor,
   changesetsProcessor,
   authInitProcessor,

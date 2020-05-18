@@ -22,7 +22,7 @@ export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
 
     dispatch(
       toastsAdd({
-        collapseKey: 'login',
+        id: 'login',
         messageKey: 'logIn.success',
         style: 'info',
         timeout: 5000,

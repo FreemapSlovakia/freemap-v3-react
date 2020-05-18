@@ -26,7 +26,7 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
   }) => void | Promise<void>;
   actionCreator: T | T[] | '*';
   errorKey?: string;
-  collapseKey?: string;
+  id?: string;
 }
 
 export const processors: Processor[] = [];
@@ -63,7 +63,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
     actionCreator: actionType,
     handle,
     errorKey,
-    collapseKey,
+    id,
   } of processors) {
     if (
       handle &&
@@ -79,13 +79,7 @@ export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
             ? p
             : p.catch((err) => {
                 console.error(err);
-                dispatchAxiosErrorAsToast(
-                  dispatch,
-                  errorKey,
-                  err,
-                  {},
-                  collapseKey,
-                );
+                dispatchAxiosErrorAsToast(dispatch, errorKey, err, {}, id);
               }),
         );
       }

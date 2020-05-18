@@ -18,8 +18,7 @@ import { RootAction } from 'fm3/actions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { LatLon } from 'fm3/types/common';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-
-// const defaultIcon = new L.Icon.Default();
+import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 
 const circularIcon = divIcon({
   // CircleMarker is not draggable
@@ -340,12 +339,15 @@ const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onPointAdd(index: number, point: Point, position: number) {
     dispatch(drawingLineAddPoint({ index, point, position }));
+    dispatch(drawingPointMeasure(true));
   },
   onPointUpdate(index: number, point: Point) {
     dispatch(drawingLineUpdatePoint({ index, point }));
+    dispatch(drawingPointMeasure(true));
   },
   onPointRemove(index: number, id: number) {
     dispatch(drawingLineRemovePoint({ index, id }));
+    dispatch(drawingPointMeasure(true));
   },
   onSelect(type: 'polygon' | 'line', index: number) {
     dispatch(
@@ -354,6 +356,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
         id: index,
       }),
     );
+    dispatch(drawingPointMeasure(true));
   },
 });
 

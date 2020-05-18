@@ -90,7 +90,7 @@ if ('serviceWorker' in navigator) {
     onUpdated: () => {
       store.dispatch(
         toastsAdd({
-          collapseKey: 'app.update',
+          id: 'app.update',
           messageKey: 'general.appUpdated',
           style: 'info',
           actions: [

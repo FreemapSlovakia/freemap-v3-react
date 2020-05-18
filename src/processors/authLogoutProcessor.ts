@@ -17,7 +17,7 @@ export const authLogoutProcessor: Processor = {
     dispatch(authLogout());
     dispatch(
       toastsAdd({
-        collapseKey: 'login',
+        id: 'login',
         messageKey: 'logOut.success',
         style: 'info',
         timeout: 5000,

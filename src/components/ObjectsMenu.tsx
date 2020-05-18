@@ -129,7 +129,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onLowZoom() {
     dispatch(
       toastsAdd({
-        collapseKey: 'objects.lowZoomAlert',
+        id: 'objects.lowZoomAlert',
         messageKey: 'objects.lowZoomAlert.message',
         style: 'warning',
         actions: [

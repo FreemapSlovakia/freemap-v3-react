@@ -180,7 +180,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     if (ask) {
       dispatch(
         toastsAdd({
-          collapseKey: 'galleryUploadModal.close',
+          id: 'galleryUploadModal.close',
           messageKey: 'general.closeWithoutSaving',
           style: 'warning',
           actions: [

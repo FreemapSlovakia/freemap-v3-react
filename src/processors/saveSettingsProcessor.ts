@@ -72,7 +72,7 @@ export const saveSettingsProcessor: Processor<typeof saveSettings> = {
     dispatch(tipsPreventNextTime(preventTips));
     dispatch(
       toastsAdd({
-        collapseKey: 'settings.saved',
+        id: 'settings.saved',
         messageKey: 'settings.saveSuccess',
         style: 'info',
         timeout: 5000,
