@@ -12,6 +12,7 @@ import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import useMedia from 'use-media';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -31,7 +32,9 @@ const MapSwitchButtonInt: React.FC<Props> = ({
 }) => {
   const [show, setShow] = useState(false);
 
-  const buttonRef = useRef<HTMLButtonElement | null>(null);
+  const buttonRef = useRef<Button | null>(null);
+
+  const button2Ref = useRef<Button | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -94,48 +97,61 @@ const MapSwitchButtonInt: React.FC<Props> = ({
     onMapRefocus({ overlays: [...s] });
   };
 
+  const isWide = useMedia({ minWidth: '768px' });
+
   return (
-    <ButtonGroup className="dropup">
-      {baseLayers
-        .filter((layer) => layer.primary)
-        .map(({ type, icon }) => (
-          <Button
-            title={t(`mapLayers.base.${type}`)}
-            key={type}
-            data-type={type}
-            active={mapType === type}
-            onClick={handleBaseClick}
-          >
-            <FontAwesomeIcon icon={icon} />
-          </Button>
-        ))}
-      {overlayLayers
-        .filter((layer) => layer.primary)
-        .map(({ type, icon }) => (
-          <Button
-            title={t(`mapLayers.overlay.${type}`)}
-            key={type}
-            data-type={type}
-            active={overlays.includes(type)}
-            onClick={handleOverlayClick}
-          >
-            <FontAwesomeIcon icon={icon} />
-          </Button>
-        ))}
-      <button
-        className="dropdown-toggle btn btn-default"
-        ref={buttonRef}
+    <>
+      <ButtonGroup className="dropup hidden-xs">
+        {baseLayers
+          .filter((layer) => layer.primary)
+          .map(({ type, icon }) => (
+            <Button
+              title={t(`mapLayers.base.${type}`)}
+              key={type}
+              data-type={type}
+              active={mapType === type}
+              onClick={handleBaseClick}
+            >
+              <FontAwesomeIcon icon={icon} />
+            </Button>
+          ))}
+        {overlayLayers
+          .filter((layer) => layer.primary)
+          .map(({ type, icon }) => (
+            <Button
+              title={t(`mapLayers.overlay.${type}`)}
+              key={type}
+              data-type={type}
+              active={overlays.includes(type)}
+              onClick={handleOverlayClick}
+            >
+              <FontAwesomeIcon icon={icon} />
+            </Button>
+          ))}
+        <Button
+          className="dropdown-toggle"
+          ref={buttonRef}
+          onClick={handleButtonClick}
+          title={t('mapLayers.layers')}
+        >
+          <span className="caret" />
+        </Button>
+      </ButtonGroup>
+      <Button
+        className="hidden-sm hidden-md hidden-lg"
+        ref={button2Ref}
         onClick={handleButtonClick}
         title={t('mapLayers.layers')}
+        bsStyle="primary"
       >
-        <span className="caret" />
-      </button>
+        <FontAwesomeIcon icon="map-o" />
+      </Button>
       <Overlay
         rootClose
         placement="top"
         show={show}
         onHide={handleHide}
-        target={buttonRef.current ?? undefined}
+        target={(isWide ? buttonRef.current : button2Ref.current) ?? undefined}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
@@ -250,7 +266,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
           </ul>
         </Popover>
       </Overlay>
-    </ButtonGroup>
+    </>
   );
 };
 

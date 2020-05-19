@@ -389,13 +389,13 @@ const MainInt: React.FC<Props> = ({
               <DrawingPointsResult />
               <ChangesetsResult />
               <TrackingResult />
-              {showElevationChart && <AsyncElevationChart />}
               {showGalleryPicker && <GalleryPicker />}
             </>
           )}
           {/* TODO should not be extra just because for position picking */}
           <GalleryResult />
         </Map>
+        {showElevationChart && <AsyncElevationChart />}
       </div>
     </>
   );

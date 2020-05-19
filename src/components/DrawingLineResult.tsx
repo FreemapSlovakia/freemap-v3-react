@@ -285,7 +285,6 @@ const DrawingLineResultInt: React.FC<Props> = ({
                   className="compact"
                   offset={[-4, 0]}
                   direction="right"
-                  permanent={i === ps.length - 1}
                 >
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
