@@ -55,6 +55,7 @@ export interface LayerDef {
   strava?: boolean;
   tms?: boolean;
   extraScales?: number[];
+  primary?: boolean;
 }
 
 export const baseLayers: LayerDef[] = [
@@ -67,6 +68,7 @@ export const baseLayers: LayerDef[] = [
     minZoom: 6,
     maxNativeZoom: 19,
     key: 'x',
+    primary: true,
   },
   ...[
     ['A', 'car', true] as const,
@@ -84,6 +86,16 @@ export const baseLayers: LayerDef[] = [
     key: type.toLowerCase(),
     showOnlyInExpertMode,
   })),
+  {
+    type: 'O',
+    icon: 'globe',
+    url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    minZoom: 0,
+    maxNativeZoom: 19,
+    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
+    key: 'o',
+    primary: true,
+  },
   {
     type: 'S',
     icon: 'plane',
@@ -104,15 +116,7 @@ export const baseLayers: LayerDef[] = [
         name: '©\xa02017 Microsoft Corporation',
       },
     ],
-  },
-  {
-    type: 'O',
-    icon: 'globe',
-    url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-    minZoom: 0,
-    maxNativeZoom: 19,
-    attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    key: 'o',
+    primary: true,
   },
   {
     type: 'M',
@@ -224,6 +228,7 @@ export const overlayLayers: LayerDef[] = [
         name: 'CC-BY-SA',
       },
     ],
+    primary: true,
   },
   {
     type: 'l',

@@ -966,8 +966,8 @@ export default {
       p: 'OpenTopoMap',
       d: 'Tömegközlekedés',
       h: 'Történelmi térkép',
-      X: 'Új szabadtéri térkép',
-      Y: 'Új szabadtéri térkép (helyi)',
+      X: 'Túrázás + Kerékpár + Síelés',
+      Y: 'Túrázás + Kerékpár + Síelés (helyi)',
     },
     overlay: {
       I: 'Fényképek',
