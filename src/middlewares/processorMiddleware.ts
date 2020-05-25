@@ -31,10 +31,10 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
 
 export const processors: Processor[] = [];
 
-export const processorMiddleware: Middleware<{}, RootState, Dispatch> = ({
+export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
   getState,
   dispatch,
-}) => (next) => (action: Action) => {
+}) => (next: Dispatch) => (action: Action): any => {
   const prevState = getState();
 
   let a: Action = action;

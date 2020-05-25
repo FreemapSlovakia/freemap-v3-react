@@ -19,7 +19,7 @@ import {
 } from 'fm3/actions/drawingPointActions';
 import turfFlatten from '@turf/flatten';
 
-export function globalReducer(state: RootState, action: RootAction) {
+export function globalReducer(state: RootState, action: RootAction): RootState {
   if (isActionOf(convertToDrawing, action)) {
     if (state.main.selection?.type === 'route-planner') {
       return produce(state, (draft) => {

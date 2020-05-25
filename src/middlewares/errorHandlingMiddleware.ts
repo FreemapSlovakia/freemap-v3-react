@@ -4,10 +4,10 @@ import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
 
 export const errorHandlingMiddleware: Middleware<
-  {},
+  any,
   RootState,
   Dispatch<RootAction>
-> = () => (next) => (action) => {
+> = () => (next: Dispatch) => (action: RootAction): any => {
   try {
     // TODO
     // if (action.type === at.UNHANDLED_LOGIC_ERROR) {

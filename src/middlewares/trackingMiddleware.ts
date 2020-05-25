@@ -10,10 +10,10 @@ import { RootAction } from 'fm3/actions';
 
 let reopenTs: number | undefined;
 
-export const trackingMiddleware: Middleware<{}, RootState, Dispatch> = ({
+export const trackingMiddleware: Middleware<any, RootState, Dispatch> = ({
   dispatch,
   getState,
-}) => (next) => (action: RootAction) => {
+}) => (next: Dispatch) => (action: RootAction): any => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

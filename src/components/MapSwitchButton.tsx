@@ -56,7 +56,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: any, e: React.SyntheticEvent<{}>) => {
+    (overlay: any, e: React.SyntheticEvent<any>) => {
       const { dataset } = e.target as HTMLElement;
 
       if (dataset && dataset.strava) {

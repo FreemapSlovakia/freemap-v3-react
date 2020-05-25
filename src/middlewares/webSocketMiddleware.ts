@@ -26,10 +26,10 @@ function resetRestarter() {
   }, 45000);
 }
 
-export const webSocketMiddleware: Middleware<{}, RootState, Dispatch> = ({
+export const webSocketMiddleware: Middleware<any, RootState, Dispatch> = ({
   dispatch,
   getState,
-}) => (next) => (action: RootAction) => {
+}) => (next: Dispatch) => (action: RootAction): any => {
   switch (action.type) {
     case getType(wsOpen): {
       if (ws && ws.readyState !== WebSocket.CLOSED) {
