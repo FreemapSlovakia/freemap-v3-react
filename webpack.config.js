@@ -10,6 +10,7 @@ const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
 const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
+const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -150,10 +151,38 @@ module.exports = {
       template: '!!ejs-loader!src/index.html',
       inject: false,
     }),
+    new FaviconsWebpackPlugin({
+      logo: './images/logo.jpg',
+      inject: true,
+      prefix: './',
+      favicons: {
+        appName: 'Freemap Slovakia', // Your application's name. `string`
+        appShortName: 'Freemap', // Your application's short_name. `string`. Optional. If not set, appName will be used
+        // Your application's description. `string`
+        appDescription:
+          'Freemap je voľne dostupná online mapa Slovenska založená na dátach z OpenStreetMap',
+        developerName: 'Freemap Slovakia', // Your (or your developer's) name. `string`
+        developerURL: 'https://github.com/FreemapSlovakia/', // Your (or your developer's) URL. `string`
+        dir: 'auto', // Primary text direction for name, short_name, and description
+        lang: 'en-US', // Primary language for name and short_name
+        background: '#ffffff', // Background colour for flattened icons. `string`
+        theme_color: '#ffffff', // Theme color user for example in Android's task switcher. `string`
+        display: 'fullscreen', // Preferred display mode: "fullscreen", "standalone", "minimal-ui" or "browser". `string`
+        appleStatusBarStyle: 'black-translucent', // Color for appleStatusBarStyle : Not implemented (black-translucent | default | black)
+        orientation: 'any', // Default orientation: "any", "natural", "portrait" or "landscape". `string`
+        icons: {
+          favicons: false, // we have separate icno for favicon
+          android: false, // we generate manifest with WebpackPwaManifest
+          coast: false,
+          yandex: false,
+        },
+      },
+    }),
     new WebpackPwaManifest({
       name: 'Freemap Slovakia',
       short_name: 'Freemap',
-      description: 'OpenStreetMap based map application',
+      description:
+        'Freemap je voľne dostupná online mapa Slovenska založená na dátach z OpenStreetMap',
       background_color: '#ffffff',
       theme_color: '#ffffff',
       'theme-color': '#ffffff',
