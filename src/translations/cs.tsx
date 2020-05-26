@@ -977,6 +977,7 @@ export default {
       s2: 'Strava (Běh)',
       s3: 'Strava (Vodní aktivity)',
       s4: 'Strava (Zimní aktivity)',
+      w: 'Wikipedia',
     },
     type: {
       map: 'mapa',

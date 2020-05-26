@@ -105,6 +105,7 @@ import { mapsDeleteProcessor } from './processors/mapsDeleteProcessor';
 import { mapsCreateProcessor } from './processors/mapsCreateProcessor';
 import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapsRenameProcessor } from './processors/mapsRenameProcessor';
+import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
 
 const reducers = {
   auth: authReducer,
@@ -204,6 +205,7 @@ processors.push(
   mapsCreateProcessor,
   mapsSaveProcessor,
   mapsRenameProcessor,
+  wikiLayerProcessor,
   ...Object.values(rpcProcessors),
   exportPdfProcessor,
   urlProcessor,

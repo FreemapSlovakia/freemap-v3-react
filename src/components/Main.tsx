@@ -109,6 +109,7 @@ import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { MapsMenu } from './MapsMenu';
+import { WikiLayer } from './WikiLayer';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -390,6 +391,7 @@ const MainInt: React.FC<Props> = ({
               <ChangesetsResult />
               <TrackingResult />
               {showGalleryPicker && <GalleryPicker />}
+              <WikiLayer />
             </>
           )}
           {/* TODO should not be extra just because for position picking */}

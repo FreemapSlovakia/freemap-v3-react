@@ -8,7 +8,7 @@ export const cancelProcessor: Processor = {
     for (const x of cancelRegister) {
       for (const a of x.cancelActions) {
         if (isActionOf(a, action)) {
-          x.source.cancel();
+          x.cancel();
           break;
         }
       }

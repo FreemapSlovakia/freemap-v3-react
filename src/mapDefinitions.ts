@@ -231,6 +231,14 @@ export const overlayLayers: LayerDef[] = [
     primary: true,
   },
   {
+    type: 'w',
+    icon: 'wikipedia-w',
+    minZoom: 12,
+    key: 'W',
+    zIndex: 3,
+    attribution: [],
+  },
+  {
     type: 'l',
     icon: 'tree',
     url: '//tiles.freemap.sk/nlc2017/{z}/{x}/{y}.png',

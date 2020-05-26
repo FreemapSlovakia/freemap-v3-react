@@ -976,6 +976,7 @@ export default {
       s2: 'Strava (runs)',
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
+      w: 'Wikipedia',
     },
     type: {
       map: 'map',

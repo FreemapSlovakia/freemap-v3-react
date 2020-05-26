@@ -52,6 +52,10 @@ const LayersInt: React.FC<Props> = ({
       );
     }
 
+    if (type === 'w') {
+      return;
+    }
+
     return (
       !!url && (
         <ScaledTileLayer

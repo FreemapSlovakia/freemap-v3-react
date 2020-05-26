@@ -1,4 +1,4 @@
-import axios, { AxiosRequestConfig, CancelTokenSource } from 'axios';
+import axios, { AxiosRequestConfig, CancelTokenSource, Canceler } from 'axios';
 import { RootState } from './storeCreator';
 import { setActiveModal, clearMap, selectFeature } from './actions/mainActions';
 import { ActionCreator } from 'typesafe-actions';
@@ -43,12 +43,12 @@ interface HttpRequestParams extends Omit<AxiosRequestConfig, 'cancelToken'> {
   cancelActions?: ActionCreator<string>[];
 }
 
-interface CancelItem {
+export interface CancelItem {
   cancelActions: ActionCreator<string>[];
-  source: CancelTokenSource;
+  cancel: Canceler;
 }
 
-export const cancelRegister = new Set<CancelItem>();
+export const cancelRegister = new Set<CancelItem>(); // TODO move elsewhere as it is reused in other places
 
 export async function httpRequest({
   getState,
@@ -59,22 +59,27 @@ export async function httpRequest({
   let source: CancelTokenSource | undefined;
   let cancelItem: CancelItem | undefined;
 
-  if (cancelActions) {
+  if (cancelActions && cancelActions.length) {
     source = axios.CancelToken.source();
-    cancelItem = { cancelActions, source };
+
+    cancelItem = {
+      cancelActions,
+      cancel: source.cancel,
+    };
+
     cancelRegister.add(cancelItem);
   }
 
   const params = {
-    cancelToken: cancelItem ? cancelItem.source.token : undefined,
+    cancelToken: source?.token,
     ...rest,
   };
 
   try {
     if (!rest.url || /^(https?:)?\/\//.test(rest.url)) {
-      return getAxios(expectedStatus).request(params);
+      return await getAxios(expectedStatus).request(params);
     } else {
-      return getAuthAxios(getState, expectedStatus).request(params);
+      return await getAuthAxios(getState, expectedStatus).request(params);
     }
   } finally {
     if (cancelItem) {

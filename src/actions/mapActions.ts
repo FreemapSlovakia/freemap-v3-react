@@ -1,6 +1,12 @@
 import { createAction } from 'typesafe-actions';
 
-export const mapReset = createAction('MAP_RESET')();
+export type WikiPoint = {
+  id: number;
+  lat: number;
+  lon: number;
+  name: string;
+  wikipedia: string;
+};
 
 export interface MapViewState {
   mapType: string;
@@ -14,6 +20,10 @@ export interface MapStateBase extends MapViewState {
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
 }
+
+export const wikiSetPoints = createAction('WIKI_SET_POINTS')<WikiPoint[]>();
+
+export const mapReset = createAction('MAP_RESET')();
 
 export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }

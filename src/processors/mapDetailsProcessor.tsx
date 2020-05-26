@@ -69,6 +69,7 @@ export const mapDetailsProcessor: Processor = {
         ');out geom meta;',
       expectedStatus: 200,
     });
+
     const data1 = { elements: [] };
 
     // const [{ data }, { data: data1 }] = await Promise.all([

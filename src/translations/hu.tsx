@@ -985,6 +985,7 @@ export default {
       s2: 'Strava (futás)',
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
+      w: 'Wikipedia',
     },
     type: {
       map: 'térkép',
