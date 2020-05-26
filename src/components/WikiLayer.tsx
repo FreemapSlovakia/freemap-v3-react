@@ -6,8 +6,8 @@ import { RootState } from 'fm3/storeCreator';
 import { divIcon } from 'leaflet';
 import { Popup, Marker } from 'react-leaflet';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+type Props = ReturnType<typeof mapStateToProps>;
+// & ReturnType<typeof mapDispatchToProps>;
 
 const icon = divIcon({
   iconSize: [19, 19],
