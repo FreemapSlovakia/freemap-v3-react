@@ -6,8 +6,6 @@ import {
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
   mapSetStravaAuth,
-  WikiPoint,
-  wikiSetPoints,
 } from 'fm3/actions/mapActions';
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
@@ -19,7 +17,6 @@ export interface MapState extends MapStateBase {
   selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
-  wikiPoints: WikiPoint[];
 }
 
 const initialState: MapState = {
@@ -34,7 +31,6 @@ const initialState: MapState = {
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
-  wikiPoints: [],
 };
 
 export const mapReducer = createReducer<MapState, RootAction>(initialState)
@@ -136,8 +132,4 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     zoom: map?.zoom ?? state.zoom,
     mapType: map?.mapType ?? state.mapType,
     overlays: map?.overlays ?? state.overlays,
-  }))
-  .handleAction(wikiSetPoints, (state, { payload }) => ({
-    ...state,
-    wikiPoints: payload,
   }));

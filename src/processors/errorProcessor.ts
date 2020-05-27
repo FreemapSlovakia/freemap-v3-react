@@ -7,6 +7,7 @@ export const errorProcessor: Processor<typeof setErrorTicketId> = {
   handle: async ({ dispatch, action }) => {
     dispatch(
       toastsAdd({
+        id: Math.random().toString(36).slice(2),
         messageKey: 'general.internalError',
         messageParams: { ticketId: action.payload },
         style: 'danger',

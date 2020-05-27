@@ -1,23 +1,36 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest, cancelRegister } from 'fm3/authAxios';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { mapRefocus, wikiSetPoints } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { isActionOf } from 'typesafe-actions';
 
 let prev = false;
 
 export const wikiLayerProcessor: Processor = {
   actionCreator: [mapRefocus, enableUpdatingUrl /* for initial */],
   errorKey: 'tracking.loadError', // TODO
-  handle: async ({ getState, dispatch }) => {
-    const { overlays, zoom, wikiPoints } = getState().map;
+  handle: async ({ getState, dispatch, action }) => {
+    const moved =
+      isActionOf(mapRefocus, action) &&
+      ['lat', 'lon', 'zoom'].some((prop) => prop in action.payload);
+
+    const {
+      map: { overlays, zoom },
+      wiki: { points },
+    } = getState();
 
     const curr = overlays.includes('w');
     const changed = prev != curr;
     prev = curr;
 
+    if (!changed && !moved) {
+      return;
+    }
+
     if (!curr || zoom < 12) {
-      if (wikiPoints.length) {
+      if (points.length) {
         dispatch(wikiSetPoints([]));
       }
 

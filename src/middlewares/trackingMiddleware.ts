@@ -29,6 +29,7 @@ export const trackingMiddleware: Middleware<any, RootState, Dispatch> = ({
     ) {
       dispatch(
         toastsAdd({
+          id: 'tracking.subscribeError',
           messageKey:
             action.payload.error.code === 404
               ? 'tracking.subscribeNotFound'

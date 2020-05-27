@@ -25,6 +25,7 @@ export const trackViewerUploadTrackProcessor: Processor = {
       if (trackGpx.length > maxSize * 1000000) {
         dispatch(
           toastsAdd({
+            id: 'trackViewer.tooBigError',
             messageKey: 'trackViewer.tooBigError',
             messageParams: {
               maxSize,

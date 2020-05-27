@@ -113,7 +113,7 @@ export const mapDetailsProcessor: Processor = {
       (oRes.elements || []).forEach((element) => {
         dispatch(
           toastsAdd({
-            // id: 'mapDetails.trackInfo.detail',
+            id: 'mapDetails.trackInfo.detail',
             message: <RoadDetails way={element} />,
             cancelType: getType(mapDetailsSetUserSelectedPosition),
             style: 'info',

@@ -50,6 +50,7 @@ export function toastsAddError(
   params: { [key: string]: any } = {},
 ) {
   return toastsAdd({
+    id: Math.random().toString(36).slice(2),
     messageKey,
     messageParams: { ...params, ...(err ? { err: err.message } : {}) },
     style: 'danger',

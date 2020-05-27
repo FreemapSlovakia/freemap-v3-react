@@ -106,6 +106,8 @@ import { mapsCreateProcessor } from './processors/mapsCreateProcessor';
 import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapsRenameProcessor } from './processors/mapsRenameProcessor';
 import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
+import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
+import { wikiReducer } from './reducers/wikiReducer';
 
 const reducers = {
   auth: authReducer,
@@ -127,6 +129,7 @@ const reducers = {
   trackViewer: trackViewerReducer,
   websocket: websocketReducer,
   maps: mapsReducer,
+  wiki: wikiReducer,
 };
 
 const combinedReducers = combineReducers(reducers);
@@ -206,6 +209,7 @@ processors.push(
   mapsSaveProcessor,
   mapsRenameProcessor,
   wikiLayerProcessor,
+  wikiLoadPreviewProcessor,
   ...Object.values(rpcProcessors),
   exportPdfProcessor,
   urlProcessor,

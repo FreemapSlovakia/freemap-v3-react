@@ -20,6 +20,7 @@ import * as tips from 'fm3/actions/tipsActions';
 import * as toasts from 'fm3/actions/toastsActions';
 import * as trackViewer from 'fm3/actions/trackViewerActions';
 import * as maps from 'fm3/actions/mapsActions';
+import * as wiki from 'fm3/actions/wikiActions';
 
 export const actions = {
   tracking: trackingActions,
@@ -43,6 +44,7 @@ export const actions = {
   toasts,
   trackViewer,
   maps,
+  wiki,
 };
 
 export type RootAction = ActionType<typeof actions> & { meta?: any };

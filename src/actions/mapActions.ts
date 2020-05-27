@@ -1,13 +1,5 @@
 import { createAction } from 'typesafe-actions';
 
-export type WikiPoint = {
-  id: number;
-  lat: number;
-  lon: number;
-  name: string;
-  wikipedia: string;
-};
-
 export interface MapViewState {
   mapType: string;
   lat: number;
@@ -20,8 +12,6 @@ export interface MapStateBase extends MapViewState {
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
 }
-
-export const wikiSetPoints = createAction('WIKI_SET_POINTS')<WikiPoint[]>();
 
 export const mapReset = createAction('MAP_RESET')();
 

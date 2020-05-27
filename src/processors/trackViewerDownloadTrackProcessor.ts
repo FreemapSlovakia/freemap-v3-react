@@ -22,6 +22,7 @@ export const trackViewerDownloadTrackProcessor: Processor = {
       // TODO ???
       dispatch(
         toastsAdd({
+          id: 'trackViewer.fetchingError',
           messageKey: 'trackViewer.fetchingError',
           messageParams: {
             err: data.error.toString(),

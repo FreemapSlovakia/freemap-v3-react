@@ -100,10 +100,10 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
 
       dispatch(
         toastsAdd({
+          id: 'measurementInfo',
           messageKey: 'measurement.elevationInfo',
           messageParams: { point, elevation },
           timeout: 5000,
-          id: 'measurementInfo',
           cancelType: [getType(selectFeature), getType(deleteFeature)],
         }),
       );
