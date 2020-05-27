@@ -26,6 +26,7 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
   }) => void | Promise<void>;
   actionCreator: T | T[] | '*';
   errorKey?: string;
+  id?: string; // toast collapse key
 }
 
 export const processors: Processor[] = [];
@@ -58,7 +59,12 @@ export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
 
   const promises: Promise<void>[] = [];
 
-  for (const { actionCreator: actionType, handle, errorKey } of processors) {
+  for (const {
+    actionCreator: actionType,
+    handle,
+    errorKey,
+    id,
+  } of processors) {
     if (
       handle &&
       (actionType === '*' ||
@@ -78,7 +84,7 @@ export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
                   errorKey,
                   err,
                   {},
-                  errorKey,
+                  id ?? Math.random().toString(36).slice(2),
                 );
               }),
         );

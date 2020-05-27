@@ -80,11 +80,13 @@ const WikiLayerInt: React.FC<Props> = ({ points, preview, onOpen, t }) => {
             </h4>
             {preview ? (
               <div style={{ maxHeight: '50vh', overflow: 'auto' }}>
-                <img
-                  src={preview.thumbnail.source}
-                  width={preview.thumbnail.width}
-                  height={preview.thumbnail.height}
-                />
+                {preview.thumbnail && (
+                  <img
+                    src={preview.thumbnail.source}
+                    width={preview.thumbnail.width}
+                    height={preview.thumbnail.height}
+                  />
+                )}
                 <div dangerouslySetInnerHTML={{ __html: preview.extract }} />
               </div>
             ) : (
