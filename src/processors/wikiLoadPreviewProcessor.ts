@@ -11,15 +11,58 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ getState, dispatch, action }) => {
     const p = action.payload.indexOf(':');
+    let lang = action.payload.slice(0, p);
+    let title = action.payload.slice(p + 1);
+    const { language } = getState().l10n;
+
+    if (language !== lang) {
+      let cont = {};
+
+      do {
+        const { data } = await httpRequest({
+          getState,
+          method: 'GET',
+          url: `https://${lang}.wikipedia.org/w/api.php`,
+          params: {
+            origin: '*',
+            action: 'query',
+            prop: 'langlinks',
+            format: 'json',
+            titles: title,
+            ...cont,
+          },
+          expectedStatus: 200,
+          cancelActions: [wikiLoadPreview, wikiSetPoints],
+        });
+
+        const item = (Object.values(
+          data.query.pages,
+        )[0] as any)?.langlinks?.find((ll: any) => ll.lang == language);
+
+        if (item) {
+          lang = item.lang;
+          title = item['*'];
+
+          break;
+        }
+
+        cont = data.continue;
+      } while (cont);
+    }
 
     const { data } = await httpRequest({
       getState,
       method: 'GET',
-      url:
-        `https://${action.payload.slice(0, p)}.wikipedia.org/w/api.php` +
-        `?origin=*&action=query&prop=extracts|pageimages&format=json&pithumbsize=280&titles=${encodeURIComponent(
-          action.payload.slice(p + 1),
-        )}`,
+      url: `https://${lang}.wikipedia.org/w/api.php`,
+      params: {
+        origin: '*',
+        action: 'query',
+        prop: 'extracts|pageimages',
+        format: 'json',
+        pithumbsize: 280,
+        titles: title,
+      },
+
       // url: `https://sk.wikipedia.org/w/api.php?action=parse&format=json&prop=text&section=0&page=${encodeURIComponent(
       //   action.payload,
       // )}&origin=*`,
