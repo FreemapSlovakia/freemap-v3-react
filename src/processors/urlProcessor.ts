@@ -184,7 +184,7 @@ export const urlProcessor: Processor = {
       historyParts.push(['gallery-user-id', galleryFilter.userId]);
     }
 
-    if (galleryFilter.tag) {
+    if (galleryFilter.tag != null) {
       historyParts.push(['gallery-tag', galleryFilter.tag]);
     }
 

@@ -524,7 +524,7 @@ function handleGallery(
 
   if (
     qUserId ||
-    qGalleryTag ||
+    qGalleryTag != null ||
     qRatingFrom ||
     qRatingTo ||
     qTakenAtFrom ||

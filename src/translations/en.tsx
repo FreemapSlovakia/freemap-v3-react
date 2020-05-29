@@ -407,6 +407,7 @@ export default {
       takenAt: 'Capture date',
       author: 'Author',
       rating: 'Rating',
+      noTags: 'no tags',
     },
   },
 

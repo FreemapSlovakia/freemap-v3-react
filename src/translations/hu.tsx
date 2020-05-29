@@ -411,6 +411,7 @@ export default {
       takenAt: 'Capture date', // TODO
       author: 'Author', // TODO
       rating: 'Rating', // TODO
+      noTags: 'no tags', // TODO
     },
   },
 

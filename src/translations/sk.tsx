@@ -419,6 +419,7 @@ export default {
       takenAt: 'Dátum fotenia',
       author: 'Autor',
       rating: 'Hodnotenie',
+      noTags: 'bez tagov',
     },
   },
 

@@ -410,6 +410,7 @@ export default {
       takenAt: 'Datum focení',
       author: 'Autor',
       rating: 'Hodnocení',
+      noTags: 'bez tagů',
     },
   },
 

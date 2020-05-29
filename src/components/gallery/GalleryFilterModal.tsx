@@ -42,7 +42,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
   const [ratingTo, setRatingTo] = useState('');
 
   useEffect(() => {
-    setTag(filter.tag ?? '');
+    setTag(filter.tag === '' ? '⌘' : filter.tag ?? '');
 
     setUserId(
       typeof filter.userId === 'number' ? filter.userId.toString() : '',
@@ -136,7 +136,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
       e.preventDefault();
 
       onOk({
-        tag: tag || undefined,
+        tag: tag === '⌘' ? '' : tag || undefined,
         userId: nn(userId ? parseInt(userId, 10) : undefined),
         takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
         takenAtTo: nt(takenAtTo ? new Date(takenAtTo) : undefined),
@@ -185,6 +185,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
               onChange={handleTagChange}
             >
               <option value="" />
+              <option value="⌘">« {t('gallery.filterModal.noTags')} »</option>
               {tags.map(({ name, count }) => (
                 <option key={name} value={name}>
                   {name} ({count})
