@@ -8,6 +8,7 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 import {
   gallerySetFilter,
@@ -19,7 +20,9 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 const GalleryFilterModalInt: React.FC<Props> = ({
   onClose,
@@ -27,6 +30,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
   users,
   onOk,
   filter,
+  t,
 }) => {
   const [tag, setTag] = useState('');
   const [userId, setUserId] = useState('');
@@ -169,12 +173,12 @@ const GalleryFilterModalInt: React.FC<Props> = ({
   return (
     <Modal show onHide={onClose}>
       <Modal.Header closeButton>
-        <Modal.Title>Filter fotografií</Modal.Title>
+        <Modal.Title>{t('gallery.filterModal.title')}</Modal.Title>
       </Modal.Header>
       <form onSubmit={handleFormSubmit}>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>Tag</ControlLabel>
+            <ControlLabel>{t('gallery.filterModal.tag')}</ControlLabel>
             <FormControl
               componentClass="select"
               value={tag}
@@ -189,7 +193,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Autor</ControlLabel>
+            <ControlLabel>{t('gallery.filterModal.author')}</ControlLabel>
             <FormControl
               componentClass="select"
               value={userId}
@@ -204,7 +208,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Dátum nahratia</ControlLabel>
+            <ControlLabel>{t('gallery.filterModal.createdAt')}</ControlLabel>
             <InputGroup>
               <FormControl
                 type="date"
@@ -220,7 +224,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Dátum fotenia</ControlLabel>
+            <ControlLabel>{t('gallery.filterModal.takenAt')}</ControlLabel>
             <InputGroup>
               <FormControl
                 type="date"
@@ -236,7 +240,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>Hodnotenie</ControlLabel>
+            <ControlLabel>{t('gallery.filterModal.rating')}</ControlLabel>
             <InputGroup>
               <FormControl
                 type="number"
@@ -260,13 +264,13 @@ const GalleryFilterModalInt: React.FC<Props> = ({
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit">
-            <Glyphicon glyph="ok" /> Použiť
+            <Glyphicon glyph="ok" /> {t('general.apply')}
           </Button>
           <Button type="button" onClick={handleEraseClick}>
-            <Glyphicon glyph="erase" /> Vyčistiť
+            <Glyphicon glyph="erase" /> {t('general.clear')}
           </Button>
           <Button type="button" onClick={onClose}>
-            <Glyphicon glyph="remove" /> Zrušiť
+            <Glyphicon glyph="remove" /> {t('general.cancel')}
           </Button>
         </Modal.Footer>
       </form>
@@ -302,4 +306,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 export const GalleryFilterModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(GalleryFilterModalInt);
+)(withTranslator(GalleryFilterModalInt));

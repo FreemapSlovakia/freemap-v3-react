@@ -36,6 +36,7 @@ export default {
     delete: 'Törlés',
     remove: 'Eltávolítás',
     close: 'Bezárás',
+    apply: 'Apply', // TODO
     exitFullscreen: 'Kilépés a teljes képernyős módból',
     fullscreen: 'Teljes képernyő',
     yes: 'Igen',
@@ -211,13 +212,13 @@ export default {
             ))}{' '}
             | Időtartam{' '}
             <b>
-              {total} {numberize(total, ['minutes', 'minute'])}
+              {total} {numberize(total, ['minutes', 'minute' /*TODO*/])}
             </b>
             <br />
             Az indulásig van: <b>{home}</b>, séta: <b>{foot}</b>,
             tömegközlekedés: <b>{bus}</b>, várakozás :{' '}
             <b>
-              {wait} {numberize(wait, ['minutes', 'minute'])}
+              {wait} {numberize(wait, ['minutes', 'minute' /*TODO*/])}
             </b>
           </>
         ),
@@ -228,7 +229,7 @@ export default {
           <>
             <b>{departure}</b> sétáljon{' '}
             <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
+              {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
             </b>{' '}
             {destination === 'TARGET' ? (
               <b>ide:</b>
@@ -260,7 +261,7 @@ export default {
           <>
             sétáljon{' '}
             <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
+              {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
             </b>{' '}
             {destination === 'TARGET' ? (
               <b>a célponthoz</b>
@@ -276,14 +277,14 @@ export default {
           <>
             kerékpározzék{' '}
             <b>
-              {duration} {numberize(duration, ['minutes', 'minte'])}
+              {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
             </b>{' '}
             ide: <b>{destination}</b>
           </>
         ),
       },
     },
-    imhdAttribution: 'public transport routes',
+    imhdAttribution: 'public transport routes', // TODO
   },
 
   more: {
@@ -399,6 +400,14 @@ export default {
     missingPositionError: 'Hiányzik a hely.',
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
+    filterModal: {
+      title: 'Photo filtering', // TODO
+      tag: 'Tag', // TODO
+      createdAt: 'Upload date', // TODO
+      takenAt: 'Capture date', // TODO
+      author: 'Author', // TODO
+      rating: 'Rating', // TODO
+    },
   },
 
   measurement: {

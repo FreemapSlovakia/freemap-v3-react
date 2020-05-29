@@ -36,6 +36,7 @@ export default {
     delete: 'Smazat',
     remove: 'Odstranit',
     close: 'Zavřít',
+    apply: 'Použiť',
     exitFullscreen: 'Zrušit zobrazení na celou obrazovku',
     fullscreen: 'Na celou obrazovku',
     yes: 'Ano',
@@ -398,6 +399,14 @@ export default {
     missingPositionError: 'Chyba pozice.',
     invalidPositionError: 'Nesprávný formát souřadnic.',
     invalidTakenAt: 'Nevalidní datum a čas focení.',
+    filterModal: {
+      title: 'Filtr fotografií',
+      tag: 'Tag',
+      createdAt: 'Datum nahrání',
+      takenAt: 'Datum focení',
+      author: 'Autor',
+      rating: 'Hodnocení',
+    },
   },
 
   measurement: {

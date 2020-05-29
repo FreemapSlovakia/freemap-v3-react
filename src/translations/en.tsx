@@ -36,6 +36,7 @@ export default {
     delete: 'Delete',
     remove: 'Remove',
     close: 'Close',
+    apply: 'Apply',
     exitFullscreen: 'Exit fullscreen mode',
     fullscreen: 'Fullscreen',
     yes: 'Yes',
@@ -274,7 +275,7 @@ export default {
           <>
             bicycle{' '}
             <b>
-              {duration} {numberize(duration, ['minutes', 'minte'])}
+              {duration} {numberize(duration, ['minutes', 'minute'])}
             </b>{' '}
             to <b>{destination}</b>
           </>
@@ -395,6 +396,14 @@ export default {
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
     invalidTakenAt: 'Invalid capture date and time.',
+    filterModal: {
+      title: 'Photo filtering',
+      tag: 'Tag',
+      createdAt: 'Upload date',
+      takenAt: 'Capture date',
+      author: 'Author',
+      rating: 'Rating',
+    },
   },
 
   measurement: {
