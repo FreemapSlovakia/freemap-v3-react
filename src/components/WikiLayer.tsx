@@ -68,10 +68,14 @@ const WikiLayerInt: React.FC<Props> = ({ points, preview, onOpen, t }) => {
           >
             <h4>
               <a
-                href={wikipedia.replace(
-                  /(.*):(.*)/,
-                  'https://$1.wikipedia.org/wiki/$2',
-                )}
+                href={
+                  preview
+                    ? `https://${preview.lang}.wikipedia.org/wiki/${preview.langTitle}`
+                    : wikipedia.replace(
+                        /(.*):(.*)/,
+                        'https://$1.wikipedia.org/wiki/$2',
+                      )
+                }
                 target="wikipedia"
               >
                 {preview ? preview.title : wikipedia.replace(/.*:/, '')}{' '}

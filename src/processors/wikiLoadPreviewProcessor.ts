@@ -72,7 +72,13 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
 
     // TODO validate
 
-    dispatch(wikiSetPreview(Object.values(data.query.pages)[0] as any));
+    const preview: any = {
+      ...(Object.values(data.query.pages)[0] as any),
+      lang,
+      langTitle: title,
+    };
+
+    dispatch(wikiSetPreview(preview));
 
     // dispatch(
     //   wikiSetPreview({
