@@ -1,11 +1,8 @@
-import React from 'react';
-
 import {
   mapDetailsSetTrackInfoPoints,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { RoadDetails } from 'fm3/components/RoadDetails';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { lineString, point, featureCollection } from '@turf/helpers';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -114,7 +111,8 @@ export const mapDetailsProcessor: Processor = {
         dispatch(
           toastsAdd({
             id: 'mapDetails.trackInfo.detail',
-            message: <RoadDetails way={element} />,
+            messageKey: 'mapDetails.detail',
+            messageParams: { element },
             cancelType: getType(mapDetailsSetUserSelectedPosition),
             style: 'info',
           }),

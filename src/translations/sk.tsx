@@ -3,6 +3,9 @@
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
+import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { RoadDetails } from 'fm3/components/RoadDetails';
 
 const nf01 = Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -489,6 +492,7 @@ export default {
     loadingError: 'Súbor sa nepodarilo načítať.',
     onlyOne: 'Očakáva sa iba jeden GPX súbor.',
     wrongFormat: 'Nahraný súbor musí mať príponu .gpx',
+    info: () => <TrackViewerDetails />,
   },
 
   drawing: {
@@ -555,12 +559,25 @@ export default {
       `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`,
     notFound: 'Neboli nájdené žiadne zmeny.',
     fetchError: 'Nastala chyba pri získavaní zmien: {err}',
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+    details: {
+      author: 'Autor:',
+      description: 'Popis:',
+      noDescription: 'bez popisu',
+      closedAt: 'Čas:',
+      moreDetailsOn: ({ osmLink, achaviLink }) => (
+        <p>
+          Viac detailov na {osmLink}, alebo {achaviLink}.
+        </p>
+      ),
+    },
   },
 
   mapDetails: {
     road: 'Info o ceste',
     notFound: 'Nebola nájdená žiadna cesta.',
     fetchingError: 'Nastala chyba pri získavaní detailov o ceste: {err}',
+    detail: ({ element }) => <RoadDetails way={element} />,
   },
 
   objects: {

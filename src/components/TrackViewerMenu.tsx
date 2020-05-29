@@ -25,7 +25,6 @@ import {
 
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { TrackViewerDetails } from './TrackViewerDetails';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
 
@@ -135,7 +134,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     dispatch(
       toastsAdd({
         id: 'trackViewer.trackInfo',
-        message: <TrackViewerDetails />, // TODO only string
+        messageKey: 'trackViewer.info',
         cancelType: [getType(clearMap), getType(trackViewerSetData)],
         style: 'info',
       }),

@@ -3,6 +3,9 @@
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
+import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { RoadDetails } from 'fm3/components/RoadDetails';
 
 const nf01 = Intl.NumberFormat('cs', {
   minimumFractionDigits: 0,
@@ -480,6 +483,7 @@ export default {
     loadingError: 'Soubor se nepodařilo načíst.',
     onlyOne: 'Očekává se pouze jeden GPX soubor.',
     wrongFormat: 'Nahraný soubor musí mít příponu .gpx',
+    info: () => <TrackViewerDetails />,
   },
 
   drawing: {
@@ -546,12 +550,25 @@ export default {
       `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
     notFound: 'Nebyly nalezeny žádné změny.',
     fetchError: 'Nastala chyba při získávání změn: {err}',
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+    details: {
+      author: 'Autor:',
+      description: 'Popis:',
+      noDescription: 'bez popisu',
+      closedAt: 'Čas:',
+      moreDetailsOn: ({ osmLink, achaviLink }) => (
+        <p>
+          Více detailů na {osmLink}, nebo {achaviLink}.
+        </p>
+      ),
+    },
   },
 
   mapDetails: {
     road: 'Info o cestě',
     notFound: 'Nebyla nalezena žádná cesta.',
     fetchingError: 'Nastala chyba při získávání detailů o cestě: {err}',
+    detail: ({ element }) => <RoadDetails way={element} />,
   },
 
   objects: {

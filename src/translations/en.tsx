@@ -3,6 +3,9 @@
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
+import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { RoadDetails } from 'fm3/components/RoadDetails';
 
 const nf01 = Intl.NumberFormat('en', {
   minimumFractionDigits: 0,
@@ -478,6 +481,7 @@ export default {
     loadingError: 'Error loading file.',
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
+    info: () => <TrackViewerDetails />,
   },
 
   drawing: {
@@ -544,12 +548,25 @@ export default {
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
     fetchError: 'Error fetching changesets: {err}',
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+    details: {
+      author: 'Author:',
+      description: 'Description:',
+      noDescription: 'without description',
+      closedAt: 'Time:',
+      moreDetailsOn: ({ osmLink, achaviLink }) => (
+        <p>
+          More details on {osmLink} or {achaviLink}.
+        </p>
+      ),
+    },
   },
 
   mapDetails: {
     road: 'Road info',
     notFound: 'No road found.',
     fetchingError: 'Error fetching road details: {err}',
+    detail: ({ element }) => <RoadDetails way={element} />,
   },
 
   objects: {

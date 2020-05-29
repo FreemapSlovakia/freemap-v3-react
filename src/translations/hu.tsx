@@ -3,6 +3,9 @@
 import React, { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
+import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { RoadDetails } from 'fm3/components/RoadDetails';
 
 const nf01 = Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -484,6 +487,7 @@ export default {
     loadingError: 'Hiba történt a fájl betöltésekor.',
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
+    info: () => <TrackViewerDetails />,
   },
 
   drawing: {
@@ -550,12 +554,26 @@ export default {
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
     fetchError: 'Hiba történt a módosításkészletek beolvasásánál: {err}',
+    detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
+    // TODO
+    details: {
+      author: 'Author:',
+      description: 'Description:',
+      noDescription: 'without description',
+      closedAt: 'Time:',
+      moreDetailsOn: ({ osmLink, achaviLink }) => (
+        <p>
+          More details on {osmLink} or {achaviLink}.
+        </p>
+      ),
+    },
   },
 
   mapDetails: {
     road: 'Út adatai',
     notFound: 'Itt nincs út.',
     fetchingError: 'Hiba történt az út adatainak beolvasásakor: {err}',
+    detail: ({ element }) => <RoadDetails way={element} />,
   },
 
   objects: {

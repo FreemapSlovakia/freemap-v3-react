@@ -25,7 +25,6 @@ type Props = ReturnType<typeof mapStateToProps> &
 const ChangesetsResultInt: React.FC<Props> = ({
   changesets,
   onShowChangesetDetail,
-  language,
   days,
 }) => {
   const opacityOf = useCallback(
@@ -60,7 +59,7 @@ const ChangesetsResultInt: React.FC<Props> = ({
             key={changeset.id}
             faIconLeftPadding="2px"
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
-            onclick={() => onShowChangesetDetail(changeset, language)}
+            onclick={() => onShowChangesetDetail(changeset)}
           >
             <Tooltip
               opacity={opacity}
@@ -85,67 +84,19 @@ const ChangesetsResultInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
   changesets: state.changesets.changesets,
   days: state.changesets.days,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onShowChangesetDetail(changeset: Changeset, language: string) {
-    const timeFormat = new Intl.DateTimeFormat(language, {
-      day: '2-digit',
-      month: '2-digit',
-      hour: 'numeric',
-      minute: '2-digit',
-    });
-
-    const message = (
-      <div>
-        <dl className="dl-horizontal">
-          <dt>Autor:</dt>
-          <dd>
-            <a
-              role="link"
-              tabIndex={0}
-              style={{ cursor: 'pointer' }}
-              onClick={() => {
-                dispatch(changesetsSetAuthorName(changeset.userName));
-              }}
-            >
-              {changeset.userName}
-            </a>
-          </dd>
-          <dt>Popis:</dt>
-          <dd>{changeset.description || <i>bez popisu</i>}</dd>
-          <dt>Čas:</dt>
-          <dd>{timeFormat.format(changeset.closedAt)}</dd>
-        </dl>
-        <p>
-          Viac detailov na{' '}
-          <a
-            href={`https://www.openstreetmap.org/changeset/${changeset.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            osm.org
-          </a>
-          {', alebo '}
-          <a
-            href={`https://overpass-api.de/achavi/?changeset=${changeset.id}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Achavi
-          </a>
-          .
-        </p>
-      </div>
-    );
-
+  onShowChangesetDetail(changeset: Changeset) {
     dispatch(
       toastsAdd({
         id: 'changeset.detail',
-        message,
+        messageKey: 'changesets.detail',
+        messageParams: {
+          changeset,
+        },
         cancelType: getType(changesetsSetAuthorName),
         style: 'info',
       }),
