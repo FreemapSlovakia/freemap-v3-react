@@ -3,6 +3,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLng } from 'leaflet';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 let watch: number | undefined;
 
@@ -52,7 +53,14 @@ export const locateProcessor: Processor = {
           }
         },
         () => {
-          // TODO toast with error
+          dispatch(
+            toastsAdd({
+              id: 'main.locationError',
+              messageKey: 'main.locationError',
+              style: 'danger',
+              timeout: 5000,
+            }),
+          );
         },
         { enableHighAccuracy: true, maximumAge: 0 },
       );

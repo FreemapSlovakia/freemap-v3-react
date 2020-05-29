@@ -13,10 +13,12 @@ import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
   errorKey: 'gpxExport.exportError',
+  id: 'gpxExport',
   handle: async ({ getState, action, dispatch }) => {
     const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
@@ -131,16 +133,27 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     switch (action.payload.destination) {
       case 'dropbox': {
+        const redirUri = encodeURIComponent(
+          `${location.protocol}//${location.host}/dropboxAuthCallback.html`,
+        );
+
         const w = window.open(
-          `https://www.dropbox.com/oauth2/authorize?client_id=vnycfeumo6jzg5p&response_type=token&redirect_uri=${encodeURIComponent(
-            `${location.protocol}//${location.host}/dropboxAuthCallback.html`,
-          )}`,
+          `https://www.dropbox.com/oauth2/authorize?client_id=vnycfeumo6jzg5p&response_type=token&redirect_uri=${redirUri}`,
           'freemap-dropbox',
           'height=400,width=600',
         );
 
         if (!w) {
-          return; // TODO toast
+          dispatch(
+            toastsAdd({
+              id: 'gpxExport',
+              messageKey: 'gpxExport.blockedPopup',
+              style: 'danger',
+              timeout: 5000,
+            }),
+          );
+
+          return;
         }
 
         const p = new Promise<string | undefined>((resolve, reject) => {
@@ -200,7 +213,14 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
           expectedStatus: 200,
         });
 
-        // TODO toast
+        dispatch(
+          toastsAdd({
+            id: 'gpxExport',
+            style: 'info',
+            timeout: 5000,
+            messageKey: 'gpxExport.exportedToDropbox',
+          }),
+        );
 
         break;
       }
@@ -296,7 +316,14 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
           });
         }
 
-        // TODO toast
+        dispatch(
+          toastsAdd({
+            id: 'gpxExport',
+            style: 'info',
+            timeout: 5000,
+            messageKey: 'gpxExport.exportedToGdrive',
+          }),
+        );
 
         break;
       case 'download':

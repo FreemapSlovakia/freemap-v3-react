@@ -316,6 +316,7 @@ export default {
     close: 'Close',
     closeTool: 'Close tool',
     locateMe: 'Locate me',
+    locationError: 'Error getting location.',
     zoomIn: 'Zoom in',
     zoomOut: 'Zoom out',
     devInfo: () => (
@@ -947,6 +948,9 @@ export default {
     },
     disabledAlert:
       'Only checkboxes having anything in the map to export are enabled.',
+    blockedPopup: 'Browser blocked pop-up window.',
+    exportedToDropbox: 'GPX file has been saved to Dropboxu.',
+    exportedToGdrive: 'GPX file has been saved to Google Drive.',
   },
 
   logIn: {

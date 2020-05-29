@@ -317,6 +317,7 @@ export default {
     close: 'Zavrieť',
     closeTool: 'Zavrieť nástroj',
     locateMe: 'Kde som?',
+    locationError: 'Nepodarilo sa získať pozíciu.',
     zoomIn: 'Priblížiť mapu',
     zoomOut: 'Oddialiť mapu',
     devInfo: () => (
@@ -957,6 +958,9 @@ export default {
     },
     disabledAlert:
       'Aktívne sú iba voľby, ktorých objekty sa nachádzajú na mape.',
+    blockedPopup: 'Prehliadač zablokoval otvorenie okna.',
+    exportedToDropbox: 'GPX súbor bol uložený do Dropboxu.',
+    exportedToGdrive: 'GPX súbor bol uložený do Google Drive.',
   },
 
   logIn: {

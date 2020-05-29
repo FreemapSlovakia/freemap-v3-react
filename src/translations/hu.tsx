@@ -318,6 +318,7 @@ export default {
     close: 'Bezárás',
     closeTool: 'Eszköz bezárása',
     locateMe: 'Saját pozícióm',
+    locationError: 'Error getting location.', // TODO
     zoomIn: 'Nagyítás',
     zoomOut: 'Kicsinyítés',
     devInfo: () => (
@@ -957,6 +958,9 @@ export default {
     },
     disabledAlert:
       'Csak az a jelölőnégyzet jelölhető be exportálásra, amelyhez a térképen tartozik tartalom.',
+    blockedPopup: 'Browser blocked pop-up window.', // TODO
+    exportedToDropbox: 'GPX file has been saved to Dropboxu.', // TODO
+    exportedToGdrive: 'GPX file has been saved to Google Drive.', // TODO
   },
 
   logIn: {
