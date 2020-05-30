@@ -97,17 +97,18 @@ export const wikiLayerProcessor: Processor = {
       }
     }
 
-    dispatch(
-      wikiSetPoints(
-        [...m.values()].map((e: any) => ({
-          id: e.id,
-          lat: e.center?.lat ?? e.lat,
-          lon: e.center?.lon ?? e.lon,
-          name: e.tags?.name,
-          wikipedia: e.tags.wikipedia,
-        })),
-      ),
-    );
+    // NOTE we don't dispatch partial data yet as it would close popup of wikidata-only item
+    // dispatch(
+    //   wikiSetPoints(
+    //     [...m.values()].map((e: any) => ({
+    //       id: e.id,
+    //       lat: e.center?.lat ?? e.lat,
+    //       lon: e.center?.lon ?? e.lon,
+    //       name: e.tags?.name,
+    //       wikipedia: e.tags.wikipedia,
+    //     })),
+    //   ),
+    // );
 
     const { language } = getState().l10n;
 
@@ -129,7 +130,14 @@ export const wikiLayerProcessor: Processor = {
 
     dispatch(
       wikiSetPoints([
-        ...getState().wiki.points,
+        // ...getState().wiki.points,
+        ...[...m.values()].map((e: any) => ({
+          id: e.id,
+          lat: e.center?.lat ?? e.lat,
+          lon: e.center?.lon ?? e.lon,
+          name: e.tags?.name,
+          wikipedia: e.tags.wikipedia,
+        })),
         ...data.elements
           .map((e: any) => {
             if (e.tags.wikipedia) {
