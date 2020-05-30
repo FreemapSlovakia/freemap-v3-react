@@ -90,7 +90,14 @@ export const wikiLayerProcessor: Processor = {
     const wikidatas: string[] = [];
 
     for (const e of data.elements) {
+      if (e.tags.wikipedia) {
+        e.tags.wikipedia = decodeURIComponent(
+          e.tags.wikipedia.replace(/_/g, ' '),
+        );
+      }
+
       const { wikipedia } = e.tags;
+
       if (wikipedia) {
         const e1 = m.get(wikipedia);
 

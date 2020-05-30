@@ -78,9 +78,7 @@ const WikiLayerInt: React.FC<Props> = ({ points, preview, onOpen, t }) => {
                 }
                 target="wikipedia"
               >
-                {preview
-                  ? preview.title
-                  : wikipedia.replace(/.*:/, '').replace(/_/g, ' ')}{' '}
+                {preview ? preview.title : wikipedia.replace(/.*:/, '')}{' '}
                 <FontAwesomeIcon icon="external-link" />
               </a>
             </h4>
