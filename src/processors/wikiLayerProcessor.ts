@@ -37,7 +37,7 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
-    // debouncing; TODO don't debounce enableUpdatingUrl
+    // debouncing
     try {
       await new Promise((resolve, reject) => {
         const to = window.setTimeout(
@@ -77,9 +77,9 @@ export const wikiLayerProcessor: Processor = {
       url: '//overpass-api.de/api/interpreter',
       data:
         `[out:json][bbox:${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}];(` +
-        `node["wikipedia"];` +
-        `way["wikipedia"];` +
-        `relation["wikipedia"];` +
+        `node[~"^wikipedia$|^wikidata$"~"."];` +
+        `way[~"^wikipedia$|^wikidata$"~"."];` +
+        `relation[~"^wikipedia$|^wikidata$"~"."];` +
         ');out tags center;',
       expectedStatus: 200,
       cancelActions: [mapRefocus],
@@ -87,8 +87,14 @@ export const wikiLayerProcessor: Processor = {
 
     const m = new Map<string, any>();
 
+    const wikidatas: string[] = [];
+
     for (const e of data.elements) {
-      m.set(e.tags.wikipedia, e);
+      if (e.tags.wikipedia) {
+        m.set(e.tags.wikipedia, e);
+      } else {
+        wikidatas.push(e.tags.wikidata);
+      }
     }
 
     dispatch(
@@ -101,6 +107,58 @@ export const wikiLayerProcessor: Processor = {
           wikipedia: e.tags.wikipedia,
         })),
       ),
+    );
+
+    const { language } = getState().l10n;
+
+    const { data: data1 } = await httpRequest({
+      getState,
+      method: 'GET',
+      url: 'https://www.wikidata.org/w/api.php',
+      params: {
+        origin: '*',
+        action: 'wbgetentities',
+        props: 'sitelinks',
+        format: 'json',
+        ids: wikidatas.join('|'),
+        sitefilter: `${language}wiki|enwiki`,
+      },
+      expectedStatus: 200,
+      cancelActions: [mapRefocus],
+    });
+
+    dispatch(
+      wikiSetPoints([
+        ...getState().wiki.points,
+        ...data.elements
+          .map((e: any) => {
+            if (e.tags.wikipedia) {
+              return null;
+            }
+
+            const sitelinks = data1.entities[e.tags.wikidata]?.sitelinks;
+
+            if (!sitelinks) {
+              return null;
+            }
+
+            const title = (sitelinks[`${language}wiki`] || sitelinks['enwiki'])
+              ?.title;
+
+            return title == null
+              ? null
+              : {
+                  id: e.id,
+                  lat: e.center?.lat ?? e.lat,
+                  lon: e.center?.lon ?? e.lon,
+                  name: e.tags?.name,
+                  wikipedia: `${
+                    `${language}wiki` in sitelinks ? language : 'en'
+                  }:${title}`,
+                };
+          })
+          .filter((x: any) => x),
+      ]),
     );
   },
 };
