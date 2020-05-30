@@ -90,8 +90,17 @@ export const wikiLayerProcessor: Processor = {
     const wikidatas: string[] = [];
 
     for (const e of data.elements) {
-      if (e.tags.wikipedia) {
-        m.set(e.tags.wikipedia, e);
+      const { wikipedia } = e.tags;
+      if (wikipedia) {
+        const e1 = m.get(wikipedia);
+
+        if (
+          !e1 ||
+          e1.type === 'relation' ||
+          (e1.type === 'way' && e.type === 'relation')
+        ) {
+          m.set(wikipedia, e);
+        }
       } else {
         wikidatas.push(e.tags.wikidata);
       }
@@ -128,45 +137,50 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus],
     });
 
+    for (const e of data.elements) {
+      if (e.tags.wikipedia) {
+        continue;
+      }
+
+      const sitelinks = data1.entities[e.tags.wikidata]?.sitelinks;
+
+      if (!sitelinks) {
+        continue;
+      }
+
+      const title = (sitelinks[`${language}wiki`] || sitelinks['enwiki'])
+        ?.title;
+
+      if (title == null) {
+        continue;
+      }
+
+      const wikipedia = `${
+        `${language}wiki` in sitelinks ? language : 'en'
+      }:${title}`;
+
+      const e1 = m.get(wikipedia);
+
+      if (
+        !e1 ||
+        e1.type === 'relation' ||
+        (e1.type === 'way' && e.type === 'relation')
+      ) {
+        e.tags.wikipedia = wikipedia;
+        m.set(wikipedia, e);
+      }
+    }
+
     dispatch(
-      wikiSetPoints([
-        // ...getState().wiki.points,
-        ...[...m.values()].map((e: any) => ({
+      wikiSetPoints(
+        [...m.values()].map((e: any) => ({
           id: e.id,
           lat: e.center?.lat ?? e.lat,
           lon: e.center?.lon ?? e.lon,
           name: e.tags?.name,
           wikipedia: e.tags.wikipedia,
         })),
-        ...data.elements
-          .map((e: any) => {
-            if (e.tags.wikipedia) {
-              return null;
-            }
-
-            const sitelinks = data1.entities[e.tags.wikidata]?.sitelinks;
-
-            if (!sitelinks) {
-              return null;
-            }
-
-            const title = (sitelinks[`${language}wiki`] || sitelinks['enwiki'])
-              ?.title;
-
-            return title == null
-              ? null
-              : {
-                  id: e.id,
-                  lat: e.center?.lat ?? e.lat,
-                  lon: e.center?.lon ?? e.lon,
-                  name: e.tags?.name,
-                  wikipedia: `${
-                    `${language}wiki` in sitelinks ? language : 'en'
-                  }:${title}`,
-                };
-          })
-          .filter((x: any) => x),
-      ]),
+      ),
     );
   },
 };
