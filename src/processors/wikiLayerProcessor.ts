@@ -137,7 +137,7 @@ export const wikiLayerProcessor: Processor = {
         action: 'wbgetentities',
         props: 'sitelinks',
         format: 'json',
-        ids: wikidatas.join('|'),
+        ids: wikidatas.slice(0, 50).join('|'), // API limit is 50
         sitefilter: `${language}wiki|enwiki`,
       },
       expectedStatus: 200,
@@ -149,7 +149,7 @@ export const wikiLayerProcessor: Processor = {
         continue;
       }
 
-      const sitelinks = data1.entities[e.tags.wikidata]?.sitelinks;
+      const sitelinks = data1.entities?.[e.tags.wikidata]?.sitelinks;
 
       if (!sitelinks) {
         continue;
