@@ -9,8 +9,8 @@ const marked = require('marked');
 const WebpackPwaManifest = require('webpack-pwa-manifest');
 const OptimizeCssAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 const ForkTsCheckerWebpackPlugin = require('fork-ts-checker-webpack-plugin');
-const ServiceWorkerWebpackPlugin = require('serviceworker-webpack-plugin');
 const FaviconsWebpackPlugin = require('favicons-webpack-plugin');
+const WorkboxPlugin = require('workbox-webpack-plugin');
 
 const prod = process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev';
 
@@ -121,9 +121,6 @@ module.exports = {
       tsconfig: path.resolve(__dirname, './tsconfig.json'),
       async: fastDev,
     }),
-    new ServiceWorkerWebpackPlugin({
-      entry: path.join(__dirname, './sw/sw.ts'),
-    }),
     new webpack.DefinePlugin({
       'process.env': {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react
@@ -150,6 +147,11 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: '!!ejs-loader!src/index.html',
       inject: false,
+    }),
+    new WorkboxPlugin.InjectManifest({
+      swSrc: '../sw/sw.ts',
+      maximumFileSizeToCacheInBytes: 100000000, // TODO only for dev
+      exclude: ['.htaccess'],
     }),
     new FaviconsWebpackPlugin({
       logo: './images/logo.jpg',

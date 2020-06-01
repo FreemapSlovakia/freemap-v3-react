@@ -6,8 +6,6 @@ import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 
-import runtime from 'serviceworker-webpack-plugin/lib/runtime';
-
 import { Main } from 'fm3/components/Main';
 import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
 
@@ -36,9 +34,7 @@ import 'fm3/styles/bootstrap-override.scss';
 import { authInit, authCheckLogin } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { AppState } from './types/common';
-
-import registerEvents from 'serviceworker-webpack-plugin/lib/browser/registerEvents';
-import applyUpdate from 'serviceworker-webpack-plugin/lib/browser/applyUpdate';
+import { Workbox } from 'workbox-window';
 
 setDefaultGetErrorObject(() => null);
 
@@ -77,30 +73,64 @@ render(
   document.getElementById('app'),
 );
 
-if ('serviceWorker' in navigator) {
-  const registration = runtime.register();
+function showSkipWaitingPrompt() {
+  store.dispatch(
+    toastsAdd({
+      id: 'app.update',
+      messageKey: 'general.appUpdated',
+      style: 'info',
+      actions: [
+        { nameKey: 'general.yes', action: reloadApp() },
+        { nameKey: 'general.no' },
+      ],
+    }),
+  );
+}
 
-  registerEvents(registration, {
-    onInstalled: () => {},
-    onUpdateReady: () => {
-      applyUpdate();
-    },
-    onUpdating: () => {},
-    onUpdateFailed: () => {},
-    onUpdated: () => {
-      store.dispatch(
-        toastsAdd({
-          id: 'app.update',
-          messageKey: 'general.appUpdated',
-          style: 'info',
-          actions: [
-            { nameKey: 'general.yes', action: reloadApp() },
-            { nameKey: 'general.no' },
-          ],
-        }),
-      );
-    },
+if ('serviceWorker' in navigator) {
+  const wb = new Workbox('/sw.js');
+
+  console.log('AAAAAAAAAAA3 START');
+
+  wb.addEventListener('waiting', (event) => {
+    console.log('AAAAAAAAAAA3 waiting', event);
+
+    if (event.isUpdate) {
+      showSkipWaitingPrompt();
+    }
   });
+
+  wb.addEventListener('installed', () => {
+    console.log('AAAAAAAAAAAA3 installed');
+  });
+
+  wb.addEventListener('externalwaiting', () => {
+    console.log('AAAAAAAAAAAA3 externalwaiting');
+  });
+
+  wb.addEventListener('externalactivated', () => {
+    console.log('AAAAAAAAAAAA3 externalactivated');
+  });
+
+  wb.addEventListener('externalinstalled', () => {
+    console.log('AAAAAAAAAAAA3 externalinstalled');
+  });
+
+  wb.addEventListener('controlling', () => {
+    console.log('AAAAAAAAAAAA3 controlling');
+  });
+
+  wb.addEventListener('controlling', () => {
+    console.log('AAAAAAAAAAAA3 activated');
+  });
+
+  wb.register()
+    .then(() => {
+      console.log('AAAAAAAAAAAA3 REG');
+    })
+    .catch((err) => {
+      console.error(err);
+    });
 }
 
 function loadAppState(): void {
