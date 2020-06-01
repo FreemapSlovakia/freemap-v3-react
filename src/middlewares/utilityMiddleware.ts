@@ -6,6 +6,7 @@ import { selectFeature, reloadApp } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { storage } from 'fm3/storage';
 import { RootAction } from 'fm3/actions';
+import { skipWaiting } from 'fm3/offlineController';
 
 // TODO to processors
 
@@ -37,7 +38,7 @@ export const utilityMiddleware: Middleware<any, RootState, Dispatch> = ({
       storage.removeItem('tip');
     }
   } else if (isActionOf(reloadApp, action)) {
-    window.location.reload();
+    skipWaiting();
   }
 
   return result;
