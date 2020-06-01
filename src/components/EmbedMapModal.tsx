@@ -244,7 +244,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
           <FormControl
             inputRef={this.setFormControl}
             componentClass="textarea"
-            value={`<iframe src="${this.state.url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen />`}
+            value={`<iframe src="${this.state.url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen></iframe>`}
             readOnly
             rows={3}
           />
