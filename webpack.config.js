@@ -130,7 +130,7 @@ module.exports = {
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         API_URL: JSON.stringify(
           {
-            www: 'https://backend.freemap.sk',
+            www: 'https://api.freemap.sk',
             next: 'http://backend.freemap.sk:3001',
           }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
         ),
