@@ -145,7 +145,7 @@ module.exports = {
       exclude: ['.git/**'],
     }),
     new HtmlWebpackPlugin({
-      template: '!!ejs-loader!src/index.html',
+      template: '!!ejs-loader?esModule=false!src/index.html',
       inject: false,
     }),
     new WorkboxPlugin.InjectManifest({
