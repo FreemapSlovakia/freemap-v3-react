@@ -9,6 +9,14 @@ import { isBigSlovakia } from './overpassUtils';
 
 let prev = false;
 
+// TODO move to some util
+const delay = (ms: number) =>
+  new Promise((resolve) => {
+    window.setTimeout(() => {
+      resolve();
+    }, ms);
+  });
+
 export const wikiLayerProcessor: Processor = {
   actionCreator: [mapRefocus, enableUpdatingUrl /* for initial */],
   errorKey: 'tracking.loadError', // TODO
@@ -38,7 +46,12 @@ export const wikiLayerProcessor: Processor = {
       return;
     }
 
-    const le = getMapLeafletElement();
+    let le = getMapLeafletElement();
+
+    if (!le) {
+      await delay(1);
+      le = getMapLeafletElement();
+    }
 
     if (!le) {
       return;
