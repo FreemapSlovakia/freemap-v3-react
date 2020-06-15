@@ -1297,7 +1297,7 @@ export default {
       plannedRoute: 'Vyhledanou trasu',
       track: 'GPX trasu',
     },
-    mapScale: 'Měřítko mapy:',
+    mapScale: 'Rozlišení mapy:',
     alert: () => (
       <>
         Upozornění:

@@ -1298,7 +1298,7 @@ export default {
       plannedRoute: 'Found route',
       track: 'GPX track',
     },
-    mapScale: 'Map scale:',
+    mapScale: 'Map resolution:',
     alert: () => (
       <>
         Notes:

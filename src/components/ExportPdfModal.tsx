@@ -61,8 +61,8 @@ function ExportPdfModalInt({
   const nf = useMemo(
     () =>
       Intl.NumberFormat(language, {
-        minimumFractionDigits: 2,
-        maximumFractionDigits: 2,
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0,
       }),
     [language],
   );
@@ -182,7 +182,7 @@ function ExportPdfModalInt({
         </Checkbox>
         <hr />
         <p>
-          {t('pdfExport.mapScale')} {nf.format(scale)}
+          {t('pdfExport.mapScale')} {nf.format(scale * 96)} DPI
         </p>
         <Slider
           value={scale}

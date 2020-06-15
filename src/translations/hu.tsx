@@ -1301,7 +1301,7 @@ export default {
       plannedRoute: 'Found route', // TODO translate
       track: 'GPX track', // TODO translate
     },
-    mapScale: 'Méretarány:',
+    mapScale: 'Map resolution:', // TODO translate
     alert: () => (
       <>
         Megjegyzések:
