@@ -62,7 +62,7 @@ export const baseLayers: LayerDef[] = [
   {
     type: 'X',
     icon: 'tree',
-    url: 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}',
+    url: 'https://tile.freemap.sk/X/{z}/{x}/{y}',
     extraScales: [2, 3],
     attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
     minZoom: 6,
@@ -78,7 +78,7 @@ export const baseLayers: LayerDef[] = [
   ].map(([type, icon, showOnlyInExpertMode]) => ({
     type,
     icon,
-    url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
+    url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
     subdomains: 'abcd',
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
