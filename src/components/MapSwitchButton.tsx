@@ -7,7 +7,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
 import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -29,6 +29,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   pictureFilterIsActive,
   stravaAuth,
   onMapRefocus,
+  language,
 }) => {
   const [show, setShow] = useState(false);
 
@@ -99,35 +100,38 @@ const MapSwitchButtonInt: React.FC<Props> = ({
 
   const isWide = useMedia({ minWidth: '768px' });
 
+  const isPrimary = (layer: LayerDef) =>
+    layer.primary === true ||
+    layer.primary === language ||
+    (typeof layer.primary === 'string' &&
+      layer.primary.startsWith('!') &&
+      layer.primary !== `!${language}`);
+
   return (
     <>
       <ButtonGroup className="dropup hidden-xs">
-        {baseLayers
-          .filter((layer) => layer.primary)
-          .map(({ type, icon }) => (
-            <Button
-              title={t(`mapLayers.base.${type}`)}
-              key={type}
-              data-type={type}
-              active={mapType === type}
-              onClick={handleBaseClick}
-            >
-              <FontAwesomeIcon icon={icon} />
-            </Button>
-          ))}
-        {overlayLayers
-          .filter((layer) => layer.primary)
-          .map(({ type, icon }) => (
-            <Button
-              title={t(`mapLayers.overlay.${type}`)}
-              key={type}
-              data-type={type}
-              active={overlays.includes(type)}
-              onClick={handleOverlayClick}
-            >
-              <FontAwesomeIcon icon={icon} />
-            </Button>
-          ))}
+        {baseLayers.filter(isPrimary).map(({ type, icon }) => (
+          <Button
+            title={t(`mapLayers.base.${type}`)}
+            key={type}
+            data-type={type}
+            active={mapType === type}
+            onClick={handleBaseClick}
+          >
+            <FontAwesomeIcon icon={icon} />
+          </Button>
+        ))}
+        {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
+          <Button
+            title={t(`mapLayers.overlay.${type}`)}
+            key={type}
+            data-type={type}
+            active={overlays.includes(type)}
+            onClick={handleOverlayClick}
+          >
+            <FontAwesomeIcon icon={icon} />
+          </Button>
+        ))}
         <Button
           className="dropdown-toggle"
           ref={buttonRef}
@@ -280,6 +284,7 @@ const mapStateToProps = (state: RootState) => ({
   ),
   isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
   stravaAuth: state.map.stravaAuth,
+  language: state.l10n.language,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

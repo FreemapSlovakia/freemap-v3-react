@@ -993,6 +993,7 @@ export default {
       C: 'Kerékpár',
       K: 'Síelés',
       S: 'Légifelvétel',
+      Z: 'Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
       p: 'OpenTopoMap',

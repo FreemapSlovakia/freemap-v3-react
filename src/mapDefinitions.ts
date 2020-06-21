@@ -55,7 +55,7 @@ export interface LayerDef {
   strava?: boolean;
   tms?: boolean;
   extraScales?: number[];
-  primary?: boolean;
+  primary?: true | string;
 }
 
 export const baseLayers: LayerDef[] = [
@@ -78,8 +78,7 @@ export const baseLayers: LayerDef[] = [
   ].map(([type, icon, showOnlyInExpertMode]) => ({
     type,
     icon,
-    url: `//{s}.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
-    subdomains: 'abcd',
+    url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
@@ -116,7 +115,23 @@ export const baseLayers: LayerDef[] = [
         name: '©\xa02017 Microsoft Corporation',
       },
     ],
-    primary: true,
+    primary: '!sk',
+  },
+  {
+    type: 'Z',
+    url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
+    minNativeZoom: 0,
+    maxNativeZoom: 19,
+    icon: 'plane',
+    attribution: [
+      {
+        type: 'map',
+        name: '©\xa0GKÚ, NLC',
+        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
+      },
+    ],
+    key: 'z',
+    primary: 'sk',
   },
   {
     type: 'M',
@@ -180,22 +195,6 @@ export const baseLayers: LayerDef[] = [
     showOnlyInExpertMode: true,
     attribution: [],
     key: 'h',
-  },
-  {
-    type: 'z',
-    url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
-    tms: true,
-    minNativeZoom: 0,
-    maxNativeZoom: 19,
-    icon: 'plane',
-    attribution: [
-      {
-        type: 'map',
-        name: '©\xa0GKÚ, NLC',
-        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
-      },
-    ],
-    key: 'z',
   },
 ];
 
