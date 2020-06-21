@@ -183,19 +183,16 @@ export const baseLayers: LayerDef[] = [
   },
   {
     type: 'z',
-    url:
-      'https://services.digitalglobe.com/earthservice/tmsaccess/tms/1.0.0/DigitalGlobe:ImageryTileService@EPSG:3857@jpg/{z}/{x}/{y}.jpg' +
-      '?connectId=fa014fbc-6cbe-4b6f-b0ca-fbfb8d1e5b7d&foo=premium',
+    url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     tms: true,
-    minNativeZoom: 1,
-    maxNativeZoom: 22,
-    icon: 'medium',
-    adminOnly: true,
+    minNativeZoom: 0,
+    maxNativeZoom: 19,
+    icon: 'plane',
     attribution: [
       {
         type: 'map',
-        name: '©\xa0DigitalGlobe',
-        url: 'https://wiki.openstreetmap.org/wiki/DigitalGlobe',
+        name: '©\xa0GKÚ, NLC',
+        url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
       },
     ],
     key: 'z',
