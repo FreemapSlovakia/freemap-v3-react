@@ -1,7 +1,7 @@
 // import { skipWaiting } from 'workbox-core';
 import { precacheAndRoute } from 'workbox-precaching';
 import { registerRoute } from 'workbox-routing';
-// import { CacheFirst, NetworkFirst } from 'workbox-strategies';
+import { NetworkFirst } from 'workbox-strategies';
 
 // export default null;
 
@@ -28,6 +28,8 @@ addEventListener('message', (event) => {
     console.log('AAAAAAAAAAAAAAAAAAAAAAAAGOOOOOOO2 }');
   }
 });
+
+registerRoute('/index.html', new NetworkFirst());
 
 // The precache routes for workbox-webpack-plugin
 precacheAndRoute(self.__WB_MANIFEST, {
