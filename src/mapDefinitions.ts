@@ -59,7 +59,11 @@ export interface LayerDef {
   extraScales?: number[];
   primary?: true | string;
   errorTileUrl?: string;
+  tileSize?: number;
+  zoomOffset?: number;
 }
+
+const isHdpi = (window.devicePixelRatio || 1) > 1.4;
 
 export const baseLayers: LayerDef[] = [
   {
@@ -124,7 +128,7 @@ export const baseLayers: LayerDef[] = [
     type: 'Z',
     url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minNativeZoom: 0,
-    maxNativeZoom: 19,
+    maxNativeZoom: isHdpi ? 18 : 19,
     icon: 'plane',
     attribution: [
       {
@@ -136,6 +140,8 @@ export const baseLayers: LayerDef[] = [
     key: 'z',
     primary: 'sk',
     errorTileUrl: white1x1,
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
   },
   {
     type: 'M',

@@ -29,6 +29,8 @@ const LayersInt: React.FC<Props> = ({
     extraScales,
     tms,
     errorTileUrl = missingTile,
+    tileSize = 256,
+    zoomOffset = 0,
   }: LayerDef) => {
     if (type === 'S') {
       return (
@@ -71,6 +73,8 @@ const LayersInt: React.FC<Props> = ({
           errorTileUrl={errorTileUrl}
           extraScales={extraScales}
           tms={tms}
+          tileSize={tileSize}
+          zoomOffset={zoomOffset}
         />
       )
     );
