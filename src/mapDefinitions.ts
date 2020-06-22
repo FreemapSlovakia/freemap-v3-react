@@ -1,3 +1,5 @@
+import white1x1 from './images/1x1-white.png';
+
 const OSM_MAP_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0OpenStreetMap',
@@ -56,6 +58,7 @@ export interface LayerDef {
   tms?: boolean;
   extraScales?: number[];
   primary?: true | string;
+  errorTileUrl?: string;
 }
 
 export const baseLayers: LayerDef[] = [
@@ -132,6 +135,7 @@ export const baseLayers: LayerDef[] = [
     ],
     key: 'z',
     primary: 'sk',
+    errorTileUrl: white1x1,
   },
   {
     type: 'M',

@@ -28,6 +28,7 @@ const LayersInt: React.FC<Props> = ({
     subdomains = 'abc',
     extraScales,
     tms,
+    errorTileUrl = missingTile,
   }: LayerDef) => {
     if (type === 'S') {
       return (
@@ -67,7 +68,7 @@ const LayersInt: React.FC<Props> = ({
           opacity={overlayOpacity[type] || 1}
           zIndex={zIndex}
           subdomains={subdomains}
-          errorTileUrl={missingTile}
+          errorTileUrl={errorTileUrl}
           extraScales={extraScales}
           tms={tms}
         />
