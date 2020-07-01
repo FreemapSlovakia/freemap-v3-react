@@ -329,6 +329,16 @@ const MoreMenuButtonInt: React.FC<Props> = ({
               </a>{' '}
               <a
                 onSelect={close}
+                href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{ color: '#ff0000' }}
+                title={t('more.youtube')}
+              >
+                <FontAwesomeIcon icon="youtube-play" />
+              </a>
+              <a
+                onSelect={close}
                 href="https://github.com/FreemapSlovakia"
                 target="_blank"
                 rel="noopener noreferrer"

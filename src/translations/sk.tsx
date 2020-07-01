@@ -307,6 +307,7 @@ export default {
     tips: 'Tipy',
     facebook: 'Freemap na Facebooku',
     twitter: 'Freemap na Twitteri',
+    youtube: 'Freemap na YouTube',
     github: 'Freemap na GitHub-e',
     automaticLanguage: 'Automaticky',
     pdfExport: 'Exportovať mapu',

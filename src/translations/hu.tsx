@@ -308,6 +308,7 @@ export default {
     tips: 'Tippek',
     facebook: 'Freemap a Facebookon',
     twitter: 'Freemap a Twitteren',
+    youtube: 'Freemap a YouTubeon',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
     pdfExport: 'Térkép exportálása', // TODO google-translated

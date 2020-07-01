@@ -306,6 +306,7 @@ export default {
     tips: 'Tips',
     facebook: 'Freemap on Facebook',
     twitter: 'Freemap on Twitter',
+    youtube: 'Freemap on YouTube',
     github: 'Freemap on GitHub',
     automaticLanguage: 'Automatic',
     pdfExport: 'Export map',
