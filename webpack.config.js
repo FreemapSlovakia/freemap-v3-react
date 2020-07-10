@@ -119,7 +119,7 @@ module.exports = {
     new ForkTsCheckerWebpackPlugin({
       eslint: {
         enabled: !fastDev,
-        files: '*',
+        files: './**/*.{ts,tsx,js,jsx}',
       },
       typescript: {
         configFile: path.resolve(__dirname, './tsconfig.json'),
