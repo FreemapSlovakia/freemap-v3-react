@@ -336,7 +336,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 title={t('more.youtube')}
               >
                 <FontAwesomeIcon icon="youtube-play" />
-              </a>
+              </a>{' '}
               <a
                 onSelect={close}
                 href="https://github.com/FreemapSlovakia"
