@@ -79,7 +79,7 @@ export const GalleryEditForm: React.FC<Props> = ({
     [changeModel],
   );
 
-  const handleTagAdded = useCallback(
+  const handleTagAddition = useCallback(
     ({ name }: Tag) => {
       const fixed = name.toLowerCase().trim().replace(/ {2,}/g, ' ');
 
@@ -90,7 +90,7 @@ export const GalleryEditForm: React.FC<Props> = ({
     [changeModel, model.tags],
   );
 
-  const handleTagDeleted = useCallback(
+  const handleTagDelete = useCallback(
     (i: number) => {
       const tags = [...model.tags];
       tags.splice(i, 1);
@@ -158,8 +158,8 @@ export const GalleryEditForm: React.FC<Props> = ({
           placeholderText={t('gallery.editForm.tags')}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}
-          handleAddition={handleTagAdded}
-          handleDelete={handleTagDeleted}
+          onAddition={handleTagAddition}
+          onDelete={handleTagDelete}
           allowNew
         />
       </FormGroup>
