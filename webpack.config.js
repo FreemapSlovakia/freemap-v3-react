@@ -117,8 +117,13 @@ module.exports = {
   },
   plugins: [
     new ForkTsCheckerWebpackPlugin({
-      eslint: !fastDev,
-      tsconfig: path.resolve(__dirname, './tsconfig.json'),
+      eslint: {
+        enabled: !fastDev,
+        files: '*',
+      },
+      typescript: {
+        configFile: path.resolve(__dirname, './tsconfig.json'),
+      },
       async: fastDev,
     }),
     new webpack.DefinePlugin({

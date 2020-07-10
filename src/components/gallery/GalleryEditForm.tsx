@@ -99,6 +99,8 @@ export const GalleryEditForm: React.FC<Props> = ({
     [changeModel, model.tags],
   );
 
+  const RT = ReactTags as any; // TODO temporary until ts definitions are updated
+
   return (
     <div>
       {errors?.map((error) => (
@@ -152,8 +154,8 @@ export const GalleryEditForm: React.FC<Props> = ({
         </InputGroup>
       </FormGroup>
       <FormGroup>
-        <ReactTags
-          placeholder={t('gallery.editForm.tags')}
+        <RT
+          placeholderText={t('gallery.editForm.tags')}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}
           handleAddition={handleTagAdded}
