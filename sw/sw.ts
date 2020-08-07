@@ -12,29 +12,22 @@ declare var self: ServiceWorkerGlobalScope;
 
 addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAGOOOOOOO2 {');
-
     // skipWaiting(); // not working
 
-    self.skipWaiting().then(
-      () => {
-        console.log('AAAAAAAAAAAAAAAAAAAAAAAA SUCCES');
-      },
-      (err) => {
-        console.log('AAAAAAAAAAAAAAAAAAAAAAAA FAIL', err);
-      },
-    );
-
-    console.log('AAAAAAAAAAAAAAAAAAAAAAAAGOOOOOOO2 }');
+    self.skipWaiting().catch((err) => {
+      console.log('Error skipWaiting', err);
+    });
   }
 });
 
 registerRoute('/index.html', new NetworkFirst());
 
-// The precache routes for workbox-webpack-plugin
-precacheAndRoute(self.__WB_MANIFEST, {
-  ignoreURLParametersMatching: [/.*/], // TODO try to use urlManipulation instead
-});
+if (process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev') {
+  // The precache routes for workbox-webpack-plugin
+  precacheAndRoute(self.__WB_MANIFEST, {
+    ignoreURLParametersMatching: [/.*/], // TODO try to use urlManipulation instead
+  });
+}
 
 registerRoute(
   '/',
