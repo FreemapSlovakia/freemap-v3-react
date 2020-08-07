@@ -135,7 +135,11 @@ export function attachKeyboardHandler(store: MyStore) {
       (!embed || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
       const baseLayer = baseLayers.find((l) => l.key === event.key);
-      if (baseLayer && (!baseLayer.adminOnly || state.auth.user?.isAdmin)) {
+      if (
+        baseLayer &&
+        (!baseLayer.adminOnly || state.auth.user?.isAdmin) &&
+        (!baseLayer.showOnlyInExpertMode || store.getState().main.expertMode)
+      ) {
         store.dispatch(mapRefocus({ mapType: baseLayer.type }));
         event.preventDefault();
         return;
@@ -144,7 +148,8 @@ export function attachKeyboardHandler(store: MyStore) {
       const overlayLayer = overlayLayers.find((l) => l.key === event.key);
       if (
         overlayLayer &&
-        (!overlayLayer.adminOnly || state.auth.user?.isAdmin)
+        (!overlayLayer.adminOnly || state.auth.user?.isAdmin) &&
+        (!overlayLayer.showOnlyInExpertMode || store.getState().main.expertMode)
       ) {
         const { type } = overlayLayer;
         const next = new Set(state.map.overlays);
