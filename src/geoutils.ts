@@ -63,7 +63,7 @@ export function distance(
     (Math.cos(toRad(lat1)) *
       Math.cos(toRad(lat2)) *
       (1 - Math.cos(toRad(lon2 - lon1)))) /
-    2;
+      2;
   return 12742000 * Math.asin(Math.sqrt(a)); // 2 * R; R = 6371 km
 }
 

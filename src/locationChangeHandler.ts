@@ -95,9 +95,9 @@ export const handleLocationChange = (
     id === undefined
       ? parsedQuery
       : {
-        ...parsedQuery,
-        ...queryString.parse(sq),
-      };
+          ...parsedQuery,
+          ...queryString.parse(sq),
+        };
 
   const params = new URLSearchParams(
     id === undefined ? search : sq,
@@ -107,10 +107,10 @@ export const handleLocationChange = (
     const points =
       typeof query.points === 'string'
         ? query.points
-          .split(',')
-          .map((point) =>
-            point ? point.split('/').map((coord) => parseFloat(coord)) : null,
-          )
+            .split(',')
+            .map((point) =>
+              point ? point.split('/').map((coord) => parseFloat(coord)) : null,
+            )
         : [];
 
     const pointsOk =
@@ -197,14 +197,14 @@ export const handleLocationChange = (
     !query.tool || typeof query.tool !== 'string'
       ? null
       : query.tool === 'info-point'
-        ? 'draw-points'
-        : query.tool === 'measure-area'
-          ? 'draw-polygons'
-          : query.tool === 'measure-dist'
-            ? 'draw-lines'
-            : query.tool === 'gallery'
-              ? 'photos'
-              : query.tool; // TODO set to null if unknown
+      ? 'draw-points'
+      : query.tool === 'measure-area'
+      ? 'draw-polygons'
+      : query.tool === 'measure-dist'
+      ? 'draw-lines'
+      : query.tool === 'gallery'
+      ? 'photos'
+      : query.tool; // TODO set to null if unknown
 
   if ((getState().main.selection?.type ?? null) !== tool) {
     dispatch(selectFeature(tool ? { type: tool as Tool } : null));
@@ -548,28 +548,28 @@ function handleGallery(
     if (
       qTakenAtFrom &&
       (filter.takenAtFrom ? filter.takenAtFrom.getTime() : NaN) !==
-      qTakenAtFrom.getTime()
+        qTakenAtFrom.getTime()
     ) {
       newFilter.takenAtFrom = qTakenAtFrom;
     }
     if (
       qTakenAtTo &&
       (filter.takenAtTo ? filter.takenAtTo.getTime() : NaN) !==
-      qTakenAtTo.getTime()
+        qTakenAtTo.getTime()
     ) {
       newFilter.takenAtTo = qTakenAtTo;
     }
     if (
       qCreatedAtFrom &&
       (filter.createdAtFrom ? filter.createdAtFrom.getTime() : NaN) !==
-      qCreatedAtFrom.getTime()
+        qCreatedAtFrom.getTime()
     ) {
       newFilter.createdAtFrom = qCreatedAtFrom;
     }
     if (
       qCreatedAtTo &&
       (filter.createdAtTo ? filter.createdAtTo.getTime() : NaN) !==
-      qCreatedAtTo.getTime()
+        qCreatedAtTo.getTime()
     ) {
       newFilter.createdAtTo = qCreatedAtTo;
     }
@@ -617,8 +617,8 @@ function handleInfoPoint(
   const ips = (!drawingPoint
     ? []
     : Array.isArray(drawingPoint)
-      ? drawingPoint
-      : [drawingPoint]
+    ? drawingPoint
+    : [drawingPoint]
   )
     .concat(typeof emp === 'string' ? [emp] : [])
     .map((ip) => /^(-?\d+(?:\.\d+)?)\/(-?\d+(?:\.\d+)?)[,;]?(.*)$/.exec(ip)) // comma (,) is for compatibility
