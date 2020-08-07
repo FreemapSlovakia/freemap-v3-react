@@ -75,9 +75,11 @@ render(
 
 initOffline(store);
 
-function loadAppState(): void {
+function loadAppState() {
   let appState: AppState | undefined;
+
   const as = storage.getItem('appState');
+
   if (as) {
     try {
       appState = assertType<AppState>(JSON.parse(as));
@@ -111,11 +113,13 @@ store.dispatch(authCheckLogin());
 
 attachKeyboardHandler(store);
 
-function checkStravaAuth(): void {
+function checkStravaAuth() {
   const img = new Image();
-  img.onload = (): void => {
+
+  img.onload = () => {
     store.dispatch(mapSetStravaAuth(true));
   };
+
   img.src =
     'https://heatmap-external-a.strava.com/tiles-auth/both/bluered/16/36718/22612.png';
 }

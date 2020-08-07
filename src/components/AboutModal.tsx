@@ -96,7 +96,7 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
 };
 
 export const AboutModal = connect(null, (dispatch: Dispatch<RootAction>) => ({
-  onModalClose(): void {
+  onModalClose() {
     dispatch(setActiveModal(null));
   },
 }))(AboutModalInt);

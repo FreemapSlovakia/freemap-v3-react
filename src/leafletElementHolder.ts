@@ -2,7 +2,7 @@ import { Map } from 'leaflet';
 
 let mapLeafletElement: Map | null = null;
 
-export function setMapLeafletElement(e: Map | null): void {
+export function setMapLeafletElement(e: Map | null) {
   mapLeafletElement = e;
 }
 

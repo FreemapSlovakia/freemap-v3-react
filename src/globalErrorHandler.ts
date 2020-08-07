@@ -44,7 +44,7 @@ interface ErrorDetails {
   colno?: number;
 }
 
-export function sendError(errDetails: ErrorDetails): void {
+export function sendError(errDetails: ErrorDetails) {
   console.error('Application error:', errDetails);
 
   if (errDetails.error) {
@@ -91,7 +91,7 @@ export function sendError(errDetails: ErrorDetails): void {
     );
 }
 
-function handle(id: string): void {
+function handle(id: string) {
   if (store) {
     store.dispatch(setErrorTicketId(id));
   } else {
