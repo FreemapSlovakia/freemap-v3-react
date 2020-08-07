@@ -3,7 +3,7 @@ import strg from 'local-storage-fallback';
 let s: StorageFallback;
 
 try {
-  if (!window.localStorage) {
+  if (window.self !== window.top || !window.localStorage) {
     throw new Error();
   }
   s = window.localStorage;
