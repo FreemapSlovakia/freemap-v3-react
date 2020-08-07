@@ -85,7 +85,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
           } else {
             window.open(
               `https://www.openstreetmap.org/#map=${
-                zoom > 19 ? 19 : zoom
+              Math.min(zoom, 19)
               }/${lat.toFixed(5)}/${lon.toFixed(5)}`,
             );
           }
@@ -100,10 +100,10 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
         case 'josm': {
           const leaflet = getMapLeafletElement();
           if (leaflet) {
-            let left;
-            let right;
-            let top;
-            let bottom;
+            let left: number;
+            let right: number;
+            let top: number;
+            let bottom: number;
 
             if (includePoint) {
               [left, bottom, right, top] = bbox(
@@ -169,13 +169,23 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
         case 'mapy.cz':
           window.open(
             `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
-              zoom > 19 ? 19 : zoom
+            zoom > 19 ? 19 : zoom
             }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`,
           );
           break;
         case 'oma.sk':
           window.open(
             `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`,
+          );
+          break;
+        case 'openstreetcam':
+          window.open(
+            `https://openstreetcam.org/map/@${lat},${lon},${zoom}z`,
+          );
+          break;
+        case 'mapillary':
+          window.open(
+            `https://www.mapillary.com/app/?lat=${lat}&lng=${lon}&z=${zoom}`,
           );
           break;
         case 'url':
@@ -283,20 +293,26 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       <MenuItem eventKey="osm.org" onSelect={handleMenuItemSelect}>
         {t('external.osm')}
       </MenuItem>
-      <MenuItem eventKey="oma.sk" onSelect={handleMenuItemSelect}>
-        {t('external.oma')}
+      <MenuItem eventKey="mapy.cz" onSelect={handleMenuItemSelect}>
+        {t('external.mapy_cz')}
       </MenuItem>
       <MenuItem eventKey="google" onSelect={handleMenuItemSelect}>
         {t('external.googleMaps')}
       </MenuItem>
+      <MenuItem eventKey="mapillary" onSelect={handleMenuItemSelect}>
+        Mapillary
+      </MenuItem>
+      <MenuItem eventKey="openstreetcam" onSelect={handleMenuItemSelect}>
+        OpenStreetCam
+      </MenuItem>
+      <MenuItem eventKey="oma.sk" onSelect={handleMenuItemSelect}>
+        {t('external.oma')} (SK)
+      </MenuItem>
       <MenuItem eventKey="hiking.sk" onSelect={handleMenuItemSelect}>
-        {t('external.hiking_sk')}
+        {t('external.hiking_sk')} (SK)
       </MenuItem>{' '}
       <MenuItem eventKey="zbgis" onSelect={handleMenuItemSelect}>
-        {t('external.zbgis')}
-      </MenuItem>
-      <MenuItem eventKey="mapy.cz" onSelect={handleMenuItemSelect}>
-        {t('external.mapy_cz')}
+        {t('external.zbgis')} (SK)
       </MenuItem>
       <MenuItem divider />
       {expertMode && (
