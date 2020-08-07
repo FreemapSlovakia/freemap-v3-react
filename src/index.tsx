@@ -51,9 +51,11 @@ loadAppState();
 store.dispatch(authInit());
 
 const { location } = history;
-history.listen((location) => {
-  handleLocationChange(store, location);
+
+history.listen((update) => {
+  handleLocationChange(store, update.location);
 });
+
 handleLocationChange(store, location);
 
 attachOsmLoginMessageHandler(store);

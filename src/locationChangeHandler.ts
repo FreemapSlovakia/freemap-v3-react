@@ -66,14 +66,13 @@ const tipKeys = tips.map(([key]) => key);
 
 export const handleLocationChange = (
   store: MyStore,
-  location: Location,
+  location: Location<{ sq?: string }>,
 ): void => {
   const { getState, dispatch } = store;
 
   const search = document.location.search;
 
-  const state =
-    typeof history.location.state === 'string' ? history.location.state : '{}';
+  const sq = history.location.state?.sq ?? '';
 
   const parsedQuery = queryString.parse(search);
 
@@ -97,11 +96,11 @@ export const handleLocationChange = (
       ? parsedQuery
       : {
           ...parsedQuery,
-          ...queryString.parse(state),
+          ...queryString.parse(sq),
         };
 
   const params = new URLSearchParams(
-    id === undefined ? search : state,
+    id === undefined ? search : sq,
   ) as URLSearchParams & Map<string, string>;
 
   {

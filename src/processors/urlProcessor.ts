@@ -303,12 +303,12 @@ export const urlProcessor: Processor = {
       historyParts.push(['follow', main.selection?.id]);
     }
 
-    const state = isMap ? serializeQuery(historyParts) : undefined;
+    const sq = isMap ? serializeQuery(historyParts) : undefined;
 
     const search = serializeQuery(queryParts);
 
     if (
-      (isMap && state !== history.location.state) ||
+      (isMap && sq !== history.location.state?.sq) ||
       search !== window.location.search
     ) {
       const method =
@@ -317,11 +317,13 @@ export const urlProcessor: Processor = {
           ? 'replace'
           : 'push';
 
-      history[method]({
-        pathname: '/',
-        search: search,
-        state: state,
-      });
+      history[method](
+        {
+          pathname: '/',
+          search: search,
+        },
+        { sq },
+      );
 
       lastActionType = action.type;
     }
