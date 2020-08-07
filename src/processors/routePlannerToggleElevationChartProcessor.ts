@@ -28,13 +28,9 @@ export const routePlannerToggleElevationChartProcessor: Processor<
       dispatch(
         elevationChartSetTrackGeojson(
           lineString(
-            ([] as any[])
-              .concat(
-                ...alternatives[activeAlternativeIndex].itinerary.map(
-                  ({ shapePoints }) => shapePoints,
-                ),
-              )
-              .map(([lat, lon]) => [lon, lat]),
+            alternatives[activeAlternativeIndex].legs
+              .flatMap((leg) => leg.steps)
+              .flatMap((step) => step.geometry.coordinates),
           ),
         ),
       );

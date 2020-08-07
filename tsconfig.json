@@ -7,11 +7,16 @@
     "jsx": "react", // use typescript to transpile jsx to js
     "target": "es2017", // specify ECMAScript target version
     "moduleResolution": "node",
-    "lib": ["es2017", "dom"],
+    "lib": [
+      "es2019",
+      "dom"
+    ],
     "allowSyntheticDefaultImports": true,
     "baseUrl": "src",
     "paths": {
-      "fm3/*": ["./*"]
+      "fm3/*": [
+        "./*"
+      ]
     },
     "noUnusedLocals": true,
     "noUnusedParameters": true,
@@ -32,5 +37,8 @@
       "trackjs"
     ]
   },
-  "include": ["src", "typings"]
+  "include": [
+    "src",
+    "typings"
+  ]
 }

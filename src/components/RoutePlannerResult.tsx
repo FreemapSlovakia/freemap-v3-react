@@ -21,6 +21,7 @@ import {
   Alternative,
   RouteAlternativeExtra,
   RouteStepExtra,
+  Step,
 } from 'fm3/actions/routePlannerActions';
 import { Translator, withTranslator } from 'fm3/l10nInjector';
 import { RootAction } from 'fm3/actions';
@@ -49,6 +50,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   language,
   activeAlternativeIndex,
   alternatives,
+  // waypoints,
   mode,
   onFinishSet,
   onAddMidpoint,
@@ -124,12 +126,12 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   }, []);
 
   const maneuverToText = useCallback(
-    (name: string, { type, modifier }, extra: RouteStepExtra) => {
+    (name: string, { type, modifier }, extra?: RouteStepExtra) => {
       const p = 'routePlanner.maneuver';
       return transportType === 'imhd'
-        ? imhdStep(t, language, extra)
+        ? extra && imhdStep(t, language, extra)
         : transportType === 'bikesharing'
-        ? bikesharingStep(t, extra)
+        ? extra && bikesharingStep(t, extra)
         : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
             type: t(`${p}.types.${type}`, {}, type),
             modifier: modifier
@@ -297,14 +299,12 @@ const RoutePlannerResultInt: React.FC<Props> = ({
       return [];
     }
 
-    const points: [number, number][] = [];
-    for (const step of alternatives[activeAlternativeIndex].itinerary) {
-      points.push(
-        ...step.shapePoints.map(([a, b]) => [b, a] as [number, number]),
-      );
-    }
+    const line = lineString(
+      alternatives[activeAlternativeIndex].legs
+        .flatMap((leg) => leg.steps)
+        .flatMap((step) => step.geometry.coordinates),
+    );
 
-    const line = lineString(points);
     const len = length(line);
 
     const milestones: Feature<Point, Properties>[] = [];
@@ -355,7 +355,9 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           faIcon={isRoute ? undefined : 'flag'}
           label={isRoute ? i + 1 : undefined}
           position={{ lat, lng: lon }}
-        />
+        >
+          {/* <Tooltip><span>{waypoints.find(wp => wp.waypoint_index === i)?.distance}</span></Tooltip> */}
+        </RichMarker>
       ))}
       {finish && (
         <RichMarker
@@ -378,67 +380,81 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           index: index === activeAlternativeIndex ? -1000 : index,
         }))
         .sort((a, b) => b.index - a.index)
-        .map(({ itinerary, alt }) => (
+        .map(({ legs, alt }) => (
           <React.Fragment key={`alt-${timestamp}-${alt}`}>
             {alt === activeAlternativeIndex &&
               special &&
-              itinerary.map(
-                ({ shapePoints, name, maneuver, extra: extra1 }, i: number) => (
-                  <Marker key={i} icon={circularIcon} position={shapePoints[0]}>
-                    <Tooltip direction="right" permanent>
-                      <div>{maneuverToText(name, maneuver, extra1)}</div>
-                    </Tooltip>
-                  </Marker>
-                ),
-              )}
-            {itinerary.map((routeSlice, i: number) => (
-              <Polyline
-                key={`slice-${i}`}
-                ref={bringToFront}
-                positions={routeSlice.shapePoints}
-                weight={10}
-                color="#fff"
-                bubblingMouseEvents={false}
-                onClick={() => onAlternativeChange(alt)}
-                onMouseMove={
-                  special
-                    ? undefined
-                    : (e: LeafletMouseEvent) =>
-                        handlePolyMouseMove(e, routeSlice.legIndex, alt)
-                }
-                onMouseOut={handlePolyMouseOut}
-              />
-            ))}
-            {itinerary.map((routeSlice, i: number) => (
-              <Polyline
-                key={`slice-${timestamp}-${alt}-${i}`}
-                ref={bringToFront}
-                positions={routeSlice.shapePoints}
-                weight={6}
-                color={
-                  alt !== activeAlternativeIndex
-                    ? '#868e96'
-                    : !special && routeSlice.legIndex % 2
-                    ? 'hsl(211, 100%, 66%)'
-                    : 'hsl(211, 100%, 50%)'
-                }
-                opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
-                dashArray={
-                  ['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode)
-                    ? '0, 10'
-                    : undefined
-                }
-                interactive={false}
-                bubblingMouseEvents={false}
-              />
-            ))}
+              legs
+                .flatMap((leg) => leg.steps)
+                .map(
+                  ({ geometry, name, maneuver, extra: extra1 }, i: number) => (
+                    <Marker
+                      key={i}
+                      icon={circularIcon}
+                      position={reverse(geometry.coordinates[0])}
+                    >
+                      <Tooltip direction="right" permanent>
+                        <div>{maneuverToText(name, maneuver, extra1)}</div>
+                      </Tooltip>
+                    </Marker>
+                  ),
+                )}
+            {legs
+              .flatMap((leg, legIndex) =>
+                leg.steps.map((step) => ({ legIndex, ...step })),
+              )
+              .map((routeSlice, i: number) => (
+                <Polyline
+                  key={`slice-${i}`}
+                  ref={bringToFront}
+                  positions={routeSlice.geometry.coordinates.map(reverse)}
+                  weight={10}
+                  color="#fff"
+                  bubblingMouseEvents={false}
+                  onClick={() => onAlternativeChange(alt)}
+                  onMouseMove={
+                    special
+                      ? undefined
+                      : (e: LeafletMouseEvent) =>
+                          handlePolyMouseMove(e, routeSlice.legIndex, alt)
+                  }
+                  onMouseOut={handlePolyMouseOut}
+                />
+              ))}
+            {legs
+              .flatMap((leg, legIndex) =>
+                leg.steps.map((step) => ({ legIndex, ...step })),
+              )
+              .map((routeSlice, i: number) => (
+                <Polyline
+                  key={`slice-${timestamp}-${alt}-${i}`}
+                  ref={bringToFront}
+                  positions={routeSlice.geometry.coordinates.map(reverse)}
+                  weight={6}
+                  color={
+                    alt !== activeAlternativeIndex
+                      ? '#868e96'
+                      : !special && routeSlice.legIndex % 2
+                      ? 'hsl(211, 100%, 66%)'
+                      : 'hsl(211, 100%, 50%)'
+                  }
+                  opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
+                  dashArray={
+                    ['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode)
+                      ? '0, 10'
+                      : undefined
+                  }
+                  interactive={false}
+                  bubblingMouseEvents={false}
+                />
+              ))}
           </React.Fragment>
         ))}
       {milestones.map((ms, i) => (
         <CircleMarker
           radius={0}
           key={i}
-          center={[ms.geometry.coordinates[1], ms.geometry.coordinates[0]]}
+          center={reverse(ms.geometry.coordinates as [number, number])}
         >
           <Tooltip className="compact" direction="right" permanent>
             <div>{(i + 1) * step}</div>
@@ -450,11 +466,16 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   );
 };
 
+function reverse(c: [number, number]) {
+  return [c[1], c[0]] as [number, number];
+}
+
 const mapStateToProps = (state: RootState) => ({
   start: state.routePlanner.start,
   finish: state.routePlanner.finish,
   midpoints: state.routePlanner.midpoints,
   alternatives: state.routePlanner.alternatives,
+  waypoints: state.routePlanner.waypoints,
   activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
   transportType: state.routePlanner.transportType,
   mode: state.routePlanner.mode,
@@ -504,23 +525,29 @@ export const RoutePlannerResult = connect(
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)
 function addMissingSegments(alt: Alternative) {
-  const routeSlices: any[] = [];
-  for (let i = 0; i < alt.itinerary.length; i += 1) {
-    const slice = alt.itinerary[i];
-    const prevSlice = alt.itinerary[i - 1];
-    const nextSlice = alt.itinerary[i + 1];
+  const routeSlices: Step[] = [];
+
+  const steps = alt.legs.flatMap((leg) => leg.steps);
+
+  for (let i = 0; i < steps.length; i += 1) {
+    const slice = steps[i];
+    const prevSlice = steps[i - 1];
+    const nextSlice = steps[i + 1];
 
     const prevSliceLastShapePoint = prevSlice
-      ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1]
+      ? prevSlice.geometry.coordinates[
+          prevSlice.geometry.coordinates.length - 1
+        ]
       : null;
-    const firstShapePoint = slice.shapePoints[0];
+    const firstShapePoint = slice.geometry.coordinates[0];
 
-    const lastShapePoint = slice.shapePoints[slice.shapePoints.length - 1];
+    const lastShapePoint =
+      slice.geometry.coordinates[slice.geometry.coordinates.length - 1];
     const nextSliceFirstShapePoint = nextSlice
-      ? nextSlice.shapePoints[0]
+      ? nextSlice.geometry.coordinates[0]
       : null;
 
-    const shapePoints = [...slice.shapePoints];
+    const coordinates = [...slice.geometry.coordinates];
 
     if (slice.mode === 'foot') {
       if (
@@ -529,7 +556,7 @@ function addMissingSegments(alt: Alternative) {
           0.0000001 ||
           Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
       ) {
-        shapePoints.unshift(prevSliceLastShapePoint);
+        coordinates.unshift(prevSliceLastShapePoint);
       }
 
       if (
@@ -538,13 +565,15 @@ function addMissingSegments(alt: Alternative) {
           0.0000001 ||
           Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
       ) {
-        shapePoints.push(nextSliceFirstShapePoint);
+        coordinates.push(nextSliceFirstShapePoint);
       }
     }
 
     routeSlices.push({
       ...slice,
-      shapePoints,
+      geometry: {
+        coordinates,
+      },
     });
   }
 

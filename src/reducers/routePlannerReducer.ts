@@ -34,6 +34,7 @@ export type PickMode = 'start' | 'finish';
 
 export interface RoutePlannerState {
   alternatives: Alternative[];
+  waypoints: any[]; // TODO type
   activeAlternativeIndex: number;
   timestamp: number | null;
   transportType: TransportType | null;
@@ -48,6 +49,7 @@ export interface RoutePlannerState {
 
 const clearResult = {
   alternatives: [],
+  waypoints: [],
   activeAlternativeIndex: 0,
   timestamp: null,
 };
@@ -191,6 +193,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   .handleAction(routePlannerSetResult, (state, action) => ({
     ...state,
     alternatives: action.payload.alternatives,
+    waypoints: action.payload.waypoints,
     timestamp: action.payload.timestamp,
     activeAlternativeIndex: 0,
     midpoints: isSpecial(action.payload.transportType) ? [] : state.midpoints,

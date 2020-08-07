@@ -469,19 +469,25 @@ function addPlannedRoute(
         undefined,
         toLatLon(midpoint),
       );
+
       createElement(midpointWptEle, 'name', `Zastávka ${i + 1}`);
     });
   }
 
-  alternatives.forEach(({ itinerary }, i: number) => {
+  alternatives.forEach(({ legs }, i: number) => {
     const trkEle = createElement(doc.documentElement, 'trk');
+
     createElement(trkEle, 'name', `Alternatíva ${i + 1}`);
+
     const trksegEle = createElement(trkEle, 'trkseg');
-    itinerary.forEach(({ shapePoints }) => {
-      shapePoints.forEach(([lat, lon]) => {
-        createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
-      });
-    });
+
+    for (const leg of legs) {
+      for (const step of leg.steps) {
+        for (const [lon, lat] of step.geometry.coordinates) {
+          createElement(trksegEle, 'trkpt', undefined, toLatLon({ lat, lon }));
+        }
+      }
+    }
   });
 }
 
@@ -503,10 +509,13 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
 
   for (const track of tracks1) {
     const trkEle = createElement(doc.documentElement, 'trk');
+
     if (track.label) {
       createElement(trkEle, 'name', track.label);
     }
+
     const trksegEle = createElement(trkEle, 'trkseg');
+
     for (const {
       ts,
       lat,
@@ -526,18 +535,23 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
         toLatLon({ lat, lon }),
       );
       createElement(ptEle, 'time', ts.toISOString());
+
       if (typeof altitude === 'number') {
         createElement(ptEle, 'ele', altitude.toString());
       }
+
       if (typeof accuracy === 'number') {
         createElement(ptEle, 'hdop', accuracy.toString());
       }
+
       if (typeof bearing === 'number') {
         createElement(ptEle, 'magvar', bearing.toString()); // maybe not the most suitable tag
       }
+
       if (message && typeof accuracy === 'number') {
         createElement(ptEle, 'cmt', accuracy.toString());
       }
+
       if (
         typeof speed === 'number' ||
         typeof battery === 'number' ||

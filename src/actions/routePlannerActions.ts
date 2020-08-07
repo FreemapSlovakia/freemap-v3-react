@@ -42,28 +42,38 @@ export interface RouteStepExtra {
   number?: number;
 }
 
+export interface Leg {
+  steps: Step[];
+  distance: number;
+  duration: number;
+  // weight: number;
+  // summary: string;
+}
+
 export interface Step {
   maneuver: {
-    location: LatLon;
+    location: [number, number];
     type: string; // TODO enum?
-    modifier: ManeuerModifier;
+    modifier?: ManeuerModifier;
   };
   distance: number;
   duration: number;
   name: string;
-  type: string; // TODO enum?
-  modifier: string; // TODO enum?
   mode: SliceMode;
-  shapePoints: [number, number][];
-  legIndex: number;
+  geometry: {
+    coordinates: [number, number][];
+  };
   extra?: RouteStepExtra;
 }
 
 export interface Alternative {
-  itinerary: Step[];
+  legs: Leg[];
   distance: number;
   duration: number;
   extra?: RouteAlternativeExtra;
+  // geometry: any;
+  // weight: number;
+  // weight_name: string;
 }
 
 export const routePlannerSetStart = createAction('ROUTE_PLANNER_SET_START')<{
@@ -108,6 +118,7 @@ export const routePlannerSetResult = createAction('ROUTE_PLANNER_SET_RESULT')<{
   timestamp: number;
   transportType: TransportType;
   alternatives: Alternative[];
+  waypoints: any[]; // TODO type
 }>();
 
 export const routePlannerToggleItineraryVisibility = createAction(

@@ -114,8 +114,10 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       if (alt) {
         const coords: number[][] = [];
 
-        for (const step of alt.itinerary) {
-          coords.push(...step.shapePoints.map(([lat, lon]) => [lon, lat]));
+        for (const leg of alt.legs) {
+          for (const step of leg.steps) {
+            coords.push(...step.geometry.coordinates);
+          }
         }
 
         features.push(lineString(coords, { name: '' }));

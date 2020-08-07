@@ -36,9 +36,9 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
 
         const coords: number[][] = [];
 
-        for (const itItem of alt.itinerary) {
-          for (const point of itItem.shapePoints) {
-            coords.push(point);
+        for (const leg of alt.legs) {
+          for (const step of leg.steps) {
+            coords.push(...step.geometry.coordinates);
           }
         }
 

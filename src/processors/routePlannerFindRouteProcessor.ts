@@ -12,8 +12,6 @@ import {
   routePlannerSetParams,
   Alternative,
   Step,
-  RouteAlternativeExtra,
-  RouteStepExtra,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { storage } from 'fm3/storage';
@@ -23,41 +21,6 @@ import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
-
-interface OsrmStep {
-  distance: number;
-  duration: number;
-  geometry: {
-    coordinates: [number, number][];
-  };
-  name: string;
-  // weight: number;
-  mode: string;
-  extra?: RouteStepExtra;
-  maneuver: {
-    type: string;
-    modifier?: string;
-    location: [number, number];
-  };
-}
-
-interface OsrmLeg {
-  distance: number;
-  duration: number;
-  // weight: number;
-  // summary: string;
-  steps: OsrmStep[];
-}
-
-interface OsrmRoute {
-  distance: number;
-  duration: number;
-  legs: OsrmLeg[];
-  // geometry: any;
-  // weight: number;
-  // weight_name: string;
-  extra?: RouteAlternativeExtra;
-}
 
 const updateRouteTypes = [
   routePlannerSetStart,
@@ -134,13 +97,14 @@ export const routePlannerFindRouteProcessor: Processor = {
           timestamp: Date.now(),
           transportType,
           alternatives: [],
+          waypoints: [],
         }),
       );
       throw err;
     }
 
     // TODO assert
-    const { code, trips, routes } = data;
+    const { code, trips, routes, waypoints } = data;
 
     if (code === 'Ok') {
       const showHint =
@@ -166,68 +130,8 @@ export const routePlannerFindRouteProcessor: Processor = {
         );
       }
 
-      const rts = routes || trips;
-      assertType<any[]>(rts);
-
-      const alts = rts.map((rt: any) => {
-        const route = assertType<OsrmRoute>(rt);
-
-        const {
-          legs,
-          distance: totalDistance,
-          duration: totalDuration,
-          extra: totalExtra,
-        } = route;
-
-        const itinerary = ([] as any).concat(
-          ...legs.map((leg, legIndex: number) =>
-            leg.steps.map(
-              ({
-                name,
-                distance,
-                duration,
-                mode: m,
-                geometry,
-                extra,
-                maneuver: {
-                  type,
-                  modifier,
-                  location: [lon, lat],
-                },
-              }) => ({
-                maneuver: {
-                  location: {
-                    lat,
-                    lon,
-                  },
-                  type,
-                  modifier,
-                },
-                distance,
-                duration,
-                name,
-                type,
-                modifier,
-                mode: m,
-                shapePoints: geometry.coordinates.map((lonlat) =>
-                  lonlat.reverse(),
-                ),
-                legIndex,
-                extra,
-              }),
-            ),
-          ),
-        );
-
-        const alt: Alternative = {
-          itinerary,
-          distance: totalDistance / 1000,
-          duration: totalDuration / 60,
-          extra: totalExtra,
-        };
-
-        return alt;
-      });
+      const alts = routes || trips;
+      assertType<any[]>(alts);
 
       const alternatives: Alternative[] =
         transportType === 'imhd'
@@ -239,6 +143,7 @@ export const routePlannerFindRouteProcessor: Processor = {
           timestamp: Date.now(),
           transportType,
           alternatives,
+          waypoints,
         }),
       );
     } else {
@@ -247,6 +152,7 @@ export const routePlannerFindRouteProcessor: Processor = {
           timestamp: Date.now(),
           transportType,
           alternatives: [],
+          waypoints: [],
         }),
       );
       dispatch(
@@ -261,50 +167,57 @@ export const routePlannerFindRouteProcessor: Processor = {
   },
 };
 
+function coord(step: Step) {
+  return step.geometry.coordinates;
+}
+
 function addMissingSegments(alt: Alternative) {
-  const routeSlices: Step[] = [];
-  for (let i = 0; i < alt.itinerary.length; i += 1) {
-    const slice = alt.itinerary[i];
-    const prevSlice = alt.itinerary[i - 1];
-    const nextSlice = alt.itinerary[i + 1];
+  const steps: Step[] = [];
 
-    const prevSliceLastShapePoint = prevSlice
-      ? prevSlice.shapePoints[prevSlice.shapePoints.length - 1]
-      : null;
-    const firstShapePoint = slice.shapePoints[0];
+  const routeSteps = alt.legs.flatMap((leg) => leg.steps);
 
-    const lastShapePoint = slice.shapePoints[slice.shapePoints.length - 1];
-    const nextSliceFirstShapePoint = nextSlice
-      ? nextSlice.shapePoints[0]
+  for (let i = 0; i < routeSteps.length; i += 1) {
+    const step = routeSteps[i];
+    const prevStep = routeSteps[i - 1];
+    const nextStep = routeSteps[i + 1];
+
+    const prevStepLastPoint = prevStep
+      ? coord(prevStep)[coord(prevStep).length - 1]
       : null;
 
-    const shapePoints = [...slice.shapePoints];
+    const firstPoint = coord(step)[0];
 
-    if (slice.mode === 'foot') {
+    const lastShapePoint = coord(step)[coord(step).length - 1];
+
+    const nextStepFirstPoint = nextStep?.geometry.coordinates[0] ?? null;
+
+    const c = coord(step);
+
+    const coordinates = [c[0], c[1]];
+
+    if (step.mode === 'foot') {
       if (
-        prevSliceLastShapePoint &&
-        (Math.abs(prevSliceLastShapePoint[0] - firstShapePoint[0]) >
-          0.0000001 ||
-          Math.abs(prevSliceLastShapePoint[1] - firstShapePoint[1]) > 0.0000001)
+        prevStepLastPoint &&
+        (Math.abs(prevStepLastPoint[0] - firstPoint[0]) > 0.0000001 ||
+          Math.abs(prevStepLastPoint[1] - firstPoint[1]) > 0.0000001)
       ) {
-        shapePoints.unshift(prevSliceLastShapePoint);
+        coordinates.unshift(prevStepLastPoint);
       }
 
       if (
-        nextSliceFirstShapePoint &&
-        (Math.abs(nextSliceFirstShapePoint[0] - lastShapePoint[0]) >
-          0.0000001 ||
-          Math.abs(nextSliceFirstShapePoint[1] - lastShapePoint[1]) > 0.0000001)
+        nextStepFirstPoint &&
+        (Math.abs(nextStepFirstPoint[0] - lastShapePoint[0]) > 0.0000001 ||
+          Math.abs(nextStepFirstPoint[1] - lastShapePoint[1]) > 0.0000001)
       ) {
-        shapePoints.push(nextSliceFirstShapePoint);
+        coordinates.push(nextStepFirstPoint);
       }
     }
 
-    routeSlices.push({
-      ...slice,
-      shapePoints,
+    steps.push({
+      ...step,
+      geometry: { coordinates },
     });
   }
 
-  return { ...alt, itinerary: routeSlices };
+  return { ...alt, itinerary: steps };
 }
