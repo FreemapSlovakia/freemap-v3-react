@@ -237,10 +237,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>ide:</b>
             ) : (
-              <>
-                ide: <b>{destination}</b>
-              </>
-            )}
+                <>
+                  ide: <b>{destination}</b>
+                </>
+              )}
           </>
         ),
         // eslint-disable-next-line
@@ -269,10 +269,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>a célponthoz</b>
             ) : (
-              <>
-                ide: <b>{destination}</b>
-              </>
-            )}
+                <>
+                  ide: <b>{destination}</b>
+                </>
+              )}
           </>
         ),
         // eslint-disable-next-line
@@ -1004,6 +1004,7 @@ export default {
       Y: 'Túrázás + Kerékpár + Síelés (helyi)',
     },
     overlay: {
+      i: 'Interactive layer', // TODO translate
       I: 'Fényképek',
       l: 'Erdészeti utak (Szlovákia)',
       n1: 'Nevek (autó)',

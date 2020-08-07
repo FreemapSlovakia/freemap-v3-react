@@ -235,10 +235,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
-              <>
-                to <b>{destination}</b>
-              </>
-            )}
+                <>
+                  to <b>{destination}</b>
+                </>
+              )}
           </>
         ),
         // eslint-disable-next-line
@@ -267,10 +267,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
-              <>
-                to <b>{destination}</b>
-              </>
-            )}
+                <>
+                  to <b>{destination}</b>
+                </>
+              )}
           </>
         ),
         // eslint-disable-next-line
@@ -994,6 +994,7 @@ export default {
       Y: 'Hiking + Bicycle + Ski (local)',
     },
     overlay: {
+      i: 'Interactive layer',
       I: 'Photos',
       l: 'Forest tracks NLC',
       n1: 'Names (car)',

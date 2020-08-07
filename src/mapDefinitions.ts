@@ -223,6 +223,13 @@ if (!process.env.NODE_ENV) {
 
 export const overlayLayers: LayerDef[] = [
   {
+    type: 'i',
+    icon: 'pencil',
+    key: 'I',
+    attribution: [],
+    showOnlyInExpertMode: true,
+  },
+  {
     type: 'I',
     icon: 'picture-o',
     minZoom: 0,

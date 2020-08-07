@@ -145,7 +145,7 @@ const MainInt: React.FC<Props> = ({
   isUserValidated,
   selection,
   onDelete,
-  canDelete,
+  canDelete, showInteractiveLayer
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
@@ -289,8 +289,8 @@ const MainInt: React.FC<Props> = ({
                   </>
                 )
               ) : (
-                <ToolsMenuButton />
-              )}
+                  <ToolsMenuButton />
+                )}
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {tool &&
@@ -377,24 +377,31 @@ const MainInt: React.FC<Props> = ({
           style={{ cursor: mouseCursor }}
         >
           <ScaleControl imperial={false} position="bottomleft" />
+
           <Layers />
+
+          {showMenu && showInteractiveLayer && <>
+            <SearchResults />
+            <ObjectsResult />
+            <RoutePlannerResult />
+            <DrawingLinesResult />
+            <LocationResult />
+            <TrackViewerResult />
+            <DrawingPointsResult />
+            <ChangesetsResult />
+            <TrackingResult />
+          </>
+          }
 
           {showMenu && (
             <>
-              <SearchResults />
-              <ObjectsResult />
-              <RoutePlannerResult />
-              <DrawingLinesResult />
-              <LocationResult />
-              <TrackViewerResult />
-              <DrawingPointsResult />
-              <ChangesetsResult />
-              <TrackingResult />
               {showGalleryPicker && <GalleryPicker />}
               <WikiLayer />
             </>
           )}
+
           {/* TODO should not be extra just because for position picking */}
+
           <GalleryResult />
         </Map>
         {showElevationChart && <AsyncElevationChart />}
@@ -407,6 +414,7 @@ const mapStateToProps = (state: RootState) => ({
   lat: state.map.lat,
   lon: state.map.lon,
   zoom: state.map.zoom,
+  showInteractiveLayer: !state.map.overlays.includes('i'),
   tool: state.main.selection?.type,
   embedFeatures: state.main.embedFeatures,
   activeModal: state.main.activeModal,

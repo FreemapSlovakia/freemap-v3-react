@@ -237,10 +237,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cíle</b>
             ) : (
-              <>
-                do <b>{destination}</b>
-              </>
-            )}
+                <>
+                  do <b>{destination}</b>
+                </>
+              )}
           </>
         ),
         // eslint-disable-next-line
@@ -269,10 +269,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cíle</b>
             ) : (
-              <>
-                na <b>{destination}</b>
-              </>
-            )}
+                <>
+                  na <b>{destination}</b>
+                </>
+              )}
           </>
         ),
         // eslint-disable-next-line
@@ -995,6 +995,7 @@ export default {
       Y: 'Turistika + Cyklo + Běžky (local)',
     },
     overlay: {
+      i: 'Interaktivní vrstva',
       I: 'Fotografie',
       l: 'Lesní cesty NLC',
       n1: 'Názvy (auto)',

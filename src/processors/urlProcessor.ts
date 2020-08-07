@@ -84,7 +84,7 @@ export const urlProcessor: Processor = {
 
     const queryParts: [string, string | number | boolean][] = [
       ['map', `${map.zoom}/${serializePoint({ lat: map.lat, lon: map.lon })}`],
-      ['layers', `${map.mapType}${map.overlays.join('')}`],
+      ['layers', `${map.mapType}${map.overlays.filter(l => l != 'i').join('')}`],
     ];
 
     if (main.selection?.type) {
@@ -175,7 +175,7 @@ export const urlProcessor: Processor = {
       historyParts.push([
         line.type,
         `${line.points.map((point) => serializePoint(point)).join(',')}${
-          line.label ? `;${line.label}` : ''
+        line.label ? `;${line.label}` : ''
         }`,
       ]);
     }
@@ -313,7 +313,7 @@ export const urlProcessor: Processor = {
     ) {
       const method =
         lastActionType &&
-        isActionOf([mapRefocus, drawingLineUpdatePoint], action)
+          isActionOf([mapRefocus, drawingLineUpdatePoint], action)
           ? 'replace'
           : 'push';
 

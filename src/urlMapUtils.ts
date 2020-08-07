@@ -57,14 +57,9 @@ function undefineNaN(val: number): number | undefined {
 
 export function getMapStateDiffFromUrl(
   state1:
-    | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>)
-    | null
-    | undefined,
+    (Partial<MapViewState> & Pick<MapViewState, 'overlays'>),
   state2: MapViewState,
 ): Partial<MapViewState> | null {
-  if (!state1 || !state2) {
-    return null;
-  }
 
   const { lat, lon, zoom, mapType, overlays = [] } = state1;
   const changes: Partial<MapViewState> = {};
@@ -75,6 +70,9 @@ export function getMapStateDiffFromUrl(
 
   if (mapType && overlays.join('') !== state2.overlays.join('')) {
     changes.overlays = overlays;
+    if (state2.overlays.includes('i')) {
+      changes.overlays.push('i');
+    }
   }
 
   if (lat && Math.abs(lat - state2.lat) > 0.00001) {
