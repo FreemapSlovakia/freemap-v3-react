@@ -76,6 +76,14 @@ export interface Alternative {
   // weight_name: string;
 }
 
+export interface Waypoint {
+  distance: number;
+  name: string;
+  location: [number, number];
+  waypoint_index?: number;
+  trips_index?: number;
+}
+
 export const routePlannerSetStart = createAction('ROUTE_PLANNER_SET_START')<{
   start: LatLon | null;
   move?: boolean;
@@ -118,7 +126,7 @@ export const routePlannerSetResult = createAction('ROUTE_PLANNER_SET_RESULT')<{
   timestamp: number;
   transportType: TransportType;
   alternatives: Alternative[];
-  waypoints: any[]; // TODO type
+  waypoints: Waypoint[]; // TODO type
 }>();
 
 export const routePlannerToggleItineraryVisibility = createAction(

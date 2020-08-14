@@ -50,7 +50,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   language,
   activeAlternativeIndex,
   alternatives,
-  // waypoints,
+  waypoints,
   mode,
   onFinishSet,
   onAddMidpoint,
@@ -84,39 +84,48 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     [],
   );
 
-  const getSummary = useMemo(
-    () => () => {
-      const { distance = undefined, duration = undefined, extra = undefined } =
-        alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
-
+  const foo = useMemo(
+    () => (distance: number, duration: number) => {
       const nf = Intl.NumberFormat(language, {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1,
       });
 
+      return (
+        <div>
+          <div>
+            {t('routePlanner.distance', { value: nf.format(distance / 1000) })}
+          </div>
+          {duration !== undefined && (
+            <div>
+              {t('routePlanner.duration', {
+                h: Math.floor(Math.round(duration / 60) / 60),
+                m: Math.round(duration / 60) % 60,
+              })}
+            </div>
+          )}
+        </div>
+      );
+    },
+    [language, t],
+  );
+
+  const getSummary = useMemo(
+    () => () => {
+      const { distance = undefined, duration = undefined, extra = undefined } =
+        alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
+
       return isSpecial(transportType) && extra?.numbers ? (
         <Tooltip direction="top" offset={[0, -36]} permanent>
           <div>{imhdSummary(t, language, extra)}</div>
         </Tooltip>
-      ) : distance ? (
+      ) : distance && duration ? (
         <Tooltip direction="top" offset={[0, -36]} permanent>
-          <div>
-            <div>
-              {t('routePlanner.distance', { value: nf.format(distance) })}
-            </div>
-            {duration !== undefined && (
-              <div>
-                {t('routePlanner.duration', {
-                  h: Math.floor(Math.round(duration) / 60),
-                  m: Math.round(duration) % 60,
-                })}
-              </div>
-            )}
-          </div>
+          {foo(distance, duration)}
         </Tooltip>
       ) : null;
     },
-    [alternatives, activeAlternativeIndex, language, t, transportType],
+    [alternatives, activeAlternativeIndex, foo, language, t, transportType],
   );
 
   const bringToFront = useCallback((ele) => {
@@ -329,9 +338,10 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           position={{ lat: start.lat, lng: start.lon }}
           onclick={handleStartPointClick}
         >
-          {!isRoute && getSummary()}
+          {mode === 'roundtrip' && getSummary()}
         </RichMarker>
       )}
+
       {dragLat !== undefined && dragLon !== undefined && (
         <Marker
           draggable
@@ -344,6 +354,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           onclick={handleFutureClick}
         />
       )}
+
       {midpoints.map(({ lat, lon }, i) => (
         <RichMarker
           draggable
@@ -352,16 +363,27 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           onclick={() => handleMidpointClick(i)}
           key={`midpoint-${i}`}
           zIndexOffset={9}
-          faIcon={isRoute ? undefined : 'flag'}
-          label={isRoute ? i + 1 : undefined}
+          label={isRoute ? i + 1 : waypoints[i + 1]?.waypoint_index}
           position={{ lat, lng: lon }}
         >
-          {/* <Tooltip><span>{waypoints.find(wp => wp.waypoint_index === i)?.distance}</span></Tooltip> */}
+          {(() => {
+            const leg =
+              alternatives[activeAlternativeIndex]?.legs[
+                isRoute ? i : (waypoints[i + 1]?.waypoint_index ?? -10) - 1
+              ];
+            return leg && <Tooltip>{foo(leg.distance, leg.duration)}</Tooltip>;
+          })()}
         </RichMarker>
       ))}
+
       {finish && (
         <RichMarker
-          faIcon={mode !== 'roundtrip' ? 'stop' : 'flag'}
+          faIcon={mode === 'roundtrip' ? undefined : 'stop'}
+          label={
+            mode === 'roundtrip'
+              ? waypoints[waypoints.length - 1]?.waypoint_index
+              : undefined
+          }
           color={mode !== 'roundtrip' ? '#d9534f' : undefined}
           zIndexOffset={10}
           draggable
@@ -370,9 +392,22 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           position={{ lat: finish.lat, lng: finish.lon }}
           onclick={handleEndPointClick}
         >
-          {isRoute && getSummary()}
+          {mode !== 'roundtrip' && getSummary()}
+
+          {mode == 'roundtrip' &&
+            (() => {
+              const leg =
+                alternatives[activeAlternativeIndex]?.legs[
+                  (waypoints[waypoints.length - 1]?.waypoint_index ?? -10) - 1
+                ];
+
+              return (
+                leg && <Tooltip>{foo(leg.distance, leg.duration)}</Tooltip>
+              );
+            })()}
         </RichMarker>
       )}
+
       {(!special ? alternatives : alternatives.map(addMissingSegments))
         .map((x, index) => ({
           ...x,
@@ -399,6 +434,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
                     </Marker>
                   ),
                 )}
+
             {legs
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
@@ -421,6 +457,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
                   onMouseOut={handlePolyMouseOut}
                 />
               ))}
+
             {legs
               .flatMap((leg, legIndex) =>
                 leg.steps.map((step) => ({ legIndex, ...step })),
@@ -450,6 +487,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
               ))}
           </React.Fragment>
         ))}
+
       {milestones.map((ms, i) => (
         <CircleMarker
           radius={0}
@@ -461,6 +499,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           </Tooltip>
         </CircleMarker>
       ))}
+
       <ElevationChartActivePoint />
     </>
   );
@@ -476,6 +515,7 @@ const mapStateToProps = (state: RootState) => ({
   midpoints: state.routePlanner.midpoints,
   alternatives: state.routePlanner.alternatives,
   waypoints: state.routePlanner.waypoints,
+
   activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
   transportType: state.routePlanner.transportType,
   mode: state.routePlanner.mode,
