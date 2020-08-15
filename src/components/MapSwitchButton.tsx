@@ -215,7 +215,13 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                 >
                   <FontAwesomeIcon
                     icon={
-                      (type === 'i' ? !overlays.includes(type) : overlays.includes(type)) ? 'check-square-o' : 'square-o'
+                      (
+                        type === 'i'
+                          ? !overlays.includes(type)
+                          : overlays.includes(type)
+                      )
+                        ? 'check-square-o'
+                        : 'square-o'
                     }
                   />{' '}
                   <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
@@ -223,7 +229,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                     style={{
                       textDecoration:
                         (minZoom !== undefined && zoom < minZoom) ||
-                          (strava && !stravaAuth)
+                        (strava && !stravaAuth)
                           ? 'line-through'
                           : 'none',
                     }}

@@ -84,9 +84,10 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
             );
           } else {
             window.open(
-              `https://www.openstreetmap.org/#map=${
-              Math.min(zoom, 19)
-              }/${lat.toFixed(5)}/${lon.toFixed(5)}`,
+              `https://www.openstreetmap.org/#map=${Math.min(
+                zoom,
+                19,
+              )}/${lat.toFixed(5)}/${lon.toFixed(5)}`,
             );
           }
           break;
@@ -169,7 +170,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
         case 'mapy.cz':
           window.open(
             `https://mapy.cz/zakladni?x=${lon}&y=${lat}&z=${
-            zoom > 19 ? 19 : zoom
+              zoom > 19 ? 19 : zoom
             }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`,
           );
           break;
@@ -179,9 +180,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
           );
           break;
         case 'openstreetcam':
-          window.open(
-            `https://openstreetcam.org/map/@${lat},${lon},${zoom}z`,
-          );
+          window.open(`https://openstreetcam.org/map/@${lat},${lon},${zoom}z`);
           break;
         case 'mapillary':
           window.open(

@@ -145,7 +145,8 @@ const MainInt: React.FC<Props> = ({
   isUserValidated,
   selection,
   onDelete,
-  canDelete, showInteractiveLayer
+  canDelete,
+  showInteractiveLayer,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
@@ -289,8 +290,8 @@ const MainInt: React.FC<Props> = ({
                   </>
                 )
               ) : (
-                  <ToolsMenuButton />
-                )}
+                <ToolsMenuButton />
+              )}
               {tool === 'objects' && <ObjectsMenu />}
               {tool === 'route-planner' && <RoutePlannerMenu />}
               {tool &&
@@ -380,18 +381,19 @@ const MainInt: React.FC<Props> = ({
 
           <Layers />
 
-          {showMenu && showInteractiveLayer && <>
-            <SearchResults />
-            <ObjectsResult />
-            <RoutePlannerResult />
-            <DrawingLinesResult />
-            <LocationResult />
-            <TrackViewerResult />
-            <DrawingPointsResult />
-            <ChangesetsResult />
-            <TrackingResult />
-          </>
-          }
+          {showMenu && showInteractiveLayer && (
+            <>
+              <SearchResults />
+              <ObjectsResult />
+              <RoutePlannerResult />
+              <DrawingLinesResult />
+              <LocationResult />
+              <TrackViewerResult />
+              <DrawingPointsResult />
+              <ChangesetsResult />
+              <TrackingResult />
+            </>
+          )}
 
           {showMenu && (
             <>
