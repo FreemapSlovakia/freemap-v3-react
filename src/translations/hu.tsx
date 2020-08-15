@@ -121,17 +121,20 @@ export default {
     },
     alternative: 'Alternatíva',
     // eslint-disable-next-line
-    distance: ({ value }) => (
+    distance: ({ value, diff }) => (
       <>
-        Távolság: <b>{value} km</b>
+        Távolság:{' '}
+        <b>
+          {value} km{diff ? ` (+ ${diff} km)` : ''}
+        </b>
       </>
     ),
     // eslint-disable-next-line
-    duration: ({ h, m }) => (
+    duration: ({ h, m, diff }) => (
       <>
         Időtartam:{' '}
         <b>
-          {h} óra {m} perc
+          {h} óra {m} perc{diff && ` (+ ${diff.h} óra ${diff.m} perc)`}
         </b>
       </>
     ),
@@ -237,10 +240,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>ide:</b>
             ) : (
-                <>
-                  ide: <b>{destination}</b>
-                </>
-              )}
+              <>
+                ide: <b>{destination}</b>
+              </>
+            )}
           </>
         ),
         // eslint-disable-next-line
@@ -269,10 +272,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>a célponthoz</b>
             ) : (
-                <>
-                  ide: <b>{destination}</b>
-                </>
-              )}
+              <>
+                ide: <b>{destination}</b>
+              </>
+            )}
           </>
         ),
         // eslint-disable-next-line

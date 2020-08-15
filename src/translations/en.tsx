@@ -119,17 +119,20 @@ export default {
     },
     alternative: 'Alternative',
     // eslint-disable-next-line
-    distance: ({ value }) => (
+    distance: ({ value, diff }) => (
       <>
-        Distance: <b>{value} km</b>
+        Distance:{' '}
+        <b>
+          {value} km{diff ? ` (+ ${diff} km)` : ''}
+        </b>
       </>
     ),
     // eslint-disable-next-line
-    duration: ({ h, m }) => (
+    duration: ({ h, m, diff }) => (
       <>
         Duration:{' '}
         <b>
-          {h} h {m} m
+          {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
         </b>
       </>
     ),
@@ -235,10 +238,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
-                <>
-                  to <b>{destination}</b>
-                </>
-              )}
+              <>
+                to <b>{destination}</b>
+              </>
+            )}
           </>
         ),
         // eslint-disable-next-line
@@ -267,10 +270,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
-                <>
-                  to <b>{destination}</b>
-                </>
-              )}
+              <>
+                to <b>{destination}</b>
+              </>
+            )}
           </>
         ),
         // eslint-disable-next-line

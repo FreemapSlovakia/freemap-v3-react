@@ -84,8 +84,13 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     [],
   );
 
-  const foo = useMemo(
-    () => (distance: number, duration: number) => {
+  const getPointDetails2 = useCallback(
+    (
+      distanceSum: number,
+      durationSum: number,
+      distanceDiff?: number,
+      durationDiff?: number,
+    ) => {
       const nf = Intl.NumberFormat(language, {
         minimumFractionDigits: 1,
         maximumFractionDigits: 1,
@@ -94,13 +99,20 @@ const RoutePlannerResultInt: React.FC<Props> = ({
       return (
         <div>
           <div>
-            {t('routePlanner.distance', { value: nf.format(distance / 1000) })}
+            {t('routePlanner.distance', {
+              value: nf.format(distanceSum / 1000),
+              diff: distanceDiff && nf.format(distanceDiff / 1000),
+            })}
           </div>
-          {duration !== undefined && (
+          {durationSum !== undefined && (
             <div>
               {t('routePlanner.duration', {
-                h: Math.floor(Math.round(duration / 60) / 60),
-                m: Math.round(duration / 60) % 60,
+                h: Math.floor(Math.round(durationSum / 60) / 60),
+                m: Math.round(durationSum / 60) % 60,
+                diff: durationDiff && {
+                  h: Math.floor(Math.round(durationDiff / 60) / 60),
+                  m: Math.round(durationDiff / 60) % 60,
+                },
               })}
             </div>
           )}
@@ -110,8 +122,80 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     [language, t],
   );
 
-  const getSummary = useMemo(
-    () => () => {
+  const step =
+    zoom > 13
+      ? 1
+      : zoom > 12
+      ? 2
+      : zoom > 10
+      ? 5
+      : zoom > 9
+      ? 10
+      : zoom > 8
+      ? 20
+      : zoom > 7
+      ? 25
+      : 50;
+
+  const milestones = useMemo(() => {
+    if (!showMilestones || !alternatives[activeAlternativeIndex]) {
+      return [];
+    }
+
+    const line = lineString(
+      alternatives[activeAlternativeIndex].legs
+        .flatMap((leg) => leg.steps)
+        .flatMap((step) => step.geometry.coordinates),
+    );
+
+    const len = length(line);
+
+    const milestones: Feature<Point, Properties>[] = [];
+    for (let i = step; i < len; i += step) {
+      milestones.push(along(line, i));
+    }
+
+    return milestones;
+  }, [activeAlternativeIndex, alternatives, step, showMilestones]);
+
+  const getPointDetails = useCallback(
+    (i: number, showDiff = true, summary = false) => {
+      let distanceSum = 0;
+      let durationSum = 0;
+
+      const offset = summary ? 0 : 1;
+
+      const ii =
+        mode === 'route' || summary
+          ? i
+          : (waypoints[i + offset]?.waypoint_index ?? -10) - offset;
+
+      for (let j = 0; j <= ii; j++) {
+        const leg = alternatives[activeAlternativeIndex]?.legs[j];
+
+        if (leg) {
+          distanceSum += leg.distance;
+          durationSum += leg.duration;
+        }
+      }
+
+      const leg =
+        showDiff && ii > 0
+          ? alternatives[activeAlternativeIndex]?.legs[ii]
+          : undefined;
+
+      return getPointDetails2(
+        distanceSum,
+        durationSum,
+        leg?.distance,
+        leg?.duration,
+      );
+    },
+    [alternatives, activeAlternativeIndex, getPointDetails2, mode, waypoints],
+  );
+
+  const getSummary = useCallback(
+    (showDiff?: boolean) => {
       const { distance = undefined, duration = undefined, extra = undefined } =
         alternatives.find((_, alt) => alt === activeAlternativeIndex) || {};
 
@@ -121,11 +205,28 @@ const RoutePlannerResultInt: React.FC<Props> = ({
         </Tooltip>
       ) : distance && duration ? (
         <Tooltip direction="top" offset={[0, -36]} permanent>
-          {foo(distance, duration)}
+          {/* <div>{getPointDetails2(distance, duration)}</div> */}
+          <div>
+            {getPointDetails(
+              midpoints.length + (mode === 'roundtrip' ? 1 : 0),
+              showDiff,
+              true,
+            )}
+          </div>
         </Tooltip>
       ) : null;
     },
-    [alternatives, activeAlternativeIndex, foo, language, t, transportType],
+    [
+      mode,
+      midpoints.length,
+      alternatives,
+      activeAlternativeIndex,
+      // getPointDetails2,
+      getPointDetails,
+      language,
+      t,
+      transportType,
+    ],
   );
 
   const bringToFront = useCallback((ele) => {
@@ -164,6 +265,26 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     }
     onSelect();
   }, [mode, onFinishSet, onSelect]);
+
+  const [endPointHovering, setEndPointHovering] = useState(false);
+
+  const handleEndPointMouseOver = useCallback(() => {
+    setEndPointHovering(true);
+  }, []);
+
+  const handleEndPointMouseOut = useCallback(() => {
+    setEndPointHovering(false);
+  }, []);
+
+  const [startPointHovering, setStartPointHovering] = useState(false);
+
+  const handleStartPointMouseOver = useCallback(() => {
+    setStartPointHovering(true);
+  }, []);
+
+  const handleStartPointMouseOut = useCallback(() => {
+    setStartPointHovering(false);
+  }, []);
 
   const handlePolyMouseMove = useCallback(
     (e: LeafletMouseEvent, segment: number, alt: number) => {
@@ -286,44 +407,6 @@ const RoutePlannerResultInt: React.FC<Props> = ({
     html: '<div class="circular-leaflet-marker-icon"></div>',
   });
 
-  const isRoute = mode === 'route';
-
-  const step =
-    zoom > 13
-      ? 1
-      : zoom > 12
-      ? 2
-      : zoom > 10
-      ? 5
-      : zoom > 9
-      ? 10
-      : zoom > 8
-      ? 20
-      : zoom > 7
-      ? 25
-      : 50;
-
-  const milestones = useMemo(() => {
-    if (!showMilestones || !alternatives[activeAlternativeIndex]) {
-      return [];
-    }
-
-    const line = lineString(
-      alternatives[activeAlternativeIndex].legs
-        .flatMap((leg) => leg.steps)
-        .flatMap((step) => step.geometry.coordinates),
-    );
-
-    const len = length(line);
-
-    const milestones: Feature<Point, Properties>[] = [];
-    for (let i = step; i < len; i += step) {
-      milestones.push(along(line, i));
-    }
-
-    return milestones;
-  }, [activeAlternativeIndex, alternatives, step, showMilestones]);
-
   return (
     <>
       {start && (
@@ -337,8 +420,10 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           ondragend={(e) => handleRouteMarkerDragEnd('start', null, e)}
           position={{ lat: start.lat, lng: start.lon }}
           onclick={handleStartPointClick}
+          onmouseover={handleStartPointMouseOver}
+          onmouseout={handleStartPointMouseOut}
         >
-          {mode === 'roundtrip' && getSummary()}
+          {mode === 'roundtrip' && getSummary(startPointHovering)}
         </RichMarker>
       )}
 
@@ -363,16 +448,12 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           onclick={() => handleMidpointClick(i)}
           key={`midpoint-${i}`}
           zIndexOffset={9}
-          label={isRoute ? i + 1 : waypoints[i + 1]?.waypoint_index}
+          label={mode === 'route' ? i + 1 : waypoints[i + 1]?.waypoint_index}
           position={{ lat, lng: lon }}
         >
-          {(() => {
-            const leg =
-              alternatives[activeAlternativeIndex]?.legs[
-                isRoute ? i : (waypoints[i + 1]?.waypoint_index ?? -10) - 1
-              ];
-            return leg && <Tooltip>{foo(leg.distance, leg.duration)}</Tooltip>;
-          })()}
+          <Tooltip direction="top" offset={[0, -36]}>
+            {getPointDetails(i)}
+          </Tooltip>
         </RichMarker>
       ))}
 
@@ -391,20 +472,16 @@ const RoutePlannerResultInt: React.FC<Props> = ({
           ondragend={(e) => handleRouteMarkerDragEnd('finish', null, e)}
           position={{ lat: finish.lat, lng: finish.lon }}
           onclick={handleEndPointClick}
+          onmouseover={handleEndPointMouseOver}
+          onmouseout={handleEndPointMouseOut}
         >
-          {mode !== 'roundtrip' && getSummary()}
+          {mode !== 'roundtrip' && getSummary(endPointHovering)}
 
-          {mode == 'roundtrip' &&
-            (() => {
-              const leg =
-                alternatives[activeAlternativeIndex]?.legs[
-                  (waypoints[waypoints.length - 1]?.waypoint_index ?? -10) - 1
-                ];
-
-              return (
-                leg && <Tooltip>{foo(leg.distance, leg.duration)}</Tooltip>
-              );
-            })()}
+          {mode == 'roundtrip' && (
+            <Tooltip direction="top" offset={[0, -36]}>
+              {getPointDetails(midpoints.length)}
+            </Tooltip>
+          )}
         </RichMarker>
       )}
 

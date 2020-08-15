@@ -118,17 +118,20 @@ export default {
     },
     alternative: 'Alternatíva',
     // eslint-disable-next-line
-    distance: ({ value }) => (
+    distance: ({ value, diff }) => (
       <>
-        Vzdialenosť: <b>{value} km</b>
+        Vzdialenosť:{' '}
+        <b>
+          {value} km{diff ? ` (+ ${diff} km)` : ''}
+        </b>
       </>
     ),
     // eslint-disable-next-line
-    duration: ({ h, m }) => (
+    duration: ({ h, m, diff }) => (
       <>
         Trvanie:{' '}
         <b>
-          {h} h {m} m
+          {h} h {m} m{diff && ` (+ ${diff.h} h ${diff.m} m)`}
         </b>
       </>
     ),
@@ -236,10 +239,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
-                <>
-                  na <b>{destination}</b>
-                </>
-              )}
+              <>
+                na <b>{destination}</b>
+              </>
+            )}
           </>
         ),
         // eslint-disable-next-line
@@ -268,10 +271,10 @@ export default {
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
-                <>
-                  na <b>{destination}</b>
-                </>
-              )}
+              <>
+                na <b>{destination}</b>
+              </>
+            )}
           </>
         ),
         // eslint-disable-next-line

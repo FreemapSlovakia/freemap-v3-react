@@ -126,7 +126,7 @@ export const routePlannerSetResult = createAction('ROUTE_PLANNER_SET_RESULT')<{
   timestamp: number;
   transportType: TransportType;
   alternatives: Alternative[];
-  waypoints: Waypoint[]; // TODO type
+  waypoints: Waypoint[];
 }>();
 
 export const routePlannerToggleItineraryVisibility = createAction(
