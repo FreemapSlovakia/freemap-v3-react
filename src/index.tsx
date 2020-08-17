@@ -36,6 +36,9 @@ import { initOffline } from './offlineController';
 
 setDefaultGetErrorObject(() => null);
 
+// filter out old browsers
+[].flatMap(() => null);
+
 if (window.location.search === '?reset-local-storage') {
   storage.clear();
 }

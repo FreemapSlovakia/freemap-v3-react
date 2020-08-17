@@ -45,6 +45,11 @@ interface ErrorDetails {
 }
 
 export function sendError(errDetails: ErrorDetails) {
+  // filter out old browsers
+  if (!Array.prototype.flatMap) {
+    return;
+  }
+
   console.error('Application error:', errDetails);
 
   if (errDetails.error) {
