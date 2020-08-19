@@ -292,9 +292,11 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
               activeAlternative.extra.price
                 ? imhdSummary(t, language, activeAlternative.extra)
                 : t('routePlanner.summary', {
-                    distance: nf.format(activeAlternative.distance),
-                    h: Math.floor(Math.round(activeAlternative.duration) / 60),
-                    m: Math.round(activeAlternative.duration) % 60,
+                    distance: nf.format(activeAlternative.distance / 1000),
+                    h: Math.floor(
+                      Math.round(activeAlternative.duration / 60) / 60,
+                    ),
+                    m: Math.round(activeAlternative.duration / 60) % 60,
                   })
             }
           >
@@ -307,9 +309,9 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                 {transportType === 'imhd' && extra?.price
                   ? imhdSummary(t, language, extra)
                   : t('routePlanner.summary', {
-                      distance: nf.format(distance),
-                      h: Math.floor(Math.round(duration) / 60),
-                      m: Math.round(duration) % 60,
+                      distance: nf.format(distance / 1000),
+                      h: Math.floor(Math.round(duration / 60) / 60),
+                      m: Math.round(duration / 60) % 60,
                     })}
               </MenuItem>
             ))}
