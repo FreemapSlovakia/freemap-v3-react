@@ -437,7 +437,7 @@ export default {
         {(['D', 'DM', 'DMS'] as const).map((format) => (
           <div key={format}>{latLonToString(point, 'sk', format)}</div>
         ))}
-        {elevation !== null && (
+        {elevation != null && (
           <div>
             Nadmorská výška: {nf01.format(elevation)}&nbsp;{masl}
           </div>
