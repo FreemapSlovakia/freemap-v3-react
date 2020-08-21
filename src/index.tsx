@@ -76,9 +76,9 @@ render(
   document.getElementById('app'),
 );
 
-if (window.self === window.top) {
-  initOffline(store);
-}
+// if (window.self === window.top) {
+initOffline(store);
+// }
 
 function loadAppState() {
   let appState: AppState | undefined;
