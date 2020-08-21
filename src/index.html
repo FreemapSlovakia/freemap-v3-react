@@ -68,7 +68,7 @@
           onError: function (payload) {
             // prettier-ignore
             return (
-              window.self !== window.top &&
+              window.self === window.top &&
               !/^Network error$|The operation is insecure|Only secure origins are allowed|Failed to register a ServiceWorker/.test(
                 payload.message
               )
