@@ -1100,6 +1100,8 @@ export default {
       footway: 'chodník',
       pedestrian: 'pešia zóna',
       unknown: 'neznámy',
+      living_street: 'Obytná zóna',
+      construction: 'Ve výstavbě',
     },
     bicycleTypes: {
       'road-bike': 'cestný',

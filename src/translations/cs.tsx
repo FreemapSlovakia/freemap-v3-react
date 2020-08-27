@@ -1073,11 +1073,11 @@ export default {
       grass: 'travnatý',
     },
     trackClasses: {
-      motorway: 'dálnice',
       trunk: 'rychlostní silnice',
       primary: 'silnice I. třídy',
       secondary: 'silnice II. třídy ',
       tertiary: 'silnice III. třídy ',
+      motorway: 'dálnice',
       service: 'přístupová',
       unclassified: 'přístupová',
       residential: 'přístupová',
@@ -1090,6 +1090,7 @@ export default {
       footway: 'chodník',
       pedestrian: 'pěší zóna',
       unknown: 'neznámý',
+      living_street: 'Obytná zóna',
     },
     bicycleTypes: {
       'road-bike': 'silniční',

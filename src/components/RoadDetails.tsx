@@ -36,7 +36,7 @@ const RoadDetailsInt: React.FC<Props> = ({ way, mapType, language, t }) => {
     <div>
       <dl className="dl-horizontal">
         <dt>{t('roadDetails.roadType')}</dt>
-        <dd>{t(`roadDetails.trackClasses.${trackClass}`) || trackClass}</dd>
+        <dd>{t(`roadDetails.trackClasses.${trackClass}`, {}, trackClass)}</dd>
         <dt>{t('roadDetails.surface')}</dt>
         <dd>{t(`roadDetails.surfaces.${surface}`) || surface}</dd>
         {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}

@@ -1093,6 +1093,8 @@ export default {
       footway: 'footway',
       pedestrian: 'pedestrian',
       unknown: 'unknown',
+      living_street: 'Living street',
+      construction: 'In construction',
     },
     bicycleTypes: {
       'road-bike': 'road bike',

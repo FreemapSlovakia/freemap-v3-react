@@ -1102,6 +1102,8 @@ export default {
       footway: 'gyalogút',
       pedestrian: 'sétálóutca',
       unknown: 'ismeretlen',
+      living_street: 'Living street', // TODO translate
+      construction: 'In construction', // TODO translate
     },
     bicycleTypes: {
       'road-bike': 'országúti kerékpár',
