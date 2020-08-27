@@ -35,11 +35,11 @@ registerRoute(
     if (event instanceof FetchEvent) {
       const data = await event.request.formData();
 
-      const client: Client = await self.clients.get(
+      const client = await self.clients.get(
         event.resultingClientId || event.clientId,
       );
 
-      client.postMessage({
+      client?.postMessage({
         freemap: { action: 'shareFile', payload: data.getAll('file') },
       });
     }
