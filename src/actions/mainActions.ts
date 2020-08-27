@@ -45,6 +45,7 @@ export interface PdfExportOptions {
   scale: number;
   area: 'visible' | 'selected';
   format: 'png' | 'jpeg' | 'svg' | 'pdf';
+  style: string;
 }
 
 export type Destination = 'download' | 'gdrive' | 'dropbox';

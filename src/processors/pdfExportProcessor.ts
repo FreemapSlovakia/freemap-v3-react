@@ -38,6 +38,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       drawing,
       plannedRoute,
       track,
+      style,
     } = action.payload;
 
     const { selection } = getState().main;
@@ -69,6 +70,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
 
     const features: Feature<Geometry>[] = [];
 
+    const properties = JSON.parse(style);
+
     if (drawing) {
       const { lines } = getState().drawingLines;
 
@@ -87,7 +90,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           line.type === 'line'
             ? lineString(
                 line.points.map((point) => [point.lon, point.lat]),
-                { name: line.label },
+                { name: line.label, ...(properties.polyline || {}) },
               )
             : polygon(
                 [
@@ -96,13 +99,15 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
                     [line.points[0].lon, line.points[0].lat],
                   ],
                 ],
-                { name: line.label },
+                { name: line.label, ...(properties.polygon || {}) },
               ),
         );
       }
 
       for (const p of getState().drawingPoints.points) {
-        features.push(point([p.lon, p.lat], { name: p.label }));
+        features.push(
+          point([p.lon, p.lat], { name: p.label, ...(properties.point || {}) }),
+        );
       }
     }
 
@@ -120,7 +125,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           }
         }
 
-        features.push(lineString(coords, { name: '' }));
+        features.push(lineString(coords, properties.polyline || {}));
       }
     }
 
@@ -128,7 +133,15 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       const { trackGeojson } = getState().trackViewer;
 
       if (trackGeojson && trackGeojson.type === 'FeatureCollection') {
-        features.push(...(trackGeojson.features as any));
+        features.push(
+          ...(trackGeojson.features.map((feature) => ({
+            ...feature,
+            properties: {
+              ...(properties.polyline || {}),
+              ...(feature.properties || {}),
+            },
+          })) as any),
+        );
       }
     }
 

@@ -1,6 +1,7 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
+import FormControl from 'react-bootstrap/lib/FormControl';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -8,6 +9,8 @@ import Modal from 'react-bootstrap/lib/Modal';
 import Checkbox from 'react-bootstrap/lib/Checkbox';
 import Alert from 'react-bootstrap/lib/Alert';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
+import FormGroup from 'react-bootstrap/lib/FormGroup';
+import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
@@ -33,6 +36,7 @@ function ExportPdfModalInt({
   t,
   language,
   canExportByPolygon,
+  expertMode,
 }: Props) {
   const [area, setArea] = useState('visible');
 
@@ -57,6 +61,40 @@ function ExportPdfModalInt({
   const [plannedRoute, setPlannedRoute] = useState(true);
 
   const [track, setTrack] = useState(true);
+
+  const [style, setStyle] = useState(`{
+  "polygon": {
+    "stroke": "#007bff",
+    "strokeWidth": 4,
+    "strokeOpacity": 0.8,
+    "polygonFill": "#007bff",
+    "polygonFillOpacity": 0.2,
+    "textColor": "#007bff",
+    "textSize": 16,
+    "dashArray": "10,0"
+  },
+  "polyline": {
+    "stroke": "#007bff",
+    "strokeWidth": 4,
+    "strokeOpacity": 0.8,
+    "textColor": "#007bff",
+    "textSize": 16,
+    "dashArray": "10,0"
+  },
+  "point": {
+    "textColor": "#007bff",
+    "markerFill": "#007bff",
+    "markerStroke": "white",
+    "markerStrokeOpacity": 0.75,
+    "markerStrokeWidth": 1.5,
+    "markerSize": 10,
+    "textSize": 16
+  }
+}`);
+
+  const handleStyleChange = useCallback((e: React.FormEvent<FormControl>) => {
+    setStyle((e.target as HTMLInputElement).value);
+  }, []);
 
   const nf = useMemo(
     () =>
@@ -190,10 +228,23 @@ function ExportPdfModalInt({
           max={8}
           step={0.05}
           tooltip={false}
-          onChange={(scale: number) => {
-            setScale(scale);
-          }}
+          onChange={setScale}
         />
+        {expertMode && (
+          <>
+            <hr />
+            <FormGroup>
+              <ControlLabel>Interactive layer style</ControlLabel>
+              <FormControl
+                componentClass="textarea"
+                value={style}
+                onChange={handleStyleChange}
+                rows={6}
+                disabled={!(drawing || plannedRoute || track)}
+              />
+            </FormGroup>
+          </>
+        )}
       </Modal.Body>
       <Modal.Footer>
         <Button
@@ -211,6 +262,7 @@ function ExportPdfModalInt({
               drawing,
               plannedRoute,
               track,
+              style,
             });
           }}
         >
@@ -229,6 +281,7 @@ const mapStateToProps = (state: RootState) => ({
   canExportByPolygon:
     state.main.selection?.type === 'draw-polygons' &&
     state.main.selection.id !== undefined,
+  expertMode: state.main.expertMode,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
