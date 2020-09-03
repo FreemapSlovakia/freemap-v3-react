@@ -54,8 +54,8 @@ import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
 
 import { EmbedMapModal } from 'fm3/components/EmbedMapModal';
-import { ExportGpxModal } from 'fm3/components/ExportGpxModal';
-import { ExportPdfModal } from 'fm3/components/ExportPdfModal';
+import { AsyncExportGpxModal } from 'fm3/components/AsyncExportGpxModal';
+import { AsyncExportPdfModal } from 'fm3/components/AsyncExportPdfModal';
 import { LoginModal } from 'fm3/components/LoginModal';
 import { TipsModal } from 'fm3/components/TipsModal';
 import { AboutModal } from 'fm3/components/AboutModal';
@@ -333,8 +333,8 @@ const MainInt: React.FC<Props> = ({
           'tracking-watched',
         ].includes(activeModal) && <TrackingModal />}
       {activeModal === 'embed' && <EmbedMapModal />}
-      {activeModal === 'export-gpx' && <ExportGpxModal />}
-      {activeModal === 'export-pdf' && <ExportPdfModal />}
+      {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
+      {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
       {activeModal === 'tips' && <TipsModal />}
       {activeModal === 'about' && <AboutModal />}
       {activeModal === 'supportUs' && <SupportUsModal />}
