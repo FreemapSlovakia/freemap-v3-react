@@ -312,7 +312,15 @@ function ExportPdfModalInt({
           <>
             <hr />
             <FormGroup>
-              <ControlLabel>Interactive layer styles</ControlLabel>
+              <ControlLabel>
+                Interactive layer styles{' '}
+                <a
+                  href="http://mapnik.org/mapnik-reference/"
+                  target="mapnik_reference"
+                >
+                  <FontAwesomeIcon icon="question-circle" />
+                </a>
+              </ControlLabel>
               <FormControl
                 componentClass="textarea"
                 value={style}
