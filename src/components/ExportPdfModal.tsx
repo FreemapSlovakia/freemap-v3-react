@@ -62,35 +62,113 @@ function ExportPdfModalInt({
 
   const [track, setTrack] = useState(true);
 
-  const [style, setStyle] = useState(`{
-  "polygon": {
-    "stroke": "#007bff",
-    "strokeWidth": 4,
-    "strokeOpacity": 0.8,
-    "polygonFill": "#007bff",
-    "polygonFillOpacity": 0.2,
-    "textColor": "#007bff",
-    "textSize": 16,
-    "dashArray": "10,0"
+  const [style, setStyle] = useState(`[
+  {
+    "Style": {
+      "@name": "custom-polygons",
+      "Rule": [
+        {
+          "PolygonSymbolizer": {
+            "@fill": "#007bff",
+            "@fill-opacity": 0.2,
+            "@stroke-linecap": "round",
+            "@stroke-linejoin": "round"
+          }
+        },
+        {
+          "LineSymbolizer": {
+            "@stroke": "#007bff",
+            "@stroke-width": 4,
+            "@stroke-opacity": 0.8,
+            "@stroke-linecap": "round",
+            "@stroke-linejoin": "round",
+            "@stroke-dasharray": "5,10"
+          }
+        },
+        {
+          "TextSymbolizer": {
+            "@fontset-name": "regular",
+            "@fill": "#007bff",
+            "@halo-fill": "white",
+            "@halo-radius": "1.5",
+            "@halo-opacity": "0.75",
+            "@size": 16,
+            "@line-spacing": -2,
+            "@wrap-width": 100,
+            "@wrap-before": true,
+            "@placement": "interior",
+            "#text": "[name]"
+          }
+        }
+      ]
+    }
   },
-  "polyline": {
-    "stroke": "#007bff",
-    "strokeWidth": 4,
-    "strokeOpacity": 0.8,
-    "textColor": "#007bff",
-    "textSize": 16,
-    "dashArray": "10,0"
+  {
+    "Style": {
+      "@name": "custom-polylines",
+      "Rule": [
+        {
+          "LineSymbolizer": {
+            "@stroke": "#007bff",
+            "@stroke-width": 4,
+            "@stroke-opacity": 0.8,
+            "@stroke-linecap": "round",
+            "@stroke-linejoin": "round",
+            "@stroke-dasharray": "5,10"
+          }
+        },
+        {
+          "TextSymbolizer": {
+            "@fontset-name": "regular",
+            "@fill": "#007bff",
+            "@halo-fill": "white",
+            "@halo-radius": "1.5",
+            "@halo-opacity": "0.75",
+            "@size": 16,
+            "@line-spacing": -2,
+            "@placement": "line",
+            "@spacing": "200",
+            "@dy": "8",
+            "#text": "[name]"
+          }
+        }
+      ]
+    }
   },
-  "point": {
-    "textColor": "#007bff",
-    "markerFill": "#007bff",
-    "markerStroke": "white",
-    "markerStrokeOpacity": 0.75,
-    "markerStrokeWidth": 1.5,
-    "markerSize": 10,
-    "textSize": 16
+  {
+    "Style": {
+      "@name": "custom-points",
+      "Rule": [
+        {
+          "MarkersSymbolizer": {
+            "@fill": "#007bff",
+            "@width": 10,
+            "@height": 10,
+            "@stroke-width": 1.5,
+            "@stroke-opacity": 0.75,
+            "@stroke": "white"
+          }
+        },
+        {
+          "TextSymbolizer": {
+            "@fontset-name": "regular",
+            "@fill": "#007bff",
+            "@halo-fill": "white",
+            "@halo-radius": "1.5",
+            "@halo-opacity": "0.75",
+            "@size": 16,
+            "@line-spacing": -2,
+            "@wrap-width": 100,
+            "@wrap-before": true,
+            "@dy": -10,
+            "#text": "[name]"
+          }
+        }
+      ]
+    }
   }
-}`);
+]
+`);
 
   const handleStyleChange = useCallback((e: React.FormEvent<FormControl>) => {
     setStyle((e.target as HTMLInputElement).value);
@@ -234,7 +312,7 @@ function ExportPdfModalInt({
           <>
             <hr />
             <FormGroup>
-              <ControlLabel>Interactive layer style</ControlLabel>
+              <ControlLabel>Interactive layer styles</ControlLabel>
               <FormControl
                 componentClass="textarea"
                 value={style}

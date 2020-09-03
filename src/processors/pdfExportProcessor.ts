@@ -7,13 +7,22 @@ import {
   lineString,
   point,
   polygon,
-  featureCollection,
   Feature,
+  FeatureCollection,
   Geometry,
 } from '@turf/helpers';
 
 const mapExportUrl =
   process.env.MAP_EXPORT_URL || 'https://outdoor.tiles.freemap.sk';
+
+const geometryTypeMapping = {
+  Polygon: 'polygon',
+  MultiPolygon: 'polygon',
+  LineString: 'polyline',
+  MultiLineString: 'polyline',
+  Point: 'point',
+  MultiPoint: 'point',
+};
 
 export const exportPdfProcessor: Processor<typeof exportPdf> = {
   actionCreator: exportPdf,
@@ -70,8 +79,6 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
 
     const features: Feature<Geometry>[] = [];
 
-    const properties = JSON.parse(style);
-
     if (drawing) {
       const { lines } = getState().drawingLines;
 
@@ -90,7 +97,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           line.type === 'line'
             ? lineString(
                 line.points.map((point) => [point.lon, point.lat]),
-                { name: line.label, ...(properties.polyline || {}) },
+                { name: line.label || '' },
               )
             : polygon(
                 [
@@ -99,15 +106,13 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
                     [line.points[0].lon, line.points[0].lat],
                   ],
                 ],
-                { name: line.label, ...(properties.polygon || {}) },
+                { name: line.label || '' },
               ),
         );
       }
 
       for (const p of getState().drawingPoints.points) {
-        features.push(
-          point([p.lon, p.lat], { name: p.label, ...(properties.point || {}) }),
-        );
+        features.push(point([p.lon, p.lat], { name: p.label || '' }));
       }
     }
 
@@ -125,7 +130,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           }
         }
 
-        features.push(lineString(coords, properties.polyline || {}));
+        features.push(lineString(coords, {}));
       }
     }
 
@@ -133,15 +138,35 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       const { trackGeojson } = getState().trackViewer;
 
       if (trackGeojson && trackGeojson.type === 'FeatureCollection') {
-        features.push(
-          ...(trackGeojson.features.map((feature) => ({
-            ...feature,
-            properties: {
-              ...(properties.polyline || {}),
-              ...(feature.properties || {}),
-            },
-          })) as any),
-        );
+        features.push(...(trackGeojson.features as any));
+      }
+    }
+
+    const f: Record<'polygon' | 'polyline' | 'point', Feature[]> = {
+      polygon: [],
+      polyline: [],
+      point: [],
+    };
+
+    for (const feature of features) {
+      const type = geometryTypeMapping[feature.geometry.type];
+
+      if (type) {
+        f[type].push(feature);
+      }
+    }
+
+    const layers: { styles: string[]; geojson: FeatureCollection }[] = [];
+
+    for (const type in f) {
+      if (f[type].length) {
+        layers.push({
+          styles: [`custom-${type}s`],
+          geojson: {
+            type: 'FeatureCollection',
+            features: f[type],
+          },
+        });
       }
     }
 
@@ -162,7 +187,9 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           skiTrails,
           horseTrails,
         },
-        geojson: features.length ? featureCollection(features) : undefined,
+        custom: layers.length
+          ? { layers, styles: JSON.parse(style) }
+          : undefined,
       },
       expectedStatus: 200,
     });
