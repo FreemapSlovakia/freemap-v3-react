@@ -40,7 +40,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
           throw new Error();
         }
 
-        line = { type: action.payload.type, points: [] };
+        line = { type: action.payload.type, points: [], label: '' };
         draft.lines.push(line);
       } else {
         line = draft.lines[action.payload.index];
