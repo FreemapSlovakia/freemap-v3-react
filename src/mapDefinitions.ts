@@ -254,7 +254,7 @@ export const overlayLayers: LayerDef[] = [
   {
     type: 'l',
     icon: 'tree',
-    url: '//tiles.freemap.sk/nlc2017/{z}/{x}/{y}.png',
+    url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
