@@ -3,7 +3,7 @@ import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 
 const ExportGpxModal = lazy(() =>
   import(
-    /* webpackChunkName: "legendModal" */ 'fm3/components/ExportGpxModal'
+    /* webpackChunkName: "exportGpxModal" */ 'fm3/components/ExportGpxModal'
   ).then(({ ExportGpxModal }) => ({ default: ExportGpxModal })),
 );
 

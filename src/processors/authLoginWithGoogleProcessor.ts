@@ -46,3 +46,5 @@ export const authLoginWithGoogleProcessor: Processor = {
     }
   },
 };
+
+export default authLoginWithGoogleProcessor;

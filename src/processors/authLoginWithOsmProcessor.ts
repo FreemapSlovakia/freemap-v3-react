@@ -40,3 +40,5 @@ export const authLoginWithOsmProcessor: Processor = {
     }
   },
 };
+
+export default authLoginWithOsmProcessor;

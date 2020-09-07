@@ -32,3 +32,5 @@ export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
     dispatch(authSetUser(data));
   },
 };
+
+export default authLoginWithOsm2Processor;

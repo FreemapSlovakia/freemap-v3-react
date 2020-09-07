@@ -56,7 +56,7 @@ import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
 import { EmbedMapModal } from 'fm3/components/EmbedMapModal';
 import { AsyncExportGpxModal } from 'fm3/components/AsyncExportGpxModal';
 import { AsyncExportPdfModal } from 'fm3/components/AsyncExportPdfModal';
-import { LoginModal } from 'fm3/components/LoginModal';
+import { AsyncLoginModal } from 'fm3/components/AsyncLoginModal';
 import { TipsModal } from 'fm3/components/TipsModal';
 import { AboutModal } from 'fm3/components/AboutModal';
 import { SupportUsModal } from 'fm3/components/SupportUsModal';
@@ -341,7 +341,7 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'legend' && <AsyncLegendModal />}
       {activeModal === 'edit-label' && <DrawingEditLabelModal />}
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
-      {showLoginModal && <LoginModal />}
+      {showLoginModal && <AsyncLoginModal />}
       <GalleryModals />
 
       <div

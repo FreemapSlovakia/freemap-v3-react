@@ -1,15 +1,28 @@
 import { Middleware, Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import {
+  getType,
   isActionOf,
   ActionCreator,
   ActionType,
   Action,
 } from 'typesafe-actions';
-import { startProgress, stopProgress } from 'fm3/actions/mainActions';
+import {
+  exportGpx,
+  exportPdf,
+  startProgress,
+  stopProgress,
+} from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
 import { dispatchAxiosErrorAsToast } from 'fm3/processors/utils';
+import { galleryUpload } from 'fm3/actions/galleryActions';
+import {
+  authLoginWithFacebook,
+  authLoginWithGoogle,
+  authLoginWithOsm,
+  authLoginWithOsm2,
+} from 'fm3/actions/authActions';
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
@@ -31,6 +44,43 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
 
 export const processors: Processor[] = [];
 
+const lazy: Record<string, () => Promise<{ default: Processor }>> = {
+  [getType(exportGpx)]: () =>
+    import(
+      /* webpackChunkName: "gpxExportProcessor" */ 'fm3/processors/gpxExportProcessor'
+    ),
+
+  [getType(exportPdf)]: () =>
+    import(
+      /* webpackChunkName: "exportPdfProcessor" */ 'fm3/processors/pdfExportProcessor'
+    ),
+
+  [getType(galleryUpload)]: () =>
+    import(
+      /* webpackChunkName: "galleryItemUploadProcessor" */ 'fm3/processors/galleryItemUploadProcessor'
+    ),
+
+  [getType(authLoginWithFacebook)]: () =>
+    import(
+      /* webpackChunkName: "authLoginWithFacebookProcessor" */ 'fm3/processors/authLoginWithFacebookProcessor'
+    ),
+
+  [getType(authLoginWithGoogle)]: () =>
+    import(
+      /* webpackChunkName: "authLoginWithGoogleProcessor" */ 'fm3/processors/authLoginWithGoogleProcessor'
+    ),
+
+  [getType(authLoginWithOsm)]: () =>
+    import(
+      /* webpackChunkName: "authLoginWithOsmProcessor" */ 'fm3/processors/authLoginWithOsmProcessor'
+    ),
+
+  [getType(authLoginWithOsm2)]: () =>
+    import(
+      /* webpackChunkName: "authLoginWithOsm2Processor" */ 'fm3/processors/authLoginWithOsm2Processor'
+    ),
+};
+
 export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
   getState,
   dispatch,
@@ -48,52 +98,75 @@ export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
         isActionOf(actionType, a))
     ) {
       const a1 = transform({ getState, dispatch, action: a, prevState });
+
       if (!a1) {
         return undefined;
       }
+
       a = a1;
     }
   }
 
   const result = next(a);
 
-  const promises: Promise<void>[] = [];
+  let promise: Promise<unknown>;
 
-  for (const {
-    actionCreator: actionType,
-    handle,
-    errorKey,
-    id,
-  } of processors) {
-    if (
-      handle &&
-      (actionType === '*' ||
-        (Array.isArray(actionType) &&
-          actionType.some((ac) => isActionOf(ac, a))) ||
-        isActionOf(actionType, a))
-    ) {
-      const p = handle({ getState, dispatch, action: a, prevState });
-      if (p) {
-        promises.push(
-          errorKey === undefined
-            ? p
-            : p.catch((err) => {
-                console.error(err);
-                dispatchAxiosErrorAsToast(
-                  dispatch,
-                  errorKey,
-                  err,
-                  {},
-                  id ?? Math.random().toString(36).slice(2),
-                );
-              }),
-        );
+  const loader = lazy[a.type];
+
+  if (loader) {
+    delete lazy[a.type];
+
+    promise = loader().then(({ default: processor }) => {
+      processors.push(processor);
+      return Promise.all(runProcessors());
+    });
+  } else {
+    promise = Promise.all(runProcessors());
+  }
+
+  function runProcessors() {
+    const promises: Promise<void>[] = [];
+
+    for (const {
+      actionCreator: actionType,
+      handle,
+      errorKey,
+      id,
+    } of processors) {
+      if (
+        handle &&
+        (actionType === '*' ||
+          (Array.isArray(actionType) &&
+            actionType.some((ac) => isActionOf(ac, a))) ||
+          isActionOf(actionType, a))
+      ) {
+        const p = handle({ getState, dispatch, action: a, prevState });
+
+        if (p) {
+          promises.push(
+            errorKey === undefined
+              ? p
+              : p.catch((err) => {
+                  console.error(err);
+                  dispatchAxiosErrorAsToast(
+                    dispatch,
+                    errorKey,
+                    err,
+                    {},
+                    id ?? Math.random().toString(36).slice(2),
+                  );
+                }),
+          );
+        }
       }
     }
+
+    return promises;
   }
 
   let isDone = false;
-  const p = Promise.all(promises).then(
+
+  const p = promise.then(
     (res) => {
       isDone = true;
       return res;
@@ -110,7 +183,9 @@ export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
     }
 
     const pid = Math.random();
+
     dispatch(startProgress(pid));
+
     p.then(
       () => {
         dispatch(stopProgress(pid));

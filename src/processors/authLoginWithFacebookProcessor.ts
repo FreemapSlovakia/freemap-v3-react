@@ -50,3 +50,5 @@ export const authLoginWithFacebookProcessor: Processor = {
     dispatch(authSetUser(user));
   },
 };
+
+export default authLoginWithFacebookProcessor;

@@ -33,10 +33,6 @@ const exportableDefinitions = [
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ] as const;
 
-type GetKeys<T extends readonly { type: any }[]> = T[number]['type'];
-
-export type Exportables = GetKeys<typeof exportableDefinitions>;
-
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
     t: Translator;

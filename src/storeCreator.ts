@@ -29,7 +29,6 @@ import { websocketReducer } from './reducers/websocketReducer';
 import { globalReducer } from './reducers/globalReducer';
 import { StateType } from 'typesafe-actions';
 import { RootAction } from './actions';
-import { exportPdfProcessor } from './processors/pdfExportProcessor';
 import { utilityMiddleware } from './middlewares/utilityMiddleware';
 import {
   processorMiddleware,
@@ -44,13 +43,9 @@ import { searchProcessor } from './processors/searchProcessor';
 import { tipsPreventProcessor } from './processors/tipsPreventProcessor';
 import { locateProcessor } from './processors/locateProcessor';
 import { saveSettingsProcessor } from './processors/saveSettingsProcessor';
-import { gpxExportProcessor } from './processors/gpxExportProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
 import { mapDetailsProcessor } from './processors/mapDetailsProcessor';
 import { changesetsProcessor } from './processors/changesetsProcessor';
-import { authLoginWithFacebookProcessor } from './processors/authLoginWithFacebookProcessor';
-import { authLoginWithGoogleProcessor } from './processors/authLoginWithGoogleProcessor';
-import { authLoginWithOsmProcessor } from './processors/authLoginWithOsmProcessor';
 import { authSaveUserProcessor } from './processors/authSaveUserProcessor';
 import { l10nSetLanguageProcessor } from './processors/l10nSetLanguageProcessor';
 import { elevationChartProcessor } from './processors/elevationChartProcessor';
@@ -71,7 +66,6 @@ import { trackViewerUploadTrackProcessor } from './processors/trackViewerUploadT
 import { trackViewerToggleElevationChartProcessor } from './processors/trackViewerToggleElevationChartProcessor';
 import { routePlannerFindRouteProcessor } from './processors/routePlannerFindRouteProcessor';
 import { galleryFetchUsersProcessor } from './processors/galleryFetchUsersProcessor';
-import { galleryItemUploadProcessor } from './processors/galleryItemUploadProcessor';
 import { galleryPreventLayerHintProcessor } from './processors/galleryPreventLayerHintProcessor';
 import { galleryDeletePictureProcessor } from './processors/galleryDeletePictureProcessor';
 import { galleryRequestImageProcessor } from './processors/galleryRequestImageProcessor';
@@ -96,7 +90,6 @@ import { errorProcessor } from './processors/errorProcessor';
 import { trackViewerSetTrackDataProcessor } from './processors/trackViewerSetTrackDataProcessor';
 import { searchHighlightProcessor } from './processors/searchHighlightProcessor';
 import { authInitProcessor } from './processors/authInitProcessor';
-import { authLoginWithOsm2Processor } from './processors/authLoginWithOsm2Processor';
 import { routePlannerSetFromCurrentPositionProcessor } from './processors/routePlannerSetFromCurrentPositionProcessor';
 import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
 import { mapsLoadListProcessor } from './processors/mapsLoadListProcessor';
@@ -149,15 +142,10 @@ processors.push(
   tipsPreventProcessor,
   locateProcessor,
   saveSettingsProcessor,
-  gpxExportProcessor,
   measurementProcessor,
   mapDetailsProcessor,
   changesetsProcessor,
   authInitProcessor,
-  authLoginWithFacebookProcessor,
-  authLoginWithGoogleProcessor,
-  authLoginWithOsmProcessor,
-  authLoginWithOsm2Processor,
   authSaveUserProcessor,
   l10nSetLanguageProcessor,
   elevationChartProcessor,
@@ -180,7 +168,6 @@ processors.push(
   routePlannerFindRouteProcessor,
   galleryDeletePictureProcessor,
   galleryFetchUsersProcessor,
-  galleryItemUploadProcessor,
   galleryPreventLayerHintProcessor,
   galleryRequestImageProcessor,
   galleryRequestImagesByOrderProcessor,
@@ -211,7 +198,6 @@ processors.push(
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   ...Object.values(rpcProcessors),
-  exportPdfProcessor,
   urlProcessor,
 );
 

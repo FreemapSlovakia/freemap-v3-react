@@ -236,3 +236,5 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
     );
   },
 };
+
+export default exportPdfProcessor;

@@ -498,7 +498,7 @@ function toLatLon(latLon: LatLon) {
   };
 }
 
-export const FM_NS = 'https://www.freemap.sk/GPX/1/0';
+const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
 function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   const tdMap = new Map(trackedDevices.map((td) => [td.id, td]));
@@ -612,3 +612,5 @@ function getSupportedGpxElements(doc: Document) {
     null,
   );
 }
+
+export default gpxExportProcessor;

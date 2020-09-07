@@ -3,7 +3,7 @@ import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 
 const ExportPdfModal = lazy(() =>
   import(
-    /* webpackChunkName: "legendModal" */ 'fm3/components/ExportPdfModal'
+    /* webpackChunkName: "exportPdfModal" */ 'fm3/components/ExportPdfModal'
   ).then(({ ExportPdfModal }) => ({ default: ExportPdfModal })),
 );
 

@@ -79,3 +79,5 @@ export const galleryItemUploadProcessor: Processor = {
     }
   },
 };
+
+export default galleryItemUploadProcessor;
