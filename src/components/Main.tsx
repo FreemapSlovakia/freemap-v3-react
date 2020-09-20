@@ -43,8 +43,6 @@ import { Copyright } from 'fm3/components/Copyright';
 import { MapControls } from 'fm3/components/MapControls';
 import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
 
-import { AsyncElevationChart } from 'fm3/components/AsyncElevationChart';
-
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
 import { DrawingEditLabelModal } from 'fm3/components/DrawingEditLabelModal';
 
@@ -53,14 +51,17 @@ import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 
 import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
 
-import { EmbedMapModal } from 'fm3/components/EmbedMapModal';
-import { AsyncExportGpxModal } from 'fm3/components/AsyncExportGpxModal';
-import { AsyncExportPdfModal } from 'fm3/components/AsyncExportPdfModal';
-import { AsyncLoginModal } from 'fm3/components/AsyncLoginModal';
-import { TipsModal } from 'fm3/components/TipsModal';
-import { AboutModal } from 'fm3/components/AboutModal';
-import { SupportUsModal } from 'fm3/components/SupportUsModal';
-import { AsyncLegendModal } from 'fm3/components/AsyncLegendModal';
+import {
+  AsyncElevationChart,
+  AsyncExportGpxModal,
+  AsyncExportPdfModal,
+  AsyncLoginModal,
+  AsyncLegendModal,
+  AsyncEmbedMapModal,
+  AsyncTipsModal,
+  AsyncAboutModal,
+  AsyncSupportUsModal,
+} from 'fm3/components/AsyncComponents';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
@@ -332,12 +333,12 @@ const MainInt: React.FC<Props> = ({
           ...(isUserValidated ? ['tracking-my'] : []),
           'tracking-watched',
         ].includes(activeModal) && <TrackingModal />}
-      {activeModal === 'embed' && <EmbedMapModal />}
+      {activeModal === 'embed' && <AsyncEmbedMapModal />}
       {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
       {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
-      {activeModal === 'tips' && <TipsModal />}
-      {activeModal === 'about' && <AboutModal />}
-      {activeModal === 'supportUs' && <SupportUsModal />}
+      {activeModal === 'tips' && <AsyncTipsModal />}
+      {activeModal === 'about' && <AsyncAboutModal />}
+      {activeModal === 'supportUs' && <AsyncSupportUsModal />}
       {activeModal === 'legend' && <AsyncLegendModal />}
       {activeModal === 'edit-label' && <DrawingEditLabelModal />}
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
