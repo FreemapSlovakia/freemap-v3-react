@@ -977,8 +977,6 @@ export default {
   },
 
   mapLayers: {
-    missingStravaAuth:
-      'Prosím přihlašte se nejprve na strava.com/heatmap (klikněte na vykřičník) a následně obnovte tuto stránku.',
     layers: 'Vrstvy',
     photoFilterWarning: 'Filtr fotografií je aktivní',
     minZoomWarning: 'Dostupné až od přiblížení {minZoom}',

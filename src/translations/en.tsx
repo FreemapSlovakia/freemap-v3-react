@@ -976,8 +976,6 @@ export default {
   },
 
   mapLayers: {
-    missingStravaAuth:
-      'Please log-in on strava.com/heatmap first (click on the exclamation mark) and then reload this page.',
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
     minZoomWarning: 'Accessible from zoom {minZoom}',

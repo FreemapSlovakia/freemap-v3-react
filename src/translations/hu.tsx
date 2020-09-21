@@ -986,8 +986,6 @@ export default {
   },
 
   mapLayers: {
-    missingStravaAuth:
-      'Először jelentkezzék be a www.strava.com/heatmap oldalon, majd frissítse az oldalt.',
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
     minZoomWarning: 'A {minZoom} nagyítási szinttől látható.',

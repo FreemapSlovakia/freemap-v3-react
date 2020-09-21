@@ -27,7 +27,6 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   expertMode,
   zoom,
   pictureFilterIsActive,
-  stravaAuth,
   onMapRefocus,
   language,
 }) => {
@@ -57,14 +56,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: any, e: React.SyntheticEvent<any>) => {
-      const { dataset } = e.target as HTMLElement;
-
-      if (dataset && dataset.strava) {
-        window.open('https://www.strava.com/heatmap');
-        return;
-      }
-
+    (overlay: any) => {
       const s = new Set(overlays);
 
       if (s.has(overlay)) {
@@ -207,7 +199,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                   !showOnlyInExpertMode || expertMode,
               )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
-              .map(({ type, icon, minZoom, key, strava }) => (
+              .map(({ type, icon, minZoom, key }) => (
                 <MenuItem
                   key={type}
                   eventKey={type}
@@ -228,8 +220,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                   <span
                     style={{
                       textDecoration:
-                        (minZoom !== undefined && zoom < minZoom) ||
-                        (strava && !stravaAuth)
+                        minZoom !== undefined && zoom < minZoom
                           ? 'line-through'
                           : 'none',
                     }}
@@ -246,17 +237,6 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                         title={t('mapLayers.minZoomWarning', {
                           minZoom: minZoom.toString(),
                         })}
-                        className="text-warning"
-                      />
-                    </>
-                  )}
-                  {strava && !stravaAuth && (
-                    <>
-                      {' '}
-                      <FontAwesomeIcon
-                        data-strava
-                        icon="exclamation-triangle"
-                        title={t('mapLayers.missingStravaAuth')}
                         className="text-warning"
                       />
                     </>
@@ -289,7 +269,6 @@ const mapStateToProps = (state: RootState) => ({
     (key) => state.gallery.filter[key],
   ),
   isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-  stravaAuth: state.map.stravaAuth,
   language: state.l10n.language,
 });
 

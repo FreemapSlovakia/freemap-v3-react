@@ -26,5 +26,3 @@ export const mapSetOverlayOpacity = createAction('MAP_SET_OVERLAY_OPACITY')<{
 export const mapSetOverlayPaneOpacity = createAction(
   'MAP_SET_OVERLAY_PANE_OPACITY',
 )<number>();
-
-export const mapSetStravaAuth = createAction('MAP_SET_STRAVA_AUTH')<boolean>();

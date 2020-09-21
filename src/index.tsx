@@ -15,7 +15,6 @@ import {
   setEmbedFeatures,
 } from 'fm3/actions/mainActions';
 // import { errorSetError } from 'fm3/actions/errorActions';
-import { mapSetStravaAuth } from 'fm3/actions/mapActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 
 import { history } from 'fm3/historyHolder';
@@ -64,8 +63,6 @@ handleLocationChange(store, location);
 attachOsmLoginMessageHandler(store);
 
 store.dispatch(enableUpdatingUrl());
-
-checkStravaAuth();
 
 render(
   <Provider store={store}>
@@ -117,14 +114,3 @@ window.addEventListener('message', (e: MessageEvent) => {
 store.dispatch(authCheckLogin());
 
 attachKeyboardHandler(store);
-
-function checkStravaAuth() {
-  const img = new Image();
-
-  img.onload = () => {
-    store.dispatch(mapSetStravaAuth(true));
-  };
-
-  img.src =
-    'https://heatmap-external-a.strava.com/tiles-auth/both/bluered/16/36718/22612.png';
-}

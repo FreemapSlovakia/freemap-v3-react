@@ -5,7 +5,6 @@ import {
   mapReset,
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
-  mapSetStravaAuth,
 } from 'fm3/actions/mapActions';
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
@@ -13,7 +12,6 @@ import { selectFeature, setAppState, Selection } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export interface MapState extends MapStateBase {
-  stravaAuth: boolean;
   selection: Selection | null;
   removeGalleryOverlayOnGalleryToolQuit: boolean;
   gpsTracked: boolean;
@@ -27,7 +25,6 @@ const initialState: MapState = {
   overlays: [],
   overlayOpacity: {},
   overlayPaneOpacity: 0.75,
-  stravaAuth: false,
   selection: null,
   removeGalleryOverlayOnGalleryToolQuit: false,
   gpsTracked: false,
@@ -97,10 +94,6 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
         }
       : state;
   })
-  .handleAction(mapSetStravaAuth, (state, action) => ({
-    ...state,
-    stravaAuth: action.payload,
-  }))
   .handleAction(selectFeature, (state, action) => {
     const currentSelection = state.selection;
     const nextSelection = action.payload;
