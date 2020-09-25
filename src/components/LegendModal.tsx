@@ -37,15 +37,20 @@ const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
         <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
         <PanelGroup accordion id="pg1">
           {legend.map((c: LegendItem, i: number) => (
-            <Panel key={`yyy${c.n}`} eventKey={i}>
-              {c.items.map((e) => (
-                <div key={`xxx${c.n}-${e.n}`}>
-                  <div className="legend-item">
-                    <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+            <Panel key={c.n} eventKey={i}>
+              <Panel.Heading>
+                <Panel.Title toggle>{c.n}</Panel.Title>
+              </Panel.Heading>
+              <Panel.Body collapsible>
+                {c.items.map((e) => (
+                  <div key={e.n}>
+                    <div className="legend-item">
+                      <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+                    </div>
+                    {` ${e.n}`}
                   </div>
-                  {` ${e.n}`}
-                </div>
-              ))}
+                ))}
+              </Panel.Body>
             </Panel>
           ))}
         </PanelGroup>
