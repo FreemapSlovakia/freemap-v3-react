@@ -260,15 +260,17 @@ export const overlayLayers: LayerDef[] = [
     maxNativeZoom: 15,
     key: 'N',
     zIndex: 2,
-    adminOnly: true,
+    // adminOnly: true,
   },
   ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
     type: `s${i}`,
     icon: 'scribd', // TODO use correct logo
-    url: `//strava-heatmap.tiles.freemap.sk/${type}/bluered/{z}/{x}/{y}.png?px=256`,
+    url: `//strava-heatmap.tiles.freemap.sk/${type}/bluered/{z}/{x}/{y}.png?px=${
+      isHdpi ? 512 : 256
+    }`,
     attribution: [STRAVA_ATTR],
     minZoom: 0,
-    maxNativeZoom: 16,
+    maxNativeZoom: isHdpi ? 15 : 16,
     key: type === 'both' ? 'H' : undefined,
     showOnlyInExpertMode: type !== 'both',
     zIndex: 2,

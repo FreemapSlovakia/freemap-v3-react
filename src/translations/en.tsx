@@ -997,7 +997,7 @@ export default {
     overlay: {
       i: 'Interactive layer',
       I: 'Photos',
-      l: 'Forest tracks NLC',
+      l: 'Forest tracks NLC (SK)',
       n1: 'Names (car)',
       n2: 'Names (hiking)',
       n3: 'Names (bicycle)',

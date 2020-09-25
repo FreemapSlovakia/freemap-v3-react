@@ -998,7 +998,7 @@ export default {
     overlay: {
       i: 'Interaktivní vrstva',
       I: 'Fotografie',
-      l: 'Lesní cesty NLC',
+      l: 'Lesní cesty NLC (SK)',
       n1: 'Názvy (auto)',
       n2: 'Názvy (turistika)',
       n3: 'Názvy (cyklo)',
