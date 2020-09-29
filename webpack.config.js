@@ -131,7 +131,7 @@ module.exports = {
         NODE_ENV: prod ? JSON.stringify('production') : 'undefined', // for react
         BROWSER: JSON.stringify(true),
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
-        MAP_EXPORT_URL: JSON.stringify(process.env.MAP_EXPORT_URL),
+        FM_MAPSERVER_URL: JSON.stringify(process.env.FM_MAPSERVER_URL),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
         API_URL: JSON.stringify(
           {

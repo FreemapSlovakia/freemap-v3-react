@@ -12,8 +12,8 @@ import {
   Geometry,
 } from '@turf/helpers';
 
-const mapExportUrl =
-  process.env.MAP_EXPORT_URL || 'https://outdoor.tiles.freemap.sk';
+const fmMapserverUrl =
+  process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
 
 const geometryTypeMapping = {
   Polygon: 'polygon',
@@ -173,7 +173,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
     const { data } = await httpRequest({
       getState,
       method: 'POST',
-      url: `${mapExportUrl}/export`,
+      url: `${fmMapserverUrl}/export`,
       data: {
         bbox: [w, s, e, n],
         zoom: getState().map.zoom,
@@ -209,7 +209,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         await httpRequest({
           getState,
           method: 'HEAD',
-          url: `${mapExportUrl}/export`,
+          url: `${fmMapserverUrl}/export`,
           params: {
             token: data.token,
           },
@@ -229,7 +229,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         id: 'pdfExport.export',
         messageKey: 'pdfExport.exported',
         messageParams: {
-          url: `${mapExportUrl}/export?token=${data.token}`,
+          url: `${fmMapserverUrl}/export?token=${data.token}`,
         },
         style: 'info',
       }),

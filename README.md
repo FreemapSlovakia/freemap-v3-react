@@ -47,3 +47,7 @@ DEPLOYMENT=next ./node_modules/.bin/webpack
 ```
 
 You'll then find all static web resources in `dist` directory.
+
+## Other env varialbes
+
+- FM_MAPSERVER_URL - base URL of Mapnik Mapserver (without trailing slash); for example `http://localhost:4000` for development

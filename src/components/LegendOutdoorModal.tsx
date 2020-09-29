@@ -23,6 +23,9 @@ type Props = ReturnType<typeof mapStateToProps> &
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
+const fmMapserverUrl =
+  process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
+
 const LegendOutdoorModalInt: React.FC<Props> = ({
   language,
   onModalClose,
@@ -32,7 +35,7 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
 
   useEffect(() => {
     axios
-      .get(`http://localhost:4000/legend?language=${language}`)
+      .get(`${fmMapserverUrl}/legend?language=${language}`)
       .then((response) => {
         const { categories, items } = response.data;
 
@@ -71,7 +74,7 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
                 {c.items.map(({ id, name }) => (
                   <div key={id}>
                     <div className="legend-item">
-                      <img src={`http://localhost:4000/legend-image/${id}`} />
+                      <img src={`${fmMapserverUrl}/legend-image/${id}`} />
                     </div>
                     {` ${name}`}
                   </div>
