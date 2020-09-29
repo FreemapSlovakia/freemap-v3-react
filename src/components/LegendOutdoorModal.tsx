@@ -59,7 +59,8 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+          <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}{' '}
+          <FontAwesomeIcon icon="flask" className="text-warning" />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
