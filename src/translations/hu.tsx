@@ -1358,6 +1358,28 @@ export default {
     createError: 'Hiba történt a térkép mentésekor: {err}',
     saveError: 'Hiba történt a térkép mentésekor: {err}',
   },
+
+  // TODO translate
+  legend: {
+    body: () => (
+      <>
+        Map legend for <i>Hiking + Bicycle + Ski</i>:
+      </>
+    ),
+  },
+
+  // TODO translate
+  contacts: {
+    ngo: 'Voluntary association',
+    registered: 'Registered at MV/VVS/1-900/90-34343 on 2009-10-02',
+    bankAccount: 'Bank account',
+    generalContact: 'General contacts',
+    board: 'Board',
+    boardMemebers: 'Board members',
+    president: 'President',
+    vicepresident: 'Vice-President',
+    secretary: 'Secretary',
+  },
 };
 
 function numberize(n, words) {

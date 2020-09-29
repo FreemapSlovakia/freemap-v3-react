@@ -1352,6 +1352,26 @@ export default {
     createError: 'Nastala chyba při ukládání mapy: {err}',
     saveError: 'Nastala chyba při ukládání mapy: {err}',
   },
+
+  legend: {
+    body: () => (
+      <>
+        Legenda k mapě <i>Turistika + Cyklo + Běžky</i>:
+      </>
+    ),
+  },
+
+  contacts: {
+    ngo: 'Spolek',
+    registered: 'Registrované na MV/VVS/1-900/90-34343 dne 2.10.2009',
+    bankAccount: 'Bankovní spojení',
+    generalContact: 'Všeobecné kontakty',
+    board: 'Představenstvo',
+    boardMemebers: 'Členové představenstva',
+    president: 'Předseda',
+    vicepresident: 'Místopředseda',
+    secretary: 'Tajemník',
+  },
 };
 
 function numberize(n: number, words: [string, string, string]) {

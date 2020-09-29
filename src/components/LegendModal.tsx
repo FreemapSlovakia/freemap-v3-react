@@ -34,7 +34,9 @@ const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
+        <p>
+          Legenda k vrstvám <i>Automapa, Turistická, Cyklomapa a Lyžiarska</i>:
+        </p>
         <PanelGroup accordion id="pg1">
           {legend.map((c: LegendItem, i: number) => (
             <Panel key={c.n} eventKey={i}>

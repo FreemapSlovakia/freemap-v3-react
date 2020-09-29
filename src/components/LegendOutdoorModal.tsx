@@ -14,13 +14,20 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
 type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+  ReturnType<typeof mapDispatchToProps> & {
+    t: Translator;
+  };
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
-const LegendOutdoorModalInt: React.FC<Props> = ({ language, onModalClose }) => {
+const LegendOutdoorModalInt: React.FC<Props> = ({
+  language,
+  onModalClose,
+  t,
+}) => {
   const [legend, setLegend] = useState<Item[]>([]);
 
   useEffect(() => {
@@ -49,11 +56,11 @@ const LegendOutdoorModalInt: React.FC<Props> = ({ language, onModalClose }) => {
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="map-o" /> Legenda mapy
+          <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Legenda k vrstvám Automapa, Turistická, Cyklomapa a Lyžiarska.</p>
+        <p>{t('legend.body')}</p>
         <PanelGroup accordion id="pg1">
           {[...legend].map((c: Item, i: number) => (
             <Panel key={c.name} eventKey={i}>
@@ -77,7 +84,7 @@ const LegendOutdoorModalInt: React.FC<Props> = ({ language, onModalClose }) => {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </FormGroup>
       </Modal.Footer>
@@ -98,4 +105,4 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
 export const LegendOutdoorModal = connect(
   mapStateToProps,
   mapDispatchToProps,
-)(LegendOutdoorModalInt);
+)(withTranslator(LegendOutdoorModalInt));

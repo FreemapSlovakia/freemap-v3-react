@@ -10,21 +10,22 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
+import { withTranslator, Translator } from 'fm3/l10nInjector';
 
-interface Props {
-  onModalClose: () => void;
-}
+type Props = ReturnType<typeof mapDispatchToProps> & {
+  t: Translator;
+};
 
-export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
+export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
   return (
     <Modal show onHide={onModalClose}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" /> Kontakty
+          <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h3>Občianske združenie</h3>
+        <h3>{t('contacts.ngo')}</h3>
         <address>
           Freemap Slovakia
           <br />
@@ -33,7 +34,7 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
           972 32 Chrenovec-Brusno
           <br />
         </address>
-        <p>Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009</p>
+        <p>{t('contacts.registered')}</p>
         <p>
           {'IČO: '}
           <a
@@ -47,7 +48,7 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
           DIČ: 2022912870
         </p>
         <p>
-          Bankové spojenie: VÚB 2746389453/0200
+          {t('contacts.bankAccount')}: VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -56,38 +57,41 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
           <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
-        <h3>Všeobecné kontakty</h3>
+        <h3>{t('contacts.generalContact')}</h3>
         <ul>
           <li>
-            {'Predstavenstvo: '}
-            <a href="oz@freemap.sk">oz@freemap.sk</a>
+            {t('contacts.board')}: <a href="oz@freemap.sk">oz@freemap.sk</a>
           </li>
         </ul>
 
-        <h3>Členovia predstavenstva</h3>
+        <h3>{t('contacts.boardMemebers')}</h3>
         <ul>
           <li>
-            {'Predseda: Michal Bellovič (Prievidza) - '}
-            <a href="mailto:michal.bellovic@freemap.sk">
-              michal.bellovic@freemap.sk
-            </a>
+            {t('contacts.president')}
+            {': '}
+            <a href="mailto:michal.bellovic@freemap.sk">Michal Bellovič</a>{' '}
+            (Prievidza)
           </li>
           <li>
-            {'Tajomník: Ing. Martin Ždila (Košice) - '}
-            <a href="mailto:martin.zdila@freemap.sk">martin.zdila@freemap.sk</a>
-          </li>
-          <li>
-            {'Podpredseda: Mgr. Ing. Michal Páleník, PhD. (Bratislava) - '}
+            {t('contacts.vicepresident')}
+            {': '}
             <a href="mailto:michal.palenik@freemap.sk">
-              michal.palenik@freemap.sk
-            </a>
+              Mgr. Ing. Michal Páleník, PhD.
+            </a>{' '}
+            (Bratislava)
+          </li>
+          <li>
+            {t('contacts.secretary')}
+            {': '}
+            <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
+            (Košice)
           </li>
         </ul>
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
           <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </FormGroup>
       </Modal.Footer>
@@ -95,8 +99,13 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose }) => {
   );
 };
 
-export const AboutModal = connect(null, (dispatch: Dispatch<RootAction>) => ({
+const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onModalClose() {
     dispatch(setActiveModal(null));
   },
-}))(AboutModalInt);
+});
+
+export const AboutModal = connect(
+  null,
+  mapDispatchToProps,
+)(withTranslator(AboutModalInt));

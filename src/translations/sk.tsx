@@ -1366,6 +1366,26 @@ export default {
     createError: 'Nastala chyba pri ukladaní mapy: {err}',
     saveError: 'Nastala chyba pri ukladaní mapy: {err}',
   },
+
+  legend: {
+    body: () => (
+      <>
+        Legenda k mape <i>Turistika + Cyklo + Bežky</i>:
+      </>
+    ),
+  },
+
+  contacts: {
+    ngo: 'Občianske združenie',
+    registered: 'Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009',
+    bankAccount: 'Bankové spojenie',
+    generalContact: 'Všeobecné kontakty',
+    board: 'Predstavenstvo',
+    boardMemebers: 'Členovia predstavenstva',
+    president: 'Predseda',
+    vicepresident: 'Podpredseda',
+    secretary: 'Tajomník',
+  },
 };
 
 function numberize(n: number, words: [string, string, string]) {

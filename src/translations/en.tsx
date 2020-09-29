@@ -1355,6 +1355,26 @@ export default {
     createError: 'Error saving map: {err}',
     saveError: 'Error saving map: {err}',
   },
+
+  legend: {
+    body: () => (
+      <>
+        Map legend for <i>Hiking + Bicycle + Ski</i>:
+      </>
+    ),
+  },
+
+  contacts: {
+    ngo: 'Voluntary association',
+    registered: 'Registered at MV/VVS/1-900/90-34343 on 2009-10-02',
+    bankAccount: 'Bank account',
+    generalContact: 'General contacts',
+    board: 'Board',
+    boardMemebers: 'Board members',
+    president: 'President',
+    vicepresident: 'Vice-President',
+    secretary: 'Secretary',
+  },
 };
 
 function numberize(n: number, words: [string, string]) {
