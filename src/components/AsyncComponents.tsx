@@ -61,6 +61,18 @@ export const AsyncLegendModal: React.FC = () => (
   </Suspense>
 );
 
+const LegendOutdoorModal = lazy(() =>
+  import(
+    /* webpackChunkName: "legendOutdoorModal" */ 'fm3/components/LegendOutdoorModal'
+  ).then(({ LegendOutdoorModal }) => ({ default: LegendOutdoorModal })),
+);
+
+export const AsyncLegendOutdoorModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <LegendOutdoorModal />
+  </Suspense>
+);
+
 const EmbedMapModal = lazy(() =>
   import(
     /* webpackChunkName: "embedMapModal" */ 'fm3/components/EmbedMapModal'

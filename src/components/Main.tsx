@@ -57,6 +57,7 @@ import {
   AsyncExportPdfModal,
   AsyncLoginModal,
   AsyncLegendModal,
+  AsyncLegendOutdoorModal,
   AsyncEmbedMapModal,
   AsyncTipsModal,
   AsyncAboutModal,
@@ -148,6 +149,7 @@ const MainInt: React.FC<Props> = ({
   onDelete,
   canDelete,
   showInteractiveLayer,
+  mapType,
 }) => {
   const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
@@ -339,7 +341,8 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'tips' && <AsyncTipsModal />}
       {activeModal === 'about' && <AsyncAboutModal />}
       {activeModal === 'supportUs' && <AsyncSupportUsModal />}
-      {activeModal === 'legend' && <AsyncLegendModal />}
+      {activeModal === 'legend' &&
+        (mapType === 'X' ? <AsyncLegendOutdoorModal /> : <AsyncLegendModal />)}
       {activeModal === 'edit-label' && <DrawingEditLabelModal />}
       {activeModal === 'upload-track' && <TrackViewerUploadModal />}
       {showLoginModal && <AsyncLoginModal />}
@@ -417,6 +420,7 @@ const mapStateToProps = (state: RootState) => ({
   lat: state.map.lat,
   lon: state.map.lon,
   zoom: state.map.zoom,
+  mapType: state.map.mapType,
   showInteractiveLayer: !state.map.overlays.includes('i'),
   tool: state.main.selection?.type,
   embedFeatures: state.main.embedFeatures,

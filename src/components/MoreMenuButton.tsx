@@ -111,6 +111,8 @@ const MoreMenuButtonInt: React.FC<Props> = ({
     setSubmenu('openExternally');
   }, []);
 
+  const skCz = ['sk', 'cs'].includes(language);
+
   return (
     <>
       <Button
@@ -195,12 +197,10 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   {t('more.reportAppError')}
                 </MenuItem>
                 <MenuItem divider />
-                {['sk', 'cs'].includes(language) && (
-                  <MenuItem eventKey="help" onSelect={setSubmenu}>
-                    <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
-                    <FontAwesomeIcon icon="chevron-right" />
-                  </MenuItem>
-                )}
+                <MenuItem eventKey="help" onSelect={setSubmenu}>
+                  <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
+                  <FontAwesomeIcon icon="chevron-right" />
+                </MenuItem>
                 <MenuItem onSelect={handleSupportUsClick}>
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
                   {t('more.supportUs')}{' '}
@@ -217,7 +217,9 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
-                {['A', 'K', 'T', 'C'].includes(mapType) && (
+                {(skCz ? ['A', 'K', 'T', 'C', 'X'] : ['X']).includes(
+                  mapType,
+                ) && (
                   <MenuItem onSelect={handleLegendClick}>
                     <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
                   </MenuItem>
@@ -225,15 +227,23 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 <MenuItem onSelect={handleAboutClick}>
                   <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
                 </MenuItem>
-                <MenuItem divider />
-                <MenuItem header>
-                  <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
-                </MenuItem>
-                {tips.map(([key, name, icon]) => (
-                  <MenuItem key={key} onSelect={handleTipSelect} eventKey={key}>
-                    <FontAwesomeIcon icon={icon} /> {name}
-                  </MenuItem>
-                ))}
+                {skCz && (
+                  <>
+                    <MenuItem divider />
+                    <MenuItem header>
+                      <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
+                    </MenuItem>
+                    {tips.map(([key, name, icon]) => (
+                      <MenuItem
+                        key={key}
+                        onSelect={handleTipSelect}
+                        eventKey={key}
+                      >
+                        <FontAwesomeIcon icon={icon} /> {name}
+                      </MenuItem>
+                    ))}
+                  </>
+                )}
               </>
             ) : submenu === 'openExternally' ? (
               <>
