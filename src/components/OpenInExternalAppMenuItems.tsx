@@ -192,7 +192,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
             .share({
               title: pointTitle,
               text: pointDescription,
-              url,
+              url: url || window.location,
             })
             .catch((error) => {
               console.error(error);
