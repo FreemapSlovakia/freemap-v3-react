@@ -10,7 +10,7 @@ export function loadFb() {
       appId: '171410630094006',
       // xfbml: true,
       status: true,
-      version: 'v2.10',
+      version: 'v8.0',
     });
     // FB.AppEvents.logPageView();
   };
