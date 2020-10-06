@@ -10,7 +10,6 @@ import { httpRequest } from 'fm3/authAxios';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { isBigSlovakia } from './overpassUtils';
 
 interface Element {
   id: number;
@@ -62,14 +61,10 @@ export const mapDetailsProcessor: Processor = {
       return;
     }
 
-    const b = le.getBounds();
-
-    const { overpassUrl } = isBigSlovakia(b); // TODO don't use bbox but clicked point
-
     const { data } = await httpRequest({
       getState,
       method: 'POST',
-      url: overpassUrl,
+      url: 'https://overpass.freemap.sk/api/interpreter',
       data:
         '[out:json];(' +
         // + `node(around:33,${userSelectedLat},${userSelectedLon});`

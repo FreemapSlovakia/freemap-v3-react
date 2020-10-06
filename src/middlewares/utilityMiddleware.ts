@@ -2,11 +2,10 @@ import { Middleware, Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
 import { isActionOf } from 'typesafe-actions';
 import { authSetUser } from 'fm3/actions/authActions';
-import { selectFeature, reloadApp } from 'fm3/actions/mainActions';
+import { selectFeature } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { storage } from 'fm3/storage';
 import { RootAction } from 'fm3/actions';
-import { skipWaiting } from 'fm3/offlineController';
 
 // TODO to processors
 
@@ -37,8 +36,6 @@ export const utilityMiddleware: Middleware<any, RootState, Dispatch> = ({
     } else {
       storage.removeItem('tip');
     }
-  } else if (isActionOf(reloadApp, action)) {
-    skipWaiting();
   }
 
   return result;

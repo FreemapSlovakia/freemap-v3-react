@@ -53,7 +53,6 @@ export default {
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
     internalError: `!HTML!${errorMarkup}`,
-    appUpdated: 'Új frissítés érhető el. Szeretné frissíteni az oldalt?',
     processorError: 'Alkalmazáshiba: ${error}',
     seconds: 'másodperc',
     minutes: 'perc',

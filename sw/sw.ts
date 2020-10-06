@@ -1,50 +1,68 @@
-// import { skipWaiting } from 'workbox-core';
-import { precacheAndRoute } from 'workbox-precaching';
-import { registerRoute } from 'workbox-routing';
-import { NetworkFirst } from 'workbox-strategies';
+declare var self: ServiceWorkerGlobalScope & { __WB_MANIFEST: any };
 
-// export default null;
+const CACHE_NAME = 'offline-html';
 
-declare var self: ServiceWorkerGlobalScope;
+const FALLBACK_HTML_URL = '/offline.html';
+const FALLBACK_LOGO_URL = '/freemap-logo.png';
 
-// clientsClaim();
-// skipWaiting();
-
-addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    // skipWaiting(); // not working
-
-    self.skipWaiting().catch((err) => {
-      console.log('Error skipWaiting', err);
-    });
-  }
+self.addEventListener('install', (event) => {
+  event.waitUntil(
+    caches
+      .open(CACHE_NAME)
+      .then((cache) => cache.addAll([FALLBACK_HTML_URL, FALLBACK_LOGO_URL])),
+  );
 });
 
-registerRoute('/index.html', new NetworkFirst());
+self.addEventListener('fetch', (event) => {
+  event.respondWith(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const url = new URL(event.request.url);
 
-if (process.env.DEPLOYMENT && process.env.DEPLOYMENT !== 'dev') {
-  // The precache routes for workbox-webpack-plugin
-  precacheAndRoute(self.__WB_MANIFEST, {
-    ignoreURLParametersMatching: [/.*/], // TODO try to use urlManipulation instead
-  });
-}
+      if (event.request.method === 'POST' && url.pathname === '/') {
+        const data = await event.request.formData();
 
-registerRoute(
-  '/',
-  async ({ event }) => {
-    if (event instanceof FetchEvent) {
-      const data = await event.request.formData();
+        const client = await self.clients.get(
+          event.resultingClientId || event.clientId,
+        );
 
-      const client = await self.clients.get(
-        event.resultingClientId || event.clientId,
-      );
+        client?.postMessage({
+          freemap: { action: 'shareFile', payload: data.getAll('file') },
+        });
 
-      client?.postMessage({
-        freemap: { action: 'shareFile', payload: data.getAll('file') },
-      });
-    }
+        return Response.redirect('/');
+      }
 
-    return Response.redirect('/');
-  },
-  'POST',
-);
+      try {
+        return await fetch(event.request);
+      } catch (err) {
+        return (
+          (await cache.match(
+            url.pathname === '/'
+              ? FALLBACK_HTML_URL
+              : url?.pathname === FALLBACK_LOGO_URL
+              ? FALLBACK_LOGO_URL
+              : '_',
+          )) || new Response(null, { status: 404 })
+        );
+      }
+    }),
+  );
+});
+
+// remove old caches
+
+self.addEventListener('activate', (event) => {
+  event.waitUntil(
+    caches.keys().then((cacheNames) =>
+      Promise.all(
+        cacheNames.map((cacheName) => {
+          if (cacheName !== CACHE_NAME) {
+            return caches.delete(cacheName);
+          }
+        }),
+      ),
+    ),
+  );
+});
+
+export default self.__WB_MANIFEST; // 2 in 1 - makes it a module and use __WB_MANIFEST required by WorkboxPlugin.InjectManifest

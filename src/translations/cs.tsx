@@ -52,7 +52,6 @@ export default {
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     back: 'Zpět',
     internalError: `!HTML!${errorMarkup}`,
-    appUpdated: 'Je dostupná aktualizce. Obnovit stránku?',
     processorError: 'Chyba aplikace: ${error}',
     seconds: 'sekundy',
     minutes: 'minuty',

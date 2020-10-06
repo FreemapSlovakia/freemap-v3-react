@@ -5,7 +5,6 @@ import { objectsSetResult, objectsSetFilter } from 'fm3/actions/objectsActions';
 import { selectFeature, clearMap } from 'fm3/actions/mainActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { isBigSlovakia } from './overpassUtils';
 
 export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
   actionCreator: objectsSetFilter,
@@ -30,12 +29,10 @@ export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
       `${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}`,
     )}; out center;`;
 
-    const { overpassUrl } = isBigSlovakia(b);
-
     const { data } = await httpRequest({
       getState,
       method: 'POST',
-      url: overpassUrl,
+      url: 'https://overpass.freemap.sk/api/interpreter',
       data: `data=${encodeURIComponent(query)}`,
       expectedStatus: 200,
       cancelActions: [objectsSetFilter, clearMap, selectFeature],

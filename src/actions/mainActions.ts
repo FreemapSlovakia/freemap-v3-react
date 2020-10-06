@@ -71,8 +71,6 @@ export const setSelectingHomeLocation = createAction(
 
 export const enableUpdatingUrl = createAction('ENABLE_UPDATING_URL')();
 
-export const reloadApp = createAction('RELOAD_APP')();
-
 export const saveSettings = createAction('SAVE_SETTINGS')<{
   homeLocation: LatLon | null;
   overlayOpacity: { [type: string]: number };

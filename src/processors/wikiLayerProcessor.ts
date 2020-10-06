@@ -5,7 +5,6 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { isActionOf } from 'typesafe-actions';
-import { isBigSlovakia } from './overpassUtils';
 
 let prev = false;
 
@@ -59,8 +58,6 @@ export const wikiLayerProcessor: Processor = {
 
     const b = le.getBounds();
 
-    const { isBigSk, overpassUrl } = isBigSlovakia(b);
-
     // debouncing
     try {
       await new Promise((resolve, reject) => {
@@ -69,7 +66,7 @@ export const wikiLayerProcessor: Processor = {
             cancelRegister.delete(cancelItem);
             resolve();
           },
-          changed ? 0 : isBigSk ? 1000 : 3000,
+          changed ? 0 : 1000,
         );
 
         const cancelItem = {
@@ -90,7 +87,7 @@ export const wikiLayerProcessor: Processor = {
     const { data } = await httpRequest({
       getState,
       method: 'POST',
-      url: overpassUrl,
+      url: 'https://overpass.freemap.sk/api/interpreter',
       data:
         `[out:json][bbox:${b.getSouth()},${b.getWest()},${b.getNorth()},${b.getEast()}];(` +
         `node[~"^wikipedia$|^wikidata$"~"."];` +

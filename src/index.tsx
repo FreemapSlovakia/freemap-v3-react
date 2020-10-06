@@ -31,7 +31,6 @@ import 'fm3/styles/bootstrap-override.scss';
 import { authInit, authCheckLogin } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { AppState } from './types/common';
-import { initOffline } from './offlineController';
 
 setDefaultGetErrorObject(() => null);
 
@@ -73,9 +72,9 @@ render(
   document.getElementById('app'),
 );
 
-// if (window.self === window.top) {
-initOffline(store);
-// }
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('/sw.js');
+}
 
 function loadAppState() {
   let appState: AppState | undefined;

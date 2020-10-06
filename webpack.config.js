@@ -153,10 +153,11 @@ module.exports = {
       template: '!!ejs-loader?esModule=false!src/index.html',
       inject: false,
     }),
+    // TODO we use InjectManifest only to generate sw.js. Find simpler way to do it.
     new WorkboxPlugin.InjectManifest({
       swSrc: '../sw/sw.ts',
-      maximumFileSizeToCacheInBytes: 100000000, // TODO only for dev
-      exclude: ['.htaccess'],
+      maximumFileSizeToCacheInBytes: 1,
+      exclude: [/.*/],
     }),
     new FaviconsWebpackPlugin({
       logo: './images/logo.jpg',
