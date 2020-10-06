@@ -217,7 +217,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
-                {(skCz ? ['A', 'K', 'T', 'C', 'X'] : ['X']).includes(
+                {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
                   mapType,
                 ) && (
                   <MenuItem onSelect={handleLegendClick}>

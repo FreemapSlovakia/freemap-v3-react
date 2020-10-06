@@ -101,6 +101,7 @@ import { mapsRenameProcessor } from './processors/mapsRenameProcessor';
 import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
 import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
 import { wikiReducer } from './reducers/wikiReducer';
+import { legendProcessor } from './processors/legendProcessor';
 
 const reducers = {
   auth: authReducer,
@@ -197,6 +198,7 @@ processors.push(
   mapsRenameProcessor,
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
+  legendProcessor,
   ...Object.values(rpcProcessors),
   urlProcessor,
 );
