@@ -45,11 +45,13 @@ const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
               </Panel.Heading>
               <Panel.Body collapsible>
                 {c.items.map((e) => (
-                  <div key={e.n}>
-                    <div className="legend-item">
-                      <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+                  <div key={e.n} className="legend-item">
+                    <div>
+                      <div>
+                        <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+                      </div>
                     </div>
-                    {` ${e.n}`}
+                    <div>{e.n}</div>
                   </div>
                 ))}
               </Panel.Body>

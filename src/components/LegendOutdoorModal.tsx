@@ -73,11 +73,21 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
               </Panel.Heading>
               <Panel.Body collapsible>
                 {c.items.map(({ id, name }) => (
-                  <div key={id}>
-                    <div className="legend-item">
-                      <img src={`${fmMapserverUrl}/legend-image/${id}`} />
+                  <div key={id} className="legend-item">
+                    <div>
+                      <img
+                        src={`${fmMapserverUrl}/legend-image/${id}`}
+                        srcSet={[1, 2, 3]
+                          .map(
+                            (s) =>
+                              `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
+                                s > 1 ? ` ${s}x` : ''
+                              }`,
+                          )
+                          .join(', ')}
+                      />
                     </div>
-                    {` ${name}`}
+                    <div>{name}</div>
                   </div>
                 ))}
               </Panel.Body>

@@ -215,9 +215,18 @@ button#freemap-logo {
 }
 
 .legend-item {
-  display: inline-block;
-  min-width: 20px;
+  display: flex;
   margin-bottom: 2px;
+  align-items: center;
+
+  & > *:nth-child(1) > div {
+    min-width: 20px;
+  }
+
+  & > *:nth-child(2) {
+    flex-grow: 1;
+    padding-left: 10px;
+  }
 }
 
 .fm-attr-popover {
