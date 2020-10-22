@@ -25,6 +25,7 @@ export const authInitProcessor: Processor = {
         url: '/auth/validate',
         method: 'POST',
         expectedStatus: [200, 401],
+        cancelActions: [],
       });
 
       dispatch(authSetUser(res.status === 200 ? res.data : null));
