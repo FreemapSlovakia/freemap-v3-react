@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
@@ -40,325 +40,276 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface State {
-  homeLocation: LatLon | null;
-  overlayOpacity: { [type: string]: number };
-  overlayPaneOpacity: number;
-  expertMode: boolean;
-  eleSmoothingFactor: number;
-  name: string;
-  email: string;
-  preventTips: boolean;
-  selectedOverlay: string;
-}
+const SettingsInt: React.FC<Props> = ({
+  onClose,
+  onHomeLocationSelect,
+  selectingHomeLocation,
+  user,
+  language,
+  t,
+  onSave,
+  onHomeLocationSelectionFinish,
+  ...props
+}) => {
+  const [homeLocation, setHomeLocation] = useState(props.homeLocation);
 
-class SettingsInt extends React.Component<Props, State> {
-  state: State;
+  const [overlayOpacity, setOverlayOpacity] = useState(props.overlayOpacity);
 
-  constructor(props: Props) {
-    super(props);
+  const [overlayPaneOpacity, setOverlayPaneOpacity] = useState(
+    props.overlayPaneOpacity,
+  );
 
-    this.state = {
-      homeLocation: props.homeLocation,
-      overlayOpacity: props.overlayOpacity,
-      overlayPaneOpacity: props.overlayPaneOpacity,
-      expertMode: props.expertMode,
-      eleSmoothingFactor: props.eleSmoothingFactor,
-      name: props.user?.name ?? '',
-      email: props.user?.email ?? '',
-      preventTips: props.preventTips,
-      selectedOverlay: 't',
+  const [expertMode, setExpertMode] = useState<boolean>(props.expertMode);
+
+  const [eleSmoothingFactor, setEleSmoothingFactor] = useState(
+    props.eleSmoothingFactor,
+  );
+
+  const [name, setName] = useState(user?.name ?? '');
+
+  const [email, setEmail] = useState(user?.email ?? '');
+
+  const [preventTips, setPreventTips] = useState(props.preventTips);
+
+  const [selectedOverlay, setSelectedOverlay] = useState('t');
+
+  useEffect(() => {
+    const onHomeLocationSelected = (lat: number, lon: number) => {
+      setHomeLocation({ lat, lon });
+      onHomeLocationSelectionFinish();
     };
-  }
 
-  componentDidMount() {
-    mapEventEmitter.on('mapClick', this.onHomeLocationSelected);
-  }
+    mapEventEmitter.on('mapClick', onHomeLocationSelected);
 
-  componentWillUnmount() {
-    mapEventEmitter.removeListener('mapClick', this.onHomeLocationSelected);
-  }
+    return () => {
+      mapEventEmitter.removeListener('mapClick', onHomeLocationSelected);
+    };
+  }, [onHomeLocationSelectionFinish]);
 
-  onHomeLocationSelected = (lat: number, lon: number) => {
-    this.setState({ homeLocation: { lat, lon } });
-    this.props.onHomeLocationSelectionFinish();
-  };
-
-  handleSave = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-
-    this.props.onSave(
-      this.state.homeLocation,
-      this.state.overlayOpacity,
-      this.state.overlayPaneOpacity,
-      this.state.expertMode,
-      this.state.eleSmoothingFactor,
-      this.props.user
-        ? {
-            name: this.state.name.trim() || null,
-            email: this.state.email.trim() || null,
-          }
-        : null,
-      this.state.preventTips,
-    );
-  };
-
-  handleNameChange = (e: React.FormEvent<FormControl>) => {
-    this.setState({ name: (e.target as HTMLInputElement).value });
-  };
-
-  handleEmailChange = (e: React.FormEvent<FormControl>) => {
-    this.setState({ email: (e.target as HTMLInputElement).value });
-  };
-
-  handleShowTipsChange = (e: React.FormEvent<FormControl>) => {
-    this.setState({
-      preventTips: !(e.target as HTMLInputElement).checked,
-    });
-  };
-
-  handleOverlaySelect = (o: any) => {
-    this.setState({
-      selectedOverlay: o,
-    });
-  };
-
-  handleOverlayOpacityChange = (newOpacity: number) => {
-    this.setState((state) => ({
-      overlayOpacity: {
-        ...state.overlayOpacity,
-        [state.selectedOverlay]: newOpacity,
-      },
-    }));
-  };
-
-  handleExpertModeChange = (e: React.FormEvent<FormControl>) => {
-    this.setState({
-      expertMode: (e.target as HTMLInputElement).checked,
-    });
-  };
-
-  render() {
-    const {
-      onClose,
-      onHomeLocationSelect,
-      selectingHomeLocation,
-      user,
-      language,
-      t,
-    } = this.props;
-    const {
-      homeLocation,
-      expertMode,
-      overlayOpacity,
-      overlayPaneOpacity,
-      eleSmoothingFactor,
-      name,
-      email,
-      preventTips,
-      selectedOverlay,
-    } = this.state;
-
-    const userMadeChanges =
-      ([
-        'homeLocation',
-        'expertMode',
-        'eleSmoothingFactor',
-        'preventTips',
-        'overlayPaneOpacity',
-      ] as const).some((prop) => this.state[prop] !== this.props[prop]) ||
-      (user && (name !== (user.name ?? '') || email !== (user.email ?? ''))) ||
-      overlayLayers.some(
-        ({ type }) =>
-          (overlayOpacity[type] || 1) !==
-          (this.props.overlayOpacity[type] || 1),
-      );
-
-    const selectedOverlayDetails = overlayLayers.find(
-      ({ type }) => type === selectedOverlay,
+  const userMadeChanges =
+    homeLocation !== props.homeLocation ||
+    expertMode !== props.expertMode ||
+    eleSmoothingFactor !== props.eleSmoothingFactor ||
+    preventTips !== props.preventTips ||
+    overlayPaneOpacity !== props.overlayPaneOpacity ||
+    (user && (name !== (user.name ?? '') || email !== (user.email ?? ''))) ||
+    overlayLayers.some(
+      ({ type }) =>
+        (overlayOpacity[type] || 1) !== (props.overlayOpacity[type] || 1),
     );
 
-    const nf0 = Intl.NumberFormat(language, {
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    });
+  const selectedOverlayDetails = overlayLayers.find(
+    ({ type }) => type === selectedOverlay,
+  );
 
-    return (
-      <Modal show={!selectingHomeLocation} onHide={onClose}>
-        <form onSubmit={this.handleSave}>
-          <Modal.Header closeButton>
-            <Modal.Title>
-              <FontAwesomeIcon icon="cog" /> {t('more.settings')}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <Checkbox
-              onChange={this.handleExpertModeChange}
-              checked={expertMode}
+  const nf0 = Intl.NumberFormat(language, {
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  });
+
+  return (
+    <Modal show={!selectingHomeLocation} onHide={onClose}>
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+
+          onSave(
+            homeLocation,
+            overlayOpacity,
+            overlayPaneOpacity,
+            expertMode,
+            eleSmoothingFactor,
+            user
+              ? {
+                  name: name.trim() || null,
+                  email: email.trim() || null,
+                }
+              : null,
+            preventTips,
+          );
+        }}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>
+            <FontAwesomeIcon icon="cog" /> {t('more.settings')}
+          </Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Checkbox
+            onChange={(e) => {
+              setExpertMode((e.target as HTMLInputElement).checked);
+            }}
+            checked={expertMode}
+          >
+            {t('settings.expert.switch')}{' '}
+            <OverlayTrigger
+              placement="right"
+              overlay={
+                <Tooltip id="tooltip">
+                  <div
+                    dangerouslySetInnerHTML={{
+                      __html: t('settings.expertInfo'),
+                    }}
+                  />
+                </Tooltip>
+              }
             >
-              {t('settings.expert.switch')}{' '}
-              <OverlayTrigger
-                placement="right"
-                overlay={
-                  <Tooltip id="tooltip">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: t('settings.expertInfo'),
+              <FontAwesomeIcon icon="question-circle-o" />
+            </OverlayTrigger>
+          </Checkbox>
+          <Tabs id="setting-tabs">
+            <Tab title={t('settings.tab.map')} eventKey={1}>
+              <div>
+                <p>
+                  {t('settings.map.overlayPaneOpacity')}{' '}
+                  {nf0.format(overlayPaneOpacity * 100)}
+                  {' %'}
+                </p>
+                <Slider
+                  value={overlayPaneOpacity}
+                  min={0}
+                  max={1}
+                  step={0.05}
+                  tooltip={false}
+                  onChange={(newValue) => setOverlayPaneOpacity(newValue)}
+                />
+              </div>
+              {expertMode && selectedOverlayDetails && (
+                <>
+                  <hr />
+                  <div>
+                    <p>{t('settings.expert.overlayOpacity')}</p>
+                    <DropdownButton
+                      id="overlayOpacity"
+                      onSelect={(o) => {
+                        setSelectedOverlay(o);
+                      }}
+                      title={
+                        <>
+                          <FontAwesomeIcon icon={selectedOverlayDetails.icon} />{' '}
+                          {t(
+                            `mapLayers.overlay.${selectedOverlayDetails.type}`,
+                          )}{' '}
+                          {nf0.format(
+                            (overlayOpacity[selectedOverlay] || 1) * 100,
+                          )}{' '}
+                          %
+                        </>
+                      }
+                    >
+                      {overlayLayers.map(({ type, icon }) => (
+                        <MenuItem key={type} eventKey={type}>
+                          {icon && <FontAwesomeIcon icon={icon} />}{' '}
+                          {t(`mapLayers.overlay.${type}`)}{' '}
+                          {nf0.format((overlayOpacity[type] || 1) * 100)} %
+                        </MenuItem>
+                      ))}
+                    </DropdownButton>
+                    <Slider
+                      value={overlayOpacity[selectedOverlay] || 1}
+                      min={0.1}
+                      max={1.0}
+                      step={0.1}
+                      tooltip={false}
+                      onChange={(newOpacity) => {
+                        setOverlayOpacity({
+                          ...overlayOpacity,
+                          [selectedOverlay]: newOpacity,
+                        });
                       }}
                     />
-                  </Tooltip>
-                }
+                  </div>
+                </>
+              )}
+              {expertMode && (
+                <>
+                  <hr />
+                  <div>
+                    <p>
+                      {t('settings.expert.trackViewerEleSmoothing.label', {
+                        value: eleSmoothingFactor,
+                      })}
+                    </p>
+                    <Slider
+                      value={eleSmoothingFactor}
+                      min={1}
+                      max={10}
+                      step={1}
+                      tooltip={false}
+                      onChange={(newValue) => setEleSmoothingFactor(newValue)}
+                    />
+                  </div>
+                  <Alert>
+                    {t('settings.expert.trackViewerEleSmoothing.info')}
+                  </Alert>
+                </>
+              )}
+              <hr />
+              <p>
+                {t('settings.map.homeLocation.label')}{' '}
+                {homeLocation
+                  ? latLonToString(homeLocation, language)
+                  : t('settings.map.homeLocation.undefined')}
+              </p>
+              <Button onClick={() => onHomeLocationSelect()}>
+                <FontAwesomeIcon icon="crosshairs" />{' '}
+                {t('settings.map.homeLocation.select')}
+              </Button>
+            </Tab>
+            <Tab title={t('settings.tab.account')} eventKey={2}>
+              {user ? (
+                <>
+                  <FormGroup>
+                    <ControlLabel>{t('settings.account.name')}</ControlLabel>
+                    <FormControl
+                      value={name}
+                      onChange={(e) => {
+                        setName((e.target as HTMLInputElement).value);
+                      }}
+                      required
+                      maxLength={255}
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <ControlLabel>{t('settings.account.email')}</ControlLabel>
+                    <FormControl
+                      type="email"
+                      value={email}
+                      onChange={(e) => {
+                        setEmail((e.target as HTMLInputElement).value);
+                      }}
+                      maxLength={255}
+                    />
+                  </FormGroup>
+                </>
+              ) : (
+                <Alert>{t('settings.account.noAuthInfo')}</Alert>
+              )}
+            </Tab>
+            <Tab title={t('settings.tab.general')} eventKey={3}>
+              <Checkbox
+                onChange={(e) => {
+                  setPreventTips(!(e.target as HTMLInputElement).checked);
+                }}
+                checked={!preventTips}
               >
-                <FontAwesomeIcon icon="question-circle-o" />
-              </OverlayTrigger>
-            </Checkbox>
-            <Tabs id="setting-tabs">
-              <Tab title={t('settings.tab.map')} eventKey={1}>
-                <div>
-                  <p>
-                    {t('settings.map.overlayPaneOpacity')}{' '}
-                    {nf0.format(overlayPaneOpacity * 100)}
-                    {' %'}
-                  </p>
-                  <Slider
-                    value={overlayPaneOpacity}
-                    min={0}
-                    max={1}
-                    step={0.05}
-                    tooltip={false}
-                    onChange={(newValue) =>
-                      this.setState({ overlayPaneOpacity: newValue })
-                    }
-                  />
-                </div>
-                {expertMode && selectedOverlayDetails && (
-                  <>
-                    <hr />
-                    <div>
-                      <p>{t('settings.expert.overlayOpacity')}</p>
-                      <DropdownButton
-                        id="overlayOpacity"
-                        onSelect={this.handleOverlaySelect}
-                        title={
-                          <>
-                            <FontAwesomeIcon
-                              icon={selectedOverlayDetails.icon}
-                            />{' '}
-                            {t(
-                              `mapLayers.overlay.${selectedOverlayDetails.type}`,
-                            )}{' '}
-                            {nf0.format(
-                              (overlayOpacity[selectedOverlay] || 1) * 100,
-                            )}{' '}
-                            %
-                          </>
-                        }
-                      >
-                        {overlayLayers.map(({ type, icon }) => (
-                          <MenuItem key={type} eventKey={type}>
-                            {icon && <FontAwesomeIcon icon={icon} />}{' '}
-                            {t(`mapLayers.overlay.${type}`)}{' '}
-                            {nf0.format((overlayOpacity[type] || 1) * 100)} %
-                          </MenuItem>
-                        ))}
-                      </DropdownButton>
-                      <Slider
-                        value={overlayOpacity[selectedOverlay] || 1}
-                        min={0.1}
-                        max={1.0}
-                        step={0.1}
-                        tooltip={false}
-                        onChange={this.handleOverlayOpacityChange}
-                      />
-                    </div>
-                  </>
-                )}
-                {expertMode && (
-                  <>
-                    <hr />
-                    <div>
-                      <p>
-                        {t('settings.expert.trackViewerEleSmoothing.label', {
-                          value: eleSmoothingFactor,
-                        })}
-                      </p>
-                      <Slider
-                        value={eleSmoothingFactor}
-                        min={1}
-                        max={10}
-                        step={1}
-                        tooltip={false}
-                        onChange={(newValue) =>
-                          this.setState({ eleSmoothingFactor: newValue })
-                        }
-                      />
-                    </div>
-                    <Alert>
-                      {t('settings.expert.trackViewerEleSmoothing.info')}
-                    </Alert>
-                  </>
-                )}
-                <hr />
-                <p>
-                  {t('settings.map.homeLocation.label')}{' '}
-                  {homeLocation
-                    ? latLonToString(homeLocation, language)
-                    : t('settings.map.homeLocation.undefined')}
-                </p>
-                <Button onClick={() => onHomeLocationSelect()}>
-                  <FontAwesomeIcon icon="crosshairs" />{' '}
-                  {t('settings.map.homeLocation.select')}
-                </Button>
-              </Tab>
-              <Tab title={t('settings.tab.account')} eventKey={2}>
-                {user ? (
-                  <>
-                    <FormGroup>
-                      <ControlLabel>{t('settings.account.name')}</ControlLabel>
-                      <FormControl
-                        value={name}
-                        onChange={this.handleNameChange}
-                        required
-                        maxLength={255}
-                      />
-                    </FormGroup>
-                    <FormGroup>
-                      <ControlLabel>{t('settings.account.email')}</ControlLabel>
-                      <FormControl
-                        type="email"
-                        value={email}
-                        onChange={this.handleEmailChange}
-                        maxLength={255}
-                      />
-                    </FormGroup>
-                  </>
-                ) : (
-                  <Alert>{t('settings.account.noAuthInfo')}</Alert>
-                )}
-              </Tab>
-              <Tab title={t('settings.tab.general')} eventKey={3}>
-                <Checkbox
-                  onChange={this.handleShowTipsChange}
-                  checked={!preventTips}
-                >
-                  {t('settings.general.tips')}
-                </Checkbox>
-              </Tab>
-            </Tabs>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
-              <Glyphicon glyph="floppy-disk" /> {t('general.save')}
-            </Button>
-            <Button type="button" onClick={onClose}>
-              <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
-            </Button>
-          </Modal.Footer>
-        </form>
-      </Modal>
-    );
-  }
-}
+                {t('settings.general.tips')}
+              </Checkbox>
+            </Tab>
+          </Tabs>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
+            <Glyphicon glyph="floppy-disk" /> {t('general.save')}
+          </Button>
+          <Button type="button" onClick={onClose}>
+            <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+          </Button>
+        </Modal.Footer>
+      </form>
+    </Modal>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   homeLocation: state.main.homeLocation,

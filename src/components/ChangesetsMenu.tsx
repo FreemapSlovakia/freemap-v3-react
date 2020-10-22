@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 import Form from 'react-bootstrap/lib/Form';
@@ -24,118 +24,91 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-interface State {
-  authorName: string | null;
-  authorNameFromProps: string | null;
-}
+const ChangesetsMenuInt: React.FC<Props> = ({
+  days,
+  t,
+  onChangesetsSetDays,
+  zoom,
+  onChangesetsSetAuthorNameAndRefresh,
+  authorName: propsAuthorName,
+}) => {
+  const [authorName, setAuthorName] = useState<string | null>(null);
 
-class ChangesetsMenuInt extends React.Component<Props> {
-  state: State = {
-    authorName: null,
-    authorNameFromProps: null,
-  };
+  useEffect(() => {
+    setAuthorName(propsAuthorName);
+  }, [propsAuthorName]);
 
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.authorName !== state.authorNameFromProps) {
-      return {
-        authorName: props.authorName,
-        authorNameFromProps: props.authorName,
-      };
-    }
-
-    return null;
-  }
-
-  canSearchWithThisAmountOfDays = (amountOfDays: number) => {
-    if (this.state.authorName) {
-      return true;
-    }
-
-    const { zoom } = this.props;
-
+  const canSearchWithThisAmountOfDays = (amountOfDays: number) => {
     return (
+      !!authorName ||
       (amountOfDays === 3 && zoom >= 9) ||
       (amountOfDays === 7 && zoom >= 10) ||
       (amountOfDays === 14 && zoom >= 11)
     );
   };
 
-  handleAuthorNameChange = (e: React.FormEvent<FormControl>) => {
-    const input = e.target as HTMLInputElement;
-    this.setState({
-      authorName: input.value === '' ? null : input.value,
-    });
-  };
-
-  handleSelect = (d: any) => {
-    if (this.canSearchWithThisAmountOfDays(d)) {
-      this.props.onChangesetsSetDays(d);
-    }
-  };
-
-  handleSubmit = (e: React.FormEvent<Form>) => {
-    e.preventDefault();
-    this.props.onChangesetsSetAuthorNameAndRefresh(
-      this.props.days,
-      this.state.authorName,
-    );
-  };
-
-  render() {
-    const { days, t } = this.props;
-    const { authorName } = this.state;
-
-    return (
-      <>
-        <Form inline onSubmit={this.handleSubmit}>
-          <ButtonGroup>
-            <DropdownButton
-              id="days"
-              onSelect={this.handleSelect}
-              title={t('changesets.olderThanFull', { days })}
+  return (
+    <Form
+      inline
+      onSubmit={(e) => {
+        e.preventDefault();
+        onChangesetsSetAuthorNameAndRefresh(days, authorName);
+      }}
+    >
+      <ButtonGroup>
+        <DropdownButton
+          id="days"
+          onSelect={(d) => {
+            if (canSearchWithThisAmountOfDays(d)) {
+              onChangesetsSetDays(d);
+            }
+          }}
+          title={t('changesets.olderThanFull', { days })}
+        >
+          {[3, 7, 14, 30].map((d) => (
+            <MenuItem
+              key={d}
+              eventKey={d}
+              disabled={!canSearchWithThisAmountOfDays(d)}
             >
-              {[3, 7, 14, 30].map((d) => (
-                <MenuItem
-                  key={d}
-                  eventKey={d}
-                  disabled={!this.canSearchWithThisAmountOfDays(d)}
-                >
-                  {t('changesets.olderThan', { days: d })}
-                </MenuItem>
-              ))}
-            </DropdownButton>
-          </ButtonGroup>{' '}
-          <FormGroup>
-            <InputGroup>
-              <FormControl
-                type="text"
-                placeholder={t('changesets.allAuthors')}
-                onChange={this.handleAuthorNameChange}
-                value={authorName ?? ''}
-              />
-              <InputGroup.Button>
-                <Button
-                  disabled={!authorName}
-                  onClick={() => this.setState({ authorName: null })}
-                >
-                  <FontAwesomeIcon icon="times" />
-                </Button>
-              </InputGroup.Button>
-            </InputGroup>
-          </FormGroup>{' '}
-          <Button
-            type="submit"
-            disabled={!this.canSearchWithThisAmountOfDays(days)}
-            title={t('changesets.download')}
-          >
-            <FontAwesomeIcon icon="refresh" />
-            <span className="hidden-xs"> {t('changesets.download')}</span>
-          </Button>
-        </Form>
-      </>
-    );
-  }
-}
+              {t('changesets.olderThan', { days: d })}
+            </MenuItem>
+          ))}
+        </DropdownButton>
+      </ButtonGroup>{' '}
+      <FormGroup>
+        <InputGroup>
+          <FormControl
+            type="text"
+            placeholder={t('changesets.allAuthors')}
+            onChange={(e) => {
+              setAuthorName((e.target as HTMLInputElement).value || null);
+            }}
+            value={authorName ?? ''}
+          />
+          <InputGroup.Button>
+            <Button
+              disabled={!authorName}
+              onClick={() => {
+                setAuthorName(null);
+              }}
+            >
+              <FontAwesomeIcon icon="times" />
+            </Button>
+          </InputGroup.Button>
+        </InputGroup>
+      </FormGroup>{' '}
+      <Button
+        type="submit"
+        disabled={!canSearchWithThisAmountOfDays(days)}
+        title={t('changesets.download')}
+      >
+        <FontAwesomeIcon icon="refresh" />
+        <span className="hidden-xs"> {t('changesets.download')}</span>
+      </Button>
+    </Form>
+  );
+};
 
 const mapStateToProps = (state: RootState) => ({
   days: state.changesets.days || 3,
