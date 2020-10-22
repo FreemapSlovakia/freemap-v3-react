@@ -936,18 +936,8 @@ export default {
 
   gpxExport: {
     export: 'Letöltés',
-    exportToDrive: () => (
-      <>
-        Mentés Google Drive-ra{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
-    exportToDropbox: () => (
-      <>
-        Mentés Dropbox-ba{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
+    exportToDrive: 'Mentés Google Drive-ra',
+    exportToDropbox: 'Mentés Dropbox-ba',
     exportError: 'Hiba a GPX exportálásakor: {err}',
     what: {
       plannedRoute: 'útvonal',

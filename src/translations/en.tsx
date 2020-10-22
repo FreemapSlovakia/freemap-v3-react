@@ -926,18 +926,8 @@ export default {
 
   gpxExport: {
     export: 'Download',
-    exportToDrive: () => (
-      <>
-        Save to Google Drive{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
-    exportToDropbox: () => (
-      <>
-        Save to Dropbox{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
+    exportToDrive: 'Save to Google Drive',
+    exportToDropbox: 'Save to Dropbox',
     exportError: 'Error exporting GPX: {err}',
     what: {
       plannedRoute: 'found route',

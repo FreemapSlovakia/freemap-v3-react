@@ -927,18 +927,8 @@ export default {
 
   gpxExport: {
     export: 'Stáhnout',
-    exportToDrive: () => (
-      <>
-        Uložit do Google Drive{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
-    exportToDropbox: () => (
-      <>
-        Uložit do Dropboxu{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
+    exportToDrive: 'Uložit do Google Drive',
+    exportToDropbox: 'Uložit do Dropboxu',
     exportError: 'Chyba exportu GPX: {err}',
     what: {
       plannedRoute: 'vyhledanou trasu',
