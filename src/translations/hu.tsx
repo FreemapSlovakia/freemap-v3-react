@@ -76,11 +76,7 @@ export default {
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
-    tracking: () => (
-      <>
-        Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
+    tracking: 'Live tracking',
     maps: () => (
       <>
         Saját térképeim{' '}

@@ -75,11 +75,7 @@ export default {
     trackViewer: 'Prohlížeč tras (GPX)',
     changesets: 'Změny mapě',
     mapDetails: 'Detaily v mapě',
-    tracking: () => (
-      <>
-        Sledování <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
+    tracking: 'Sledování',
     maps: () => (
       <>
         Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />

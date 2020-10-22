@@ -75,11 +75,7 @@ export default {
     trackViewer: 'Track viewer (GPX)',
     changesets: 'Map changes',
     mapDetails: 'Map details',
-    tracking: () => (
-      <>
-        Live tracking <FontAwesomeIcon icon="flask" className="text-warning" />
-      </>
-    ),
+    tracking: 'Live tracking',
     maps: () => (
       <>
         My maps <FontAwesomeIcon icon="flask" className="text-warning" />
