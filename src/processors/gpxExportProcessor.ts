@@ -208,7 +208,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
             }),
           },
           data: new Blob([serializer.serializeToString(doc)], {
-            type: 'application/gpx+xml',
+            type: 'application/octet-stream', // NOTE 'application/gpx+xml' is denied
           }),
           expectedStatus: 200,
         });
