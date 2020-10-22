@@ -3,9 +3,11 @@ import { connect } from 'react-redux';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
-import { GalleryViewerModal } from 'fm3/components/gallery/GalleryViewerModal';
-import { GalleryFilterModal } from 'fm3/components/gallery/GalleryFilterModal';
-import { AsyncGalleryUploadModal } from 'fm3/components/gallery/AsyncGalleryUploadModal';
+import {
+  AsyncGalleryFilterModal,
+  AsyncGalleryViewerModal,
+  AsyncGalleryUploadModal,
+} from 'fm3/components/AsyncComponents';
 
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';
@@ -43,8 +45,8 @@ const GalleryModalsInt: React.FC<Props> = ({
 
   return (
     <>
-      {showGalleryViewer && <GalleryViewerModal />}
-      {showFilter && <GalleryFilterModal />}
+      {showGalleryViewer && <AsyncGalleryViewerModal />}
+      {showFilter && <AsyncGalleryFilterModal />}
       {showUploadModal && <AsyncGalleryUploadModal />}
     </>
   );

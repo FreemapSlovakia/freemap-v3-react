@@ -120,3 +120,75 @@ export const AsyncSupportUsModal: React.FC = () => (
     <SupportUsModal />
   </Suspense>
 );
+
+const GalleryUploadModal = lazy(() =>
+  import(
+    /* webpackChunkName: "galleryUploadModal" */ 'fm3/components/gallery/GalleryUploadModal'
+  ).then(({ GalleryUploadModal }) => ({ default: GalleryUploadModal })),
+);
+
+export const AsyncGalleryUploadModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <GalleryUploadModal />
+  </Suspense>
+);
+
+const GalleryViewerModal = lazy(() =>
+  import(
+    /* webpackChunkName: "galleryViewerModal" */ 'fm3/components/gallery/GalleryViewerModal'
+  ).then(({ GalleryViewerModal }) => ({ default: GalleryViewerModal })),
+);
+
+export const AsyncGalleryViewerModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <GalleryViewerModal />
+  </Suspense>
+);
+
+const GalleryFilterModal = lazy(() =>
+  import(
+    /* webpackChunkName: "galleryFilterModal" */ 'fm3/components/gallery/GalleryFilterModal'
+  ).then(({ GalleryFilterModal }) => ({ default: GalleryFilterModal })),
+);
+
+export const AsyncGalleryFilterModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <GalleryFilterModal />
+  </Suspense>
+);
+
+const TrackingModal = lazy(() =>
+  import(
+    /* webpackChunkName: "trackingModal" */ 'fm3/components/tracking/TrackingModal'
+  ).then(({ TrackingModal }) => ({ default: TrackingModal })),
+);
+
+export const AsyncTrackingModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <TrackingModal />
+  </Suspense>
+);
+
+const DrawingEditLabelModal = lazy(() =>
+  import(
+    /* webpackChunkName: "drawingEditLabelModal" */ 'fm3/components/DrawingEditLabelModal'
+  ).then(({ DrawingEditLabelModal }) => ({ default: DrawingEditLabelModal })),
+);
+
+export const AsyncDrawingEditLabelModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <DrawingEditLabelModal />
+  </Suspense>
+);
+
+const TrackViewerUploadModal = lazy(() =>
+  import(
+    /* webpackChunkName: "trackViewerUploadModal" */ 'fm3/components/TrackViewerUploadModal'
+  ).then(({ TrackViewerUploadModal }) => ({ default: TrackViewerUploadModal })),
+);
+
+export const AsyncTrackViewerUploadModal: React.FC = () => (
+  <Suspense fallback={<AsyncLoadingIndicator />}>
+    <TrackViewerUploadModal />
+  </Suspense>
+);

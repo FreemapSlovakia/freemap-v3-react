@@ -30,7 +30,6 @@ import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
-import { TrackViewerUploadModal } from 'fm3/components/TrackViewerUploadModal';
 
 import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
@@ -44,7 +43,6 @@ import { MapControls } from 'fm3/components/MapControls';
 import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
 
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-import { DrawingEditLabelModal } from 'fm3/components/DrawingEditLabelModal';
 
 import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
@@ -62,6 +60,9 @@ import {
   AsyncTipsModal,
   AsyncAboutModal,
   AsyncSupportUsModal,
+  AsyncTrackingModal,
+  AsyncDrawingEditLabelModal,
+  AsyncTrackViewerUploadModal,
 } from 'fm3/components/AsyncComponents';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
@@ -77,7 +78,6 @@ import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
 import 'fm3/styles/main.scss';
 import 'fm3/styles/leaflet.scss';
-import { TrackingModal } from 'fm3/components/tracking/TrackingModal';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
 import { RootState } from 'fm3/storeCreator';
@@ -334,7 +334,7 @@ const MainInt: React.FC<Props> = ({
         [
           ...(isUserValidated ? ['tracking-my'] : []),
           'tracking-watched',
-        ].includes(activeModal) && <TrackingModal />}
+        ].includes(activeModal) && <AsyncTrackingModal />}
       {activeModal === 'embed' && <AsyncEmbedMapModal />}
       {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
       {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
@@ -343,8 +343,8 @@ const MainInt: React.FC<Props> = ({
       {activeModal === 'supportUs' && <AsyncSupportUsModal />}
       {activeModal === 'legend' &&
         (mapType === 'X' ? <AsyncLegendOutdoorModal /> : <AsyncLegendModal />)}
-      {activeModal === 'edit-label' && <DrawingEditLabelModal />}
-      {activeModal === 'upload-track' && <TrackViewerUploadModal />}
+      {activeModal === 'edit-label' && <AsyncDrawingEditLabelModal />}
+      {activeModal === 'upload-track' && <AsyncTrackViewerUploadModal />}
       {showLoginModal && <AsyncLoginModal />}
       <GalleryModals />
 
