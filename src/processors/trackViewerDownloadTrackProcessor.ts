@@ -2,9 +2,9 @@ import {
   trackViewerSetData,
   trackViewerDownloadTrack,
 } from 'fm3/actions/trackViewerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { assertType } from 'typescript-is';
 
 export const trackViewerDownloadTrackProcessor: Processor = {
   actionCreator: trackViewerDownloadTrack,
@@ -18,20 +18,10 @@ export const trackViewerDownloadTrackProcessor: Processor = {
       url: `/tracklogs/${trackUID}`,
     });
 
-    if (data.error) {
-      // TODO ???
-      dispatch(
-        toastsAdd({
-          id: 'trackViewer.fetchingError',
-          messageKey: 'trackViewer.fetchingError',
-          messageParams: {
-            err: data.error.toString(),
-          },
-        }),
-      );
-    } else {
-      const trackGpx = atob(data.data);
-      dispatch(trackViewerSetData({ trackGpx }));
-    }
+    dispatch(
+      trackViewerSetData({
+        trackGpx: atob(assertType<{ data: string }>(data).data),
+      }),
+    );
   },
 };

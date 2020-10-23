@@ -4,6 +4,8 @@ import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadNode } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';
+import { assertType } from 'typescript-is';
+import { OsmResult, OsmNode } from 'fm3/types/common';
 
 export const osmLoadNodeProcessor: Processor = {
   actionCreator: osmLoadNode,
@@ -18,9 +20,9 @@ export const osmLoadNodeProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const nodes = data.elements
-      .filter((el) => el.type === 'node')
-      .map((node) => [node.lon, node.lat]);
+    const nodes = (assertType<OsmResult>(data).elements.filter(
+      (el) => el.type === 'node',
+    ) as OsmNode[]).map((node) => [node.lon, node.lat]);
 
     dispatch(
       trackViewerSetData({

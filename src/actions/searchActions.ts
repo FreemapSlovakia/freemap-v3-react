@@ -9,7 +9,7 @@ export interface SearchResult {
   lon: number;
   class?: string;
   type?: string;
-  osmType?: string;
+  osmType?: 'node' | 'way' | 'relation';
 }
 
 export const searchSetQuery = createAction('SEARCH_SET_QUERY')<{

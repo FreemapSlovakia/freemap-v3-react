@@ -53,3 +53,46 @@ export type StringDates<T> = {
     ? string | null
     : StringDates<T[K]>;
 };
+
+export interface OverpassElement {
+  id: number;
+  tags: {
+    [key: string]: string;
+  };
+  type: 'way' | 'node' | 'relation';
+  geometry?: any; // TODO per type
+  center?: {
+    lat: number;
+    lon: number;
+  };
+  lat: number;
+  lon: number;
+}
+
+export interface OverpassResult {
+  elements?: OverpassElement[];
+}
+
+interface OsmElement {
+  id: number;
+}
+
+export interface OsmNode extends OsmElement {
+  type: 'node';
+  lat: number;
+  lon: number;
+}
+
+export interface OsmWay extends OsmElement {
+  type: 'way';
+  nodes: number[];
+}
+
+export interface OsmRelation extends OsmElement {
+  type: 'relation';
+  members: { type: 'node' | 'way' | 'relation'; ref: number }[];
+}
+
+export interface OsmResult {
+  elements: (OsmNode | OsmWay | OsmRelation)[];
+}

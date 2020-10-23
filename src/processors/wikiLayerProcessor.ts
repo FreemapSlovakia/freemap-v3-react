@@ -5,6 +5,18 @@ import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { isActionOf } from 'typesafe-actions';
+import { assertType } from 'typescript-is';
+import { OverpassResult } from 'fm3/types/common';
+
+interface WikiResponse {
+  entities?: {
+    [key: string]: {
+      type: 'item';
+      id: string;
+      sitelinks: { [key: string]: { site: string; title: string } };
+    };
+  };
+}
 
 let prev = false;
 
@@ -98,11 +110,13 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus],
     });
 
+    const okData = assertType<OverpassResult>(data);
+
     const m = new Map<string, any>();
 
     const wikidatas: string[] = [];
 
-    for (const e of data.elements) {
+    for (const e of okData.elements || []) {
       if (e.tags.wikipedia) {
         e.tags.wikipedia = decodeURIComponent(
           e.tags.wikipedia.replace(/_/g, ' '),
@@ -157,12 +171,14 @@ export const wikiLayerProcessor: Processor = {
       cancelActions: [mapRefocus],
     });
 
-    for (const e of data.elements) {
+    const okData1 = assertType<WikiResponse>(data1);
+
+    for (const e of okData.elements || []) {
       if (e.tags.wikipedia) {
         continue;
       }
 
-      const sitelinks = data1.entities?.[e.tags.wikidata]?.sitelinks;
+      const sitelinks = okData1.entities?.[e.tags.wikidata]?.sitelinks;
 
       if (!sitelinks) {
         continue;

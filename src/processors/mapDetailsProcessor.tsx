@@ -10,20 +10,7 @@ import { httpRequest } from 'fm3/authAxios';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-
-interface Element {
-  id: number;
-  tags: {
-    [key: string]: string;
-  };
-  timestamp: string;
-  type: 'way' | 'node' | 'relation';
-  geometry: any; // TODO per type
-}
-
-interface OverpassResult {
-  elements?: Element[];
-}
+import { OverpassResult } from 'fm3/types/common';
 
 const mappings = {
   way: (element) =>
