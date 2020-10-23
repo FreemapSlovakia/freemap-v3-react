@@ -56,14 +56,14 @@ export function splitAndSubstitute(
 }
 
 export interface Translations {
-  [key: string]: Translations | string | ((...params: any[]) => string);
+  [key: string]: Translations | string | ((...params: unknown[]) => string);
 }
 
 export function translate(
   translations: Translations | undefined,
   key: string,
   dflt = '',
-): string | ((...params: any[]) => string) {
+): string | ((...params: unknown[]) => string) {
   if (!translations) {
     return '…';
   }

@@ -5,6 +5,19 @@ import { objectsSetResult, objectsSetFilter } from 'fm3/actions/objectsActions';
 import { selectFeature, clearMap } from 'fm3/actions/mainActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { assertType } from 'typescript-is';
+
+interface OverpassElement {
+  id: number;
+  center?: {
+    lat: number;
+    lon: number;
+  };
+  lat: number;
+  lon: number;
+  tags: { [key: string]: string };
+  typeId: number;
+}
 
 export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
   actionCreator: objectsSetFilter,
@@ -38,7 +51,9 @@ export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
       cancelActions: [objectsSetFilter, clearMap, selectFeature],
     });
 
-    const result = data.elements.map(({ id, center, tags, lat, lon }) => ({
+    const result = assertType<{ elements: OverpassElement[] }>(
+      data,
+    ).elements.map(({ id, center, tags, lat, lon }) => ({
       id,
       lat: center?.lat ?? lat,
       lon: center?.lon ?? lon,

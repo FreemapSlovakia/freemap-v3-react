@@ -34,7 +34,7 @@ export const poiTypes = subcategories.map(
 const poiTypesMap = new Map<number, typeof poiTypes[0]>();
 poiTypes.forEach((pt) => poiTypesMap.set(pt.id, pt));
 
-export function getPoiType(id: number) {
+export function getPoiType(id: number): typeof poiTypes[0] | undefined {
   return poiTypesMap.get(id);
 }
 

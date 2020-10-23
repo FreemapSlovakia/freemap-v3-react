@@ -25,13 +25,12 @@ import {
   routePlannerToggleMilestones,
   Alternative,
   Waypoint,
+  PickMode,
 } from 'fm3/actions/routePlannerActions';
 import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
-
-export type PickMode = 'start' | 'finish';
 
 export interface RoutePlannerState {
   alternatives: Alternative[];

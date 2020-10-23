@@ -72,15 +72,17 @@ export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(
   location: Location,
-) {
+): { lat: number; lon: number; label: string } | null {
   if (location.search && location.search.indexOf('markerLat') >= 0) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
+
     return {
       lat: parseFloat(oldFreemapUrlParams.markerLat),
       lon: parseFloat(oldFreemapUrlParams.markerLon),
       label: oldFreemapUrlParams.markerHtml,
     };
   }
+
   return null;
 }
 

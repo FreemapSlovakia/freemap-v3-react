@@ -3,6 +3,7 @@ import { mapsCreate, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { getMapDataFromState } from './mapsSaveProcessor';
 import { translate } from 'fm3/stringUtils';
+import { assertType } from 'typescript-is';
 
 export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
   actionCreator: mapsCreate,
@@ -29,6 +30,9 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
     });
 
     dispatch(mapsLoadList());
-    dispatch(mapsLoad({ id: data.id })); // TODO skip loading in this case
+
+    const okData = assertType<{ id: number }>(data);
+
+    dispatch(mapsLoad({ id: okData.id })); // TODO skip loading in this case
   },
 };

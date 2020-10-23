@@ -1,6 +1,9 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { assertType } from 'typescript-is';
+import { StringDates } from 'fm3/types/common';
+import { AccessToken } from 'fm3/types/trackingTypes';
 
 export const saveAccessTokenProcessor: Processor<typeof trackingActions.saveAccessToken> = {
   actionCreator: trackingActions.saveAccessToken,
@@ -44,13 +47,18 @@ export const loadAccessTokensProcessor: Processor<typeof trackingActions.loadAcc
       }/access-tokens`,
     });
 
-    for (const accessToken of data) {
-      for (const field of ['createdAt', 'timeFrom', 'timeTo']) {
-        accessToken[field] = accessToken[field] && new Date(accessToken[field]);
-      }
-    }
+    const okData = assertType<StringDates<AccessToken[]>>(data);
 
-    dispatch(trackingActions.setAccessTokens(data));
+    dispatch(
+      trackingActions.setAccessTokens(
+        okData.map((item) => ({
+          ...item,
+          createdAt: new Date(item.createdAt),
+          timeFrom: item.timeFrom === null ? null : new Date(item.timeFrom),
+          timeTo: item.timeTo === null ? null : new Date(item.timeTo),
+        })),
+      ),
+    );
   },
 };
 

@@ -6,6 +6,7 @@ import {
 import { createFilter } from 'fm3/galleryUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { assertType } from 'typescript-is';
 
 export const galleryRequestImagesByOrderProcessor: Processor<typeof galleryList> = {
   actionCreator: galleryList,
@@ -24,8 +25,10 @@ export const galleryRequestImagesByOrderProcessor: Processor<typeof galleryList>
       expectedStatus: 200,
     });
 
-    const ids = data.map((item) => item.id);
+    const ids = assertType<{ id: number }[]>(data).map((item) => item.id);
+
     dispatch(gallerySetImageIds(ids));
+
     if (ids.length) {
       dispatch(galleryRequestImage(ids[0]));
     }

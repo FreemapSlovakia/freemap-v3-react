@@ -1,8 +1,9 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsLoadList, mapsSetList } from 'fm3/actions/mapsActions';
+import { MapMeta, mapsLoadList, mapsSetList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { isActionOf } from 'typesafe-actions';
+import { assertType } from 'typescript-is';
 
 export const mapsLoadListProcessor: Processor<
   typeof selectFeature | typeof mapsLoadList
@@ -19,7 +20,7 @@ export const mapsLoadListProcessor: Processor<
           expectedStatus: 200,
         });
 
-        dispatch(mapsSetList(data));
+        dispatch(mapsSetList(assertType<MapMeta[]>(data)));
       } else {
         dispatch(mapsSetList([]));
       }

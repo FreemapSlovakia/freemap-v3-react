@@ -1,9 +1,15 @@
-import axios, { AxiosRequestConfig, CancelTokenSource, Canceler } from 'axios';
+import axios, {
+  AxiosRequestConfig,
+  CancelTokenSource,
+  Canceler,
+  AxiosInstance,
+  AxiosResponse,
+} from 'axios';
 import { RootState } from './storeCreator';
 import { setActiveModal, clearMap, selectFeature } from './actions/mainActions';
 import { ActionCreator } from 'typesafe-actions';
 
-export function getAxios(expectedStatus?: number | number[]) {
+export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
   const cfg: AxiosRequestConfig = {
     baseURL: process.env.API_URL,
   };
@@ -18,7 +24,7 @@ export function getAxios(expectedStatus?: number | number[]) {
 export function getAuthAxios(
   getState: () => RootState,
   expectedStatus?: number | number[],
-) {
+): AxiosInstance {
   const instance = getAxios(expectedStatus);
 
   instance.interceptors.request.use((cfg) => {
@@ -55,7 +61,7 @@ export async function httpRequest({
   expectedStatus,
   cancelActions = [selectFeature, clearMap, setActiveModal],
   ...rest
-}: HttpRequestParams) {
+}: HttpRequestParams): Promise<AxiosResponse<unknown>> {
   let source: CancelTokenSource | undefined;
   let cancelItem: CancelItem | undefined;
 
@@ -77,7 +83,7 @@ export async function httpRequest({
 
   try {
     if (!rest.url || /^(https?:)?\/\//.test(rest.url)) {
-      return await getAxios(expectedStatus).request(params);
+      return await getAxios(expectedStatus).request<unknown>(params);
     } else {
       return await getAuthAxios(getState, expectedStatus).request(params);
     }

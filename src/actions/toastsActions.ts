@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, PayloadAction } from 'typesafe-actions';
 import { RootAction } from '.';
 
 export interface ToastAction {
@@ -48,7 +48,7 @@ export function toastsAddError(
   messageKey?: string,
   err?: Error,
   params: { [key: string]: any } = {},
-) {
+): PayloadAction<'TOASTS_ADD', ResolvedToast> {
   return toastsAdd({
     id: Math.random().toString(36).slice(2),
     messageKey,

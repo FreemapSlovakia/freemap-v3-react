@@ -1,20 +1,25 @@
+import { PickMode } from 'fm3/actions/routePlannerActions';
 import { RootState } from 'fm3/storeCreator';
+import { Track } from 'fm3/types/trackingTypes';
 import { createSelector } from 'reselect';
 
-export const toolSelector = (state: RootState) => state.main.selection?.type;
+export const toolSelector = (state: RootState): Selection['type'] | undefined =>
+  state.main.selection?.type;
 
-export const mapOverlaysSelector = (state: RootState) => state.map.overlays;
+export const mapOverlaysSelector = (state: RootState): string[] =>
+  state.map.overlays;
 
-export const selectingHomeLocationSelector = (state: RootState) =>
+export const selectingHomeLocationSelector = (state: RootState): boolean =>
   state.main.selectingHomeLocation;
 
-export const routePlannerPickModeSelector = (state: RootState) =>
+export const routePlannerPickModeSelector = (state: RootState): PickMode =>
   state.routePlanner.pickMode;
 
-export const galleryPickingPositionForIdSelector = (state: RootState) =>
-  state.gallery.pickingPositionForId;
+export const galleryPickingPositionForIdSelector = (
+  state: RootState,
+): number | null => state.gallery.pickingPositionForId;
 
-export const galleryShowPositionSelector = (state: RootState) =>
+export const galleryShowPositionSelector = (state: RootState): boolean =>
   state.gallery.showPosition;
 
 export const showGalleryPickerSelector = createSelector(
@@ -38,9 +43,9 @@ export const showGalleryPickerSelector = createSelector(
     !selectingHomeLocation,
 );
 
-export const showGalleryViewer = (state: RootState) =>
-  !state.gallery.pickingPositionForId &&
-  state.gallery.activeImageId &&
+export const showGalleryViewer = (state: RootState): boolean =>
+  state.gallery.pickingPositionForId !== null &&
+  state.gallery.activeImageId !== null &&
   !state.gallery.showPosition;
 
 export const mouseCursorSelector = createSelector(
@@ -67,11 +72,15 @@ export const mouseCursorSelector = createSelector(
 
 ////
 
-export const trackingTracksSelector = (state: RootState) =>
+export const trackingTracksSelector = (state: RootState): Track[] =>
   state.tracking.tracks;
 
-export const trackingActiveTrackIdSelector = (state: RootState) =>
-  state.main.selection?.type === 'tracking' && state.main.selection?.id;
+export const trackingActiveTrackIdSelector = (
+  state: RootState,
+): string | number | undefined =>
+  state.main.selection?.type === 'tracking'
+    ? state.main.selection.id
+    : undefined;
 
 export const trackingTrackSelector = createSelector(
   trackingTracksSelector,

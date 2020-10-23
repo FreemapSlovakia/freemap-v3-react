@@ -203,8 +203,10 @@ processors.push(
   urlProcessor,
 );
 
-export function createReduxStore() {
-  const store = createStore(
+export type MyStore = Store<RootState, RootAction>;
+
+export function createReduxStore(): MyStore {
+  return createStore(
     rootReducer as CR,
     composeWithDevTools(
       applyMiddleware(
@@ -217,8 +219,4 @@ export function createReduxStore() {
       ),
     ),
   );
-
-  return store;
 }
-
-export type MyStore = Store<RootState, RootAction>;

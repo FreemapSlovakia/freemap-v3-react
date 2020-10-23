@@ -8,13 +8,13 @@ import { DrawingPoint } from './drawingPointActions';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
 import { MapState } from 'fm3/reducers/mapReducer';
 
-export type MapMeta = {
+export interface MapMeta {
   id: number;
   name: string;
   public: boolean;
-};
+}
 
-export type MapData = {
+export interface MapData {
   lines?: Line[];
   points?: DrawingPoint[];
   objects?: ObjectsResult[];
@@ -31,8 +31,10 @@ export type MapData = {
   >;
   galleryFilter?: GalleryFilter;
   trackViewer?: TrackViewerState;
-  map?: Pick<MapState, 'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays'>;
-};
+  map?: Partial<
+    Pick<MapState, 'mapType' | 'lat' | 'lon' | 'zoom' | 'overlays'>
+  >;
+}
 
 export const mapsLoad = createAction('MAPS_LOAD')<{
   id?: number | undefined;

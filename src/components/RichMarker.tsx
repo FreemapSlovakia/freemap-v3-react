@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo } from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
-import { divIcon } from 'leaflet';
+import { DivIcon, divIcon } from 'leaflet';
 
 interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;
@@ -36,7 +36,7 @@ export const RichMarker: React.FC<Props> = ({
   return <Marker {...restProps} icon={icon} ref={markerRef} />;
 };
 
-export function createMarkerIcon(props: IconProps = {}) {
+export function createMarkerIcon(props: IconProps = {}): DivIcon {
   const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = props;
 
   const gradinentDef = `<defs>

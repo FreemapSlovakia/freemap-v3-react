@@ -1,6 +1,8 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { Device } from 'fm3/types/trackingTypes';
+import { assertType } from 'typescript-is';
 
 export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> = {
   actionCreator: trackingActions.saveDevice,
@@ -15,6 +17,7 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
         url: `/tracking/devices/${modifiedDeviceId}`,
         data: action.payload,
       });
+
       dispatch(trackingActions.modifyDevice(undefined));
     } else {
       await httpRequest({
@@ -23,6 +26,7 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
         url: '/tracking/devices',
         data: action.payload,
       });
+
       dispatch(trackingActions.modifyDevice(undefined));
     }
   },
@@ -37,6 +41,7 @@ export const loadDevicesProcessor: Processor<typeof trackingActions.loadDevices>
       method: 'GET',
       url: '/tracking/devices',
     });
+
     if (Array.isArray(data)) {
       for (const device of data) {
         if (device && typeof device === 'object') {
@@ -44,7 +49,8 @@ export const loadDevicesProcessor: Processor<typeof trackingActions.loadDevices>
         }
       }
     }
-    dispatch(trackingActions.setDevices(data));
+
+    dispatch(trackingActions.setDevices(assertType<Device[]>(data)));
   },
 };
 
@@ -58,6 +64,7 @@ export const deleteDeviceProcessor: Processor<typeof trackingActions.deleteDevic
       url: `/tracking/devices/${encodeURIComponent(action.payload)}`,
       expectedStatus: 204,
     });
+
     dispatch(trackingActions.loadDevices());
   },
 };

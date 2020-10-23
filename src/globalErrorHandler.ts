@@ -5,7 +5,7 @@ import { MyStore } from './storeCreator';
 
 let store: MyStore;
 
-export function setStore(s: MyStore) {
+export function setStore(s: MyStore): void {
   store = s;
 }
 
@@ -44,7 +44,7 @@ interface ErrorDetails {
   colno?: number;
 }
 
-export function sendError(errDetails: ErrorDetails) {
+export function sendError(errDetails: ErrorDetails): void {
   // filter out old browsers
   if (!Array.prototype.flatMap) {
     return;

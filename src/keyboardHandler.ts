@@ -30,7 +30,7 @@ import { toolDefinitions } from './toolDefinitions';
 let keyTimer: number | null = null;
 let initKey: 'e' | 'g' | null = null;
 
-export function attachKeyboardHandler(store: MyStore) {
+export function attachKeyboardHandler(store: MyStore): void {
   document.addEventListener('keydown', (event: KeyboardEvent) => {
     const embed = window.self !== window.top;
 

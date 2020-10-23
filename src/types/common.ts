@@ -45,3 +45,11 @@ export interface AppState {
   language: string | null;
   routePlanner: Pick<RoutePlannerState, 'transportType'>;
 }
+
+export type StringDates<T> = {
+  [K in keyof T]: T[K] extends Date
+    ? string
+    : T[K] extends Date | null
+    ? string | null
+    : StringDates<T[K]>;
+};

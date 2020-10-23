@@ -86,7 +86,7 @@ export function usePictureDropHandler(
   language: string,
   onItemAdd: (item: GalleryItem) => void,
   onItemChange: (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => void,
-) {
+): (files: File[]) => void {
   const processFile = useCallback(
     (file: File, cb: (err?: any) => void) => {
       const reader = new FileReader();

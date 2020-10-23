@@ -56,7 +56,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     this.state.iframeUrl = this.getUrl(window.location.href);
   }
 
-  componentDidUpdate() {
+  componentDidUpdate(): void {
     if (this.iframe?.contentWindow) {
       this.iframe.contentWindow.postMessage(
         {
@@ -70,7 +70,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     }
   }
 
-  setFormControl = (textarea: HTMLInputElement | null) => {
+  setFormControl = (textarea: HTMLInputElement | null): void => {
     this.textarea = textarea;
     setTimeout(() => {
       if (textarea) {
@@ -79,7 +79,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     });
   };
 
-  handleCopyClick = () => {
+  handleCopyClick = (): void => {
     if (this.textarea) {
       this.textarea.focus();
       setTimeout(() => {
@@ -91,25 +91,25 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     }
   };
 
-  handleWidthChange = (e: React.FormEvent<FormControl>) => {
+  handleWidthChange = (e: React.FormEvent<FormControl>): void => {
     this.setState({
       width: (e.target as HTMLInputElement).value,
     });
   };
 
-  handleHeightChange = (e: React.FormEvent<FormControl>) => {
+  handleHeightChange = (e: React.FormEvent<FormControl>): void => {
     this.setState({
       height: (e.target as HTMLInputElement).value,
     });
   };
 
-  adjustUrl = () => {
+  adjustUrl = (): void => {
     this.setState({
       url: this.getUrl(this.state.url),
     });
   };
 
-  handleEnableSearchChange = (e: React.FormEvent<Checkbox>) => {
+  handleEnableSearchChange = (e: React.FormEvent<Checkbox>): void => {
     this.setState(
       {
         enableSearch: (e.target as HTMLInputElement).checked,
@@ -118,7 +118,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     );
   };
 
-  handleEnableMapSwitchChange = (e: React.FormEvent<Checkbox>) => {
+  handleEnableMapSwitchChange = (e: React.FormEvent<Checkbox>): void => {
     this.setState(
       {
         enableMapSwitch: (e.target as HTMLInputElement).checked,
@@ -127,7 +127,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     );
   };
 
-  handleEnableLocateMeChange = (e: React.FormEvent<Checkbox>) => {
+  handleEnableLocateMeChange = (e: React.FormEvent<Checkbox>): void => {
     this.setState(
       {
         enableLocateMe: (e.target as HTMLInputElement).checked,
@@ -136,7 +136,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     );
   };
 
-  setIframe = (ref: HTMLIFrameElement | null) => {
+  setIframe = (ref: HTMLIFrameElement | null): void => {
     this.iframe = ref;
     if (ref) {
       this.timerRef = window.setInterval(() => {
@@ -158,17 +158,17 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     }
   };
 
-  getEmbedFeatures = () => {
+  getEmbedFeatures = (): string[] => {
     const { enableSearch, enableMapSwitch, enableLocateMe } = this.state;
 
     return [
       enableSearch && 'search',
       !enableMapSwitch && 'noMapSwitch',
       !enableLocateMe && 'noLocateMe',
-    ].filter((x) => x);
+    ].filter((x) => x) as string[];
   };
 
-  getUrl = (url: string) => {
+  getUrl = (url: string): string => {
     const embedFeatures = this.getEmbedFeatures();
 
     return `${url.replace(/&(show|embed)=[^&]*/, '')}${

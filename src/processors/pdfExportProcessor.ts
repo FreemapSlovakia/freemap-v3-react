@@ -11,6 +11,7 @@ import {
   FeatureCollection,
   Geometry,
 } from '@turf/helpers';
+import { assertType } from 'typescript-is';
 
 const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
@@ -194,6 +195,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       expectedStatus: 200,
     });
 
+    const okData = assertType<{ token: string }>(data);
+
     dispatch(setActiveModal(null));
 
     dispatch(
@@ -211,7 +214,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           method: 'HEAD',
           url: `${fmMapserverUrl}/export`,
           params: {
-            token: data.token,
+            token: okData.token,
           },
           expectedStatus: 200,
         });
@@ -229,7 +232,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         id: 'pdfExport.export',
         messageKey: 'pdfExport.exported',
         messageParams: {
-          url: `${fmMapserverUrl}/export?token=${data.token}`,
+          url: `${fmMapserverUrl}/export?token=${okData.token}`,
         },
         style: 'info',
       }),
