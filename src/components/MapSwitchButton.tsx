@@ -56,10 +56,12 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: any) => {
+    (overlay: unknown) => {
       const s = new Set(overlays);
 
-      if (s.has(overlay)) {
+      if (typeof overlay !== 'string') {
+        // uh-oh
+      } else if (s.has(overlay)) {
         s.delete(overlay);
       } else {
         s.add(overlay);
@@ -203,7 +205,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                 <MenuItem
                   key={type}
                   eventKey={type}
-                  onSelect={handleOverlaySelect as any}
+                  onSelect={handleOverlaySelect}
                 >
                   <FontAwesomeIcon
                     icon={

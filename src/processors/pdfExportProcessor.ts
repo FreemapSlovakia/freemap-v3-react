@@ -9,7 +9,7 @@ import {
   polygon,
   Feature,
   FeatureCollection,
-  Geometry,
+  Geometries,
 } from '@turf/helpers';
 import { assertType } from 'typescript-is';
 
@@ -78,7 +78,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       }
     }
 
-    const features: Feature<Geometry>[] = [];
+    const features: Feature<Geometries>[] = [];
 
     if (drawing) {
       const { lines } = getState().drawingLines;
@@ -139,7 +139,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       const { trackGeojson } = getState().trackViewer;
 
       if (trackGeojson && trackGeojson.type === 'FeatureCollection') {
-        features.push(...(trackGeojson.features as any));
+        features.push(...trackGeojson.features);
       }
     }
 

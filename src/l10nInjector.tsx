@@ -15,6 +15,7 @@ interface InjectedProps {
   t: Translator;
 }
 
+// eslint-disable-next-line
 export const withTranslator = <BaseProps extends InjectedProps>(
   BaseComponent: React.ComponentType<BaseProps>,
 ) => {

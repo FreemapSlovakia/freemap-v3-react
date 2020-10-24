@@ -40,30 +40,37 @@ function exec<T>(x: T | (() => T)): T {
 export function splitAndSubstitute(
   input: string,
   params: { [k: string]: any } = {},
-) {
-  const x = splitByVars(input, true)
-    .map((part) =>
-      typeof part === 'string' ? part : exec(params[part.variable]),
-    )
-    .reduce(
-      (a, b) =>
-        typeof b === 'string' && a.length && typeof a[a.length - 1] === 'string'
-          ? [...a.slice(0, -1), a[a.length - 1] + b]
-          : [...a, b],
-      '',
-    );
+): any | any[] {
+  const x = splitByVars(input, true).map((part) =>
+    typeof part === 'string' ? part : exec(params[part.variable]),
+  );
+
+  const a: any[] = [];
+
+  for (const b of x) {
+    if (
+      typeof b === 'string' &&
+      a.length &&
+      typeof a[a.length - 1] === 'string'
+    ) {
+      a[a.length - 1] += b;
+    } else {
+      a.push(b);
+    }
+  }
+
   return x.length === 1 ? x[0] : x;
 }
 
 export interface Translations {
-  [key: string]: Translations | string | ((...params: unknown[]) => string);
+  [key: string]: Translations | string | ((...params: any[]) => string);
 }
 
 export function translate(
   translations: Translations | undefined,
   key: string,
   dflt = '',
-): string | ((...params: unknown[]) => string) {
+): string | ((...params: any[]) => string) {
   if (!translations) {
     return '…';
   }

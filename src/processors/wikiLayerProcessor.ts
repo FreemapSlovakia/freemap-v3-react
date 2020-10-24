@@ -6,7 +6,7 @@ import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
-import { OverpassResult } from 'fm3/types/common';
+import { OverpassResult, OverpassElement } from 'fm3/types/common';
 
 interface WikiResponse {
   entities?: {
@@ -112,7 +112,7 @@ export const wikiLayerProcessor: Processor = {
 
     const okData = assertType<OverpassResult>(data);
 
-    const m = new Map<string, any>();
+    const m = new Map<string, OverpassElement>();
 
     const wikidatas: string[] = [];
 
@@ -209,7 +209,7 @@ export const wikiLayerProcessor: Processor = {
 
     dispatch(
       wikiSetPoints(
-        [...m.values()].map((e: any) => ({
+        [...m.values()].map((e: OverpassElement) => ({
           id: e.id,
           lat: e.center?.lat ?? e.lat,
           lon: e.center?.lon ?? e.lon,

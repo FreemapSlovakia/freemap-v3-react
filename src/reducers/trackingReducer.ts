@@ -6,6 +6,7 @@ import {
   TrackedDevice,
   Device,
   AccessToken,
+  TrackPoint,
 } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
 import {
@@ -16,6 +17,8 @@ import {
 import { wsStateChanged } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { is } from 'typescript-is';
+import { StringDates } from 'fm3/types/common';
 
 export interface TrackingState {
   devices: Device[];
@@ -42,6 +45,10 @@ const initialState: TrackingState = {
   showLine: true,
   showPoints: true,
 };
+
+type HasTokenOrDeviceId =
+  | { token: 'string'; deviceId: undefined }
+  | { token: undefined; deviceId: number };
 
 export const trackingReducer = createReducer<TrackingState, RootAction>(
   initialState,
@@ -120,11 +127,20 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     action.payload.state === 1 ? state : { ...state, tracks: [] },
   )
   .handleAction(rpcResponse, (state, action) => {
+    const { payload } = action;
+
+    if (!is<HasTokenOrDeviceId>(payload.params)) {
+      return state;
+    }
+
+    const params = payload.params;
+
     if (
-      action.payload.method === 'tracking.subscribe' &&
-      action.payload.type === 'result'
+      payload.method === 'tracking.subscribe' &&
+      payload.type === 'result' &&
+      is<StringDates<TrackPoint[]>>(payload.result)
     ) {
-      const tid = action.payload.params.token || action.payload.params.deviceId;
+      const tid = params.token || params.deviceId;
 
       return {
         ...state,
@@ -132,7 +148,7 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
           ...state.tracks.filter(({ id }) => id !== tid),
           {
             id: tid,
-            trackPoints: action.payload.result.map((tp) => ({
+            trackPoints: payload.result.map((tp) => ({
               ...tp,
               ts: new Date(tp.ts),
             })),
@@ -142,15 +158,13 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     }
 
     if (
-      action.payload.method === 'tracking.unsubscribe' &&
-      action.payload.type === 'result'
+      payload.method === 'tracking.unsubscribe' &&
+      payload.type === 'result'
     ) {
       return {
         ...state,
         tracks: state.tracks.filter(
-          (track) =>
-            track.id !== action.payload.params.token ||
-            action.payload.params.deviceId,
+          (track) => track.id !== params.token || params.deviceId,
         ),
       };
     }
@@ -158,15 +172,24 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
     return state;
   })
   .handleAction(rpcEvent, (state, action) => {
-    if (action.payload.method === 'tracking.addPoint') {
+    if (
+      action.payload.method === 'tracking.addPoint' &&
+      is<TrackPoint & HasTokenOrDeviceId>(action.payload.params)
+    ) {
       // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
       const { token, deviceId, ts, ...rest } = action.payload.params;
 
       return produce(state, (draft) => {
-        let track = draft.tracks.find((t) => t.id === token || deviceId);
+        const key = token || deviceId;
+
+        if (key === undefined) {
+          return;
+        }
+
+        let track = draft.tracks.find((t) => t.id === key);
 
         if (!track) {
-          track = { id: token || deviceId, trackPoints: [] };
+          track = { id: key, trackPoints: [] };
           draft.tracks.push(track);
         }
 

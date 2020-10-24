@@ -15,13 +15,13 @@ import {
   osmLoadWay,
   osmLoadRelation,
 } from 'fm3/actions/osmActions';
-import { FeatureCollection } from 'geojson';
 import produce from 'immer';
 import { searchSelectResult } from 'fm3/actions/searchActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { FeatureCollection, Geometries } from '@turf/helpers';
 
 export interface TrackViewerState {
-  trackGeojson: FeatureCollection | null;
+  trackGeojson: FeatureCollection<Geometries> | null;
   trackGpx: string | null;
   trackUID: string | null;
   startPoints: TrackPoint[];

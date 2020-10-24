@@ -22,16 +22,21 @@ export const changesetsProcessor: Processor = {
     }
 
     const t = new Date();
+
     t.setDate(t.getDate() - state.changesets.days);
+
     const fromTime = `${t.getFullYear()}/${
       t.getMonth() + 1
     }/${t.getDate()}T00:00:00+00:00`;
-    const toTime = null;
+
     const bbox = le.getBounds().toBBoxString();
 
-    await loadChangesets(toTime, []);
+    await loadChangesets(null, []);
 
-    async function loadChangesets(toTime0, changesetsFromPreviousRequest) {
+    async function loadChangesets(
+      toTime0: string | null,
+      changesetsFromPreviousRequest,
+    ) {
       const { data } = await httpRequest({
         getState,
         method: 'GET',

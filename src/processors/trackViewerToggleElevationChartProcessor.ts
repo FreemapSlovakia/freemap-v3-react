@@ -4,6 +4,7 @@ import {
 } from 'fm3/actions/elevationChartActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { trackViewerToggleElevationChart } from 'fm3/actions/trackViewerActions';
+import { Feature, LineString } from '@turf/helpers';
 
 export const trackViewerToggleElevationChartProcessor: Processor = {
   actionCreator: trackViewerToggleElevationChart,
@@ -13,11 +14,12 @@ export const trackViewerToggleElevationChartProcessor: Processor = {
     } else {
       const { trackGeojson } = getState().trackViewer;
 
-      if (trackGeojson?.features[0]) {
-        // this is bit confusing. TrackViewerMenu.props.trackGeojson is actually a feature set of geojsons
-        // (thought typically contains only one geojson),
-        // while in ElevationChart.props.trackGeojson we use first "real" feature, e.g. LineString
-        dispatch(elevationChartSetTrackGeojson(trackGeojson.features[0]));
+      for (const feature of trackGeojson?.features ?? []) {
+        if (feature.geometry.type === 'LineString') {
+          dispatch(
+            elevationChartSetTrackGeojson(feature as Feature<LineString>),
+          );
+        }
       }
     }
   },

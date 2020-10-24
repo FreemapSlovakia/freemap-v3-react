@@ -1,3 +1,4 @@
+import { Feature, LineString } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
@@ -24,7 +25,7 @@ export interface ElevationProfilePoint extends LatLon {
 }
 
 export interface ElevationChartState {
-  trackGeojson: any;
+  trackGeojson: Feature<LineString> | null;
   activePoint: ElevationProfilePoint | null;
   elevationProfilePoints: Array<ElevationProfilePoint> | null;
 }

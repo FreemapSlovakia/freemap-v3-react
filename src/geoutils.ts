@@ -1,6 +1,6 @@
+import { Feature } from '@turf/helpers';
 import { LatLngLiteral } from 'leaflet';
 import { LatLon } from './types/common';
-import { Feature } from 'geojson';
 
 const PI2 = 2 * Math.PI;
 
@@ -106,6 +106,7 @@ export function getCurrentPosition(): Promise<LatLon> {
 export function containsElevations(geojson: Feature): boolean {
   return (
     geojson.geometry.type === 'LineString' &&
+    Array.isArray(geojson.geometry.coordinates[0]) &&
     geojson.geometry.coordinates[0].length === 3
   );
 }

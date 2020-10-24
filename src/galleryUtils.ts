@@ -1,4 +1,5 @@
 import { GalleryFilter } from './actions/galleryActions';
+import { StringDates } from './types/common';
 
 export function createFilter({
   tag,
@@ -9,7 +10,7 @@ export function createFilter({
   takenAtTo,
   createdAtFrom,
   createdAtTo,
-}: GalleryFilter) {
+}: GalleryFilter): StringDates<GalleryFilter> {
   return {
     tag,
     userId,

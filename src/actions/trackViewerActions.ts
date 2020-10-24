@@ -1,6 +1,6 @@
 import { createAction } from 'typesafe-actions';
 import { LatLon } from 'fm3/types/common';
-import { FeatureCollection } from 'geojson';
+import { FeatureCollection, Geometries } from '@turf/helpers';
 
 export type ColorizingMode = 'elevation' | 'steepness';
 
@@ -12,7 +12,7 @@ export interface TrackPoint extends LatLon {
 
 export const trackViewerSetData = createAction('TRACK_VIEWER_SET_TRACK_DATA')<{
   trackGpx?: string;
-  trackGeojson?: FeatureCollection;
+  trackGeojson?: FeatureCollection<Geometries>;
   startPoints?: TrackPoint[];
   finishPoints?: TrackPoint[];
   focus?: boolean;

@@ -1,10 +1,10 @@
 import { createAction } from 'typesafe-actions';
 import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
-import { GeoJsonObject } from 'geojson';
+import { Feature, LineString } from '@turf/helpers';
 
 export const elevationChartSetTrackGeojson = createAction(
   'ELEVATION_CHART_SET_TRACK_GEOJSON',
-)<GeoJsonObject>();
+)<Feature<LineString>>();
 
 export const elevationChartClose = createAction('ELEVATION_CHART_CLOSE')();
 

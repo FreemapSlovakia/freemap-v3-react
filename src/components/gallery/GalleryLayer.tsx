@@ -9,6 +9,7 @@ import {
   DoneCallback,
   GridLayerOptions,
 } from 'leaflet';
+import { LatLon } from 'fm3/types/common';
 
 type GalleryLayerOptions = GridLayerOptions & {
   filter: any;
@@ -78,22 +79,20 @@ class LGalleryLayer extends LGridLayer {
       .then(({ data }) => {
         const s = new Set();
         const mangled = data
-          .map(({ lat, lon }) => {
-            const la = Math.round(lat * k);
-            const lo = Math.round(lon * k);
-            return { la, lo };
+          .map(({ lat, lon }: LatLon) => {
+            return { lat: Math.round(lat * k), lon: Math.round(lon * k) };
           })
-          .filter(({ la, lo }) => {
-            const key = `${la},${lo}`;
+          .filter(({ lat, lon }: LatLon) => {
+            const key = `${lat},${lon}`;
             const has = s.has(key);
             if (!has) {
               s.add(key);
             }
             return !has;
           })
-          .map(({ la, lo }) => ({ lat: la / k, lon: lo / k }));
+          .map(({ lat, lon }: LatLon) => ({ lat: lat / k, lon: lon / k }));
 
-        mangled.forEach(({ lat, lon }) => {
+        mangled.forEach(({ lat, lon }: LatLon) => {
           const y =
             size.y - ((lat - pointB.lat) / (pointA.lat - pointB.lat)) * size.y;
           const x = ((lon - pointA.lng) / (pointB.lng - pointA.lng)) * size.x;

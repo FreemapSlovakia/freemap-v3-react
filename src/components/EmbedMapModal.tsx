@@ -176,6 +176,7 @@ export class EmbedMapModalInt extends React.Component<Props, State> {
     }`;
   };
 
+  // eslint-disable-next-line
   render() {
     const { onModalClose, t } = this.props;
     const {

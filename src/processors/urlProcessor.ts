@@ -11,7 +11,7 @@ const tipKeys = allTips.map(([key]) => key);
 
 let lastActionType: string | undefined;
 
-let previous: any[] = [];
+let previous: unknown[] = [];
 
 export const urlProcessor: Processor = {
   actionCreator: '*',

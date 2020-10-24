@@ -51,22 +51,19 @@ export type StringDates<T> = {
     ? string
     : T[K] extends Date | null
     ? string | null
+    : T[K] extends Date | undefined
+    ? string | undefined
     : StringDates<T[K]>;
 };
 
-export interface OverpassElement {
+export interface OverpassElement extends LatLon {
   id: number;
   tags: {
     [key: string]: string;
   };
   type: 'way' | 'node' | 'relation';
   geometry?: any; // TODO per type
-  center?: {
-    lat: number;
-    lon: number;
-  };
-  lat: number;
-  lon: number;
+  center?: LatLon;
 }
 
 export interface OverpassResult {
@@ -77,10 +74,8 @@ interface OsmElement {
   id: number;
 }
 
-export interface OsmNode extends OsmElement {
+export interface OsmNode extends OsmElement, LatLon {
   type: 'node';
-  lat: number;
-  lon: number;
 }
 
 export interface OsmWay extends OsmElement {

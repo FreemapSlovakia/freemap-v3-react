@@ -1,16 +1,41 @@
 import { wsSend, wsReceived } from 'fm3/actions/websocketActions';
 import { rpcResponse, rpcEvent, rpcCall } from 'fm3/actions/rpcActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { is } from 'typescript-is';
 
 // TODO implement call timeout
 
-interface Call {
+interface JsonRpcRequest {
+  jsonrpc: '2.0';
   method: string;
-  params: any;
-  tag?: any;
+  params?: unknown;
+  id?: string | number | null;
 }
 
-const callMap = new Map<number, Call>();
+interface JsonRpcResponseBase {
+  jsonrpc: '2.0';
+  id: string | number | null;
+}
+
+interface JsonRpcOkResponse extends JsonRpcResponseBase {
+  result: unknown;
+}
+
+interface JsonRpcErrorResponse extends JsonRpcResponseBase {
+  error: {
+    code: number;
+    message: string;
+    data?: unknown;
+  };
+}
+
+interface Call {
+  method: string;
+  params: unknown;
+  tag?: unknown;
+}
+
+const callMap = new Map<number | string, Call>();
 let id = 0;
 
 export const rpcWsStateProcessor: Processor = {
@@ -66,7 +91,7 @@ export const rpcCallProcessor: Processor<typeof rpcCall> = {
 export const wsReceivedProcessor: Processor<typeof wsReceived> = {
   actionCreator: wsReceived,
   handle: async ({ dispatch, action }) => {
-    let object: any;
+    let object: unknown;
 
     try {
       object = JSON.parse(action.payload);
@@ -74,11 +99,12 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
       // ignore
     }
 
-    if (!object || typeof object !== 'object' || object.jsonrpc !== '2.0') {
-      // nothing
-    } else if (typeof object.method === 'string' && object.id === undefined) {
+    if (is<JsonRpcRequest>(object) && object.id === undefined) {
       dispatch(rpcEvent({ method: object.method, params: object.params }));
-    } else if (object.id !== undefined && !object.method) {
+    } else if (
+      is<JsonRpcOkResponse | JsonRpcErrorResponse>(object) &&
+      object.id !== null
+    ) {
       const call = callMap.get(object.id);
 
       if (call) {
@@ -91,14 +117,13 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
 
         dispatch(
           rpcResponse(
-            'error' in object
+            is<JsonRpcErrorResponse>(object)
               ? {
                   type: 'error',
                   ...base,
                   error: object.error,
                 }
-              : // TODO check 'result' in object
-                {
+              : {
                   type: 'result',
                   ...base,
                   result: object.result,
