@@ -20,8 +20,8 @@ export const osmLoadWayProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const nodes: any = {};
-    const ways: any = {};
+    const nodes: Record<number, [number, number]> = {};
+    const ways: Record<number, [number, number][]> = {};
 
     for (const item of assertType<OsmResult>(data).elements) {
       if (item.type === 'node') {

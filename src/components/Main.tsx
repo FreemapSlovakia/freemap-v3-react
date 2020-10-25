@@ -496,12 +496,12 @@ export const Main = connect(
 
 function handleMapClick(e: LeafletMouseEvent) {
   // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-  const target: any = e.originalEvent?.target;
+  const target = e.originalEvent.target;
 
   if (
     !window.preventMapClick &&
-    target?.tagName === 'DIV' &&
-    target?.classList.contains('leaflet-container')
+    target instanceof HTMLDivElement &&
+    target.classList.contains('leaflet-container')
   ) {
     mapEventEmitter.emit('mapClick', e.latlng.lat, e.latlng.lng);
   }

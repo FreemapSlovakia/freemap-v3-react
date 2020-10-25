@@ -23,6 +23,7 @@ import {
   authLoginWithOsm,
   authLoginWithOsm2,
 } from 'fm3/actions/authActions';
+import { RootAction } from 'fm3/actions';
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
@@ -81,10 +82,13 @@ const lazy: Record<string, () => Promise<{ default: Processor }>> = {
     ),
 };
 
-export const processorMiddleware: Middleware<any, RootState, Dispatch> = ({
-  getState,
-  dispatch,
-}) => (next: Dispatch) => (action: Action): any => {
+export const processorMiddleware: Middleware<
+  unknown,
+  RootState,
+  Dispatch<RootAction>
+> = ({ getState, dispatch }) => (next: Dispatch) => (
+  action: Action,
+): unknown => {
   const prevState = getState();
 
   let a: Action = action;

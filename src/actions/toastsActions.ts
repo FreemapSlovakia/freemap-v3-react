@@ -11,7 +11,7 @@ export interface ToastAction {
 export interface Toast {
   message?: string;
   messageKey?: string;
-  messageParams?: { [key: string]: any };
+  messageParams?: { [key: string]: unknown };
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
   actions?: ToastAction[];

@@ -88,17 +88,23 @@ const MoreMenuButtonInt: React.FC<Props> = ({
   const handleLegendClick = useMenu(onLegend);
 
   const handleLanguageClick = useCallback(
-    (language: any) => {
+    (language: unknown) => {
       close();
-      onLanguageChange(language);
+
+      if (language === null || typeof language === 'string') {
+        onLanguageChange(language);
+      }
     },
     [onLanguageChange, close],
   );
 
   const handleTipSelect = useCallback(
-    (tip: any) => {
+    (tip: unknown) => {
       close();
-      onTip(tip);
+
+      if (typeof tip === 'string') {
+        onTip(tip);
+      }
     },
     [onTip, close],
   );

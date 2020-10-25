@@ -10,4 +10,4 @@ export const mapDetailsSetUserSelectedPosition = createAction(
 
 export const mapDetailsSetTrackInfoPoints = createAction(
   'MAP_DETAILS_SET_TRACK_INFO_POINTS',
-)<any>();
+)<unknown>();

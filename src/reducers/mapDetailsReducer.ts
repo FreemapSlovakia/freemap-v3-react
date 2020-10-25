@@ -11,7 +11,7 @@ export interface MapDetailsState {
   userSelectedLat: number | null;
   userSelectedLon: number | null;
   subtool: string | null;
-  trackInfoPoints: any[] | null;
+  trackInfoPoints: unknown | null;
 }
 
 const initialState: MapDetailsState = {

@@ -115,7 +115,7 @@ class LGalleryLayer extends LGridLayer {
 }
 
 interface Props extends GridLayerProps {
-  filter: any; // TODO
+  filter: GalleryFilter;
 }
 
 class GalleryLayerInt extends GridLayer<Props, LGalleryLayer> {
