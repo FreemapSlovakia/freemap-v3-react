@@ -443,6 +443,7 @@ function imhdSummary(
   });
 
   const { price, arrival, numbers } = extra;
+
   return t('routePlanner.imhd.total.short', {
     price:
       price === undefined

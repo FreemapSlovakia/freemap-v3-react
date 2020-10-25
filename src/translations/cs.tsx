@@ -6,6 +6,7 @@ import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('cs', {
   minimumFractionDigits: 0,
@@ -30,7 +31,7 @@ const errorMarkup = `<h1>Chyba aplikace</h1>
 </p>
 `;
 
-export default {
+const cs: Messages = {
   general: {
     elevationProfile: 'Výškový profil',
     save: 'Uložit',
@@ -1051,7 +1052,7 @@ export default {
       paved: 'zpevněný',
       unknown: 'neznámý',
       unpaved: 'nezpevněný',
-      'concrete: plates': 'betonové desky',
+      'concrete:plates': 'betonové desky',
       concrete: 'beton',
       grass: 'travnatý',
     },
@@ -1074,6 +1075,7 @@ export default {
       pedestrian: 'pěší zóna',
       unknown: 'neznámý',
       living_street: 'Obytná zóna',
+      construction: 'Ve výstavbě',
     },
     bicycleTypes: {
       'road-bike': 'silniční',
@@ -1362,3 +1364,5 @@ export default {
 function numberize(n: number, words: [string, string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : n < 5 ? words[2] : words[0];
 }
+
+export default cs;

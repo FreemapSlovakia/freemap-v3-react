@@ -6,6 +6,7 @@ import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('en', {
   minimumFractionDigits: 0,
@@ -30,7 +31,7 @@ const errorMarkup = `
   Thank you.
 </p>`;
 
-export default {
+const en: Messages = {
   general: {
     elevationProfile: 'Elevation profile',
     save: 'Save',
@@ -1365,3 +1366,5 @@ export default {
 function numberize(n: number, words: [string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
 }
+
+export default en;
