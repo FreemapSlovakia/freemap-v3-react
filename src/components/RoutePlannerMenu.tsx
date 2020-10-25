@@ -408,8 +408,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToggleElevationChart() {
     dispatch(routePlannerToggleElevationChart());
   },
-  onAlternativeChange(index: any) {
-    dispatch(routePlannerSetActiveAlternativeIndex(index as number));
+  onAlternativeChange(index: unknown) {
+    if (typeof index === 'number') {
+      dispatch(routePlannerSetActiveAlternativeIndex(index as number));
+    }
   },
   onEndsSwap() {
     dispatch(routePlannerSwapEnds());

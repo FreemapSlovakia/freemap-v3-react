@@ -7,7 +7,7 @@ export function dispatchAxiosErrorAsToast(
   dispatch: Dispatch<ActionType<typeof toastsAdd>>,
   messageKey: string,
   err?: unknown,
-  params: { [key: string]: any } = {},
+  params: { [key: string]: unknown } = {},
   id?: string,
 ): PayloadAction<'TOASTS_ADD', ResolvedToast> | undefined {
   if (axios.isCancel(err)) {

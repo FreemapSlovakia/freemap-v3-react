@@ -12,6 +12,7 @@ import {
   routePlannerSetParams,
   Alternative,
   Step,
+  Waypoint,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { storage } from 'fm3/storage';
@@ -75,7 +76,7 @@ export const routePlannerFindRouteProcessor: Processor = {
       exclude: ttDef.exclude,
     };
 
-    let data: any;
+    let data: unknown;
 
     try {
       data = (
@@ -100,11 +101,18 @@ export const routePlannerFindRouteProcessor: Processor = {
           waypoints: [],
         }),
       );
+
       throw err;
     }
 
-    // TODO assert
-    const { code, trips, routes, waypoints } = data;
+    type OsrmResult = {
+      code: string;
+      trips?: Alternative[];
+      routes?: Alternative[];
+      waypoints?: Waypoint[];
+    };
+
+    const { code, trips, routes, waypoints } = assertType<OsrmResult>(data);
 
     if (code === 'Ok') {
       const showHint =
@@ -130,8 +138,7 @@ export const routePlannerFindRouteProcessor: Processor = {
         );
       }
 
-      const alts = routes || trips;
-      assertType<any[]>(alts);
+      const alts = routes || trips || [];
 
       const alternatives: Alternative[] =
         transportType === 'imhd'
@@ -143,7 +150,7 @@ export const routePlannerFindRouteProcessor: Processor = {
           timestamp: Date.now(),
           transportType,
           alternatives,
-          waypoints,
+          waypoints: waypoints || [],
         }),
       );
     } else {

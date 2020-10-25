@@ -47,7 +47,7 @@ export const toastsRestartTimeout = createAction('TOASTS_RESTART_TIMEOUT')<
 export function toastsAddError(
   messageKey?: string,
   err?: Error,
-  params: { [key: string]: any } = {},
+  params: { [key: string]: unknown } = {},
 ): PayloadAction<'TOASTS_ADD', ResolvedToast> {
   return toastsAdd({
     id: Math.random().toString(36).slice(2),

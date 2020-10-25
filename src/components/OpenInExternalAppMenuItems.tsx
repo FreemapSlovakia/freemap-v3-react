@@ -5,7 +5,7 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
-import qs from 'query-string';
+import qs, { StringifiableRecord } from 'query-string';
 import buffer from '@turf/buffer';
 import bbox from '@turf/bbox';
 import { point } from '@turf/helpers';
@@ -143,7 +143,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
           break;
         case 'hiking.sk': {
           const point = CRS.EPSG3857.project({ lat, lng: lon });
-          const params: any = {
+          const params: StringifiableRecord = {
             zoom: zoom > 15 ? 15 : zoom,
             lon: point.x,
             lat: point.y,
