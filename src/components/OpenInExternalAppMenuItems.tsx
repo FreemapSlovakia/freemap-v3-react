@@ -42,8 +42,8 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
   onSelect,
 }) => {
   const handleMenuItemSelect = useCallback(
-    (where: any) => {
-      if (onSelect) {
+    (where: unknown) => {
+      if (onSelect && typeof where === 'string') {
         onSelect(where);
       }
 

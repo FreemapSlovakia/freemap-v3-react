@@ -15,10 +15,10 @@ type HasTokenOrDeviceId =
   | { token: 'string'; deviceId?: undefined }
   | { token?: undefined; deviceId: number };
 
-export const trackingMiddleware: Middleware<any, RootState, Dispatch> = ({
+export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
   dispatch,
   getState,
-}) => (next: Dispatch) => (action: RootAction): any => {
+}) => (next: Dispatch) => (action: RootAction): unknown => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&

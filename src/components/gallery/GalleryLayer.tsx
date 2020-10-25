@@ -10,9 +10,10 @@ import {
   GridLayerOptions,
 } from 'leaflet';
 import { LatLon } from 'fm3/types/common';
+import { GalleryFilter } from 'fm3/actions/galleryActions';
 
 type GalleryLayerOptions = GridLayerOptions & {
-  filter: any;
+  filter: GalleryFilter;
 };
 
 class LGalleryLayer extends LGridLayer {

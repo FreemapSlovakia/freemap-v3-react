@@ -4,34 +4,41 @@ import {
 } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { lineString, point, featureCollection } from '@turf/helpers';
+import {
+  lineString,
+  point,
+  featureCollection,
+  Geometries,
+} from '@turf/helpers';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { OverpassResult } from 'fm3/types/common';
+import { LatLon } from 'fm3/types/common';
 
-const mappings = {
-  way: (element) =>
-    lineString(element.geometry.map(({ lat, lon }) => [lon, lat])),
-  node: (element) => point([element.lon, element.lat]),
-  relation: (element) => ({
-    type: 'Feature',
-    geometry: {
-      type: 'GeometryCollection',
-      geometries: element.members
-        .filter(({ type }) =>
-          ['way', 'node' /* TODO , 'relation' */].includes(type),
-        )
-        .map((member) =>
-          member.type === 'way'
-            ? lineString(member.geometry.map(({ lat, lon }) => [lon, lat]))
-            : point([member.lon, member.lat]),
-        ),
-    },
-  }),
-};
+interface OverpassNodeElement extends LatLon {
+  type: 'node';
+}
+
+interface OverpassWayElement {
+  type: 'way';
+  geometry: LatLon[];
+}
+
+interface OverpassRelationElement {
+  type: 'relation';
+  members: OverpassElement[];
+}
+
+type OverpassElement =
+  | OverpassNodeElement
+  | OverpassWayElement
+  | OverpassRelationElement;
+
+interface OverpassResult {
+  elements: OverpassElement[];
+}
 
 export const mapDetailsProcessor: Processor = {
   actionCreator: mapDetailsSetUserSelectedPosition,
@@ -95,10 +102,40 @@ export const mapDetailsProcessor: Processor = {
 
     const oRes = assertType<OverpassResult>(data);
 
-    const elements = [...(oRes.elements || []), ...(data1.elements || [])];
+    const elements = [...oRes.elements, ...data1.elements];
+
     if (elements.length > 0) {
-      const geojson = featureCollection(
-        elements.map((element) => mappings[element.type](element) as any), // TODO fix type
+      const geojson = featureCollection<Geometries>(
+        elements.map((element) => {
+          switch (element.type) {
+            case 'node':
+              return point([element.lon, element.lat]);
+            case 'way':
+              return lineString(
+                element.geometry.map(({ lat, lon }) => [lon, lat]),
+              );
+            case 'relation': {
+              // TODO
+              // const f = featureCollection<Geometries>(
+              //   element.members
+              //     .filter(({ type }) =>
+              //       ['way', 'node' /* TODO , 'relation' */].includes(type),
+              //     )
+              //     .map((member) =>
+              //       member.type === 'way'
+              //         ? lineString(
+              //             member.geometry.map(({ lat, lon }) => [lon, lat]),
+              //           )
+              //         : member.type === 'node'
+              //         ? point([member.lon, member.lat])
+              //         : point([0, 0]),
+              //     ),
+              // );
+
+              return point([0, 0]);
+            }
+          }
+        }),
       );
 
       (oRes.elements || []).forEach((element) => {
@@ -117,7 +154,7 @@ export const mapDetailsProcessor: Processor = {
 
       dispatch(
         trackViewerSetData({
-          trackGeojson: geojson as any, // TODO fix type
+          trackGeojson: geojson,
           startPoints: [],
           finishPoints: [],
         }),

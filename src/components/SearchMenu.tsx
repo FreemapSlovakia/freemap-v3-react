@@ -36,6 +36,7 @@ import {
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
+import { DropdownBaseProps } from 'react-bootstrap/lib/Dropdown';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -87,7 +88,7 @@ const SearchMenuInt: React.FC<Props> = ({
   const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
 
   const handleSelect = useCallback(
-    (eventKey: any) => {
+    (eventKey: unknown) => {
       const found = results.find((item) => item.id === eventKey);
       if (found) {
         onResultSelect(found);
@@ -99,16 +100,15 @@ const SearchMenuInt: React.FC<Props> = ({
     [results, onResultSelect, selectedResult],
   );
 
-  const handleToggle = useCallback(
-    (open: any, _: any, { source }: any) => {
-      if (!open && source !== 'select') {
-        setOpen(false);
-      } else if (open && results.length > 0) {
-        setOpen(true);
-      }
-    },
-    [setOpen, results],
-  );
+  const f: DropdownBaseProps['onToggle'] = (open, _, { source }) => {
+    if (!open && source !== 'select') {
+      setOpen(false);
+    } else if (open && results.length > 0) {
+      setOpen(true);
+    }
+  };
+
+  const handleToggle = useCallback(f, [setOpen, results]);
 
   const setInputRef = useCallback(
     (ref: HTMLInputElement | null) => {
@@ -176,7 +176,7 @@ const SearchMenuInt: React.FC<Props> = ({
           // className="dropdown-long"
           id="objectsMenuDropdown"
           open={open}
-          onToggle={handleToggle as any}
+          onToggle={handleToggle}
         >
           <FormGroup2 bsRole="toggle">
             <InputGroup>

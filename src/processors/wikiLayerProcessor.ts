@@ -6,7 +6,7 @@ import { wikiSetPoints } from 'fm3/actions/wikiActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
-import { OverpassResult, OverpassElement } from 'fm3/types/common';
+import { OverpassElement, OverpassResult } from 'fm3/types/common';
 
 interface WikiResponse {
   entities?: {
@@ -116,7 +116,7 @@ export const wikiLayerProcessor: Processor = {
 
     const wikidatas: string[] = [];
 
-    for (const e of okData.elements || []) {
+    for (const e of okData.elements) {
       if (e.tags.wikipedia) {
         e.tags.wikipedia = decodeURIComponent(
           e.tags.wikipedia.replace(/_/g, ' '),
@@ -173,7 +173,7 @@ export const wikiLayerProcessor: Processor = {
 
     const okData1 = assertType<WikiResponse>(data1);
 
-    for (const e of okData.elements || []) {
+    for (const e of okData.elements) {
       if (e.tags.wikipedia) {
         continue;
       }
@@ -211,9 +211,9 @@ export const wikiLayerProcessor: Processor = {
       wikiSetPoints(
         [...m.values()].map((e: OverpassElement) => ({
           id: e.id,
-          lat: e.center?.lat ?? e.lat,
-          lon: e.center?.lon ?? e.lon,
-          name: e.tags?.name,
+          lat: e.type === 'node' ? e.lat : e.center.lat,
+          lon: e.type === 'node' ? e.lon : e.center.lon,
+          name: e.tags.name,
           wikipedia: e.tags.wikipedia,
         })),
       ),
