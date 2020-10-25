@@ -28,7 +28,7 @@ export const osmLoadNodeProcessor: Processor = {
       trackViewerSetData({
         trackGeojson: {
           type: 'FeatureCollection',
-          features: Object.keys(nodes).map((id) => point(nodes[id])),
+          features: nodes.map((node) => point(node)),
         },
         startPoints: [],
         finishPoints: [],

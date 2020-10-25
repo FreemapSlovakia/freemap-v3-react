@@ -365,7 +365,7 @@ function getErrors(item: GalleryItem | PictureModel) {
   return errors;
 }
 
-function safeParseCoordinates(coords) {
+function safeParseCoordinates(coords: string) {
   try {
     return parseCoordinates(coords);
   } catch (err) {

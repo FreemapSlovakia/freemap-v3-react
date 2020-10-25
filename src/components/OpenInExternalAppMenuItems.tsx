@@ -194,7 +194,7 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
               text: pointDescription,
               url: url || window.location,
             })
-            .catch((error) => {
+            .catch((error: unknown) => {
               console.error(error);
             }); // TODO toast
           break;

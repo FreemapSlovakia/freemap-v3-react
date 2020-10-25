@@ -201,7 +201,7 @@ export function usePictureDropHandler(
   return useCallback(
     (acceptedFiles: File[] /* , rejectedFiles: File[] */) => {
       for (const accpetedFile of acceptedFiles) {
-        processFile(accpetedFile, (err?: Error) => {
+        processFile(accpetedFile, (err?: unknown) => {
           if (err) {
             // TODO
           }

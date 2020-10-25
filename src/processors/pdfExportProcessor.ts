@@ -23,7 +23,7 @@ const geometryTypeMapping = {
   MultiLineString: 'polyline',
   Point: 'point',
   MultiPoint: 'point',
-};
+} as const;
 
 export const exportPdfProcessor: Processor<typeof exportPdf> = {
   actionCreator: exportPdf,
@@ -159,7 +159,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
 
     const layers: { styles: string[]; geojson: FeatureCollection }[] = [];
 
-    for (const type in f) {
+    for (const type of ['polygon', 'polyline', 'point'] as const) {
       if (f[type].length) {
         layers.push({
           styles: [`custom-${type}s`],
