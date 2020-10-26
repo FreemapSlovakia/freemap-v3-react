@@ -267,9 +267,7 @@ const mapStateToProps = (state: RootState) => ({
   mapType: state.map.mapType,
   overlays: state.map.overlays,
   expertMode: state.main.expertMode,
-  pictureFilterIsActive: Object.keys(state.gallery.filter).some(
-    (key) => state.gallery.filter[key],
-  ),
+  pictureFilterIsActive: Object.keys(state.gallery.filter).length > 0,
   isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
   language: state.l10n.language,
 });

@@ -20,3 +20,5 @@ declare module '*.gif' {
 }
 
 declare module 'react-leaflet-bing';
+
+declare module '@mapbox/togeojson';

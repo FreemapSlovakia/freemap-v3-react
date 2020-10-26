@@ -132,7 +132,13 @@ type CR = typeof combinedReducers;
 
 export type RootState = StateType<CR>;
 
-const rootReducer = reduceReducers<RootState>(combinedReducers, globalReducer);
+const rootReducer = reduceReducers<RootState>(
+  // TODO
+  // eslint-disable-next-line
+  // @ts-ignore
+  combinedReducers,
+  globalReducer,
+);
 
 processors.push(
   errorProcessor,

@@ -9,7 +9,9 @@ import {
 import { assertType } from 'typescript-is';
 
 interface WikiResponse1 {
-  query: { pages: { [key: string]: { langlinks: { lang: string }[] } } };
+  query: {
+    pages: { [key: string]: { langlinks: { lang: string; '*': string }[] } };
+  };
   continue?: Record<string, unknown>;
 }
 

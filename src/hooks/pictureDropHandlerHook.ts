@@ -134,7 +134,7 @@ export function usePictureDropHandler(
 
         const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
 
-        const NS = { S: -1, N: 1 };
+        const NS: Record<string, number> = { S: -1, N: 1 };
 
         const lat =
           rawLat *
@@ -148,7 +148,7 @@ export function usePictureDropHandler(
 
         const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
 
-        const EW = { W: -1, E: 1 };
+        const EW: Record<string, number> = { W: -1, E: 1 };
 
         const lon =
           rawLon *

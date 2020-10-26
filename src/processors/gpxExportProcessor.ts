@@ -115,7 +115,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     const r = getSupportedGpxElements(doc);
 
-    const q = {
+    const q: Record<string, Node[]> = {
       wpt: [],
       rte: [],
       trk: [],
@@ -269,7 +269,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
               .build()
               .setVisible(true);
 
-            function pickerCallback(data) {
+            function pickerCallback(data: any) {
               switch (data[pkr.Response.ACTION]) {
                 case pkr.Action.PICKED:
                   resolve(data[pkr.Response.DOCUMENTS][0]);

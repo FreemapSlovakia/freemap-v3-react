@@ -9,6 +9,16 @@ import { httpRequest } from 'fm3/authAxios';
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import { assertType } from 'typescript-is';
 import { getType } from 'typesafe-actions';
+import { Changeset } from 'fm3/actions/changesetsActions';
+
+// interface Changeset {
+//   userName: string | null;
+//   id: string | null;
+//   centerLat: number;
+//   centerLon: number;
+//   closedAt: Date;
+//   description: string | null | undefined;
+// }
 
 export const changesetsProcessor: Processor = {
   actionCreator: changesetsSetAuthorName,
@@ -35,8 +45,8 @@ export const changesetsProcessor: Processor = {
 
     async function loadChangesets(
       toTime0: string | null,
-      changesetsFromPreviousRequest,
-    ) {
+      changesetsFromPreviousRequest: Changeset[],
+    ): Promise<void> {
       const { data } = await httpRequest({
         getState,
         method: 'GET',
@@ -57,7 +67,9 @@ export const changesetsProcessor: Processor = {
       );
 
       const rawChangesets = xml.getElementsByTagName('changeset');
+
       const arrayOfrawChangesets = Array.from(rawChangesets);
+
       const changesetsFromThisRequest = arrayOfrawChangesets
         .map((rawChangeset) => {
           const minLat = parseFloat(rawChangeset.getAttribute('min_lat') ?? '');
@@ -69,13 +81,13 @@ export const changesetsProcessor: Processor = {
             rawChangeset.getElementsByTagName('tag'),
           ).find((tag) => tag.getAttribute('k') === 'comment');
 
-          const changeset = {
-            userName: rawChangeset.getAttribute('user'),
-            id: rawChangeset.getAttribute('id'),
+          const changeset: Changeset = {
+            userName: rawChangeset.getAttribute('user') ?? '???',
+            id: Number(rawChangeset.getAttribute('id') ?? '???'),
             centerLat: (minLat + maxLat) / 2.0,
             centerLon: (minLon + maxLon) / 2.0,
-            closedAt: new Date(rawChangeset.getAttribute('closed_at') ?? ''),
-            description: descriptionTag?.getAttribute('v'),
+            closedAt: new Date(rawChangeset.getAttribute('closed_at') ?? '???'),
+            description: descriptionTag?.getAttribute('v') ?? '???',
           };
 
           return changeset;
@@ -89,6 +101,7 @@ export const changesetsProcessor: Processor = {
         );
 
       const allChangesetsSoFar = [...changesetsFromPreviousRequest];
+
       const allChangesetSoFarIDs = allChangesetsSoFar.map((ch) => ch.id);
 
       changesetsFromThisRequest.forEach((ch) => {
@@ -121,8 +134,6 @@ export const changesetsProcessor: Processor = {
           }),
         );
       }
-
-      return Promise.resolve();
     }
   },
 };

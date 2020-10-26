@@ -1,13 +1,13 @@
 import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import { Map, ScaleControl } from 'react-leaflet';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
 
 import Button from 'react-bootstrap/lib/Button';
-import CloseButton from 'react-bootstrap/lib/CloseButton';
+// import CloseButton from 'react-bootstrap/lib/CloseButton';
 import Panel from 'react-bootstrap/lib/Panel';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
@@ -151,7 +151,7 @@ const MainInt: React.FC<Props> = ({
   showInteractiveLayer,
   mapType,
 }) => {
-  const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
+  // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
   const mapRef = useRef<Map | null>();
 
@@ -189,9 +189,9 @@ const MainInt: React.FC<Props> = ({
     }
   }, [onMapReset]);
 
-  const handleInfoBarCloseClick = useCallback(() => {
-    setShowInfoBar(false);
-  }, [setShowInfoBar]);
+  // const handleInfoBarCloseClick = useCallback(() => {
+  //   setShowInfoBar(false);
+  // }, [setShowInfoBar]);
 
   const handlePicturesDrop = usePictureDropHandler(
     true,
@@ -261,12 +261,12 @@ const MainInt: React.FC<Props> = ({
       <Toasts />
 
       <div className="header">
-        {showInfoBar && language === 'sk' && !embed && (
+        {/* {showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
             {t('main.p2')}
           </div>
-        )}
+        )} */}
         <div className="menus">
           <Panel className="fm-toolbar">
             <Button
