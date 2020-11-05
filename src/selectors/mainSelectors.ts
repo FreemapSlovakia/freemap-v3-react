@@ -44,7 +44,7 @@ export const showGalleryPickerSelector = createSelector(
 );
 
 export const showGalleryViewer = (state: RootState): boolean =>
-  state.gallery.pickingPositionForId !== null &&
+  state.gallery.pickingPositionForId === null &&
   state.gallery.activeImageId !== null &&
   !state.gallery.showPosition;
 
