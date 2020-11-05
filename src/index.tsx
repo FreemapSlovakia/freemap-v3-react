@@ -103,6 +103,7 @@ function loadAppState() {
 
 window.addEventListener('message', (e: MessageEvent) => {
   const { data } = e;
+
   if (data && typeof data === 'object' && typeof data.freemap === 'object') {
     if (data.freemap.action === 'setEmbedFeatures') {
       store.dispatch(setEmbedFeatures(data.freemap.payload));
