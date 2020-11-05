@@ -219,11 +219,12 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
 
     const getImageUrl = (id: number) =>
       `${process.env.API_URL}/gallery/pictures/${id}/image?width=${
-        isFullscreen
+        window.devicePixelRatio *
+        (isFullscreen
           ? window.innerWidth
           : window.matchMedia('(min-width: 992px)').matches
           ? 868
-          : 568
+          : 568)
       }`;
 
     const sizes = isFullscreen ? undefined : '(min-width: 992px) 868px, 568px';
@@ -264,6 +265,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                     ref={this.setImageElement}
                     className={`gallery-image ${loading ? 'loading' : ''}`}
                     src={getImageUrl(activeImageId)}
+                    srcset={}
                     sizes={sizes}
                     alt={title}
                   />
