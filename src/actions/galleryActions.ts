@@ -48,7 +48,7 @@ export interface Picture extends LatLon {
   tags: string[];
   comments: PictureComment[];
   rating: number;
-  myStars: number;
+  myStars: number | null;
   user: User;
   createdAt: Date;
   takenAt: Date | null;

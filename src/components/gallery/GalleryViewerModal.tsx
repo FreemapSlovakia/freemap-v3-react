@@ -410,7 +410,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                           className="stars"
                           size={22}
                           half={false}
-                          value={myStars}
+                          value={myStars ?? 0}
                           onChange={onStarsChange}
                         />
                       </div>

@@ -7,7 +7,7 @@ export type PickMode = 'start' | 'finish';
 
 export type RoutingMode = 'trip' | 'roundtrip' | 'route';
 
-export type SliceMode = 'foot';
+export type SliceMode = 'walking' | 'cycling' | 'driving' | 'ferry';
 
 export type ManeuerModifier =
   | 'uturn'
