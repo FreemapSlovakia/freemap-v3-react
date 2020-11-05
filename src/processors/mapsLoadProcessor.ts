@@ -15,7 +15,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         expectedStatus: 200,
       });
 
-      const map = assertType<MapData>(data);
+      const map = assertType<{ data: MapData }>(data).data;
 
       if (map.map) {
         if (payload.ignoreMap) {
