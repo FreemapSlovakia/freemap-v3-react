@@ -328,6 +328,17 @@ export const urlProcessor: Processor = {
         { sq },
       );
 
+      if (window.parent !== window.self) {
+        window.parent.postMessage(
+          {
+            freemap: {
+              action: 'urlUpdated',
+            },
+          },
+          '*',
+        );
+      }
+
       lastActionType = action.type;
     }
   },
