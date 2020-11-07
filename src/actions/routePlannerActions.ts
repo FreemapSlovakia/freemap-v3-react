@@ -7,7 +7,13 @@ export type PickMode = 'start' | 'finish';
 
 export type RoutingMode = 'trip' | 'roundtrip' | 'route';
 
-export type SliceMode = 'walking' | 'cycling' | 'driving' | 'ferry';
+export type SliceMode =
+  | 'foot'
+  | 'walking'
+  | 'cycling'
+  | 'driving'
+  | 'ferry'
+  | 'pushing bike';
 
 export type ManeuerModifier =
   | 'uturn'
@@ -79,9 +85,9 @@ export interface Alternative {
 }
 
 export interface Waypoint {
-  distance: number;
   name: string;
   location: [number, number];
+  distance?: number;
   waypoint_index?: number;
   trips_index?: number;
 }

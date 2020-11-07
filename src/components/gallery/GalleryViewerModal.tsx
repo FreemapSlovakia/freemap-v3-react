@@ -263,7 +263,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                     ref={this.setImageElement}
                     className={`gallery-image ${loading ? 'loading' : ''}`}
                     src={getImageUrl(activeImageId)}
-                    alt={title}
+                    alt={title ?? undefined}
                   />
                 )}
                 {!!nextImageId && !loading && (
@@ -462,8 +462,8 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
               expertMode={expertMode}
               placement="top"
               includePoint
-              pointTitle={title}
-              pointDescription={description}
+              pointTitle={title ?? undefined}
+              pointDescription={description ?? undefined}
               url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
             >
               <FontAwesomeIcon icon="external-link" />

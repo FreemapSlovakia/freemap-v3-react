@@ -1,4 +1,5 @@
 import white1x1 from './images/1x1-white.png';
+import transparent1x1 from './images/1x1-transparent.png';
 
 const OSM_MAP_ATTR: AttributionDef = {
   type: 'map',
@@ -260,6 +261,7 @@ export const overlayLayers: LayerDef[] = [
     maxNativeZoom: 15,
     key: 'N',
     zIndex: 2,
+    errorTileUrl: transparent1x1,
     // adminOnly: true,
   },
   ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
@@ -275,6 +277,7 @@ export const overlayLayers: LayerDef[] = [
     showOnlyInExpertMode: type !== 'both',
     zIndex: 2,
     strava: true,
+    errorTileUrl: transparent1x1,
   })),
   {
     type: 'g',

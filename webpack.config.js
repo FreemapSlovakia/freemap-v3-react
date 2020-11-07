@@ -132,7 +132,7 @@ module.exports = {
         BROWSER: JSON.stringify(true),
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
         FM_MAPSERVER_URL: JSON.stringify(process.env.FM_MAPSERVER_URL),
-        MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(5),
+        MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(15),
         API_URL: JSON.stringify(
           {
             www: 'https://backend.freemap.sk',

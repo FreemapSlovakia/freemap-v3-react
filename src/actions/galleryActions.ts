@@ -37,19 +37,19 @@ export interface GalleryUser {
 export interface PictureComment {
   id: number;
   createdAt: Date;
-  user: User;
+  user: Pick<User, 'id' | 'name'>;
   comment: string;
 }
 
 export interface Picture extends LatLon {
   id: number;
-  title: string;
-  description: string;
+  title: string | null;
+  description: string | null;
   tags: string[];
   comments: PictureComment[];
   rating: number;
-  myStars: number | null;
-  user: User;
+  myStars?: number | null;
+  user: Pick<User, 'id' | 'name'>;
   createdAt: Date;
   takenAt: Date | null;
 }
