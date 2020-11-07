@@ -47,7 +47,7 @@ const initialState: TrackingState = {
 };
 
 type HasTokenOrDeviceId =
-  | { token: 'string'; deviceId: undefined }
+  | { token: string; deviceId: undefined }
   | { token: undefined; deviceId: number };
 
 export const trackingReducer = createReducer<TrackingState, RootAction>(
@@ -141,6 +141,10 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       is<StringDates<TrackPoint[]>>(payload.result)
     ) {
       const tid = params.token || params.deviceId;
+
+      if (tid === undefined) {
+        throw new Error();
+      }
 
       return {
         ...state,
