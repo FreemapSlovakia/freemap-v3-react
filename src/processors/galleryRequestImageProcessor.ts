@@ -1,9 +1,12 @@
 import {
   gallerySetImage,
   galleryRequestImage,
+  Picture,
 } from 'fm3/actions/galleryActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { assertType } from 'typescript-is';
+import { StringDates } from 'fm3/types/common';
 
 // TODO react only on getState().gallery.activeImageId change
 export const galleryRequestImageProcessor: Processor = {
@@ -17,12 +20,14 @@ export const galleryRequestImageProcessor: Processor = {
       expectedStatus: 200,
     });
 
+    const okData = assertType<StringDates<Picture>>(data);
+
     dispatch(
       gallerySetImage({
-        ...data,
-        createdAt: new Date(data.createdAt),
-        takenAt: data.takenAt && new Date(data.takenAt),
-        comments: data.comments.map((comment) => ({
+        ...okData,
+        createdAt: new Date(okData.createdAt),
+        takenAt: okData.takenAt === null ? null : new Date(okData.takenAt),
+        comments: okData.comments.map((comment) => ({
           ...comment,
           createdAt: new Date(comment.createdAt),
         })),

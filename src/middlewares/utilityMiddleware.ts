@@ -9,9 +9,9 @@ import { RootAction } from 'fm3/actions';
 
 // TODO to processors
 
-export const utilityMiddleware: Middleware<any, RootState, Dispatch> = ({
+export const utilityMiddleware: Middleware<unknown, RootState, Dispatch> = ({
   getState,
-}) => (next: Dispatch) => (action: RootAction): any => {
+}) => (next: Dispatch) => (action: RootAction): unknown => {
   const result = next(action);
 
   if (isActionOf(authSetUser, action)) {

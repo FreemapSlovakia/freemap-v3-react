@@ -23,10 +23,8 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
       return;
     }
 
-    const { id } = selection;
-
     if (selection?.type === 'draw-polygons') {
-      const { points } = getState().drawingLines.lines[id];
+      const { points } = getState().drawingLines.lines[selection.id];
 
       if (points.length > 2) {
         dispatch(
@@ -52,7 +50,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
         );
       }
     } else if (selection?.type === 'draw-lines') {
-      const { points } = getState().drawingLines.lines[id];
+      const { points } = getState().drawingLines.lines[selection.id];
 
       if (points.length > 1) {
         dispatch(
@@ -70,7 +68,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
         );
       }
     } else if (selection?.type === 'draw-points') {
-      const point = getState().drawingPoints.points[id];
+      const point = getState().drawingPoints.points[selection.id];
 
       let elevation;
 

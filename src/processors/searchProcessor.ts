@@ -10,6 +10,19 @@ import { httpRequest } from 'fm3/authAxios';
 import { LatLon } from 'fm3/types/common';
 import { point } from '@turf/helpers';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { assertType } from 'typescript-is';
+import { GeoJsonObject } from 'geojson';
+
+interface NominatimResult {
+  osm_id: number;
+  geojson: GeoJsonObject;
+  osm_type: 'node' | 'way' | 'relation';
+  lat: string;
+  lon: string;
+  display_name: string;
+  class: string;
+  type: string;
+}
 
 export const searchProcessor: Processor<typeof searchSetQuery> = {
   actionCreator: searchSetQuery,
@@ -69,7 +82,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
       cancelActions: [clearMap, searchSetQuery],
     });
 
-    const results = data
+    const results = assertType<NominatimResult[]>(data)
       .filter(
         (item) =>
           item.osm_id && item.geojson && item.osm_type && item.lat && item.lon,

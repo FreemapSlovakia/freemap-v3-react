@@ -3,6 +3,8 @@ import { authLoginWithOsm2, authSetUser } from 'fm3/actions/authActions';
 import { httpRequest } from 'fm3/authAxios';
 import { setHomeLocation } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { assertType } from 'typescript-is';
+import { User } from 'fm3/types/common';
 
 export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
   actionCreator: authLoginWithOsm2,
@@ -16,8 +18,14 @@ export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
       expectedStatus: 200,
     });
 
-    if (!getState().main.homeLocation) {
-      dispatch(setHomeLocation({ lat: data.lat, lon: data.lon }));
+    const okData = assertType<User>(data);
+
+    if (
+      !getState().main.homeLocation &&
+      typeof okData.lat === 'number' &&
+      typeof okData.lon === 'number'
+    ) {
+      dispatch(setHomeLocation({ lat: okData.lat, lon: okData.lon }));
     }
 
     dispatch(
@@ -29,7 +37,7 @@ export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
       }),
     );
 
-    dispatch(authSetUser(data));
+    dispatch(authSetUser(okData));
   },
 };
 

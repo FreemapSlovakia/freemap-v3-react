@@ -67,7 +67,7 @@ const tipKeys = tips.map(([key]) => key);
 export const handleLocationChange = (
   store: MyStore,
   location: Location<{ sq?: string }>,
-) => {
+): void => {
   const { getState, dispatch } = store;
 
   const search = document.location.search;

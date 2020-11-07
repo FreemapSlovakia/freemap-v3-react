@@ -218,15 +218,14 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
     });
 
     const getImageUrl = (id: number) =>
-      `${process.env.API_URL}/gallery/pictures/${id}/image?width=${
-        isFullscreen
-          ? window.innerWidth
-          : window.matchMedia('(min-width: 992px)').matches
-          ? 868
-          : 568
-      }`;
-
-    const sizes = isFullscreen ? undefined : '(min-width: 992px) 868px, 568px';
+      `${process.env.API_URL}/gallery/pictures/${id}/image?width=${Math.round(
+        window.devicePixelRatio *
+          (isFullscreen
+            ? window.innerWidth
+            : window.matchMedia('(min-width: 992px)').matches
+            ? 868
+            : 568),
+      )}`;
 
     return (
       <Modal show onHide={onClose} bsSize="large" keyboard={false}>
@@ -264,8 +263,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                     ref={this.setImageElement}
                     className={`gallery-image ${loading ? 'loading' : ''}`}
                     src={getImageUrl(activeImageId)}
-                    sizes={sizes}
-                    alt={title}
+                    alt={title ?? undefined}
                   />
                 )}
                 {!!nextImageId && !loading && (
@@ -273,7 +271,6 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                     key={`next-${imgKey}`}
                     style={{ display: 'none' }}
                     src={getImageUrl(nextImageId)}
-                    sizes={sizes}
                     alt="next"
                   />
                 )}
@@ -282,7 +279,6 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                     key={`prev-${imgKey}`}
                     style={{ display: 'none' }}
                     src={getImageUrl(prevImageId)}
-                    sizes={sizes}
                     alt="prev"
                   />
                 )}
@@ -414,7 +410,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                           className="stars"
                           size={22}
                           half={false}
-                          value={myStars}
+                          value={myStars ?? 0}
                           onChange={onStarsChange}
                         />
                       </div>
@@ -466,8 +462,8 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
               expertMode={expertMode}
               placement="top"
               includePoint
-              pointTitle={title}
-              pointDescription={description}
+              pointTitle={title ?? undefined}
+              pointDescription={description ?? undefined}
               url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
             >
               <FontAwesomeIcon icon="external-link" />

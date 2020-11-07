@@ -132,7 +132,13 @@ type CR = typeof combinedReducers;
 
 export type RootState = StateType<CR>;
 
-const rootReducer = reduceReducers<RootState>(combinedReducers, globalReducer);
+const rootReducer = reduceReducers<RootState>(
+  // TODO
+  // eslint-disable-next-line
+  // @ts-ignore
+  combinedReducers,
+  globalReducer,
+);
 
 processors.push(
   errorProcessor,
@@ -203,8 +209,10 @@ processors.push(
   urlProcessor,
 );
 
-export function createReduxStore() {
-  const store = createStore(
+export type MyStore = Store<RootState, RootAction>;
+
+export function createReduxStore(): MyStore {
+  return createStore(
     rootReducer as CR,
     composeWithDevTools(
       applyMiddleware(
@@ -217,8 +225,4 @@ export function createReduxStore() {
       ),
     ),
   );
-
-  return store;
 }
-
-export type MyStore = Store<RootState, RootAction>;

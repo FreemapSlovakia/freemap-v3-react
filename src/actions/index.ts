@@ -47,4 +47,4 @@ export const actions = {
   wiki,
 };
 
-export type RootAction = ActionType<typeof actions> & { meta?: any };
+export type RootAction = ActionType<typeof actions>; // & { meta?: any };

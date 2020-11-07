@@ -21,6 +21,8 @@ import {
   routePlannerSetFromCurrentPosition,
   routePlannerToggleMilestones,
   RouteAlternativeExtra,
+  PickMode,
+  RoutingMode,
 } from 'fm3/actions/routePlannerActions';
 import { setActiveModal, convertToDrawing } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
@@ -87,7 +89,7 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
   }, [handlePoiAdd]);
 
   const setFromHomeLocation = useCallback(
-    (pointType: 'start' | 'finish') => {
+    (pointType: PickMode) => {
       if (!homeLocation) {
         onMissingHomeLocation();
       } else if (pointType === 'start') {
@@ -378,13 +380,13 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onItineraryVisibilityToggle() {
     dispatch(routePlannerToggleItineraryVisibility());
   },
-  onTransportTypeChange(transportType: any) {
+  onTransportTypeChange(transportType: unknown) {
     dispatch(routePlannerSetTransportType(transportType as TransportType));
   },
-  onModeChange(mode: any) {
-    dispatch(routePlannerSetMode(mode as 'trip' | 'roundtrip' | 'route'));
+  onModeChange(mode: unknown) {
+    dispatch(routePlannerSetMode(mode as RoutingMode));
   },
-  onPickPointModeChange(pickMode: 'start' | 'finish') {
+  onPickPointModeChange(pickMode: PickMode) {
     dispatch(routePlannerSetPickMode(pickMode));
   },
   onMissingHomeLocation() {
@@ -406,8 +408,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToggleElevationChart() {
     dispatch(routePlannerToggleElevationChart());
   },
-  onAlternativeChange(index: any) {
-    dispatch(routePlannerSetActiveAlternativeIndex(index as number));
+  onAlternativeChange(index: unknown) {
+    if (typeof index === 'number') {
+      dispatch(routePlannerSetActiveAlternativeIndex(index as number));
+    }
   },
   onEndsSwap() {
     dispatch(routePlannerSwapEnds());
@@ -439,6 +443,7 @@ function imhdSummary(
   });
 
   const { price, arrival, numbers } = extra;
+
   return t('routePlanner.imhd.total.short', {
     price:
       price === undefined

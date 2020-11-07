@@ -20,7 +20,7 @@ export const authLogout = createAction('AUTH_LOGOUT')();
 
 export const authStartLogout = createAction('AUTH_START_LOGOUT')();
 
-export const authSetUser = createAction('AUTH_SET_USER')<User>();
+export const authSetUser = createAction('AUTH_SET_USER')<User | null>();
 
 export const authChooseLoginMethod = createAction('AUTH_CHOOSE_LOGIN_METHOD')();
 

@@ -181,8 +181,10 @@ const SettingsInt: React.FC<Props> = ({
                     <p>{t('settings.expert.overlayOpacity')}</p>
                     <DropdownButton
                       id="overlayOpacity"
-                      onSelect={(o) => {
-                        setSelectedOverlay(o);
+                      onSelect={(o: unknown) => {
+                        if (typeof o === 'string') {
+                          setSelectedOverlay(o);
+                        }
                       }}
                       title={
                         <>

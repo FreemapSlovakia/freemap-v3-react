@@ -1,12 +1,12 @@
 import { Tool } from './actions/mainActions';
 
-export type ToolDefinition = {
+export interface ToolDefinition {
   tool: Tool;
   icon: string;
   msgKey: string;
   kbd?: string;
   expertOnly?: boolean;
-};
+}
 
 export const toolDefinitions: ToolDefinition[] = [
   { tool: 'maps', icon: 'map', msgKey: 'maps', kbd: 'm' },

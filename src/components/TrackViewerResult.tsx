@@ -4,10 +4,10 @@ import { Tooltip, Polyline } from 'react-leaflet';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { Hotline } from 'fm3/components/Hotline';
-import turfLineSlice from '@turf/line-slice';
-import turfLength from '@turf/length';
+// import turfLineSlice from '@turf/line-slice';
+// import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
-import { point, Feature, Properties, LineString, Point } from '@turf/helpers';
+import { Feature, Properties, LineString, Point } from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
 
 import { distance, smoothElevations } from 'fm3/geoutils';
@@ -74,58 +74,58 @@ class TrackViewerResultInt extends React.Component<Props, State> {
       });
     });
 
-  // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
-  handleEachFeature = (feature, layer) => {
-    if (
-      feature.geometry.type === 'Point' &&
-      feature.properties &&
-      feature.properties.name
-    ) {
-      layer.bindTooltip(feature.properties.name, {
-        direction: 'right',
-        className: 'compact',
-      });
-    }
+  // // we keep here only business logic which needs access to the layer (otherwise use trackViewerLogic)
+  // handleEachFeature = (feature, layer) => {
+  //   if (
+  //     feature.geometry.type === 'Point' &&
+  //     feature.properties &&
+  //     feature.properties.name
+  //   ) {
+  //     layer.bindTooltip(feature.properties.name, {
+  //       direction: 'right',
+  //       className: 'compact',
+  //     });
+  //   }
 
-    if (feature.geometry.type === 'LineString') {
-      layer.on('click', (e) => {
-        this.showInfoPoint(e, feature);
-      });
+  //   if (feature.geometry.type === 'LineString') {
+  //     layer.on('click', (e) => {
+  //       this.showInfoPoint(e, feature);
+  //     });
 
-      layer.on('mouseover', (e) => {
-        this.showInfoPoint(e, feature);
-      });
+  //     layer.on('mouseover', (e) => {
+  //       this.showInfoPoint(e, feature);
+  //     });
 
-      layer.on('mouseout', () => {
-        this.setState({
-          infoLat: undefined,
-          infoLon: undefined,
-          infoDistanceKm: undefined,
-        });
-      });
-    }
-  };
+  //     layer.on('mouseout', () => {
+  //       this.setState({
+  //         infoLat: undefined,
+  //         infoLon: undefined,
+  //         infoDistanceKm: undefined,
+  //       });
+  //     });
+  //   }
+  // };
 
-  showInfoPoint = (e, feature) => {
-    const infoLat = e.latlng.lat;
-    const infoLon = e.latlng.lng;
-    const infoDistanceKm = this.computeInfoDistanceKm(
-      infoLat,
-      infoLon,
-      feature,
-    );
-    this.setState({ infoLat, infoLon, infoDistanceKm });
-  };
+  // showInfoPoint = (e, feature) => {
+  //   const infoLat = e.latlng.lat;
+  //   const infoLon = e.latlng.lng;
+  //   const infoDistanceKm = this.computeInfoDistanceKm(
+  //     infoLat,
+  //     infoLon,
+  //     feature,
+  //   );
+  //   this.setState({ infoLat, infoLon, infoDistanceKm });
+  // };
 
-  computeInfoDistanceKm = (
-    infoLat: number,
-    infoLon: number,
-    geojsonLineString,
-  ) => {
-    const p1 = point(geojsonLineString.geometry.coordinates[0]);
-    const p2 = point([infoLon, infoLat]);
-    return turfLength(turfLineSlice(p1, p2, geojsonLineString));
-  };
+  // computeInfoDistanceKm = (
+  //   infoLat: number,
+  //   infoLon: number,
+  //   geojsonLineString,
+  // ) => {
+  //   const p1 = point(geojsonLineString.geometry.coordinates[0]);
+  //   const p2 = point([infoLon, infoLat]);
+  //   return turfLength(turfLineSlice(p1, p2, geojsonLineString));
+  // };
 
   handlePointClick = () => {
     // just to prevent click propagation to map

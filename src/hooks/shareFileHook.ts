@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 
-export function useShareFile(handleShare) {
+export function useShareFile(handleShare: (files: File[]) => void): void {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       const handler = (e: MessageEvent) => {

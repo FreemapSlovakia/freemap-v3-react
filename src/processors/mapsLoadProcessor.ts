@@ -1,6 +1,7 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
+import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
+import { assertType } from 'typescript-is';
 
 export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
   actionCreator: mapsLoad,
@@ -14,17 +15,19 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         expectedStatus: 200,
       });
 
-      const map = data.data;
+      const map = assertType<{ data: MapData }>(data).data;
 
-      if (payload.ignoreMap) {
-        delete map.map.lat;
-        delete map.map.lon;
-        delete map.map.zoom;
-      }
+      if (map.map) {
+        if (payload.ignoreMap) {
+          delete map.map.lat;
+          delete map.map.lon;
+          delete map.map.zoom;
+        }
 
-      if (payload.ignoreLayers) {
-        delete map.map.mapType;
-        delete map.map.overlays;
+        if (payload.ignoreLayers) {
+          delete map.map.mapType;
+          delete map.map.overlays;
+        }
       }
 
       dispatch(mapsDataLoaded(map));

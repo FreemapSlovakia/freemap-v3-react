@@ -45,11 +45,11 @@ const ObjectsMenuInt: React.FC<Props> = ({
   }, [dropdownOpened]);
 
   const handleSelect = useCallback(
-    (id: any) => {
+    (id: unknown) => {
       if (zoom < 12) {
         onLowZoom();
-      } else {
-        onSearch(id as number);
+      } else if (typeof id === 'number') {
+        onSearch(id);
       }
     },
     [zoom, onLowZoom, onSearch],

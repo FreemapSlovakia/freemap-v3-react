@@ -16,6 +16,7 @@ import { withTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
 import { toolDefinitions } from 'fm3/toolDefinitions';
+import { is } from 'typescript-is';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -42,12 +43,14 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   }, []);
 
   const handleToolSelect = useCallback(
-    (tool0: any) => {
-      const tool = tool0 as Tool | null;
+    (tool0: unknown) => {
+      if (is<Tool | null>(tool0)) {
+        const tool = tool0 as Tool | null;
 
-      setShow(false);
+        setShow(false);
 
-      onSelect(tool ? { type: tool } : null);
+        onSelect(tool ? { type: tool } : null);
+      }
     },
     [onSelect],
   );

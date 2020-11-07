@@ -65,7 +65,7 @@ export function tooltipText(
   nf: Intl.NumberFormat,
   { battery, ts, gsmSignal, speed, message, altitude }: TrackPoint,
   label?: string | null,
-) {
+): JSX.Element {
   // TODO bearing
 
   const items: string[][] = [];

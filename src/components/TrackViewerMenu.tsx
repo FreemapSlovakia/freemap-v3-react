@@ -29,6 +29,7 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
 
 import 'fm3/styles/trackViewer.scss';
+import { assertType } from 'typescript-is';
 
 type Props = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatchToProps> & {
@@ -127,8 +128,10 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onServerUpload() {
     dispatch(trackViewerUploadTrack());
   },
-  onColorizeTrackBy(approach: any) {
-    dispatch(trackViewerColorizeTrackBy(approach as ColorizingMode | null));
+  onColorizeTrackBy(approach: unknown) {
+    dispatch(
+      trackViewerColorizeTrackBy(assertType<ColorizingMode | null>(approach)),
+    );
   },
   onShowTrackInfo() {
     dispatch(

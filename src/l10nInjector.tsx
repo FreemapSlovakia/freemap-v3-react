@@ -4,7 +4,7 @@ import { Diff } from 'utility-types';
 import { connect } from 'react-redux';
 import { RootState } from './storeCreator';
 
-function tx(key: string, params: { [key: string]: any } = {}, dflt = '') {
+function tx(key: string, params: { [key: string]: unknown } = {}, dflt = '') {
   const t = translate(window.translations, key, dflt);
   return typeof t === 'function' ? t(params) : splitAndSubstitute(t, params);
 }
@@ -15,6 +15,7 @@ interface InjectedProps {
   t: Translator;
 }
 
+// eslint-disable-next-line
 export const withTranslator = <BaseProps extends InjectedProps>(
   BaseComponent: React.ComponentType<BaseProps>,
 ) => {

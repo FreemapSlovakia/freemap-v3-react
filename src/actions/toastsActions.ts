@@ -1,4 +1,4 @@
-import { createAction } from 'typesafe-actions';
+import { createAction, PayloadAction } from 'typesafe-actions';
 import { RootAction } from '.';
 
 export interface ToastAction {
@@ -11,7 +11,7 @@ export interface ToastAction {
 export interface Toast {
   message?: string;
   messageKey?: string;
-  messageParams?: { [key: string]: any };
+  messageParams?: { [key: string]: unknown };
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
   actions?: ToastAction[];
@@ -47,8 +47,8 @@ export const toastsRestartTimeout = createAction('TOASTS_RESTART_TIMEOUT')<
 export function toastsAddError(
   messageKey?: string,
   err?: Error,
-  params: { [key: string]: any } = {},
-) {
+  params: { [key: string]: unknown } = {},
+): PayloadAction<'TOASTS_ADD', ResolvedToast> {
   return toastsAdd({
     id: Math.random().toString(36).slice(2),
     messageKey,

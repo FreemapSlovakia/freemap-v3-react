@@ -3,9 +3,17 @@ import { createAction } from 'typesafe-actions';
 import { RouteMode } from 'fm3/reducers/routePlannerReducer';
 import { TransportType } from 'fm3/transportTypeDefs';
 
+export type PickMode = 'start' | 'finish';
+
 export type RoutingMode = 'trip' | 'roundtrip' | 'route';
 
-export type SliceMode = 'foot';
+export type SliceMode =
+  | 'foot'
+  | 'walking'
+  | 'cycling'
+  | 'driving'
+  | 'ferry'
+  | 'pushing bike';
 
 export type ManeuerModifier =
   | 'uturn'
@@ -77,9 +85,9 @@ export interface Alternative {
 }
 
 export interface Waypoint {
-  distance: number;
   name: string;
   location: [number, number];
+  distance?: number;
   waypoint_index?: number;
   trips_index?: number;
 }
@@ -96,7 +104,7 @@ export const routePlannerSetFinish = createAction('ROUTE_PLANNER_SET_FINISH')<{
 
 export const routePlannerSetFromCurrentPosition = createAction(
   'ROUTE_PLANNER_SET_FROM_CURRENT_POSITION',
-)<'start' | 'finish'>();
+)<PickMode>();
 
 export const routePlannerAddMidpoint = createAction(
   'ROUTE_PLANNER_ADD_MIDPOINT',
@@ -120,7 +128,7 @@ export const routePlannerSetMode = createAction('ROUTE_PLANNER_SET_MODE')<
 
 export const routePlannerSetPickMode = createAction(
   'ROUTE_PLANNER_SET_PICK_MODE',
-)<'start' | 'finish'>();
+)<PickMode>();
 
 export const routePlannerSetResult = createAction('ROUTE_PLANNER_SET_RESULT')<{
   timestamp: number;

@@ -7,13 +7,18 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
+import { is } from 'typescript-is';
 
 let reopenTs: number | undefined;
 
-export const trackingMiddleware: Middleware<any, RootState, Dispatch> = ({
+type HasTokenOrDeviceId =
+  | { token: 'string'; deviceId?: undefined }
+  | { token?: undefined; deviceId: number };
+
+export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
   dispatch,
   getState,
-}) => (next: Dispatch) => (action: RootAction): any => {
+}) => (next: Dispatch) => (action: RootAction): unknown => {
   if (
     action.type === getType(setActiveModal) &&
     action.payload === 'tracking-my' &&
@@ -23,21 +28,24 @@ export const trackingMiddleware: Middleware<any, RootState, Dispatch> = ({
   }
 
   if (action.type === getType(rpcResponse)) {
+    const { payload } = action;
+
     if (
-      action.payload.method === 'tracking.subscribe' &&
-      action.payload.type === 'error'
+      payload.method === 'tracking.subscribe' &&
+      payload.type === 'error' &&
+      is<HasTokenOrDeviceId>(payload.params)
     ) {
       dispatch(
         toastsAdd({
           id: 'tracking.subscribeError',
           messageKey:
-            action.payload.error.code === 404
+            payload.error.code === 404
               ? 'tracking.subscribeNotFound'
               : 'tracking.subscribeError',
           messageParams: {
-            id: action.payload.params.token || action.payload.params.deviceId,
+            id: payload.params.token || payload.params.deviceId,
           },
-          style: action.payload.error.code === 404 ? 'warning' : 'danger',
+          style: payload.error.code === 404 ? 'warning' : 'danger',
         }),
       );
     }

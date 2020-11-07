@@ -11,7 +11,7 @@ export function setupTimeout(
   id: string,
   timeout: number,
   dispatch: Dispatch<RootAction>,
-) {
+): void {
   const timeoutId = window.setTimeout(() => {
     timeoutMap.delete(id);
     dispatch(toastsRemove(id));
@@ -23,8 +23,9 @@ export function setupTimeout(
   });
 }
 
-export function removeTimeout(id: string) {
+export function removeTimeout(id: string): void {
   const tm = timeoutMap.get(id);
+
   if (tm) {
     timeoutMap.delete(id);
     clearTimeout(tm.timeoutId);

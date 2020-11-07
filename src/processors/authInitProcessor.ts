@@ -5,6 +5,8 @@ import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { history } from 'fm3/historyHolder';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { storage } from 'fm3/storage';
+import { assertType } from 'typescript-is';
+import { User } from 'fm3/types/common';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,
@@ -28,7 +30,9 @@ export const authInitProcessor: Processor = {
         cancelActions: [],
       });
 
-      dispatch(authSetUser(res.status === 200 ? res.data : null));
+      dispatch(
+        authSetUser(res.status === 200 ? assertType<User>(res.data) : null),
+      );
     }
 
     // show tips only if not embedded and there are no other query parameters except 'map' or 'layers'

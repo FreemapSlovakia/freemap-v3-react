@@ -1,10 +1,18 @@
-import { lineString, point, Feature, featureCollection } from '@turf/helpers';
+import {
+  lineString,
+  point,
+  Feature,
+  featureCollection,
+  Point,
+  LineString,
+} from '@turf/helpers';
 
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
 import { httpRequest } from 'fm3/authAxios';
-import { FeatureCollection } from 'geojson';
+import { assertType } from 'typescript-is';
+import { OsmResult, OsmRelation } from 'fm3/types/common';
 
 export const osmLoadRelationProcessor: Processor = {
   actionCreator: osmLoadRelation,
@@ -19,10 +27,10 @@ export const osmLoadRelationProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const nodes: any = {};
-    const ways: any = {};
+    const nodes: Record<number, [number, number]> = {};
+    const ways: Record<number, [number, number][]> = {};
 
-    for (const item of data.elements) {
+    for (const item of assertType<OsmResult>(data).elements) {
       if (item.type === 'node') {
         nodes[item.id] = [item.lon, item.lat];
       } else if (item.type === 'way') {
@@ -30,9 +38,11 @@ export const osmLoadRelationProcessor: Processor = {
       }
     }
 
-    const relations = data.elements.filter((el) => el.type === 'relation');
+    const relations = assertType<OsmResult>(data).elements.filter(
+      (el) => el.type === 'relation',
+    ) as OsmRelation[];
 
-    const features: Feature[] = [];
+    const features: Feature<Point | LineString>[] = [];
 
     for (const relation of relations) {
       for (const member of relation.members) {
@@ -60,7 +70,7 @@ export const osmLoadRelationProcessor: Processor = {
 
     dispatch(
       trackViewerSetData({
-        trackGeojson: trackGeojson as FeatureCollection, // TODO fix type incompatibility
+        trackGeojson,
         startPoints: [],
         finishPoints: [],
       }),

@@ -75,7 +75,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onTrackedDevicesClick() {
     dispatch(setActiveModal('tracking-watched'));
   },
-  onVisualChange(visual: any) {
+  onVisualChange(visual: unknown) {
     switch (visual) {
       case 'line':
         dispatch(trackingActions.setShowPoints(false));

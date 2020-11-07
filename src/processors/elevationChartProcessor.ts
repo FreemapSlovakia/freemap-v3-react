@@ -15,6 +15,8 @@ import { Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
+import { Feature, Geometries, LineString } from '@turf/helpers';
+import { RootState } from 'fm3/storeCreator';
 
 export const elevationChartProcessor: Processor = {
   actionCreator: elevationChartSetTrackGeojson,
@@ -22,7 +24,9 @@ export const elevationChartProcessor: Processor = {
   handle: async ({ dispatch, getState }) => {
     const { trackGeojson } = getState().elevationChart;
 
-    if (containsElevations(trackGeojson)) {
+    if (!trackGeojson) {
+      // should not happen
+    } else if (containsElevations(trackGeojson)) {
       resolveElevationProfilePointsLocally(trackGeojson, dispatch);
     } else {
       await resolveElevationProfilePointsViaApi(
@@ -35,7 +39,7 @@ export const elevationChartProcessor: Processor = {
 };
 
 function resolveElevationProfilePointsLocally(
-  trackGeojson,
+  trackGeojson: Feature<Geometries>,
   dispatch: Dispatch<RootAction>,
 ) {
   let dist = 0;
@@ -65,8 +69,8 @@ function resolveElevationProfilePointsLocally(
 }
 
 async function resolveElevationProfilePointsViaApi(
-  getState,
-  trackGeojson,
+  getState: () => RootState,
+  trackGeojson: Feature<LineString>,
   dispatch: Dispatch<RootAction>,
 ) {
   const totalDistanceInKm = turfLength(trackGeojson);

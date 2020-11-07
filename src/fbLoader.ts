@@ -1,6 +1,6 @@
 let fbPromise: Promise<undefined>;
 
-export function loadFb() {
+export function loadFb(): Promise<undefined> {
   if (fbPromise) {
     return fbPromise;
   }

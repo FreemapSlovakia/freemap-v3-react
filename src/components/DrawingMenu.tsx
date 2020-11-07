@@ -1,7 +1,7 @@
 import React, { useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
-import { lineString } from '@turf/helpers';
+import { Feature, LineString, lineString } from '@turf/helpers';
 
 import { withTranslator, Translator } from 'fm3/l10nInjector';
 
@@ -19,7 +19,6 @@ import Button from 'react-bootstrap/lib/Button';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
-import { GeoJsonObject } from 'geojson';
 import {
   drawingPointAdd,
   drawingPointMeasure,
@@ -185,7 +184,7 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
   onToolSet(tool: Tool | null) {
     dispatch(selectFeature(tool && { type: tool }));
   },
-  onElevationChartTrackGeojsonSet(trackGeojson: GeoJsonObject) {
+  onElevationChartTrackGeojsonSet(trackGeojson: Feature<LineString>) {
     dispatch(elevationChartSetTrackGeojson(trackGeojson));
   },
   onElevationChartClose() {

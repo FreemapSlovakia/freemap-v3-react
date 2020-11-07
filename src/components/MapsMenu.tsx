@@ -99,8 +99,10 @@ const mapStateToProps = (state: RootState) => ({
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSelect(id: any) {
-    dispatch(mapsLoad({ id }));
+  onSelect(id: unknown) {
+    if (typeof id === 'number') {
+      dispatch(mapsLoad({ id }));
+    }
   },
   onRename() {
     dispatch(mapsRename());

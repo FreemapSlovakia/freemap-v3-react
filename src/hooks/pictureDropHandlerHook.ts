@@ -3,13 +3,16 @@ import ExifReader from 'exifreader';
 import { latLonToString } from 'fm3/geoutils';
 import { GalleryItem } from 'fm3/actions/galleryActions';
 import { useCallback } from 'react';
+import { is } from 'typescript-is';
 
 let nextId = 1;
 
+type HasOrientation = { Orientation: { value: number } };
+
 function loadPreview(
   file: File,
-  tags: { [key: string]: any },
-  cb: (err?: any, dataUrl?: string) => void,
+  tags: { [key: string]: unknown },
+  cb: (err?: unknown, dataUrl?: string) => void,
 ) {
   const img = new Image();
   const url = URL.createObjectURL(file);
@@ -26,7 +29,7 @@ function loadPreview(
     const ratio = 618 / img.naturalWidth;
     const width = img.naturalWidth * ratio;
     const height = img.naturalHeight * ratio;
-    const o = (tags.Orientation && tags.Orientation.value) || 1;
+    const o = is<HasOrientation>(tags) ? tags.Orientation.value : 1;
     canvas.width = width;
     canvas.height = height;
 
@@ -73,7 +76,7 @@ function loadPreview(
         // });
         cb(undefined, canvas2.toDataURL());
       })
-      .catch((err: any) => {
+      .catch((err: unknown) => {
         cb(err);
       });
   };
@@ -86,9 +89,9 @@ export function usePictureDropHandler(
   language: string,
   onItemAdd: (item: GalleryItem) => void,
   onItemChange: (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => void,
-) {
+): (files: File[]) => void {
   const processFile = useCallback(
-    (file: File, cb: (err?: any) => void) => {
+    (file: File, cb: (err?: unknown) => void) => {
       const reader = new FileReader();
 
       reader.onerror = () => {
@@ -131,7 +134,7 @@ export function usePictureDropHandler(
 
         const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
 
-        const NS = { S: -1, N: 1 };
+        const NS: Record<string, number> = { S: -1, N: 1 };
 
         const lat =
           rawLat *
@@ -145,7 +148,7 @@ export function usePictureDropHandler(
 
         const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
 
-        const EW = { W: -1, E: 1 };
+        const EW: Record<string, number> = { W: -1, E: 1 };
 
         const lon =
           rawLon *
@@ -198,7 +201,7 @@ export function usePictureDropHandler(
   return useCallback(
     (acceptedFiles: File[] /* , rejectedFiles: File[] */) => {
       for (const accpetedFile of acceptedFiles) {
-        processFile(accpetedFile, (err?: Error) => {
+        processFile(accpetedFile, (err?: unknown) => {
           if (err) {
             // TODO
           }

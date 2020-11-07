@@ -4,7 +4,29 @@ import {
   wikiSetPoints,
   wikiLoadPreview,
   wikiSetPreview,
+  WikiPreview,
 } from 'fm3/actions/wikiActions';
+import { assertType } from 'typescript-is';
+
+interface WikiResponse1 {
+  query: {
+    pages: { [key: string]: { langlinks: { lang: string; '*': string }[] } };
+  };
+  continue?: Record<string, unknown>;
+}
+
+interface WikiResponse2 {
+  query: {
+    pages: {
+      [key: string]: {
+        title: string;
+        extract: string;
+        thumbnail: { source: string; width: number; height: number };
+      };
+    };
+  };
+  continue?: Record<string, unknown>;
+}
 
 export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   actionCreator: wikiLoadPreview,
@@ -16,7 +38,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
     const { language } = getState().l10n;
 
     if (language !== lang) {
-      let cont = {};
+      let cont: Record<string, unknown> | undefined = {};
 
       do {
         const { data } = await httpRequest({
@@ -35,9 +57,11 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
           cancelActions: [wikiLoadPreview, wikiSetPoints],
         });
 
-        const item = (Object.values(
-          data.query.pages,
-        )[0] as any)?.langlinks?.find((ll: any) => ll.lang == language);
+        const okData: WikiResponse1 = assertType<WikiResponse1>(data);
+
+        const item = Object.values(okData.query.pages)[0]?.langlinks?.find(
+          (ll) => ll.lang == language,
+        );
 
         if (item) {
           lang = item.lang;
@@ -46,7 +70,7 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
           break;
         }
 
-        cont = data.continue;
+        cont = okData.continue;
       } while (cont);
     }
 
@@ -70,10 +94,12 @@ export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
       cancelActions: [wikiLoadPreview, wikiSetPoints],
     });
 
+    const okData = assertType<WikiResponse2>(data);
+
     // TODO validate
 
-    const preview: any = {
-      ...(Object.values(data.query.pages)[0] as any),
+    const preview: WikiPreview = {
+      ...Object.values(okData.query.pages)[0],
       lang,
       langTitle: title,
     };

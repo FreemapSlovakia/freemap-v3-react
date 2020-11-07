@@ -1,29 +1,29 @@
 import { createAction } from 'typesafe-actions';
 
-interface RpcResponse {
+interface RpcResponseBase {
   method: string;
-  params: any;
-  tag?: any;
+  params: unknown;
+  tag?: unknown;
 }
 
-interface RpcResultResponse extends RpcResponse {
+export interface RpcResultResponse extends RpcResponseBase {
   type: 'result';
-  result: any;
+  result: unknown;
 }
 
-interface RpcErrorResponse extends RpcResponse {
+export interface RpcErrorResponse extends RpcResponseBase {
   type: 'error';
   error: {
     code: number;
     message: string;
-    data?: any;
+    data?: unknown;
   };
 }
 
 export const rpcCall = createAction('RPC_CALL')<{
   method: string;
-  params: any;
-  tag?: any;
+  params: unknown;
+  tag?: unknown;
 }>();
 
 export const rpcResponse = createAction('RPC_RESPONSE')<
@@ -32,5 +32,5 @@ export const rpcResponse = createAction('RPC_RESPONSE')<
 
 export const rpcEvent = createAction('RPC_EVENT')<{
   method: string;
-  params: any;
+  params: unknown;
 }>();

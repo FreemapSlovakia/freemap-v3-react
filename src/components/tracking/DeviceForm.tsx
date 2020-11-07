@@ -24,7 +24,7 @@ type Props = ReturnType<typeof mapStateToProps> &
     t: Translator;
   };
 
-const types = {
+const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
   imei: 'TK102B IMEI',
   did: 'TK102B Device ID',

@@ -14,6 +14,9 @@ import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { assertType } from 'typescript-is';
+import { StringDates } from 'fm3/types/common';
+import { Picture } from 'fm3/actions/galleryActions';
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
@@ -77,7 +80,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
         expectedStatus: 200,
       });
 
-      addPictures(doc, data);
+      addPictures(doc, assertType<StringDates<Picture[]>>(data));
     }
 
     if (set.has('drawingLines')) {
@@ -112,7 +115,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
 
     const r = getSupportedGpxElements(doc);
 
-    const q = {
+    const q: Record<string, Node[]> = {
       wpt: [],
       rte: [],
       trk: [],
@@ -266,7 +269,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
               .build()
               .setVisible(true);
 
-            function pickerCallback(data) {
+            function pickerCallback(data: any) {
               switch (data[pkr.Response.ACTION]) {
                 case pkr.Action.PICKED:
                   resolve(data[pkr.Response.DOCUMENTS][0]);
@@ -341,11 +344,11 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
   },
 };
 
-function addPictures(doc: Document, pictures) {
+function addPictures(doc: Document, pictures: StringDates<Picture>[]) {
   pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
-      lat,
-      lon,
+      lat: String(lat),
+      lon: String(lon),
     });
 
     if (takenAt) {

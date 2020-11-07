@@ -58,8 +58,8 @@ const ChangesetsMenuInt: React.FC<Props> = ({
       <ButtonGroup>
         <DropdownButton
           id="days"
-          onSelect={(d) => {
-            if (canSearchWithThisAmountOfDays(d)) {
+          onSelect={(d: unknown) => {
+            if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
               onChangesetsSetDays(d);
             }
           }}

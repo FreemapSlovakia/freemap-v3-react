@@ -6,6 +6,7 @@ import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('hu', {
   minimumFractionDigits: 0,
@@ -30,7 +31,7 @@ const errorMarkup = `
   Köszönjük!
 </p>`;
 
-export default {
+const hu: Messages = {
   general: {
     elevationProfile: 'Magassági profil',
     save: 'Mentés',
@@ -687,7 +688,6 @@ export default {
       85: 'Függönybolt',
       86: 'Csemegés',
       87: 'Nagyáruház',
-      88: 'Búvárfelszerelés-bolt',
       89: 'Vegytisztító',
       90: 'Barkácsbolt',
       91: 'Szórakoztató elektronikai bolt',
@@ -696,7 +696,6 @@ export default {
       94: 'Termelői bolt',
       95: 'Virágüzlet',
       96: 'Képkeretbolt',
-      97: 'Kazánbolt',
       98: 'Temetkezési iroda',
       99: 'Bútorbolt',
       100: 'Kertészet',
@@ -722,7 +721,6 @@ export default {
       120: 'Hangszerüzlet',
       121: 'Újságárus',
       122: 'Optika',
-      123: 'Biotermékeket árusító bolt',
       124: 'Túrafelszerelés-bolt',
       125: 'Festékbolt',
       126: 'Zálogház',
@@ -1274,6 +1272,16 @@ export default {
   pdfExport: {
     export: 'Export', // TODO translate
     exportError: 'Error exporting map: {err}', // TODO translate
+    exporting: 'Please wait, exporting map…', // TODO translate
+    // TODO translate
+    exported: ({ url }) => (
+      <>
+        Map export has finished.{' '}
+        <a href={url} target="_blank">
+          Open.
+        </a>
+      </>
+    ),
     area: 'Exportálandó terület:',
     areas: {
       visible: 'A térkép látható területe',
@@ -1367,6 +1375,8 @@ export default {
   },
 };
 
-function numberize(n, words) {
+function numberize(n: number, words: [string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : words[0];
 }
+
+export default hu;

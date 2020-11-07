@@ -56,10 +56,12 @@ const MapSwitchButtonInt: React.FC<Props> = ({
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: any) => {
+    (overlay: unknown) => {
       const s = new Set(overlays);
 
-      if (s.has(overlay)) {
+      if (typeof overlay !== 'string') {
+        // uh-oh
+      } else if (s.has(overlay)) {
         s.delete(overlay);
       } else {
         s.add(overlay);
@@ -203,7 +205,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                 <MenuItem
                   key={type}
                   eventKey={type}
-                  onSelect={handleOverlaySelect as any}
+                  onSelect={handleOverlaySelect}
                 >
                   <FontAwesomeIcon
                     icon={
@@ -265,9 +267,7 @@ const mapStateToProps = (state: RootState) => ({
   mapType: state.map.mapType,
   overlays: state.map.overlays,
   expertMode: state.main.expertMode,
-  pictureFilterIsActive: Object.keys(state.gallery.filter).some(
-    (key) => state.gallery.filter[key],
-  ),
+  pictureFilterIsActive: Object.keys(state.gallery.filter).length > 0,
   isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
   language: state.l10n.language,
 });

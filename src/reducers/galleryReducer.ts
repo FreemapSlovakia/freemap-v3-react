@@ -294,8 +294,8 @@ export const galleryReducer = createReducer<GalleryState, RootAction>(
       editModel: state.editModel
         ? null
         : {
-            title: state.image ? state.image.title : '',
-            description: state.image ? state.image.description : '',
+            title: state.image?.title ?? '',
+            description: state.image?.description ?? '',
             takenAt: !state.image
               ? ''
               : state.image.takenAt
@@ -365,7 +365,7 @@ function getErrors(item: GalleryItem | PictureModel) {
   return errors;
 }
 
-function safeParseCoordinates(coords) {
+function safeParseCoordinates(coords: string) {
   try {
     return parseCoordinates(coords);
   } catch (err) {

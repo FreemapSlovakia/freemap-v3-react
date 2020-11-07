@@ -1,6 +1,6 @@
 let gapiPromise: Promise<undefined>;
 
-export function loadGapi() {
+export function loadGapi(): Promise<undefined> {
   if (gapiPromise) {
     return gapiPromise;
   }
@@ -36,7 +36,7 @@ export async function getAuth2(
   cfg: {
     scope?: string;
   } = {},
-) {
+): Promise<void> {
   await loadGapi();
 
   await new Promise((resolve) => {

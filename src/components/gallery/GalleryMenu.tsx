@@ -61,9 +61,7 @@ const GalleryMenuInt: React.FC<Props> = ({
 };
 
 const mapStateToProps = (state: RootState) => ({
-  filterIsActive: Object.keys(state.gallery.filter).some(
-    (key) => state.gallery.filter[key],
-  ),
+  filterIsActive: Object.keys(state.gallery.filter).length > 0,
 });
 
 const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({

@@ -6,7 +6,7 @@ export function useGpxDropHandler(
   onDrop: (gpx: string) => void,
   onLoadError: (msg: string) => void,
   t: Translator,
-) {
+): (acceptedFiles: File[], fileRejections?: FileRejection[]) => void {
   return useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {
       if (fileRejections.length) {

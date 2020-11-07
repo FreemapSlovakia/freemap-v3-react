@@ -7,7 +7,7 @@ interface Props extends PathProps {
   positions: (readonly [number, number, number])[];
   outlineWidth: number;
   outlineColor?: string;
-  palette: any; // TODO
+  palette: Record<number, string>;
   min?: number;
   max?: number;
   weight?: number; // TODO ingerited from PathProps; should we actually extend from Path?

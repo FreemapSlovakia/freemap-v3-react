@@ -1,4 +1,4 @@
-declare var self: ServiceWorkerGlobalScope & { __WB_MANIFEST: any };
+declare var self: ServiceWorkerGlobalScope & { __WB_MANIFEST: unknown };
 
 const CACHE_NAME = 'offline-html';
 

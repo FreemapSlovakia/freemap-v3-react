@@ -21,7 +21,7 @@ export function createElement(
   return elem;
 }
 
-export function addAttribute(elem: Element, name: string, value: string) {
+export function addAttribute(elem: Element, name: string, value: string): void {
   const attr = document.createAttribute(name);
   attr.value = value;
   elem.setAttributeNode(attr);

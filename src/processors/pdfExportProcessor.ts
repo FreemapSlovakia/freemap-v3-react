@@ -9,8 +9,9 @@ import {
   polygon,
   Feature,
   FeatureCollection,
-  Geometry,
+  Geometries,
 } from '@turf/helpers';
+import { assertType } from 'typescript-is';
 
 const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
@@ -22,7 +23,7 @@ const geometryTypeMapping = {
   MultiLineString: 'polyline',
   Point: 'point',
   MultiPoint: 'point',
-};
+} as const;
 
 export const exportPdfProcessor: Processor<typeof exportPdf> = {
   actionCreator: exportPdf,
@@ -77,7 +78,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       }
     }
 
-    const features: Feature<Geometry>[] = [];
+    const features: Feature<Geometries>[] = [];
 
     if (drawing) {
       const { lines } = getState().drawingLines;
@@ -138,7 +139,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       const { trackGeojson } = getState().trackViewer;
 
       if (trackGeojson && trackGeojson.type === 'FeatureCollection') {
-        features.push(...(trackGeojson.features as any));
+        features.push(...trackGeojson.features);
       }
     }
 
@@ -158,7 +159,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
 
     const layers: { styles: string[]; geojson: FeatureCollection }[] = [];
 
-    for (const type in f) {
+    for (const type of ['polygon', 'polyline', 'point'] as const) {
       if (f[type].length) {
         layers.push({
           styles: [`custom-${type}s`],
@@ -194,6 +195,8 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       expectedStatus: 200,
     });
 
+    const okData = assertType<{ token: string }>(data);
+
     dispatch(setActiveModal(null));
 
     dispatch(
@@ -211,7 +214,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
           method: 'HEAD',
           url: `${fmMapserverUrl}/export`,
           params: {
-            token: data.token,
+            token: okData.token,
           },
           expectedStatus: 200,
         });
@@ -229,7 +232,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         id: 'pdfExport.export',
         messageKey: 'pdfExport.exported',
         messageParams: {
-          url: `${fmMapserverUrl}/export?token=${data.token}`,
+          url: `${fmMapserverUrl}/export?token=${okData.token}`,
         },
         style: 'info',
       }),

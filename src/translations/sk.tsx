@@ -6,6 +6,7 @@ import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('sk', {
   minimumFractionDigits: 0,
@@ -29,7 +30,7 @@ const errorMarkup = `<h1>Chyba aplikácie</h1>
   Ďakujeme.
 </p>`;
 
-export default {
+const sk: Messages = {
   general: {
     elevationProfile: 'Výškový profil',
     save: 'Uložiť',
@@ -1084,7 +1085,7 @@ export default {
       pedestrian: 'pešia zóna',
       unknown: 'neznámy',
       living_street: 'Obytná zóna',
-      construction: 'Ve výstavbě',
+      construction: 'Vo výstavbe',
     },
     bicycleTypes: {
       'road-bike': 'cestný',
@@ -1164,7 +1165,7 @@ export default {
       watchPrivately: 'Sledovať privátne',
       watch: 'Sledovať',
       delete: 'Zmazať zariadenie?',
-      modifyTitle: ({ name }: { name: string }) => (
+      modifyTitle: ({ name }) => (
         <>
           Upraviť zariadenie <i>{name}</i>
         </>
@@ -1376,3 +1377,5 @@ export default {
 function numberize(n: number, words: [string, string, string]) {
   return n < 1 ? words[0] : n < 2 ? words[1] : n < 5 ? words[2] : words[0];
 }
+
+export default sk;
