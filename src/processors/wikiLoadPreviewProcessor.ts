@@ -21,7 +21,7 @@ interface WikiResponse2 {
       [key: string]: {
         title: string;
         extract: string;
-        thumbnail: { source: string; width: number; height: number };
+        thumbnail?: { source: string; width: number; height: number };
       };
     };
   };
