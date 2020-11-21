@@ -1,6 +1,6 @@
-let fbPromise: Promise<undefined>;
+let fbPromise: Promise<void>;
 
-export function loadFb(): Promise<undefined> {
+export function loadFb(): Promise<void> {
   if (fbPromise) {
     return fbPromise;
   }
@@ -15,7 +15,7 @@ export function loadFb(): Promise<undefined> {
     // FB.AppEvents.logPageView();
   };
 
-  fbPromise = new Promise((resolve, reject) => {
+  fbPromise = new Promise<void>((resolve, reject) => {
     const js = document.createElement('script');
 
     js.async = true;

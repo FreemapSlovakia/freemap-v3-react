@@ -8,7 +8,9 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
-export const galleryRequestImagesByOrderProcessor: Processor<typeof galleryList> = {
+export const galleryRequestImagesByOrderProcessor: Processor<
+  typeof galleryList
+> = {
   actionCreator: galleryList,
   errorKey: 'gallery.picturesFetchingError',
   handle: async ({ getState, dispatch, action }) => {

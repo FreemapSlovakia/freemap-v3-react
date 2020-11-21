@@ -4,7 +4,9 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { Device } from 'fm3/types/trackingTypes';
 import { assertType } from 'typescript-is';
 
-export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> = {
+export const saveDeviceProcessor: Processor<
+  typeof trackingActions.saveDevice
+> = {
   actionCreator: trackingActions.saveDevice,
   errorKey: 'tracking.savingError', // TODO
   handle: async ({ dispatch, getState, action }) => {
@@ -32,7 +34,9 @@ export const saveDeviceProcessor: Processor<typeof trackingActions.saveDevice> =
   },
 };
 
-export const loadDevicesProcessor: Processor<typeof trackingActions.loadDevices> = {
+export const loadDevicesProcessor: Processor<
+  typeof trackingActions.loadDevices
+> = {
   actionCreator: trackingActions.loadDevices,
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ dispatch, getState }) => {
@@ -54,7 +58,9 @@ export const loadDevicesProcessor: Processor<typeof trackingActions.loadDevices>
   },
 };
 
-export const deleteDeviceProcessor: Processor<typeof trackingActions.deleteDevice> = {
+export const deleteDeviceProcessor: Processor<
+  typeof trackingActions.deleteDevice
+> = {
   actionCreator: trackingActions.deleteDevice,
   errorKey: 'tracking.deleteError', // TODO
   handle: async ({ dispatch, getState, action }) => {

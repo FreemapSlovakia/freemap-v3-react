@@ -5,7 +5,9 @@ import {
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 
-export const gallerySubmitStarsProcessor: Processor<typeof gallerySubmitStars> = {
+export const gallerySubmitStarsProcessor: Processor<
+  typeof gallerySubmitStars
+> = {
   actionCreator: gallerySubmitStars,
   errorKey: 'gallery.ratingError',
   handle: async ({ getState, dispatch, action }) => {

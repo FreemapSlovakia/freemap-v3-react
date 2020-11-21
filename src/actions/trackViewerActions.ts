@@ -42,6 +42,6 @@ export const trackViewerToggleElevationChart = createAction(
   'TRACK_VIEWER_TOGGLE_ELEVATION_CHART',
 )();
 
-export const trackViewerGpxLoad = createAction('TRACK_VIEWER_GPX_LOAD')<
-  string
->();
+export const trackViewerGpxLoad = createAction(
+  'TRACK_VIEWER_GPX_LOAD',
+)<string>();

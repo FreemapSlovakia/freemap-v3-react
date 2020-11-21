@@ -6,7 +6,9 @@ import {
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getCurrentPosition } from 'fm3/geoutils';
 
-export const routePlannerSetFromCurrentPositionProcessor: Processor<typeof routePlannerSetFromCurrentPosition> = {
+export const routePlannerSetFromCurrentPositionProcessor: Processor<
+  typeof routePlannerSetFromCurrentPosition
+> = {
   actionCreator: routePlannerSetFromCurrentPosition,
   errorKey: 'routePlanner.gpsError',
   handle: async ({ dispatch, action }) => {

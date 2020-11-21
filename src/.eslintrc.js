@@ -30,6 +30,7 @@ module.exports = {
       version: 'detect',
     },
   },
+  ignorePatterns: ['.eslintrc.js'],
   rules: {
     '@typescript-eslint/no-empty-function': 0,
     '@typescript-eslint/no-use-before-define': 0,

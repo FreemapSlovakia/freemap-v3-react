@@ -7,7 +7,9 @@ import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { geoJSON } from 'leaflet';
 import { FeatureCollection, Geometries } from '@turf/helpers';
 
-export const trackViewerSetTrackDataProcessor: Processor<typeof trackViewerSetData> = {
+export const trackViewerSetTrackDataProcessor: Processor<
+  typeof trackViewerSetData
+> = {
   actionCreator: trackViewerSetData,
   transform: ({ action }) => {
     if (!action.payload.trackGpx) {

@@ -20,9 +20,9 @@ export const trackingActions = {
     string | number
   >(),
 
-  saveTrackedDevice: createAction('TRACKING_SAVE_TRACKED_DEVICE')<
-    TrackedDevice
-  >(),
+  saveTrackedDevice: createAction(
+    'TRACKING_SAVE_TRACKED_DEVICE',
+  )<TrackedDevice>(),
 
   setDevices: createAction('TRACKING_SET_DEVICES')<Device[]>(),
 
@@ -44,9 +44,9 @@ export const trackingActions = {
 
   deleteAccessToken: createAction('TRACKING_DELETE_ACCESS_TOKEN')<number>(),
 
-  saveAccessToken: createAction('TRACKING_SAVE_ACCESS_TOKEN')<
-    AccessTokenBase
-  >(),
+  saveAccessToken: createAction(
+    'TRACKING_SAVE_ACCESS_TOKEN',
+  )<AccessTokenBase>(),
 
   loadAccessTokens: createAction('TRACKING_LOAD_ACCESS_TOKENS')(),
 

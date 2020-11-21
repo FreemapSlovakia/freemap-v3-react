@@ -14,18 +14,16 @@ export const locateProcessor: Processor = {
       dispatch(mapRefocus({ gpsTracked: true }));
 
       watch = navigator.geolocation?.watchPosition(
-        (p: Position) => {
+        ({ coords: { latitude, longitude, accuracy } }) => {
           if (watch) {
             navigator.geolocation.clearWatch(watch);
           }
-
-          const { latitude, longitude, accuracy } = p.coords;
 
           dispatch(
             setLocation({
               lat: latitude,
               lon: longitude,
-              accuracy: accuracy,
+              accuracy,
             }),
           );
 

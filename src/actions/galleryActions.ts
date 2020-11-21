@@ -65,9 +65,9 @@ export interface GalleryFilter {
   ratingTo?: number;
 }
 
-export const galleryRequestImages = createAction('GALLERY_REQUEST_IMAGES')<
-  LatLon
->();
+export const galleryRequestImages = createAction(
+  'GALLERY_REQUEST_IMAGES',
+)<LatLon>();
 
 export const galleryRequestImage = createAction('GALLERY_REQUEST_IMAGE')<
   number | 'next' | 'prev'
@@ -126,15 +126,15 @@ export const gallerySetComment = createAction('GALLERY_SET_COMMENT')<string>();
 
 export const gallerySubmitComment = createAction('GALLERY_SUBMIT_COMMENT')();
 
-export const gallerySubmitStars = createAction('GALLERY_SUBMIT_STARS')<
-  number
->();
+export const gallerySubmitStars = createAction(
+  'GALLERY_SUBMIT_STARS',
+)<number>();
 
 export const galleryEditPicture = createAction('GALLERY_EDIT_PICTURE')();
 
-export const gallerySetEditModel = createAction('GALLERY_SET_EDIT_MODEL')<
-  PictureModel
->();
+export const gallerySetEditModel = createAction(
+  'GALLERY_SET_EDIT_MODEL',
+)<PictureModel>();
 
 export const galleryDeletePicture = createAction('GALLERY_DELETE_PICTURE')();
 
@@ -150,9 +150,9 @@ export const galleryHideUploadModal = createAction(
   'GALLERY_HIDE_UPLOAD_MODAL',
 )();
 
-export const gallerySetFilter = createAction('GALLERY_SET_FILTER')<
-  GalleryFilter
->();
+export const gallerySetFilter = createAction(
+  'GALLERY_SET_FILTER',
+)<GalleryFilter>();
 
 export const gallerySavePicture = createAction('GALLERY_SAVE_PICTURE')();
 

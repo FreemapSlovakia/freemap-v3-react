@@ -5,7 +5,9 @@ import { assertType } from 'typescript-is';
 import { StringDates } from 'fm3/types/common';
 import { AccessToken } from 'fm3/types/trackingTypes';
 
-export const saveAccessTokenProcessor: Processor<typeof trackingActions.saveAccessToken> = {
+export const saveAccessTokenProcessor: Processor<
+  typeof trackingActions.saveAccessToken
+> = {
   actionCreator: trackingActions.saveAccessToken,
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ dispatch, getState, action }) => {
@@ -35,7 +37,9 @@ export const saveAccessTokenProcessor: Processor<typeof trackingActions.saveAcce
   },
 };
 
-export const loadAccessTokensProcessor: Processor<typeof trackingActions.loadAccessTokens> = {
+export const loadAccessTokensProcessor: Processor<
+  typeof trackingActions.loadAccessTokens
+> = {
   actionCreator: trackingActions.loadAccessTokens,
   errorKey: 'tracking.loadError', // TODO
   handle: async ({ dispatch, getState }) => {
@@ -62,7 +66,9 @@ export const loadAccessTokensProcessor: Processor<typeof trackingActions.loadAcc
   },
 };
 
-export const deleteAccessTokenProcessor: Processor<typeof trackingActions.deleteAccessToken> = {
+export const deleteAccessTokenProcessor: Processor<
+  typeof trackingActions.deleteAccessToken
+> = {
   actionCreator: trackingActions.deleteAccessToken,
   errorKey: 'tracking.deleteError', // TODO
   handle: async ({ dispatch, getState, action }) => {

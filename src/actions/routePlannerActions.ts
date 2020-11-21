@@ -122,9 +122,9 @@ export const routePlannerSetTransportType = createAction(
   'ROUTE_PLANNER_SET_TRANSPORT_TYPE',
 )<TransportType>();
 
-export const routePlannerSetMode = createAction('ROUTE_PLANNER_SET_MODE')<
-  RoutingMode
->();
+export const routePlannerSetMode = createAction(
+  'ROUTE_PLANNER_SET_MODE',
+)<RoutingMode>();
 
 export const routePlannerSetPickMode = createAction(
   'ROUTE_PLANNER_SET_PICK_MODE',

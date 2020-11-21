@@ -1,11 +1,11 @@
-let gapiPromise: Promise<undefined>;
+let gapiPromise: Promise<void>;
 
-export function loadGapi(): Promise<undefined> {
+export function loadGapi(): Promise<void> {
   if (gapiPromise) {
     return gapiPromise;
   }
 
-  gapiPromise = new Promise((resolve, reject) => {
+  gapiPromise = new Promise<void>((resolve, reject) => {
     const js = document.createElement('script');
 
     js.async = true;
@@ -39,7 +39,7 @@ export async function getAuth2(
 ): Promise<void> {
   await loadGapi();
 
-  await new Promise((resolve) => {
+  await new Promise<void>((resolve) => {
     gapi.load('client:auth2', () => {
       resolve();
     });

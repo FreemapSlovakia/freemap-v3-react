@@ -87,11 +87,11 @@ export function toRad(deg: number): number {
 
 export function getCurrentPosition(): Promise<LatLon> {
   return new Promise((resolve, reject) => {
-    const onSuccess = (pos: Position) => {
+    const onSuccess = (pos: GeolocationPosition) => {
       resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude });
     };
 
-    const onError = (error: PositionError) => {
+    const onError = (error: GeolocationPositionError) => {
       reject(error);
     };
 

@@ -35,9 +35,9 @@ export const toastsRemove = createAction('TOASTS_REMOVE')<string>();
 
 export const toastsStopTimeout = createAction('TOASTS_STOP_TIMEOUT')<string>();
 
-export const toastsRestartTimeout = createAction('TOASTS_RESTART_TIMEOUT')<
-  string
->();
+export const toastsRestartTimeout = createAction(
+  'TOASTS_RESTART_TIMEOUT',
+)<string>();
 
 // helpers
 

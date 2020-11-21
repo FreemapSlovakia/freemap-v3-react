@@ -159,7 +159,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
           return;
         }
 
-        const p = new Promise<string | undefined>((resolve, reject) => {
+        const p = new Promise<string | void>((resolve, reject) => {
           const msgListener = (e: MessageEvent) => {
             if (
               e.origin === window.location.origin &&
@@ -231,7 +231,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
         {
           await loadGapi();
 
-          await new Promise((resolve) => {
+          await new Promise<void>((resolve) => {
             gapi.load('picker', () => {
               resolve();
             });
@@ -275,7 +275,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
                   resolve(data[pkr.Response.DOCUMENTS][0]);
                   break;
                 case pkr.Action.CANCEL:
-                  resolve();
+                  resolve(undefined);
                   break;
               }
             }

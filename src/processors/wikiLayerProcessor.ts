@@ -22,7 +22,7 @@ let prev = false;
 
 // TODO move to some util
 const delay = (ms: number) =>
-  new Promise((resolve) => {
+  new Promise<void>((resolve) => {
     window.setTimeout(() => {
       resolve();
     }, ms);
@@ -72,7 +72,7 @@ export const wikiLayerProcessor: Processor = {
 
     // debouncing
     try {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         const to = window.setTimeout(
           () => {
             cancelRegister.delete(cancelItem);
