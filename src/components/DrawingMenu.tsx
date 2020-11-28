@@ -1,12 +1,11 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { Feature, LineString, lineString } from '@turf/helpers';
+import React, { useEffect, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { lineString } from '@turf/helpers';
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
-import { drawingLineAddPoint, Point } from 'fm3/actions/drawingLineActions';
+import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
 
 import {
   elevationChartSetTrackGeojson,
@@ -18,35 +17,41 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import {
   drawingPointAdd,
   drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function DrawingMenu(): ReactElement {
+  const dispatch = useDispatch();
 
-const DrawingMenuInt: React.FC<Props> = ({
-  onToolSet,
-  selection,
-  elevationChartTrackGeojson,
-  t,
-  onInfoPointAdd,
-  linePoints,
-  onDistPointAdd,
-  onElevationChartTrackGeojsonSet,
-  onElevationChartClose,
-  onLabelModify,
-}) => {
+  const t = useTranslator();
+
+  function setTool(tool: Tool | null) {
+    dispatch(selectFeature(tool && { type: tool }));
+  }
+
+  const selection = useSelector((state: RootState) => state.main.selection);
+
+  const linePoints = useSelector((state: RootState) =>
+    (state.main.selection?.type !== 'draw-lines' &&
+      state.main.selection?.type !== 'draw-polygons') ||
+    state.main.selection.id === undefined
+      ? []
+      : state.drawingLines.lines[state.main.selection.id].points,
+  );
+
+  const elevationChartTrackGeojson = useSelector(
+    (state: RootState) => state.elevationChart.trackGeojson,
+  );
+
   const handlePoiAdd = useCallback(
     (lat: number, lon: number, position?: number, id0?: number) => {
       const tool = selection?.type;
       if (tool === 'draw-points') {
-        onInfoPointAdd(lat, lon);
+        dispatch(drawingPointAdd({ lat, lon, label: '' }));
+        dispatch(drawingPointMeasure(true));
         return;
       }
 
@@ -66,22 +71,21 @@ const DrawingMenuInt: React.FC<Props> = ({
         id = (points[pos - 1].id + points[pos].id) / 2;
       }
 
-      onDistPointAdd(
-        tool === 'draw-lines' ? 'line' : 'polygon',
-        selection?.type === 'draw-lines' || selection?.type === 'draw-polygons'
-          ? selection?.id
-          : undefined,
-        { lat, lon, id },
-        pos,
+      dispatch(
+        drawingLineAddPoint({
+          index:
+            selection?.type === 'draw-lines' ||
+            selection?.type === 'draw-polygons'
+              ? selection?.id
+              : undefined,
+          point: { lat, lon, id },
+          position: pos,
+          type: tool === 'draw-lines' ? 'line' : 'polygon',
+        }),
       );
+      dispatch(drawingPointMeasure(true));
     },
-    [
-      selection?.id,
-      selection?.type,
-      linePoints,
-      onInfoPointAdd,
-      onDistPointAdd,
-    ],
+    [selection?.type, selection?.id, linePoints, dispatch],
   );
 
   useEffect(() => {
@@ -95,18 +99,15 @@ const DrawingMenuInt: React.FC<Props> = ({
     // TODO to logic
 
     if (elevationChartTrackGeojson) {
-      onElevationChartClose();
+      dispatch(elevationChartClose());
     } else {
-      onElevationChartTrackGeojsonSet(
-        lineString(linePoints.map((p) => [p.lon, p.lat])),
+      dispatch(
+        elevationChartSetTrackGeojson(
+          lineString(linePoints.map((p) => [p.lon, p.lat])),
+        ),
       );
     }
-  }, [
-    linePoints,
-    elevationChartTrackGeojson,
-    onElevationChartClose,
-    onElevationChartTrackGeojsonSet,
-  ]);
+  }, [linePoints, elevationChartTrackGeojson, dispatch]);
 
   const tool = selection?.type;
 
@@ -120,7 +121,7 @@ const DrawingMenuInt: React.FC<Props> = ({
     <>
       <ButtonGroup>
         <Button
-          onClick={() => onToolSet('draw-lines')}
+          onClick={() => setTool('draw-lines')}
           active={tool === 'draw-lines'}
           title={t('measurement.distance')}
         >
@@ -128,7 +129,7 @@ const DrawingMenuInt: React.FC<Props> = ({
           <span className="hidden-xs"> {t('measurement.distance')}</span>
         </Button>
         <Button
-          onClick={() => onToolSet('draw-points')}
+          onClick={() => setTool('draw-points')}
           active={tool === 'draw-points'}
           title={t('measurement.elevation')}
         >
@@ -136,7 +137,7 @@ const DrawingMenuInt: React.FC<Props> = ({
           <span className="hidden-xs"> {t('measurement.elevation')}</span>
         </Button>
         <Button
-          onClick={() => onToolSet('draw-polygons')}
+          onClick={() => setTool('draw-polygons')}
           active={tool === 'draw-polygons'}
           title={t('measurement.area')}
         >
@@ -147,7 +148,10 @@ const DrawingMenuInt: React.FC<Props> = ({
       {isActive && (
         <>
           {' '}
-          <Button onClick={onLabelModify} disabled={!isActive}>
+          <Button
+            onClick={() => dispatch(setActiveModal('edit-label'))}
+            disabled={!isActive}
+          >
             <FontAwesomeIcon icon="tag" />
             <span className="hidden-xs"> {t('drawing.modify')}</span>
           </Button>
@@ -167,48 +171,4 @@ const DrawingMenuInt: React.FC<Props> = ({
       )}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  selection: state.main.selection,
-  linePoints:
-    (state.main.selection?.type !== 'draw-lines' &&
-      state.main.selection?.type !== 'draw-polygons') ||
-    state.main.selection.id === undefined
-      ? []
-      : state.drawingLines.lines[state.main.selection.id].points,
-  elevationChartTrackGeojson: state.elevationChart.trackGeojson,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onToolSet(tool: Tool | null) {
-    dispatch(selectFeature(tool && { type: tool }));
-  },
-  onElevationChartTrackGeojsonSet(trackGeojson: Feature<LineString>) {
-    dispatch(elevationChartSetTrackGeojson(trackGeojson));
-  },
-  onElevationChartClose() {
-    dispatch(elevationChartClose());
-  },
-  onDistPointAdd(
-    type: 'polygon' | 'line',
-    index: number | undefined,
-    point: Point,
-    position: number,
-  ) {
-    dispatch(drawingLineAddPoint({ index, point, position, type }));
-    dispatch(drawingPointMeasure(true));
-  },
-  onInfoPointAdd(lat: number, lon: number) {
-    dispatch(drawingPointAdd({ lat, lon, label: '' }));
-    dispatch(drawingPointMeasure(true));
-  },
-  onLabelModify() {
-    dispatch(setActiveModal('edit-label'));
-  },
-});
-
-export const DrawingMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(DrawingMenuInt));
+}

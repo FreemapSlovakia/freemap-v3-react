@@ -1,7 +1,7 @@
 import React from 'react';
 import { translate, splitAndSubstitute } from 'fm3/stringUtils';
 import { Diff } from 'utility-types';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { RootState } from './storeCreator';
 
 function tx(key: string, params: { [key: string]: unknown } = {}, dflt = '') {
@@ -43,3 +43,10 @@ export const withTranslator = <BaseProps extends InjectedProps>(
     Hoc,
   );
 };
+
+export function useTranslator(): typeof tx {
+  // force applying english language on load
+  useSelector((state: RootState) => state.l10n.counter);
+
+  return tx;
+}

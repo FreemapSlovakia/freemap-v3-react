@@ -1,6 +1,11 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, {
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import { useDispatch } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -14,14 +19,13 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { useTranslator } from 'fm3/l10nInjector';
 
-type Props = ReturnType<typeof mapDispatchToProps> & {
-  t: Translator;
-};
+export function EmbedMapModal(): ReactElement {
+  const t = useTranslator();
 
-export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
+  const dispatch = useDispatch();
+
   const [width, setWidth] = useState('500');
 
   const [height, setHeight] = useState('300');
@@ -112,8 +116,12 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
     }
   };
 
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onModalClose} className="dynamic">
+    <Modal show onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
@@ -206,21 +214,10 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
         <Button onClick={handleCopyClick}>
           <Glyphicon glyph="copy" /> {t('general.copyCode')}
         </Button>{' '}
-        <Button onClick={onModalClose}>
+        <Button onClick={close}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const EmbedMapModal = connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(EmbedMapModalInt));
+}

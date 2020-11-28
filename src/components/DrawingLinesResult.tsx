@@ -1,12 +1,12 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { RootState } from 'fm3/storeCreator';
 import { DrawingLineResult } from './DrawingLineResult';
+import { RootState } from 'fm3/storeCreator';
 
-type Props = ReturnType<typeof mapStateToProps>;
+export function DrawingLinesResult(): ReactElement {
+  const lines = useSelector((state: RootState) => state.drawingLines.lines);
 
-const DrawingLinesResultInt: React.FC<Props> = ({ lines }) => {
   return (
     <>
       {lines.map((_, i) => (
@@ -16,12 +16,4 @@ const DrawingLinesResultInt: React.FC<Props> = ({ lines }) => {
       <ElevationChartActivePoint />
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  lines: state.drawingLines.lines,
-});
-
-export const DrawingLinesResult = connect(mapStateToProps)(
-  DrawingLinesResultInt,
-);
+}

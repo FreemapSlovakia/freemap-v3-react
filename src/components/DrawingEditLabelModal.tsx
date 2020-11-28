@@ -1,6 +1,5 @@
-import React, { useState, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useState, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -12,30 +11,41 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function DrawingEditLabelModal(): ReactElement {
+  const t = useTranslator();
 
-const DrawingEditLabelModalInt: React.FC<Props> = ({
-  label,
-  onSave,
-  onModalClose,
-  t,
-}) => {
+  const label = useSelector((state: RootState) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-points' && selection.id !== undefined
+      ? state.drawingPoints.points[selection.id]?.label ?? '???'
+      : (selection?.type === 'draw-lines' ||
+          selection?.type === 'draw-polygons') &&
+        selection.id !== undefined
+      ? state.drawingLines.lines[selection.id]?.label ?? '???'
+      : '???';
+  });
+
   const [editedLabel, setEditedLabel] = useState(label);
+
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
 
   const saveLabel = useCallback(
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onSave(editedLabel);
-      onModalClose();
+
+      dispatch(drawingChangeLabel({ label: editedLabel }));
+
+      close();
     },
-    [editedLabel, onSave, onModalClose],
+    [editedLabel, dispatch, close],
   );
 
   const handleLocalLabelChange = useCallback(
@@ -46,7 +56,7 @@ const DrawingEditLabelModalInt: React.FC<Props> = ({
   );
 
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show onHide={close}>
       <form onSubmit={saveLabel}>
         <Modal.Header closeButton>
           <Modal.Title>{t('drawing.edit.title')}</Modal.Title>
@@ -67,40 +77,11 @@ const DrawingEditLabelModalInt: React.FC<Props> = ({
           <Button type="submit" bsStyle="info">
             <Glyphicon glyph="floppy-disk" /> {t('general.save')}
           </Button>
-          <Button type="button" onClick={onModalClose}>
+          <Button type="button" onClick={close}>
             <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => {
-  const { selection } = state.main;
-
-  return {
-    label:
-      selection?.type === 'draw-points' && selection.id !== undefined
-        ? state.drawingPoints.points[selection.id]?.label ?? '???'
-        : (selection?.type === 'draw-lines' ||
-            selection?.type === 'draw-polygons') &&
-          selection.id !== undefined
-        ? state.drawingLines.lines[selection.id]?.label ?? '???'
-        : '???',
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSave(label: string | undefined) {
-    dispatch(drawingChangeLabel({ label }));
-  },
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const DrawingEditLabelModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(DrawingEditLabelModalInt));
+}

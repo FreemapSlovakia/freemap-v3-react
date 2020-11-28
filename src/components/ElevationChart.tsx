@@ -1,6 +1,5 @@
-import React, { CSSProperties } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { CSSProperties, ReactElement } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { Line } from 'react-chartjs-2';
 import Button from 'react-bootstrap/lib/Button';
 import { elevationChartClose } from 'fm3/actions/elevationChartActions';
@@ -8,31 +7,28 @@ import {
   elevationChartSetActivePoint,
   elevationChartRemoveActivePoint,
 } from 'fm3/actions/elevationChartActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import 'fm3/styles/elevationChart.scss';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
-
-const styles: { [key: string]: CSSProperties } = {
-  closeButton: { position: 'absolute', right: 0, marginRight: '10px' },
+const styles: Record<string, CSSProperties> = {
+  closeButtonStyle: { position: 'absolute', right: 0, marginRight: '10px' },
+  pStyle: { marginLeft: '4px' },
 };
 
-const ElevationChartInt: React.FC<Props> = ({
-  elevationProfilePoints,
-  setActivePoint,
-  removeActivePoint,
-  t,
-  language,
-  onClose,
-}) => {
+export function ElevationChart(): ReactElement | null {
+  const t = useTranslator();
+
+  const dispatch = useDispatch();
+
+  const elevationProfilePoints = useSelector(
+    (state: RootState) => state.elevationChart.elevationProfilePoints,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   if (!elevationProfilePoints) {
     return null;
   }
@@ -41,6 +37,7 @@ const ElevationChartInt: React.FC<Props> = ({
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
   });
+
   const nf1 = Intl.NumberFormat(language, {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
@@ -52,7 +49,11 @@ const ElevationChartInt: React.FC<Props> = ({
 
   return (
     <div className="elevationChart">
-      <Button style={styles.closeButton} bsSize="small" onClick={onClose}>
+      <Button
+        style={styles.closeButton}
+        bsSize="small"
+        onClick={() => dispatch(elevationChartClose())}
+      >
         <FontAwesomeIcon icon="times" />
       </Button>
       <Line
@@ -63,11 +64,13 @@ const ElevationChartInt: React.FC<Props> = ({
             intersect: false,
             custom(tooltip: any /* dataPoints is missing in the type */) {
               if (tooltip?.dataPoints?.length) {
-                setActivePoint(
-                  elevationProfilePoints[tooltip.dataPoints[0].index],
+                dispatch(
+                  elevationChartSetActivePoint(
+                    elevationProfilePoints[tooltip.dataPoints[0].index],
+                  ),
                 );
               } else {
-                removeActivePoint();
+                dispatch(elevationChartRemoveActivePoint());
               }
             },
           },
@@ -123,33 +126,11 @@ const ElevationChartInt: React.FC<Props> = ({
         }}
       />
       {typeof climbUp === 'number' && typeof climbDown === 'number' && (
-        <p style={{ marginLeft: '4px' }}>
+        <p style={styles.pStyle}>
           {t('trackViewer.details.uphill')}: {nf0.format(climbUp)} m,{' '}
           {t('trackViewer.details.downhill')}: {nf0.format(climbDown)} m
         </p>
       )}
     </div>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  elevationProfilePoints: state.elevationChart.elevationProfilePoints,
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  setActivePoint(activePoint: ElevationProfilePoint) {
-    dispatch(elevationChartSetActivePoint(activePoint));
-  },
-  removeActivePoint() {
-    dispatch(elevationChartRemoveActivePoint());
-  },
-  onClose() {
-    dispatch(elevationChartClose());
-  },
-});
-
-export const ElevationChart = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ElevationChartInt));
+}

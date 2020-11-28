@@ -1,21 +1,21 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
 import { RichMarker } from 'fm3/components/RichMarker';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
 
-type Props = ReturnType<typeof mapStateToProps> & {
-  t: Translator;
-};
+export function ElevationChartActivePoint(): ReactElement | null {
+  const t = useTranslator();
 
-const ElevationChartActivePointInt: React.FC<Props> = ({
-  elevationChartActivePoint,
-  language,
-  t,
-}) => {
+  const elevationChartActivePoint = useSelector(
+    (state: RootState) => state.elevationChart.activePoint,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const nf0 = Intl.NumberFormat(language, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -62,13 +62,4 @@ const ElevationChartActivePointInt: React.FC<Props> = ({
       </RichMarker>
     )
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  elevationChartActivePoint: state.elevationChart.activePoint,
-  language: state.l10n.language,
-});
-
-export const ElevationChartActivePoint = connect(mapStateToProps)(
-  withTranslator(ElevationChartActivePointInt),
-);
+}
