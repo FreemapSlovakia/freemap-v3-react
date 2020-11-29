@@ -1,8 +1,8 @@
 import axios from 'axios';
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
 import qs, { StringifiableRecord } from 'query-string';
@@ -24,23 +24,24 @@ interface Props extends LatLon {
   pointTitle?: string;
   pointDescription?: string;
   url?: string;
-  t: Translator;
   onSelect?: (where: string) => void;
 }
 
-const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
+export function OpenInExternalAppMenuItems({
   lat,
   lon,
   zoom,
   mapType,
-  t,
+
   expertMode,
   includePoint,
   pointTitle,
   pointDescription,
   url,
   onSelect,
-}) => {
+}: Props): ReactElement {
+  const t = useTranslator();
+
   const handleMenuItemSelect = useCallback(
     (where: unknown) => {
       if (onSelect && typeof where === 'string') {
@@ -324,8 +325,4 @@ const OpenInExternalAppMenuItemsInt: React.FC<Props> = ({
       </MenuItem>
     </>
   );
-};
-
-export const OpenInExternalAppMenuItems = withTranslator(
-  OpenInExternalAppMenuItemsInt,
-);
+}

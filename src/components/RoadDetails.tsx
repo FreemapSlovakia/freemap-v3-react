@@ -1,6 +1,6 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import React, { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
+import { useTranslator } from 'fm3/l10nInjector';
 import {
   resolveTrackSurface,
   resolveTrackClass,
@@ -8,8 +8,7 @@ import {
 } from 'fm3/osmOntologyTools';
 import { RootState } from 'fm3/storeCreator';
 
-type Props = ReturnType<typeof mapStateToProps> & {
-  t: Translator;
+type Props = {
   way: {
     id: number;
     tags: {
@@ -19,7 +18,13 @@ type Props = ReturnType<typeof mapStateToProps> & {
   };
 };
 
-const RoadDetailsInt: React.FC<Props> = ({ way, mapType, language, t }) => {
+export function RoadDetails({ way }: Props): ReactElement {
+  const t = useTranslator();
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const dateFormat = new Intl.DateTimeFormat(language, {
     day: '2-digit',
     month: '2-digit',
@@ -60,13 +65,4 @@ const RoadDetailsInt: React.FC<Props> = ({ way, mapType, language, t }) => {
       </p>
     </div>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  mapType: state.map.mapType,
-  language: state.l10n.language,
-});
-
-export const RoadDetails = connect(mapStateToProps)(
-  withTranslator(RoadDetailsInt),
-);
+}

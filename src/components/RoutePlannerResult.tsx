@@ -4,9 +4,9 @@ import React, {
   useRef,
   useCallback,
   useMemo,
+  ReactElement,
 } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Polyline, Tooltip, Marker, CircleMarker } from 'react-leaflet';
 
 import { RichMarker } from 'fm3/components/RichMarker';
@@ -23,10 +23,8 @@ import {
   RouteStepExtra,
   Step,
 } from 'fm3/actions/routePlannerActions';
-import { Translator, withTranslator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { useTranslator, Translator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { LatLon } from 'fm3/types/common';
 import {
   divIcon,
   DragEndEvent,
@@ -39,39 +37,59 @@ import along from '@turf/along';
 import length from '@turf/length';
 import { selectFeature } from 'fm3/actions/mainActions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function RoutePlannerResult(): ReactElement {
+  const t = useTranslator();
 
-const RoutePlannerResultInt: React.FC<Props> = ({
-  transportType,
-  t,
-  language,
-  activeAlternativeIndex,
-  alternatives,
-  waypoints,
-  mode,
-  onFinishSet,
-  onAddMidpoint,
-  onAlternativeChange,
-  onStartSet,
-  onMidpointSet,
-  onRemoveMidpoint,
-  start,
-  midpoints,
-  finish,
-  timestamp,
-  zoom,
-  showMilestones,
-  onSelect,
-}) => {
+  const dispatch = useDispatch();
+
+  const start = useSelector((state: RootState) => state.routePlanner.start);
+
+  const finish = useSelector((state: RootState) => state.routePlanner.finish);
+
+  const midpoints = useSelector(
+    (state: RootState) => state.routePlanner.midpoints,
+  );
+
+  const alternatives = useSelector(
+    (state: RootState) => state.routePlanner.alternatives,
+  );
+
+  const waypoints = useSelector(
+    (state: RootState) => state.routePlanner.waypoints,
+  );
+
+  const activeAlternativeIndex = useSelector(
+    (state: RootState) => state.routePlanner.activeAlternativeIndex,
+  );
+
+  const transportType = useSelector(
+    (state: RootState) => state.routePlanner.transportType,
+  );
+
+  const mode = useSelector((state: RootState) => state.routePlanner.mode);
+
+  const timestamp = useSelector(
+    (state: RootState) => state.routePlanner.timestamp,
+  );
+
+  const showMilestones = useSelector(
+    (state: RootState) => state.routePlanner.milestones,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
   const tRef = useRef<number>();
+
   const draggingRef = useRef<boolean>();
 
   const [dragLat, setDragLat] = useState<number>();
+
   const [dragLon, setDragLon] = useState<number>();
+
   const [dragSegment, setDragSegment] = useState<number>();
+
   const [dragAlt, setDragAlt] = useState<number>();
 
   useEffect(
@@ -256,15 +274,17 @@ const RoutePlannerResultInt: React.FC<Props> = ({
   const handleStartPointClick = useCallback(() => {
     // also prevent default
 
-    onSelect();
-  }, [onSelect]);
+    dispatch(selectFeature({ type: 'route-planner' }));
+  }, [dispatch]);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
-      onFinishSet(null);
+      dispatch(routePlannerSetFinish({ finish: null, move: true }));
+      dispatch(selectFeature({ type: 'route-planner' }));
     }
-    onSelect();
-  }, [mode, onFinishSet, onSelect]);
+
+    dispatch(selectFeature({ type: 'route-planner' }));
+  }, [mode, dispatch]);
 
   const [endPointHovering, setEndPointHovering] = useState(false);
 
@@ -347,20 +367,34 @@ const RoutePlannerResultInt: React.FC<Props> = ({
       setDragLon(undefined);
 
       if (dragSegment !== undefined) {
-        onAddMidpoint(dragSegment, {
-          lat: e.target.getLatLng().lat,
-          lon: e.target.getLatLng().lng,
-        });
+        dispatch(
+          routePlannerAddMidpoint({
+            midpoint: {
+              lat: e.target.getLatLng().lat,
+              lon: e.target.getLatLng().lng,
+            },
+            position: dragSegment,
+          }),
+        );
+        dispatch(selectFeature({ type: 'route-planner' }));
       }
     },
-    [onAddMidpoint, dragSegment],
+    [dispatch, dragSegment],
+  );
+
+  const changeAlternative = useCallback(
+    (index: number) => {
+      dispatch(routePlannerSetActiveAlternativeIndex(index));
+      dispatch(selectFeature({ type: 'route-planner' }));
+    },
+    [dispatch],
   );
 
   const handleFutureClick = useCallback(() => {
     if (dragAlt !== undefined) {
-      onAlternativeChange(dragAlt);
+      changeAlternative(dragAlt);
     }
-  }, [onAlternativeChange, dragAlt]);
+  }, [dragAlt, changeAlternative]);
 
   const handleRouteMarkerDragEnd = useCallback(
     (
@@ -374,28 +408,35 @@ const RoutePlannerResultInt: React.FC<Props> = ({
 
       switch (movedPointType) {
         case 'start':
-          onStartSet({ lat, lon });
+          dispatch(routePlannerSetStart({ start: { lat, lon }, move: true }));
+          dispatch(selectFeature({ type: 'route-planner' }));
           break;
         case 'finish':
-          onFinishSet({ lat, lon });
+          dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
+          dispatch(selectFeature({ type: 'route-planner' }));
+
           break;
         case 'midpoint':
           if (position !== null) {
-            onMidpointSet(position, { lat, lon });
+            dispatch(
+              routePlannerSetMidpoint({ position, midpoint: { lat, lon } }),
+            );
+            dispatch(selectFeature({ type: 'route-planner' }));
           }
           break;
         default:
           throw new Error('unknown pointType');
       }
     },
-    [onStartSet, onFinishSet, onMidpointSet],
+    [dispatch],
   );
 
   const handleMidpointClick = useCallback(
     (position) => {
-      onRemoveMidpoint(position);
+      dispatch(routePlannerRemoveMidpoint(position));
+      dispatch(selectFeature({ type: 'route-planner' }));
     },
-    [onRemoveMidpoint],
+    [dispatch],
   );
 
   const special = !!transportType && isSpecial(transportType);
@@ -524,7 +565,7 @@ const RoutePlannerResultInt: React.FC<Props> = ({
                   weight={10}
                   color="#fff"
                   bubblingMouseEvents={false}
-                  onClick={() => onAlternativeChange(alt)}
+                  onClick={() => changeAlternative(alt)}
                   onMouseMove={
                     special
                       ? undefined
@@ -580,64 +621,13 @@ const RoutePlannerResultInt: React.FC<Props> = ({
       <ElevationChartActivePoint />
     </>
   );
-};
+}
 
 function reverse(c: [number, number]) {
   return [c[1], c[0]] as [number, number];
 }
 
-const mapStateToProps = (state: RootState) => ({
-  start: state.routePlanner.start,
-  finish: state.routePlanner.finish,
-  midpoints: state.routePlanner.midpoints,
-  alternatives: state.routePlanner.alternatives,
-  waypoints: state.routePlanner.waypoints,
-
-  activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-  transportType: state.routePlanner.transportType,
-  mode: state.routePlanner.mode,
-  timestamp: state.routePlanner.timestamp,
-  showMilestones: state.routePlanner.milestones,
-  language: state.l10n.language,
-  zoom: state.map.zoom,
-  selected: state.main.selection?.type === 'route-planner',
-});
-
 // TODO instead of calling dispatch(selectFeature({ type: 'route-planner' })) implement selecting feature in globalReducer
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onStartSet(start: LatLon | null) {
-    dispatch(routePlannerSetStart({ start, move: true }));
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-  onFinishSet(finish: LatLon | null) {
-    dispatch(routePlannerSetFinish({ finish, move: true }));
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-  onAddMidpoint(position: number, midpoint: LatLon) {
-    dispatch(routePlannerAddMidpoint({ midpoint, position }));
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-  onMidpointSet(position: number, midpoint: LatLon) {
-    dispatch(routePlannerSetMidpoint({ position, midpoint }));
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-  onRemoveMidpoint(position: number) {
-    dispatch(routePlannerRemoveMidpoint(position));
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-  onAlternativeChange(index: number) {
-    dispatch(routePlannerSetActiveAlternativeIndex(index));
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-  onSelect() {
-    dispatch(selectFeature({ type: 'route-planner' }));
-  },
-});
-
-export const RoutePlannerResult = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(RoutePlannerResultInt));
 
 // TODO do it in logic so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)

@@ -1,7 +1,7 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/lib/Button';
 import Popover from 'react-bootstrap/lib/Popover';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
@@ -17,16 +17,14 @@ interface Props extends LatLon {
   pointTitle?: string;
   pointDescription?: string;
   url?: string;
-  t: Translator;
   children: JSX.Element | JSX.Element[];
 }
 
-const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
+export function OpenInExternalAppMenuButton({
   lat,
   lon,
   zoom,
   mapType,
-  t,
   expertMode,
   placement,
   includePoint,
@@ -34,8 +32,11 @@ const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
   pointDescription,
   url,
   children,
-}) => {
+}: Props): ReactElement {
+  const t = useTranslator();
+
   const buttonRef = useRef<Button>();
+
   const [show, setShow] = useState(false);
 
   const handleMenuItemClick = useCallback(() => {
@@ -90,8 +91,4 @@ const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
       </Ovl>
     </>
   );
-};
-
-export const OpenInExternalAppMenuButton = withTranslator(
-  OpenInExternalAppMenuButtonInt,
-);
+}

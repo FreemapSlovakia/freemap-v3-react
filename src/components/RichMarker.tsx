@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, ReactElement } from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { DivIcon, divIcon } from 'leaflet';
 
@@ -14,10 +14,10 @@ interface IconProps {
   faIconLeftPadding?: string;
 }
 
-export const RichMarker: React.FC<Props> = ({
+export function RichMarker({
   autoOpenPopup,
   ...restProps
-}) => {
+}: Props): ReactElement {
   const markerRef = useRef<Marker | null>(null);
 
   useEffect(() => {
@@ -34,7 +34,7 @@ export const RichMarker: React.FC<Props> = ({
   );
 
   return <Marker {...restProps} icon={icon} ref={markerRef} />;
-};
+}
 
 export function createMarkerIcon(props: IconProps = {}): DivIcon {
   const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = props;

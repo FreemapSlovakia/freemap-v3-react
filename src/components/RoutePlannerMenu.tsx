@@ -1,12 +1,11 @@
-import React, { useMemo, useEffect, useCallback } from 'react';
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
+import React, { useMemo, useEffect, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { Translator, useTranslator } from 'fm3/l10nInjector';
 
 import {
   routePlannerSetStart,
@@ -14,7 +13,7 @@ import {
   routePlannerSetTransportType,
   routePlannerSetMode,
   routePlannerSetPickMode,
-  routePlannerToggleItineraryVisibility,
+  // routePlannerToggleItineraryVisibility,
   routePlannerToggleElevationChart,
   routePlannerSetActiveAlternativeIndex,
   routePlannerSwapEnds,
@@ -29,56 +28,75 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
-import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
-import { LatLon } from 'fm3/types/common';
 import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
 import { Checkbox } from 'react-bootstrap';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function RoutePlannerMenu(): ReactElement {
+  const t = useTranslator();
 
-const RoutePlannerMenuInt: React.FC<Props> = ({
-  pickPointMode,
-  transportType,
-  onTransportTypeChange,
-  onPickPointModeChange,
-  // onItineraryVisibilityToggle,
-  // itineraryIsVisible,
-  elevationProfileIsVisible,
-  routeFound,
-  expertMode,
-  onToggleElevationChart,
-  t,
-  activeAlternativeIndex,
-  alternatives,
-  onAlternativeChange,
-  language,
-  onEndsSwap,
-  canSwap,
-  mode,
-  onModeChange,
-  pickMode,
-  onStartSet,
-  onFinishSet,
-  onMissingHomeLocation,
-  onSetFromCurrentPosition,
-  homeLocation,
-  onConvertToDrawing,
-  onMilestonesChange,
-  milestones,
-}) => {
+  const dispatch = useDispatch();
+
+  const milestones = useSelector(
+    (state: RootState) => state.routePlanner.milestones,
+  );
+
+  const pickMode = useSelector(
+    (state: RootState) => state.routePlanner.pickMode,
+  );
+
+  const homeLocation = useSelector(
+    (state: RootState) => state.main.homeLocation,
+  );
+
+  const transportType = useSelector(
+    (state: RootState) => state.routePlanner.transportType,
+  );
+
+  const mode = useSelector((state: RootState) => state.routePlanner.mode);
+
+  const pickPointMode = useSelector(
+    (state: RootState) => state.routePlanner.pickMode,
+  );
+
+  // const itineraryIsVisible = useSelector(
+  //   (state: RootState) => state.routePlanner.itineraryIsVisible,
+  // );
+
+  const routeFound = useSelector(
+    (state: RootState) => !!state.routePlanner.alternatives.length,
+  );
+
+  const activeAlternativeIndex = useSelector(
+    (state: RootState) => state.routePlanner.activeAlternativeIndex,
+  );
+
+  const alternatives = useSelector(
+    (state: RootState) => state.routePlanner.alternatives,
+  );
+
+  const elevationProfileIsVisible = useSelector(
+    (state: RootState) => !!state.elevationChart.trackGeojson,
+  );
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const canSwap = useSelector(
+    (state: RootState) =>
+      !!(state.routePlanner.start && state.routePlanner.finish),
+  );
+
   const handlePoiAdd = useCallback(
     (lat: number, lon: number) => {
       if (pickMode === 'start') {
-        onStartSet({ lat, lon });
+        dispatch(routePlannerSetStart({ start: { lat, lon } }));
       } else if (pickMode === 'finish') {
-        onFinishSet({ lat, lon });
+        dispatch(routePlannerSetFinish({ finish: { lat, lon } }));
       }
     },
-    [pickMode, onStartSet, onFinishSet],
+    [pickMode, dispatch],
   );
 
   useEffect(() => {
@@ -88,34 +106,28 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
     };
   }, [handlePoiAdd]);
 
-  const setFromHomeLocation = useCallback(
-    (pointType: PickMode) => {
-      if (!homeLocation) {
-        onMissingHomeLocation();
-      } else if (pointType === 'start') {
-        onStartSet(homeLocation);
-      } else if (pointType === 'finish') {
-        onFinishSet(homeLocation);
-      }
-    },
-    [homeLocation, onMissingHomeLocation, onStartSet, onFinishSet],
-  );
-
-  const handleStartCurrent = useCallback(() => {
-    onSetFromCurrentPosition('start');
-  }, [onSetFromCurrentPosition]);
-
-  const handleStartHome = useCallback(() => {
-    setFromHomeLocation('start');
-  }, [setFromHomeLocation]);
-
-  const handleFinishCurrent = useCallback(() => {
-    onSetFromCurrentPosition('finish');
-  }, [onSetFromCurrentPosition]);
-
-  const handleFinishHome = useCallback(() => {
-    setFromHomeLocation('finish');
-  }, [setFromHomeLocation]);
+  function setFromHomeLocation(pointType: PickMode) {
+    if (!homeLocation) {
+      dispatch(
+        toastsAdd({
+          id: 'routePlanner.noHomeAlert',
+          messageKey: 'routePlanner.noHomeAlert.msg',
+          style: 'warning',
+          actions: [
+            {
+              nameKey: 'routePlanner.noHomeAlert.setHome',
+              action: setActiveModal('settings'),
+            },
+            { nameKey: 'general.close' },
+          ],
+        }),
+      );
+    } else if (pointType === 'start') {
+      dispatch(routePlannerSetStart({ start: homeLocation }));
+    } else if (pointType === 'finish') {
+      dispatch(routePlannerSetFinish({ finish: homeLocation }));
+    }
+  }
 
   const activeTransportType = useMemo(
     () => transportTypeDefs.find(({ type }) => type === transportType),
@@ -139,9 +151,9 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
     const tolerance = window.prompt(t('general.simplifyPrompt'), '50');
 
     if (tolerance !== null) {
-      onConvertToDrawing(Number(tolerance));
+      dispatch(convertToDrawing(Number(tolerance)));
     }
-  }, [onConvertToDrawing, t]);
+  }, [dispatch, t]);
 
   return (
     <>
@@ -154,24 +166,36 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
             </span>
           }
           id="set-start-dropdown"
-          onClick={() => onPickPointModeChange('start')}
+          onClick={() => {
+            dispatch(routePlannerSetPickMode('start'));
+          }}
           active={pickPointMode === 'start'}
         >
           <MenuItem>
             <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
           </MenuItem>
-          <MenuItem onSelect={handleStartCurrent}>
+          <MenuItem
+            onSelect={() => {
+              dispatch(routePlannerSetFromCurrentPosition('start'));
+            }}
+          >
             <FontAwesomeIcon icon="bullseye" />{' '}
             {t('routePlanner.point.current')}
           </MenuItem>
-          <MenuItem onSelect={handleStartHome}>
+          <MenuItem
+            onSelect={() => {
+              setFromHomeLocation('start');
+            }}
+          >
             <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
           </MenuItem>
         </DropdownButton2>
         {mode !== 'roundtrip' && (
           <>
             <Button
-              onClick={onEndsSwap}
+              onClick={() => {
+                dispatch(routePlannerSwapEnds());
+              }}
               disabled={!canSwap}
               title={t('routePlanner.swap')}
             >
@@ -185,18 +209,28 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
                 </span>
               }
               id="set-finish-dropdown"
-              onClick={() => onPickPointModeChange('finish')}
+              onClick={() => {
+                dispatch(routePlannerSetPickMode('finish'));
+              }}
               active={pickPointMode === 'finish'}
             >
               <MenuItem>
                 <FontAwesomeIcon icon="map-marker" />{' '}
                 {t('routePlanner.point.pick')}
               </MenuItem>
-              <MenuItem onSelect={handleFinishCurrent}>
+              <MenuItem
+                onSelect={() => {
+                  dispatch(routePlannerSetFromCurrentPosition('finish'));
+                }}
+              >
                 <FontAwesomeIcon icon="bullseye" />{' '}
                 {t('routePlanner.point.current')}
               </MenuItem>
-              <MenuItem onSelect={handleFinishHome}>
+              <MenuItem
+                onSelect={() => {
+                  setFromHomeLocation('finish');
+                }}
+              >
                 <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
               </MenuItem>
             </DropdownButton2>
@@ -205,7 +239,11 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       </ButtonGroup>{' '}
       <DropdownButton
         id="transport-type"
-        onSelect={onTransportTypeChange}
+        onSelect={(transportType: unknown) => {
+          dispatch(
+            routePlannerSetTransportType(transportType as TransportType),
+          );
+        }}
         title={
           activeTransportType ? (
             <>
@@ -267,7 +305,9 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       </DropdownButton>{' '}
       <DropdownButton
         id="mode"
-        onSelect={onModeChange}
+        onSelect={(mode: unknown) => {
+          dispatch(routePlannerSetMode(mode as RoutingMode));
+        }}
         title={t(`routePlanner.mode.${mode}`)}
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
@@ -287,7 +327,13 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
           {' '}
           <DropdownButton
             id="transport-type"
-            onSelect={onAlternativeChange}
+            onSelect={(index: unknown) => {
+              if (typeof index === 'number') {
+                dispatch(
+                  routePlannerSetActiveAlternativeIndex(index as number),
+                );
+              }
+            }}
             title={
               transportType === 'imhd' &&
               activeAlternative.extra &&
@@ -322,7 +368,9 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       )}
       {/* ' '}
       <Button
-        onClick={() => onItineraryVisibilityToggle()}
+        onClick={() => {
+          dispatch(routePlannerToggleItineraryVisibility());
+        }}
         active={itineraryIsVisible}
         title="Itinerár"
       >
@@ -330,7 +378,9 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
       </Button>
       */}{' '}
       <Button
-        onClick={onToggleElevationChart}
+        onClick={() => {
+          dispatch(routePlannerToggleElevationChart());
+        }}
         active={elevationProfileIsVisible}
         disabled={!routeFound}
         title={t('general.elevationProfile')}
@@ -346,91 +396,18 @@ const RoutePlannerMenuInt: React.FC<Props> = ({
         <FontAwesomeIcon icon="pencil" />
         <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
       </Button>{' '}
-      <Checkbox inline onChange={onMilestonesChange} checked={milestones}>
+      <Checkbox
+        inline
+        onChange={() => {
+          dispatch(routePlannerToggleMilestones(undefined));
+        }}
+        checked={milestones}
+      >
         {t('routePlanner.milestones')}
       </Checkbox>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  milestones: state.routePlanner.milestones,
-  pickMode: state.routePlanner.pickMode,
-  homeLocation: state.main.homeLocation,
-  transportType: state.routePlanner.transportType,
-  mode: state.routePlanner.mode,
-  pickPointMode: state.routePlanner.pickMode,
-  itineraryIsVisible: state.routePlanner.itineraryIsVisible,
-  routeFound: !!state.routePlanner.alternatives.length,
-  activeAlternativeIndex: state.routePlanner.activeAlternativeIndex,
-  alternatives: state.routePlanner.alternatives,
-  elevationProfileIsVisible: !!state.elevationChart.trackGeojson,
-  expertMode: state.main.expertMode,
-  language: state.l10n.language,
-  canSwap: !!(state.routePlanner.start && state.routePlanner.finish),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onStartSet(start: LatLon) {
-    dispatch(routePlannerSetStart({ start }));
-  },
-  onFinishSet(finish: LatLon) {
-    dispatch(routePlannerSetFinish({ finish }));
-  },
-  onItineraryVisibilityToggle() {
-    dispatch(routePlannerToggleItineraryVisibility());
-  },
-  onTransportTypeChange(transportType: unknown) {
-    dispatch(routePlannerSetTransportType(transportType as TransportType));
-  },
-  onModeChange(mode: unknown) {
-    dispatch(routePlannerSetMode(mode as RoutingMode));
-  },
-  onPickPointModeChange(pickMode: PickMode) {
-    dispatch(routePlannerSetPickMode(pickMode));
-  },
-  onMissingHomeLocation() {
-    dispatch(
-      toastsAdd({
-        id: 'routePlanner.noHomeAlert',
-        messageKey: 'routePlanner.noHomeAlert.msg',
-        style: 'warning',
-        actions: [
-          {
-            nameKey: 'routePlanner.noHomeAlert.setHome',
-            action: setActiveModal('settings'),
-          },
-          { nameKey: 'general.close' },
-        ],
-      }),
-    );
-  },
-  onToggleElevationChart() {
-    dispatch(routePlannerToggleElevationChart());
-  },
-  onAlternativeChange(index: unknown) {
-    if (typeof index === 'number') {
-      dispatch(routePlannerSetActiveAlternativeIndex(index as number));
-    }
-  },
-  onEndsSwap() {
-    dispatch(routePlannerSwapEnds());
-  },
-  onSetFromCurrentPosition(end: 'start' | 'finish') {
-    dispatch(routePlannerSetFromCurrentPosition(end));
-  },
-  onConvertToDrawing(tolerance: number | undefined) {
-    dispatch(convertToDrawing(tolerance));
-  },
-  onMilestonesChange() {
-    dispatch(routePlannerToggleMilestones(undefined));
-  },
-});
-
-export const RoutePlannerMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(RoutePlannerMenuInt));
+}
 
 function imhdSummary(
   t: Translator,
