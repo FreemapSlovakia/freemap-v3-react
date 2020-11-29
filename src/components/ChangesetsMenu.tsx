@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useState, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/lib/Form';
 import Button from 'react-bootstrap/lib/Button';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
@@ -10,33 +9,24 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import {
   changesetsSetDays,
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ChangesetsMenu(): ReactElement {
+  const t = useTranslator();
 
-const ChangesetsMenuInt: React.FC<Props> = ({
-  days,
-  t,
-  onChangesetsSetDays,
-  zoom,
-  onChangesetsSetAuthorNameAndRefresh,
-  authorName: propsAuthorName,
-}) => {
-  const [authorName, setAuthorName] = useState<string | null>(null);
+  const [authorName, setAuthorName] = useState<string | null>(
+    useSelector((state: RootState) => state.changesets.authorName),
+  );
 
-  useEffect(() => {
-    setAuthorName(propsAuthorName);
-  }, [propsAuthorName]);
+  const days = useSelector((state: RootState) => state.changesets.days || 3);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
 
   const canSearchWithThisAmountOfDays = (amountOfDays: number) => {
     return (
@@ -47,12 +37,15 @@ const ChangesetsMenuInt: React.FC<Props> = ({
     );
   };
 
+  const dispatch = useDispatch();
+
   return (
     <Form
       inline
       onSubmit={(e) => {
         e.preventDefault();
-        onChangesetsSetAuthorNameAndRefresh(days, authorName);
+        dispatch(changesetsSetDays(days));
+        dispatch(changesetsSetAuthorName(authorName));
       }}
     >
       <ButtonGroup>
@@ -60,7 +53,7 @@ const ChangesetsMenuInt: React.FC<Props> = ({
           id="days"
           onSelect={(d: unknown) => {
             if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
-              onChangesetsSetDays(d);
+              dispatch(changesetsSetDays(days));
             }
           }}
           title={t('changesets.olderThanFull', { days })}
@@ -108,28 +101,4 @@ const ChangesetsMenuInt: React.FC<Props> = ({
       </Button>
     </Form>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  days: state.changesets.days || 3,
-  authorName: state.changesets.authorName,
-  zoom: state.map.zoom,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onChangesetsSetDays(days: number | null) {
-    dispatch(changesetsSetDays(days));
-  },
-  onChangesetsSetAuthorNameAndRefresh(
-    days: number | null,
-    authorName: string | null,
-  ) {
-    dispatch(changesetsSetDays(days));
-    dispatch(changesetsSetAuthorName(authorName));
-  },
-});
-
-export const ChangesetsMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ChangesetsMenuInt));
+}

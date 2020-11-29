@@ -1,13 +1,13 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import { Circle } from 'react-leaflet';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
 
-type Props = ReturnType<typeof mapStateToProps>;
+export function LocationResult(): ReactElement | null {
+  const gpsLocation = useSelector((state: RootState) => state.main.location);
 
-const LocationResultInt: React.FC<Props> = ({ gpsLocation }) => {
-  return gpsLocation ? (
+  return !gpsLocation ? null : (
     <>
       <Circle
         center={{ lat: gpsLocation.lat, lng: gpsLocation.lon }}
@@ -19,11 +19,5 @@ const LocationResultInt: React.FC<Props> = ({ gpsLocation }) => {
         interactive={false}
       />
     </>
-  ) : null;
-};
-
-const mapStateToProps = (state: RootState) => ({
-  gpsLocation: state.main.location,
-});
-
-export const LocationResult = connect(mapStateToProps)(LocationResultInt);
+  );
+}

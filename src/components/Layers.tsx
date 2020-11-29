@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
 
@@ -9,16 +9,23 @@ import { RootState } from 'fm3/storeCreator';
 
 import missingTile from '../images/missing-tile-256x256.png';
 
-type Props = ReturnType<typeof mapStateToProps>;
+export function Layers(): ReactElement {
+  const overlays = useSelector((state: RootState) => state.map.overlays);
 
-const LayersInt: React.FC<Props> = ({
-  mapType,
-  overlays,
-  isAdmin,
-  galleryFilter,
-  galleryDirtySeq,
-  overlayOpacity,
-}) => {
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const overlayOpacity = useSelector(
+    (state: RootState) => state.map.overlayOpacity,
+  );
+
+  const galleryFilter = useSelector((state: RootState) => state.gallery.filter);
+
+  const galleryDirtySeq = useSelector(
+    (state: RootState) => state.gallery.dirtySeq,
+  );
+
+  const isAdmin = useSelector((state: RootState) => !!state.auth.user?.isAdmin);
+
   const getTileLayer = ({
     type,
     url,
@@ -94,15 +101,4 @@ const LayersInt: React.FC<Props> = ({
       ]}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  overlays: state.map.overlays,
-  mapType: state.map.mapType,
-  overlayOpacity: state.map.overlayOpacity,
-  galleryFilter: state.gallery.filter,
-  galleryDirtySeq: state.gallery.dirtySeq,
-  isAdmin: !!state.auth.user?.isAdmin,
-});
-
-export const Layers = connect(mapStateToProps)(LayersInt);
+}

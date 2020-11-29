@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -8,17 +8,19 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
-type Props = ReturnType<typeof mapDispatchToProps> & {
-  t: Translator;
-};
+export function AboutModal(): ReactElement {
+  const t = useTranslator();
 
-export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
+  const dispatch = useDispatch();
+
+  function close() {
+    dispatch(setActiveModal(null));
+  }
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
@@ -90,22 +92,11 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onModalClose}>
+          <Button onClick={close}>
             <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const AboutModal = connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(AboutModalInt));
+}

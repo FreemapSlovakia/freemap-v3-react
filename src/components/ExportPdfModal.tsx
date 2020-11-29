@@ -1,6 +1,5 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useState, useMemo, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import FormControl from 'react-bootstrap/lib/FormControl';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -16,28 +15,23 @@ import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import {
-  setActiveModal,
-  exportPdf,
-  PdfExportOptions,
-} from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ExportPdfModal(): ReactElement {
+  const language = useSelector((state: RootState) => state.l10n.language);
 
-function ExportPdfModalInt({
-  onExport,
-  onModalClose,
-  t,
-  language,
-  canExportByPolygon,
-  expertMode,
-}: Props) {
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
+  const canExportByPolygon = useSelector(
+    (state: RootState) =>
+      state.main.selection?.type === 'draw-polygons' &&
+      state.main.selection.id !== undefined,
+  );
+
+  const t = useTranslator();
+
   const [area, setArea] = useState('visible');
 
   const [scale, setScale] = useState(1);
@@ -183,8 +177,14 @@ function ExportPdfModalInt({
     [language],
   );
 
+  const dispatch = useDispatch();
+
+  function close() {
+    dispatch(setActiveModal(null));
+  }
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
@@ -335,51 +335,31 @@ function ExportPdfModalInt({
       <Modal.Footer>
         <Button
           onClick={() => {
-            onExport({
-              area: area as any,
-              scale,
-              format: format as any,
-              contours,
-              shadedRelief,
-              hikingTrails,
-              bicycleTrails,
-              skiTrails,
-              horseTrails,
-              drawing,
-              plannedRoute,
-              track,
-              style,
-            });
+            dispatch(
+              exportPdf({
+                area: area as any,
+                scale,
+                format: format as any,
+                contours,
+                shadedRelief,
+                hikingTrails,
+                bicycleTrails,
+                skiTrails,
+                horseTrails,
+                drawing,
+                plannedRoute,
+                track,
+                style,
+              }),
+            );
           }}
         >
           <FontAwesomeIcon icon="download" /> {t('pdfExport.export')}
         </Button>{' '}
-        <Button onClick={onModalClose}>
+        <Button onClick={close}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
 }
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-  canExportByPolygon:
-    state.main.selection?.type === 'draw-polygons' &&
-    state.main.selection.id !== undefined,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-  onExport(options: PdfExportOptions) {
-    dispatch(exportPdf(options));
-  },
-});
-
-export const ExportPdfModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ExportPdfModalInt));

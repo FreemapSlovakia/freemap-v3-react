@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useState, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -14,8 +13,7 @@ import {
   exportGpx,
   Destination,
 } from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 const exportableDefinitions = [
@@ -33,23 +31,78 @@ const exportableDefinitions = [
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ] as const;
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ExportGpxModal(): ReactElement | null {
+  const t = useTranslator();
 
-const ExportGpxModalInt: React.FC<Props> = ({
-  onModalClose,
-  exportables: initExportables,
-  t,
-  onExport,
-}) => {
-  const [exportables, setExportables] = useState<string[] | undefined>();
+  const dispatch = useDispatch();
 
-  useEffect(() => {
-    setExportables(initExportables);
-    // eslint-disable-next-line
-  }, []);
+  const initExportables = useSelector((state: RootState) => {
+    const exportables: string[] = [];
+
+    if (state.search.selectedResult) {
+      // exportables.push('search');
+    }
+
+    if (state.routePlanner.alternatives.length) {
+      exportables.push('plannedRoute');
+      exportables.push('plannedRouteWithStops');
+    }
+
+    if (state.objects.objects.length) {
+      exportables.push('objects');
+    }
+
+    if (state.map.overlays.includes('I')) {
+      exportables.push('pictures');
+    }
+
+    if (state.drawingLines.lines.some((line) => line.type === 'line')) {
+      exportables.push('drawingLines');
+    }
+
+    if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
+      exportables.push('areaMeasurement');
+    }
+
+    if (state.drawingPoints.points.length) {
+      exportables.push('drawingPoints');
+    }
+
+    if (state.tracking.tracks.length) {
+      exportables.push('tracking');
+    }
+
+    if (state.trackViewer.trackGpx) {
+      exportables.push('gpx');
+    }
+
+    // if (state.changesets.changesets.length) {
+    //   exportables.push('changesets');
+    // }
+
+    // if (state.mapDetails.trackInfoPoints) {
+    //   exportables.push('mapDetails');
+    // }
+
+    return exportables;
+  });
+
+  const [exportables, setExportables] = useState<string[] | undefined>(
+    initExportables,
+  );
+
+  const onExport = useCallback(
+    (exportables: string[] | null, destination: Destination) => {
+      if (exportables) {
+        dispatch(exportGpx({ exportables, destination }));
+      }
+    },
+    [dispatch],
+  );
+
+  function close() {
+    dispatch(setActiveModal(null));
+  }
 
   const handleExportClick = useCallback(() => {
     if (exportables) {
@@ -86,12 +139,8 @@ const ExportGpxModalInt: React.FC<Props> = ({
     [exportables],
   );
 
-  if (!exportables) {
-    return null;
-  }
-
-  return (
-    <Modal show onHide={onModalClose} bsSize="large">
+  return !exportables ? null : (
+    <Modal show onHide={close} bsSize="large">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}
@@ -124,79 +173,10 @@ const ExportGpxModalInt: React.FC<Props> = ({
         <Button onClick={handleExportToDropbox} disabled={!exportables.length}>
           <FontAwesomeIcon icon="dropbox" /> {t('gpxExport.exportToDropbox')}
         </Button>{' '}
-        <Button onClick={onModalClose}>
+        <Button onClick={close}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => {
-  const exportables: string[] = [];
-
-  if (state.search.selectedResult) {
-    // exportables.push('search');
-  }
-
-  if (state.routePlanner.alternatives.length) {
-    exportables.push('plannedRoute');
-    exportables.push('plannedRouteWithStops');
-  }
-
-  if (state.objects.objects.length) {
-    exportables.push('objects');
-  }
-
-  if (state.map.overlays.includes('I')) {
-    exportables.push('pictures');
-  }
-
-  if (state.drawingLines.lines.some((line) => line.type === 'line')) {
-    exportables.push('drawingLines');
-  }
-
-  if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
-    exportables.push('areaMeasurement');
-  }
-
-  if (state.drawingPoints.points.length) {
-    exportables.push('drawingPoints');
-  }
-
-  if (state.tracking.tracks.length) {
-    exportables.push('tracking');
-  }
-
-  if (state.trackViewer.trackGpx) {
-    exportables.push('gpx');
-  }
-
-  if (state.changesets.changesets.length) {
-    // exportables.push('changesets');
-  }
-
-  if (state.mapDetails.trackInfoPoints) {
-    // exportables.push('mapDetails');
-  }
-
-  return {
-    exportables,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-  onExport(exportables: string[] | null, destination: Destination) {
-    if (exportables) {
-      dispatch(exportGpx({ exportables, destination }));
-    }
-  },
-});
-
-export const ExportGpxModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ExportGpxModalInt));
+}

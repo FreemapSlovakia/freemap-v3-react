@@ -1,5 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement, useCallback } from 'react';
+import { useDispatch } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -10,24 +10,26 @@ import Panel from 'react-bootstrap/lib/Panel';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 
 import legend from 'fm3/legend/index.json';
 
-type Props = ReturnType<typeof mapDispatchToProps>;
-
 interface LegendItem {
   n: string;
-  items: Array<{
+  items: {
     i: string;
     n: string;
-  }>;
+  }[];
 }
 
-const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
+export function LegendModal(): ReactElement {
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onModalClose} bsSize="small">
+    <Modal show onHide={close} bsSize="small">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="map-o" /> Legenda mapy
@@ -61,19 +63,11 @@ const LegendModalInt: React.FC<Props> = ({ onModalClose }) => {
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onModalClose}>
+          <Button onClick={close}>
             <Glyphicon glyph="remove" /> Zavrieť
           </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const LegendModal = connect(null, mapDispatchToProps)(LegendModalInt);
+}

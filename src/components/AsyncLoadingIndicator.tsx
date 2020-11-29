@@ -1,3 +1,5 @@
-import React from 'react';
+import React, { ReactElement } from 'react';
 
-export const AsyncLoadingIndicator: React.FC = () => <span />; // TODO
+export function AsyncLoadingIndicator(): ReactElement {
+  return <span />;
+}

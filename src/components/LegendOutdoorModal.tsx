@@ -1,6 +1,6 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -11,27 +11,20 @@ import Panel from 'react-bootstrap/lib/Panel';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 import { RootState } from 'fm3/storeCreator';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+import { useTranslator } from 'fm3/l10nInjector';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
 const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
 
-const LegendOutdoorModalInt: React.FC<Props> = ({
-  language,
-  onModalClose,
-  t,
-}) => {
+export function LegendOutdoorModal(): ReactElement {
+  const t = useTranslator();
+
   const [legend, setLegend] = useState<Item[]>([]);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
 
   useEffect(() => {
     axios
@@ -55,8 +48,14 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
       });
   }, [language]);
 
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
@@ -96,26 +95,11 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onModalClose}>
+          <Button onClick={close}>
             <Glyphicon glyph="remove" /> {t('general.close')}
           </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const LegendOutdoorModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(LegendOutdoorModalInt));
+}

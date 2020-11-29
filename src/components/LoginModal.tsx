@@ -1,6 +1,5 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useCallback, ReactElement } from 'react';
+import { useDispatch } from 'react-redux';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -11,22 +10,31 @@ import {
   authLoginWithGoogle,
   authLoginClose,
 } from 'fm3/actions/authActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { useTranslator } from 'fm3/l10nInjector';
 
-type Props = ReturnType<typeof mapDispatchToProps> & {
-  t: Translator;
-};
+export function LoginModal(): ReactElement {
+  const t = useTranslator();
 
-const LoginModalInt: React.FC<Props> = ({
-  onClose,
-  onLoginWithFacebook,
-  onLoginWithGoogle,
-  onLoginWithOsm,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(authLoginClose());
+  }, [dispatch]);
+
+  const loginWithFacebook = useCallback(() => {
+    dispatch(authLoginWithFacebook());
+  }, [dispatch]);
+
+  const loginWithGoogle = useCallback(() => {
+    dispatch(authLoginWithGoogle());
+  }, [dispatch]);
+
+  const loginWithOsm = useCallback(() => {
+    dispatch(authLoginWithOsm());
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onClose}>
+    <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
@@ -34,7 +42,7 @@ const LoginModalInt: React.FC<Props> = ({
       </Modal.Header>
       <Modal.Body>
         <Button
-          onClick={onLoginWithFacebook}
+          onClick={loginWithFacebook}
           bsSize="large"
           block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
@@ -43,7 +51,7 @@ const LoginModalInt: React.FC<Props> = ({
           {t('logIn.with.facebook')}
         </Button>
         <Button
-          onClick={onLoginWithGoogle}
+          onClick={loginWithGoogle}
           bsSize="large"
           block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
@@ -51,7 +59,7 @@ const LoginModalInt: React.FC<Props> = ({
           <FontAwesomeIcon icon="google" /> {t('logIn.with.google')}
         </Button>
         <Button
-          onClick={onLoginWithOsm}
+          onClick={loginWithOsm}
           bsSize="large"
           block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
@@ -60,30 +68,10 @@ const LoginModalInt: React.FC<Props> = ({
         </Button>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onClose}>
+        <Button onClick={close}>
           <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(authLoginClose());
-  },
-  onLoginWithFacebook() {
-    dispatch(authLoginWithFacebook());
-  },
-  onLoginWithGoogle() {
-    dispatch(authLoginWithGoogle());
-  },
-  onLoginWithOsm() {
-    dispatch(authLoginWithOsm());
-  },
-});
-
-export const LoginModal = connect(
-  undefined,
-  mapDispatchToProps,
-)(withTranslator(LoginModalInt));
+}
