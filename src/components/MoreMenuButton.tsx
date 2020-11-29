@@ -1,13 +1,12 @@
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import React, { useState, useRef, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useRef, useCallback, ReactElement } from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import {
@@ -17,37 +16,29 @@ import {
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function MoreMenuButton(): ReactElement {
+  const user = useSelector((state: RootState) => state.auth.user);
 
-const MoreMenuButtonInt: React.FC<Props> = ({
-  user,
-  t,
-  language,
-  chosenLanguage,
-  lat,
-  lon,
-  zoom,
-  expertMode,
-  mapType,
-  onLogin,
-  onLogout,
-  onSettingsShow,
-  onGpxExport,
-  onPdfExport,
-  onEmbed,
-  onSupportUs,
-  onAbout,
-  onLegend,
-  onLanguageChange,
-  onTip,
-}) => {
+  const chosenLanguage = useSelector(
+    (state: RootState) => state.l10n.chosenLanguage,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const lat = useSelector((state: RootState) => state.map.lat);
+
+  const lon = useSelector((state: RootState) => state.map.lon);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
   const [show, setShow] = useState(false);
+
   const [submenu, setSubmenu] = useState<any>(null);
 
   const button = useRef<Button | null>(null);
@@ -61,41 +52,17 @@ const MoreMenuButtonInt: React.FC<Props> = ({
     setSubmenu(null);
   }, []);
 
-  function useMenu<T>(fn: (...args: T[]) => void, ...args: T[]) {
-    return useCallback(() => {
-      close();
-      fn(...args);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fn, ...args]);
-  }
-
-  const handleLoginClick = useMenu(onLogin);
-
-  const handleLogoutClick = useMenu(onLogout);
-
-  const handleSettingsShowClick = useMenu(onSettingsShow);
-
-  const handleGpxExportClick = useMenu(onGpxExport);
-
-  const handlePdfExportClick = useMenu(onPdfExport);
-
-  const handleEmbedClick = useMenu(onEmbed);
-
-  const handleSupportUsClick = useMenu(onSupportUs);
-
-  const handleAboutClick = useMenu(onAbout);
-
-  const handleLegendClick = useMenu(onLegend);
+  const dispatch = useDispatch();
 
   const handleLanguageClick = useCallback(
     (language: unknown) => {
       close();
 
       if (language === null || typeof language === 'string') {
-        onLanguageChange(language);
+        dispatch(l10nSetChosenLanguage(language));
       }
     },
-    [onLanguageChange, close],
+    [dispatch, close],
   );
 
   const handleTipSelect = useCallback(
@@ -103,10 +70,10 @@ const MoreMenuButtonInt: React.FC<Props> = ({
       close();
 
       if (typeof tip === 'string') {
-        onTip(tip);
+        dispatch(tipsShow(tip));
       }
     },
-    [onTip, close],
+    [dispatch, close],
   );
 
   const handleBackClick = useCallback(() => {
@@ -118,6 +85,8 @@ const MoreMenuButtonInt: React.FC<Props> = ({
   }, []);
 
   const skCz = ['sk', 'cs'].includes(language);
+
+  const t = useTranslator();
 
   return (
     <>
@@ -146,16 +115,31 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
                 {user ? (
-                  <MenuItem onSelect={handleLogoutClick}>
+                  <MenuItem
+                    onSelect={() => {
+                      close();
+                      dispatch(authStartLogout());
+                    }}
+                  >
                     <FontAwesomeIcon icon="sign-out" />{' '}
                     {t('more.logOut', { name: user.name })}
                   </MenuItem>
                 ) : (
-                  <MenuItem onSelect={handleLoginClick}>
+                  <MenuItem
+                    onSelect={() => {
+                      close();
+                      dispatch(authChooseLoginMethod());
+                    }}
+                  >
                     <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
                   </MenuItem>
                 )}
-                <MenuItem onSelect={handleSettingsShowClick}>
+                <MenuItem
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('settings'));
+                  }}
+                >
                   <FontAwesomeIcon icon="cog" /> {t('more.settings')}{' '}
                   <kbd>e</kbd> <kbd>s</kbd>
                 </MenuItem>
@@ -165,11 +149,21 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   {t('external.openInExternal')}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
-                <MenuItem onSelect={handlePdfExportClick}>
+                <MenuItem
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('export-pdf'));
+                  }}
+                >
                   <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}{' '}
                   <kbd>e</kbd> <kbd>p</kbd>
                 </MenuItem>
-                <MenuItem onSelect={handleGpxExportClick}>
+                <MenuItem
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('export-gpx'));
+                  }}
+                >
                   <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}{' '}
                   <kbd>e</kbd> <kbd>g</kbd>
                 </MenuItem>
@@ -181,7 +175,12 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <FontAwesomeIcon icon="!icon-gps-device" />{' '}
                   {t('more.mapExports')}
                 </MenuItem>
-                <MenuItem onSelect={handleEmbedClick}>
+                <MenuItem
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('embed'));
+                  }}
+                >
                   <FontAwesomeIcon icon="code" /> {t('more.embedMap')}{' '}
                   <kbd>e</kbd> <kbd>e</kbd>
                 </MenuItem>
@@ -207,7 +206,12 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                   <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
-                <MenuItem onSelect={handleSupportUsClick}>
+                <MenuItem
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('supportUs'));
+                  }}
+                >
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
                   {t('more.supportUs')}{' '}
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
@@ -226,11 +230,21 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
                   mapType,
                 ) && (
-                  <MenuItem onSelect={handleLegendClick}>
+                  <MenuItem
+                    onSelect={() => {
+                      close();
+                      dispatch(setActiveModal('legend'));
+                    }}
+                  >
                     <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
                   </MenuItem>
                 )}
-                <MenuItem onSelect={handleAboutClick}>
+                <MenuItem
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('about'));
+                  }}
+                >
                   <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
                 </MenuItem>
                 {skCz && (
@@ -369,56 +383,4 @@ const MoreMenuButtonInt: React.FC<Props> = ({
       </Overlay>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  user: state.auth.user,
-  chosenLanguage: state.l10n.chosenLanguage,
-  language: state.l10n.language,
-  mapType: state.map.mapType,
-  lat: state.map.lat,
-  lon: state.map.lon,
-  zoom: state.map.zoom,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSettingsShow() {
-    dispatch(setActiveModal('settings'));
-  },
-  onGpxExport() {
-    dispatch(setActiveModal('export-gpx'));
-  },
-  onPdfExport() {
-    dispatch(setActiveModal('export-pdf'));
-  },
-  onEmbed() {
-    dispatch(setActiveModal('embed'));
-  },
-  onSupportUs() {
-    dispatch(setActiveModal('supportUs'));
-  },
-  onAbout() {
-    dispatch(setActiveModal('about'));
-  },
-  onLegend() {
-    dispatch(setActiveModal('legend'));
-  },
-  onLogin() {
-    dispatch(authChooseLoginMethod());
-  },
-  onLogout() {
-    dispatch(authStartLogout());
-  },
-  onTip(which: string) {
-    dispatch(tipsShow(which));
-  },
-  onLanguageChange(lang: string | null) {
-    dispatch(l10nSetChosenLanguage(lang));
-  },
-});
-
-export const MoreMenuButton = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MoreMenuButtonInt));
+}

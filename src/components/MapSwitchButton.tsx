@@ -1,6 +1,5 @@
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import React, { useCallback, useState, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { useCallback, useState, useRef, ReactElement } from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
@@ -8,28 +7,34 @@ import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
-import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import useMedia from 'use-media';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function MapSwitchButton(): ReactElement {
+  const t = useTranslator();
 
-const MapSwitchButtonInt: React.FC<Props> = ({
-  isAdmin,
-  t,
-  mapType,
-  overlays,
-  expertMode,
-  zoom,
-  pictureFilterIsActive,
-  onMapRefocus,
-  language,
-}) => {
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const overlays = useSelector((state: RootState) => state.map.overlays);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
+  const pictureFilterIsActive = useSelector(
+    (state: RootState) => Object.keys(state.gallery.filter).length > 0,
+  );
+
+  const isAdmin = useSelector(
+    (state: RootState) => !!(state.auth.user && state.auth.user.isAdmin),
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const dispatch = useDispatch();
+
   const [show, setShow] = useState(false);
 
   const buttonRef = useRef<Button | null>(null);
@@ -49,10 +54,10 @@ const MapSwitchButtonInt: React.FC<Props> = ({
       setShow(false);
 
       if (mapType !== mapType1) {
-        onMapRefocus({ mapType: mapType1 });
+        dispatch(mapRefocus({ mapType: mapType1 }));
       }
     },
-    [onMapRefocus, mapType],
+    [dispatch, mapType],
   );
 
   const handleOverlaySelect = useCallback(
@@ -67,15 +72,17 @@ const MapSwitchButtonInt: React.FC<Props> = ({
         s.add(overlay);
       }
 
-      onMapRefocus({ overlays: [...s] });
+      dispatch(mapRefocus({ overlays: [...s] }));
     },
-    [onMapRefocus, overlays],
+    [dispatch, overlays],
   );
 
   const handleBaseClick = (e: React.MouseEvent<Button>) => {
-    onMapRefocus({
-      mapType: (e.currentTarget as any).dataset.type,
-    });
+    dispatch(
+      mapRefocus({
+        mapType: (e.currentTarget as any).dataset.type,
+      }),
+    );
   };
 
   const handleOverlayClick = (e: React.MouseEvent<Button>) => {
@@ -89,7 +96,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
       s.add(overlay);
     }
 
-    onMapRefocus({ overlays: [...s] });
+    dispatch(mapRefocus({ overlays: [...s] }));
   };
 
   const isWide = useMedia({ minWidth: '768px' });
@@ -260,25 +267,4 @@ const MapSwitchButtonInt: React.FC<Props> = ({
       </Overlay>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  zoom: state.map.zoom,
-  mapType: state.map.mapType,
-  overlays: state.map.overlays,
-  expertMode: state.main.expertMode,
-  pictureFilterIsActive: Object.keys(state.gallery.filter).length > 0,
-  isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapRefocus(changes: Partial<MapViewState>) {
-    dispatch(mapRefocus(changes));
-  },
-});
-
-export const MapSwitchButton = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MapSwitchButtonInt));
+}

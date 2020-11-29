@@ -1,6 +1,5 @@
-import React, { useCallback, useState } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { ReactElement, useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
@@ -15,25 +14,23 @@ import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { convertToDrawing } from 'fm3/actions/mainActions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ObjectsMenu(): ReactElement {
+  const t = useTranslator();
 
-const ObjectsMenuInt: React.FC<Props> = ({
-  t,
-  zoom,
-  onLowZoom,
-  onSearch,
-  hasObjects,
-  onConvertToMeasurement,
-}) => {
+  const dispatch = useDispatch();
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const hasObjects = useSelector(
+    (state: RootState) => state.objects.objects.length > 0,
+  );
+
   const [filter, setFilter] = useState('');
+
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
   const handleFilterSet = useCallback((e: React.FormEvent<FormControl>) => {
@@ -47,12 +44,25 @@ const ObjectsMenuInt: React.FC<Props> = ({
   const handleSelect = useCallback(
     (id: unknown) => {
       if (zoom < 12) {
-        onLowZoom();
+        dispatch(
+          toastsAdd({
+            id: 'objects.lowZoomAlert',
+            messageKey: 'objects.lowZoomAlert.message',
+            style: 'warning',
+            actions: [
+              {
+                // name: 'Priblíž a hľadaj', TODO
+                nameKey: 'objects.lowZoomAlert.zoom',
+                action: [mapRefocus({ zoom: 12 })],
+              },
+            ],
+          }),
+        );
       } else if (typeof id === 'number') {
-        onSearch(id);
+        dispatch(objectsSetFilter(id));
       }
     },
-    [zoom, onLowZoom, onSearch],
+    [zoom, dispatch],
   );
 
   const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
@@ -106,7 +116,9 @@ const ObjectsMenuInt: React.FC<Props> = ({
         </Dropdown.Menu>
       </Dropdown>{' '}
       <Button
-        onClick={onConvertToMeasurement}
+        onClick={() => {
+          dispatch(convertToDrawing(undefined));
+        }}
         disabled={!hasObjects}
         title={t('general.convertToDrawing')}
       >
@@ -115,39 +127,4 @@ const ObjectsMenuInt: React.FC<Props> = ({
       </Button>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  zoom: state.map.zoom,
-  hasObjects: state.objects.objects.length > 0,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSearch(typeId: number) {
-    dispatch(objectsSetFilter(typeId));
-  },
-  onLowZoom() {
-    dispatch(
-      toastsAdd({
-        id: 'objects.lowZoomAlert',
-        messageKey: 'objects.lowZoomAlert.message',
-        style: 'warning',
-        actions: [
-          {
-            // name: 'Priblíž a hľadaj', TODO
-            nameKey: 'objects.lowZoomAlert.zoom',
-            action: [mapRefocus({ zoom: 12 })],
-          },
-        ],
-      }),
-    );
-  },
-  onConvertToMeasurement() {
-    dispatch(convertToDrawing(undefined));
-  },
-});
-
-export const ObjectsMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ObjectsMenuInt));
+}
