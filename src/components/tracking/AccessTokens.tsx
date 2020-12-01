@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { ReactElement, useEffect } from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
@@ -9,27 +9,30 @@ import Alert from 'react-bootstrap/lib/Alert';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function AccessTokens(): ReactElement {
+  const t = useTranslator();
 
-const AccessTokensInt: React.FC<Props> = ({
-  onClose,
-  onOpen,
-  onAdd,
-  accessTokens,
-  deviceName,
-  t,
-}) => {
-  React.useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+  const dispatch = useDispatch();
+
+  const accessTokens = useSelector(
+    (state: RootState) => state.tracking.accessTokens,
+  );
+
+  const deviceName = useSelector(
+    (state: RootState) =>
+      (
+        state.tracking.devices.find(
+          (device) => device.id === state.tracking.accessTokensDeviceId,
+        ) || { name: '???' }
+      ).name,
+  );
+
+  useEffect(() => {
+    dispatch(trackingActions.loadAccessTokens());
+  }, [dispatch]);
 
   return (
     <>
@@ -63,40 +66,23 @@ const AccessTokensInt: React.FC<Props> = ({
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" onClick={onAdd}>
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.modifyAccessToken(null));
+          }}
+        >
           {t('general.add')}
         </Button>
-        <Button type="button" onClick={onClose}>
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.showAccessTokens(undefined));
+          }}
+        >
           {t('general.back')}
         </Button>
       </Modal.Footer>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  accessTokens: state.tracking.accessTokens,
-  language: state.l10n.language,
-  deviceName: (
-    state.tracking.devices.find(
-      (device) => device.id === state.tracking.accessTokensDeviceId,
-    ) || { name: '???' }
-  ).name,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onOpen() {
-    dispatch(trackingActions.loadAccessTokens());
-  },
-  onClose() {
-    dispatch(trackingActions.showAccessTokens(undefined));
-  },
-  onAdd() {
-    dispatch(trackingActions.modifyAccessToken(null));
-  },
-});
-
-export const AccessTokens = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(AccessTokensInt));
+}

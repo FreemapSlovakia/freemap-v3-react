@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
@@ -30,72 +29,80 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { overlayLayers } from 'fm3/mapDefinitions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { LatLon } from 'fm3/types/common';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
+export function Settings(): ReactElement {
+  const init = {
+    homeLocation: useSelector((state: RootState) => state.main.homeLocation),
+    overlayOpacity: useSelector((state: RootState) => state.map.overlayOpacity),
+    overlayPaneOpacity: useSelector(
+      (state: RootState) => state.map.overlayPaneOpacity,
+    ),
+    expertMode: useSelector((state: RootState) => state.main.expertMode),
+    eleSmoothingFactor: useSelector(
+      (state: RootState) => state.main.eleSmoothingFactor,
+    ),
+    preventTips: useSelector((state: RootState) => state.tips.preventTips),
   };
 
-const SettingsInt: React.FC<Props> = ({
-  onClose,
-  onHomeLocationSelect,
-  selectingHomeLocation,
-  user,
-  language,
-  t,
-  onSave,
-  onHomeLocationSelectionFinish,
-  ...props
-}) => {
-  const [homeLocation, setHomeLocation] = useState(props.homeLocation);
-
-  const [overlayOpacity, setOverlayOpacity] = useState(props.overlayOpacity);
-
-  const [overlayPaneOpacity, setOverlayPaneOpacity] = useState(
-    props.overlayPaneOpacity,
+  const selectingHomeLocation = useSelector(
+    (state: RootState) => state.main.selectingHomeLocation,
   );
 
-  const [expertMode, setExpertMode] = useState<boolean>(props.expertMode);
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const t = useTranslator();
+
+  const [homeLocation, setHomeLocation] = useState(init.homeLocation);
+
+  const [overlayOpacity, setOverlayOpacity] = useState(init.overlayOpacity);
+
+  const [overlayPaneOpacity, setOverlayPaneOpacity] = useState(
+    init.overlayPaneOpacity,
+  );
+
+  const [expertMode, setExpertMode] = useState<boolean>(init.expertMode);
 
   const [eleSmoothingFactor, setEleSmoothingFactor] = useState(
-    props.eleSmoothingFactor,
+    init.eleSmoothingFactor,
   );
 
   const [name, setName] = useState(user?.name ?? '');
 
   const [email, setEmail] = useState(user?.email ?? '');
 
-  const [preventTips, setPreventTips] = useState(props.preventTips);
+  const [preventTips, setPreventTips] = useState(init.preventTips);
 
   const [selectedOverlay, setSelectedOverlay] = useState('t');
 
+  const dispatch = useDispatch();
+
   useEffect(() => {
-    const onHomeLocationSelected = (lat: number, lon: number) => {
+    const handleHomeLocationSelected = (lat: number, lon: number) => {
       setHomeLocation({ lat, lon });
-      onHomeLocationSelectionFinish();
+      dispatch(setSelectingHomeLocation(false));
     };
 
-    mapEventEmitter.on('mapClick', onHomeLocationSelected);
+    mapEventEmitter.on('mapClick', handleHomeLocationSelected);
 
     return () => {
-      mapEventEmitter.removeListener('mapClick', onHomeLocationSelected);
+      mapEventEmitter.removeListener('mapClick', handleHomeLocationSelected);
     };
-  }, [onHomeLocationSelectionFinish]);
+  }, [dispatch]);
 
   const userMadeChanges =
-    homeLocation !== props.homeLocation ||
-    expertMode !== props.expertMode ||
-    eleSmoothingFactor !== props.eleSmoothingFactor ||
-    preventTips !== props.preventTips ||
-    overlayPaneOpacity !== props.overlayPaneOpacity ||
+    homeLocation !== init.homeLocation ||
+    expertMode !== init.expertMode ||
+    eleSmoothingFactor !== init.eleSmoothingFactor ||
+    preventTips !== init.preventTips ||
+    overlayPaneOpacity !== init.overlayPaneOpacity ||
     (user && (name !== (user.name ?? '') || email !== (user.email ?? ''))) ||
     overlayLayers.some(
       ({ type }) =>
-        (overlayOpacity[type] || 1) !== (props.overlayOpacity[type] || 1),
+        (overlayOpacity[type] || 1) !== (init.overlayOpacity[type] || 1),
     );
 
   const selectedOverlayDetails = overlayLayers.find(
@@ -107,25 +114,31 @@ const SettingsInt: React.FC<Props> = ({
     maximumFractionDigits: 0,
   });
 
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show={!selectingHomeLocation} onHide={onClose}>
+    <Modal show={!selectingHomeLocation} onHide={close}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
 
-          onSave(
-            homeLocation,
-            overlayOpacity,
-            overlayPaneOpacity,
-            expertMode,
-            eleSmoothingFactor,
-            user
-              ? {
-                  name: name.trim() || null,
-                  email: email.trim() || null,
-                }
-              : null,
-            preventTips,
+          dispatch(
+            saveSettings({
+              homeLocation,
+              overlayOpacity,
+              overlayPaneOpacity,
+              expertMode,
+              trackViewerEleSmoothingFactor: eleSmoothingFactor,
+              user: user
+                ? {
+                    name: name.trim() || null,
+                    email: email.trim() || null,
+                  }
+                : null,
+              preventTips,
+            }),
           );
         }}
       >
@@ -253,7 +266,11 @@ const SettingsInt: React.FC<Props> = ({
                   ? latLonToString(homeLocation, language)
                   : t('settings.map.homeLocation.undefined')}
               </p>
-              <Button onClick={() => onHomeLocationSelect()}>
+              <Button
+                onClick={() => {
+                  dispatch(setSelectingHomeLocation(true));
+                }}
+              >
                 <FontAwesomeIcon icon="crosshairs" />{' '}
                 {t('settings.map.homeLocation.select')}
               </Button>
@@ -304,61 +321,11 @@ const SettingsInt: React.FC<Props> = ({
           <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
             <Glyphicon glyph="floppy-disk" /> {t('general.save')}
           </Button>
-          <Button type="button" onClick={onClose}>
+          <Button type="button" onClick={close}>
             <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  homeLocation: state.main.homeLocation,
-  overlayOpacity: state.map.overlayOpacity,
-  overlayPaneOpacity: state.map.overlayPaneOpacity,
-  expertMode: state.main.expertMode,
-  eleSmoothingFactor: state.main.eleSmoothingFactor,
-  selectingHomeLocation: state.main.selectingHomeLocation,
-  user: state.auth.user,
-  preventTips: state.tips.preventTips,
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSave(
-    homeLocation: LatLon | null,
-    overlayOpacity: { [type: string]: number },
-    overlayPaneOpacity: number,
-    expertMode: boolean,
-    trackViewerEleSmoothingFactor: number,
-    user: { name: string | null; email: string | null } | null,
-    preventTips: boolean,
-  ) {
-    dispatch(
-      saveSettings({
-        homeLocation,
-        overlayOpacity,
-        overlayPaneOpacity,
-        expertMode,
-        trackViewerEleSmoothingFactor,
-        user,
-        preventTips,
-      }),
-    );
-  },
-  onClose() {
-    dispatch(setActiveModal(null));
-  },
-  onHomeLocationSelect() {
-    dispatch(setSelectingHomeLocation(true));
-  },
-  onHomeLocationSelectionFinish() {
-    dispatch(setSelectingHomeLocation(false));
-  },
-});
-
-export const Settings = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(SettingsInt));
+}

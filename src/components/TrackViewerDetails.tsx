@@ -1,21 +1,30 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import React, { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import { smoothElevations, distance } from 'fm3/geoutils';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
-type Props = ReturnType<typeof mapStateToProps> & {
-  t: Translator;
-};
+export function TrackViewerDetails(): ReactElement | null {
+  const t = useTranslator();
 
-const TrackViewerDetailsInt: React.FC<Props> = ({
-  startPoints,
-  finishPoints,
-  trackGeojson,
-  eleSmoothingFactor,
-  language,
-  t,
-}) => {
+  const startPoints = useSelector(
+    (state: RootState) => state.trackViewer.startPoints,
+  );
+
+  const finishPoints = useSelector(
+    (state: RootState) => state.trackViewer.finishPoints,
+  );
+
+  const trackGeojson = useSelector(
+    (state: RootState) => state.trackViewer.trackGeojson,
+  );
+
+  const eleSmoothingFactor = useSelector(
+    (state: RootState) => state.main.eleSmoothingFactor,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   if (!trackGeojson) {
     return null;
   }
@@ -156,16 +165,4 @@ const TrackViewerDetailsInt: React.FC<Props> = ({
       ])}
     </dl>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  startPoints: state.trackViewer.startPoints,
-  finishPoints: state.trackViewer.finishPoints,
-  trackGeojson: state.trackViewer.trackGeojson,
-  eleSmoothingFactor: state.main.eleSmoothingFactor,
-  language: state.l10n.language,
-});
-
-export const TrackViewerDetails = connect(mapStateToProps)(
-  withTranslator(TrackViewerDetailsInt),
-);
+}

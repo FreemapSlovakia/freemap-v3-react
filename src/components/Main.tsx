@@ -1,16 +1,15 @@
 import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useEffect, useRef, useCallback, ReactElement } from 'react';
 import { Map, ScaleControl } from 'react-leaflet';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from 'react-bootstrap/lib/Button';
 // import CloseButton from 'react-bootstrap/lib/CloseButton';
 import Panel from 'react-bootstrap/lib/Panel';
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import { Layers } from 'fm3/components/Layers';
 import { Toasts } from 'fm3/components/Toasts';
@@ -67,12 +66,8 @@ import {
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
-import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
-import {
-  setActiveModal,
-  deleteFeature,
-  Selection,
-} from 'fm3/actions/mainActions';
+import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
@@ -81,7 +76,6 @@ import 'fm3/styles/leaflet.scss';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { LeafletMouseEvent } from 'leaflet';
 
 import fmLogo from '../images/freemap-logo-print.png';
@@ -113,44 +107,88 @@ import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { MapsMenu } from './MapsMenu';
 import { WikiLayer } from './WikiLayer';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
-
 const embed = window.self !== window.top;
 
-const MainInt: React.FC<Props> = ({
-  lat,
-  lon,
-  zoom,
-  tool,
-  activeModal,
-  progress,
-  mouseCursor,
-  showElevationChart,
-  showGalleryPicker,
-  showLoginModal,
-  onMapReset,
-  showMenu,
-  overlayPaneOpacity,
-  embedFeatures,
-  onMapRefocus,
-  onGpxDrop,
-  onGpxLoadError,
-  onPictureUpdated,
-  onPictureAdded,
-  onPicturesDrop,
-  authenticated,
-  language,
-  t,
-  isUserValidated,
-  selection,
-  onDelete,
-  canDelete,
-  showInteractiveLayer,
-  mapType,
-}) => {
+export function Main(): ReactElement {
+  const t = useTranslator();
+
+  const dispatch = useDispatch();
+
+  const lat = useSelector((state: RootState) => state.map.lat);
+
+  const lon = useSelector((state: RootState) => state.map.lon);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const showInteractiveLayer = useSelector(
+    (state: RootState) => !state.map.overlays.includes('i'),
+  );
+
+  const tool = useSelector((state: RootState) => state.main.selection?.type);
+
+  const embedFeatures = useSelector(
+    (state: RootState) => state.main.embedFeatures,
+  );
+
+  const activeModal = useSelector((state: RootState) => state.main.activeModal);
+
+  const progress = useSelector(
+    (state: RootState) => !!state.main.progress.length,
+  );
+
+  const mouseCursor = useSelector((state: RootState) =>
+    mouseCursorSelector(state),
+  );
+
+  const authenticated = useSelector((state: RootState) => !!state.auth.user);
+
+  const showElevationChart = useSelector(
+    (state: RootState) => !!state.elevationChart.elevationProfilePoints,
+  );
+
+  const showGalleryPicker = useSelector((state: RootState) =>
+    showGalleryPickerSelector(state),
+  );
+
+  const showLoginModal = useSelector(
+    (state: RootState) => state.auth.chooseLoginMethod,
+  );
+
+  const showMenu = useSelector(
+    (state: RootState) =>
+      !state.main.selectingHomeLocation &&
+      !state.gallery.pickingPositionForId &&
+      !state.gallery.showPosition,
+  );
+
+  const overlayPaneOpacity = useSelector(
+    (state: RootState) => state.map.overlayPaneOpacity,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const isUserValidated = useSelector(
+    (state: RootState) => state.auth.user && !state.auth.user.notValidated,
+  );
+
+  const selection = useSelector((state: RootState) => state.main.selection);
+
+  const canDelete = useSelector(
+    (state: RootState) =>
+      state.main.selection?.id !== undefined ||
+      (state.main.selection?.type === 'route-planner' &&
+        (state.routePlanner.start ||
+          state.routePlanner.finish ||
+          state.routePlanner.midpoints.length > 0)) ||
+      ((state.main.selection?.type === 'map-details' ||
+        state.main.selection?.type === 'track-viewer') &&
+        state.trackViewer.trackGeojson) ||
+      (state.main.selection?.type === 'changesets' &&
+        state.changesets.changesets.length > 0),
+  );
+
   // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
   const mapRef = useRef<Map | null>();
@@ -177,27 +215,65 @@ const MainInt: React.FC<Props> = ({
     const newZoom = map.getZoom();
 
     if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
-      onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
+      dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
     }
-  }, [onMapRefocus, lat, lon, zoom]);
+  }, [dispatch, lat, lon, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (embed) {
       window.open(window.location.href, '_blank');
     } else {
-      onMapReset();
+      dispatch(mapReset());
     }
-  }, [onMapReset]);
+  }, [dispatch]);
 
   // const handleInfoBarCloseClick = useCallback(() => {
   //   setShowInfoBar(false);
   // }, [setShowInfoBar]);
 
+  const handlePictureAdded = useCallback(
+    (item: GalleryItem) => {
+      dispatch(galleryAddItem(item));
+    },
+    [dispatch],
+  );
+
+  const onPictureUpdated = useCallback(
+    (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
+      dispatch(galleryMergeItem(item));
+    },
+    [dispatch],
+  );
+
   const handlePicturesDrop = usePictureDropHandler(
     true,
     language,
-    onPictureAdded,
+    handlePictureAdded,
     onPictureUpdated,
+  );
+
+  const onGpxDrop = useCallback(
+    (trackGpx: string) => {
+      dispatch(trackViewerSetTrackUID(null));
+      dispatch(trackViewerSetData({ trackGpx }));
+      dispatch(setActiveModal(null));
+      dispatch(elevationChartClose());
+    },
+    [dispatch],
+  );
+
+  const onGpxLoadError = useCallback(
+    (message: string) => {
+      dispatch(
+        toastsAdd({
+          id: 'trackViewer.loadError',
+          message,
+          style: 'danger',
+          timeout: 5000,
+        }),
+      );
+    },
+    [dispatch],
   );
 
   const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError, t);
@@ -209,7 +285,8 @@ const MainInt: React.FC<Props> = ({
       );
 
       if (pictureFiles.length) {
-        onPicturesDrop(); // if no user then it displays valuable error
+        dispatch(galleryShowUploadModal()); // if no user then it displays valuable error
+
         if (authenticated) {
           handlePicturesDrop(pictureFiles);
         }
@@ -223,7 +300,7 @@ const MainInt: React.FC<Props> = ({
         handleGpxDrop(gpxFiles);
       }
     },
-    [handlePicturesDrop, handleGpxDrop, onPicturesDrop, authenticated],
+    [handlePicturesDrop, handleGpxDrop, dispatch, authenticated],
   );
 
   useShareFile(onDrop);
@@ -236,9 +313,9 @@ const MainInt: React.FC<Props> = ({
 
   const handleDeleteClick = useCallback(() => {
     if (selection) {
-      onDelete(selection);
+      dispatch(deleteFeature(selection));
     }
-  }, [onDelete, selection]);
+  }, [dispatch, selection]);
 
   const embedToolDef = embed && toolDefinitions.find((td) => td.tool === tool);
 
@@ -414,85 +491,7 @@ const MainInt: React.FC<Props> = ({
       </div>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  lat: state.map.lat,
-  lon: state.map.lon,
-  zoom: state.map.zoom,
-  mapType: state.map.mapType,
-  showInteractiveLayer: !state.map.overlays.includes('i'),
-  tool: state.main.selection?.type,
-  embedFeatures: state.main.embedFeatures,
-  activeModal: state.main.activeModal,
-  progress: !!state.main.progress.length,
-  mouseCursor: mouseCursorSelector(state),
-  authenticated: !!state.auth.user,
-  showElevationChart: !!state.elevationChart.elevationProfilePoints,
-  showGalleryPicker: showGalleryPickerSelector(state),
-  showLoginModal: state.auth.chooseLoginMethod,
-  showMenu:
-    !state.main.selectingHomeLocation &&
-    !state.gallery.pickingPositionForId &&
-    !state.gallery.showPosition,
-  overlayPaneOpacity: state.map.overlayPaneOpacity,
-  language: state.l10n.language,
-  isUserValidated: state.auth.user && !state.auth.user.notValidated,
-  selection: state.main.selection,
-  canDelete:
-    state.main.selection?.id !== undefined ||
-    (state.main.selection?.type === 'route-planner' &&
-      (state.routePlanner.start ||
-        state.routePlanner.finish ||
-        state.routePlanner.midpoints.length > 0)) ||
-    ((state.main.selection?.type === 'map-details' ||
-      state.main.selection?.type === 'track-viewer') &&
-      state.trackViewer.trackGeojson) ||
-    (state.main.selection?.type === 'changesets' &&
-      state.changesets.changesets.length > 0),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapRefocus(changes: Partial<MapViewState>) {
-    dispatch(mapRefocus(changes));
-  },
-  onMapReset() {
-    dispatch(mapReset());
-  },
-  onGpxDrop(trackGpx: string) {
-    dispatch(trackViewerSetTrackUID(null));
-    dispatch(trackViewerSetData({ trackGpx }));
-    dispatch(setActiveModal(null));
-    dispatch(elevationChartClose());
-  },
-  onGpxLoadError(message: string) {
-    dispatch(
-      toastsAdd({
-        id: 'trackViewer.loadError',
-        message,
-        style: 'danger',
-        timeout: 5000,
-      }),
-    );
-  },
-  onPicturesDrop() {
-    dispatch(galleryShowUploadModal());
-  },
-  onPictureAdded(item: GalleryItem) {
-    dispatch(galleryAddItem(item));
-  },
-  onPictureUpdated(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
-    dispatch(galleryMergeItem(item));
-  },
-  onDelete(selection: Selection) {
-    dispatch(deleteFeature(selection));
-  },
-});
-
-export const Main = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MainInt));
+}
 
 function handleMapClick(e: LeafletMouseEvent) {
   // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168

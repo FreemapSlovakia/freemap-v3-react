@@ -1,8 +1,7 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import {
   galleryShowFilter,
@@ -18,30 +17,36 @@ import Form from 'react-bootstrap/lib/Form';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import { is } from 'typescript-is';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function GalleryMenuInt(): ReactElement {
+  const t = useTranslator();
 
-const GalleryMenuInt: React.FC<Props> = ({
-  onUpload,
-  onFilterShow,
-  filterIsActive,
-  onOrderSelect,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const filterIsActive = useSelector(
+    (state: RootState) => Object.keys(state.gallery.filter).length > 0,
+  );
+
   return (
     <Form inline>
-      <Button onClick={onFilterShow} active={filterIsActive}>
+      <Button
+        onClick={() => {
+          dispatch(galleryShowFilter());
+        }}
+        active={filterIsActive}
+      >
         <FontAwesomeIcon icon="filter" />
         <span className="hidden-xs"> {t('gallery.filter')}</span>
       </Button>{' '}
       <DropdownButton
         id="all-pics"
         title={t('gallery.allPhotos')}
-        onSelect={onOrderSelect as (x: any) => void}
+        onSelect={(order: unknown) => {
+          if (is<GalleryListOrder>(order)) {
+            dispatch(galleryList(order));
+          }
+        }}
       >
         <MenuItem eventKey="+createdAt">
           {t('gallery.f.firstUploaded')}
@@ -52,31 +57,14 @@ const GalleryMenuInt: React.FC<Props> = ({
         <MenuItem eventKey="+rating">{t('gallery.f.leastRated')}</MenuItem>
         <MenuItem eventKey="-rating">{t('gallery.f.mostRated')}</MenuItem>
       </DropdownButton>{' '}
-      <Button onClick={onUpload}>
+      <Button
+        onClick={() => {
+          dispatch(galleryShowUploadModal());
+        }}
+      >
         <FontAwesomeIcon icon="upload" />
         <span className="hidden-xs"> {t('gallery.upload')}</span>
       </Button>
     </Form>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  filterIsActive: Object.keys(state.gallery.filter).length > 0,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onUpload() {
-    dispatch(galleryShowUploadModal());
-  },
-  onFilterShow() {
-    dispatch(galleryShowFilter());
-  },
-  onOrderSelect(order: GalleryListOrder) {
-    dispatch(galleryList(order));
-  },
-});
-
-export const GalleryMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryMenuInt));
+}

@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import React from 'react';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
+import React, { ReactElement } from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
@@ -14,25 +14,37 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
+import { useTranslator } from 'fm3/l10nInjector';
 import { InputGroup } from 'react-bootstrap';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { selectFeature } from 'fm3/actions/mainActions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function TrackedDeviceForm(): ReactElement {
+  const t = useTranslator();
 
-const TrackedDeviceFormInt: React.FC<Props> = ({
-  onSave,
-  onCancel,
-  device,
-  forceNew,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const { device, forceNew } = useSelector((state: RootState) => {
+    let device: TrackedDevice | undefined;
+    let forceNew = false;
+
+    if (state.tracking.modifiedTrackedDeviceId != null) {
+      device = state.tracking.trackedDevices.find(
+        (device) => device.id === state.tracking.modifiedTrackedDeviceId,
+      );
+
+      if (!device) {
+        device = { id: state.tracking.modifiedTrackedDeviceId };
+        forceNew = true;
+      }
+    }
+
+    return {
+      device,
+      forceNew,
+    };
+  }, shallowEqual);
+
   const [id, setId] = useTextInputState(device?.id?.toString() ?? '');
 
   const [label, setLabel] = useTextInputState(device?.label ?? '');
@@ -63,20 +75,28 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const id0 = id.trim();
-    onSave({
-      id: /^\d+$/.test(id0) ? Number.parseInt(id0) : id0,
-      label: label.trim() || null,
-      color: color.trim() || null,
-      fromTime: fromTime === '' ? null : new Date(fromTime),
-      maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-      maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-      width: width === '' ? null : Number.parseInt(width, 10),
-      splitDistance:
-        splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
-      splitDuration:
-        splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
-    });
+
+    const did = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
+
+    dispatch(
+      trackingActions.saveTrackedDevice({
+        id: did,
+        label: label.trim() || null,
+        color: color.trim() || null,
+        fromTime: fromTime === '' ? null : new Date(fromTime),
+        maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
+        maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+        width: width === '' ? null : Number.parseInt(width, 10),
+        splitDistance:
+          splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
+        splitDuration:
+          splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
+      }),
+    );
+
+    dispatch(selectFeature({ type: 'tracking', id: did }));
   };
 
   return (
@@ -180,46 +200,15 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <Button type="submit">{t('general.save')}</Button>
-        <Button type="button" onClick={onCancel}>
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.modifyTrackedDevice(undefined));
+          }}
+        >
           {t('general.cancel')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>
   );
-};
-
-const mapStateToProps = (state: RootState) => {
-  let device: TrackedDevice | undefined;
-  let forceNew = false;
-
-  if (state.tracking.modifiedTrackedDeviceId != null) {
-    device = state.tracking.trackedDevices.find(
-      (device) => device.id === state.tracking.modifiedTrackedDeviceId,
-    );
-
-    if (!device) {
-      device = { id: state.tracking.modifiedTrackedDeviceId };
-      forceNew = true;
-    }
-  }
-
-  return {
-    device,
-    forceNew,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onCancel() {
-    dispatch(trackingActions.modifyTrackedDevice(undefined));
-  },
-  onSave(device: TrackedDevice) {
-    dispatch(trackingActions.saveTrackedDevice(device));
-    dispatch(selectFeature({ type: 'tracking', id: device.id }));
-  },
-});
-
-export const TrackedDeviceForm = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(TrackedDeviceFormInt));
+}

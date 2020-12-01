@@ -1,33 +1,34 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { useEffect, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import Panel from 'react-bootstrap/lib/Panel';
 
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function GalleryShowPositionMenu(): ReactElement | null {
+  const t = useTranslator();
 
-const GalleryShowPositionMenuInt: React.FC<Props> = ({
-  onClose,
-  showPosition,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const showPosition = useSelector(
+    (state: RootState) => state.gallery.showPosition,
+  );
+
+  const close = useCallback(() => {
+    dispatch(galleryCancelShowOnTheMap());
+  }, [dispatch]);
+
   const handleKeyUp = useCallback(
     (event: KeyboardEvent) => {
       if (event.keyCode === 27 /* escape key */) {
-        onClose();
+        close();
       }
     },
-    [onClose],
+    [close],
   );
 
   useEffect(() => {
@@ -39,31 +40,12 @@ const GalleryShowPositionMenuInt: React.FC<Props> = ({
     };
   }, [handleKeyUp]);
 
-  if (!showPosition) {
-    return null;
-  }
-
-  return (
+  return !showPosition ? null : (
     <Panel className="fm-toolbar">
-      <Button onClick={onClose}>
+      <Button onClick={close}>
         <FontAwesomeIcon icon="chevron-left" />
         <span className="hidden-xs"> {t('general.back')}</span> <kbd>Esc</kbd>
       </Button>
     </Panel>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  showPosition: state.gallery.showPosition,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(galleryCancelShowOnTheMap());
-  },
-});
-
-export const GalleryShowPositionMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryShowPositionMenuInt));
+}

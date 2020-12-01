@@ -1,29 +1,25 @@
-import { connect } from 'react-redux';
-import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { ReactElement } from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    device: TrackedDeviceType;
-    t: Translator;
-  };
+type Props = {
+  device: TrackedDeviceType;
+};
 
-const TrackedDeviceInt: React.FC<Props> = ({
-  onDelete,
-  onModify,
-  device,
-  language,
-  t,
-}) => {
+export function TrackedDevice({ device }: Props): ReactElement {
+  const t = useTranslator();
+
+  const dispatch = useDispatch();
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
     month: 'short',
@@ -33,12 +29,12 @@ const TrackedDeviceInt: React.FC<Props> = ({
   });
 
   const handleModify = React.useCallback(() => {
-    onModify(device.id);
-  }, [device.id, onModify]);
+    dispatch(trackingActions.modifyTrackedDevice(device.id));
+  }, [device.id, dispatch]);
 
   const handleDelete = React.useCallback(() => {
-    onDelete(device.id);
-  }, [device.id, onDelete]);
+    dispatch(trackingActions.deleteTrackedDevice(device.id));
+  }, [device.id, dispatch]);
 
   return (
     <tr>
@@ -85,22 +81,4 @@ const TrackedDeviceInt: React.FC<Props> = ({
       </td>
     </tr>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModify(id: string | number) {
-    dispatch(trackingActions.modifyTrackedDevice(id));
-  },
-  onDelete(id: string | number) {
-    dispatch(trackingActions.deleteTrackedDevice(id));
-  },
-});
-
-export const TrackedDevice = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(TrackedDeviceInt));
+}

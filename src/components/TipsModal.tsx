@@ -1,6 +1,11 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, {
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+  ReactElement,
+} from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
@@ -14,24 +19,18 @@ import tips from 'fm3/tips/index.json';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function TipsModal(): ReactElement {
+  const t = useTranslator();
 
-export const TipsModalInt: React.FC<Props> = ({
-  tip,
-  onPrevious,
-  onNext,
-  onModalClose,
-  t,
-  onNextTimePrevent,
-}) => {
+  const dispatch = useDispatch();
+
+  const tip = useSelector((state: RootState) => state.tips.tip);
+
   const [loading, setLoading] = useState(false);
+
   const [tipText, setTipText] = useState<string | null>(null);
 
   useEffect(() => {
@@ -51,9 +50,9 @@ export const TipsModalInt: React.FC<Props> = ({
 
   const handleNextTimePrevent = useCallback(
     (e: React.FormEvent<Checkbox>) => {
-      onNextTimePrevent((e.target as HTMLInputElement).checked);
+      dispatch(tipsPreventNextTime((e.target as HTMLInputElement).checked));
     },
-    [onNextTimePrevent],
+    [dispatch],
   );
 
   const [, title, icon] = useMemo<
@@ -66,8 +65,12 @@ export const TipsModalInt: React.FC<Props> = ({
     [tip],
   );
 
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="lightbulb-o" />
@@ -94,44 +97,28 @@ export const TipsModalInt: React.FC<Props> = ({
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onPrevious}>
+          <Button
+            onClick={() => {
+              dispatch(tipsShow('prev'));
+            }}
+          >
             <Glyphicon glyph="chevron-left" /> {t('tips.previous')}
           </Button>
-          <Button onClick={onNext}>
+          <Button
+            onClick={() => {
+              dispatch(tipsShow('next'));
+            }}
+          >
             <Glyphicon glyph="chevron-right" /> {t('tips.next')}
           </Button>{' '}
           <Checkbox inline onChange={handleNextTimePrevent}>
             {t('tips.prevent')}
           </Checkbox>{' '}
-          <Button onClick={onModalClose}>
+          <Button onClick={close}>
             <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
           </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  tip: state.tips.tip,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-  onPrevious() {
-    dispatch(tipsShow('prev'));
-  },
-  onNext() {
-    dispatch(tipsShow('next'));
-  },
-  onNextTimePrevent(prevent: boolean) {
-    dispatch(tipsPreventNextTime(prevent));
-  },
-});
-
-export const TipsModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(TipsModalInt));
+}

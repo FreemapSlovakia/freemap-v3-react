@@ -1,7 +1,6 @@
-import React, { useCallback } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
@@ -22,60 +21,107 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { PictureModel } from './GalleryEditForm';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function GalleryUploadModal(): ReactElement {
+  const t = useTranslator();
 
-const GalleryUploadModalInt: React.FC<Props> = ({
-  items,
-  onPositionPick,
-  visible,
-  onUpload,
-  uploading,
-  allTags,
-  t,
-  showPreview,
-  onShowPreviewToggle,
-  onItemRemove,
-  onItemMerge,
-  onItemAdd,
-  onClose,
-  language,
-}) => {
+  const dispatch = useDispatch();
+
+  const items = useSelector((state: RootState) => state.gallery.items);
+
+  const visible = useSelector(
+    (state: RootState) => state.gallery.pickingPositionForId === null,
+  );
+
+  const uploading = useSelector(
+    (state: RootState) => !!state.gallery.uploadingId,
+  );
+
+  const allTags = useSelector((state: RootState) => state.gallery.tags);
+
+  const showPreview = useSelector(
+    (state: RootState) => state.gallery.showPreview,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const handleItemMerge = useCallback(
+    (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
+      dispatch(galleryMergeItem(item));
+    },
+    [dispatch],
+  );
+
   const handleModelChange = useCallback(
     (id: number, model: PictureModel) => {
-      onItemMerge({
+      handleItemMerge({
         id,
         ...model,
         takenAt: model.takenAt ? new Date(model.takenAt) : null,
       });
     },
-    [onItemMerge],
+    [handleItemMerge],
   );
 
   const handleClose = useCallback(() => {
-    onClose(!!items.length);
-  }, [onClose, items]);
+    if (items.length) {
+      dispatch(
+        toastsAdd({
+          id: 'galleryUploadModal.close',
+          messageKey: 'general.closeWithoutSaving',
+          style: 'warning',
+          actions: [
+            {
+              nameKey: 'general.yes',
+              action: galleryHideUploadModal(),
+              style: 'danger',
+            },
+            { nameKey: 'general.no' },
+          ],
+        }),
+      );
+    } else {
+      dispatch(galleryHideUploadModal());
+    }
+  }, [dispatch, items]);
+
+  const handleItemAdd = useCallback(
+    (item: GalleryItem) => {
+      dispatch(galleryAddItem(item));
+    },
+    [dispatch],
+  );
 
   const handleFileDrop = usePictureDropHandler(
     showPreview,
     language,
-    onItemAdd,
-    onItemMerge,
+    handleItemAdd,
+    handleItemMerge,
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleFileDrop,
     accept: '.jpg,.jpeg',
   });
+
+  const handlePositionPick = useCallback(
+    (id: number) => {
+      dispatch(gallerySetItemForPositionPicking(id));
+    },
+    [dispatch],
+  );
+
+  const handleItemRemove = useCallback(
+    (id: number) => {
+      dispatch(galleryRemoveItem(id));
+    },
+    [dispatch],
+  );
 
   return (
     <Modal show={visible} onHide={handleClose}>
@@ -110,8 +156,8 @@ const GalleryUploadModalInt: React.FC<Props> = ({
               }}
               allTags={allTags}
               errors={errors}
-              onRemove={onItemRemove}
-              onPositionPick={onPositionPick}
+              onRemove={handleItemRemove}
+              onPositionPick={handlePositionPick}
               onModelChange={handleModelChange}
               disabled={uploading}
               showPreview={showPreview}
@@ -121,7 +167,9 @@ const GalleryUploadModalInt: React.FC<Props> = ({
         {!uploading && (
           <>
             <Checkbox
-              onChange={onShowPreviewToggle}
+              onChange={() => {
+                dispatch(galleryToggleShowPreview());
+              }}
               checked={showPreview}
               disabled={!!items.length}
             >
@@ -143,7 +191,12 @@ const GalleryUploadModalInt: React.FC<Props> = ({
         )}
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onUpload} disabled={uploading}>
+        <Button
+          onClick={() => {
+            dispatch(galleryUpload());
+          }}
+          disabled={uploading}
+        >
           <FontAwesomeIcon icon="upload" />{' '}
           {uploading
             ? t('gallery.uploadModal.uploading', { n: items.length })
@@ -155,60 +208,4 @@ const GalleryUploadModalInt: React.FC<Props> = ({
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  items: state.gallery.items,
-  visible: state.gallery.pickingPositionForId === null,
-  uploading: !!state.gallery.uploadingId,
-  allTags: state.gallery.tags,
-  showPreview: state.gallery.showPreview,
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onItemAdd(item: GalleryItem) {
-    dispatch(galleryAddItem(item));
-  },
-  onItemRemove(id: number) {
-    dispatch(galleryRemoveItem(id));
-  },
-  onUpload() {
-    dispatch(galleryUpload());
-  },
-  onClose(ask: boolean) {
-    if (ask) {
-      dispatch(
-        toastsAdd({
-          id: 'galleryUploadModal.close',
-          messageKey: 'general.closeWithoutSaving',
-          style: 'warning',
-          actions: [
-            {
-              nameKey: 'general.yes',
-              action: galleryHideUploadModal(),
-              style: 'danger',
-            },
-            { nameKey: 'general.no' },
-          ],
-        }),
-      );
-    } else {
-      dispatch(galleryHideUploadModal());
-    }
-  },
-  onPositionPick(id: number) {
-    dispatch(gallerySetItemForPositionPicking(id));
-  },
-  onItemMerge(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
-    dispatch(galleryMergeItem(item));
-  },
-  onShowPreviewToggle() {
-    dispatch(galleryToggleShowPreview());
-  },
-});
-
-export const GalleryUploadModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryUploadModalInt));
+}

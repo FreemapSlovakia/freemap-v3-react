@@ -1,12 +1,11 @@
-import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
+import React, { ReactElement, useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Button from 'react-bootstrap/lib/Button';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
@@ -24,48 +23,56 @@ import {
 } from 'fm3/actions/trackViewerActions';
 
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
 
 import 'fm3/styles/trackViewer.scss';
 import { assertType } from 'typescript-is';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function TrackViewerMenu(): ReactElement {
+  const t = useTranslator();
 
-const TrackViewerMenuInt: React.FC<Props> = ({
-  onServerUpload,
-  onUpload,
-  hasTrack,
-  elevationChartActive,
-  colorizeTrackBy,
-  onColorizeTrackBy,
-  onShowTrackInfo,
-  trackGeojsonIsSuitableForElevationChart,
-  onToggleElevationChart,
-  onConvertToDrawing,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const hasTrack = useSelector(
+    (state: RootState) => !!state.trackViewer.trackGeojson,
+  );
+
+  const elevationChartActive = useSelector(
+    (state: RootState) => !!state.elevationChart.trackGeojson,
+  );
+
+  const colorizeTrackBy = useSelector(
+    (state: RootState) => state.trackViewer.colorizeTrackBy,
+  );
+
+  const trackGeojsonIsSuitableForElevationChart = useSelector(
+    (state: RootState) => isSuitableForElevationChart(state),
+  );
+
   const handleConvertToDrawing = useCallback(() => {
     const tolerance = window.prompt(t('general.simplifyPrompt'), '50');
 
     if (tolerance !== null) {
-      onConvertToDrawing(Number(tolerance));
+      dispatch(convertToDrawing(Number(tolerance)));
     }
-  }, [onConvertToDrawing, t]);
+  }, [dispatch, t]);
 
   return (
     <>
-      <Button onClick={() => onUpload()}>
+      <Button
+        onClick={() => {
+          dispatch(setActiveModal('upload-track'));
+        }}
+      >
         <FontAwesomeIcon icon="upload" />
         <span className="hidden-xs"> {t('trackViewer.upload')}</span>
       </Button>{' '}
       <Button
         active={elevationChartActive}
-        onClick={onToggleElevationChart}
+        onClick={() => {
+          dispatch(trackViewerToggleElevationChart());
+        }}
         disabled={!trackGeojsonIsSuitableForElevationChart}
       >
         <FontAwesomeIcon icon="bar-chart" />
@@ -73,7 +80,13 @@ const TrackViewerMenuInt: React.FC<Props> = ({
       </Button>{' '}
       <DropdownButton
         id="colorizing_mode"
-        onSelect={onColorizeTrackBy}
+        onSelect={(approach: unknown) => {
+          dispatch(
+            trackViewerColorizeTrackBy(
+              assertType<ColorizingMode | null>(approach),
+            ),
+          );
+        }}
         title={
           <>
             <FontAwesomeIcon icon="paint-brush" />{' '}
@@ -92,13 +105,27 @@ const TrackViewerMenuInt: React.FC<Props> = ({
         ))}
       </DropdownButton>{' '}
       <Button
-        onClick={onShowTrackInfo}
+        onClick={() => {
+          dispatch(
+            toastsAdd({
+              id: 'trackViewer.trackInfo',
+              messageKey: 'trackViewer.info',
+              cancelType: [getType(clearMap), getType(trackViewerSetData)],
+              style: 'info',
+            }),
+          );
+        }}
         disabled={!trackGeojsonIsSuitableForElevationChart}
       >
         <FontAwesomeIcon icon="info-circle" />
         <span className="hidden-xs"> {t('trackViewer.moreInfo')}</span>
       </Button>{' '}
-      <Button onClick={onServerUpload} disabled={!hasTrack}>
+      <Button
+        onClick={() => {
+          dispatch(trackViewerUploadTrack());
+        }}
+        disabled={!hasTrack}
+      >
         <FontAwesomeIcon icon="cloud-upload" />
         <span className="hidden-xs"> {t('trackViewer.share')}</span>
       </Button>{' '}
@@ -112,49 +139,7 @@ const TrackViewerMenuInt: React.FC<Props> = ({
       </Button>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  hasTrack: !!state.trackViewer.trackGeojson,
-  elevationChartActive: !!state.elevationChart.trackGeojson,
-  colorizeTrackBy: state.trackViewer.colorizeTrackBy,
-  trackGeojsonIsSuitableForElevationChart: isSuitableForElevationChart(state),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onUpload() {
-    dispatch(setActiveModal('upload-track'));
-  },
-  onServerUpload() {
-    dispatch(trackViewerUploadTrack());
-  },
-  onColorizeTrackBy(approach: unknown) {
-    dispatch(
-      trackViewerColorizeTrackBy(assertType<ColorizingMode | null>(approach)),
-    );
-  },
-  onShowTrackInfo() {
-    dispatch(
-      toastsAdd({
-        id: 'trackViewer.trackInfo',
-        messageKey: 'trackViewer.info',
-        cancelType: [getType(clearMap), getType(trackViewerSetData)],
-        style: 'info',
-      }),
-    );
-  },
-  onToggleElevationChart() {
-    dispatch(trackViewerToggleElevationChart());
-  },
-  onConvertToDrawing(tolerance: number | undefined) {
-    dispatch(convertToDrawing(tolerance));
-  },
-});
-
-export const TrackViewerMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(TrackViewerMenuInt));
+}
 
 function isSuitableForElevationChart(state: RootState) {
   const { trackGeojson } = state.trackViewer;

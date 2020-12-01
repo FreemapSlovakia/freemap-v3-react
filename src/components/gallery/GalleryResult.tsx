@@ -1,5 +1,5 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
+import React, { useEffect, useCallback, ReactElement } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
@@ -9,28 +9,40 @@ import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { Dispatch } from 'redux';
 import { DragEndEvent } from 'leaflet';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+export function GalleryResult(): ReactElement {
+  const dispatch = useDispatch();
 
-const GalleryResultInt: React.FC<Props> = ({
-  pickingPosition,
-  showPosition,
-  image,
-  isPickingPosition,
-  onPositionPick,
-}) => {
+  const image = useSelector((state: RootState) => state.gallery.image);
+
+  const isPickingPosition = useSelector(
+    (state: RootState) => state.gallery.pickingPositionForId !== null,
+  );
+
+  const pickingPosition = useSelector(
+    (state: RootState) => state.gallery.pickingPosition,
+  );
+
+  const showPosition = useSelector(
+    (state: RootState) => state.gallery.showPosition,
+  );
+
+  const handlePositionPick = useCallback(
+    (lat: number, lon: number) => {
+      dispatch(gallerySetPickingPosition({ lat, lon }));
+    },
+    [dispatch],
+  );
+
   // TODO mode to GalleryMenu to be consistent with other tools
   const handleMapClick = useCallback(
     (lat: number, lon: number) => {
       if (isPickingPosition) {
-        onPositionPick(lat, lon);
+        handlePositionPick(lat, lon);
       }
     },
-    [isPickingPosition, onPositionPick],
+    [isPickingPosition, handlePositionPick],
   );
 
   useEffect(() => {
@@ -44,9 +56,9 @@ const GalleryResultInt: React.FC<Props> = ({
   const handlePositionMarkerDragEnd = useCallback(
     (e: DragEndEvent) => {
       const coords = e.target.getLatLng();
-      onPositionPick(coords.lat, coords.lng);
+      handlePositionPick(coords.lat, coords.lng);
     },
-    [onPositionPick],
+    [handlePositionPick],
   );
 
   return (
@@ -63,22 +75,4 @@ const GalleryResultInt: React.FC<Props> = ({
       )}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  image: state.gallery.image,
-  isPickingPosition: state.gallery.pickingPositionForId !== null,
-  pickingPosition: state.gallery.pickingPosition,
-  showPosition: state.gallery.showPosition,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPositionPick(lat: number, lon: number) {
-    dispatch(gallerySetPickingPosition({ lat, lon }));
-  },
-});
-
-export const GalleryResult = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(GalleryResultInt);
+}

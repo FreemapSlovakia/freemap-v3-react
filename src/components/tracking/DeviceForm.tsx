@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import React, { useCallback, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { ReactElement, useCallback, useState } from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Button from 'react-bootstrap/lib/Button';
@@ -11,18 +11,10 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { EditedDevice } from 'fm3/types/trackingTypes';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { InputGroup } from 'react-bootstrap';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
@@ -30,7 +22,19 @@ const types: Record<string, string> = {
   did: 'TK102B Device ID',
 };
 
-const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
+export function DeviceForm(): ReactElement {
+  const t = useTranslator();
+
+  const dispatch = useDispatch();
+
+  const device = useSelector((state: RootState) =>
+    state.tracking.modifiedDeviceId
+      ? state.tracking.devices.find(
+          (device) => device.id === state.tracking.modifiedDeviceId,
+        )
+      : null,
+  );
+
   const [type, setType] = useState(
     device?.token?.includes(':') ? device?.token?.replace(/:.*/, '') : 'url',
   );
@@ -54,16 +58,19 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-      onSave({
-        name: name.trim(),
-        maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-        maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-        regenerateToken:
-          type === 'url' || !device?.id ? undefined : regenerateToken,
-        token: type === 'url' ? undefined : `${type}:${token}`,
-      });
+
+      dispatch(
+        trackingActions.saveDevice({
+          name: name.trim(),
+          maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+          maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
+          regenerateToken:
+            type === 'url' || !device?.id ? undefined : regenerateToken,
+          token: type === 'url' ? undefined : `${type}:${token}`,
+        }),
+      );
     },
-    [onSave, name, maxCount, maxAge, regenerateToken, type, token, device],
+    [dispatch, name, maxCount, maxAge, regenerateToken, type, token, device],
   );
 
   const onSelect = useCallback(
@@ -172,32 +179,15 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button type="submit">{t('general.save')}</Button>
-        <Button type="button" onClick={onCancel}>
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.modifyDevice(undefined));
+          }}
+        >
           {t('general.cancel')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  device: state.tracking.modifiedDeviceId
-    ? state.tracking.devices.find(
-        (device) => device.id === state.tracking.modifiedDeviceId,
-      )
-    : null,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onCancel() {
-    dispatch(trackingActions.modifyDevice(undefined));
-  },
-  onSave(device: EditedDevice) {
-    dispatch(trackingActions.saveDevice(device));
-  },
-});
-
-export const DeviceForm = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(DeviceFormInt));
+}

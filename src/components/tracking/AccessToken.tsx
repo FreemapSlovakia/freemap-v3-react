@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import React, { useCallback } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { ReactElement, useCallback } from 'react';
 
 import Button from 'react-bootstrap/lib/Button';
 import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
@@ -7,29 +7,24 @@ import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Tooltip } from 'react-bootstrap';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-    accessToken: AccessTokenType;
-  };
+type Props = {
+  accessToken: AccessTokenType;
+};
 
-const AccessTokenInt: React.FC<Props> = ({
-  onDelete,
-  onModify,
-  onView,
-  accessToken,
-  language,
-  t,
-}) => {
+export function AccessToken({ accessToken }: Props): ReactElement {
+  const t = useTranslator();
+
+  const dispatch = useDispatch();
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
     month: 'short',
@@ -39,12 +34,31 @@ const AccessTokenInt: React.FC<Props> = ({
   });
 
   const handleModify = useCallback(() => {
-    onModify(accessToken.id);
-  }, [accessToken.id, onModify]);
+    dispatch(trackingActions.modifyAccessToken(accessToken.id));
+  }, [accessToken.id, dispatch]);
 
   const handleDelete = useCallback(() => {
-    onDelete(accessToken.id);
-  }, [accessToken.id, onDelete]);
+    dispatch(
+      toastsAdd({
+        id: 'tracking.deleteAccessToken',
+        messageKey: 'tracking.accessToken.delete',
+        style: 'warning',
+        cancelType: [
+          getType(trackingActions.modifyAccessToken),
+          getType(trackingActions.showAccessTokens),
+          getType(setActiveModal),
+        ],
+        actions: [
+          {
+            nameKey: 'general.yes',
+            action: trackingActions.deleteAccessToken(accessToken.id),
+            style: 'danger',
+          },
+          { nameKey: 'general.no' },
+        ],
+      }),
+    );
+  }, [accessToken.id, dispatch]);
 
   const handleCopyClick = useCallback(() => {
     navigator.clipboard.writeText(
@@ -55,8 +69,9 @@ const AccessTokenInt: React.FC<Props> = ({
   }, [accessToken.token]);
 
   const handleView = useCallback(() => {
-    onView(accessToken.token);
-  }, [accessToken.token, onView]);
+    dispatch(setActiveModal('tracking-watched'));
+    dispatch(trackingActions.modifyTrackedDevice(accessToken.token));
+  }, [accessToken.token, dispatch]);
 
   return (
     <tr>
@@ -120,45 +135,4 @@ const AccessTokenInt: React.FC<Props> = ({
       </td>
     </tr>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModify(id: number) {
-    dispatch(trackingActions.modifyAccessToken(id));
-  },
-  onDelete(id: number) {
-    dispatch(
-      toastsAdd({
-        id: 'tracking.deleteAccessToken',
-        messageKey: 'tracking.accessToken.delete',
-        style: 'warning',
-        cancelType: [
-          getType(trackingActions.modifyAccessToken),
-          getType(trackingActions.showAccessTokens),
-          getType(setActiveModal),
-        ],
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: trackingActions.deleteAccessToken(id),
-            style: 'danger',
-          },
-          { nameKey: 'general.no' },
-        ],
-      }),
-    );
-  },
-  onView(id: string) {
-    dispatch(setActiveModal('tracking-watched'));
-    dispatch(trackingActions.modifyTrackedDevice(id));
-  },
-});
-
-export const AccessToken = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(AccessTokenInt));
+}

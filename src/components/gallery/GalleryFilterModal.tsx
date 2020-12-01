@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect, useCallback, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
@@ -8,37 +8,39 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useTranslator } from 'fm3/l10nInjector';
 
 import {
   gallerySetFilter,
   galleryHideFilter,
-  GalleryFilter,
 } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function GalleryFilterModal(): ReactElement | null {
+  const dispatch = useDispatch();
 
-const GalleryFilterModalInt: React.FC<Props> = ({
-  onClose,
-  tags,
-  users,
-  onOk,
-  filter,
-  t,
-}) => {
+  const t = useTranslator();
+
+  const filter = useSelector((state: RootState) => state.gallery.filter);
+
+  const users = useSelector((state: RootState) => state.gallery.users);
+
+  const tags = useSelector((state: RootState) => state.gallery.tags);
+
   const [tag, setTag] = useState('');
+
   const [userId, setUserId] = useState('');
+
   const [takenAtFrom, setTakenAtFrom] = useState('');
+
   const [takenAtTo, setTakenAtTo] = useState('');
+
   const [createdAtFrom, setCreatedAtFrom] = useState('');
+
   const [createdAtTo, setCreatedAtTo] = useState('');
+
   const [ratingFrom, setRatingFrom] = useState('');
+
   const [ratingTo, setRatingTo] = useState('');
 
   useEffect(() => {
@@ -135,19 +137,23 @@ const GalleryFilterModalInt: React.FC<Props> = ({
     (e: React.FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      onOk({
-        tag: tag === '⌘' ? '' : tag || undefined,
-        userId: nn(userId ? parseInt(userId, 10) : undefined),
-        takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
-        takenAtTo: nt(takenAtTo ? new Date(takenAtTo) : undefined),
-        createdAtFrom: nt(createdAtFrom ? new Date(createdAtFrom) : undefined),
-        createdAtTo: nt(createdAtTo ? new Date(createdAtTo) : undefined),
-        ratingFrom: nn(ratingFrom ? parseFloat(ratingFrom) : undefined),
-        ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
-      });
+      dispatch(
+        gallerySetFilter({
+          tag: tag === '⌘' ? '' : tag || undefined,
+          userId: nn(userId ? parseInt(userId, 10) : undefined),
+          takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
+          takenAtTo: nt(takenAtTo ? new Date(takenAtTo) : undefined),
+          createdAtFrom: nt(
+            createdAtFrom ? new Date(createdAtFrom) : undefined,
+          ),
+          createdAtTo: nt(createdAtTo ? new Date(createdAtTo) : undefined),
+          ratingFrom: nn(ratingFrom ? parseFloat(ratingFrom) : undefined),
+          ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
+        }),
+      );
     },
     [
-      onOk,
+      dispatch,
       tag,
       userId,
       takenAtFrom,
@@ -170,8 +176,12 @@ const GalleryFilterModalInt: React.FC<Props> = ({
     setRatingTo('');
   };
 
+  const close = useCallback(() => {
+    dispatch(galleryHideFilter());
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onClose}>
+    <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>{t('gallery.filterModal.title')}</Modal.Title>
       </Modal.Header>
@@ -270,14 +280,14 @@ const GalleryFilterModalInt: React.FC<Props> = ({
           <Button type="button" onClick={handleEraseClick}>
             <Glyphicon glyph="erase" /> {t('general.clear')}
           </Button>
-          <Button type="button" onClick={onClose}>
+          <Button type="button" onClick={close}>
             <Glyphicon glyph="remove" /> {t('general.cancel')}
           </Button>
         </Modal.Footer>
       </form>
     </Modal>
   );
-};
+}
 
 function nn(value: number | undefined) {
   return value === undefined || Number.isNaN(value) ? undefined : value;
@@ -288,23 +298,3 @@ function nt(value: Date | undefined) {
     ? value
     : undefined;
 }
-
-const mapStateToProps = (state: RootState) => ({
-  filter: state.gallery.filter,
-  users: state.gallery.users,
-  tags: state.gallery.tags,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(galleryHideFilter());
-  },
-  onOk(filter: GalleryFilter) {
-    dispatch(gallerySetFilter(filter));
-  },
-});
-
-export const GalleryFilterModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryFilterModalInt));

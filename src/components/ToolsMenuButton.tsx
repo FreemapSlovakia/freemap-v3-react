@@ -1,35 +1,25 @@
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import React, { useState, useCallback, useRef } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { useState, useCallback, useRef, ReactElement } from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import {
-  selectFeature,
-  Tool,
-  clearMap,
-  Selection,
-} from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { selectFeature, Tool, clearMap } from 'fm3/actions/mainActions';
+import { useTranslator } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { is } from 'typescript-is';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ToolsMenuButton(): ReactElement {
+  const t = useTranslator();
 
-const ToolsMenuButtonInt: React.FC<Props> = ({
-  t,
-  tool,
-  expertMode,
-  onSelect,
-  onMapClear,
-}) => {
+  const dispatch = useDispatch();
+
+  const tool = useSelector((state: RootState) => state.main.selection?.type);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
   const [show, setShow] = useState(false);
 
   const button = useRef<Button | null>(null);
@@ -43,22 +33,20 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   }, []);
 
   const handleToolSelect = useCallback(
-    (tool0: unknown) => {
-      if (is<Tool | null>(tool0)) {
-        const tool = tool0 as Tool | null;
-
+    (tool: unknown) => {
+      if (is<Tool | null>(tool)) {
         setShow(false);
 
-        onSelect(tool ? { type: tool } : null);
+        dispatch(selectFeature(tool ? { type: tool } : null));
       }
     },
-    [onSelect],
+    [dispatch],
   );
 
   const handleMapClear = useCallback(() => {
     setShow(false);
-    onMapClear();
-  }, [onMapClear]);
+    dispatch(clearMap());
+  }, [dispatch]);
 
   const toolDef = toolDefinitions.find(
     (t) =>
@@ -131,23 +119,4 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
       </Overlay>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  tool: state.main.selection?.type,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapClear() {
-    dispatch(clearMap());
-  },
-  onSelect(selection: Selection | null) {
-    dispatch(selectFeature(selection));
-  },
-});
-
-export const ToolsMenuButton = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ToolsMenuButtonInt));
+}

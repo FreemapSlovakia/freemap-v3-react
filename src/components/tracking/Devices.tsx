@@ -1,5 +1,5 @@
-import { connect } from 'react-redux';
-import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, ReactElement } from 'react';
 
 import Modal from 'react-bootstrap/lib/Modal';
 import Table from 'react-bootstrap/lib/Table';
@@ -10,26 +10,19 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { Device } from './Device';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import { useTranslator } from 'fm3/l10nInjector';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function Devices(): ReactElement {
+  const t = useTranslator();
 
-const DevicesInt: React.FC<Props> = ({
-  onClose,
-  onOpen,
-  onAdd,
-  devices,
-  t,
-}) => {
-  React.useEffect(() => {
-    onOpen();
-  }, [onOpen]);
+  const dispatch = useDispatch();
+
+  const devices = useSelector((state: RootState) => state.tracking.devices);
+
+  useEffect(() => {
+    dispatch(trackingActions.loadDevices());
+  }, [dispatch]);
 
   return (
     <>
@@ -59,34 +52,23 @@ const DevicesInt: React.FC<Props> = ({
         </Table>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="button" onClick={onAdd}>
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.modifyDevice(null));
+          }}
+        >
           {t('general.add')}
         </Button>
-        <Button type="button" onClick={onClose}>
+        <Button
+          type="button"
+          onClick={() => {
+            dispatch(setActiveModal(null));
+          }}
+        >
           {t('general.close')} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  devices: state.tracking.devices,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onOpen() {
-    dispatch(trackingActions.loadDevices());
-  },
-  onClose() {
-    dispatch(setActiveModal(null));
-  },
-  onAdd() {
-    dispatch(trackingActions.modifyDevice(null));
-  },
-});
-
-export const Devices = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(DevicesInt));
+}
