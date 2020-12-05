@@ -2,6 +2,8 @@ import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
 import { LatLon } from 'fm3/types/common';
 import { ReactNode } from 'react';
 
+type Err = { err: string };
+
 export interface Messages {
   general: {
     elevationProfile: string;
@@ -23,8 +25,8 @@ export interface Messages {
     preventShowingAgain: string;
     closeWithoutSaving: string;
     back: string;
-    internalError: (ticketId: string) => string;
-    processorError: string;
+    internalError: ({ ticketId }: { ticketId?: string }) => string;
+    processorError: ({ err }: Err) => string;
     seconds: string;
     minutes: string;
     meters: string;
@@ -113,7 +115,7 @@ export interface Messages {
     showMidpointHint: string;
     gpsError: string;
     routeNotFound: string;
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
     maneuverWithName: ({
       type,
       modifier,
@@ -332,13 +334,13 @@ export interface Messages {
       title: string;
     };
     layerHint: string;
-    deletingError: string;
-    tagsFetchingError: string;
-    pictureFetchingError: string;
-    picturesFetchingError: string;
-    savingError: string;
-    commentAddingError: string;
-    ratingError: string;
+    deletingError: ({ err }: Err) => string;
+    tagsFetchingError: ({ err }: Err) => string;
+    pictureFetchingError: ({ err }: Err) => string;
+    picturesFetchingError: ({ err }: Err) => string;
+    savingError: ({ err }: Err) => string;
+    commentAddingError: ({ err }: Err) => string;
+    ratingError: ({ err }: Err) => string;
     unauthenticatedError: string;
     missingPositionError: string;
     invalidPositionError: string;
@@ -357,7 +359,7 @@ export interface Messages {
     distance: string;
     elevation: string;
     area: string;
-    elevationFetchError: string;
+    elevationFetchError: ({ err }: Err) => string;
     elevationInfo: ({
       elevation,
       point,
@@ -394,9 +396,8 @@ export interface Messages {
       drop: string;
     };
     shareToast: string;
-    fetchingError: string;
-    savingError: string;
-    tooBigError: string;
+    fetchingError: ({ err }: Err) => string;
+    savingError: ({ err }: Err) => string;
     loadingError: string;
     onlyOne: string;
     wrongFormat: string;
@@ -443,7 +444,7 @@ export interface Messages {
       };
     };
     saveSuccess: string;
-    savingError: string;
+    savingError: ({ err }: Err) => string;
   };
   changesets: {
     allAuthors: string;
@@ -451,7 +452,7 @@ export interface Messages {
     olderThan: ({ days }: { days: number }) => string;
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;
-    fetchError: string;
+    fetchError: ({ err }: Err) => string;
     detail: ({ changeset }: { changeset: any }) => JSX.Element;
     details: {
       author: string;
@@ -470,7 +471,7 @@ export interface Messages {
   mapDetails: {
     road: string;
     notFound: string;
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
     detail: ({ element }: { element: any }) => JSX.Element;
   };
   objects: {
@@ -479,7 +480,7 @@ export interface Messages {
       message: string;
       zoom: string;
     };
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
     categories: Record<number, string>;
     subcategories: Record<number, string>;
   };
@@ -504,7 +505,7 @@ export interface Messages {
     prompt: string;
     routeFrom: string;
     routeTo: string;
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
     buttonTitle: string;
   };
   embed: {
@@ -535,7 +536,7 @@ export interface Messages {
     export: string;
     exportToDrive: string;
     exportToDropbox: string;
-    exportError: string;
+    exportError: ({ err }: Err) => string;
     what: {
       plannedRoute: string;
       plannedRouteWithStops: string;
@@ -559,10 +560,10 @@ export interface Messages {
       osm: string;
     };
     success: string;
-    logInError: string;
+    logInError: ({ err }: Err) => string;
     logInError2: string;
-    logOutError: string;
-    verifyError: string;
+    logOutError: ({ err }: Err) => string;
+    verifyError: ({ err }: Err) => string;
   };
   logOut: {
     success: string;
@@ -587,13 +588,13 @@ export interface Messages {
   elevationChart: {
     distance: string;
     ele: string;
-    fetchError: string;
+    fetchError: ({ err }: Err) => string;
   };
   errorCatcher: {
     html: (ticketId: string) => string;
   };
   osm: {
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
   };
   roadDetails: {
     roadType: string;
@@ -612,9 +613,9 @@ export interface Messages {
     };
   };
   tracking: {
-    savingError: string;
-    loadError: string;
-    deleteError: string;
+    savingError: ({ err }: Err) => string;
+    loadError: ({ err }: Err) => string;
+    deleteError: ({ err }: Err) => string;
     unauthenticatedError: string;
     trackedDevices: {
       button: string;
@@ -683,7 +684,7 @@ export interface Messages {
   };
   pdfExport: {
     export: string;
-    exportError: string;
+    exportError: ({ err }: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;
     area: string;
@@ -715,12 +716,12 @@ export interface Messages {
     delete: string;
     namePrompt: string;
     deleteConfirm: string;
-    fetchError: string;
-    fetchListError: string;
-    deleteError: string;
-    renameError: string;
-    createError: string;
-    saveError: string;
+    fetchError: ({ err }: Err) => string;
+    fetchListError: ({ err }: Err) => string;
+    deleteError: ({ err }: Err) => string;
+    renameError: ({ err }: Err) => string;
+    createError: ({ err }: Err) => string;
+    saveError: ({ err }: Err) => string;
   };
   legend: {
     body: () => JSX.Element;

@@ -1,6 +1,6 @@
 import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
-import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { Middleware, Dispatch } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -24,7 +24,12 @@ export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
     action.payload === 'tracking-my' &&
     !getState().auth.user
   ) {
-    return next(toastsAddError('tracking.unauthenticatedError'));
+    return next(
+      toastsAdd({
+        messageKey: 'tracking.unauthenticatedError',
+        style: 'danger',
+      }),
+    );
   }
 
   if (isActionOf(rpcResponse, action)) {

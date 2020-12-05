@@ -91,12 +91,12 @@ export function sendError(errDetails: ErrorDetails): void {
         }
       },
       () => {
-        handle('???');
+        handle();
       },
     );
 }
 
-function handle(id: string) {
+function handle(id?: string) {
   if (store) {
     store.dispatch(setErrorTicketId(id));
   } else {

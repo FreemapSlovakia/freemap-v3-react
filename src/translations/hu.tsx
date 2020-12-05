@@ -20,10 +20,14 @@ const nf33 = Intl.NumberFormat('hu', {
 
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
-const getErrorMarkup = (ticketId: string) => `
+const getErrorMarkup = (ticketId?: string) => `
 <h1>Alkalmazáshiba</h1>
 <p>
-  A hiba automatikusan be lett jelentve, és a következő jegyazonosítót (Ticked ID) kapta: <b>${ticketId}</b>.
+  ${
+    ticketId
+      ? `A hiba automatikusan be lett jelentve, és a következő jegyazonosítót (Ticked ID) kapta: <b>${ticketId}</b>.`
+      : ''
+  }
   A hibát Ön is bejelentheti a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHubon</a>,
   vagy végső esetben elküldheti nekünk az adatokat e-mailen: <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -53,8 +57,8 @@ const hu: Messages = {
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
-    internalError: (ticketId) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: 'Alkalmazáshiba: ${error}',
+    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    processorError: ({ err }) => `Alkalmazáshiba: ${err}`,
     seconds: 'másodperc',
     minutes: 'perc',
     meters: 'méter',
@@ -151,7 +155,7 @@ const hu: Messages = {
     gpsError: 'Hiba történt jelenlegi pozíciójának meghatározásakor.',
     routeNotFound:
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
-    fetchingError: 'Hiba történt az útvonaltervezésnél: {err}',
+    fetchingError: ({ err }) => `Hiba történt az útvonaltervezésnél: ${err}`,
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} itt: ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -400,13 +404,17 @@ const hu: Messages = {
     },
     layerHint:
       'A fényképeket tartalmazó rátétréteg megjelenítéséhez jelölje ki a Térképrétegek menüből a Fényképeket (vagy nyomja meg a Shift + F billentyűket.',
-    deletingError: 'Hiba történt a fénykép törlésénél: {err}',
-    tagsFetchingError: 'Hiba történt a címkék beolvasásánál: {err}',
-    pictureFetchingError: 'Hiba történt a fénykép beolvasásánál: {err}',
-    picturesFetchingError: 'Hiba történt a fényképek beolvasásánál: {err}',
-    savingError: 'Hiba történt a fénykép mentésénél: {err}',
-    commentAddingError: 'Hiba történt a hozzászólás hozzáadásánál: {err}',
-    ratingError: 'Hiba történt a fénykép értékelésénél: {err}',
+    deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
+    tagsFetchingError: ({ err }) =>
+      `Hiba történt a címkék beolvasásánál: ${err}`,
+    pictureFetchingError: (err) =>
+      `Hiba történt a fénykép beolvasásánál: ${err}`,
+    picturesFetchingError: (err) =>
+      `Hiba történt a fényképek beolvasásánál: ${err}`,
+    savingError: ({ err }) => `Hiba történt a fénykép mentésénél: ${err}`,
+    commentAddingError: (err) =>
+      `Hiba történt a hozzászólás hozzáadásánál: ${err}`,
+    ratingError: ({ err }) => `Hiba történt a fénykép értékelésénél: ${err}`,
     unauthenticatedError:
       'Fényképek galériába történő feltöltéséhez kérjük, jelentkezzék be.',
     missingPositionError: 'Hiányzik a hely.',
@@ -427,8 +435,8 @@ const hu: Messages = {
     distance: 'Távolság',
     elevation: 'Magasság',
     area: 'Terület',
-    elevationFetchError:
-      'Hiba történt a pont magasságának beolvasásakor: {err}',
+    elevationFetchError: (err) =>
+      `Hiba történt a pont magasságának beolvasásakor: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
@@ -491,9 +499,9 @@ const hu: Messages = {
       drop: 'Húzza ide a .gpx fájlt vagy kattintson ide a kijelöléséhez.',
     },
     shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.',
-    fetchingError: 'Hiba történt a nyomvonal adatainak beolvasásakor: {err}',
-    savingError: 'Hiba történt a nyomvonal mentésekor: {err}',
-    tooBigError: 'A nyomvonal nagyobb, mint a megengedett {maxSize} MB.',
+    fetchingError: (err) =>
+      `Hiba történt a nyomvonal adatainak beolvasásakor: ${err}`,
+    savingError: ({ err }) => `Hiba történt a nyomvonal mentésekor: ${err}`,
     loadingError: 'Hiba történt a fájl betöltésekor.',
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
@@ -554,7 +562,7 @@ const hu: Messages = {
       },
     },
     saveSuccess: 'A beállítások el lettek mentve.',
-    savingError: 'Hiba történt a beállítások mentésénél: {err}',
+    savingError: ({ err }) => `Hiba történt a beállítások mentésénél: ${err}`,
   },
 
   changesets: {
@@ -563,7 +571,8 @@ const hu: Messages = {
     olderThan: ({ days }) => `${days} nap`,
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
-    fetchError: 'Hiba történt a módosításkészletek beolvasásánál: {err}',
+    fetchError: (err) =>
+      `Hiba történt a módosításkészletek beolvasásánál: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     // TODO
     details: {
@@ -582,7 +591,8 @@ const hu: Messages = {
   mapDetails: {
     road: 'Út adatai',
     notFound: 'Itt nincs út.',
-    fetchingError: 'Hiba történt az út adatainak beolvasásakor: {err}',
+    fetchingError: (err) =>
+      `Hiba történt az út adatainak beolvasásakor: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
 
@@ -593,7 +603,8 @@ const hu: Messages = {
         'Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a 12. szintre kell nagyítani.',
       zoom: 'Nagyítás',
     },
-    fetchingError: 'Hiba történt az objektumok (POI-k) beolvasásánál: {err}',
+    fetchingError: (err) =>
+      `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
     categories: {
       1: 'Természet',
       2: 'Szolgáltatások',
@@ -904,7 +915,7 @@ const hu: Messages = {
     prompt: 'Adja meg a helyet',
     routeFrom: 'Útvonal innen',
     routeTo: 'Útvonal ide',
-    fetchingError: 'Keresési hiba: {err}',
+    fetchingError: ({ err }) => `Keresési hiba: ${err}`,
     buttonTitle: 'Keresés',
   },
 
@@ -940,7 +951,7 @@ const hu: Messages = {
     export: 'Letöltés',
     exportToDrive: 'Mentés Google Drive-ra',
     exportToDropbox: 'Mentés Dropbox-ba',
-    exportError: 'Hiba a GPX exportálásakor: {err}',
+    exportError: ({ err }) => `Hiba a GPX exportálásakor: ${err}`,
     what: {
       plannedRoute: 'útvonal',
       plannedRouteWithStops: 'útvonal (megállásokkal)',
@@ -966,10 +977,11 @@ const hu: Messages = {
       osm: 'Belépés OpenStreetMap-fiókkal',
     },
     success: 'Sikeresen bejelentkezett.',
-    logInError: 'Hiba történt a bejelentkezésnél: {err}',
+    logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
     logInError2: 'Hiba történt a bejelentkezésnél.',
-    logOutError: 'Hiba történt a kijelentkezésnél: {err}',
-    verifyError: 'Hiba történt a hitelesítés ellenőrzésénél: {err}',
+    logOutError: ({ err }) => `Hiba történt a kijelentkezésnél: ${err}`,
+    verifyError: ({ err }) =>
+      `Hiba történt a hitelesítés ellenőrzésénél: ${err}`,
   },
 
   logOut: {
@@ -1027,7 +1039,8 @@ const hu: Messages = {
   elevationChart: {
     distance: 'Távolság [km]',
     ele: `Magasság [${masl}]`,
-    fetchError: 'Hiba történt a magasságiprofil-adatok lekérésénél: {err}',
+    fetchError: (err) =>
+      `Hiba történt a magasságiprofil-adatok lekérésénél: ${err}`,
   },
 
   errorCatcher: {
@@ -1044,7 +1057,8 @@ const hu: Messages = {
   },
 
   osm: {
-    fetchingError: 'Hiba történt az OSM-adatok lekérésénél: {err}',
+    fetchingError: ({ err }) =>
+      `Hiba történt az OSM-adatok lekérésénél: ${err}`,
   },
 
   roadDetails: {
@@ -1101,9 +1115,9 @@ const hu: Messages = {
   },
 
   tracking: {
-    savingError: 'Mentési hiba: {err}',
-    loadError: 'Betöltési hiba: {err}',
-    deleteError: 'Törlési hiba: {err}',
+    savingError: ({ err }) => `Mentési hiba: ${err}`,
+    loadError: ({ err }) => `Betöltési hiba: ${err}`,
+    deleteError: ({ err }) => `Törlési hiba: ${err}`,
     unauthenticatedError: 'Eszközei kezeléséhez kérjük, jelentkezzék be.',
     trackedDevices: {
       button: 'Figyelt',
@@ -1280,7 +1294,7 @@ const hu: Messages = {
   },
   pdfExport: {
     export: 'Export', // TODO translate
-    exportError: 'Error exporting map: {err}', // TODO translate
+    exportError: ({ err }) => `Error exporting map: ${err}`, // TODO translate
     exporting: 'Please wait, exporting map…', // TODO translate
     // TODO translate
     exported: ({ url }) => (
@@ -1353,12 +1367,12 @@ const hu: Messages = {
     delete: 'Törlés',
     namePrompt: 'Térkép neve:',
     deleteConfirm: 'Biztosan törli ezt a térképet?',
-    fetchError: 'Hiba történt a térkép betöltéskor: {err}',
-    fetchListError: 'Hiba történt a térképek betöltéskor: {err}',
-    deleteError: 'Hiba történt a térkép törlésekor: {err}',
-    renameError: 'Hiba történt a térkép átnevezésekor: {err}',
-    createError: 'Hiba történt a térkép mentésekor: {err}',
-    saveError: 'Hiba történt a térkép mentésekor: {err}',
+    fetchError: ({ err }) => `Hiba történt a térkép betöltéskor: ${err}`,
+    fetchListError: ({ err }) => `Hiba történt a térképek betöltéskor: ${err}`,
+    deleteError: ({ err }) => `Hiba történt a térkép törlésekor: ${err}`,
+    renameError: ({ err }) => `Hiba történt a térkép átnevezésekor: ${err}`,
+    createError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
+    saveError: ({ err }) => `Hiba történt a térkép mentésekor: ${err}`,
   },
 
   // TODO translate

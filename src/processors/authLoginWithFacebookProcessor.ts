@@ -1,4 +1,4 @@
-import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { authSetUser, authLoginWithFacebook } from 'fm3/actions/authActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
@@ -22,7 +22,12 @@ export const authLoginWithFacebookProcessor: Processor = {
       });
 
       if (response.status !== 'connected') {
-        dispatch(toastsAddError('logIn.logInError2'));
+        dispatch(
+          toastsAdd({
+            messageKey: 'logIn.logInError2',
+            style: 'danger',
+          }),
+        );
         return;
       }
     }

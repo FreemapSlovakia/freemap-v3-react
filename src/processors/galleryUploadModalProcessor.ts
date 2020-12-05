@@ -1,4 +1,4 @@
-import { toastsAddError } from 'fm3/actions/toastsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   gallerySetTags,
   galleryShowUploadModal,
@@ -16,7 +16,10 @@ export const galleryUploadModalTransformer: Processor = {
   transform: ({ getState, action }) => {
     return getState().auth.user
       ? action
-      : toastsAddError('gallery.unauthenticatedError');
+      : toastsAdd({
+          messageKey: 'gallery.unauthenticatedError',
+          style: 'danger',
+        });
   },
 };
 

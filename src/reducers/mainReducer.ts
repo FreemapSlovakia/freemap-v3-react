@@ -37,7 +37,7 @@ export interface MainState {
   locate: boolean;
   selectingHomeLocation: boolean;
   urlUpdatingEnabled: boolean;
-  errorTicketId: string | null;
+  errorTicketId: string | undefined;
   eleSmoothingFactor: number;
   embedFeatures: string[];
   selection: Selection | null;
@@ -52,7 +52,7 @@ const initialState: MainState = {
   locate: false,
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
-  errorTicketId: null,
+  errorTicketId: undefined,
   eleSmoothingFactor: 5,
   embedFeatures: [],
   selection: null,

@@ -201,13 +201,15 @@ export const processorMiddleware: Middleware<
 
         sendError({ kind: 'processor', error, action });
 
+        console.log(`XXXXXXXXXXXXXX: ${error}`);
+
         dispatch(
           toastsAdd({
             id: Math.random().toString(36).slice(2),
             style: 'danger',
             messageKey: 'general.processorError',
             messageParams: {
-              error,
+              err: error,
             },
           }),
         );

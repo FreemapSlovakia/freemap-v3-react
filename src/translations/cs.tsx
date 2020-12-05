@@ -20,10 +20,16 @@ const nf33 = Intl.NumberFormat('cs', {
 
 const masl = 'm\xa0n.\xa0m.';
 
-const getErrorMarkup = (ticketId: string) => `<h1>Chyba aplikace</h1>
+const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 <p>
-  Chyba nám byla automaticky reportována pod ID <b>${ticketId}</b>.
-  Můžeš ji nahlásit i na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+  ${
+    ticketId
+      ? `Chyba nám byla automaticky reportována pod ID <b>${ticketId}</b>.`
+      : ''
+  }
+  Chybu můžeš nahlásit ${
+    ticketId ? 'i ' : ''
+  }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   případně nám poslat detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
 <p>
@@ -52,8 +58,8 @@ const cs: Messages = {
     preventShowingAgain: 'Už více nezobrazovat',
     closeWithoutSaving: 'Zavřít okno bez uložení změn?',
     back: 'Zpět',
-    internalError: (ticketId) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: 'Chyba aplikace: ${error}',
+    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    processorError: ({ err }) => `Chyba aplikace: ${err}`,
     seconds: 'sekundy',
     minutes: 'minuty',
     meters: 'metre',
@@ -150,7 +156,7 @@ const cs: Messages = {
     gpsError: 'Nelze získat aktuální polohu.',
     routeNotFound:
       'Přes zvolené body se nepodařilo vyhledat trasu. Zkuste změnit parametry nebo posunout body trasy. ',
-    fetchingError: 'Nastala chyba při hledání trasy: {err}',
+    fetchingError: ({ err }) => `Nastala chyba při hledání trasy: ${err}`,
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} na ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -399,13 +405,16 @@ const cs: Messages = {
     },
     layerHint:
       'Pro zapnutí vrstvy s fotografiemi zvolte Fotografie z nabídky vrstev (nebo stiskněte klávesy Shift + F).',
-    deletingError: 'Nastala chyba při mazání obrázku: {err}',
-    tagsFetchingError: 'Nastala chyba při nahrávání tagů: {err}',
-    pictureFetchingError: 'Nastala chyba při nahrávání fotky: {err}',
-    picturesFetchingError: 'Nastala chyba při nahrávání fotek: {err}',
-    savingError: 'Nastala chyba při ukládání fotky: {err}',
-    commentAddingError: 'Nastala chyba při přidávání komentáře: {err}',
-    ratingError: 'Nastala chyba při hodnocení {err}',
+    deletingError: ({ err }) => `Nastala chyba při mazání obrázku: ${err}`,
+    tagsFetchingError: ({ err }) => `Nastala chyba při nahrávání tagů: ${err}`,
+    pictureFetchingError: ({ err }) =>
+      `Nastala chyba při nahrávání fotky: ${err}`,
+    picturesFetchingError: ({ err }) =>
+      `Nastala chyba při nahrávání fotek: ${err}`,
+    savingError: ({ err }) => `Nastala chyba při ukládání fotky: ${err}`,
+    commentAddingError: (err) =>
+      `Nastala chyba při přidávání komentáře: ${err}`,
+    ratingError: ({ err }) => `Nastala chyba při hodnocení ${err}`,
     unauthenticatedError:
       'Pro nahrávání fotek do galerie musíte být přihlášen.',
     missingPositionError: 'Chyba pozice.',
@@ -426,7 +435,8 @@ const cs: Messages = {
     distance: 'Čára',
     elevation: 'Bod',
     area: 'Polygon',
-    elevationFetchError: 'Nastala chyba při získávání výšky bodu: {err}',
+    elevationFetchError: (err) =>
+      `Nastala chyba při získávání výšky bodu: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
@@ -487,9 +497,9 @@ const cs: Messages = {
       drop: 'Přetáhněte sem .gpx soubor, nebo sem klikněte pro jeho výběr.',
     },
     shareToast: 'Trasa byla uložena na server a můžete ji sdílet.',
-    fetchingError: 'Nastala chyba při získávání záznamu trasy: {err}',
-    savingError: 'Nepodařilo se uložit trasu: {err}',
-    tooBigError: 'Velikost nahraného souboru přesahuje limit {maxsize} MB.',
+    fetchingError: ({ err }) =>
+      `Nastala chyba při získávání záznamu trasy: ${err}`,
+    savingError: ({ err }) => `Nepodařilo se uložit trasu: ${err}`,
     loadingError: 'Soubor se nepodařilo načíst.',
     onlyOne: 'Očekává se pouze jeden GPX soubor.',
     wrongFormat: 'Nahraný soubor musí mít příponu .gpx',
@@ -549,7 +559,7 @@ const cs: Messages = {
       },
     },
     saveSuccess: 'Změny byly uloženy.',
-    savingError: 'Nastala chyba při ukládání nastavení: {err}',
+    savingError: ({ err }) => `Nastala chyba při ukládání nastavení: ${err}`,
   },
 
   changesets: {
@@ -559,7 +569,7 @@ const cs: Messages = {
     olderThanFull: ({ days }) =>
       `Změny novější než ${days} dn ${days === 3 ? 'i' : 'í'}`,
     notFound: 'Nebyly nalezeny žádné změny.',
-    fetchError: 'Nastala chyba při získávání změn: {err}',
+    fetchError: ({ err }) => `Nastala chyba při získávání změn: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Autor:',
@@ -577,7 +587,8 @@ const cs: Messages = {
   mapDetails: {
     road: 'Info o cestě',
     notFound: 'Nebyla nalezena žádná cesta.',
-    fetchingError: 'Nastala chyba při získávání detailů o cestě: {err}',
+    fetchingError: (err) =>
+      `Nastala chyba při získávání detailů o cestě: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
 
@@ -587,7 +598,7 @@ const cs: Messages = {
       message: 'Vyhledávání míst je možné až od přiblížení úrovně 12.',
       zoom: 'Přiblíž',
     },
-    fetchingError: 'Nastala chyba při získávání objektů: {err}',
+    fetchingError: ({ err }) => `Nastala chyba při získávání objektů: ${err}`,
     categories: {
       1: 'Příroda',
       2: 'Služby',
@@ -898,7 +909,8 @@ const cs: Messages = {
     prompt: 'Zadejte lokalitu',
     routeFrom: 'Navigovat odsud',
     routeTo: 'Navigovat sem',
-    fetchingError: 'Nastala chyba při zpracování výsledků vyhledávání: {err}',
+    fetchingError: (err) =>
+      `Nastala chyba při zpracování výsledků vyhledávání: ${err}`,
     buttonTitle: 'Hledat',
   },
 
@@ -934,7 +946,7 @@ const cs: Messages = {
     export: 'Stáhnout',
     exportToDrive: 'Uložit do Google Drive',
     exportToDropbox: 'Uložit do Dropboxu',
-    exportError: 'Chyba exportu GPX: {err}',
+    exportError: ({ err }) => `Chyba exportu GPX: ${err}`,
     what: {
       plannedRoute: 'vyhledanou trasu',
       plannedRouteWithStops: 'vyhledanou trasu se zastávkami',
@@ -960,10 +972,10 @@ const cs: Messages = {
       osm: 'Přihlásit se pomocí OpenStreetMap',
     },
     success: 'Byli jste úspěšně přihlášen.',
-    logInError: 'Nepodařilo se přihlásit: {err}',
+    logInError: ({ err }) => `Nepodařilo se přihlásit: ${err}`,
     logInError2: 'Nepodařilo se přihlásit.',
-    logOutError: 'Nepodařilo se odhlásit: {err}',
-    verifyError: 'Nepodařilo se ověřit přihlášení: {err}',
+    logOutError: ({ err }) => `Nepodařilo se odhlásit: ${err}`,
+    verifyError: ({ err }) => `Nepodařilo se ověřit přihlášení: ${err}`,
   },
 
   logOut: {
@@ -1021,7 +1033,8 @@ const cs: Messages = {
   elevationChart: {
     distance: 'Vzdálenost [km]',
     ele: 'Nadm. výška [m.n.m.] ',
-    fetchError: 'Nastala chyba při získávání výškového profilu: {err}',
+    fetchError: (err) =>
+      `Nastala chyba při získávání výškového profilu: ${err}`,
   },
 
   errorCatcher: {
@@ -1037,7 +1050,7 @@ const cs: Messages = {
     `,
   },
   osm: {
-    fetchingError: 'Nastala chyba při získávání OSM dat: {err}',
+    fetchingError: ({ err }) => `Nastala chyba při získávání OSM dat: ${err}`,
   },
 
   roadDetails: {
@@ -1092,9 +1105,9 @@ const cs: Messages = {
   },
 
   tracking: {
-    savingError: 'Chyba ukládání: {err}',
-    loadError: 'Chyba nahrávání: {err}',
-    deleteError: 'Chyba pří mazání: {err}',
+    savingError: ({ err }) => `Chyba ukládání: ${err}`,
+    loadError: ({ err }) => `Chyba nahrávání: ${err}`,
+    deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
     unauthenticatedError: 'Pro správu zařízení se musíte přihlásit.',
     trackedDevices: {
       button: 'Sledované',
@@ -1270,7 +1283,7 @@ const cs: Messages = {
   },
   pdfExport: {
     export: 'Exportovat',
-    exportError: 'Chyba exportu mapy: {err}',
+    exportError: ({ err }) => `Chyba exportu mapy: ${err}`,
     exporting: 'Prosím počkejte, mapa se exportuje…',
     exported: ({ url }) => (
       <>
@@ -1341,12 +1354,12 @@ const cs: Messages = {
     delete: 'Smazat',
     namePrompt: 'Název mapy:',
     deleteConfirm: 'Opravdu si přejete smazat tuto mapu?',
-    fetchError: 'Nastala chyba při nahrávání mapy: {err}',
-    fetchListError: 'Nastala chyba při nahrávání map: {err}',
-    deleteError: 'Nastala chyba při mazání mapy: {err}',
-    renameError: 'Nastala chyba při přejmenování mapy: {err}',
-    createError: 'Nastala chyba při ukládání mapy: {err}',
-    saveError: 'Nastala chyba při ukládání mapy: {err}',
+    fetchError: ({ err }) => `Nastala chyba při nahrávání mapy: ${err}`,
+    fetchListError: ({ err }) => `Nastala chyba při nahrávání map: ${err}`,
+    deleteError: ({ err }) => `Nastala chyba při mazání mapy: ${err}`,
+    renameError: ({ err }) => `Nastala chyba při přejmenování mapy: ${err}`,
+    createError: ({ err }) => `Nastala chyba při ukládání mapy: ${err}`,
+    saveError: ({ err }) => `Nastala chyba při ukládání mapy: ${err}`,
   },
 
   legend: {

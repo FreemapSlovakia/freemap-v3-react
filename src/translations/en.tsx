@@ -20,10 +20,14 @@ const nf33 = Intl.NumberFormat('en', {
 
 const masl = 'm\xa0a.s.l.';
 
-const getErrorMarkup = (ticketId: string) => `
+const getErrorMarkup = (ticketId?: string) => `
 <h1>Application error!</h1>
 <p>
-  The error has been automatically reported under Ticket ID <b>${ticketId}</b>.
+  ${
+    ticketId
+      ? `The error has been automatically reported under Ticket ID <b>${ticketId}</b>.`
+      : ''
+  }
   You can report the problem at <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   or eventually email us the details at <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -52,8 +56,8 @@ const en: Messages = {
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
-    internalError: (ticketId) => `!HTML!${getErrorMarkup(ticketId)}`,
-    processorError: 'Application error: ${error}',
+    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    processorError: ({ err }) => `Application error: ${err}`,
     seconds: 'seconds',
     minutes: 'minutes',
     meters: 'meters',
@@ -149,7 +153,7 @@ const en: Messages = {
     gpsError: 'Error getting your current location.',
     routeNotFound:
       'No route found. Try to change parameters or move the route points.',
-    fetchingError: 'Error finding the route: {err}',
+    fetchingError: ({ err }) => `Error finding the route: ${err}`,
     maneuverWithName: ({ type, modifier, name }) =>
       `${type} ${modifier} on ${name}`,
     maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
@@ -397,13 +401,13 @@ const en: Messages = {
     },
     layerHint:
       'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
-    deletingError: 'Error deleting photo: {err}',
-    tagsFetchingError: 'Error fetching tags: {err}',
-    pictureFetchingError: 'Error fetching photo: {err}',
-    picturesFetchingError: 'Error fetching photos: {err}',
-    savingError: 'Error saving photo: {err}',
-    commentAddingError: 'Error adding comment: {err}',
-    ratingError: 'Error rating photo: {err}',
+    deletingError: ({ err }) => `Error deleting photo: ${err}`,
+    tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
+    pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,
+    picturesFetchingError: ({ err }) => `Error fetching photos: ${err}`,
+    savingError: ({ err }) => `Error saving photo: ${err}`,
+    commentAddingError: ({ err }) => `Error adding comment: ${err}`,
+    ratingError: ({ err }) => `Error rating photo: ${err}`,
     unauthenticatedError: 'Please log-in to upload the photos to the gallery.',
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
@@ -423,7 +427,7 @@ const en: Messages = {
     distance: 'Line',
     elevation: 'Point',
     area: 'Polygon',
-    elevationFetchError: 'Error fetching point elevation: {err}',
+    elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
@@ -484,10 +488,8 @@ const en: Messages = {
       drop: 'Drop your .gpx file here or click here to select it.',
     },
     shareToast: 'The track has been saved to the server and can be shared.',
-    fetchingError: 'Error fetching track data: {err}',
-    savingError: 'Error saving the track: {err}',
-    tooBigError:
-      'Size of the uploaded track is bigger than the limit {maxSize} MB.',
+    fetchingError: ({ err }) => `Error fetching track data: ${err}`,
+    savingError: ({ err }) => `Error saving the track: ${err}`,
     loadingError: 'Error loading file.',
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
@@ -548,7 +550,7 @@ const en: Messages = {
       },
     },
     saveSuccess: 'Settings have been saved.',
-    savingError: 'Error saving settings: {err}',
+    savingError: ({ err }) => `Error saving settings: ${err}`,
   },
 
   changesets: {
@@ -557,7 +559,7 @@ const en: Messages = {
     olderThan: ({ days }) => `${days} days`,
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
-    fetchError: 'Error fetching changesets: {err}',
+    fetchError: ({ err }) => `Error fetching changesets: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Author:',
@@ -575,7 +577,7 @@ const en: Messages = {
   mapDetails: {
     road: 'Road info',
     notFound: 'No road found.',
-    fetchingError: 'Error fetching road details: {err}',
+    fetchingError: ({ err }) => `Error fetching road details: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
 
@@ -586,7 +588,7 @@ const en: Messages = {
         'To see objects by their type, you need to zoom in to at least level 12.',
       zoom: 'Zoom-in',
     },
-    fetchingError: 'Error fetching objects (POIs): {err}',
+    fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
     categories: {
       1: 'Nature',
       2: 'Services',
@@ -897,7 +899,7 @@ const en: Messages = {
     prompt: 'Enter the place',
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
-    fetchingError: 'Searching error: {err}',
+    fetchingError: ({ err }) => `Searching error: ${err}`,
     buttonTitle: 'Search',
   },
 
@@ -933,7 +935,7 @@ const en: Messages = {
     export: 'Download',
     exportToDrive: 'Save to Google Drive',
     exportToDropbox: 'Save to Dropbox',
-    exportError: 'Error exporting GPX: {err}',
+    exportError: ({ err }) => `Error exporting GPX: ${err}`,
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'found route including stops',
@@ -959,10 +961,10 @@ const en: Messages = {
       osm: 'Log in with OpenStreetMap',
     },
     success: 'You have been successfully logged in.',
-    logInError: 'Error logging in: {err}',
+    logInError: ({ err }) => `Error logging in: ${err}`,
     logInError2: 'Error logging in.',
-    logOutError: 'Error logging out: {err}',
-    verifyError: 'Error verifying authentication: {err}',
+    logOutError: ({ err }) => `Error logging out: ${err}`,
+    verifyError: ({ err }) => `Error verifying authentication: ${err}`,
   },
 
   logOut: {
@@ -1020,7 +1022,7 @@ const en: Messages = {
   elevationChart: {
     distance: 'Distance [km]',
     ele: `Elevation [${masl}]`,
-    fetchError: 'Error fetching elevation profile data: {err}',
+    fetchError: ({ err }) => `Error fetching elevation profile data: ${err}`,
   },
 
   errorCatcher: {
@@ -1037,7 +1039,7 @@ const en: Messages = {
   },
 
   osm: {
-    fetchingError: 'Error fetching OSM data: {err}',
+    fetchingError: ({ err }) => `Error fetching OSM data: ${err}`,
   },
 
   roadDetails: {
@@ -1095,9 +1097,9 @@ const en: Messages = {
   },
 
   tracking: {
-    savingError: 'Save error: {err}',
-    loadError: 'Loading error: {err}',
-    deleteError: 'Deleting error: {err}',
+    savingError: ({ err }) => `Save error: ${err}`,
+    loadError: ({ err }) => `Loading error: ${err}`,
+    deleteError: ({ err }) => `Deleting error: ${err}`,
     unauthenticatedError: 'Please log-in to manage your devices.',
     trackedDevices: {
       button: 'Watched',
@@ -1271,7 +1273,7 @@ const en: Messages = {
   },
   pdfExport: {
     export: 'Export',
-    exportError: 'Error exporting map: {err}',
+    exportError: ({ err }) => `Error exporting map: ${err}`,
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
       <>
@@ -1343,12 +1345,12 @@ const en: Messages = {
     delete: 'Delete',
     namePrompt: 'Map name:',
     deleteConfirm: 'Are you sure to delete this map?',
-    fetchError: 'Error loading map: {err}',
-    fetchListError: 'Error loading maps: {err}',
-    deleteError: 'Error deleting map: {err}',
-    renameError: 'Error renaming map: {err}',
-    createError: 'Error saving map: {err}',
-    saveError: 'Error saving map: {err}',
+    fetchError: ({ err }) => `Error loading map: ${err}`,
+    fetchListError: ({ err }) => `Error loading maps: ${err}`,
+    deleteError: ({ err }) => `Error deleting map: ${err}`,
+    renameError: ({ err }) => `Error renaming map: ${err}`,
+    createError: ({ err }) => `Error saving map: ${err}`,
+    saveError: ({ err }) => `Error saving map: ${err}`,
   },
 
   legend: {

@@ -81,7 +81,9 @@ export const saveSettings = createAction('SAVE_SETTINGS')<{
   preventTips: boolean;
 }>();
 
-export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<string>();
+export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
+  string | undefined
+>();
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 

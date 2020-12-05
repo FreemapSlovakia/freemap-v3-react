@@ -1,4 +1,4 @@
-import { createAction, PayloadAction } from 'typesafe-actions';
+import { createAction } from 'typesafe-actions';
 import { RootAction } from '.';
 
 export interface ToastAction {
@@ -38,21 +38,3 @@ export const toastsStopTimeout = createAction('TOASTS_STOP_TIMEOUT')<string>();
 export const toastsRestartTimeout = createAction(
   'TOASTS_RESTART_TIMEOUT',
 )<string>();
-
-// helpers
-
-/**
- * @deprecated use dispatchAxiosErrorAsToast
- */
-export function toastsAddError(
-  messageKey: string,
-  err?: Error,
-  params: { [key: string]: unknown } = {},
-): PayloadAction<'TOASTS_ADD', ResolvedToast> {
-  return toastsAdd({
-    id: Math.random().toString(36).slice(2),
-    messageKey,
-    messageParams: { ...params, ...(err ? { err: err.message } : {}) },
-    style: 'danger',
-  });
-}
