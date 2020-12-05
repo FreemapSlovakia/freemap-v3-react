@@ -201,8 +201,6 @@ export const processorMiddleware: Middleware<
 
         sendError({ kind: 'processor', error, action });
 
-        console.log(`XXXXXXXXXXXXXX: ${error}`);
-
         dispatch(
           toastsAdd({
             id: Math.random().toString(36).slice(2),
