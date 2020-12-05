@@ -6,7 +6,7 @@ import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import {
@@ -86,14 +86,14 @@ export function MoreMenuButton(): ReactElement {
 
   const skCz = ['sk', 'cs'].includes(language);
 
-  const t = useTranslator();
+  const m = useMessages();
 
   return (
     <>
       <Button
         ref={button}
         onClick={handleButtonClick}
-        title={t('more.more')}
+        title={m?.more.more}
         bsStyle="primary"
       >
         <FontAwesomeIcon icon="bars" />
@@ -122,7 +122,7 @@ export function MoreMenuButton(): ReactElement {
                     }}
                   >
                     <FontAwesomeIcon icon="sign-out" />{' '}
-                    {t('more.logOut', { name: user.name })}
+                    {m?.more.logOut(user.name)}
                   </MenuItem>
                 ) : (
                   <MenuItem
@@ -131,7 +131,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(authChooseLoginMethod());
                     }}
                   >
-                    <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
+                    <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
                   </MenuItem>
                 )}
                 <MenuItem
@@ -140,13 +140,13 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('settings'));
                   }}
                 >
-                  <FontAwesomeIcon icon="cog" /> {t('more.settings')}{' '}
-                  <kbd>e</kbd> <kbd>s</kbd>
+                  <FontAwesomeIcon icon="cog" /> {m?.more.settings} <kbd>e</kbd>{' '}
+                  <kbd>s</kbd>
                 </MenuItem>
                 <MenuItem divider />
                 <MenuItem onSelect={handleOpenExternally}>
                   <FontAwesomeIcon icon="external-link" />{' '}
-                  {t('external.openInExternal')}{' '}
+                  {m?.external.openInExternal}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
                 <MenuItem
@@ -155,7 +155,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('export-pdf'));
                   }}
                 >
-                  <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}{' '}
+                  <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}{' '}
                   <kbd>e</kbd> <kbd>p</kbd>
                 </MenuItem>
                 <MenuItem
@@ -164,7 +164,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('export-gpx'));
                   }}
                 >
-                  <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}{' '}
+                  <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}{' '}
                   <kbd>e</kbd> <kbd>g</kbd>
                 </MenuItem>
                 <MenuItem
@@ -173,7 +173,7 @@ export function MoreMenuButton(): ReactElement {
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="!icon-gps-device" />{' '}
-                  {t('more.mapExports')}
+                  {m?.more.mapExports}
                 </MenuItem>
                 <MenuItem
                   onSelect={() => {
@@ -181,7 +181,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('embed'));
                   }}
                 >
-                  <FontAwesomeIcon icon="code" /> {t('more.embedMap')}{' '}
+                  <FontAwesomeIcon icon="code" /> {m?.more.embedMap}{' '}
                   <kbd>e</kbd> <kbd>e</kbd>
                 </MenuItem>
                 <MenuItem divider />
@@ -191,19 +191,18 @@ export function MoreMenuButton(): ReactElement {
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="exclamation-triangle" />{' '}
-                  {t('more.reportMapError')}
+                  {m?.more.reportMapError}
                 </MenuItem>
                 <MenuItem
                   onSelect={close}
                   href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
                   target="_blank"
                 >
-                  <FontAwesomeIcon icon="!icon-bug" />{' '}
-                  {t('more.reportAppError')}
+                  <FontAwesomeIcon icon="!icon-bug" /> {m?.more.reportAppError}
                 </MenuItem>
                 <MenuItem divider />
                 <MenuItem eventKey="help" onSelect={setSubmenu}>
-                  <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
+                  <FontAwesomeIcon icon="book" /> {m?.more.help}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
                 </MenuItem>
                 <MenuItem
@@ -213,17 +212,17 @@ export function MoreMenuButton(): ReactElement {
                   }}
                 >
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
-                  {t('more.supportUs')}{' '}
+                  {m?.more.supportUs}{' '}
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
                 </MenuItem>
               </>
             ) : submenu === 'help' ? (
               <>
                 <MenuItem header>
-                  <FontAwesomeIcon icon="book" /> {t('more.help')}
+                  <FontAwesomeIcon icon="book" /> {m?.more.help}
                 </MenuItem>
                 <MenuItem onSelect={handleBackClick}>
-                  <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                  <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
@@ -236,7 +235,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(setActiveModal('legend'));
                     }}
                   >
-                    <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+                    <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
                   </MenuItem>
                 )}
                 <MenuItem
@@ -245,13 +244,13 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('about'));
                   }}
                 >
-                  <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
+                  <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
                 </MenuItem>
                 {skCz && (
                   <>
                     <MenuItem divider />
                     <MenuItem header>
-                      <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
+                      <FontAwesomeIcon icon="lightbulb-o" /> {m?.more.tips}
                     </MenuItem>
                     {tips.map(([key, name, icon]) => (
                       <MenuItem
@@ -269,10 +268,10 @@ export function MoreMenuButton(): ReactElement {
               <>
                 <MenuItem header>
                   <FontAwesomeIcon icon="external-link" />{' '}
-                  {t('external.openInExternal')}
+                  {m?.external.openInExternal}
                 </MenuItem>
                 <MenuItem onSelect={handleBackClick}>
-                  <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                  <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
@@ -293,7 +292,7 @@ export function MoreMenuButton(): ReactElement {
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv
                 </MenuItem>
                 <MenuItem onSelect={handleBackClick}>
-                  <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                  <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
                 </MenuItem>
                 <MenuItem divider />
@@ -302,7 +301,7 @@ export function MoreMenuButton(): ReactElement {
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
-                  {t('more.automaticLanguage')}
+                  {m?.more.automaticLanguage}
                 </MenuItem>
                 <MenuItem
                   eventKey="en"
@@ -343,7 +342,7 @@ export function MoreMenuButton(): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#3b5998' }}
-                title={t('more.facebook')}
+                title={m?.more.facebook}
               >
                 <FontAwesomeIcon icon="facebook-official" />
               </a>{' '}
@@ -353,7 +352,7 @@ export function MoreMenuButton(): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#0084b4' }}
-                title={t('more.twitter')}
+                title={m?.more.twitter}
               >
                 <FontAwesomeIcon icon="twitter" />
               </a>{' '}
@@ -363,7 +362,7 @@ export function MoreMenuButton(): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#ff0000' }}
-                title={t('more.youtube')}
+                title={m?.more.youtube}
               >
                 <FontAwesomeIcon icon="youtube-play" />
               </a>{' '}
@@ -373,7 +372,7 @@ export function MoreMenuButton(): ReactElement {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#333' }}
-                title={t('more.github')}
+                title={m?.more.github}
               >
                 <FontAwesomeIcon icon="github" />
               </a>

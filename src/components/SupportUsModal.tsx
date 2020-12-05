@@ -8,10 +8,10 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 export function SupportUsModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -24,15 +24,15 @@ export function SupportUsModal(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
-          {t('more.supportUs')}{' '}
+          {m?.more.supportUs}{' '}
           <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{t('supportUs.explanation')}</p>
+        <p>{m?.supportUs.explanation}</p>
         <hr />
         <p>
-          {t('supportUs.account')} VÚB 2746389453/0200
+          {m?.supportUs.account} VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -44,11 +44,11 @@ export function SupportUsModal(): ReactElement {
           <input name="cmd" value="_s-xclick" type="hidden" />
           <input name="hosted_button_id" value="DB6Y3ZAB2XCPN" type="hidden" />
           <Button type="submit">
-            <FontAwesomeIcon icon="paypal" /> {t('supportUs.paypal')}
+            <FontAwesomeIcon icon="paypal" /> {m?.supportUs.paypal}
           </Button>
         </form>
         <br />
-        <p>{t('supportUs.thanks')}</p>
+        <p>{m?.supportUs.thanks}</p>
         <hr />
         <p>2% z dane</p>
         <p>
@@ -71,7 +71,7 @@ export function SupportUsModal(): ReactElement {
           972 32 Chrenovec-Brusno
           <br />
           <br />
-          {t('supportUs.registration')}
+          {m?.supportUs.registration}
           <br />
           <br />
           IČO:{' '}
@@ -92,7 +92,7 @@ export function SupportUsModal(): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+            <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </FormGroup>
       </Modal.Footer>

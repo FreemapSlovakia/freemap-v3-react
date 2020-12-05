@@ -5,12 +5,12 @@ import { MapSwitchButton } from './MapSwitchButton';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/storeCreator';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { MapViewState, mapRefocus } from 'fm3/actions/mapActions';
 import { toggleLocate } from 'fm3/actions/mainActions';
 
 export function MapControls(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -74,7 +74,7 @@ export function MapControls(): ReactElement | null {
             onClick={() => {
               onMapRefocus({ zoom: zoom + 1 });
             }}
-            title={t('main.zoomIn')}
+            title={m?.main.zoomIn}
             disabled={zoom >= leafletElement.getMaxZoom()}
           >
             <FontAwesomeIcon icon="plus" />
@@ -83,7 +83,7 @@ export function MapControls(): ReactElement | null {
             onClick={() => {
               onMapRefocus({ zoom: zoom - 1 });
             }}
-            title={t('main.zoomOut')}
+            title={m?.main.zoomOut}
             disabled={zoom <= leafletElement.getMinZoom()}
           >
             <FontAwesomeIcon icon="minus" />
@@ -94,7 +94,7 @@ export function MapControls(): ReactElement | null {
             onClick={() => {
               dispatch(toggleLocate());
             }}
-            title={t('main.locateMe')}
+            title={m?.main.locateMe}
             active={locate}
             bsStyle={gpsTracked ? 'warning' : 'default'}
           >
@@ -106,8 +106,8 @@ export function MapControls(): ReactElement | null {
             onClick={handleFullscreenClick}
             title={
               document.fullscreenElement
-                ? t('general.exitFullscreen')
-                : t('general.fullscreen')
+                ? m?.general.exitFullscreen
+                : m?.general.fullscreen
             }
           >
             <FontAwesomeIcon

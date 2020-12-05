@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import {
   mapsCreate,
   mapsRename,
@@ -17,7 +17,7 @@ import { deleteFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 
 export function MapsMenu(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const maps = useSelector((state: RootState) => state.maps.maps);
 
@@ -31,7 +31,7 @@ export function MapsMenu(): ReactElement {
     <>
       <DropdownButton
         id="maps-dropdown"
-        title={maps.find((map) => map.id === id)?.name ?? t('maps.noMap')}
+        title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
         disabled={!authenticated}
         onSelect={(id: unknown) => {
           if (typeof id === 'number') {
@@ -39,7 +39,7 @@ export function MapsMenu(): ReactElement {
           }
         }}
       >
-        <MenuItem eventKey={undefined}>{t('maps.noMap')}</MenuItem>
+        <MenuItem eventKey={undefined}>{m?.maps.noMap}</MenuItem>
 
         {maps.map((map) => (
           <MenuItem key={map.id} eventKey={map.id}>
@@ -58,7 +58,7 @@ export function MapsMenu(): ReactElement {
             <FontAwesomeIcon icon="floppy-o" />
             <span className="hidden-md hidden-sm hidden-xs">
               {' '}
-              {t('maps.save')}
+              {m?.maps.save}
             </span>
           </Button>
         </>
@@ -70,10 +70,7 @@ export function MapsMenu(): ReactElement {
         disabled={!authenticated}
       >
         <FontAwesomeIcon icon="plus" />
-        <span className="hidden-md hidden-sm hidden-xs">
-          {' '}
-          {t('maps.create')}
-        </span>
+        <span className="hidden-md hidden-sm hidden-xs"> {m?.maps.create}</span>
       </Button>
       {authenticated && id !== undefined && (
         <>
@@ -86,7 +83,7 @@ export function MapsMenu(): ReactElement {
             <FontAwesomeIcon icon="pencil" />
             <span className="hidden-md hidden-sm hidden-xs">
               {' '}
-              {t('maps.rename')}
+              {m?.maps.rename}
             </span>
           </Button>
         </>
@@ -102,7 +99,7 @@ export function MapsMenu(): ReactElement {
             <FontAwesomeIcon icon="trash" />
             <span className="hidden-md hidden-sm hidden-xs">
               {' '}
-              {t('maps.delete')} <kbd>Del</kbd>
+              {m?.maps.delete} <kbd>Del</kbd>
             </span>
           </Button>
         </>

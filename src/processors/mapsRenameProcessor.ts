@@ -1,15 +1,12 @@
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapsRename, mapsLoadList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { translate } from 'fm3/stringUtils';
 
 export const mapsRenameProcessor: Processor<typeof mapsRename> = {
   actionCreator: mapsRename,
   errorKey: 'maps.renameError',
   handle: async ({ getState, dispatch }) => {
-    const name = window.prompt(
-      translate(window.translations, 'maps.namePrompt') as string,
-    );
+    const name = window.prompt(window.translations?.maps.namePrompt);
 
     if (name === null) {
       return;

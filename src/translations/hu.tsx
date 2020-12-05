@@ -20,10 +20,10 @@ const nf33 = Intl.NumberFormat('hu', {
 
 const masl = 'm\xa0tszf.'; // méter a tengerszint fölött;
 
-const errorMarkup = `
+const getErrorMarkup = (ticketId: string) => `
 <h1>Alkalmazáshiba</h1>
 <p>
-  A hiba automatikusan be lett jelentve, és a következő jegyazonosítót (Ticked ID) kapta: <b>{ticketId}</b>.
+  A hiba automatikusan be lett jelentve, és a következő jegyazonosítót (Ticked ID) kapta: <b>${ticketId}</b>.
   A hibát Ön is bejelentheti a <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHubon</a>,
   vagy végső esetben elküldheti nekünk az adatokat e-mailen: <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -53,7 +53,7 @@ const hu: Messages = {
     closeWithoutSaving:
       'Az ablak nem mentett módosításokat tartalmaz. Bezárja?',
     back: 'Vissza',
-    internalError: `!HTML!${errorMarkup}`,
+    internalError: (ticketId) => `!HTML!${getErrorMarkup(ticketId)}`,
     processorError: 'Alkalmazáshiba: ${error}',
     seconds: 'másodperc',
     minutes: 'perc',
@@ -152,8 +152,9 @@ const hu: Messages = {
     routeNotFound:
       'Nem sikerült útvonalat találni. Próbálja meg módosítani a paramétereket vagy áthelyezni az út pontjait.',
     fetchingError: 'Hiba történt az útvonaltervezésnél: {err}',
-    maneuverWithName: '{type} {modifier} itt: {name}',
-    maneuverWithoutName: '{type} {modifier}',
+    maneuverWithName: ({ type, modifier, name }) =>
+      `${type} ${modifier} itt: ${name}`,
+    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
 
     maneuver: {
       types: {
@@ -194,7 +195,7 @@ const hu: Messages = {
         short: ({ arrival, price, numbers }) => (
           <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -206,7 +207,7 @@ const hu: Messages = {
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Érkezés: <b>{arrival}</b> | Ár: <b>{price} €</b> | Járat:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -230,9 +231,11 @@ const hu: Messages = {
         foot: ({ departure, duration, destination }) => (
           <>
             <b>{departure}</b> sétáljon{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>ide:</b>
             ) : (
@@ -262,9 +265,11 @@ const hu: Messages = {
         foot: ({ duration, destination }) => (
           <>
             sétáljon{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>a célponthoz</b>
             ) : (
@@ -278,9 +283,11 @@ const hu: Messages = {
         bicycle: ({ duration, destination }) => (
           <>
             kerékpározzék{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+              </b>
+            )}{' '}
             ide: <b>{destination}</b>
           </>
         ),
@@ -291,7 +298,7 @@ const hu: Messages = {
 
   more: {
     more: 'Továbbiak',
-    logOut: 'Kijelentkezés: {name}',
+    logOut: (name) => `Kijelentkezés: ${name}`,
     logIn: 'Bejelentkezés',
     settings: 'Beállítások',
     gpxExport: 'Exportálás GPX-be',
@@ -350,8 +357,9 @@ const hu: Messages = {
       yourRating: 'Az Ön értékelése:',
       showOnTheMap: 'Megjelenítés a térképen',
       openInNewWindow: 'Megnyitás…',
-      uploaded: '{username} töltötte fel ekkor: {createdAt}',
-      captured: 'Ekkor készült: {takenAt}',
+      uploaded: ({ username, createdAt }) =>
+        `${username} töltötte fel ekkor: ${createdAt}`,
+      captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
       deletePrompt: 'Kép törlése?',
       modify: 'Módosítás',
     },
@@ -369,7 +377,7 @@ const hu: Messages = {
     },
     uploadModal: {
       title: 'Fényképek feltöltése',
-      uploading: 'Feltöltés folyamatban ({n})',
+      uploading: (n) => `Feltöltés folyamatban (${n})`,
       upload: 'Feltöltés',
       rules: `
         <p>Húzza ide a fényképeit vagy kattintson ide a kijelölésükhöz.</p>
@@ -476,7 +484,7 @@ const hu: Messages = {
       maxEle: 'Legnagyobb magasság',
       uphill: 'Összes emelkedés',
       downhill: 'Összes lejtés',
-      durationValue: '{h} óra {m} perc',
+      durationValue: ({ h, m }) => `${h} óra ${m} perc`,
     },
     uploadModal: {
       title: 'A nyomvonal feltöltése',
@@ -539,8 +547,8 @@ const hu: Messages = {
       switch: 'Szakértői mód',
       overlayOpacity: 'Réteg átlátszatlansága:',
       trackViewerEleSmoothing: {
-        label:
-          'A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: {value}',
+        label: (value) =>
+          `A simítás szintje a teljes emelkedés/lejtés kiszámításánál a nyomvonal-megtekintőben: ${value}`,
         info:
           '1 értéknél minden magasság egyenként figyelembe vétetik. A nagyobb értékek a magasságok elsimítására szolgáló lebegő ablakszélességet jelentenek.',
       },
@@ -971,8 +979,8 @@ const hu: Messages = {
   mapLayers: {
     layers: 'Térképrétegek',
     photoFilterWarning: 'A fényképszűrés aktív',
-    minZoomWarning: 'A {minZoom} nagyítási szinttől látható.',
-    base: {
+    minZoomWarning: (minZoom) => `A ${minZoom} nagyítási szinttől látható`,
+    letters: {
       A: 'Autó',
       T: 'Túrázás',
       C: 'Kerékpár',
@@ -985,9 +993,6 @@ const hu: Messages = {
       d: 'Tömegközlekedés',
       h: 'Történelmi térkép',
       X: 'Túrázás + Kerékpár + Síelés',
-      Y: 'Túrázás + Kerékpár + Síelés (helyi)',
-    },
-    overlay: {
       i: 'Interactive layer', // TODO translate
       I: 'Fényképek',
       l: 'Erdészeti utak (Szlovákia)',
@@ -1026,7 +1031,7 @@ const hu: Messages = {
   },
 
   errorCatcher: {
-    html: `${errorMarkup}
+    html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
         Megpróbálhatja a következőket:
       </p>
@@ -1104,8 +1109,12 @@ const hu: Messages = {
       button: 'Figyelt',
       modalTitle: 'Figyelt eszközök',
       desc: 'Figyelt eszközök kezelése ismerősei pozíciójának megismeréséhez.',
-      modifyTitle: 'Figyelt eszköz módosítása',
-      createTitle: ({ name }) => (
+      modifyTitle: (name) => (
+        <>
+          Figyelt eszköz módosításaí <i>{name}</i>
+        </>
+      ),
+      createTitle: (name) => (
         <>
           <i>{name}</i> készülék figyelése
         </>
@@ -1120,18 +1129,18 @@ const hu: Messages = {
       delete: 'Delete access token?',
     },
     accessTokens: {
-      modalTitle: ({ deviceName }) => (
+      modalTitle: (deviceName) => (
         <>
           <i>{deviceName}</i> készülék figyelési kódjai
         </>
       ),
-      desc: ({ deviceName }) => (
+      desc: (deviceName) => (
         <p>
           Határozzon meg figyelési kódokat, hogy <i>{deviceName}</i> készüléke
           pozícióját megoszthassa ismerőseivel.
         </p>
       ),
-      createTitle: ({ deviceName }) => (
+      createTitle: (deviceName) => (
         <>
           Figyelési kód hozzáadása a(z) <i>{deviceName}</i> készülékhez
         </>

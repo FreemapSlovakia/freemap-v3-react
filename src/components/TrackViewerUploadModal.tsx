@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import Modal from 'react-bootstrap/lib/Modal';
 import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import {
@@ -20,7 +20,7 @@ import 'fm3/styles/trackViewer.scss';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
 
 export function TrackViewerUploadModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -52,7 +52,7 @@ export function TrackViewerUploadModal(): ReactElement {
     [dispatch],
   );
 
-  const handleGpxDrop = useGpxDropHandler(handleUpload, handleLoadError, t);
+  const handleGpxDrop = useGpxDropHandler(handleUpload, handleLoadError, m);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleGpxDrop,
@@ -64,7 +64,7 @@ export function TrackViewerUploadModal(): ReactElement {
   return (
     <Modal show onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{t('trackViewer.uploadModal.title')}</Modal.Title>
+        <Modal.Title>{m?.trackViewer.uploadModal.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div
@@ -72,12 +72,12 @@ export function TrackViewerUploadModal(): ReactElement {
           className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
         >
           <input {...getInputProps()} />
-          {t('trackViewer.uploadModal.drop')}
+          {m?.trackViewer.uploadModal.drop}
         </div>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+          <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

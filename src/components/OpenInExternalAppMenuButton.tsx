@@ -1,7 +1,7 @@
 import React, { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/lib/Button';
 import Popover from 'react-bootstrap/lib/Popover';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { Overlay } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
@@ -33,7 +33,7 @@ export function OpenInExternalAppMenuButton({
   url,
   children,
 }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const buttonRef = useRef<Button>();
 
@@ -60,7 +60,7 @@ export function OpenInExternalAppMenuButton({
       <Button
         ref={buttonRef as React.MutableRefObject<Button>}
         onClick={handleButtonClick}
-        title={t('external.openInExternal')}
+        title={m?.external.openInExternal}
       >
         {children}
       </Button>

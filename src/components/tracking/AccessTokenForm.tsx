@@ -12,11 +12,11 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function AccessTokenForm(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -71,24 +71,24 @@ export function AccessTokenForm(): ReactElement {
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
           {accessToken
-            ? t('tracking.accessTokens.modifyTitle', {
+            ? m?.tracking.accessTokens.modifyTitle({
                 token: accessToken.token,
                 deviceName,
               })
-            : t('tracking.accessTokens.createTitle', { deviceName })}
+            : m?.tracking.accessTokens.createTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.timeFrom')}</ControlLabel>
+          <ControlLabel>{m?.tracking.accessToken.timeFrom}</ControlLabel>
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.timeTo')}</ControlLabel>
+          <ControlLabel>{m?.tracking.accessToken.timeTo}</ControlLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
         {/* <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.listingLabel')}</ControlLabel>
+          <ControlLabel>{m?.tracking.accessToken.listingLabel}</ControlLabel>
           <FormControl
             value={listingLabel}
             onChange={setListingLabel}
@@ -96,19 +96,19 @@ export function AccessTokenForm(): ReactElement {
           />
         </FormGroup> */}
         <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.note')}</ControlLabel>
+          <ControlLabel>{m?.tracking.accessToken.note}</ControlLabel>
           <FormControl value={note} onChange={setNote} maxLength={255} />
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">{t('general.save')}</Button>
+        <Button type="submit">{m?.general.save}</Button>
         <Button
           type="button"
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(undefined));
           }}
         >
-          {t('general.cancel')} <kbd>Esc</kbd>
+          {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>

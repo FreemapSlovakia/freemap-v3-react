@@ -10,7 +10,7 @@ import React, {
 import { useDispatch, useSelector } from 'react-redux';
 import ReactStars from 'react-stars';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
@@ -48,7 +48,7 @@ import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 
 export function GalleryViewerModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -228,7 +228,7 @@ export function GalleryViewerModal(): ReactElement {
     <Modal show onHide={close} bsSize="large" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {t('gallery.viewer.title')}{' '}
+          {m?.gallery.viewer.title}{' '}
           {imageIds && (
             <FormControl
               componentClass="select"
@@ -314,7 +314,7 @@ export function GalleryViewerModal(): ReactElement {
                 <>{`${index + 1} / ${imageIds.length}`} ｜ </>
               )}
               {isFullscreen && title && <>{title} ｜ </>}
-              {t('gallery.viewer.uploaded', {
+              {m?.gallery.viewer.uploaded({
                 username: () => <b key={image.user.name}>{image.user.name}</b>,
                 createdAt: () =>
                   createdAt && (
@@ -326,13 +326,9 @@ export function GalleryViewerModal(): ReactElement {
               {takenAt && (
                 <>
                   {' ｜ '}
-                  {t('gallery.viewer.captured', {
-                    takenAt: () => (
-                      <b key={takenAt.getTime()}>
-                        {dateFormat.format(takenAt)}
-                      </b>
-                    ),
-                  })}
+                  {m?.gallery.viewer.captured(
+                    <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
+                  )}
                 </>
               )}
               {' ｜ '}
@@ -354,10 +350,10 @@ export function GalleryViewerModal(): ReactElement {
               {!isFullscreen && editModel && (
                 <form onSubmit={handleSave}>
                   <hr />
-                  <h5>{t('gallery.viewer.modify')}</h5>
+                  <h5>{m?.gallery.viewer.modify}</h5>
 
                   <GalleryEditForm
-                    t={t}
+                    m={m}
                     model={editModel}
                     allTags={allTags}
                     errors={saveErrors}
@@ -365,14 +361,14 @@ export function GalleryViewerModal(): ReactElement {
                     onModelChange={handleEditModelChange}
                   />
                   <Button bsStyle="primary" type="submit">
-                    <Glyphicon glyph="save" /> {t('general.save')}
+                    <Glyphicon glyph="save" /> {m?.general.save}
                   </Button>
                 </form>
               )}
               {!isFullscreen && (
                 <>
                   <hr />
-                  <h5>{t('gallery.viewer.comments')}</h5>
+                  <h5>{m?.gallery.viewer.comments}</h5>
                   {comments &&
                     comments.map((c) => (
                       <p key={c.id}>
@@ -386,7 +382,7 @@ export function GalleryViewerModal(): ReactElement {
                         <InputGroup>
                           <FormControl
                             type="text"
-                            placeholder={t('gallery.viewer.newComment')}
+                            placeholder={m?.gallery.viewer.newComment}
                             value={comment}
                             onChange={(e) => {
                               dispatch(
@@ -399,7 +395,7 @@ export function GalleryViewerModal(): ReactElement {
                           />
                           <InputGroup.Button>
                             <Button type="submit" disabled={comment.length < 1}>
-                              {t('gallery.viewer.addComment')}
+                              {m?.gallery.viewer.addComment}
                             </Button>
                           </InputGroup.Button>
                         </InputGroup>
@@ -408,7 +404,7 @@ export function GalleryViewerModal(): ReactElement {
                   )}
                   {user && (
                     <div>
-                      {t('gallery.viewer.yourRating')}{' '}
+                      {m?.gallery.viewer.yourRating}{' '}
                       <ReactStars
                         className="stars"
                         size={22}
@@ -436,7 +432,7 @@ export function GalleryViewerModal(): ReactElement {
               <Glyphicon glyph="edit" />
               <span className="hidden-xs">
                 {' '}
-                {t('general.modify')} <kbd>M</kbd>
+                {m?.general.modify} <kbd>M</kbd>
               </span>
             </Button>
             <Button
@@ -464,7 +460,7 @@ export function GalleryViewerModal(): ReactElement {
               bsStyle="danger"
             >
               <Glyphicon glyph="trash" />
-              <span className="hidden-xs"> {t('general.delete')}</span>
+              <span className="hidden-xs"> {m?.general.delete}</span>
             </Button>
           </>
         )}
@@ -476,7 +472,7 @@ export function GalleryViewerModal(): ReactElement {
           <FontAwesomeIcon icon="dot-circle-o" />
           <span className="hidden-xs hidden-sm">
             {' '}
-            {t('gallery.viewer.showOnTheMap')} <kbd>S</kbd>
+            {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
           </span>
         </Button>
         {document.exitFullscreen && (
@@ -484,7 +480,7 @@ export function GalleryViewerModal(): ReactElement {
             <Glyphicon glyph="fullscreen" />
             <span className="hidden-xs hidden-sm">
               {' '}
-              {t('general.fullscreen')}
+              {m?.general.fullscreen}
             </span>
           </Button>
         )}
@@ -504,7 +500,7 @@ export function GalleryViewerModal(): ReactElement {
             <FontAwesomeIcon icon="external-link" />
             <span className="hidden-sm hidden-xs">
               {' '}
-              {t('gallery.viewer.openInNewWindow')}
+              {m?.gallery.viewer.openInNewWindow}
             </span>
           </OpenInExternalAppMenuButton>
         )}
@@ -512,7 +508,7 @@ export function GalleryViewerModal(): ReactElement {
           <Glyphicon glyph="remove" />
           <span className="hidden-xs hidden-sm">
             {' '}
-            {t('general.close')} <kbd>Esc</kbd>
+            {m?.general.close} <kbd>Esc</kbd>
           </span>
         </Button>
       </Modal.Footer>

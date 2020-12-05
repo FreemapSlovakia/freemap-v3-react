@@ -20,9 +20,9 @@ const nf33 = Intl.NumberFormat('sk', {
 
 const masl = 'm\xa0n.\xa0m.';
 
-const errorMarkup = `<h1>Chyba aplikácie</h1>
+const getErrorMarkup = (ticketId: string) => `<h1>Chyba aplikácie</h1>
 <p>
-  Chyba nám bola automaticky reportovaná pod ID <b>{ticketId}</b>.
+  Chyba nám bola automaticky reportovaná pod ID <b>${ticketId}</b>.
   Môžeš ju nahlásiť aj na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   prípadne nám poslať detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -51,7 +51,7 @@ const sk: Messages = {
     preventShowingAgain: 'Už viac nezobrazovať',
     closeWithoutSaving: 'Zavrieť okno bez uloženia zmien?',
     back: 'Späť',
-    internalError: `!HTML!${errorMarkup}`,
+    internalError: (ticketId) => `!HTML!${getErrorMarkup(ticketId)}`,
     processorError: 'Chyba aplikácie: ${error}',
     seconds: 'sekundy',
     minutes: 'minúty',
@@ -150,8 +150,9 @@ const sk: Messages = {
     routeNotFound:
       'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
     fetchingError: 'Nastala chyba pri hľadaní trasy: {err}',
-    maneuverWithName: '{type} {modifier} na {name}',
-    maneuverWithoutName: '{type} {modifier}',
+    maneuverWithName: ({ type, modifier, name }) =>
+      `${type} ${modifier} na ${name}`,
+    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
 
     maneuver: {
       types: {
@@ -193,7 +194,7 @@ const sk: Messages = {
         short: ({ arrival, price, numbers }) => (
           <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -205,7 +206,7 @@ const sk: Messages = {
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -229,9 +230,11 @@ const sk: Messages = {
         foot: ({ departure, duration, destination }) => (
           <>
             o <b>{departure}</b> pešo{' '}
-            <b>
-              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
@@ -261,9 +264,11 @@ const sk: Messages = {
         foot: ({ duration, destination }) => (
           <>
             pešo{' '}
-            <b>
-              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
@@ -277,9 +282,11 @@ const sk: Messages = {
         bicycle: ({ duration, destination }) => (
           <>
             bicyklom{' '}
-            <b>
-              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+              </b>
+            )}{' '}
             na <b>{destination}</b>
           </>
         ),
@@ -290,7 +297,7 @@ const sk: Messages = {
 
   more: {
     more: 'Ďalšie',
-    logOut: 'Odhlásiť {name}',
+    logOut: (name) => `Odhlásiť ${name}`,
     logIn: 'Prihlásenie',
     settings: 'Nastavenia',
     gpxExport: 'Exportovať do GPX',
@@ -359,8 +366,9 @@ const sk: Messages = {
       yourRating: 'Tvoje hodnotenie:',
       showOnTheMap: 'Ukázať na mape',
       openInNewWindow: 'Otvoriť v…',
-      uploaded: 'Nahral {username} dňa {createdAt}',
-      captured: 'Odfotené dňa {takenAt}',
+      uploaded: ({ username, createdAt }) =>
+        `Nahral ${username} dňa ${createdAt}`,
+      captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',
     },
@@ -378,7 +386,7 @@ const sk: Messages = {
     },
     uploadModal: {
       title: 'Nahrať fotky',
-      uploading: 'Nahrávam ({n})',
+      uploading: (n) => `Nahrávam (${n})`,
       upload: 'Nahrať',
       rules: `
         <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
@@ -481,7 +489,7 @@ const sk: Messages = {
       maxEle: 'Najvyšší bod',
       uphill: 'Celkové stúpanie',
       downhill: 'Celkové klesanie',
-      durationValue: '{h} hodín {m} minút',
+      durationValue: ({ h, m }) => `${h} hodín ${m} minút`,
     },
     uploadModal: {
       title: 'Nahrať trasu',
@@ -543,8 +551,8 @@ const sk: Messages = {
       switch: 'Expertný mód',
       overlayOpacity: 'Viditeľnosť vrstvy:',
       trackViewerEleSmoothing: {
-        label:
-          'Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}',
+        label: (value) =>
+          `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
         info:
           'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
       },
@@ -974,8 +982,8 @@ const sk: Messages = {
   mapLayers: {
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
-    minZoomWarning: 'Dostupné až od priblíženia {minZoom}',
-    base: {
+    minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,
+    letters: {
       A: 'Automapa',
       T: 'Turistická',
       C: 'Cyklomapa',
@@ -988,9 +996,6 @@ const sk: Messages = {
       d: 'Verejná doprava (ÖPNV)',
       h: 'Historická',
       X: 'Turistika + Cyklo + Bežky',
-      Y: 'Turistika + Cyklo + Bežky (local)',
-    },
-    overlay: {
       i: 'Interaktívna vrstva',
       I: 'Fotografie',
       l: 'Lesné cesty NLC (SK)',
@@ -1029,7 +1034,7 @@ const sk: Messages = {
   },
 
   errorCatcher: {
-    html: `${errorMarkup}
+    html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
         Akcie:
       </p>
@@ -1108,8 +1113,12 @@ const sk: Messages = {
       modalTitle: 'Sledované zariadenia',
       desc:
         'Tu môžete spravovať sledované zariadenia, aby ste videli pozíciu svojich priateľov.',
-      modifyTitle: 'Upraviť sledované zariadenie',
-      createTitle: ({ name }) => (
+      modifyTitle: (name) => (
+        <>
+          Upraviť sledované zariadenie <i>{name}</i>
+        </>
+      ),
+      createTitle: (name) => (
         <>
           Sledovať zariadenie <i>{name}</i>
         </>
@@ -1124,18 +1133,18 @@ const sk: Messages = {
       delete: 'Zmazať token sledovania?',
     },
     accessTokens: {
-      modalTitle: ({ deviceName }) => (
+      modalTitle: (deviceName) => (
         <>
           Tokeny sledovania pre <i>{deviceName}</i>
         </>
       ),
-      desc: ({ deviceName }) => (
+      desc: (deviceName) => (
         <p>
           Zadefinujte tokeny sledovania, aby ste mohli zdieľať pozíciu vášho
           zariadenia <i>{deviceName}</i> s vašimi priateľmi.
         </p>
       ),
-      createTitle: ({ deviceName }) => (
+      createTitle: (deviceName) => (
         <>
           Pridať token sledovania pre <i>{deviceName}</i>
         </>

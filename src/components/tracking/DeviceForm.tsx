@@ -13,7 +13,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { InputGroup } from 'react-bootstrap';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 const types: Record<string, string> = {
@@ -23,7 +23,7 @@ const types: Record<string, string> = {
 };
 
 export function DeviceForm(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -90,15 +90,15 @@ export function DeviceForm(): ReactElement {
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
           {device
-            ? t('tracking.devices.modifyTitle', {
+            ? m?.tracking.devices.modifyTitle({
                 name: device.name,
               })
-            : t('tracking.devices.createTitle')}
+            : m?.tracking.devices.createTitle}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup className="required">
-          <ControlLabel>{t('tracking.device.name')}</ControlLabel>
+          <ControlLabel>{m?.tracking.device.name}</ControlLabel>
           <FormControl
             type="text"
             value={name}
@@ -136,7 +136,7 @@ export function DeviceForm(): ReactElement {
               disabled={type === 'url' || !!device?.id}
               value={
                 (type === 'url' && !device?.id) || regenerateToken
-                  ? t('tracking.device.generatedToken')
+                  ? m?.tracking.device.generatedToken
                   : token
               }
               onChange={setToken}
@@ -154,7 +154,7 @@ export function DeviceForm(): ReactElement {
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.device.maxCount')}</ControlLabel>
+          <ControlLabel>{m?.tracking.device.maxCount}</ControlLabel>
           <FormControl
             type="number"
             min="0"
@@ -164,7 +164,7 @@ export function DeviceForm(): ReactElement {
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.device.maxAge')}</ControlLabel>
+          <ControlLabel>{m?.tracking.device.maxAge}</ControlLabel>
           <InputGroup>
             <FormControl
               type="number"
@@ -173,19 +173,19 @@ export function DeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
+            <InputGroup.Addon>{m?.general.minutes}</InputGroup.Addon>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">{t('general.save')}</Button>
+        <Button type="submit">{m?.general.save}</Button>
         <Button
           type="button"
           onClick={() => {
             dispatch(trackingActions.modifyDevice(undefined));
           }}
         >
-          {t('general.cancel')} <kbd>Esc</kbd>
+          {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>

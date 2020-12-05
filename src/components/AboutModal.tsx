@@ -8,10 +8,10 @@ import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 export function AboutModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -23,11 +23,11 @@ export function AboutModal(): ReactElement {
     <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
+          <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h3>{t('contacts.ngo')}</h3>
+        <h3>{m?.contacts.ngo}</h3>
         <address>
           Freemap Slovakia
           <br />
@@ -36,7 +36,7 @@ export function AboutModal(): ReactElement {
           972 32 Chrenovec-Brusno
           <br />
         </address>
-        <p>{t('contacts.registered')}</p>
+        <p>{m?.contacts.registered}</p>
         <p>
           {'IČO: '}
           <a
@@ -50,7 +50,7 @@ export function AboutModal(): ReactElement {
           DIČ: 2022912870
         </p>
         <p>
-          {t('contacts.bankAccount')}: VÚB 2746389453/0200
+          {m?.contacts.bankAccount}: VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -59,23 +59,23 @@ export function AboutModal(): ReactElement {
           <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
-        <h3>{t('contacts.generalContact')}</h3>
+        <h3>{m?.contacts.generalContact}</h3>
         <ul>
           <li>
-            {t('contacts.board')}: <a href="oz@freemap.sk">oz@freemap.sk</a>
+            {m?.contacts.board}: <a href="oz@freemap.sk">oz@freemap.sk</a>
           </li>
         </ul>
 
-        <h3>{t('contacts.boardMemebers')}</h3>
+        <h3>{m?.contacts.boardMemebers}</h3>
         <ul>
           <li>
-            {t('contacts.president')}
+            {m?.contacts.president}
             {': '}
             <a href="mailto:michal.bellovic@freemap.sk">Michal Bellovič</a>{' '}
             (Prievidza)
           </li>
           <li>
-            {t('contacts.vicepresident')}
+            {m?.contacts.vicepresident}
             {': '}
             <a href="mailto:michal.palenik@freemap.sk">
               Mgr. Ing. Michal Páleník, PhD.
@@ -83,7 +83,7 @@ export function AboutModal(): ReactElement {
             (Bratislava)
           </li>
           <li>
-            {t('contacts.secretary')}
+            {m?.contacts.secretary}
             {': '}
             <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
             (Košice)
@@ -93,7 +93,7 @@ export function AboutModal(): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+            <Glyphicon glyph="remove" /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>

@@ -1,11 +1,12 @@
+import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
 import { createAction } from 'typesafe-actions';
 
 export interface MapViewState {
-  mapType: string;
+  mapType: BaseLayerLetters;
   lat: number;
   lon: number;
   zoom: number;
-  overlays: string[];
+  overlays: OverlayLetters[];
 }
 
 export interface MapStateBase extends MapViewState {

@@ -1,4 +1,4 @@
-import { ActionType } from 'typesafe-actions';
+import { Action } from 'typesafe-actions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import * as main from 'fm3/actions/mainActions';
 import * as ws from 'fm3/actions/websocketActions';
@@ -47,4 +47,4 @@ export const actions = {
   wiki,
 };
 
-export type RootAction = ActionType<typeof actions>; // & { meta?: any };
+export type RootAction = Action; // TODO this makes TS superslow: ActionType<typeof actions>;

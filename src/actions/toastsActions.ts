@@ -11,7 +11,7 @@ export interface ToastAction {
 export interface Toast {
   message?: string;
   messageKey?: string;
-  messageParams?: { [key: string]: unknown };
+  messageParams?: Record<string, unknown>;
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
   actions?: ToastAction[];
@@ -19,10 +19,10 @@ export interface Toast {
   cancelType?: string | string[] | RegExp;
 }
 
-export interface ResolvedToast extends Toast {
+export type ResolvedToast = Toast & {
   actions: ToastAction[];
   id: string;
-}
+};
 
 export const toastsAdd = createAction('TOASTS_ADD', (toast: Toast) =>
   Object.assign(
@@ -45,7 +45,7 @@ export const toastsRestartTimeout = createAction(
  * @deprecated use dispatchAxiosErrorAsToast
  */
 export function toastsAddError(
-  messageKey?: string,
+  messageKey: string,
   err?: Error,
   params: { [key: string]: unknown } = {},
 ): PayloadAction<'TOASTS_ADD', ResolvedToast> {

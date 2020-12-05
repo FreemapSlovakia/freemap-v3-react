@@ -16,7 +16,7 @@ import 'react-rangeslider/lib/index.css';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function ExportPdfModal(): ReactElement {
@@ -30,7 +30,7 @@ export function ExportPdfModal(): ReactElement {
       state.main.selection.id !== undefined,
   );
 
-  const t = useTranslator();
+  const m = useMessages();
 
   const [area, setArea] = useState('visible');
 
@@ -187,29 +187,29 @@ export function ExportPdfModal(): ReactElement {
     <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
+          <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="warning">{t('pdfExport.alert')}</Alert>
-        <p>{t('pdfExport.area')}</p>
+        <Alert bsStyle="warning">{m?.pdfExport.alert}</Alert>
+        <p>{m?.pdfExport.area}</p>
         <ButtonGroup>
           <Button
             active={area === 'visible'}
             onClick={() => setArea('visible')}
           >
-            {t('pdfExport.areas.visible')}
+            {m?.pdfExport.areas.visible}
           </Button>
           <Button
             active={area === 'selected'}
             onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
           >
-            {t('pdfExport.areas.pinned')} <FontAwesomeIcon icon="square-o" />
+            {m?.pdfExport.areas.pinned} <FontAwesomeIcon icon="square-o" />
           </Button>
         </ButtonGroup>
         <hr />
-        <p>{t('pdfExport.format')}</p>
+        <p>{m?.pdfExport.format}</p>
         <ButtonGroup>
           <Button onClick={() => setFormat('jpeg')} active={format === 'jpeg'}>
             JPEG
@@ -225,20 +225,20 @@ export function ExportPdfModal(): ReactElement {
           </Button>
         </ButtonGroup>
         <hr />
-        <p>{t('pdfExport.layersTitle')}</p>
+        <p>{m?.pdfExport.layersTitle}</p>
         <Checkbox
           checked={contours}
           onChange={() => {
             setContours((b) => !b);
           }}
         >
-          {t('pdfExport.layers.contours')}
+          {m?.pdfExport.layers.contours}
         </Checkbox>
         <Checkbox
           checked={shadedRelief}
           onChange={() => setShadedRelief((b) => !b)}
         >
-          {t('pdfExport.layers.shading')}
+          {m?.pdfExport.layers.shading}
         </Checkbox>
         <Checkbox
           checked={hikingTrails}
@@ -246,7 +246,7 @@ export function ExportPdfModal(): ReactElement {
             setHikingTrails((b) => !b);
           }}
         >
-          {t('pdfExport.layers.hikingTrails')}
+          {m?.pdfExport.layers.hikingTrails}
         </Checkbox>
         <Checkbox
           checked={bicycleTrails}
@@ -254,7 +254,7 @@ export function ExportPdfModal(): ReactElement {
             setBicycleTrails((b) => !b);
           }}
         >
-          {t('pdfExport.layers.bicycleTrails')}
+          {m?.pdfExport.layers.bicycleTrails}
         </Checkbox>
         <Checkbox
           checked={skiTrails}
@@ -262,7 +262,7 @@ export function ExportPdfModal(): ReactElement {
             setSkiTrails((b) => !b);
           }}
         >
-          {t('pdfExport.layers.skiTrails')}
+          {m?.pdfExport.layers.skiTrails}
         </Checkbox>
         <Checkbox
           checked={horseTrails}
@@ -270,7 +270,7 @@ export function ExportPdfModal(): ReactElement {
             setHorseTrails((b) => !b);
           }}
         >
-          {t('pdfExport.layers.horseTrails')}
+          {m?.pdfExport.layers.horseTrails}
         </Checkbox>
         <Checkbox
           checked={drawing}
@@ -278,7 +278,7 @@ export function ExportPdfModal(): ReactElement {
             setDrawing((b) => !b);
           }}
         >
-          {t('pdfExport.layers.drawing')}
+          {m?.pdfExport.layers.drawing}
         </Checkbox>
         <Checkbox
           checked={plannedRoute}
@@ -286,7 +286,7 @@ export function ExportPdfModal(): ReactElement {
             setPlannedRoute((b) => !b);
           }}
         >
-          {t('pdfExport.layers.plannedRoute')}
+          {m?.pdfExport.layers.plannedRoute}
         </Checkbox>
         <Checkbox
           checked={track}
@@ -294,11 +294,11 @@ export function ExportPdfModal(): ReactElement {
             setTrack((b) => !b);
           }}
         >
-          {t('pdfExport.layers.track')}
+          {m?.pdfExport.layers.track}
         </Checkbox>
         <hr />
         <p>
-          {t('pdfExport.mapScale')} {nf.format(scale * 96)} DPI
+          {m?.pdfExport.mapScale} {nf.format(scale * 96)} DPI
         </p>
         <Slider
           value={scale}
@@ -354,10 +354,10 @@ export function ExportPdfModal(): ReactElement {
             );
           }}
         >
-          <FontAwesomeIcon icon="download" /> {t('pdfExport.export')}
+          <FontAwesomeIcon icon="download" /> {m?.pdfExport.export}
         </Button>{' '}
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

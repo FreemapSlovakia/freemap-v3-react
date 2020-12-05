@@ -19,10 +19,10 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 export function EmbedMapModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -124,14 +124,14 @@ export function EmbedMapModal(): ReactElement {
     <Modal show onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
+          <FontAwesomeIcon icon="code" /> {m?.more.embedMap}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup style={{ maxWidth: '542px' }}>
-          <ControlLabel>{t('embed.dimensions')}</ControlLabel>
+          <ControlLabel>{m?.embed.dimensions}</ControlLabel>
           <InputGroup>
-            <InputGroup.Addon>{t('embed.width')}</InputGroup.Addon>
+            <InputGroup.Addon>{m?.embed.width}</InputGroup.Addon>
             <FormControl
               type="number"
               value={width}
@@ -143,7 +143,7 @@ export function EmbedMapModal(): ReactElement {
                 setWidth((target as HTMLInputElement).value);
               }}
             />
-            <InputGroup.Addon>{t('embed.height')}</InputGroup.Addon>
+            <InputGroup.Addon>{m?.embed.height}</InputGroup.Addon>
             <FormControl
               type="number"
               value={height}
@@ -158,14 +158,14 @@ export function EmbedMapModal(): ReactElement {
           </InputGroup>
         </FormGroup>
 
-        <strong>{t('embed.enableFeatures')}</strong>
+        <strong>{m?.embed.enableFeatures}</strong>
         <Checkbox
           onChange={({ target }) => {
             setEnableSearch((target as HTMLInputElement).checked);
           }}
           checked={enableSearch}
         >
-          {t('embed.enableSearch')}
+          {m?.embed.enableSearch}
         </Checkbox>
         <Checkbox
           onChange={({ target }) => {
@@ -173,7 +173,7 @@ export function EmbedMapModal(): ReactElement {
           }}
           checked={enableMapSwitch}
         >
-          {t('embed.enableMapSwitch')}
+          {m?.embed.enableMapSwitch}
         </Checkbox>
         <Checkbox
           onChange={({ target }) => {
@@ -181,10 +181,10 @@ export function EmbedMapModal(): ReactElement {
           }}
           checked={enableLocateMe}
         >
-          {t('embed.enableLocateMe')}
+          {m?.embed.enableLocateMe}
         </Checkbox>
         <hr />
-        <p>{t('embed.code')}</p>
+        <p>{m?.embed.code}</p>
         <FormControl
           inputRef={setFormControl}
           componentClass="textarea"
@@ -193,7 +193,7 @@ export function EmbedMapModal(): ReactElement {
           rows={3}
         />
         <br />
-        <p>{t('embed.example')}</p>
+        <p>{m?.embed.example}</p>
         <div style={{ overflowX: 'auto' }}>
           <iframe
             title="Freemap.sk"
@@ -212,10 +212,10 @@ export function EmbedMapModal(): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
-          <Glyphicon glyph="copy" /> {t('general.copyCode')}
+          <Glyphicon glyph="copy" /> {m?.general.copyCode}
         </Button>{' '}
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

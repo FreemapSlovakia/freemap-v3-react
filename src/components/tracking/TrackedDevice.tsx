@@ -6,7 +6,7 @@ import Button from 'react-bootstrap/lib/Button';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 type Props = {
@@ -14,7 +14,7 @@ type Props = {
 };
 
 export function TrackedDevice({ device }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -54,7 +54,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
       <td>
         {typeof device.maxAge === 'number'
-          ? `${device.maxAge / 60} ${t('general.minutes')}`
+          ? `${device.maxAge / 60} ${m?.general.minutes}`
           : ''}
       </td>
       <td>{device.maxCount}</td>
@@ -65,7 +65,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleModify}
-          title={t('general.modify')}
+          title={m?.general.modify}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
@@ -74,7 +74,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleDelete}
-          title={t('general.delete')}
+          title={m?.general.delete}
         >
           <FontAwesomeIcon icon="close" />
         </Button>

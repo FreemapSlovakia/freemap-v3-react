@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import {
   resolveTrackSurface,
   resolveTrackClass,
@@ -19,7 +19,7 @@ type Props = {
 };
 
 export function RoadDetails({ way }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const mapType = useSelector((state: RootState) => state.map.mapType);
 
@@ -40,17 +40,17 @@ export function RoadDetails({ way }: Props): ReactElement {
   return (
     <div>
       <dl className="dl-horizontal">
-        <dt>{t('roadDetails.roadType')}</dt>
-        <dd>{t(`roadDetails.trackClasses.${trackClass}`, {}, trackClass)}</dd>
-        <dt>{t('roadDetails.surface')}</dt>
-        <dd>{t(`roadDetails.surfaces.${surface}`) || surface}</dd>
-        {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}
+        <dt>{m?.roadDetails.roadType}</dt>
+        <dd>{m?.roadDetails.trackClasses[trackClass] ?? trackClass}</dd>
+        <dt>{m?.roadDetails.surface}</dt>
+        <dd>{m?.roadDetails.surfaces[surface] ?? surface}</dd>
+        {isBicycleMap && <dt>{m?.roadDetails.suitableBikeType}</dt>}
         {isBicycleMap && (
           <dd style={{ whiteSpace: 'nowrap' }}>
-            {t(`roadDetails.bicycleTypes.${bicycleType}`)}
+            {m?.roadDetails.bicycleTypes[bicycleType]}
           </dd>
         )}
-        <dt>{t('roadDetails.lastChange')}</dt>
+        <dt>{m?.roadDetails.lastChange}</dt>
         <dd>{lastEditAt}</dd>
       </dl>
       <p>
@@ -60,7 +60,7 @@ export function RoadDetails({ way }: Props): ReactElement {
           target="_blank"
           rel="noopener noreferrer"
         >
-          {t('roadDetails.showDetails')}
+          {m?.roadDetails.showDetails}
         </a>
       </p>
     </div>

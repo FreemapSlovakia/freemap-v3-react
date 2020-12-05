@@ -10,8 +10,9 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import Alert from 'react-bootstrap/lib/Alert';
 
 import { DateTime } from '../DateTime';
-import { Translator } from 'fm3/l10nInjector';
 import { GalleryTag } from 'fm3/actions/galleryActions';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { getMessageByKey } from 'fm3/l10nInjector';
 
 export interface PictureModel {
   title: string;
@@ -27,7 +28,7 @@ interface Props {
   errors: string[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: PictureModel) => void;
-  t: Translator;
+  m?: Messages;
 }
 
 export const GalleryEditForm: React.FC<Props> = ({
@@ -35,7 +36,7 @@ export const GalleryEditForm: React.FC<Props> = ({
   allTags,
   errors,
   onPositionPick,
-  t,
+  m,
   onModelChange,
 }) => {
   const changeModel = useCallback(
@@ -105,12 +106,17 @@ export const GalleryEditForm: React.FC<Props> = ({
     <div>
       {errors?.map((error) => (
         <Alert bsStyle="danger" key={error}>
-          {error.startsWith('~') ? error.slice(1) : t(error)}
+          {error.startsWith('~')
+            ? error.slice(1)
+            : (() => {
+                const v = getMessageByKey(m, error);
+                return typeof v === 'string' ? v : error;
+              })()}
         </Alert>
       ))}
       <FormGroup>
         <FormControl
-          placeholder={t('gallery.editForm.name')}
+          placeholder={m?.gallery.editForm.name}
           type="text"
           value={model.title}
           onChange={handleTitleChange}
@@ -119,43 +125,45 @@ export const GalleryEditForm: React.FC<Props> = ({
       </FormGroup>
       <FormGroup>
         <FormControl
-          placeholder={t('gallery.editForm.description')}
+          placeholder={m?.gallery.editForm.description}
           componentClass="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
           maxLength={4096}
         />
       </FormGroup>
-      <FormGroup>
-        <DateTime
-          value={model.takenAt}
-          onChange={handleTakenAtChange}
-          placeholders={{
-            date: t('gallery.editForm.takenAt.date'),
-            time: t('gallery.editForm.takenAt.time'),
-            datetime: t('gallery.editForm.takenAt.datetime'),
-          }}
-        />
-      </FormGroup>
+      {m && (
+        <FormGroup>
+          <DateTime
+            value={model.takenAt}
+            onChange={handleTakenAtChange}
+            placeholders={{
+              date: m.gallery.editForm.takenAt.date,
+              time: m.gallery.editForm.takenAt.time,
+              datetime: m.gallery.editForm.takenAt.datetime,
+            }}
+          />
+        </FormGroup>
+      )}
       <FormGroup>
         <InputGroup>
           <FormControl
             type="text"
-            placeholder={t('gallery.editForm.location')}
+            placeholder={m?.gallery.editForm.location}
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
           <InputGroup.Button>
             <Button onClick={onPositionPick}>
               <FontAwesomeIcon icon="dot-circle-o" />
-              {t('gallery.editForm.setLocation')}
+              {m?.gallery.editForm.setLocation}
             </Button>
           </InputGroup.Button>
         </InputGroup>
       </FormGroup>
       <FormGroup>
         <RT
-          placeholderText={t('gallery.editForm.tags')}
+          placeholderText={m?.gallery.editForm.tags}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}
           onAddition={handleTagAddition}

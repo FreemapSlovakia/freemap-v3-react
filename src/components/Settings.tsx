@@ -29,7 +29,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { overlayLayers } from 'fm3/mapDefinitions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function Settings(): ReactElement {
@@ -54,7 +54,7 @@ export function Settings(): ReactElement {
 
   const language = useSelector((state: RootState) => state.l10n.language);
 
-  const t = useTranslator();
+  const m = useMessages();
 
   const [homeLocation, setHomeLocation] = useState(init.homeLocation);
 
@@ -144,7 +144,7 @@ export function Settings(): ReactElement {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <FontAwesomeIcon icon="cog" /> {t('more.settings')}
+            <FontAwesomeIcon icon="cog" /> {m?.more.settings}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -154,27 +154,29 @@ export function Settings(): ReactElement {
             }}
             checked={expertMode}
           >
-            {t('settings.expert.switch')}{' '}
+            {m?.settings.expert.switch}{' '}
             <OverlayTrigger
               placement="right"
               overlay={
-                <Tooltip id="tooltip">
-                  <div
-                    dangerouslySetInnerHTML={{
-                      __html: t('settings.expertInfo'),
-                    }}
-                  />
-                </Tooltip>
+                m && (
+                  <Tooltip id="tooltip">
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: m.settings.expertInfo,
+                      }}
+                    />
+                  </Tooltip>
+                )
               }
             >
               <FontAwesomeIcon icon="question-circle-o" />
             </OverlayTrigger>
           </Checkbox>
           <Tabs id="setting-tabs">
-            <Tab title={t('settings.tab.map')} eventKey={1}>
+            <Tab title={m?.settings.tab.map} eventKey={1}>
               <div>
                 <p>
-                  {t('settings.map.overlayPaneOpacity')}{' '}
+                  {m?.settings.map.overlayPaneOpacity}{' '}
                   {nf0.format(overlayPaneOpacity * 100)}
                   {' %'}
                 </p>
@@ -191,7 +193,7 @@ export function Settings(): ReactElement {
                 <>
                   <hr />
                   <div>
-                    <p>{t('settings.expert.overlayOpacity')}</p>
+                    <p>{m?.settings.expert.overlayOpacity}</p>
                     <DropdownButton
                       id="overlayOpacity"
                       onSelect={(o: unknown) => {
@@ -202,9 +204,7 @@ export function Settings(): ReactElement {
                       title={
                         <>
                           <FontAwesomeIcon icon={selectedOverlayDetails.icon} />{' '}
-                          {t(
-                            `mapLayers.overlay.${selectedOverlayDetails.type}`,
-                          )}{' '}
+                          {m?.mapLayers.letters[selectedOverlayDetails.type]}{' '}
                           {nf0.format(
                             (overlayOpacity[selectedOverlay] || 1) * 100,
                           )}{' '}
@@ -215,7 +215,7 @@ export function Settings(): ReactElement {
                       {overlayLayers.map(({ type, icon }) => (
                         <MenuItem key={type} eventKey={type}>
                           {icon && <FontAwesomeIcon icon={icon} />}{' '}
-                          {t(`mapLayers.overlay.${type}`)}{' '}
+                          {m?.mapLayers.letters[type]}{' '}
                           {nf0.format((overlayOpacity[type] || 1) * 100)} %
                         </MenuItem>
                       ))}
@@ -241,9 +241,9 @@ export function Settings(): ReactElement {
                   <hr />
                   <div>
                     <p>
-                      {t('settings.expert.trackViewerEleSmoothing.label', {
-                        value: eleSmoothingFactor,
-                      })}
+                      {m?.settings.expert.trackViewerEleSmoothing.label(
+                        eleSmoothingFactor,
+                      )}
                     </p>
                     <Slider
                       value={eleSmoothingFactor}
@@ -255,16 +255,16 @@ export function Settings(): ReactElement {
                     />
                   </div>
                   <Alert>
-                    {t('settings.expert.trackViewerEleSmoothing.info')}
+                    {m?.settings.expert.trackViewerEleSmoothing.info}
                   </Alert>
                 </>
               )}
               <hr />
               <p>
-                {t('settings.map.homeLocation.label')}{' '}
+                {m?.settings.map.homeLocation.label}{' '}
                 {homeLocation
                   ? latLonToString(homeLocation, language)
-                  : t('settings.map.homeLocation.undefined')}
+                  : m?.settings.map.homeLocation.undefined}
               </p>
               <Button
                 onClick={() => {
@@ -272,14 +272,14 @@ export function Settings(): ReactElement {
                 }}
               >
                 <FontAwesomeIcon icon="crosshairs" />{' '}
-                {t('settings.map.homeLocation.select')}
+                {m?.settings.map.homeLocation.select}
               </Button>
             </Tab>
-            <Tab title={t('settings.tab.account')} eventKey={2}>
+            <Tab title={m?.settings.tab.account} eventKey={2}>
               {user ? (
                 <>
                   <FormGroup>
-                    <ControlLabel>{t('settings.account.name')}</ControlLabel>
+                    <ControlLabel>{m?.settings.account.name}</ControlLabel>
                     <FormControl
                       value={name}
                       onChange={(e) => {
@@ -290,7 +290,7 @@ export function Settings(): ReactElement {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <ControlLabel>{t('settings.account.email')}</ControlLabel>
+                    <ControlLabel>{m?.settings.account.email}</ControlLabel>
                     <FormControl
                       type="email"
                       value={email}
@@ -302,27 +302,27 @@ export function Settings(): ReactElement {
                   </FormGroup>
                 </>
               ) : (
-                <Alert>{t('settings.account.noAuthInfo')}</Alert>
+                <Alert>{m?.settings.account.noAuthInfo}</Alert>
               )}
             </Tab>
-            <Tab title={t('settings.tab.general')} eventKey={3}>
+            <Tab title={m?.settings.tab.general} eventKey={3}>
               <Checkbox
                 onChange={(e) => {
                   setPreventTips(!(e.target as HTMLInputElement).checked);
                 }}
                 checked={!preventTips}
               >
-                {t('settings.general.tips')}
+                {m?.settings.general.tips}
               </Checkbox>
             </Tab>
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
           <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
-            <Glyphicon glyph="floppy-disk" /> {t('general.save')}
+            <Glyphicon glyph="floppy-disk" /> {m?.general.save}
           </Button>
           <Button type="button" onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+            <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>

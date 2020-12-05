@@ -1,15 +1,13 @@
 import queryString from 'query-string';
 
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import { BaseLayerLetters, overlayLetters } from 'fm3/mapDefinitions';
 import {
   getTrasformedParamsIfIsOldFreemapUrl,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
 import { Location } from 'history';
 import { MapViewState } from './actions/mapActions';
-
-const baseLetters = baseLayers.map(({ type }) => type);
-const overlayLetters = overlayLayers.map(({ type }) => type);
+import { is } from 'typescript-is';
 
 export function getMapStateFromUrl(
   location: Location,
@@ -18,6 +16,7 @@ export function getMapStateFromUrl(
     const transformedParams = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
       location,
     );
+
     if (transformedParams) {
       return transformedParams;
     }
@@ -25,6 +24,7 @@ export function getMapStateFromUrl(
 
   {
     const transformedParams = getTrasformedParamsIfIsOldFreemapUrl(location);
+
     if (transformedParams) {
       return transformedParams;
     }
@@ -38,14 +38,19 @@ export function getMapStateFromUrl(
   ).split('/');
 
   const lat = undefineNaN(parseFloat(latFrag));
+
   const lon = undefineNaN(parseFloat(lonFrag));
+
   const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
   const layers = typeof query.layers === 'string' ? query.layers : '';
 
   const base = layers.charAt(0);
-  const mapType = baseLetters.includes(base) ? base : undefined;
+
+  const mapType = is<BaseLayerLetters>(base) ? base : undefined;
+
   const ovl = layers.slice(1);
+
   const overlays = overlayLetters.filter((x) => ovl.includes(x));
 
   return { lat, lon, zoom, mapType, overlays };
@@ -60,6 +65,7 @@ export function getMapStateDiffFromUrl(
   state2: MapViewState,
 ): Partial<MapViewState> | null {
   const { lat, lon, zoom, mapType, overlays = [] } = state1;
+
   const changes: Partial<MapViewState> = {};
 
   if (mapType && mapType !== state2.mapType) {
@@ -68,6 +74,7 @@ export function getMapStateDiffFromUrl(
 
   if (mapType && overlays.join('') !== state2.overlays.join('')) {
     changes.overlays = overlays;
+
     if (state2.overlays.includes('i')) {
       changes.overlays.push('i');
     }

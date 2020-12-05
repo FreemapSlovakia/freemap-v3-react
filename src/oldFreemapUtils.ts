@@ -1,12 +1,14 @@
 import { Location } from 'history';
+import { is } from 'typescript-is';
 import { MapViewState } from './actions/mapActions';
+import { BaseLayerLetters } from './mapDefinitions';
 
 // it's amazing that old freemap is using at least three different url param formats
 
 // either freemap.sk/#m=T,p=48.21836|17.4166|16|T or freemap.sk/?m=A&p=48.1855|17.4029|14
 export function getTrasformedParamsIfIsOldFreemapUrl(
   location: Location,
-): false | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>) {
+): undefined | (Partial<MapViewState> & Pick<MapViewState, 'overlays'>) {
   const isFromOldFreemapUrlFormat1 =
     location.hash &&
     (location.hash.indexOf('#p=') === 0 || location.hash.indexOf('#m=') === 0); // #m=T,p=48.21836|17.4166|16|T
@@ -15,7 +17,7 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
     location.search && /[?&]m=/.test(location.search); // "?m=A&p=48.1855|17.4029|14"
 
   if (!isFromOldFreemapUrlFormat1 && !isFromOldFreemapUrlFormat2) {
-    return false;
+    return undefined;
   }
 
   const oldFreemapUrlParams = isFromOldFreemapUrlFormat1
@@ -32,14 +34,16 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
 
     const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'X';
 
-    return {
-      lat: parseFloat(latFrag),
-      lon: parseFloat(lonFrag),
-      zoom: parseInt(zoomFrag, 10),
-      mapType,
-      overlays: [],
-    };
-  } else if (oldFreemapUrlParams.m) {
+    return is<BaseLayerLetters>(mapType)
+      ? {
+          lat: parseFloat(latFrag),
+          lon: parseFloat(lonFrag),
+          zoom: parseInt(zoomFrag, 10),
+          mapType,
+          overlays: [],
+        }
+      : undefined;
+  } else if (is<BaseLayerLetters>(oldFreemapUrlParams.m)) {
     return { mapType: oldFreemapUrlParams.m, overlays: [] };
   } else {
     return { mapType: 'X', overlays: [] };
@@ -50,23 +54,26 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1
 export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
   location: Location,
-): false | MapViewState {
+): MapViewState | undefined {
   if (
     location.search &&
     (location.search.indexOf('marker=1') >= 0 ||
       location.search.indexOf('markerLat') >= 0)
   ) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
-    const out: MapViewState = {
-      lat: parseFloat(oldFreemapUrlParams.lat),
-      lon: parseFloat(oldFreemapUrlParams.lon),
-      zoom: parseInt(oldFreemapUrlParams.zoom, 10),
-      mapType: oldFreemapUrlParams.layers,
-      overlays: [],
-    };
-    return out;
+
+    if (is<BaseLayerLetters>(oldFreemapUrlParams.layers)) {
+      return {
+        lat: parseFloat(oldFreemapUrlParams.lat),
+        lon: parseFloat(oldFreemapUrlParams.lon),
+        zoom: parseInt(oldFreemapUrlParams.zoom, 10),
+        mapType: oldFreemapUrlParams.layers,
+        overlays: [],
+      };
+    }
   }
-  return false;
+
+  return undefined;
 }
 
 // http://embed2.freemap.sk/index.html?lat=48.79&lon=19.55&zoom=12&layers=T&markerLat=48.8&markerLon=19.6&markerHtml=Hello&markerShowPopup=1

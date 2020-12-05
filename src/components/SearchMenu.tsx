@@ -20,7 +20,7 @@ import {
   routePlannerSetStart,
   routePlannerSetFinish,
 } from 'fm3/actions/routePlannerActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import 'fm3/styles/search.scss';
 import { RootState } from 'fm3/storeCreator';
@@ -42,7 +42,7 @@ type Props = {
 };
 
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -192,7 +192,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 {!!selectedResult && (
                   <Button
                     type="button"
-                    title={t('general.clear')}
+                    title={m?.general.clear}
                     onClick={handleClearClick}
                   >
                     <FontAwesomeIcon icon="times" />
@@ -200,7 +200,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 )}
                 <Button
                   type="submit"
-                  title={t('search.buttonTitle')}
+                  title={m?.search.buttonTitle}
                   disabled={!value}
                 >
                   <FontAwesomeIcon icon="search" />
@@ -231,7 +231,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       {selectedResult && !embed && (
         <ButtonGroup>
           <Button
-            title={t('search.routeFrom')}
+            title={m?.search.routeFrom}
             onClick={() => {
               const start = {
                 lat: selectedResult.lat,
@@ -246,7 +246,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
           </Button>
           <Button
-            title={t('search.routeTo')}
+            title={m?.search.routeTo}
             onClick={() => {
               const finish = {
                 lat: selectedResult.lat,

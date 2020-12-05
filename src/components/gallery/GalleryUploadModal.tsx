@@ -21,14 +21,14 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { PictureModel } from './GalleryEditForm';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
 
 export function GalleryUploadModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -126,7 +126,7 @@ export function GalleryUploadModal(): ReactElement {
   return (
     <Modal show={visible} onHide={handleClose}>
       <Modal.Header closeButton>
-        <Modal.Title>{t('gallery.uploadModal.title')}</Modal.Title>
+        <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         {items.map(
@@ -144,7 +144,7 @@ export function GalleryUploadModal(): ReactElement {
             <GalleryUploadItem
               key={id}
               id={id}
-              t={t}
+              m={m}
               filename={file.name}
               url={url}
               model={{
@@ -173,7 +173,7 @@ export function GalleryUploadModal(): ReactElement {
               checked={showPreview}
               disabled={!!items.length}
             >
-              {t('gallery.uploadModal.showPreview')}
+              {m?.gallery.uploadModal.showPreview}
             </Checkbox>
 
             <div
@@ -181,11 +181,13 @@ export function GalleryUploadModal(): ReactElement {
               className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
             >
               <input {...getInputProps()} />
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: t('gallery.uploadModal.rules'),
-                }}
-              />
+              {m && (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: m.gallery.uploadModal.rules,
+                  }}
+                />
+              )}
             </div>
           </>
         )}
@@ -199,11 +201,11 @@ export function GalleryUploadModal(): ReactElement {
         >
           <FontAwesomeIcon icon="upload" />{' '}
           {uploading
-            ? t('gallery.uploadModal.uploading', { n: items.length })
-            : t('gallery.uploadModal.upload')}
+            ? m?.gallery.uploadModal.uploading(items.length)
+            : m?.gallery.uploadModal.upload}
         </Button>
         <Button onClick={handleClose} bsStyle="danger">
-          <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+          <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

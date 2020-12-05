@@ -7,7 +7,7 @@ import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Tooltip } from 'react-bootstrap';
@@ -19,7 +19,7 @@ type Props = {
 };
 
 export function AccessToken({ accessToken }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -93,7 +93,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
             <Button
               onClick={handleCopyClick}
               bsSize="xs"
-              title={t('external.copy')}
+              title={m?.external.copy}
               type="button"
             >
               <FontAwesomeIcon icon="clipboard" />
@@ -111,7 +111,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleView}
-          title={t('tracking.devices.watch')}
+          title={m?.tracking.devices.watch}
         >
           <FontAwesomeIcon icon="eye" />
         </Button>{' '}
@@ -119,7 +119,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleModify}
-          title={t('general.modify')}
+          title={m?.general.modify}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
@@ -128,7 +128,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleDelete}
-          title={t('general.delete')}
+          title={m?.general.delete}
         >
           <FontAwesomeIcon icon="close" />
         </Button>

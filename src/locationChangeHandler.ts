@@ -296,6 +296,7 @@ export const handleLocationChange = (
   }
 
   const transformed = getTrasformedParamsIfIsOldEmbeddedFreemapUrl(location);
+
   if (transformed) {
     const { lat, lon } = transformed;
     dispatch(drawingPointAdd({ lat, lon }));

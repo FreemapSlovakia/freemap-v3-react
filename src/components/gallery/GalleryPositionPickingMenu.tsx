@@ -10,11 +10,11 @@ import {
 import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function GalleryPositionPickingMenu(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -24,14 +24,14 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
 
   return !pickingPosition ? null : (
     <Panel className="fm-toolbar">
-      {t('gallery.locationPicking.title')}{' '}
+      {m?.gallery.locationPicking.title}{' '}
       <Button
         onClick={() => {
           dispatch(galleryConfirmPickedPosition());
         }}
       >
         <FontAwesomeIcon icon="check" />
-        <span className="hidden-xs"> {t('general.ok')}</span>
+        <span className="hidden-xs"> {m?.general.ok}</span>
       </Button>{' '}
       <Button
         onClick={() => {
@@ -39,7 +39,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
         }}
       >
         <FontAwesomeIcon icon="times" />
-        <span className="hidden-xs"> {t('general.cancel')}</span> <kbd>Esc</kbd>
+        <span className="hidden-xs"> {m?.general.cancel}</span> <kbd>Esc</kbd>
       </Button>
     </Panel>
   );

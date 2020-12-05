@@ -11,10 +11,10 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { Device } from './Device';
 import { RootState } from 'fm3/storeCreator';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 export function Devices(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -28,20 +28,20 @@ export function Devices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" /> {t('tracking.devices.modalTitle')}
+          <FontAwesomeIcon icon="bullseye" /> {m?.tracking.devices.modalTitle}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="info">{t('tracking.devices.desc')}</Alert>
+        <Alert bsStyle="info">{m?.tracking.devices.desc}</Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>
-              <th>{t('tracking.device.name')}</th>
-              <th>{t('tracking.device.token')}</th>
-              <th>{t('tracking.device.maxCount')}</th>
-              <th>{t('tracking.device.maxAge')}</th>
-              <th>{t('general.createdAt')}</th>
-              <th>{t('general.actions')}</th>
+              <th>{m?.tracking.device.name}</th>
+              <th>{m?.tracking.device.token}</th>
+              <th>{m?.tracking.device.maxCount}</th>
+              <th>{m?.tracking.device.maxAge}</th>
+              <th>{m?.general.createdAt}</th>
+              <th>{m?.general.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -58,7 +58,7 @@ export function Devices(): ReactElement {
             dispatch(trackingActions.modifyDevice(null));
           }}
         >
-          {t('general.add')}
+          {m?.general.add}
         </Button>
         <Button
           type="button"
@@ -66,7 +66,7 @@ export function Devices(): ReactElement {
             dispatch(setActiveModal(null));
           }}
         >
-          {t('general.close')} <kbd>Esc</kbd>
+          {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>

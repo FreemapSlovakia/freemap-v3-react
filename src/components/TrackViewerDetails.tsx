@@ -1,11 +1,12 @@
 import React, { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import { smoothElevations, distance } from 'fm3/geoutils';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 export function TrackViewerDetails(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const startPoints = useSelector(
     (state: RootState) => state.trackViewer.startPoints,
@@ -44,7 +45,7 @@ export function TrackViewerDetails(): ReactElement | null {
     minute: '2-digit',
   });
 
-  const tableData: [string, string][] = [];
+  const tableData: [keyof Messages['trackViewer']['details'], string][] = [];
 
   let startTime: Date | undefined;
   let finishTime: Date | undefined;
@@ -64,13 +65,13 @@ export function TrackViewerDetails(): ReactElement | null {
   }
 
   let duration = 0;
-  if (startTime && finishTime) {
+  if (startTime && finishTime && m) {
     duration = (finishTime.getTime() - startTime.getTime()) / 1000;
     const hours = Math.floor(duration / 3600);
     const minutes = Math.floor((duration - hours * 3600) / 60);
     tableData.push([
       'duration',
-      t('trackViewer.details.durationValue', { h: hours, m: minutes }),
+      m.trackViewer.details.durationValue({ h: hours, m: minutes }),
     ]);
   }
 
@@ -134,14 +135,14 @@ export function TrackViewerDetails(): ReactElement | null {
   if (minEle !== Infinity) {
     tableData.push([
       'minEle',
-      `${noDecimalDigitsNumberFormat.format(minEle)} ${t('general.masl')}`,
+      `${noDecimalDigitsNumberFormat.format(minEle)} ${m?.general.masl}`,
     ]);
   }
 
   if (maxEle !== -Infinity) {
     tableData.push([
       'maxEle',
-      `${noDecimalDigitsNumberFormat.format(maxEle)} ${t('general.masl')}`,
+      `${noDecimalDigitsNumberFormat.format(maxEle)} ${m?.general.masl}`,
     ]);
   }
 
@@ -158,7 +159,7 @@ export function TrackViewerDetails(): ReactElement | null {
   return (
     <dl className="trackInfo dl-horizontal">
       {tableData.map(([key, value]) => [
-        <dt key={`${key}-dt`}>{t(`trackViewer.details.${key}`)}:</dt>,
+        <dt key={`${key}-dt`}>{m?.trackViewer.details[key]}:</dt>,
         <dd key={`${key}-dd`} className="infoValue">
           {value}
         </dd>,

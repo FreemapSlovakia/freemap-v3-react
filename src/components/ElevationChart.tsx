@@ -7,7 +7,7 @@ import {
   elevationChartSetActivePoint,
   elevationChartRemoveActivePoint,
 } from 'fm3/actions/elevationChartActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import 'fm3/styles/elevationChart.scss';
 import { RootState } from 'fm3/storeCreator';
@@ -19,7 +19,7 @@ const styles: Record<string, CSSProperties> = {
 };
 
 export function ElevationChart(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -87,7 +87,7 @@ export function ElevationChart(): ReactElement | null {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: t('elevationChart.distance'),
+                  labelString: m?.elevationChart.distance,
                 },
               },
             ],
@@ -98,7 +98,7 @@ export function ElevationChart(): ReactElement | null {
                 },
                 scaleLabel: {
                   display: true,
-                  labelString: t('elevationChart.ele'),
+                  labelString: m?.elevationChart.ele,
                 },
               },
             ],
@@ -127,8 +127,8 @@ export function ElevationChart(): ReactElement | null {
       />
       {typeof climbUp === 'number' && typeof climbDown === 'number' && (
         <p style={styles.pStyle}>
-          {t('trackViewer.details.uphill')}: {nf0.format(climbUp)} m,{' '}
-          {t('trackViewer.details.downhill')}: {nf0.format(climbDown)} m
+          {m?.trackViewer.details.uphill}: {nf0.format(climbUp)} m,{' '}
+          {m?.trackViewer.details.downhill}: {nf0.format(climbDown)} m
         </p>
       )}
     </div>

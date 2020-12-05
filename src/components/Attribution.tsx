@@ -1,30 +1,38 @@
 import React from 'react';
-import { baseLayers, overlayLayers, AttributionDef } from 'fm3/mapDefinitions';
-import { Translator } from 'fm3/l10nInjector';
+import {
+  baseLayers,
+  overlayLayers,
+  AttributionDef,
+  BaseLayerLetters,
+  OverlayLetters,
+} from 'fm3/mapDefinitions';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 interface Props {
-  t: Translator;
-  imhd: boolean;
-  mapType: string; // TODO enum
-  overlays: string[]; // TODO enum
+  m?: Messages;
+  // imhd: boolean;
+  mapType: BaseLayerLetters;
+  overlays: OverlayLetters[];
 }
 
 export const Attribution: React.FC<Props> = ({
-  t,
+  m,
   mapType,
   overlays,
-  imhd,
+  // imhd,
 }) => {
   return (
     <ul style={{ padding: '10px 0 0 20px' }}>
       {categorize(
         [
           ...baseLayers.filter(({ type }) => mapType === type),
-          ...overlayLayers.filter(({ type }) => overlays.includes(type)),
+          ...overlayLayers.filter(({ type }) =>
+            (overlays as string[]).includes(type),
+          ),
         ].reduce((a, b) => [...a, ...b.attribution], [] as AttributionDef[]),
       ).map(({ type, attributions }) => (
         <li key={type}>
-          {t(`mapLayers.type.${type}`)}{' '}
+          {m?.mapLayers.type[type]}{' '}
           {attributions.map((a, j) => [
             j > 0 ? ', ' : '',
             a.url ? (
@@ -34,32 +42,32 @@ export const Attribution: React.FC<Props> = ({
                 target="_blank"
                 rel="noopener noreferrer"
               >
-                {a.name || (a.nameKey && t(a.nameKey))}
+                {a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])}
               </a>
             ) : (
-              a.name || (a.nameKey && t(a.nameKey))
+              a.name || (a.nameKey && m?.mapLayers.attr[a.nameKey])
             ),
           ])}
         </li>
       ))}
-      {imhd && (
+      {/* {imhd && (
         <li>
           {'; '}
-          {t('routePlanner.imhdAttribution')}
+          {m?.routePlanner.imhdAttribution}
           {' ©\xa0'}
           <a href="https://imhd.sk" target="_blank" rel="noopener noreferrer">
             imhd.sk
           </a>
         </li>
-      )}
+      )} */}
     </ul>
   );
 };
 
 function categorize(
   attributions: AttributionDef[],
-): Array<{ type: string; attributions: AttributionDef[] }> {
-  const res: { [type: string]: AttributionDef[] } = {};
+): { type: AttributionDef['type']; attributions: AttributionDef[] }[] {
+  const res: Partial<Record<AttributionDef['type'], AttributionDef[]>> = {};
 
   for (const attribution of attributions) {
     let x = res[attribution.type];
@@ -72,5 +80,10 @@ function categorize(
     }
   }
 
-  return Object.keys(res).map((type) => ({ type, attributions: res[type] }));
+  const keys = Object.keys(res) as AttributionDef['type'][];
+
+  return keys.map((type) => ({
+    type,
+    attributions: res[type] as AttributionDef[],
+  }));
 }

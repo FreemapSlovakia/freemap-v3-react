@@ -9,7 +9,7 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import {
   changesetsSetDays,
@@ -18,7 +18,7 @@ import {
 import { RootState } from 'fm3/storeCreator';
 
 export function ChangesetsMenu(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const [authorName, setAuthorName] = useState<string | null>(
     useSelector((state: RootState) => state.changesets.authorName),
@@ -56,7 +56,7 @@ export function ChangesetsMenu(): ReactElement {
               dispatch(changesetsSetDays(days));
             }
           }}
-          title={t('changesets.olderThanFull', { days })}
+          title={m?.changesets.olderThanFull({ days })}
         >
           {[3, 7, 14, 30].map((d) => (
             <MenuItem
@@ -64,7 +64,7 @@ export function ChangesetsMenu(): ReactElement {
               eventKey={d}
               disabled={!canSearchWithThisAmountOfDays(d)}
             >
-              {t('changesets.olderThan', { days: d })}
+              {m?.changesets.olderThan({ days: d })}
             </MenuItem>
           ))}
         </DropdownButton>
@@ -73,7 +73,7 @@ export function ChangesetsMenu(): ReactElement {
         <InputGroup>
           <FormControl
             type="text"
-            placeholder={t('changesets.allAuthors')}
+            placeholder={m?.changesets.allAuthors}
             onChange={(e) => {
               setAuthorName((e.target as HTMLInputElement).value || null);
             }}
@@ -94,10 +94,10 @@ export function ChangesetsMenu(): ReactElement {
       <Button
         type="submit"
         disabled={!canSearchWithThisAmountOfDays(days)}
-        title={t('changesets.download')}
+        title={m?.changesets.download}
       >
         <FontAwesomeIcon icon="refresh" />
-        <span className="hidden-xs"> {t('changesets.download')}</span>
+        <span className="hidden-xs"> {m?.changesets.download}</span>
       </Button>
     </Form>
   );

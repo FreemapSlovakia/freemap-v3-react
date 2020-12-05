@@ -6,11 +6,11 @@ import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function GalleryShowPositionMenu(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -44,7 +44,7 @@ export function GalleryShowPositionMenu(): ReactElement | null {
     <Panel className="fm-toolbar">
       <Button onClick={close}>
         <FontAwesomeIcon icon="chevron-left" />
-        <span className="hidden-xs"> {t('general.back')}</span> <kbd>Esc</kbd>
+        <span className="hidden-xs"> {m?.general.back}</span> <kbd>Esc</kbd>
       </Button>
     </Panel>
   );

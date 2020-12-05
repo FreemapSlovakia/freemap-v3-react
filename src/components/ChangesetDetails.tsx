@@ -5,14 +5,14 @@ import {
 } from 'fm3/actions/changesetsActions';
 import { useDispatch, useSelector } from 'react-redux';
 import { RootState } from 'fm3/storeCreator';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 type Props = { changeset: Changeset };
 
 const linkStyle: CSSProperties = { cursor: 'pointer' };
 
 export function ChangesetDetails({ changeset }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -28,7 +28,7 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
   return (
     <div>
       <dl className="dl-horizontal">
-        <dt>{t('changesets.details.author')}</dt>
+        <dt>{m?.changesets.details.author}</dt>
         <dd>
           <a
             role="link"
@@ -41,16 +41,16 @@ export function ChangesetDetails({ changeset }: Props): ReactElement {
             {changeset.userName}
           </a>
         </dd>
-        <dt>{t('changesets.details.description')}</dt>
+        <dt>{m?.changesets.details.description}</dt>
         <dd>
           {changeset.description || (
-            <i>{t('changesets.details.noDescription')}</i>
+            <i>{m?.changesets.details.noDescription}</i>
           )}
         </dd>
-        <dt>{t('changesets.details.closedAt')}</dt>
+        <dt>{m?.changesets.details.closedAt}</dt>
         <dd>{timeFormat.format(changeset.closedAt)}</dd>
       </dl>
-      {t('changesets.details.moreDetailsOn', {
+      {m?.changesets.details.moreDetailsOn({
         osmLink: (
           <a
             href={`https://www.openstreetmap.org/changeset/${changeset.id}`}

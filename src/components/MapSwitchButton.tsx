@@ -6,14 +6,21 @@ import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
+import {
+  baseLayers,
+  overlayLayers,
+  LayerDef,
+  OverlayLetters,
+  BaseLayerLetters,
+} from 'fm3/mapDefinitions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import useMedia from 'use-media';
+import { is } from 'typescript-is';
 
 export function MapSwitchButton(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const zoom = useSelector((state: RootState) => state.map.zoom);
 
@@ -53,7 +60,7 @@ export function MapSwitchButton(): ReactElement {
     (mapType1: string) => {
       setShow(false);
 
-      if (mapType !== mapType1) {
+      if (mapType !== mapType1 && is<BaseLayerLetters>(mapType1)) {
         dispatch(mapRefocus({ mapType: mapType1 }));
       }
     },
@@ -64,7 +71,7 @@ export function MapSwitchButton(): ReactElement {
     (overlay: unknown) => {
       const s = new Set(overlays);
 
-      if (typeof overlay !== 'string') {
+      if (!is<OverlayLetters>(overlay)) {
         // uh-oh
       } else if (s.has(overlay)) {
         s.delete(overlay);
@@ -86,14 +93,18 @@ export function MapSwitchButton(): ReactElement {
   };
 
   const handleOverlayClick = (e: React.MouseEvent<Button>) => {
-    const overlay = (e.currentTarget as any).dataset.type as string;
+    const { type } = (e.currentTarget as any).dataset;
+
+    if (!is<OverlayLetters>(type)) {
+      return;
+    }
 
     const s = new Set(overlays);
 
-    if (s.has(overlay)) {
-      s.delete(overlay);
+    if (s.has(type)) {
+      s.delete(type);
     } else {
-      s.add(overlay);
+      s.add(type);
     }
 
     dispatch(mapRefocus({ overlays: [...s] }));
@@ -113,7 +124,7 @@ export function MapSwitchButton(): ReactElement {
       <ButtonGroup className="dropup hidden-xs">
         {baseLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
-            title={t(`mapLayers.base.${type}`)}
+            title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
             active={mapType === type}
@@ -124,7 +135,7 @@ export function MapSwitchButton(): ReactElement {
         ))}
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
-            title={t(`mapLayers.overlay.${type}`)}
+            title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
             active={overlays.includes(type)}
@@ -137,7 +148,7 @@ export function MapSwitchButton(): ReactElement {
           className="dropdown-toggle"
           ref={buttonRef}
           onClick={handleButtonClick}
-          title={t('mapLayers.layers')}
+          title={m?.mapLayers.layers}
         >
           <span className="caret" />
         </Button>
@@ -146,7 +157,7 @@ export function MapSwitchButton(): ReactElement {
         className="hidden-sm hidden-md hidden-lg"
         ref={button2Ref}
         onClick={handleButtonClick}
-        title={t('mapLayers.layers')}
+        title={m?.mapLayers.layers}
         bsStyle="primary"
       >
         <FontAwesomeIcon icon="map-o" />
@@ -182,7 +193,7 @@ export function MapSwitchButton(): ReactElement {
                             : 'none',
                       }}
                     >
-                      {t(`mapLayers.base.${type}`)}
+                      {m?.mapLayers.letters[type]}
                     </span>
                     {key && ' '}
                     {key && <kbd>{key}</kbd>}
@@ -191,9 +202,7 @@ export function MapSwitchButton(): ReactElement {
                         {' '}
                         <FontAwesomeIcon
                           icon="exclamation-triangle"
-                          title={t('mapLayers.minZoomWarning', {
-                            minZoom: minZoom.toString(),
-                          })}
+                          title={m?.mapLayers.minZoomWarning(minZoom)}
                           className="text-warning"
                         />
                       </>
@@ -234,7 +243,7 @@ export function MapSwitchButton(): ReactElement {
                           : 'none',
                     }}
                   >
-                    {t(`mapLayers.overlay.${type}`)}
+                    {m?.mapLayers.letters[type]}
                   </span>
                   {key && ' '}
                   {key && <kbd>{key}</kbd>}
@@ -243,9 +252,7 @@ export function MapSwitchButton(): ReactElement {
                       {' '}
                       <FontAwesomeIcon
                         icon="exclamation-triangle"
-                        title={t('mapLayers.minZoomWarning', {
-                          minZoom: minZoom.toString(),
-                        })}
+                        title={m?.mapLayers.minZoomWarning(minZoom)}
                         className="text-warning"
                       />
                     </>
@@ -255,7 +262,7 @@ export function MapSwitchButton(): ReactElement {
                       {' '}
                       <FontAwesomeIcon
                         icon="filter"
-                        title={t('mapLayers.photoFilterWarning')}
+                        title={m?.mapLayers.photoFilterWarning}
                         className="text-warning"
                       />
                     </>

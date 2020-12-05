@@ -3,7 +3,16 @@ import { Tool } from './actions/mainActions';
 export interface ToolDefinition {
   tool: Tool;
   icon: string;
-  msgKey: string;
+  msgKey:
+    | 'maps'
+    | 'routePlanner'
+    | 'objects'
+    | 'photos'
+    | 'measurement'
+    | 'trackViewer'
+    | 'mapDetails'
+    | 'tracking'
+    | 'changesets';
   kbd?: string;
   expertOnly?: boolean;
 }

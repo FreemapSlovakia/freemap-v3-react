@@ -2,7 +2,7 @@ import React, { useEffect, useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { lineString } from '@turf/helpers';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
 import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
@@ -26,7 +26,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 export function DrawingMenu(): ReactElement {
   const dispatch = useDispatch();
 
-  const t = useTranslator();
+  const m = useMessages();
 
   function setTool(tool: Tool | null) {
     dispatch(selectFeature(tool && { type: tool }));
@@ -123,26 +123,26 @@ export function DrawingMenu(): ReactElement {
         <Button
           onClick={() => setTool('draw-lines')}
           active={tool === 'draw-lines'}
-          title={t('measurement.distance')}
+          title={m?.measurement.distance}
         >
           <FontAwesomeIcon icon="arrows-h" />
-          <span className="hidden-xs"> {t('measurement.distance')}</span>
+          <span className="hidden-xs"> {m?.measurement.distance}</span>
         </Button>
         <Button
           onClick={() => setTool('draw-points')}
           active={tool === 'draw-points'}
-          title={t('measurement.elevation')}
+          title={m?.measurement.elevation}
         >
           <FontAwesomeIcon icon="map-marker" />
-          <span className="hidden-xs"> {t('measurement.elevation')}</span>
+          <span className="hidden-xs"> {m?.measurement.elevation}</span>
         </Button>
         <Button
           onClick={() => setTool('draw-polygons')}
           active={tool === 'draw-polygons'}
-          title={t('measurement.area')}
+          title={m?.measurement.area}
         >
           <FontAwesomeIcon icon="square-o" />
-          <span className="hidden-xs"> {t('measurement.area')}</span>
+          <span className="hidden-xs"> {m?.measurement.area}</span>
         </Button>
       </ButtonGroup>
       {isActive && (
@@ -153,7 +153,7 @@ export function DrawingMenu(): ReactElement {
             disabled={!isActive}
           >
             <FontAwesomeIcon icon="tag" />
-            <span className="hidden-xs"> {t('drawing.modify')}</span>
+            <span className="hidden-xs"> {m?.drawing.modify}</span>
           </Button>
         </>
       )}
@@ -165,7 +165,7 @@ export function DrawingMenu(): ReactElement {
             onClick={toggleElevationChart}
           >
             <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+            <span className="hidden-xs"> {m?.general.elevationProfile}</span>
           </Button>
         </>
       )}

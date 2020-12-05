@@ -3,11 +3,13 @@ import {
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 export const l10nSetLanguageProcessor: Processor = {
   actionCreator: l10nSetChosenLanguage,
   handle: async ({ dispatch, getState }) => {
     const { chosenLanguage } = getState().l10n;
+
     const language =
       chosenLanguage ||
       [...(navigator.languages || []), navigator.language]
@@ -15,11 +17,12 @@ export const l10nSetLanguageProcessor: Processor = {
         .find((lang) => lang && ['en', 'sk', 'cs', 'hu'].includes(lang)) ||
       'en';
 
-    const translations = await import(
+    const translations = (await import(
       /* webpackChunkName: "translations-[request]" */ `fm3/translations/${language}.tsx`
-    );
+    )) as { default: Messages };
 
     window.translations = translations.default;
+
     dispatch(l10nSetLanguage(language));
   },
 };

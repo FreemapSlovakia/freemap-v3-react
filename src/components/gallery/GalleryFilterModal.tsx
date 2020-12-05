@@ -8,7 +8,7 @@ import InputGroup from 'react-bootstrap/lib/InputGroup';
 import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 import FormControl from 'react-bootstrap/lib/FormControl';
 import FormGroup from 'react-bootstrap/lib/FormGroup';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import {
   gallerySetFilter,
@@ -19,7 +19,7 @@ import { RootState } from 'fm3/storeCreator';
 export function GalleryFilterModal(): ReactElement | null {
   const dispatch = useDispatch();
 
-  const t = useTranslator();
+  const m = useMessages();
 
   const filter = useSelector((state: RootState) => state.gallery.filter);
 
@@ -183,19 +183,19 @@ export function GalleryFilterModal(): ReactElement | null {
   return (
     <Modal show onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{t('gallery.filterModal.title')}</Modal.Title>
+        <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
       </Modal.Header>
       <form onSubmit={handleFormSubmit}>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.tag')}</ControlLabel>
+            <ControlLabel>{m?.gallery.filterModal.tag}</ControlLabel>
             <FormControl
               componentClass="select"
               value={tag}
               onChange={handleTagChange}
             >
               <option value="" />
-              <option value="⌘">« {t('gallery.filterModal.noTags')} »</option>
+              <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
               {tags.map(({ name, count }) => (
                 <option key={name} value={name}>
                   {name} ({count})
@@ -204,7 +204,7 @@ export function GalleryFilterModal(): ReactElement | null {
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.author')}</ControlLabel>
+            <ControlLabel>{m?.gallery.filterModal.author}</ControlLabel>
             <FormControl
               componentClass="select"
               value={userId}
@@ -219,7 +219,7 @@ export function GalleryFilterModal(): ReactElement | null {
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.createdAt')}</ControlLabel>
+            <ControlLabel>{m?.gallery.filterModal.createdAt}</ControlLabel>
             <InputGroup>
               <FormControl
                 type="date"
@@ -235,7 +235,7 @@ export function GalleryFilterModal(): ReactElement | null {
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.takenAt')}</ControlLabel>
+            <ControlLabel>{m?.gallery.filterModal.takenAt}</ControlLabel>
             <InputGroup>
               <FormControl
                 type="date"
@@ -251,7 +251,7 @@ export function GalleryFilterModal(): ReactElement | null {
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.rating')}</ControlLabel>
+            <ControlLabel>{m?.gallery.filterModal.rating}</ControlLabel>
             <InputGroup>
               <FormControl
                 type="number"
@@ -275,13 +275,13 @@ export function GalleryFilterModal(): ReactElement | null {
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit">
-            <Glyphicon glyph="ok" /> {t('general.apply')}
+            <Glyphicon glyph="ok" /> {m?.general.apply}
           </Button>
           <Button type="button" onClick={handleEraseClick}>
-            <Glyphicon glyph="erase" /> {t('general.clear')}
+            <Glyphicon glyph="erase" /> {m?.general.clear}
           </Button>
           <Button type="button" onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.cancel')}
+            <Glyphicon glyph="remove" /> {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </form>

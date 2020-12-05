@@ -20,10 +20,10 @@ const nf33 = Intl.NumberFormat('en', {
 
 const masl = 'm\xa0a.s.l.';
 
-const errorMarkup = `
+const getErrorMarkup = (ticketId: string) => `
 <h1>Application error!</h1>
 <p>
-  The error has been automatically reported under Ticket ID <b>{ticketId}</b>.
+  The error has been automatically reported under Ticket ID <b>${ticketId}</b>.
   You can report the problem at <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   or eventually email us the details at <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -52,7 +52,7 @@ const en: Messages = {
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
-    internalError: `!HTML!${errorMarkup}`,
+    internalError: (ticketId) => `!HTML!${getErrorMarkup(ticketId)}`,
     processorError: 'Application error: ${error}',
     seconds: 'seconds',
     minutes: 'minutes',
@@ -150,8 +150,9 @@ const en: Messages = {
     routeNotFound:
       'No route found. Try to change parameters or move the route points.',
     fetchingError: 'Error finding the route: {err}',
-    maneuverWithName: '{type} {modifier} on {name}',
-    maneuverWithoutName: '{type} {modifier}',
+    maneuverWithName: ({ type, modifier, name }) =>
+      `${type} ${modifier} on ${name}`,
+    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
 
     maneuver: {
       types: {
@@ -192,7 +193,7 @@ const en: Messages = {
         short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -204,7 +205,7 @@ const en: Messages = {
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -228,9 +229,11 @@ const en: Messages = {
         foot: ({ departure, duration, destination }) => (
           <>
             at <b>{departure}</b> walk{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
@@ -260,9 +263,11 @@ const en: Messages = {
         foot: ({ duration, destination }) => (
           <>
             walk{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
@@ -276,9 +281,11 @@ const en: Messages = {
         bicycle: ({ duration, destination }) => (
           <>
             bicycle{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute'])}
+              </b>
+            )}{' '}
             to <b>{destination}</b>
           </>
         ),
@@ -289,7 +296,7 @@ const en: Messages = {
 
   more: {
     more: 'More',
-    logOut: 'Log out {name}',
+    logOut: (name) => `Log out ${name}`,
     logIn: 'Log in',
     settings: 'Settings',
     gpxExport: 'Export to GPX',
@@ -348,8 +355,9 @@ const en: Messages = {
       yourRating: 'Your rating:',
       showOnTheMap: 'Show on the map',
       openInNewWindow: 'Open in…',
-      uploaded: 'Uploaded by {username} on {createdAt}',
-      captured: 'Captured on {takenAt}',
+      uploaded: ({ username, createdAt }) =>
+        `Uploaded by ${username} on ${createdAt}`,
+      captured: (takenAt) => <>Captured on {takenAt}</>,
       deletePrompt: 'Delete this picture?',
       modify: 'Modify',
     },
@@ -367,7 +375,7 @@ const en: Messages = {
     },
     uploadModal: {
       title: 'Upload photos',
-      uploading: 'Uploading ({n})',
+      uploading: (n) => `Uploading (${n})`,
       upload: 'Upload',
       rules: `
         <p>Drop your photos here or click here to select them.</p>
@@ -469,7 +477,7 @@ const en: Messages = {
       maxEle: 'Max. elevation',
       uphill: 'Total climb',
       downhill: 'Total descend',
-      durationValue: '{h} hours {m} minutes',
+      durationValue: ({ h, m }) => `${h} hours ${m} minutes`,
     },
     uploadModal: {
       title: 'Upload the track',
@@ -533,8 +541,8 @@ const en: Messages = {
       switch: 'Expert mode',
       overlayOpacity: 'Layer opacity:',
       trackViewerEleSmoothing: {
-        label:
-          'Smoothing level for computing total climb/descend in Track viewer: {value}',
+        label: (value) =>
+          `Smoothing level for computing total climb/descend in Track viewer: ${value}`,
         info:
           'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
       },
@@ -964,8 +972,8 @@ const en: Messages = {
   mapLayers: {
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
-    minZoomWarning: 'Accessible from zoom {minZoom}',
-    base: {
+    minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
+    letters: {
       A: 'Car',
       T: 'Hiking',
       C: 'Bicycle',
@@ -978,9 +986,6 @@ const en: Messages = {
       d: 'Public transport (ÖPNV)',
       h: 'Historic',
       X: 'Hiking + Bicycle + Ski',
-      Y: 'Hiking + Bicycle + Ski (local)',
-    },
-    overlay: {
       i: 'Interactive layer',
       I: 'Photos',
       l: 'Forest tracks NLC (SK)',
@@ -1019,7 +1024,7 @@ const en: Messages = {
   },
 
   errorCatcher: {
-    html: `${errorMarkup}
+    html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
         You can try:
       </p>
@@ -1098,8 +1103,12 @@ const en: Messages = {
       button: 'Watched',
       modalTitle: 'Watched Devices',
       desc: 'Manage watched devices to see the position of your friends.',
-      modifyTitle: 'Modify Watched Device',
-      createTitle: ({ name }) => (
+      modifyTitle: (name) => (
+        <>
+          Modify Watched Device <i>{name}</i>
+        </>
+      ),
+      createTitle: (name) => (
         <>
           Watch Device <i>{name}</i>
         </>
@@ -1114,18 +1123,18 @@ const en: Messages = {
       delete: 'Delete access token?',
     },
     accessTokens: {
-      modalTitle: ({ deviceName }) => (
+      modalTitle: (deviceName) => (
         <>
           Watch Tokens for <i>{deviceName}</i>
         </>
       ),
-      desc: ({ deviceName }) => (
+      desc: (deviceName) => (
         <p>
           Define watch tokens to share position of your device{' '}
           <i>{deviceName}</i> with your friends.
         </p>
       ),
-      createTitle: ({ deviceName }) => (
+      createTitle: (deviceName) => (
         <>
           Add Watch Token for <i>{deviceName}</i>
         </>

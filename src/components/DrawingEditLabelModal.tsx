@@ -11,11 +11,11 @@ import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function DrawingEditLabelModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const label = useSelector((state: RootState) => {
     const { selection } = state.main;
@@ -59,11 +59,11 @@ export function DrawingEditLabelModal(): ReactElement {
     <Modal show onHide={close}>
       <form onSubmit={saveLabel}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('drawing.edit.title')}</Modal.Title>
+          <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{t('drawing.edit.label')}</ControlLabel>
+            <ControlLabel>{m?.drawing.edit.label}</ControlLabel>
             <FormControl
               autoFocus
               type="text"
@@ -71,14 +71,14 @@ export function DrawingEditLabelModal(): ReactElement {
               onChange={handleLocalLabelChange}
             />
           </FormGroup>
-          <Alert>{t('drawing.edit.hint')}</Alert>
+          <Alert>{m?.drawing.edit.hint}</Alert>
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit" bsStyle="info">
-            <Glyphicon glyph="floppy-disk" /> {t('general.save')}
+            <Glyphicon glyph="floppy-disk" /> {m?.general.save}
           </Button>
           <Button type="button" onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+            <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>

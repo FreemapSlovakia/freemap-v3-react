@@ -31,6 +31,7 @@ import 'fm3/styles/bootstrap-override.scss';
 import { authInit, authCheckLogin } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { AppState } from './types/common';
+import { MessagesProvider } from './components/TranslationProvider';
 
 setDefaultGetErrorObject(() => null);
 
@@ -65,9 +66,11 @@ store.dispatch(enableUpdatingUrl());
 
 render(
   <Provider store={store}>
-    <ErrorCatcher>
-      <Main />
-    </ErrorCatcher>
+    <MessagesProvider>
+      <ErrorCatcher>
+        <Main />
+      </ErrorCatcher>
+    </MessagesProvider>
   </Provider>,
   document.getElementById('app'),
 );

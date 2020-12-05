@@ -10,10 +10,10 @@ import {
   authLoginWithGoogle,
   authLoginClose,
 } from 'fm3/actions/authActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 export function LoginModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -37,7 +37,7 @@ export function LoginModal(): ReactElement {
     <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
+          <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -47,8 +47,7 @@ export function LoginModal(): ReactElement {
           block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
         >
-          <FontAwesomeIcon icon="facebook-official" />{' '}
-          {t('logIn.with.facebook')}
+          <FontAwesomeIcon icon="facebook-official" /> {m?.logIn.with.facebook}
         </Button>
         <Button
           onClick={loginWithGoogle}
@@ -56,7 +55,7 @@ export function LoginModal(): ReactElement {
           block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
         >
-          <FontAwesomeIcon icon="google" /> {t('logIn.with.google')}
+          <FontAwesomeIcon icon="google" /> {m?.logIn.with.google}
         </Button>
         <Button
           onClick={loginWithOsm}
@@ -64,12 +63,12 @@ export function LoginModal(): ReactElement {
           block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
         >
-          <FontAwesomeIcon icon="map-o" /> {t('logIn.with.osm')}
+          <FontAwesomeIcon icon="map-o" /> {m?.logIn.with.osm}
         </Button>
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

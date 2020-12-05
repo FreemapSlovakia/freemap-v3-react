@@ -5,7 +5,7 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 import Button from 'react-bootstrap/lib/Button';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
-import { Translator, useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import {
   routePlannerSetStart,
@@ -31,9 +31,10 @@ import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
 import { Checkbox } from 'react-bootstrap';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 export function RoutePlannerMenu(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -148,12 +149,12 @@ export function RoutePlannerMenu(): ReactElement {
   }, []);
 
   const handleConvertToDrawing = useCallback(() => {
-    const tolerance = window.prompt(t('general.simplifyPrompt'), '50');
+    const tolerance = window.prompt(m?.general.simplifyPrompt, '50');
 
     if (tolerance !== null) {
       dispatch(convertToDrawing(Number(tolerance)));
     }
-  }, [dispatch, t]);
+  }, [dispatch, m]);
 
   return (
     <>
@@ -162,7 +163,7 @@ export function RoutePlannerMenu(): ReactElement {
           title={
             <span>
               <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
-              <span className="hidden-xs"> {t('routePlanner.start')}</span>
+              <span className="hidden-xs"> {m?.routePlanner.start}</span>
             </span>
           }
           id="set-start-dropdown"
@@ -172,22 +173,21 @@ export function RoutePlannerMenu(): ReactElement {
           active={pickPointMode === 'start'}
         >
           <MenuItem>
-            <FontAwesomeIcon icon="map-marker" /> {t('routePlanner.point.pick')}
+            <FontAwesomeIcon icon="map-marker" /> {m?.routePlanner.point.pick}
           </MenuItem>
           <MenuItem
             onSelect={() => {
               dispatch(routePlannerSetFromCurrentPosition('start'));
             }}
           >
-            <FontAwesomeIcon icon="bullseye" />{' '}
-            {t('routePlanner.point.current')}
+            <FontAwesomeIcon icon="bullseye" /> {m?.routePlanner.point.current}
           </MenuItem>
           <MenuItem
             onSelect={() => {
               setFromHomeLocation('start');
             }}
           >
-            <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
+            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
           </MenuItem>
         </DropdownButton2>
         {mode !== 'roundtrip' && (
@@ -197,7 +197,7 @@ export function RoutePlannerMenu(): ReactElement {
                 dispatch(routePlannerSwapEnds());
               }}
               disabled={!canSwap}
-              title={t('routePlanner.swap')}
+              title={m?.routePlanner.swap}
             >
               ⇆
             </Button>
@@ -205,7 +205,7 @@ export function RoutePlannerMenu(): ReactElement {
               title={
                 <span>
                   <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
-                  <span className="hidden-xs"> {t('routePlanner.finish')}</span>
+                  <span className="hidden-xs"> {m?.routePlanner.finish}</span>
                 </span>
               }
               id="set-finish-dropdown"
@@ -216,7 +216,7 @@ export function RoutePlannerMenu(): ReactElement {
             >
               <MenuItem>
                 <FontAwesomeIcon icon="map-marker" />{' '}
-                {t('routePlanner.point.pick')}
+                {m?.routePlanner.point.pick}
               </MenuItem>
               <MenuItem
                 onSelect={() => {
@@ -224,14 +224,14 @@ export function RoutePlannerMenu(): ReactElement {
                 }}
               >
                 <FontAwesomeIcon icon="bullseye" />{' '}
-                {t('routePlanner.point.current')}
+                {m?.routePlanner.point.current}
               </MenuItem>
               <MenuItem
                 onSelect={() => {
                   setFromHomeLocation('finish');
                 }}
               >
-                <FontAwesomeIcon icon="home" /> {t('routePlanner.point.home')}
+                <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
               </MenuItem>
             </DropdownButton2>
           </>
@@ -253,9 +253,9 @@ export function RoutePlannerMenu(): ReactElement {
               )}
               <span className="hidden-xs">
                 {' '}
-                {t(
-                  `routePlanner.transportType.${activeTransportType.type}`,
-                ).replace(/\s*,.*/, '')}
+                {m?.routePlanner.transportType[
+                  activeTransportType.type
+                ].replace(/\s*,.*/, '')}
               </span>
             </>
           ) : (
@@ -269,20 +269,20 @@ export function RoutePlannerMenu(): ReactElement {
             <MenuItem
               eventKey={type}
               key={type}
-              title={t(`routePlanner.transportType.${type}`)}
+              title={m?.routePlanner.transportType[type]}
               active={transportType === type}
             >
               <FontAwesomeIcon icon={icon} />
               {['car', 'bikesharing'].includes(type) && (
                 <FontAwesomeIcon icon="money" />
               )}{' '}
-              {t(`routePlanner.transportType.${type}`)}
+              {m?.routePlanner.transportType[type]}
               {development && (
                 <>
                   {' '}
                   <FontAwesomeIcon
                     icon="flask"
-                    title={t('routePlanner.development')}
+                    title={m?.routePlanner.development}
                     className="text-warning"
                   />
                 </>
@@ -308,17 +308,17 @@ export function RoutePlannerMenu(): ReactElement {
         onSelect={(mode: unknown) => {
           dispatch(routePlannerSetMode(mode as RoutingMode));
         }}
-        title={t(`routePlanner.mode.${mode}`)}
+        title={m?.routePlanner.mode[mode]}
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
         {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
           <MenuItem
             eventKey={mode1}
             key={mode1}
-            title={t(`routePlanner.mode.${mode1}`)}
+            title={m?.routePlanner.mode[mode1]}
             active={mode === mode1}
           >
-            {t(`routePlanner.mode.${mode1}`)}
+            {m?.routePlanner.mode[mode1]}
           </MenuItem>
         ))}
       </DropdownButton>
@@ -338,8 +338,8 @@ export function RoutePlannerMenu(): ReactElement {
               transportType === 'imhd' &&
               activeAlternative.extra &&
               activeAlternative.extra.price
-                ? imhdSummary(t, language, activeAlternative.extra)
-                : t('routePlanner.summary', {
+                ? imhdSummary(m, language, activeAlternative.extra)
+                : m?.routePlanner.summary({
                     distance: nf.format(activeAlternative.distance / 1000),
                     h: Math.floor(
                       Math.round(activeAlternative.duration / 60) / 60,
@@ -355,8 +355,8 @@ export function RoutePlannerMenu(): ReactElement {
                 active={i === activeAlternativeIndex}
               >
                 {transportType === 'imhd' && extra?.price
-                  ? imhdSummary(t, language, extra)
-                  : t('routePlanner.summary', {
+                  ? imhdSummary(m, language, extra)
+                  : m?.routePlanner.summary({
                       distance: nf.format(distance / 1000),
                       h: Math.floor(Math.round(duration / 60) / 60),
                       m: Math.round(duration / 60) % 60,
@@ -383,18 +383,18 @@ export function RoutePlannerMenu(): ReactElement {
         }}
         active={elevationProfileIsVisible}
         disabled={!routeFound}
-        title={t('general.elevationProfile')}
+        title={m?.general.elevationProfile}
       >
         <FontAwesomeIcon icon="bar-chart" />
-        <span className="hidden-xs"> {t('general.elevationProfile')}</span>
+        <span className="hidden-xs"> {m?.general.elevationProfile}</span>
       </Button>{' '}
       <Button
         onClick={handleConvertToDrawing}
         disabled={!routeFound}
-        title={t('general.convertToDrawing')}
+        title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
+        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
       </Button>{' '}
       <Checkbox
         inline
@@ -403,14 +403,14 @@ export function RoutePlannerMenu(): ReactElement {
         }}
         checked={milestones}
       >
-        {t('routePlanner.milestones')}
+        {m?.routePlanner.milestones}
       </Checkbox>
     </>
   );
 }
 
 function imhdSummary(
-  t: Translator,
+  m: Messages | undefined,
   language: string,
   extra: RouteAlternativeExtra,
 ) {
@@ -421,7 +421,7 @@ function imhdSummary(
 
   const { price, arrival, numbers } = extra;
 
-  return t('routePlanner.imhd.total.short', {
+  return m?.routePlanner.imhd.total.short({
     price:
       price === undefined
         ? undefined

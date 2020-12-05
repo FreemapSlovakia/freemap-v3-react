@@ -7,7 +7,7 @@ import { divIcon } from 'leaflet';
 import { Popup, Marker } from 'react-leaflet';
 import { wikiLoadPreview } from 'fm3/actions/wikiActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 const icon = divIcon({
   iconSize: [19, 19],
@@ -24,7 +24,7 @@ const icon = divIcon({
 });
 
 export function WikiLayer(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const points = useSelector((state: RootState) => state.wiki.points);
 
@@ -95,7 +95,7 @@ export function WikiLayer(): ReactElement {
                 <div dangerouslySetInnerHTML={{ __html: preview.extract }} />
               </div>
             ) : (
-              t('general.loading')
+              m?.general.loading
             )}
           </Popup>
         </Marker>

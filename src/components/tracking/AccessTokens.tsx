@@ -9,11 +9,11 @@ import Alert from 'react-bootstrap/lib/Alert';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function AccessTokens(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -39,23 +39,23 @@ export function AccessTokens(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
-          {t('tracking.accessTokens.modalTitle', { deviceName })}
+          {m?.tracking.accessTokens.modalTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <Alert bsStyle="info">
-          {t('tracking.accessTokens.desc', { deviceName })}
+          {m?.tracking.accessTokens.desc(deviceName)}
         </Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>
-              <th>{t('tracking.accessToken.token')}</th>
-              <th>{t('general.createdAt')}</th>
-              <th>{t('tracking.accessToken.timeFrom')}</th>
-              <th>{t('tracking.accessToken.timeTo')}</th>
-              {/* <th>{t('tracking.accessToken.listingLabel')}</th> */}
-              <th>{t('tracking.accessToken.note')}</th>
-              <th>{t('general.actions')}</th>
+              <th>{m?.tracking.accessToken.token}</th>
+              <th>{m?.general.createdAt}</th>
+              <th>{m?.tracking.accessToken.timeFrom}</th>
+              <th>{m?.tracking.accessToken.timeTo}</th>
+              {/* <th>{m?.tracking.accessToken.listingLabel}</th> */}
+              <th>{m?.tracking.accessToken.note}</th>
+              <th>{m?.general.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -72,7 +72,7 @@ export function AccessTokens(): ReactElement {
             dispatch(trackingActions.modifyAccessToken(null));
           }}
         >
-          {t('general.add')}
+          {m?.general.add}
         </Button>
         <Button
           type="button"
@@ -80,7 +80,7 @@ export function AccessTokens(): ReactElement {
             dispatch(trackingActions.showAccessTokens(undefined));
           }}
         >
-          {t('general.back')}
+          {m?.general.back}
         </Button>
       </Modal.Footer>
     </>

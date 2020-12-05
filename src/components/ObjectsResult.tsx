@@ -4,12 +4,12 @@ import { Popup } from 'react-leaflet';
 
 import { RichMarker } from 'fm3/components/RichMarker';
 import { getPoiType } from 'fm3/poiTypes';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { selectFeature } from 'fm3/actions/mainActions';
 
 export function ObjectsResult(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -51,11 +51,11 @@ export function ObjectsResult(): ReactElement {
               <span>
                 {pt ? (
                   <>
-                    {t(`objects.subcategories.${pt.id}`)}
+                    {m?.objects.subcategories[pt.id]}
                     {name && <br />}
                     {name}
                     {ele && <br />}
-                    {ele && `${nf.format(parseFloat(ele))} m n. m.`}
+                    {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
                   </>
                 ) : (
                   name

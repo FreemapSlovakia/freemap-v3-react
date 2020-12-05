@@ -43,7 +43,11 @@ export interface RouteAlternativeExtra {
 }
 
 export interface RouteStepExtra {
-  type: string;
+  type: 'foot' | 'bicycle';
+  // |'bus'
+  // |'tram'
+  // |'trolleybus'
+  // |'foot'
   destination: string;
   departure?: number;
   duration?: number;
@@ -61,7 +65,22 @@ export interface Leg {
 export interface Step {
   maneuver: {
     location: [number, number];
-    type: string; // TODO enum?
+    type:
+      | 'turn'
+      | 'new name'
+      | 'depart'
+      | 'arrive'
+      | 'merge'
+      | 'on ramp'
+      | 'off ramp'
+      | 'fork'
+      | 'end of road'
+      | 'continue'
+      | 'roundabout'
+      | 'rotary'
+      | 'roundabout turn'
+      | 'exit rotary'
+      | 'exit roundabout';
     modifier?: ManeuerModifier;
   };
   distance: number;

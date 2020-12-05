@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Device as DeviceType } from 'fm3/types/trackingTypes';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
@@ -19,7 +19,7 @@ type Props = {
 };
 
 export function Device({ device }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -104,7 +104,7 @@ export function Device({ device }: Props): ReactElement {
                   <Button
                     onClick={handleCopyClick}
                     bsSize="xs"
-                    title={t('external.copy')}
+                    title={m?.external.copy}
                     type="button"
                   >
                     <FontAwesomeIcon icon="clipboard" />
@@ -120,7 +120,7 @@ export function Device({ device }: Props): ReactElement {
       <td>{device.maxCount}</td>
       <td>
         {typeof device.maxAge === 'number'
-          ? `${device.maxAge / 60} ${t('general.minutes')}`
+          ? `${device.maxAge / 60} ${m?.general.minutes}`
           : ''}
       </td>
       <td>{dateFormat.format(device.createdAt)}</td>
@@ -129,7 +129,7 @@ export function Device({ device }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleModify}
-          title={t('general.modify')}
+          title={m?.general.modify}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
@@ -138,7 +138,7 @@ export function Device({ device }: Props): ReactElement {
           type="button"
           bsStyle="primary"
           onClick={handleShowAccessTokens}
-          title={t('tracking.devices.watchTokens')}
+          title={m?.tracking.devices.watchTokens}
         >
           <FontAwesomeIcon icon="key" />
         </Button>{' '}
@@ -146,7 +146,7 @@ export function Device({ device }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleView}
-          title={t('tracking.devices.watchPrivately')}
+          title={m?.tracking.devices.watchPrivately}
         >
           <FontAwesomeIcon icon="eye" />
         </Button>{' '}
@@ -155,7 +155,7 @@ export function Device({ device }: Props): ReactElement {
           bsSize="small"
           type="button"
           onClick={handleDelete}
-          title={t('general.delete')}
+          title={m?.general.delete}
         >
           <FontAwesomeIcon icon="close" />
         </Button>

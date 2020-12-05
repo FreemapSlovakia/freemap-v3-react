@@ -3,7 +3,12 @@ import { useSelector } from 'react-redux';
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
 
-import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
+import {
+  BaseLayerDef,
+  baseLayers,
+  OverlayLayerDef,
+  overlayLayers,
+} from 'fm3/mapDefinitions';
 import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
 
@@ -38,7 +43,7 @@ export function Layers(): ReactElement {
     errorTileUrl = missingTile,
     tileSize = 256,
     zoomOffset = 0,
-  }: LayerDef) => {
+  }: BaseLayerDef | OverlayLayerDef) => {
     if (type === 'S') {
       return (
         <BingLayer

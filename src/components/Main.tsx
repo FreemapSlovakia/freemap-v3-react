@@ -9,7 +9,7 @@ import Button from 'react-bootstrap/lib/Button';
 // import CloseButton from 'react-bootstrap/lib/CloseButton';
 import Panel from 'react-bootstrap/lib/Panel';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 import { Layers } from 'fm3/components/Layers';
 import { Toasts } from 'fm3/components/Toasts';
@@ -110,7 +110,7 @@ import { WikiLayer } from './WikiLayer';
 const embed = window.self !== window.top;
 
 export function Main(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -276,7 +276,7 @@ export function Main(): ReactElement {
     [dispatch],
   );
 
-  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError, t);
+  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError, m);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -341,7 +341,7 @@ export function Main(): ReactElement {
         {/* {showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
-            {t('main.p2')}
+            {m?.main.p2}
           </div>
         )} */}
         <div className="menus">
@@ -366,7 +366,7 @@ export function Main(): ReactElement {
                 embedToolDef && (
                   <>
                     <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                    {t(`tools.${embedToolDef.msgKey}`)}{' '}
+                    {m?.tools[embedToolDef.msgKey]}{' '}
                   </>
                 )
               ) : (
@@ -385,11 +385,11 @@ export function Main(): ReactElement {
               {tool === 'tracking' && <TrackingMenu />}
               {tool === 'maps' && <MapsMenu />}{' '}
               {canDelete && (
-                <Button title={t('general.delete')} onClick={handleDeleteClick}>
+                <Button title={m?.general.delete} onClick={handleDeleteClick}>
                   <FontAwesomeIcon icon="trash" />
                   <span className="hidden-xs">
                     {' '}
-                    {t('general.delete')} <kbd>Del</kbd>
+                    {m?.general.delete} <kbd>Del</kbd>
                   </span>
                 </Button>
               )}

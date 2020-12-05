@@ -10,11 +10,11 @@ import {
 } from 'fm3/actions/mapDetailsActions';
 import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function MapDetailsMenu(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -40,10 +40,10 @@ export function MapDetailsMenu(): ReactElement {
         dispatch(mapDetailsSetSubtool('track-info'));
       }}
       active={subtool === 'track-info'}
-      title={t('mapDetails.road')}
+      title={m?.mapDetails.road}
     >
       <FontAwesomeIcon icon="road" />
-      <span className="hidden-xs"> {t('mapDetails.road')}</span>
+      <span className="hidden-xs"> {m?.mapDetails.road}</span>
     </Button>
   );
 }

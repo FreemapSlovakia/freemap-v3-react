@@ -7,9 +7,9 @@ import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
-import { Translator } from 'fm3/l10nInjector';
 import { GalleryTag } from 'fm3/actions/galleryActions';
 import spinnerbar from 'fm3/images/spinnerbar.gif';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 interface Props {
   id: number;
@@ -22,7 +22,7 @@ interface Props {
   onPositionPick: (id: number) => void;
   onModelChange: (id: number, model: PictureModel) => void;
   disabled: boolean;
-  t: Translator;
+  m?: Messages;
   showPreview: boolean;
 }
 
@@ -34,7 +34,7 @@ export const GalleryUploadItem: React.FC<Props> = ({
   model,
   allTags,
   errors,
-  t,
+  m,
   showPreview,
   onRemove,
   onPositionPick,
@@ -69,12 +69,12 @@ export const GalleryUploadItem: React.FC<Props> = ({
       <fieldset disabled={disabled}>
         <GalleryEditForm
           {...{ model, allTags, errors }}
-          t={t}
+          m={m}
           onPositionPick={disabled ? undefined : handlePositionPick}
           onModelChange={handleModelChange}
         />{' '}
         <Button onClick={handleRemove} bsStyle="danger">
-          <FontAwesomeIcon icon="times" /> {t('general.remove')}
+          <FontAwesomeIcon icon="times" /> {m?.general.remove}
         </Button>
       </fieldset>
       <hr />

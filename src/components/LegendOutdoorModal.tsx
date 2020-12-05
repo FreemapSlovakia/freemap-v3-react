@@ -12,7 +12,7 @@ import Panel from 'react-bootstrap/lib/Panel';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
@@ -20,7 +20,7 @@ const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
 
 export function LegendOutdoorModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const [legend, setLegend] = useState<Item[]>([]);
 
@@ -58,11 +58,11 @@ export function LegendOutdoorModal(): ReactElement {
     <Modal show onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+          <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{t('legend.body')}</p>
+        <p>{m?.legend.body}</p>
         <PanelGroup accordion id="pg1">
           {[...legend].map((c: Item, i: number) => (
             <Panel key={c.name} eventKey={i}>
@@ -96,7 +96,7 @@ export function LegendOutdoorModal(): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+            <Glyphicon glyph="remove" /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>

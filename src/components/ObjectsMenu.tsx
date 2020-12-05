@@ -14,12 +14,12 @@ import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { convertToDrawing } from 'fm3/actions/mainActions';
 
 export function ObjectsMenu(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -78,7 +78,7 @@ export function ObjectsMenu(): ReactElement {
         <FormGroup2 bsRole="toggle">
           <FormControl
             type="text"
-            placeholder={t('objects.type')}
+            placeholder={m?.objects.type}
             onChange={handleFilterSet}
             value={filter}
           />
@@ -91,8 +91,8 @@ export function ObjectsMenu(): ReactElement {
               .filter(({ group }) => group === gid)
               .filter(
                 ({ id }) =>
-                  t(`objects.subcategories.${id}`)
-                    .toLowerCase()
+                  m?.objects.subcategories[id]
+                    ?.toLowerCase()
                     .indexOf(filter.toLowerCase()) !== -1,
               )
               .map(({ group, id, icon }) => (
@@ -101,14 +101,14 @@ export function ObjectsMenu(): ReactElement {
                     src={require(`../images/mapIcons/${icon}.png`)}
                     alt={`${group}-${icon}`}
                   />{' '}
-                  {t(`objects.subcategories.${id}`)}
+                  {m?.objects.subcategories[id]}
                 </MenuItem>
               ));
 
             return items.length === 0 ? null : (
               <React.Fragment key={gid}>
                 {i > 0 && <MenuItem divider />}
-                <MenuItem header>{t(`objects.categories.${gid}`)}</MenuItem>
+                <MenuItem header>{m?.objects.categories[gid]}</MenuItem>
                 {items}
               </React.Fragment>
             );
@@ -120,10 +120,10 @@ export function ObjectsMenu(): ReactElement {
           dispatch(convertToDrawing(undefined));
         }}
         disabled={!hasObjects}
-        title={t('general.convertToDrawing')}
+        title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
+        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
       </Button>
     </>
   );

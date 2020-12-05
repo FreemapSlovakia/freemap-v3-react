@@ -19,11 +19,11 @@ import tips from 'fm3/tips/index.json';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function TipsModal(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -41,12 +41,12 @@ export function TipsModal(): ReactElement {
         setTipText(tipText);
       })
       .catch(() => {
-        setTipText(t('tips.errorLoading'));
+        setTipText(m?.tips.errorLoading ?? null);
       })
       .then(() => {
         setLoading(false);
       });
-  }, [tip, t]);
+  }, [tip, m]);
 
   const handleNextTimePrevent = useCallback(
     (e: React.FormEvent<Checkbox>) => {
@@ -74,14 +74,14 @@ export function TipsModal(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="lightbulb-o" />
-          {t('more.tips')}
+          {m?.more.tips}
           {'\u00A0 | \u00A0'}
           {title && icon ? (
             <>
               <FontAwesomeIcon icon={icon} /> {title}
             </>
           ) : (
-            t('general.loading')
+            m?.general.loading
           )}
         </Modal.Title>
       </Modal.Header>
@@ -92,7 +92,7 @@ export function TipsModal(): ReactElement {
             dangerouslySetInnerHTML={{ __html: tipText }}
           />
         ) : (
-          t('general.loading')
+          m?.general.loading
         )}
       </Modal.Body>
       <Modal.Footer>
@@ -102,20 +102,20 @@ export function TipsModal(): ReactElement {
               dispatch(tipsShow('prev'));
             }}
           >
-            <Glyphicon glyph="chevron-left" /> {t('tips.previous')}
+            <Glyphicon glyph="chevron-left" /> {m?.tips.previous}
           </Button>
           <Button
             onClick={() => {
               dispatch(tipsShow('next'));
             }}
           >
-            <Glyphicon glyph="chevron-right" /> {t('tips.next')}
+            <Glyphicon glyph="chevron-right" /> {m?.tips.next}
           </Button>{' '}
           <Checkbox inline onChange={handleNextTimePrevent}>
-            {t('tips.prevent')}
+            {m?.tips.prevent}
           </Checkbox>{' '}
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+            <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </FormGroup>
       </Modal.Footer>

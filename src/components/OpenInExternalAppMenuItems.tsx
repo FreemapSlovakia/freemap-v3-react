@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { ReactElement, useCallback } from 'react';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
 import qs, { StringifiableRecord } from 'query-string';
@@ -40,7 +40,7 @@ export function OpenInExternalAppMenuItems({
   url,
   onSelect,
 }: Props): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const handleMenuItemSelect = useCallback(
     (where: unknown) => {
@@ -257,16 +257,16 @@ export function OpenInExternalAppMenuItems({
       {url && (
         <>
           <MenuItem eventKey="window" onSelect={handleMenuItemSelect}>
-            <FontAwesomeIcon icon="window-maximize" /> {t('external.window')}
+            <FontAwesomeIcon icon="window-maximize" /> {m?.external.window}
           </MenuItem>
           {hasShare && (
             <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
-              <FontAwesomeIcon icon="link" /> {t('external.url')}
+              <FontAwesomeIcon icon="link" /> {m?.external.url}
             </MenuItem>
           )}
           {(navigator as any).canShare && (
             <MenuItem eventKey="image" onSelect={handleMenuItemSelect}>
-              <FontAwesomeIcon icon="share-alt" /> {t('external.image')}
+              <FontAwesomeIcon icon="share-alt" /> {m?.external.image}
             </MenuItem>
           )}
           <MenuItem divider />
@@ -274,12 +274,12 @@ export function OpenInExternalAppMenuItems({
       )}
       {!url && hasClipboard && (
         <MenuItem eventKey="copy" onSelect={handleMenuItemSelect}>
-          <FontAwesomeIcon icon="clipboard" /> {t('external.copy')}
+          <FontAwesomeIcon icon="clipboard" /> {m?.external.copy}
         </MenuItem>
       )}
       {!url && hasShare && (
         <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
-          <FontAwesomeIcon icon="link" /> {t('external.url')}
+          <FontAwesomeIcon icon="link" /> {m?.external.url}
         </MenuItem>
       )}
       {!url && (hasClipboard || hasShare) && <MenuItem divider />}
@@ -291,13 +291,13 @@ export function OpenInExternalAppMenuItems({
       </MenuItem>
       <MenuItem divider />
       <MenuItem eventKey="osm.org" onSelect={handleMenuItemSelect}>
-        {t('external.osm')}
+        {m?.external.osm}
       </MenuItem>
       <MenuItem eventKey="mapy.cz" onSelect={handleMenuItemSelect}>
-        {t('external.mapy_cz')}
+        {m?.external.mapy_cz}
       </MenuItem>
       <MenuItem eventKey="google" onSelect={handleMenuItemSelect}>
-        {t('external.googleMaps')}
+        {m?.external.googleMaps}
       </MenuItem>
       <MenuItem eventKey="mapillary" onSelect={handleMenuItemSelect}>
         Mapillary
@@ -306,22 +306,22 @@ export function OpenInExternalAppMenuItems({
         OpenStreetCam
       </MenuItem>
       <MenuItem eventKey="oma.sk" onSelect={handleMenuItemSelect}>
-        {t('external.oma')} (SK)
+        {m?.external.oma} (SK)
       </MenuItem>
       <MenuItem eventKey="hiking.sk" onSelect={handleMenuItemSelect}>
-        {t('external.hiking_sk')} (SK)
+        {m?.external.hiking_sk} (SK)
       </MenuItem>{' '}
       <MenuItem eventKey="zbgis" onSelect={handleMenuItemSelect}>
-        {t('external.zbgis')} (SK)
+        {m?.external.zbgis} (SK)
       </MenuItem>
       <MenuItem divider />
       {expertMode && (
         <MenuItem eventKey="josm" onSelect={handleMenuItemSelect}>
-          {t('external.josm')}
+          {m?.external.josm}
         </MenuItem>
       )}
       <MenuItem eventKey="osm.org/id" onSelect={handleMenuItemSelect}>
-        {t('external.id')}
+        {m?.external.id}
       </MenuItem>
     </>
   );

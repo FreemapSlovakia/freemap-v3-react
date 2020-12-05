@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
 import Button from 'react-bootstrap/lib/Button';
 import Alert from 'react-bootstrap/lib/Alert';
@@ -7,10 +7,11 @@ import 'fm3/styles/toasts.scss';
 import { RootAction } from 'fm3/actions';
 import { ResolvedToast } from 'fm3/actions/toastsActions';
 
-interface Props extends ResolvedToast {
+interface Props extends Pick<ResolvedToast, 'id' | 'actions' | 'style'> {
   onAction: (id: string, action?: RootAction | RootAction[]) => void;
   onTimeoutStop: (id: string) => void;
   onTimeoutRestart: (id: string) => void;
+  message: ReactNode;
 }
 
 export const Toast: React.FC<Props> = ({

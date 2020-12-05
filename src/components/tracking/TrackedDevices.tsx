@@ -10,11 +10,11 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { TrackedDevice } from './TrackedDevice';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function TrackedDevices(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -27,22 +27,22 @@ export function TrackedDevices(): ReactElement {
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
-          {t('tracking.trackedDevices.modalTitle')}
+          {m?.tracking.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="info">{t('tracking.trackedDevices.desc')}</Alert>
+        <Alert bsStyle="info">{m?.tracking.trackedDevices.desc}</Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>
-              <th>{t('tracking.trackedDevice.token')}</th>
-              <th>{t('tracking.trackedDevice.label')}</th>
-              <th>{t('tracking.trackedDevice.fromTime')}</th>
-              <th>{t('tracking.trackedDevice.maxAge')}</th>
-              <th>{t('tracking.trackedDevice.maxCount')}</th>
-              <th>{t('tracking.trackedDevice.splitDistance')}</th>
-              <th>{t('tracking.trackedDevice.splitDuration')}</th>
-              <th>{t('general.actions')}</th>
+              <th>{m?.tracking.trackedDevice.token}</th>
+              <th>{m?.tracking.trackedDevice.label}</th>
+              <th>{m?.tracking.trackedDevice.fromTime}</th>
+              <th>{m?.tracking.trackedDevice.maxAge}</th>
+              <th>{m?.tracking.trackedDevice.maxCount}</th>
+              <th>{m?.tracking.trackedDevice.splitDistance}</th>
+              <th>{m?.tracking.trackedDevice.splitDuration}</th>
+              <th>{m?.general.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -59,7 +59,7 @@ export function TrackedDevices(): ReactElement {
             dispatch(trackingActions.modifyTrackedDevice(null));
           }}
         >
-          {t('general.add')}
+          {m?.general.add}
         </Button>
         <Button
           type="button"
@@ -67,7 +67,7 @@ export function TrackedDevices(): ReactElement {
             dispatch(setActiveModal(null));
           }}
         >
-          {t('general.close')} <kbd>Esc</kbd>
+          {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </>

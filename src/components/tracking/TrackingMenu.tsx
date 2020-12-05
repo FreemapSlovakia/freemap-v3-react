@@ -8,11 +8,11 @@ import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 export function TrackingMenu(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -23,7 +23,7 @@ export function TrackingMenu(): ReactElement {
       ? 'line'
       : state.tracking.showPoints
       ? 'points'
-      : '???',
+      : undefined,
   );
 
   const handleVisualChange = useCallback(
@@ -58,7 +58,7 @@ export function TrackingMenu(): ReactElement {
         <FontAwesomeIcon icon="eye" />
         <span className="hidden-md hidden-sm hidden-xs">
           {' '}
-          {t('tracking.trackedDevices.button')}
+          {m?.tracking.trackedDevices.button}
         </span>
       </Button>{' '}
       <Button
@@ -69,21 +69,21 @@ export function TrackingMenu(): ReactElement {
         <FontAwesomeIcon icon="mobile" />
         <span className="hidden-md hidden-sm hidden-xs">
           {' '}
-          {t('tracking.devices.button')}
+          {m?.tracking.devices.button}
         </span>
       </Button>{' '}
       <DropdownButton
         id="tracking-visual-dropdown"
-        title={t(`tracking.visual.${visual}`)}
+        title={visual && m?.tracking.visual[visual]}
       >
         <MenuItem eventKey="points" onSelect={handleVisualChange}>
-          {t('tracking.visual.points')}
+          {m?.tracking.visual.points}
         </MenuItem>
         <MenuItem eventKey="line" onSelect={handleVisualChange}>
-          {t('tracking.visual.line')}
+          {m?.tracking.visual.line}
         </MenuItem>
         <MenuItem eventKey="line+points" onSelect={handleVisualChange}>
-          {t('tracking.visual.line+points')}
+          {m?.tracking.visual['line+points']}
         </MenuItem>
       </DropdownButton>
     </>

@@ -23,7 +23,7 @@ import {
   RouteStepExtra,
   Step,
 } from 'fm3/actions/routePlannerActions';
-import { useTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import {
   divIcon,
@@ -36,9 +36,10 @@ import { lineString, Point, Properties, Feature } from '@turf/helpers';
 import along from '@turf/along';
 import length from '@turf/length';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 export function RoutePlannerResult(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -117,27 +118,33 @@ export function RoutePlannerResult(): ReactElement {
       return (
         <div>
           <div>
-            {t('routePlanner.distance', {
+            {m?.routePlanner.distance({
               value: nf.format(distanceSum / 1000),
-              diff: distanceDiff && nf.format(distanceDiff / 1000),
+              diff:
+                distanceDiff === undefined
+                  ? undefined
+                  : nf.format(distanceDiff / 1000),
             })}
           </div>
           {durationSum !== undefined && (
             <div>
-              {t('routePlanner.duration', {
+              {m?.routePlanner.duration({
                 h: Math.floor(Math.round(durationSum / 60) / 60),
                 m: Math.round(durationSum / 60) % 60,
-                diff: durationDiff && {
-                  h: Math.floor(Math.round(durationDiff / 60) / 60),
-                  m: Math.round(durationDiff / 60) % 60,
-                },
+                diff:
+                  durationDiff === undefined
+                    ? undefined
+                    : {
+                        h: Math.floor(Math.round(durationDiff / 60) / 60),
+                        m: Math.round(durationDiff / 60) % 60,
+                      },
               })}
             </div>
           )}
         </div>
       );
     },
-    [language, t],
+    [language, m],
   );
 
   const step =
@@ -219,7 +226,7 @@ export function RoutePlannerResult(): ReactElement {
 
       return isSpecial(transportType) && extra?.numbers ? (
         <Tooltip direction="top" offset={[0, -36]} permanent>
-          <div>{imhdSummary(t, language, extra)}</div>
+          <div>{imhdSummary(m, language, extra)}</div>
         </Tooltip>
       ) : distance && duration ? (
         <Tooltip direction="top" offset={[0, -36]} permanent>
@@ -242,7 +249,7 @@ export function RoutePlannerResult(): ReactElement {
       // getPointDetails2,
       getPointDetails,
       language,
-      t,
+      m,
       transportType,
     ],
   );
@@ -254,21 +261,23 @@ export function RoutePlannerResult(): ReactElement {
   }, []);
 
   const maneuverToText = useCallback(
-    (name: string, { type, modifier }, extra?: RouteStepExtra) => {
-      const p = 'routePlanner.maneuver';
-      return transportType === 'imhd'
-        ? extra && imhdStep(t, language, extra)
+    (
+      name: string,
+      { type, modifier }: Step['maneuver'],
+      extra?: RouteStepExtra,
+    ) =>
+      transportType === 'imhd'
+        ? extra && imhdStep(m, language, extra)
         : transportType === 'bikesharing'
-        ? extra && bikesharingStep(t, extra)
-        : t(`routePlanner.maneuverWith${name ? '' : 'out'}Name`, {
-            type: t(`${p}.types.${type}`, {}, type),
+        ? extra && bikesharingStep(m, extra)
+        : m?.routePlanner[name ? 'maneuverWithName' : 'maneuverWithoutName']({
+            type: m?.routePlanner.maneuver.types[type],
             modifier: modifier
-              ? ` ${t(`${p}.modifiers.${modifier}`, {}, modifier)}`
+              ? ' ' + m?.routePlanner.maneuver.modifiers[modifier]
               : '',
             name,
-          });
-    },
-    [t, transportType, language],
+          }),
+    [m, transportType, language],
   );
 
   const handleStartPointClick = useCallback(() => {
@@ -539,19 +548,17 @@ export function RoutePlannerResult(): ReactElement {
               special &&
               legs
                 .flatMap((leg) => leg.steps)
-                .map(
-                  ({ geometry, name, maneuver, extra: extra1 }, i: number) => (
-                    <Marker
-                      key={i}
-                      icon={circularIcon}
-                      position={reverse(geometry.coordinates[0])}
-                    >
-                      <Tooltip direction="right" permanent>
-                        <div>{maneuverToText(name, maneuver, extra1)}</div>
-                      </Tooltip>
-                    </Marker>
-                  ),
-                )}
+                .map(({ geometry, name, maneuver, extra }, i: number) => (
+                  <Marker
+                    key={i}
+                    icon={circularIcon}
+                    position={reverse(geometry.coordinates[0])}
+                  >
+                    <Tooltip direction="right" permanent>
+                      <div>{maneuverToText(name, maneuver, extra)}</div>
+                    </Tooltip>
+                  </Marker>
+                ))}
 
             {legs
               .flatMap((leg, legIndex) =>
@@ -688,7 +695,7 @@ function addMissingSegments(alt: Alternative) {
 }
 
 function imhdSummary(
-  t: Translator,
+  m: Messages | undefined,
   language: string,
   extra: RouteAlternativeExtra,
 ) {
@@ -704,7 +711,7 @@ function imhdSummary(
     numbers,
   } = extra;
 
-  return t('routePlanner.imhd.total.full', {
+  return m?.routePlanner.imhd.total.full({
     total: Math.round(
       ((foot ?? 0) + (bus ?? 0) + (home ?? 0) + (wait ?? 0)) / 60,
     ),
@@ -726,7 +733,7 @@ function imhdSummary(
 }
 
 function imhdStep(
-  t: Translator,
+  m: Messages | undefined,
   language: string,
   { type, destination, departure, duration, number }: RouteStepExtra,
 ) {
@@ -735,8 +742,8 @@ function imhdStep(
     minute: '2-digit',
   });
 
-  return t(`routePlanner.imhd.step.${type === 'foot' ? 'foot' : 'bus'}`, {
-    type: t(`routePlanner.imhd.type.${type}`),
+  return m?.routePlanner.imhd.step[type === 'foot' ? 'foot' : 'bus']({
+    type: (m?.routePlanner.imhd.type as any)[type], // TODO
     destination,
     departure:
       departure === undefined ? undefined : dateFormat.format(departure * 1000),
@@ -746,10 +753,10 @@ function imhdStep(
 }
 
 function bikesharingStep(
-  t: Translator,
+  m: Messages | undefined,
   { type, destination, duration }: RouteStepExtra,
 ) {
-  return t(`routePlanner.bikesharing.step.${type}`, {
+  return m?.routePlanner.bikesharing.step[type]({
     destination,
     duration: duration === undefined ? undefined : Math.round(duration / 60),
   });

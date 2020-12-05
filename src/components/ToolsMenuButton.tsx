@@ -6,13 +6,13 @@ import Overlay from 'react-bootstrap/lib/Overlay';
 import Popover from 'react-bootstrap/lib/Popover';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { selectFeature, Tool, clearMap } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { is } from 'typescript-is';
 
 export function ToolsMenuButton(): ReactElement {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -61,14 +61,14 @@ export function ToolsMenuButton(): ReactElement {
       <Button
         ref={button}
         onClick={handleButtonClick}
-        title={t('tools.tools')}
+        title={m?.tools.tools}
         id="tools-button"
         bsStyle="primary"
       >
         <FontAwesomeIcon icon={toolDef ? toolDef.icon : 'briefcase'} />
         <span className="hidden-xs">
           {' '}
-          {t(`tools.${tool && toolDef ? toolDef.msgKey : 'tools'}`)}
+          {m?.tools[tool && toolDef ? toolDef.msgKey : 'tools']}
         </span>
       </Button>
       {tool && <FontAwesomeIcon icon="chevron-right" />}
@@ -83,14 +83,14 @@ export function ToolsMenuButton(): ReactElement {
           <ul>
             {tool && (
               <MenuItem eventKey={null} onSelect={handleToolSelect}>
-                <FontAwesomeIcon icon="briefcase" /> {t('tools.none')}{' '}
+                <FontAwesomeIcon icon="briefcase" /> {m?.tools.none}{' '}
                 <kbd>Esc</kbd>
               </MenuItem>
             )}
 
             <MenuItem onSelect={handleMapClear}>
-              <FontAwesomeIcon icon="eraser" /> {t('main.clearMap')}{' '}
-              <kbd>g</kbd> <kbd>c</kbd>
+              <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap} <kbd>g</kbd>{' '}
+              <kbd>c</kbd>
             </MenuItem>
             <MenuItem divider />
 
@@ -105,7 +105,7 @@ export function ToolsMenuButton(): ReactElement {
                       onSelect={handleToolSelect}
                       active={toolDef?.tool === newTool}
                     >
-                      <FontAwesomeIcon icon={icon} /> {t(`tools.${msgKey}`)}{' '}
+                      <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
                       {kbd && (
                         <>
                           <kbd>g</kbd> <kbd>{kbd}</kbd>

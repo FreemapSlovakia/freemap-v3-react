@@ -3,12 +3,12 @@ import { useSelector } from 'react-redux';
 import { Tooltip } from 'react-leaflet';
 
 import { RichMarker } from 'fm3/components/RichMarker';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
 
 export function ElevationChartActivePoint(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const elevationChartActivePoint = useSelector(
     (state: RootState) => state.elevationChart.activePoint,
@@ -47,7 +47,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
           <span>
             → {nf1.format(elevationChartActivePoint.distance / 1000)} km
             {' ▴ '}
-            {nf0.format(elevationChartActivePoint.ele)} {t('general.masl')}
+            {nf0.format(elevationChartActivePoint.ele)} {m?.general.masl}
             {typeof elevationChartActivePoint.climbUp === 'number' &&
               typeof elevationChartActivePoint.climbDown === 'number' && (
                 <>

@@ -13,7 +13,7 @@ import {
   exportGpx,
   Destination,
 } from 'fm3/actions/mainActions';
-import { useTranslator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 
 const exportableDefinitions = [
@@ -32,7 +32,7 @@ const exportableDefinitions = [
 ] as const;
 
 export function ExportGpxModal(): ReactElement | null {
-  const t = useTranslator();
+  const m = useMessages();
 
   const dispatch = useDispatch();
 
@@ -143,11 +143,11 @@ export function ExportGpxModal(): ReactElement | null {
     <Modal show onHide={close} bsSize="large">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}
+          <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="warning">{t('gpxExport.disabledAlert')}</Alert>
+        <Alert bsStyle="warning">{m?.gpxExport.disabledAlert}</Alert>
         {exportableDefinitions.map(({ type, icon }) => (
           <Checkbox
             key={type}
@@ -155,26 +155,26 @@ export function ExportGpxModal(): ReactElement | null {
             disabled={!initExportables.includes(type)}
             onChange={() => handleCheckboxChange(type)}
           >
-            {t('gpxExport.export')} <FontAwesomeIcon icon={icon} />{' '}
-            {t(`gpxExport.what.${type}`)}
+            {m?.gpxExport.export} <FontAwesomeIcon icon={icon} />{' '}
+            {m?.gpxExport.what[type]}
           </Checkbox>
         ))}
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleExportClick} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
+          <FontAwesomeIcon icon="download" /> {m?.gpxExport.export}
         </Button>{' '}
         <Button
           onClick={handleExportToDriveClick}
           disabled={!exportables.length}
         >
-          <FontAwesomeIcon icon="google" /> {t('gpxExport.exportToDrive')}
+          <FontAwesomeIcon icon="google" /> {m?.gpxExport.exportToDrive}
         </Button>{' '}
         <Button onClick={handleExportToDropbox} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="dropbox" /> {t('gpxExport.exportToDropbox')}
+          <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
         </Button>{' '}
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

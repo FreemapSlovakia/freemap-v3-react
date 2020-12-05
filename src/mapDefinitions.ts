@@ -1,6 +1,13 @@
 import white1x1 from './images/1x1-white.png';
 import transparent1x1 from './images/1x1-transparent.png';
 
+export interface AttributionDef {
+  type: 'map' | 'data' | 'photos';
+  name?: string;
+  nameKey?: 'osmData' | 'freemap' | 'srtm';
+  url?: string;
+}
+
 const OSM_MAP_ATTR: AttributionDef = {
   type: 'map',
   name: '©\xa0OpenStreetMap',
@@ -9,18 +16,18 @@ const OSM_MAP_ATTR: AttributionDef = {
 
 const OSM_DATA_ATTR: AttributionDef = {
   type: 'data',
-  nameKey: 'mapLayers.attr.osmData',
+  nameKey: 'osmData',
   url: 'https://osm.org/copyright',
 };
 
 const FM_ATTR: AttributionDef = {
   type: 'map',
-  nameKey: 'mapLayers.attr.freemap',
+  nameKey: 'freemap',
 };
 
 const SRTM_ATTR: AttributionDef = {
   type: 'data',
-  nameKey: 'mapLayers.attr.srtm',
+  nameKey: 'srtm',
 };
 
 const STRAVA_ATTR: AttributionDef = {
@@ -35,15 +42,46 @@ const NLC_ATTR: AttributionDef = {
   url: 'http://www.nlcsk.org/',
 };
 
-export interface AttributionDef {
-  type: string;
-  name?: string;
-  nameKey?: string;
-  url?: string;
-}
+export const baseLayerLetters = [
+  'A',
+  'T',
+  'C',
+  'K',
+  'S',
+  'Z',
+  'O',
+  'M',
+  'p',
+  'd',
+  'h',
+  'X',
+] as const;
+
+export const overlayLetters = [
+  'i',
+  'I',
+  'l',
+  'n1',
+  'n2',
+  'n3',
+  'g',
+  't',
+  'c',
+  'q',
+  'r',
+  's0',
+  's1',
+  's2',
+  's3',
+  's4',
+  'w',
+] as const;
+
+export type BaseLayerLetters = typeof baseLayerLetters[number];
+
+export type OverlayLetters = typeof overlayLetters[number];
 
 export interface LayerDef {
-  type: string;
   icon: string;
   url?: string;
   attribution: AttributionDef[];
@@ -64,26 +102,22 @@ export interface LayerDef {
   zoomOffset?: number;
 }
 
+export interface BaseLayerDef extends LayerDef {
+  type: BaseLayerLetters;
+}
+
+export interface OverlayLayerDef extends LayerDef {
+  type: OverlayLetters;
+}
+
 const isHdpi = (window.devicePixelRatio || 1) > 1.4;
 
-export const baseLayers: LayerDef[] = [
-  {
-    type: 'X',
-    icon: 'tree',
-    url: 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}',
-    extraScales: [2, 3],
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
-    minZoom: 6,
-    maxNativeZoom: 19,
-    key: 'x',
-    primary: true,
-  },
-  ...[
-    ['A', 'car', true] as const,
-    ['T', '!icon-hiking', false] as const,
-    ['C', 'bicycle', false] as const,
-    ['K', '!icon-skier-skiing', true] as const,
-  ].map(([type, icon, showOnlyInExpertMode]) => ({
+function legacyFreemap(
+  type: BaseLayerLetters,
+  icon: string,
+  showOnlyInExpertMode: boolean,
+): BaseLayerDef {
+  return {
     type,
     icon,
     url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
@@ -92,7 +126,27 @@ export const baseLayers: LayerDef[] = [
     maxNativeZoom: 16,
     key: type.toLowerCase(),
     showOnlyInExpertMode,
-  })),
+  };
+}
+
+export const baseLayers: BaseLayerDef[] = [
+  {
+    type: 'X',
+    icon: 'tree',
+    url: `${
+      process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk'
+    }/{z}/{x}/{y}`,
+    extraScales: [2, 3],
+    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
+    minZoom: 6,
+    maxNativeZoom: 19,
+    key: 'x' as const,
+    primary: true,
+  },
+  legacyFreemap('A', 'car', true),
+  legacyFreemap('T', '!icon-hiking', false),
+  legacyFreemap('C', 'bicycle', false),
+  legacyFreemap('K', '!icon-skier-skiing', true),
   {
     type: 'O',
     icon: 'globe',
@@ -209,20 +263,7 @@ export const baseLayers: LayerDef[] = [
   },
 ];
 
-if (!process.env.NODE_ENV) {
-  baseLayers.push({
-    type: 'Y',
-    icon: 'flask',
-    url: 'http://localhost:4000/{z}/{x}/{y}',
-    extraScales: [2, 3],
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
-    minZoom: 6,
-    maxNativeZoom: 19,
-    key: 'y',
-  });
-}
-
-export const overlayLayers: LayerDef[] = [
+export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'i',
     icon: 'pencil',
@@ -264,8 +305,14 @@ export const overlayLayers: LayerDef[] = [
     errorTileUrl: transparent1x1,
     // adminOnly: true,
   },
-  ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
-    type: `s${i}`,
+  ...([
+    ['s0', 'both'],
+    ['s1', 'ride'],
+    ['s2', 'run'],
+    ['s3', 'water'],
+    ['s4', 'winter'],
+  ] as const).map(([type, stravaType]) => ({
+    type,
     icon: 'scribd', // TODO use correct logo
     url: `//strava-heatmap.tiles.freemap.sk/${type}/bluered/{z}/{x}/{y}.png?px=${
       isHdpi ? 512 : 256
@@ -273,8 +320,8 @@ export const overlayLayers: LayerDef[] = [
     attribution: [STRAVA_ATTR],
     minZoom: 0,
     maxNativeZoom: isHdpi ? 15 : 16,
-    key: type === 'both' ? 'H' : undefined,
-    showOnlyInExpertMode: type !== 'both',
+    key: stravaType === 'both' ? 'H' : undefined,
+    showOnlyInExpertMode: stravaType !== 'both',
     zIndex: 2,
     strava: true,
     errorTileUrl: transparent1x1,
@@ -329,11 +376,11 @@ export const overlayLayers: LayerDef[] = [
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
-  ...[
+  ...([
     ['n1', '1', ''],
     ['n2', '2', 'h'],
     ['n3', '3', 'c'],
-  ].map(([type, key, suffix]) => ({
+  ] as const).map(([type, key, suffix]) => ({
     type,
     icon: 'font',
     url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
