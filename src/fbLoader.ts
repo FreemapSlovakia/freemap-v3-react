@@ -20,7 +20,9 @@ export function loadFb(): Promise<void> {
 
     js.async = true;
     js.defer = true;
-    js.src = '//connect.facebook.net/sk_SK/sdk.js'; // TODO other languages?
+    js.src = `//connect.facebook.net/${
+      window.translations?.general.iso ?? 'en_US'
+    }/sdk.js`;
 
     js.onload = () => {
       resolve();

@@ -37,6 +37,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const hu: Messages = {
   general: {
+    iso: 'hu_HU',
     elevationProfile: 'Magassági profil',
     save: 'Mentés',
     cancel: 'Mégse',

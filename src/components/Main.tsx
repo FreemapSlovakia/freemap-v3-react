@@ -211,7 +211,9 @@ export function Main(): ReactElement {
     }
 
     const map = mapRef.current.leafletElement;
+
     const { lat: newLat, lng: newLon } = map.getCenter();
+
     const newZoom = map.getZoom();
 
     if (lat !== newLat || lon !== newLon || zoom !== newZoom) {

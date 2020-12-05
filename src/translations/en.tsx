@@ -37,6 +37,7 @@ const getErrorMarkup = (ticketId?: string) => `
 
 const en: Messages = {
   general: {
+    iso: 'en_US',
     elevationProfile: 'Elevation profile',
     save: 'Save',
     cancel: 'Cancel',

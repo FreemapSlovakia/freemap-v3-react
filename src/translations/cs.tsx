@@ -39,6 +39,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikace</h1>
 
 const cs: Messages = {
   general: {
+    iso: 'cs_CZ',
     elevationProfile: 'Výškový profil',
     save: 'Uložit',
     cancel: 'Zrušit',

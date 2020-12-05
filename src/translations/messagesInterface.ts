@@ -6,6 +6,7 @@ type Err = { err: string };
 
 export interface Messages {
   general: {
+    iso: string;
     elevationProfile: string;
     save: string;
     cancel: string;

@@ -61,6 +61,7 @@ import { Dispatch } from 'redux';
 import { isTransportType } from './transportTypeDefs';
 import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
+import { is } from 'typescript-is';
 
 const tipKeys = tips.map(([key]) => key);
 
@@ -204,10 +205,12 @@ export const handleLocationChange = (
       ? 'draw-lines'
       : query.tool === 'gallery'
       ? 'photos'
-      : query.tool; // TODO set to null if unknown
+      : is<Tool>(query.tool)
+      ? query.tool
+      : null;
 
   if ((getState().main.selection?.type ?? null) !== tool) {
-    dispatch(selectFeature(tool ? { type: tool as Tool } : null));
+    dispatch(selectFeature(tool ? { type: tool } : null));
   }
 
   const trackUID = query['track-uid'];
