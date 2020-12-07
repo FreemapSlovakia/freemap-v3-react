@@ -306,7 +306,7 @@ export interface Messages {
       }: {
         username: ReactNode;
         createdAt: ReactNode;
-      }) => string;
+      }) => JSX.Element;
       captured: (takenAt: JSX.Element) => JSX.Element;
       deletePrompt: string;
       modify: string;

@@ -362,8 +362,11 @@ const hu: Messages = {
       yourRating: 'Az Ön értékelése:',
       showOnTheMap: 'Megjelenítés a térképen',
       openInNewWindow: 'Megnyitás…',
-      uploaded: ({ username, createdAt }) =>
-        `${username} töltötte fel ekkor: ${createdAt}`,
+      uploaded: ({ username, createdAt }) => (
+        <>
+          {username} töltötte fel ekkor: {createdAt}
+        </>
+      ),
       captured: (takenAt) => <>Ekkor készült: {takenAt}</>,
       deletePrompt: 'Kép törlése?',
       modify: 'Módosítás',

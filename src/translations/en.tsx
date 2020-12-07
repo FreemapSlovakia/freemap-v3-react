@@ -360,8 +360,11 @@ const en: Messages = {
       yourRating: 'Your rating:',
       showOnTheMap: 'Show on the map',
       openInNewWindow: 'Open in…',
-      uploaded: ({ username, createdAt }) =>
-        `Uploaded by ${username} on ${createdAt}`,
+      uploaded: ({ username, createdAt }) => (
+        <>
+          Uploaded by {username} on {createdAt}
+        </>
+      ),
       captured: (takenAt) => <>Captured on {takenAt}</>,
       deletePrompt: 'Delete this picture?',
       modify: 'Modify',

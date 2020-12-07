@@ -373,8 +373,11 @@ const sk: Messages = {
       yourRating: 'Tvoje hodnotenie:',
       showOnTheMap: 'Ukázať na mape',
       openInNewWindow: 'Otvoriť v…',
-      uploaded: ({ username, createdAt }) =>
-        `Nahral ${username} dňa ${createdAt}`,
+      uploaded: ({ username, createdAt }) => (
+        <>
+          Nahral {username} dňa {createdAt}
+        </>
+      ),
       captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',

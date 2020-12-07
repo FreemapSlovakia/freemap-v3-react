@@ -364,8 +364,11 @@ const cs: Messages = {
       yourRating: 'Tvé hodnocení:',
       showOnTheMap: 'Ukázat na mapě',
       openInNewWindow: 'Otevřít v…',
-      uploaded: ({ username, createdAt }) =>
-        `Nahrál ${username} dne ${createdAt}`,
+      uploaded: ({ username, createdAt }) => (
+        <>
+          Nahrál {username} dne {createdAt}
+        </>
+      ),
       captured: (takenAt) => <>Vyfoceno dne {takenAt}</>,
       deletePrompt: 'Smazat obrázek?',
       modify: 'Úprava',
