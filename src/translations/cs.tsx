@@ -413,7 +413,7 @@ const cs: Messages = {
     picturesFetchingError: ({ err }) =>
       `Nastala chyba při nahrávání fotek: ${err}`,
     savingError: ({ err }) => `Nastala chyba při ukládání fotky: ${err}`,
-    commentAddingError: (err) =>
+    commentAddingError: ({ err }) =>
       `Nastala chyba při přidávání komentáře: ${err}`,
     ratingError: ({ err }) => `Nastala chyba při hodnocení ${err}`,
     unauthenticatedError:
@@ -436,7 +436,7 @@ const cs: Messages = {
     distance: 'Čára',
     elevation: 'Bod',
     area: 'Polygon',
-    elevationFetchError: (err) =>
+    elevationFetchError: ({ err }) =>
       `Nastala chyba při získávání výšky bodu: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
@@ -588,7 +588,7 @@ const cs: Messages = {
   mapDetails: {
     road: 'Info o cestě',
     notFound: 'Nebyla nalezena žádná cesta.',
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Nastala chyba při získávání detailů o cestě: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
@@ -910,7 +910,7 @@ const cs: Messages = {
     prompt: 'Zadejte lokalitu',
     routeFrom: 'Navigovat odsud',
     routeTo: 'Navigovat sem',
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Nastala chyba při zpracování výsledků vyhledávání: ${err}`,
     buttonTitle: 'Hledat',
   },
@@ -1035,7 +1035,7 @@ const cs: Messages = {
   elevationChart: {
     distance: 'Vzdálenost [km]',
     ele: 'Nadm. výška [m.n.m.] ',
-    fetchError: (err) =>
+    fetchError: ({ err }) =>
       `Nastala chyba při získávání výškového profilu: ${err}`,
   },
 

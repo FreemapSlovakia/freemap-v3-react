@@ -420,10 +420,10 @@ const sk: Messages = {
       `Nastala chyba pri načítavaní tagov: ${err}`,
     pictureFetchingError: ({ err }) =>
       `Nastala chyba pri načítavaní fotky: ${err}`,
-    picturesFetchingError: (err) =>
+    picturesFetchingError: ({ err }) =>
       `Nastala chyba pri načítavaní fotiek: ${err}`,
     savingError: ({ err }) => `Nastala chyba pri ukladaní fotky: ${err}`,
-    commentAddingError: (err) =>
+    commentAddingError: ({ err }) =>
       `Nastala chyba pri pridávaní komentára: ${err}`,
     ratingError: ({ err }) => `Nastala chyba pri hodnotení: ${err}`,
     unauthenticatedError:
@@ -446,7 +446,7 @@ const sk: Messages = {
     distance: 'Čiara',
     elevation: 'Bod',
     area: 'Polygón',
-    elevationFetchError: (err) =>
+    elevationFetchError: ({ err }) =>
       `Nastala chyba pri získavaní výšky bodu: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
@@ -598,7 +598,7 @@ const sk: Messages = {
   mapDetails: {
     road: 'Info o ceste',
     notFound: 'Nebola nájdená žiadna cesta.',
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Nastala chyba pri získavaní detailov o ceste: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
@@ -920,7 +920,7 @@ const sk: Messages = {
     prompt: 'Zadajte lokalitu',
     routeFrom: 'Navigovať odtiaľto',
     routeTo: 'Navigovať sem',
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Nastala chyba pri spracovaní výsledkov vyhľadávania: ${err}`,
     buttonTitle: 'Hľadať',
   },
@@ -1046,7 +1046,7 @@ const sk: Messages = {
   elevationChart: {
     distance: 'Vzdialenosť [km]',
     ele: `Nadm. výška [${masl}]`,
-    fetchError: (err) =>
+    fetchError: ({ err }) =>
       `Nastala chyba pri získavaní výškového profilu: ${err}`,
   },
 

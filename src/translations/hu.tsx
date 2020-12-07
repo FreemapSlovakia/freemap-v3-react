@@ -408,12 +408,12 @@ const hu: Messages = {
     deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Hiba történt a címkék beolvasásánál: ${err}`,
-    pictureFetchingError: (err) =>
+    pictureFetchingError: ({ err }) =>
       `Hiba történt a fénykép beolvasásánál: ${err}`,
-    picturesFetchingError: (err) =>
+    picturesFetchingError: ({ err }) =>
       `Hiba történt a fényképek beolvasásánál: ${err}`,
     savingError: ({ err }) => `Hiba történt a fénykép mentésénél: ${err}`,
-    commentAddingError: (err) =>
+    commentAddingError: ({ err }) =>
       `Hiba történt a hozzászólás hozzáadásánál: ${err}`,
     ratingError: ({ err }) => `Hiba történt a fénykép értékelésénél: ${err}`,
     unauthenticatedError:
@@ -436,7 +436,7 @@ const hu: Messages = {
     distance: 'Távolság',
     elevation: 'Magasság',
     area: 'Terület',
-    elevationFetchError: (err) =>
+    elevationFetchError: ({ err }) =>
       `Hiba történt a pont magasságának beolvasásakor: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
@@ -500,7 +500,7 @@ const hu: Messages = {
       drop: 'Húzza ide a .gpx fájlt vagy kattintson ide a kijelöléséhez.',
     },
     shareToast: 'Az útvonal elmentődött a kiszolgálóra, és megosztható.',
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Hiba történt a nyomvonal adatainak beolvasásakor: ${err}`,
     savingError: ({ err }) => `Hiba történt a nyomvonal mentésekor: ${err}`,
     loadingError: 'Hiba történt a fájl betöltésekor.',
@@ -572,7 +572,7 @@ const hu: Messages = {
     olderThan: ({ days }) => `${days} nap`,
     olderThanFull: ({ days }) => `Az elmúlt ${days} nap módosításkészletei`,
     notFound: 'Nincs módosításkészlet.',
-    fetchError: (err) =>
+    fetchError: ({ err }) =>
       `Hiba történt a módosításkészletek beolvasásánál: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     // TODO
@@ -592,7 +592,7 @@ const hu: Messages = {
   mapDetails: {
     road: 'Út adatai',
     notFound: 'Itt nincs út.',
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Hiba történt az út adatainak beolvasásakor: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
@@ -604,7 +604,7 @@ const hu: Messages = {
         'Ahhoz, hogy az objektumok típusok szerint látsszanak, legalább a 12. szintre kell nagyítani.',
       zoom: 'Nagyítás',
     },
-    fetchingError: (err) =>
+    fetchingError: ({ err }) =>
       `Hiba történt az objektumok (POI-k) beolvasásánál: ${err}`,
     categories: {
       1: 'Természet',
@@ -1041,7 +1041,7 @@ const hu: Messages = {
   elevationChart: {
     distance: 'Távolság [km]',
     ele: `Magasság [${masl}]`,
-    fetchError: (err) =>
+    fetchError: ({ err }) =>
       `Hiba történt a magasságiprofil-adatok lekérésénél: ${err}`,
   },
 
