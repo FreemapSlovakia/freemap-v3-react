@@ -314,7 +314,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   ] as const).map(([type, stravaType]) => ({
     type,
     icon: 'scribd', // TODO use correct logo
-    url: `//strava-heatmap.tiles.freemap.sk/${type}/bluered/{z}/{x}/{y}.png?px=${
+    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/bluered/{z}/{x}/{y}.png?px=${
       isHdpi ? 512 : 256
     }`,
     attribution: [STRAVA_ATTR],
