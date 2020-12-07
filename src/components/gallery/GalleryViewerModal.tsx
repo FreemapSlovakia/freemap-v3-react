@@ -315,13 +315,14 @@ export function GalleryViewerModal(): ReactElement {
               )}
               {isFullscreen && title && <>{title} ｜ </>}
               {m?.gallery.viewer.uploaded({
-                username: () => <b key={image.user.name}>{image.user.name}</b>,
-                createdAt: () =>
-                  createdAt && (
-                    <b key={createdAt.getTime()}>
-                      {dateFormat.format(createdAt)}
-                    </b>
-                  ),
+                username: <b key={image.user.name}>{image.user.name}</b>,
+                createdAt: createdAt ? (
+                  <b key={createdAt.getTime()}>
+                    {dateFormat.format(createdAt)}
+                  </b>
+                ) : (
+                  '-'
+                ),
               })}
               {takenAt && (
                 <>
