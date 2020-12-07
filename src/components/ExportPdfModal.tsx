@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { colors } from 'fm3/constants';
 
 export function ExportPdfModal(): ReactElement {
   const language = useSelector((state: RootState) => state.l10n.language);
@@ -63,7 +64,7 @@ export function ExportPdfModal(): ReactElement {
       "Rule": [
         {
           "PolygonSymbolizer": {
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@fill-opacity": 0.2,
             "@stroke-linecap": "round",
             "@stroke-linejoin": "round"
@@ -71,7 +72,7 @@ export function ExportPdfModal(): ReactElement {
         },
         {
           "LineSymbolizer": {
-            "@stroke": "#007bff",
+            "@stroke": "${colors.normal}",
             "@stroke-width": 4,
             "@stroke-opacity": 0.8,
             "@stroke-linecap": "round",
@@ -82,7 +83,7 @@ export function ExportPdfModal(): ReactElement {
         {
           "TextSymbolizer": {
             "@fontset-name": "regular",
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@halo-fill": "white",
             "@halo-radius": "1.5",
             "@halo-opacity": "0.75",
@@ -103,7 +104,7 @@ export function ExportPdfModal(): ReactElement {
       "Rule": [
         {
           "LineSymbolizer": {
-            "@stroke": "#007bff",
+            "@stroke": "${colors.normal}",
             "@stroke-width": 4,
             "@stroke-opacity": 0.8,
             "@stroke-linecap": "round",
@@ -114,7 +115,7 @@ export function ExportPdfModal(): ReactElement {
         {
           "TextSymbolizer": {
             "@fontset-name": "regular",
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@halo-fill": "white",
             "@halo-radius": "1.5",
             "@halo-opacity": "0.75",
@@ -135,7 +136,7 @@ export function ExportPdfModal(): ReactElement {
       "Rule": [
         {
           "MarkersSymbolizer": {
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@width": 10,
             "@height": 10,
             "@stroke-width": 1.5,
@@ -146,7 +147,7 @@ export function ExportPdfModal(): ReactElement {
         {
           "TextSymbolizer": {
             "@fontset-name": "regular",
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@halo-fill": "white",
             "@halo-radius": "1.5",
             "@halo-opacity": "0.75",

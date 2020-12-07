@@ -24,13 +24,14 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { LatLon } from 'fm3/types/common';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { colors } from 'fm3/constants';
 
 const circularIcon = divIcon({
   // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: '<div class="circular-leaflet-marker-icon"></div>',
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
 });
 
 type Props = {
@@ -215,28 +216,38 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   return (
     <>
       {ps.length > 2 && line.type === 'line' && (
-        <Polyline
-          weight={4}
-          color={selected ? '#65b2ff' : '#007bff'}
-          interactive
-          onclick={handleSelect}
-          positions={ps
-            .filter((_, i) => i % 2 === 0)
-            .map(({ lat, lon }) => ({ lat, lng: lon }))}
-          key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}
-        >
-          {line.label && (
-            <Tooltip className="compact" permanent>
-              <span>{line.label}</span>
-            </Tooltip>
-          )}
-        </Polyline>
+        <React.Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
+          <Polyline
+            weight={12}
+            opacity={0}
+            interactive
+            onclick={handleSelect}
+            positions={ps
+              .filter((_, i) => i % 2 === 0)
+              .map(({ lat, lon }) => ({ lat, lng: lon }))}
+          />
+
+          <Polyline
+            weight={4}
+            color={selected ? colors.selected : colors.normal}
+            interactive={false}
+            positions={ps
+              .filter((_, i) => i % 2 === 0)
+              .map(({ lat, lon }) => ({ lat, lng: lon }))}
+          >
+            {line.label && (
+              <Tooltip className="compact" permanent>
+                <span>{line.label}</span>
+              </Tooltip>
+            )}
+          </Polyline>
+        </React.Fragment>
       )}
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           weight={4}
-          color={selected ? '#65b2ff' : '#007bff'}
+          color={selected ? colors.selected : colors.normal}
           interactive
           onclick={handleSelect}
           positions={ps
@@ -260,6 +271,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {!!(ps.length > 0 && coords && !window.preventMapClick) && (
         <Polyline
+          color={colors.selected}
           weight={4}
           dashArray="6,8"
           interactive={false}

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useMemo, ReactElement } from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { DivIcon, divIcon } from 'leaflet';
+import { colors } from 'fm3/constants';
 
 interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;
@@ -37,7 +38,13 @@ export function RichMarker({
 }
 
 export function createMarkerIcon(props: IconProps = {}): DivIcon {
-  const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = props;
+  const {
+    image,
+    faIcon,
+    faIconLeftPadding,
+    color = colors.normal,
+    label,
+  } = props;
 
   const gradinentDef = `<defs>
       <radialGradient id="gradient-${color}" gradientUnits="userSpaceOnUse" cx="154.607" cy="160.652" r="131.625" gradientTransform="matrix(0.907588, 0, 0, 0.907588, 13.800331, 17.89466)">

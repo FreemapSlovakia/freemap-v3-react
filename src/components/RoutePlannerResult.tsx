@@ -37,6 +37,7 @@ import along from '@turf/along';
 import length from '@turf/length';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { colors } from 'fm3/constants';
 
 export function RoutePlannerResult(): ReactElement {
   const m = useMessages();
@@ -454,7 +455,7 @@ export function RoutePlannerResult(): ReactElement {
     // CircleMarker is not draggable
     iconSize: [14, 14],
     iconAnchor: [7, 7],
-    html: '<div class="circular-leaflet-marker-icon"></div>',
+    html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
   });
 
   return (

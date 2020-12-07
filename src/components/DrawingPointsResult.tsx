@@ -8,6 +8,7 @@ import { RootState } from 'fm3/storeCreator';
 import { Point, DragEndEvent } from 'leaflet';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { colors } from 'fm3/constants';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
@@ -71,7 +72,7 @@ export function DrawingPointsResult(): ReactElement {
           ondrag={handleDrag}
           position={{ lat, lng: lon }}
           onclick={onSelects[i]}
-          color={activeIndex === i ? '#65b2ff' : undefined}
+          color={activeIndex === i ? colors.selected : undefined}
           draggable
         >
           {label && (

@@ -7,6 +7,7 @@ import { getPoiType } from 'fm3/poiTypes';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { colors } from 'fm3/constants';
 
 export function ObjectsResult(): ReactElement {
   const m = useMessages();
@@ -45,7 +46,7 @@ export function ObjectsResult(): ReactElement {
             onclick={() => {
               dispatch(selectFeature({ type: 'objects', id }));
             }}
-            color={activeId === id ? '#65b2ff' : undefined}
+            color={activeId === id ? colors.selected : undefined}
           >
             <Popup autoPan={false}>
               <span>
