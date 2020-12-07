@@ -53,6 +53,8 @@ export type StringDates<T> = {
     ? string | null
     : T[K] extends Date | undefined
     ? string | undefined
+    : T[K] extends Date | null | undefined
+    ? string | null | undefined
     : StringDates<T[K]>;
 };
 

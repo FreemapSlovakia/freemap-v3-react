@@ -3,6 +3,7 @@ import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 import { Line, Point } from 'fm3/actions/drawingLineActions';
+import { StringDates } from 'fm3/types/common';
 
 interface OldLine {
   type: 'area' | 'distance';
@@ -22,7 +23,9 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         expectedStatus: 200,
       });
 
-      const map = assertType<{ data: MapData<Line | OldLine> }>(data).data;
+      const map = assertType<{ data: StringDates<MapData<Line | OldLine>> }>(
+        data,
+      ).data;
 
       if (map.map) {
         if (payload.ignoreMap) {
@@ -53,6 +56,57 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
                     : line.type,
               } as Line),
           ),
+          tracking: map.tracking && {
+            ...map.tracking,
+            trackedDevices: map.tracking.trackedDevices.map((device) => ({
+              ...device,
+              fromTime: device.fromTime ? new Date(device.fromTime) : null,
+            })),
+          },
+          galleryFilter: map.galleryFilter && {
+            ...map.galleryFilter,
+            createdAtFrom:
+              map.galleryFilter.createdAtFrom === undefined
+                ? undefined
+                : new Date(map.galleryFilter.createdAtFrom),
+            createdAtTo:
+              map.galleryFilter.createdAtTo === undefined
+                ? undefined
+                : new Date(map.galleryFilter.createdAtTo),
+            takenAtFrom:
+              map.galleryFilter.takenAtFrom === undefined
+                ? undefined
+                : new Date(map.galleryFilter.takenAtFrom),
+            takenAtTo:
+              map.galleryFilter.takenAtTo === undefined
+                ? undefined
+                : new Date(map.galleryFilter.takenAtTo),
+          },
+          trackViewer: map.trackViewer && {
+            ...map.trackViewer,
+            startPoints: map.trackViewer.startPoints.map((point) => ({
+              ...point,
+              startTime:
+                point.startTime === undefined
+                  ? undefined
+                  : new Date(point.startTime),
+              finishTime:
+                point.finishTime === undefined
+                  ? undefined
+                  : new Date(point.finishTime),
+            })),
+            finishPoints: map.trackViewer.finishPoints.map((point) => ({
+              ...point,
+              startTime:
+                point.startTime === undefined
+                  ? undefined
+                  : new Date(point.startTime),
+              finishTime:
+                point.finishTime === undefined
+                  ? undefined
+                  : new Date(point.finishTime),
+            })),
+          },
         }),
       );
     }
