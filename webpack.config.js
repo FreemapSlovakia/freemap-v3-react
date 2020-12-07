@@ -136,7 +136,7 @@ module.exports = {
         API_URL: JSON.stringify(
           {
             www: 'https://backend.freemap.sk',
-            next: 'http://backend.freemap.sk:3001',
+            next: 'https://backend.freemap.sk',
           }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
         ),
         GA_TRACKING_CODE: JSON.stringify(
