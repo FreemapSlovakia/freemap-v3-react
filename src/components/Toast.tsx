@@ -32,7 +32,6 @@ export const Toast: React.FC<Props> = ({
   }, [onTimeoutRestart, id]);
 
   const handleAlertDismiss = useCallback(() => {
-    console.log('FFFFFFFFFFF');
     onAction(id);
   }, [onAction, id]);
 
