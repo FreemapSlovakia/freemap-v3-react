@@ -82,7 +82,7 @@ const en: Messages = {
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
-    maps: () => (
+    maps: (
       <>
         My maps <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
@@ -961,6 +961,7 @@ const en: Messages = {
       google: 'Log in with Google',
       osm: 'Log in with OpenStreetMap',
     },
+    enablePopup: 'Please enable pop-up windows for this site in you browser.',
     success: 'You have been successfully logged in.',
     logInError: ({ err }) => `Error logging in: ${err}`,
     logInError2: 'Error logging in.',

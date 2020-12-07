@@ -2,6 +2,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { authLoginWithOsm } from 'fm3/actions/authActions';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 
 interface LoginResponse {
   redirect: string;
@@ -10,7 +11,7 @@ interface LoginResponse {
 export const authLoginWithOsmProcessor: Processor = {
   actionCreator: authLoginWithOsm,
   errorKey: 'logIn.logInError',
-  handle: async ({ getState }) => {
+  handle: async ({ getState, dispatch }) => {
     // open window within user gesture gandler (before await)
     const w = window.open(
       '',
@@ -21,7 +22,16 @@ export const authLoginWithOsmProcessor: Processor = {
     );
 
     if (!w) {
-      throw new Error('window is null');
+      dispatch(
+        toastsAdd({
+          id: 'logIn.enablePopup',
+          style: 'warning',
+          messageKey: 'logIn.enablePopup',
+          timeout: 5000,
+        }),
+      );
+
+      return;
     }
 
     try {

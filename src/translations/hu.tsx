@@ -83,7 +83,7 @@ const hu: Messages = {
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Live tracking',
-    maps: () => (
+    maps: (
       <>
         Saját térképeim{' '}
         <FontAwesomeIcon icon="flask" className="text-warning" />
@@ -977,6 +977,7 @@ const hu: Messages = {
       google: 'Belépés Google-fiókkal',
       osm: 'Belépés OpenStreetMap-fiókkal',
     },
+    enablePopup: 'Please enable pop-up windows for this site in you browser.', // TODO translate
     success: 'Sikeresen bejelentkezett.',
     logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
     logInError2: 'Hiba történt a bejelentkezésnél.',

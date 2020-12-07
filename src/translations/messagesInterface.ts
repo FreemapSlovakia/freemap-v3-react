@@ -49,7 +49,7 @@ export interface Messages {
     changesets: string;
     mapDetails: string;
     tracking: string;
-    maps: () => JSX.Element;
+    maps: JSX.Element;
   };
   routePlanner: {
     milestones: string;
@@ -560,6 +560,7 @@ export interface Messages {
       google: string;
       osm: string;
     };
+    enablePopup: string;
     success: string;
     logInError: ({ err }: Err) => string;
     logInError2: string;

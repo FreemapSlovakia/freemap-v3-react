@@ -83,7 +83,7 @@ const sk: Messages = {
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
-    maps: () => (
+    maps: (
       <>
         Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
@@ -982,6 +982,8 @@ const sk: Messages = {
       google: 'Prihlásiť sa pomocou Googlu',
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
+    enablePopup:
+      'Prosím, povoľte vo vašom prehliadači pop-up okná pre túto stránku.',
     success: 'Boli ste úspešne prihlásený.',
     logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
     logInError2: 'Nepodarilo sa prihlásiť.',
