@@ -2,6 +2,13 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
+import { Line, Point } from 'fm3/actions/drawingLineActions';
+
+interface OldLine {
+  type: 'area' | 'distance';
+  label?: string;
+  points: Point[];
+}
 
 export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
   actionCreator: mapsLoad,
@@ -15,7 +22,7 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         expectedStatus: 200,
       });
 
-      const map = assertType<{ data: MapData }>(data).data;
+      const map = assertType<{ data: MapData<Line | OldLine> }>(data).data;
 
       if (map.map) {
         if (payload.ignoreMap) {
@@ -30,7 +37,24 @@ export const mapsLoadProcessor: Processor<typeof mapsLoad> = {
         }
       }
 
-      dispatch(mapsDataLoaded(map));
+      dispatch(
+        mapsDataLoaded({
+          ...map,
+          // get rid of OldLines
+          lines: map.lines?.map(
+            (line) =>
+              ({
+                ...line,
+                type:
+                  line.type === 'area'
+                    ? 'polyline'
+                    : line.type === 'distance'
+                    ? 'line'
+                    : line.type,
+              } as Line),
+          ),
+        }),
+      );
     }
   },
 };

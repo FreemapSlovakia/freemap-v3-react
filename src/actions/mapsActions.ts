@@ -14,8 +14,8 @@ export interface MapMeta {
   public: boolean;
 }
 
-export interface MapData {
-  lines?: Line[];
+export interface MapData<LT = Line> {
+  lines?: LT[];
   points?: DrawingPoint[];
   objects?: ObjectsResult[];
   tracking?: Pick<TrackingState, 'trackedDevices' | 'showLine' | 'showPoints'>;
