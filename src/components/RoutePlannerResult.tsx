@@ -39,6 +39,12 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { colors } from 'fm3/constants';
 
+const circularIcon = divIcon({
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
+});
+
 export function RoutePlannerResult(): ReactElement {
   const m = useMessages();
 
@@ -97,6 +103,7 @@ export function RoutePlannerResult(): ReactElement {
   useEffect(
     () => () => {
       const tim = tRef.current;
+
       if (typeof tim === 'number') {
         clearTimeout(tim);
       }
@@ -177,6 +184,7 @@ export function RoutePlannerResult(): ReactElement {
     const len = length(line);
 
     const milestones: Feature<Point, Properties>[] = [];
+
     for (let i = step; i < len; i += step) {
       milestones.push(along(line, i));
     }
@@ -451,13 +459,6 @@ export function RoutePlannerResult(): ReactElement {
 
   const special = !!transportType && isSpecial(transportType);
 
-  const circularIcon = divIcon({
-    // CircleMarker is not draggable
-    iconSize: [14, 14],
-    iconAnchor: [7, 7],
-    html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
-  });
-
   return (
     <>
       {start && (
@@ -482,10 +483,10 @@ export function RoutePlannerResult(): ReactElement {
         <Marker
           draggable
           icon={circularIcon}
-          onDragStart={handleDragStart}
-          onDragEnd={handleFutureDragEnd}
-          onMouseOver={handleFutureMouseOver}
-          onMouseOut={handleFutureMouseOut}
+          ondragstart={handleDragStart}
+          ondragend={handleFutureDragEnd}
+          onmouseover={handleFutureMouseOver}
+          onmouseout={handleFutureMouseOut}
           position={{ lat: dragLat, lng: dragLon }}
           onclick={handleFutureClick}
         />

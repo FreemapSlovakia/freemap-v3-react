@@ -27,7 +27,6 @@ import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import { colors } from 'fm3/constants';
 
 const circularIcon = divIcon({
-  // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
