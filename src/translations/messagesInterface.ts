@@ -4,7 +4,7 @@ import { ReactNode } from 'react';
 
 type Err = { err: string };
 
-export interface Messages {
+export type Messages = {
   general: {
     iso: string;
     elevationProfile: string;
@@ -739,4 +739,4 @@ export interface Messages {
     vicepresident: string;
     secretary: string;
   };
-}
+};

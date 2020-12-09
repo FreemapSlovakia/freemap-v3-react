@@ -1,16 +1,17 @@
+import { MessagePaths } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
 import { RootAction } from '.';
 
 export interface ToastAction {
   name?: string;
-  nameKey?: string;
+  nameKey?: MessagePaths;
   action?: RootAction | RootAction[];
   style?: string;
 }
 
 export interface Toast {
   message?: string;
-  messageKey?: string;
+  messageKey?: MessagePaths;
   messageParams?: Record<string, unknown>;
   timeout?: number;
   style?: 'info' | 'warning' | 'danger';
