@@ -137,7 +137,7 @@ module.exports = {
           {
             www: 'https://www.freemap.sk',
             next: 'https://next.freemap.sk',
-          }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
+          }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:9000',
         ),
         API_URL: JSON.stringify(
           {
