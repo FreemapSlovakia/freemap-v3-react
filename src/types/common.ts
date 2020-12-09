@@ -138,20 +138,20 @@ type Join<K, P> = K extends string | number
     : never
   : never;
 
-type Paths<T, D extends number = 10> = [D] extends [never]
-  ? never
-  : T extends Record<string, unknown>
-  ? {
-      [K in keyof T]-?: K extends string | number
-        ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
-        : never;
-    }[keyof T]
-  : '';
-
-// type Leaves<T, D extends number = 10> = [D] extends [never]
+// type Paths<T, D extends number = 10> = [D] extends [never]
 //   ? never
 //   : T extends Record<string, unknown>
-//   ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+//   ? {
+//       [K in keyof T]-?: K extends string | number
+//         ? `${K}` | Join<K, Paths<T[K], Prev[D]>>
+//         : never;
+//     }[keyof T]
 //   : '';
 
-export type MessagePaths = Paths<Messages>;
+type Leaves<T, D extends number = 10> = [D] extends [never]
+  ? never
+  : T extends Record<string, unknown>
+  ? { [K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>> }[keyof T]
+  : '';
+
+export type MessagePaths = Leaves<Messages>;
