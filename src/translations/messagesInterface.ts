@@ -403,6 +403,7 @@ export type Messages = {
     onlyOne: string;
     wrongFormat: string;
     info: () => JSX.Element;
+    tooBigError: string;
   };
   drawing: {
     modify: string;

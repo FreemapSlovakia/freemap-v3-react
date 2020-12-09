@@ -101,7 +101,7 @@ export function MapControls(): ReactElement | null {
             <FontAwesomeIcon icon="dot-circle-o" />
           </Button>
         )}
-        {document.exitFullscreen && (
+        {'exitFullscreen' in document && (
           <Button
             onClick={handleFullscreenClick}
             title={

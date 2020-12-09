@@ -510,6 +510,7 @@ const hu: Messages = {
     onlyOne: 'Csak egyetlen GPX-fájl tölthető be.',
     wrongFormat: 'A fájlnak GPX kiterjesztésűnek kell lennie.',
     info: () => <TrackViewerDetails />,
+    tooBigError: 'The file is too big.', // TODO translate
   },
 
   drawing: {

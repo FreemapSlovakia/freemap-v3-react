@@ -476,7 +476,7 @@ export function GalleryViewerModal(): ReactElement {
             {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
           </span>
         </Button>
-        {document.exitFullscreen && (
+        {'exitFullscreen' in document && (
           <Button onClick={handleFullscreen}>
             <Glyphicon glyph="fullscreen" />
             <span className="hidden-xs hidden-sm">

@@ -498,6 +498,7 @@ const en: Messages = {
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
     info: () => <TrackViewerDetails />,
+    tooBigError: 'The file is too big.',
   },
 
   drawing: {

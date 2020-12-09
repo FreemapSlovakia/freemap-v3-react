@@ -24,6 +24,7 @@ import {
   authLoginWithOsm2,
 } from 'fm3/actions/authActions';
 import { RootAction } from 'fm3/actions';
+import { MessagePaths } from 'fm3/types/common';
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
@@ -39,7 +40,7 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
     action: ActionType<T>;
   }) => void | Promise<void>;
   actionCreator: T | T[] | '*';
-  errorKey?: string;
+  errorKey?: MessagePaths;
   id?: string; // toast collapse key
 }
 

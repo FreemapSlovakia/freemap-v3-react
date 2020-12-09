@@ -508,6 +508,7 @@ const cs: Messages = {
     onlyOne: 'Očekává se pouze jeden GPX soubor.',
     wrongFormat: 'Nahraný soubor musí mít příponu .gpx',
     info: () => <TrackViewerDetails />,
+    tooBigError: 'Nahraný soubor je příliš velký.',
   },
 
   drawing: {
