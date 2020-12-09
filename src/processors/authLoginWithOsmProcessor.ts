@@ -41,6 +41,9 @@ export const authLoginWithOsmProcessor: Processor = {
         url: '/auth/login',
         expectedStatus: 200,
         cancelActions: [],
+        data: {
+          webBaseUrl: process.env.BASE_URL,
+        },
       });
 
       w.location.href = assertType<LoginResponse>(data).redirect;
