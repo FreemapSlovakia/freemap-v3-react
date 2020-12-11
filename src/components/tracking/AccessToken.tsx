@@ -1,16 +1,12 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement, useCallback } from 'react';
-
-import Button from 'react-bootstrap/lib/Button';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-
+import { ReactElement, useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Tooltip } from 'react-bootstrap';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
 
@@ -92,7 +88,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
             {accessToken.token}{' '}
             <Button
               onClick={handleCopyClick}
-              bsSize="xs"
+              size="sm"
               title={m?.external.copy}
               type="button"
             >
@@ -108,7 +104,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
       <td>{accessToken.note}</td>
       <td>
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
           onClick={handleView}
           title={m?.tracking.devices.watch}
@@ -116,7 +112,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           <FontAwesomeIcon icon="eye" />
         </Button>{' '}
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
           onClick={handleModify}
           title={m?.general.modify}
@@ -124,8 +120,8 @@ export function AccessToken({ accessToken }: Props): ReactElement {
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
         <Button
-          bsStyle="danger"
-          bsSize="small"
+          variant="danger"
+          size="sm"
           type="button"
           onClick={handleDelete}
           title={m?.general.delete}

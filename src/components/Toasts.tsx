@@ -1,4 +1,4 @@
-import React, { ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
 
 import {
   toastsRemove,

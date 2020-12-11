@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import { Circle } from 'react-leaflet';
 import { RichMarker } from 'fm3/components/RichMarker';

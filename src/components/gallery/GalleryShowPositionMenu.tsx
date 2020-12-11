@@ -1,13 +1,12 @@
-import React, { useEffect, useCallback, ReactElement } from 'react';
+import { useEffect, useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Panel from 'react-bootstrap/lib/Panel';
 
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
-import Button from 'react-bootstrap/lib/Button';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Button, Card } from 'react-bootstrap';
 
 export function GalleryShowPositionMenu(): ReactElement | null {
   const m = useMessages();
@@ -41,11 +40,11 @@ export function GalleryShowPositionMenu(): ReactElement | null {
   }, [handleKeyUp]);
 
   return !showPosition ? null : (
-    <Panel className="fm-toolbar">
+    <Card className="fm-toolbar">
       <Button onClick={close}>
         <FontAwesomeIcon icon="chevron-left" />
         <span className="hidden-xs"> {m?.general.back}</span> <kbd>Esc</kbd>
       </Button>
-    </Panel>
+    </Card>
   );
 }

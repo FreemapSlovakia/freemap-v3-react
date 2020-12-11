@@ -1,21 +1,6 @@
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import Modal from 'react-bootstrap/lib/Modal';
-import Button from 'react-bootstrap/lib/Button';
-import Alert from 'react-bootstrap/lib/Alert';
-import Tabs from 'react-bootstrap/lib/Tabs';
-import Tab from 'react-bootstrap/lib/Tab';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Tooltip from 'react-bootstrap/lib/Tooltip';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
 
@@ -32,6 +17,21 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import {
+  Alert,
+  Button,
+  DropdownButton,
+  FormCheck,
+  FormControl,
+  FormGroup,
+  FormLabel,
+  Modal,
+  OverlayTrigger,
+  Tab,
+  Tabs,
+  Tooltip,
+} from 'react-bootstrap';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function Settings(): ReactElement {
   const init = {
@@ -155,9 +155,10 @@ export function Settings(): ReactElement {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <Checkbox
+          <FormCheck
+            type="checkbox"
             onChange={(e) => {
-              setExpertMode((e.target as HTMLInputElement).checked);
+              setExpertMode(e.currentTarget.checked);
             }}
             checked={expertMode}
           >
@@ -178,7 +179,7 @@ export function Settings(): ReactElement {
             >
               <FontAwesomeIcon icon="question-circle-o" />
             </OverlayTrigger>
-          </Checkbox>
+          </FormCheck>
           <Tabs id="setting-tabs">
             <Tab title={m?.settings.tab.map} eventKey={1}>
               <div>
@@ -220,11 +221,11 @@ export function Settings(): ReactElement {
                       }
                     >
                       {overlayLayers.map(({ type, icon }) => (
-                        <MenuItem key={type} eventKey={type}>
+                        <DropdownItem key={type} eventKey={type}>
                           {icon && <FontAwesomeIcon icon={icon} />}{' '}
                           {m?.mapLayers.letters[type]}{' '}
                           {nf0.format((overlayOpacity[type] || 1) * 100)} %
-                        </MenuItem>
+                        </DropdownItem>
                       ))}
                     </DropdownButton>
                     <Slider
@@ -282,27 +283,27 @@ export function Settings(): ReactElement {
                 {m?.settings.map.homeLocation.select}
               </Button>
             </Tab>
-            <Tab title={m?.settings.tab.account} eventKey={2}>
+            <Tab title={m?.settings.tab.account} eventKey="2">
               {user ? (
                 <>
                   <FormGroup>
-                    <ControlLabel>{m?.settings.account.name}</ControlLabel>
+                    <FormLabel>{m?.settings.account.name}</FormLabel>
                     <FormControl
                       value={name}
                       onChange={(e) => {
-                        setName((e.target as HTMLInputElement).value);
+                        setName(e.target.value);
                       }}
                       required
                       maxLength={255}
                     />
                   </FormGroup>
                   <FormGroup>
-                    <ControlLabel>{m?.settings.account.email}</ControlLabel>
+                    <FormLabel>{m?.settings.account.email}</FormLabel>
                     <FormControl
                       type="email"
                       value={email}
                       onChange={(e) => {
-                        setEmail((e.target as HTMLInputElement).value);
+                        setEmail(e.target.value);
                       }}
                       maxLength={255}
                     />
@@ -312,24 +313,25 @@ export function Settings(): ReactElement {
                 <Alert>{m?.settings.account.noAuthInfo}</Alert>
               )}
             </Tab>
-            <Tab title={m?.settings.tab.general} eventKey={3}>
-              <Checkbox
+            <Tab title={m?.settings.tab.general} eventKey="3">
+              <FormCheck
+                type="checkbox"
                 onChange={(e) => {
-                  setPreventTips(!(e.target as HTMLInputElement).checked);
+                  setPreventTips(!e.currentTarget.checked);
                 }}
                 checked={!preventTips}
               >
                 {m?.settings.general.tips}
-              </Checkbox>
+              </FormCheck>
             </Tab>
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <Button bsStyle="info" type="submit" disabled={!userMadeChanges}>
+          <Button variant="info" type="submit" disabled={!userMadeChanges}>
             <Glyphicon glyph="floppy-disk" /> {m?.general.save}
           </Button>
           <Button type="button" onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>

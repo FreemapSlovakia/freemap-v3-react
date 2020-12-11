@@ -1,10 +1,8 @@
-import React, { ReactElement, useCallback, useRef, useState } from 'react';
-import Button from 'react-bootstrap/lib/Button';
-import Popover from 'react-bootstrap/lib/Popover';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import { useMessages } from 'fm3/l10nInjector';
-import { Overlay } from 'react-bootstrap';
+import { Button, Overlay, Popover } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
-import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppDropdownItems';
 
 interface Props extends LatLon {
   lat: number;
@@ -35,11 +33,11 @@ export function OpenInExternalAppMenuButton({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const buttonRef = useRef<Button>();
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
   const [show, setShow] = useState(false);
 
-  const handleMenuItemClick = useCallback(() => {
+  const handleDropdownItemClick = useCallback(() => {
     setShow(false);
   }, [setShow]);
 
@@ -58,7 +56,7 @@ export function OpenInExternalAppMenuButton({
   return (
     <>
       <Button
-        ref={buttonRef as React.MutableRefObject<Button>}
+        ref={buttonRef}
         onClick={handleButtonClick}
         title={m?.external.openInExternal}
       >
@@ -74,7 +72,7 @@ export function OpenInExternalAppMenuButton({
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <ul>
-            <OpenInExternalAppMenuItems
+            <OpenInExternalAppDropdownItems
               lat={lat}
               lon={lon}
               zoom={zoom}
@@ -84,7 +82,7 @@ export function OpenInExternalAppMenuButton({
               pointTitle={pointTitle}
               pointDescription={pointDescription}
               url={url}
-              onSelect={handleMenuItemClick}
+              onSelect={handleDropdownItemClick}
             />
           </ul>
         </Popover>

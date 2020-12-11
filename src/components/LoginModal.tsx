@@ -1,8 +1,5 @@
-import React, { useCallback, ReactElement } from 'react';
+import { useCallback, ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   authLoginWithOsm,
@@ -11,6 +8,7 @@ import {
   authLoginClose,
 } from 'fm3/actions/authActions';
 import { useMessages } from 'fm3/l10nInjector';
+import { Button, Modal } from 'react-bootstrap';
 
 export function LoginModal(): ReactElement {
   const m = useMessages();
@@ -43,7 +41,7 @@ export function LoginModal(): ReactElement {
       <Modal.Body>
         <Button
           onClick={loginWithFacebook}
-          bsSize="large"
+          size="lg"
           block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
         >
@@ -51,7 +49,7 @@ export function LoginModal(): ReactElement {
         </Button>
         <Button
           onClick={loginWithGoogle}
-          bsSize="large"
+          size="lg"
           block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
         >
@@ -59,7 +57,7 @@ export function LoginModal(): ReactElement {
         </Button>
         <Button
           onClick={loginWithOsm}
-          bsSize="large"
+          size="lg"
           block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
         >
@@ -68,7 +66,7 @@ export function LoginModal(): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

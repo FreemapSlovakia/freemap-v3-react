@@ -1,17 +1,13 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Panel from 'react-bootstrap/lib/Panel';
-
 import {
   gallerySetItemForPositionPicking,
   galleryConfirmPickedPosition,
 } from 'fm3/actions/galleryActions';
-
-import Button from 'react-bootstrap/lib/Button';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Button, Card } from 'react-bootstrap';
 
 export function GalleryPositionPickingMenu(): ReactElement | null {
   const m = useMessages();
@@ -23,7 +19,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
   );
 
   return !pickingPosition ? null : (
-    <Panel className="fm-toolbar">
+    <Card className="fm-toolbar">
       {m?.gallery.locationPicking.title}{' '}
       <Button
         onClick={() => {
@@ -41,6 +37,6 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
         <FontAwesomeIcon icon="times" />
         <span className="hidden-xs"> {m?.general.cancel}</span> <kbd>Esc</kbd>
       </Button>
-    </Panel>
+    </Card>
   );
 }

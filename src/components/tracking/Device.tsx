@@ -1,10 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement, useCallback } from 'react';
-
-import Button from 'react-bootstrap/lib/Button';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Tooltip from 'react-bootstrap/lib/Tooltip';
-
+import { ReactElement, useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
@@ -13,6 +8,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { getType } from 'typesafe-actions';
+import { Button, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 type Props = {
   device: DeviceType;
@@ -103,7 +99,7 @@ export function Device({ device }: Props): ReactElement {
                 {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? (
                   <Button
                     onClick={handleCopyClick}
-                    bsSize="xs"
+                    size="sm"
                     title={m?.external.copy}
                     type="button"
                   >
@@ -126,7 +122,7 @@ export function Device({ device }: Props): ReactElement {
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
           onClick={handleModify}
           title={m?.general.modify}
@@ -134,16 +130,16 @@ export function Device({ device }: Props): ReactElement {
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
-          bsStyle="primary"
+          variant="primary"
           onClick={handleShowAccessTokens}
           title={m?.tracking.devices.watchTokens}
         >
           <FontAwesomeIcon icon="key" />
         </Button>{' '}
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
           onClick={handleView}
           title={m?.tracking.devices.watchPrivately}
@@ -151,8 +147,8 @@ export function Device({ device }: Props): ReactElement {
           <FontAwesomeIcon icon="eye" />
         </Button>{' '}
         <Button
-          bsStyle="danger"
-          bsSize="small"
+          variant="danger"
+          size="sm"
           type="button"
           onClick={handleDelete}
           title={m?.general.delete}

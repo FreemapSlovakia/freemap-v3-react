@@ -1,9 +1,5 @@
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { useMessages } from 'fm3/l10nInjector';
 
@@ -28,6 +24,8 @@ import { getType } from 'typesafe-actions';
 
 import 'fm3/styles/trackViewer.scss';
 import { assertType } from 'typescript-is';
+import { Button, DropdownButton } from 'react-bootstrap';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
@@ -94,14 +92,14 @@ export function TrackViewerMenu(): ReactElement {
           </>
         }
       >
-        {([null, 'elevation', 'steepness'] as const).map((mode) => (
-          <MenuItem
+        {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
+          <DropdownItem
             eventKey={mode}
             key={mode || 'none'}
             active={mode === colorizeTrackBy}
           >
             {m?.trackViewer.colorizingMode[mode ?? 'none']}
-          </MenuItem>
+          </DropdownItem>
         ))}
       </DropdownButton>{' '}
       <Button

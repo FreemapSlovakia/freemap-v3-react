@@ -1,17 +1,12 @@
-import React, {
+import {
   useState,
   useEffect,
   useCallback,
   useMemo,
   ReactElement,
+  FormEvent,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
@@ -21,6 +16,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Button, FormCheck, FormGroup, Modal } from 'react-bootstrap';
 
 export function TipsModal(): ReactElement {
   const m = useMessages();
@@ -49,8 +45,8 @@ export function TipsModal(): ReactElement {
   }, [tip, m]);
 
   const handleNextTimePrevent = useCallback(
-    (e: React.FormEvent<Checkbox>) => {
-      dispatch(tipsPreventNextTime((e.target as HTMLInputElement).checked));
+    (e: FormEvent<HTMLInputElement>) => {
+      dispatch(tipsPreventNextTime(e.currentTarget.checked));
     },
     [dispatch],
   );
@@ -111,11 +107,11 @@ export function TipsModal(): ReactElement {
           >
             <Glyphicon glyph="chevron-right" /> {m?.tips.next}
           </Button>{' '}
-          <Checkbox inline onChange={handleNextTimePrevent}>
+          <FormCheck inline onChange={handleNextTimePrevent} type="checkbox">
             {m?.tips.prevent}
-          </Checkbox>{' '}
+          </FormCheck>{' '}
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
+            <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
           </Button>
         </FormGroup>
       </Modal.Footer>

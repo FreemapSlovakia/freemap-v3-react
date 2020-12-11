@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';

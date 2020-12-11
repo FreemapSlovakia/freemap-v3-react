@@ -4,7 +4,7 @@
     "sourceMap": true, // allow sourcemap support
     "strictNullChecks": true, // enable strict null checks as a best practice
     "module": "esnext", // specify module code generation
-    "jsx": "react", // use typescript to transpile jsx to js
+    "jsx": "react-jsx", // use typescript to transpile jsx to js
     "target": "es2017", // specify ECMAScript target version
     "moduleResolution": "node",
     "lib": ["es2019", "dom"],

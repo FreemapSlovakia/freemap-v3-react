@@ -1,8 +1,7 @@
-import React, { ReactElement, useEffect } from 'react';
+import { ReactElement, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
 
 import {
   mapDetailsSetSubtool,
@@ -13,6 +12,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Button } from 'react-bootstrap';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();

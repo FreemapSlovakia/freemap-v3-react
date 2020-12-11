@@ -1,11 +1,13 @@
 /* eslint-disable react/display-name */
 
-import React, {
+import {
   useCallback,
   ReactElement,
   useRef,
   useState,
   useEffect,
+  FormEvent,
+  Fragment,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ReactStars from 'react-stars';
@@ -17,14 +19,6 @@ import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Label from 'react-bootstrap/lib/Label';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
@@ -46,6 +40,14 @@ import 'fm3/styles/gallery.scss';
 import { RootState } from 'fm3/storeCreator';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
+import {
+  Badge,
+  Button,
+  FormControl,
+  FormGroup,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
 
 export function GalleryViewerModal(): ReactElement {
   const m = useMessages();
@@ -128,9 +130,9 @@ export function GalleryViewerModal(): ReactElement {
   );
 
   const handleIndexChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
+    (e: ChangeEvent<HTMLFormElement>) => {
       if (imageIds) {
-        const idx = parseInt((e.target as HTMLSelectElement).value, 10);
+        const idx = parseInt(e.currentTarget.value, 10);
 
         if (isNaN(idx)) {
           throw new Error();
@@ -143,7 +145,7 @@ export function GalleryViewerModal(): ReactElement {
   );
 
   const handleCommentFormSubmit = useCallback(
-    (e: React.FormEvent) => {
+    (e: FormEvent) => {
       e.preventDefault();
       dispatch(gallerySubmitComment());
     },
@@ -161,7 +163,7 @@ export function GalleryViewerModal(): ReactElement {
   }, []);
 
   const handleSave = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
       dispatch(gallerySavePicture());
     },
@@ -231,7 +233,7 @@ export function GalleryViewerModal(): ReactElement {
           {m?.gallery.viewer.title}{' '}
           {imageIds && (
             <FormControl
-              componentClass="select"
+              as="select"
               value={index}
               onChange={handleIndexChange}
               style={{ width: 'auto', display: 'inline-block' }}
@@ -343,10 +345,10 @@ export function GalleryViewerModal(): ReactElement {
               {tags && tags.length > 0 && ' ｜ '}
               {tags &&
                 tags.map((tag) => (
-                  <React.Fragment key={tag}>
+                  <Fragment key={tag}>
                     {' '}
-                    <Label>{tag}</Label>
-                  </React.Fragment>
+                    <Badge>{tag}</Badge>
+                  </Fragment>
                 ))}
               {!isFullscreen && editModel && (
                 <form onSubmit={handleSave}>
@@ -361,7 +363,7 @@ export function GalleryViewerModal(): ReactElement {
                     onPositionPick={handlePositionPick}
                     onModelChange={handleEditModelChange}
                   />
-                  <Button bsStyle="primary" type="submit">
+                  <Button variant="primary" type="submit">
                     <Glyphicon glyph="save" /> {m?.general.save}
                   </Button>
                 </form>
@@ -387,18 +389,16 @@ export function GalleryViewerModal(): ReactElement {
                             value={comment}
                             onChange={(e) => {
                               dispatch(
-                                gallerySetComment(
-                                  (e.target as HTMLInputElement).value,
-                                ),
+                                gallerySetComment(e.currentTarget.value),
                               );
                             }}
                             maxLength={4096}
                           />
-                          <InputGroup.Button>
+                          <InputGroup.Append>
                             <Button type="submit" disabled={comment.length < 1}>
                               {m?.gallery.viewer.addComment}
                             </Button>
-                          </InputGroup.Button>
+                          </InputGroup.Append>
                         </InputGroup>
                       </FormGroup>
                     </form>
@@ -458,7 +458,7 @@ export function GalleryViewerModal(): ReactElement {
                   }),
                 );
               }}
-              bsStyle="danger"
+              variant="danger"
             >
               <Glyphicon glyph="trash" />
               <span className="hidden-xs"> {m?.general.delete}</span>
@@ -506,7 +506,7 @@ export function GalleryViewerModal(): ReactElement {
           </OpenInExternalAppMenuButton>
         )}
         <Button onClick={close}>
-          <Glyphicon glyph="remove" />
+          <FontAwesomeIcon icon="close" />
           <span className="hidden-xs hidden-sm">
             {' '}
             {m?.general.close} <kbd>Esc</kbd>

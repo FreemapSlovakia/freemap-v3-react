@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, ReactElement } from 'react';
+import { useCallback, useMemo, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Tooltip, useMapEvent } from 'react-leaflet';
 

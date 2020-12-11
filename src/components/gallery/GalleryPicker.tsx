@@ -1,4 +1,4 @@
-import React, { useCallback, useState, ReactElement } from 'react';
+import { useCallback, useState, ReactElement } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Circle, useMapEvent } from 'react-leaflet';
 

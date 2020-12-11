@@ -1,9 +1,10 @@
-import React, {
+import {
   useEffect,
   useState,
   useCallback,
   useMemo,
   ReactElement,
+  Fragment,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -218,7 +219,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   return (
     <>
       {ps.length > 2 && line.type === 'line' && (
-        <React.Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
+        <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
             weight={12}
             opacity={0}
@@ -246,7 +247,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               </Tooltip>
             )}
           </Polyline>
-        </React.Fragment>
+        </Fragment>
       )}
 
       {ps.length > 1 && line.type === 'polygon' && (

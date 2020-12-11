@@ -1,4 +1,4 @@
-import React, { lazy, Suspense } from 'react';
+import React, { lazy, ReactElement, Suspense } from 'react';
 import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
 
 const LoginModal = lazy(() =>
@@ -7,7 +7,7 @@ const LoginModal = lazy(() =>
   ).then(({ LoginModal }) => ({ default: LoginModal })),
 );
 
-export const AsyncLoginModal: React.FC = () => (
+export const AsyncLoginModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <LoginModal />
   </Suspense>
@@ -19,7 +19,7 @@ const ElevationChart = lazy(() =>
   ).then(({ ElevationChart }) => ({ default: ElevationChart })),
 );
 
-export const AsyncElevationChart: React.FC = () => (
+export const AsyncElevationChart = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <ElevationChart />
   </Suspense>
@@ -31,7 +31,7 @@ const ExportGpxModal = lazy(() =>
   ).then(({ ExportGpxModal }) => ({ default: ExportGpxModal })),
 );
 
-export const AsyncExportGpxModal: React.FC = () => (
+export const AsyncExportGpxModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <ExportGpxModal />
   </Suspense>
@@ -43,7 +43,7 @@ const ExportPdfModal = lazy(() =>
   ).then(({ ExportPdfModal }) => ({ default: ExportPdfModal })),
 );
 
-export const AsyncExportPdfModal: React.FC = () => (
+export const AsyncExportPdfModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <ExportPdfModal />
   </Suspense>
@@ -55,7 +55,7 @@ const LegendModal = lazy(() =>
   ).then(({ LegendModal }) => ({ default: LegendModal })),
 );
 
-export const AsyncLegendModal: React.FC = () => (
+export const AsyncLegendModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <LegendModal />
   </Suspense>
@@ -67,7 +67,7 @@ const LegendOutdoorModal = lazy(() =>
   ).then(({ LegendOutdoorModal }) => ({ default: LegendOutdoorModal })),
 );
 
-export const AsyncLegendOutdoorModal: React.FC = () => (
+export const AsyncLegendOutdoorModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <LegendOutdoorModal />
   </Suspense>
@@ -79,7 +79,7 @@ const EmbedMapModal = lazy(() =>
   ).then(({ EmbedMapModal }) => ({ default: EmbedMapModal })),
 );
 
-export const AsyncEmbedMapModal: React.FC = () => (
+export const AsyncEmbedMapModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <EmbedMapModal />
   </Suspense>
@@ -91,7 +91,7 @@ const TipsModal = lazy(() =>
   ).then(({ TipsModal }) => ({ default: TipsModal })),
 );
 
-export const AsyncTipsModal: React.FC = () => (
+export const AsyncTipsModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <TipsModal />
   </Suspense>
@@ -103,7 +103,7 @@ const AboutModal = lazy(() =>
   ).then(({ AboutModal }) => ({ default: AboutModal })),
 );
 
-export const AsyncAboutModal: React.FC = () => (
+export const AsyncAboutModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <AboutModal />
   </Suspense>
@@ -115,7 +115,7 @@ const SupportUsModal = lazy(() =>
   ).then(({ SupportUsModal }) => ({ default: SupportUsModal })),
 );
 
-export const AsyncSupportUsModal: React.FC = () => (
+export const AsyncSupportUsModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <SupportUsModal />
   </Suspense>
@@ -127,7 +127,7 @@ const GalleryUploadModal = lazy(() =>
   ).then(({ GalleryUploadModal }) => ({ default: GalleryUploadModal })),
 );
 
-export const AsyncGalleryUploadModal: React.FC = () => (
+export const AsyncGalleryUploadModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <GalleryUploadModal />
   </Suspense>
@@ -139,7 +139,7 @@ const GalleryViewerModal = lazy(() =>
   ).then(({ GalleryViewerModal }) => ({ default: GalleryViewerModal })),
 );
 
-export const AsyncGalleryViewerModal: React.FC = () => (
+export const AsyncGalleryViewerModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <GalleryViewerModal />
   </Suspense>
@@ -151,7 +151,7 @@ const GalleryFilterModal = lazy(() =>
   ).then(({ GalleryFilterModal }) => ({ default: GalleryFilterModal })),
 );
 
-export const AsyncGalleryFilterModal: React.FC = () => (
+export const AsyncGalleryFilterModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <GalleryFilterModal />
   </Suspense>
@@ -163,7 +163,7 @@ const TrackingModal = lazy(() =>
   ).then(({ TrackingModal }) => ({ default: TrackingModal })),
 );
 
-export const AsyncTrackingModal: React.FC = () => (
+export const AsyncTrackingModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <TrackingModal />
   </Suspense>
@@ -175,7 +175,7 @@ const DrawingEditLabelModal = lazy(() =>
   ).then(({ DrawingEditLabelModal }) => ({ default: DrawingEditLabelModal })),
 );
 
-export const AsyncDrawingEditLabelModal: React.FC = () => (
+export const AsyncDrawingEditLabelModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <DrawingEditLabelModal />
   </Suspense>
@@ -187,7 +187,7 @@ const TrackViewerUploadModal = lazy(() =>
   ).then(({ TrackViewerUploadModal }) => ({ default: TrackViewerUploadModal })),
 );
 
-export const AsyncTrackViewerUploadModal: React.FC = () => (
+export const AsyncTrackViewerUploadModal = (): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
     <TrackViewerUploadModal />
   </Suspense>

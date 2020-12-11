@@ -1,11 +1,5 @@
-import React, { useState, useCallback, ReactElement } from 'react';
+import { useState, useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import Alert from 'react-bootstrap/lib/Alert';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
@@ -15,6 +9,7 @@ import {
 } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Button, FormCheck, Modal } from 'react-bootstrap';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
@@ -147,9 +142,10 @@ export function ExportGpxModal(): ReactElement | null {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="warning">{m?.gpxExport.disabledAlert}</Alert>
+        <Alert variant="warning">{m?.gpxExport.disabledAlert}</Alert>
         {exportableDefinitions.map(({ type, icon }) => (
-          <Checkbox
+          <FormCheck
+            type="checkbox"
             key={type}
             checked={exportables.includes(type)}
             disabled={!initExportables.includes(type)}
@@ -157,7 +153,7 @@ export function ExportGpxModal(): ReactElement | null {
           >
             {m?.gpxExport.export} <FontAwesomeIcon icon={icon} />{' '}
             {m?.gpxExport.what[type]}
-          </Checkbox>
+          </FormCheck>
         ))}
       </Modal.Body>
       <Modal.Footer>
@@ -174,7 +170,7 @@ export function ExportGpxModal(): ReactElement | null {
           <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
         </Button>{' '}
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

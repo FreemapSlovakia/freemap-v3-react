@@ -1,5 +1,5 @@
 import { useSelector } from 'react-redux';
-import React, { ReactNode } from 'react';
+import { Component, ReactNode } from 'react';
 
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -24,7 +24,7 @@ function Error() {
   ) : null;
 }
 
-export class ErrorCatcher extends React.Component<unknown, State> {
+export class ErrorCatcher extends Component<unknown, State> {
   state: State = {};
 
   componentDidCatch(error: Error): void {

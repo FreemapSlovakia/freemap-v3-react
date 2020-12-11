@@ -1,10 +1,7 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
 
 import { useMessages } from 'fm3/l10nInjector';
 import {
@@ -15,6 +12,8 @@ import {
 } from 'fm3/actions/mapsActions';
 import { deleteFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
+import { Button, DropdownButton } from 'react-bootstrap';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -39,12 +38,12 @@ export function MapsMenu(): ReactElement {
           }
         }}
       >
-        <MenuItem eventKey={undefined}>{m?.maps.noMap}</MenuItem>
+        <DropdownItem eventKey={undefined}>{m?.maps.noMap}</DropdownItem>
 
         {maps.map((map) => (
-          <MenuItem key={map.id} eventKey={map.id}>
+          <DropdownItem key={map.id} eventKey={map.id}>
             {map.name}
-          </MenuItem>
+          </DropdownItem>
         ))}
       </DropdownButton>
       {authenticated && id !== undefined && (

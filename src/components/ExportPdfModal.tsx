@@ -1,15 +1,5 @@
-import React, { useState, useMemo, useCallback, ReactElement } from 'react';
+import { useState, useMemo, useCallback, ReactElement, FormEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import FormControl from 'react-bootstrap/lib/FormControl';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import Alert from 'react-bootstrap/lib/Alert';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import Slider from 'react-rangeslider';
 import 'react-rangeslider/lib/index.css';
@@ -19,6 +9,15 @@ import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { colors } from 'fm3/constants';
+import {
+  Alert,
+  Button,
+  ButtonGroup,
+  FormCheck,
+  FormGroup,
+  FormLabel,
+  Modal,
+} from 'react-bootstrap';
 
 export function ExportPdfModal(): ReactElement {
   const language = useSelector((state: RootState) => state.l10n.language);
@@ -165,8 +164,8 @@ export function ExportPdfModal(): ReactElement {
 ]
 `);
 
-  const handleStyleChange = useCallback((e: React.FormEvent<FormControl>) => {
-    setStyle((e.target as HTMLInputElement).value);
+  const handleStyleChange = useCallback((e: FormEvent<HTMLInputElement>) => {
+    setStyle(e.currentTarget.value);
   }, []);
 
   const nf = useMemo(
@@ -192,7 +191,7 @@ export function ExportPdfModal(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="warning">{m?.pdfExport.alert}</Alert>
+        <Alert variant="warning">{m?.pdfExport.alert}</Alert>
         <p>{m?.pdfExport.area}</p>
         <ButtonGroup>
           <Button
@@ -227,76 +226,84 @@ export function ExportPdfModal(): ReactElement {
         </ButtonGroup>
         <hr />
         <p>{m?.pdfExport.layersTitle}</p>
-        <Checkbox
+        <FormCheck
+          type="checkbox"
           checked={contours}
           onChange={() => {
             setContours((b) => !b);
           }}
         >
           {m?.pdfExport.layers.contours}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={shadedRelief}
           onChange={() => setShadedRelief((b) => !b)}
         >
           {m?.pdfExport.layers.shading}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={hikingTrails}
           onChange={() => {
             setHikingTrails((b) => !b);
           }}
         >
           {m?.pdfExport.layers.hikingTrails}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
           checked={bicycleTrails}
           onChange={() => {
             setBicycleTrails((b) => !b);
           }}
         >
           {m?.pdfExport.layers.bicycleTrails}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={skiTrails}
           onChange={() => {
             setSkiTrails((b) => !b);
           }}
         >
           {m?.pdfExport.layers.skiTrails}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={horseTrails}
           onChange={() => {
             setHorseTrails((b) => !b);
           }}
         >
           {m?.pdfExport.layers.horseTrails}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={drawing}
           onChange={() => {
             setDrawing((b) => !b);
           }}
         >
           {m?.pdfExport.layers.drawing}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={plannedRoute}
           onChange={() => {
             setPlannedRoute((b) => !b);
           }}
         >
           {m?.pdfExport.layers.plannedRoute}
-        </Checkbox>
-        <Checkbox
+        </FormCheck>
+        <FormCheck
+          type="checkbox"
           checked={track}
           onChange={() => {
             setTrack((b) => !b);
           }}
         >
           {m?.pdfExport.layers.track}
-        </Checkbox>
+        </FormCheck>
         <hr />
         <p>
           {m?.pdfExport.mapScale} {nf.format(scale * 96)} DPI
@@ -313,7 +320,7 @@ export function ExportPdfModal(): ReactElement {
           <>
             <hr />
             <FormGroup>
-              <ControlLabel>
+              <FormLabel>
                 Interactive layer styles{' '}
                 <a
                   href="http://mapnik.org/mapnik-reference/"
@@ -321,9 +328,9 @@ export function ExportPdfModal(): ReactElement {
                 >
                   <FontAwesomeIcon icon="question-circle" />
                 </a>
-              </ControlLabel>
+              </FormLabel>
               <FormControl
-                componentClass="textarea"
+                as="textarea"
                 value={style}
                 onChange={handleStyleChange}
                 rows={6}
@@ -358,7 +365,7 @@ export function ExportPdfModal(): ReactElement {
           <FontAwesomeIcon icon="download" /> {m?.pdfExport.export}
         </Button>{' '}
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

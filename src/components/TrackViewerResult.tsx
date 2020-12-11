@@ -1,4 +1,4 @@
-import React, { ReactElement, useState } from 'react';
+import { Fragment, ReactElement, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Tooltip, Polyline } from 'react-leaflet';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
@@ -176,7 +176,7 @@ export function TrackViewerResult(): ReactElement | null {
   });
 
   return (
-    <React.Fragment key={keyToAssureProperRefresh}>
+    <Fragment key={keyToAssureProperRefresh}>
       {xxx.map(({ lineData, name }, i) => (
         <Polyline
           key={`outline-${i}`}
@@ -321,6 +321,6 @@ export function TrackViewerResult(): ReactElement | null {
       )}
 
       <ElevationChartActivePoint />
-    </React.Fragment>
+    </Fragment>
   );
 }

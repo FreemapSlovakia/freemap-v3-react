@@ -1,8 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-
+import { ReactElement } from 'react';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { Devices } from './Devices';
 import { DeviceForm } from './DeviceForm';
@@ -11,6 +8,7 @@ import { AccessTokenForm } from './AccessTokenForm';
 import { TrackedDevices } from './TrackedDevices';
 import { TrackedDeviceForm } from './TrackedDeviceForm';
 import { RootState } from 'fm3/storeCreator';
+import { Modal } from 'react-bootstrap';
 
 // type Views =
 //   | 'devices'

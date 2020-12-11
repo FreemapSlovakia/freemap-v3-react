@@ -1,4 +1,4 @@
-import React, { useCallback, ReactElement } from 'react';
+import { useCallback, ReactElement } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
 import { RichMarker } from 'fm3/components/RichMarker';

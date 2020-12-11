@@ -1,17 +1,11 @@
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import PanelGroup from 'react-bootstrap/lib/PanelGroup';
-import Panel from 'react-bootstrap/lib/Panel';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 import legend from 'fm3/legend/index.json';
+import { Modal } from 'react-bootstrap';
 
 interface LegendItem {
   n: string;
@@ -64,7 +58,7 @@ export function LegendModal(): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> Zavrieť
+            <FontAwesomeIcon icon="close" /> Zavrieť
           </Button>
         </FormGroup>
       </Modal.Footer>

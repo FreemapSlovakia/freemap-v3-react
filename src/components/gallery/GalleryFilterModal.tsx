@@ -1,20 +1,27 @@
-import React, { useState, useEffect, useCallback, ReactElement } from 'react';
+import {
+  useState,
+  useEffect,
+  useCallback,
+  ReactElement,
+  FormEvent,
+  ChangeEvent,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
 import { useMessages } from 'fm3/l10nInjector';
-
 import {
   gallerySetFilter,
   galleryHideFilter,
 } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';
+import {
+  Button,
+  FormControl,
+  FormGroup,
+  FormLabel,
+  InputGroup,
+  Modal,
+} from 'react-bootstrap';
+import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 export function GalleryFilterModal(): ReactElement | null {
   const dispatch = useDispatch();
@@ -83,58 +90,61 @@ export function GalleryFilterModal(): ReactElement | null {
     );
   }, [filter]);
 
-  const handleTagChange = useCallback((e: React.FormEvent<FormControl>) => {
-    setTag((e.target as HTMLSelectElement).value);
+  const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    setTag(e.currentTarget.value);
   }, []);
 
-  const handleUserIdChange = useCallback((e: React.FormEvent<FormControl>) => {
-    setUserId((e.target as HTMLSelectElement).value);
-  }, []);
+  const handleUserIdChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      setUserId(e.currentTarget.value);
+    },
+    [],
+  );
 
   const handleTakenAtFromChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setTakenAtFrom((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTakenAtFrom(e.currentTarget.value);
     },
     [],
   );
 
   const handleTakenAtToChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setTakenAtTo((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTakenAtTo(e.currentTarget.value);
     },
     [],
   );
 
   const handleCreatedAtFromChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setCreatedAtFrom((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setCreatedAtFrom(e.currentTarget.value);
     },
     [],
   );
 
   const handleCreatedAtToChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setCreatedAtTo((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setCreatedAtTo(e.currentTarget.value);
     },
     [],
   );
 
   const handleRatingFromChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setRatingFrom((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setRatingFrom(e.currentTarget.value);
     },
     [],
   );
 
   const handleRatingToChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setRatingTo((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setRatingTo(e.currentTarget.value);
     },
     [],
   );
 
   const handleFormSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       dispatch(
@@ -188,12 +198,8 @@ export function GalleryFilterModal(): ReactElement | null {
       <form onSubmit={handleFormSubmit}>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{m?.gallery.filterModal.tag}</ControlLabel>
-            <FormControl
-              componentClass="select"
-              value={tag}
-              onChange={handleTagChange}
-            >
+            <FormLabel>{m?.gallery.filterModal.tag}</FormLabel>
+            <FormControl as="select" value={tag} onChange={handleTagChange}>
               <option value="" />
               <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
               {tags.map(({ name, count }) => (
@@ -204,9 +210,9 @@ export function GalleryFilterModal(): ReactElement | null {
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{m?.gallery.filterModal.author}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.author}</FormLabel>
             <FormControl
-              componentClass="select"
+              as="select"
               value={userId}
               onChange={handleUserIdChange}
             >
@@ -219,14 +225,14 @@ export function GalleryFilterModal(): ReactElement | null {
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{m?.gallery.filterModal.createdAt}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.createdAt}</FormLabel>
             <InputGroup>
               <FormControl
                 type="date"
                 value={createdAtFrom}
                 onChange={handleCreatedAtFromChange}
               />
-              <InputGroup.Addon> - </InputGroup.Addon>
+              <InputGroup.Append> - </InputGroup.Append>
               <FormControl
                 type="date"
                 value={createdAtTo}
@@ -235,14 +241,14 @@ export function GalleryFilterModal(): ReactElement | null {
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{m?.gallery.filterModal.takenAt}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.takenAt}</FormLabel>
             <InputGroup>
               <FormControl
                 type="date"
                 value={takenAtFrom}
                 onChange={handleTakenAtFromChange}
               />
-              <InputGroup.Addon> - </InputGroup.Addon>
+              <InputGroup.Append> - </InputGroup.Append>
               <FormControl
                 type="date"
                 value={takenAtTo}
@@ -251,7 +257,7 @@ export function GalleryFilterModal(): ReactElement | null {
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{m?.gallery.filterModal.rating}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.rating}</FormLabel>
             <InputGroup>
               <FormControl
                 type="number"
@@ -261,7 +267,7 @@ export function GalleryFilterModal(): ReactElement | null {
                 value={ratingFrom}
                 onChange={handleRatingFromChange}
               />
-              <InputGroup.Addon> - </InputGroup.Addon>
+              <InputGroup.Append> - </InputGroup.Append>
               <FormControl
                 type="number"
                 min={ratingFrom || 1}
@@ -281,7 +287,7 @@ export function GalleryFilterModal(): ReactElement | null {
             <Glyphicon glyph="erase" /> {m?.general.clear}
           </Button>
           <Button type="button" onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.cancel}
+            <FontAwesomeIcon icon="close" /> {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </form>

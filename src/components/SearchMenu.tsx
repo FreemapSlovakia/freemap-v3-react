@@ -1,15 +1,14 @@
-import React, {
+import {
   useCallback,
   useState,
   useEffect,
   useRef,
   MouseEvent,
   ReactElement,
+  FocusEvent,
+  ChangeEvent,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 import {
   searchSetQuery,
   searchSelectResult,
@@ -29,12 +28,13 @@ import {
   FormGroup,
   Form,
   Dropdown,
-  MenuItem,
   InputGroup,
+  Button,
+  ButtonGroup,
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
-import { DropdownBaseProps } from 'react-bootstrap/lib/Dropdown';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 type Props = {
   hidden?: boolean;
@@ -65,16 +65,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSearch = useCallback(
-    (e: React.FormEvent<Form>) => {
+    (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       dispatch(searchSetQuery({ query: value }));
     },
     [dispatch, value],
   );
 
   const handleChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setValue((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.currentTarget.value);
 
       if (results.length > 0) {
         dispatch(searchSetResults([]));
@@ -109,13 +110,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   };
 
   const handleToggle = useCallback(f, [setOpen, results]);
-
-  const setInputRef = useCallback(
-    (ref: HTMLInputElement | null) => {
-      inputRef.current = ref;
-    },
-    [inputRef],
-  );
 
   useEffect(() => {
     if (results.length) {
@@ -156,12 +150,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     };
   }, [hidden, inputRef, preventShortcut]);
 
-  const handleInputFocus = useCallback((e: React.FocusEvent<FormControl>) => {
-    ((e.target as any) as HTMLInputElement).select();
+  const handleInputFocus = useCallback((e: FocusEvent<HTMLInputElement>) => {
+    e.currentTarget.select();
   }, []);
 
   const handleClearClick = useCallback(
-    (e: MouseEvent<Button>) => {
+    (e: MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();
       dispatch(searchSelectResult(null));
       setValue('');
@@ -185,10 +179,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 onChange={handleChange}
                 value={value}
                 placeholder="Brusno"
-                inputRef={setInputRef}
+                ref={inputRef}
                 onFocus={handleInputFocus}
               />
-              <InputGroup.Button style={{ width: 'auto' }}>
+              <InputGroup.Append style={{ width: 'auto' }}>
                 {!!selectedResult && (
                   <Button
                     type="button"
@@ -205,14 +199,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 >
                   <FontAwesomeIcon icon="search" />
                 </Button>
-              </InputGroup.Button>
+              </InputGroup.Append>
             </InputGroup>
           </FormGroup2>
           <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
             {results.map((result) => (
-              <MenuItem
+              <DropdownItem
                 key={result.id}
-                eventKey={result.id}
+                eventKey={String(result.id)}
                 onSelect={handleSelect}
                 active={!!selectedResult && result.id === selectedResult.id}
               >
@@ -223,7 +217,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     {result.class}={result.type}
                   </small>
                 )}
-              </MenuItem>
+              </DropdownItem>
             ))}
           </Dropdown.Menu>
         </Dropdown>{' '}

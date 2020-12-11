@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { DrawingLineResult } from './DrawingLineResult';

@@ -1,18 +1,12 @@
 import axios from 'axios';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import PanelGroup from 'react-bootstrap/lib/PanelGroup';
-import Panel from 'react-bootstrap/lib/Panel';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import { useMessages } from 'fm3/l10nInjector';
+import { Button, FormGroup, Modal } from 'react-bootstrap';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
@@ -96,7 +90,7 @@ export function LegendOutdoorModal(): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.close}
+            <FontAwesomeIcon icon="times" /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>

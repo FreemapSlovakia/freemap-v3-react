@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo, ReactElement } from 'react';
+import { useRef, useEffect, useMemo, ReactElement } from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { DivIcon, divIcon } from 'leaflet';
 import { colors } from 'fm3/constants';

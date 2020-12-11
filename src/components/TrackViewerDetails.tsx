@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useSelector } from 'react-redux';
 import { smoothElevations, distance } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';

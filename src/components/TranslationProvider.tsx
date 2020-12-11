@@ -1,6 +1,6 @@
 import { RootState } from 'fm3/storeCreator';
 import { Messages } from 'fm3/translations/messagesInterface';
-import React, { createContext, ReactElement, ReactNode } from 'react';
+import { createContext, ReactElement, ReactNode } from 'react';
 import { useSelector } from 'react-redux';
 
 const MessagesContext = createContext<Messages | undefined>(undefined);

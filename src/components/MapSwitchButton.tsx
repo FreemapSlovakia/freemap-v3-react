@@ -1,10 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useCallback, useState, useRef, ReactElement } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
+import { useCallback, useState, useRef, ReactElement, MouseEvent } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   baseLayers,
@@ -18,6 +13,9 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import useMedia from 'use-media';
 import { is } from 'typescript-is';
+import { Button, ButtonGroup, Popover } from 'react-bootstrap';
+import Overlay from 'react-overlays/esm/Overlay';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
@@ -44,9 +42,9 @@ export function MapSwitchButton(): ReactElement {
 
   const [show, setShow] = useState(false);
 
-  const buttonRef = useRef<Button | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const button2Ref = useRef<Button | null>(null);
+  const button2Ref = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -84,16 +82,16 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, overlays],
   );
 
-  const handleBaseClick = (e: React.MouseEvent<Button>) => {
+  const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
     dispatch(
       mapRefocus({
-        mapType: (e.currentTarget as any).dataset.type,
+        mapType: e.currentTarget.dataset.type as BaseLayerLetters,
       }),
     );
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<Button>) => {
-    const { type } = (e.currentTarget as any).dataset;
+  const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const { type } = e.currentTarget.dataset;
 
     if (!is<OverlayLetters>(type)) {
       return;
@@ -158,7 +156,7 @@ export function MapSwitchButton(): ReactElement {
         ref={button2Ref}
         onClick={handleButtonClick}
         title={m?.mapLayers.layers}
-        bsStyle="primary"
+        variant="primary"
       >
         <FontAwesomeIcon icon="map-o" />
       </Button>
@@ -180,7 +178,10 @@ export function MapSwitchButton(): ReactElement {
                 )
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key }) => (
-                  <MenuItem key={type} onClick={() => handleMapSelect(type)}>
+                  <DropdownItem
+                    key={type}
+                    onClick={() => handleMapSelect(type)}
+                  >
                     <FontAwesomeIcon
                       icon={mapType === type ? 'check-circle-o' : 'circle-o'}
                     />{' '}
@@ -207,10 +208,10 @@ export function MapSwitchButton(): ReactElement {
                         />
                       </>
                     )}
-                  </MenuItem>
+                  </DropdownItem>
                 ))
             }
-            <MenuItem divider />
+            <DropdownItem divider />
             {overlayLayers
               .filter(
                 ({ showOnlyInExpertMode }) =>
@@ -218,7 +219,7 @@ export function MapSwitchButton(): ReactElement {
               )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .map(({ type, icon, minZoom, key }) => (
-                <MenuItem
+                <DropdownItem
                   key={type}
                   eventKey={type}
                   onSelect={handleOverlaySelect}
@@ -267,7 +268,7 @@ export function MapSwitchButton(): ReactElement {
                       />
                     </>
                   )}
-                </MenuItem>
+                </DropdownItem>
               ))}
           </ul>
         </Popover>

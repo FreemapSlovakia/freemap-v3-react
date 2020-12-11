@@ -1,9 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { useState, useRef, useCallback, ReactElement } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
+import { useState, useRef, useCallback, ReactElement } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import tips from 'fm3/tips/index.json';
 import { useMessages } from 'fm3/l10nInjector';
@@ -16,7 +12,10 @@ import {
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { RootState } from 'fm3/storeCreator';
-import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppDropdownItems';
+import { Button, Popover } from 'react-bootstrap';
+import Overlay from 'react-overlays/esm/Overlay';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function MoreMenuButton(): ReactElement {
   const user = useSelector((state: RootState) => state.auth.user);
@@ -94,7 +93,7 @@ export function MoreMenuButton(): ReactElement {
         ref={button}
         onClick={handleButtonClick}
         title={m?.more.more}
-        bsStyle="primary"
+        variant="primary"
       >
         <FontAwesomeIcon icon="bars" />
       </Button>
@@ -110,12 +109,12 @@ export function MoreMenuButton(): ReactElement {
           <ul>
             {submenu === null ? (
               <>
-                <MenuItem eventKey="language" onSelect={setSubmenu}>
+                <DropdownItem eventKey="language" onSelect={setSubmenu}>
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv{' '}
                   <FontAwesomeIcon icon="chevron-right" />
-                </MenuItem>
+                </DropdownItem>
                 {user ? (
-                  <MenuItem
+                  <DropdownItem
                     onSelect={() => {
                       close();
                       dispatch(authStartLogout());
@@ -123,18 +122,18 @@ export function MoreMenuButton(): ReactElement {
                   >
                     <FontAwesomeIcon icon="sign-out" />{' '}
                     {m?.more.logOut(user.name)}
-                  </MenuItem>
+                  </DropdownItem>
                 ) : (
-                  <MenuItem
+                  <DropdownItem
                     onSelect={() => {
                       close();
                       dispatch(authChooseLoginMethod());
                     }}
                   >
                     <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
-                  </MenuItem>
+                  </DropdownItem>
                 )}
-                <MenuItem
+                <DropdownItem
                   onSelect={() => {
                     close();
                     dispatch(setActiveModal('settings'));
@@ -142,14 +141,14 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FontAwesomeIcon icon="cog" /> {m?.more.settings} <kbd>e</kbd>{' '}
                   <kbd>s</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem onSelect={handleOpenExternally}>
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem onSelect={handleOpenExternally}>
                   <FontAwesomeIcon icon="external-link" />{' '}
                   {m?.external.openInExternal}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   onSelect={() => {
                     close();
                     dispatch(setActiveModal('export-pdf'));
@@ -157,8 +156,8 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}{' '}
                   <kbd>e</kbd> <kbd>p</kbd>
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   onSelect={() => {
                     close();
                     dispatch(setActiveModal('export-gpx'));
@@ -166,16 +165,16 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}{' '}
                   <kbd>e</kbd> <kbd>g</kbd>
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   onSelect={close}
                   href="http://wiki.freemap.sk/FileDownload"
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="!icon-gps-device" />{' '}
                   {m?.more.mapExports}
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   onSelect={() => {
                     close();
                     dispatch(setActiveModal('embed'));
@@ -183,29 +182,29 @@ export function MoreMenuButton(): ReactElement {
                 >
                   <FontAwesomeIcon icon="code" /> {m?.more.embedMap}{' '}
                   <kbd>e</kbd> <kbd>e</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem
                   onSelect={close}
                   href="http://wiki.freemap.sk/NahlasenieChyby"
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="exclamation-triangle" />{' '}
                   {m?.more.reportMapError}
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   onSelect={close}
                   href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="!icon-bug" /> {m?.more.reportAppError}
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem eventKey="help" onSelect={setSubmenu}>
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem eventKey="help" onSelect={setSubmenu}>
                   <FontAwesomeIcon icon="book" /> {m?.more.help}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   onSelect={() => {
                     close();
                     dispatch(setActiveModal('supportUs'));
@@ -214,68 +213,68 @@ export function MoreMenuButton(): ReactElement {
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
                   {m?.more.supportUs}{' '}
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
-                </MenuItem>
+                </DropdownItem>
               </>
             ) : submenu === 'help' ? (
               <>
-                <MenuItem header>
+                <DropdownItem header>
                   <FontAwesomeIcon icon="book" /> {m?.more.help}
-                </MenuItem>
-                <MenuItem onSelect={handleBackClick}>
+                </DropdownItem>
+                <DropdownItem onSelect={handleBackClick}>
                   <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
-                </MenuItem>
-                <MenuItem divider />
+                </DropdownItem>
+                <DropdownItem divider />
                 {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
                   mapType,
                 ) && (
-                  <MenuItem
+                  <DropdownItem
                     onSelect={() => {
                       close();
                       dispatch(setActiveModal('legend'));
                     }}
                   >
                     <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
-                  </MenuItem>
+                  </DropdownItem>
                 )}
-                <MenuItem
+                <DropdownItem
                   onSelect={() => {
                     close();
                     dispatch(setActiveModal('about'));
                   }}
                 >
                   <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
-                </MenuItem>
+                </DropdownItem>
                 {skCz && (
                   <>
-                    <MenuItem divider />
-                    <MenuItem header>
+                    <DropdownItem divider />
+                    <DropdownItem header>
                       <FontAwesomeIcon icon="lightbulb-o" /> {m?.more.tips}
-                    </MenuItem>
+                    </DropdownItem>
                     {tips.map(([key, name, icon]) => (
-                      <MenuItem
+                      <DropdownItem
                         key={key}
                         onSelect={handleTipSelect}
                         eventKey={key}
                       >
                         <FontAwesomeIcon icon={icon} /> {name}
-                      </MenuItem>
+                      </DropdownItem>
                     ))}
                   </>
                 )}
               </>
             ) : submenu === 'openExternally' ? (
               <>
-                <MenuItem header>
+                <DropdownItem header>
                   <FontAwesomeIcon icon="external-link" />{' '}
                   {m?.external.openInExternal}
-                </MenuItem>
-                <MenuItem onSelect={handleBackClick}>
+                </DropdownItem>
+                <DropdownItem onSelect={handleBackClick}>
                   <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <OpenInExternalAppMenuItems
+                </DropdownItem>
+                <DropdownItem divider />
+                <OpenInExternalAppDropdownItems
                   lat={lat}
                   lon={lon}
                   zoom={zoom}
@@ -288,49 +287,49 @@ export function MoreMenuButton(): ReactElement {
               </>
             ) : submenu === 'language' ? (
               <>
-                <MenuItem header>
+                <DropdownItem header>
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv
-                </MenuItem>
-                <MenuItem onSelect={handleBackClick}>
+                </DropdownItem>
+                <DropdownItem onSelect={handleBackClick}>
                   <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem divider />
+                <DropdownItem
                   eventKey={null}
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
                   {m?.more.automaticLanguage}
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   eventKey="en"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'en'}
                 >
                   English
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   eventKey="sk"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'sk'}
                 >
                   Slovensky
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   eventKey="cs"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'cs'}
                 >
                   Česky
-                </MenuItem>
-                <MenuItem
+                </DropdownItem>
+                <DropdownItem
                   eventKey="hu"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'hu'}
                 >
                   Magyar
-                </MenuItem>
+                </DropdownItem>
               </>
             ) : null}
           </ul>

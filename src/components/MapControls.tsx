@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect, ReactElement } from 'react';
+import { useCallback, useState, useEffect, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import { MapSwitchButton } from './MapSwitchButton';
@@ -96,7 +96,7 @@ export function MapControls(): ReactElement | null {
             }}
             title={m?.main.locateMe}
             active={locate}
-            bsStyle={gpsTracked ? 'warning' : 'default'}
+            variant={gpsTracked ? 'warning' : 'default'}
           >
             <FontAwesomeIcon icon="dot-circle-o" />
           </Button>

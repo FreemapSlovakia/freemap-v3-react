@@ -1,8 +1,6 @@
 import { setDefaultGetErrorObject } from 'typescript-is';
 import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
 import 'fullscreen-api-polyfill';
-
-import React from 'react';
 import { render } from 'react-dom';
 import { Provider } from 'react-redux';
 

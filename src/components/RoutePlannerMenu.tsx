@@ -1,9 +1,5 @@
-import React, { useMemo, useCallback, ReactElement } from 'react';
+import { useMemo, useCallback, ReactElement, MouseEvent } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 
 import { useMessages } from 'fm3/l10nInjector';
 
@@ -29,8 +25,14 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
-import { Checkbox } from 'react-bootstrap';
+import {
+  Button,
+  ButtonGroup,
+  DropdownButton,
+  FormCheck,
+} from 'react-bootstrap';
 import { Messages } from 'fm3/translations/messagesInterface';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
@@ -121,7 +123,7 @@ export function RoutePlannerMenu(): ReactElement {
 
   const DropdownButton2 = DropdownButton as any; // because active is missing
 
-  const stopPropagation = useCallback((e: React.MouseEvent) => {
+  const stopPropagation = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);
 
@@ -149,23 +151,23 @@ export function RoutePlannerMenu(): ReactElement {
           }}
           active={pickPointMode === 'start'}
         >
-          <MenuItem>
+          <DropdownItem>
             <FontAwesomeIcon icon="map-marker" /> {m?.routePlanner.point.pick}
-          </MenuItem>
-          <MenuItem
+          </DropdownItem>
+          <DropdownItem
             onSelect={() => {
               dispatch(routePlannerSetFromCurrentPosition('start'));
             }}
           >
             <FontAwesomeIcon icon="bullseye" /> {m?.routePlanner.point.current}
-          </MenuItem>
-          <MenuItem
+          </DropdownItem>
+          <DropdownItem
             onSelect={() => {
               setFromHomeLocation('start');
             }}
           >
             <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
-          </MenuItem>
+          </DropdownItem>
         </DropdownButton2>
         {mode !== 'roundtrip' && (
           <>
@@ -191,25 +193,25 @@ export function RoutePlannerMenu(): ReactElement {
               }}
               active={pickPointMode === 'finish'}
             >
-              <MenuItem>
+              <DropdownItem>
                 <FontAwesomeIcon icon="map-marker" />{' '}
                 {m?.routePlanner.point.pick}
-              </MenuItem>
-              <MenuItem
+              </DropdownItem>
+              <DropdownItem
                 onSelect={() => {
                   dispatch(routePlannerSetFromCurrentPosition('finish'));
                 }}
               >
                 <FontAwesomeIcon icon="bullseye" />{' '}
                 {m?.routePlanner.point.current}
-              </MenuItem>
-              <MenuItem
+              </DropdownItem>
+              <DropdownItem
                 onSelect={() => {
                   setFromHomeLocation('finish');
                 }}
               >
                 <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
-              </MenuItem>
+              </DropdownItem>
             </DropdownButton2>
           </>
         )}
@@ -243,7 +245,7 @@ export function RoutePlannerMenu(): ReactElement {
         {transportTypeDefs
           .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
           .map(({ type, icon, development }) => (
-            <MenuItem
+            <DropdownItem
               eventKey={type}
               key={type}
               title={m?.routePlanner.transportType[type]}
@@ -277,7 +279,7 @@ export function RoutePlannerMenu(): ReactElement {
                   </a>
                 </>
               )}
-            </MenuItem>
+            </DropdownItem>
           ))}
       </DropdownButton>{' '}
       <DropdownButton
@@ -289,14 +291,14 @@ export function RoutePlannerMenu(): ReactElement {
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
         {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
-          <MenuItem
+          <DropdownItem
             eventKey={mode1}
             key={mode1}
             title={m?.routePlanner.mode[mode1]}
             active={mode === mode1}
           >
             {m?.routePlanner.mode[mode1]}
-          </MenuItem>
+          </DropdownItem>
         ))}
       </DropdownButton>
       {alternatives.length > 1 && (
@@ -326,8 +328,8 @@ export function RoutePlannerMenu(): ReactElement {
             }
           >
             {alternatives.map(({ duration, distance, extra }, i) => (
-              <MenuItem
-                eventKey={i}
+              <DropdownItem
+                eventKey={String(i)}
                 key={i}
                 active={i === activeAlternativeIndex}
               >
@@ -338,7 +340,7 @@ export function RoutePlannerMenu(): ReactElement {
                       h: Math.floor(Math.round(duration / 60) / 60),
                       m: Math.round(duration / 60) % 60,
                     })}
-              </MenuItem>
+              </DropdownItem>
             ))}
           </DropdownButton>
         </>
@@ -373,7 +375,8 @@ export function RoutePlannerMenu(): ReactElement {
         <FontAwesomeIcon icon="pencil" />
         <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
       </Button>{' '}
-      <Checkbox
+      <FormCheck
+        type="checkbox"
         inline
         onChange={() => {
           dispatch(routePlannerToggleMilestones(undefined));
@@ -381,7 +384,7 @@ export function RoutePlannerMenu(): ReactElement {
         checked={milestones}
       >
         {m?.routePlanner.milestones}
-      </Checkbox>
+      </FormCheck>
     </>
   );
 }

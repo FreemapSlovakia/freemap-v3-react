@@ -1,10 +1,6 @@
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
 import { useDispatch, useSelector } from 'react-redux';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
 
 import {
   galleryAddItem,
@@ -26,6 +22,7 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { PictureModel } from './GalleryEditForm';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { Button, FormCheck, Modal } from 'react-bootstrap';
 
 export function GalleryUploadModal(): ReactElement {
   const m = useMessages();
@@ -166,7 +163,8 @@ export function GalleryUploadModal(): ReactElement {
         )}
         {!uploading && (
           <>
-            <Checkbox
+            <FormCheck
+              type="checkbox"
               onChange={() => {
                 dispatch(galleryToggleShowPreview());
               }}
@@ -174,7 +172,7 @@ export function GalleryUploadModal(): ReactElement {
               disabled={!!items.length}
             >
               {m?.gallery.uploadModal.showPreview}
-            </Checkbox>
+            </FormCheck>
 
             <div
               {...getRootProps()}
@@ -204,8 +202,8 @@ export function GalleryUploadModal(): ReactElement {
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
-        <Button onClick={handleClose} bsStyle="danger">
-          <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
+        <Button onClick={handleClose} variant="danger">
+          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

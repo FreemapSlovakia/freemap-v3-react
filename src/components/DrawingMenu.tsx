@@ -1,4 +1,4 @@
-import React, { useCallback, ReactElement } from 'react';
+import { useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { lineString } from '@turf/helpers';
 
@@ -12,10 +12,9 @@ import {
 } from 'fm3/actions/elevationChartActions';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Button from 'react-bootstrap/lib/Button';
 import { RootState } from 'fm3/storeCreator';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { Button, ButtonGroup } from 'react-bootstrap';
 
 export function DrawingMenu(): ReactElement {
   const dispatch = useDispatch();

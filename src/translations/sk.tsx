@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';

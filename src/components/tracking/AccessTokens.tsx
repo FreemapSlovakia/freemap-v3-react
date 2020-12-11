@@ -1,16 +1,11 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement, useEffect } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Table from 'react-bootstrap/lib/Table';
-import Button from 'react-bootstrap/lib/Button';
-import Alert from 'react-bootstrap/lib/Alert';
-
+import { ReactElement, useEffect } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Alert, Button, Modal, Table } from 'react-bootstrap';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();
@@ -43,7 +38,7 @@ export function AccessTokens(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="info">
+        <Alert variant="info">
           {m?.tracking.accessTokens.desc(deviceName)}
         </Alert>
         <Table striped bordered responsive>

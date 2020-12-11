@@ -1,13 +1,9 @@
 import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
-import React, { useEffect, useCallback, ReactElement, useState } from 'react';
+import { useEffect, useCallback, ReactElement, useState } from 'react';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Button from 'react-bootstrap/lib/Button';
-// import CloseButton from 'react-bootstrap/lib/CloseButton';
-import Panel from 'react-bootstrap/lib/Panel';
 
 import { useMessages } from 'fm3/l10nInjector';
 
@@ -104,6 +100,7 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { MapsMenu } from './MapsMenu';
 import { WikiLayer } from './WikiLayer';
+import { Button } from 'react-bootstrap';
 
 const embed = window.self !== window.top;
 
@@ -307,7 +304,7 @@ export function Main(): ReactElement {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const handleDropzoneClick = useCallback((e: React.MouseEvent) => {
+  const handleDropzoneClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);
 

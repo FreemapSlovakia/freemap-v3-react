@@ -1,10 +1,11 @@
-import React, {
+import {
   useState,
   useEffect,
   useRef,
   useCallback,
   useMemo,
   ReactElement,
+  Fragment,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -594,7 +595,7 @@ export function RoutePlannerResult(): ReactElement {
   const paths = useMemo(
     () =>
       foo.map(({ legs, alt }) => (
-        <React.Fragment key={`alt-${timestamp}-${alt}`}>
+        <Fragment key={`alt-${timestamp}-${alt}`}>
           {alt === activeAlternativeIndex &&
             special &&
             legs
@@ -664,7 +665,7 @@ export function RoutePlannerResult(): ReactElement {
                 bubblingMouseEvents={false}
               />
             ))}
-        </React.Fragment>
+        </Fragment>
       )),
     [
       activeAlternativeIndex,

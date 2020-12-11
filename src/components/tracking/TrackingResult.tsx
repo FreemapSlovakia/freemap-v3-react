@@ -1,4 +1,4 @@
-import React, { ReactElement, useMemo, useState, useRef } from 'react';
+import { ReactElement, useMemo, useState, useRef, Fragment } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Polyline, Tooltip, Circle } from 'react-leaflet';
 import { RichMarker } from 'fm3/components/RichMarker';
@@ -115,7 +115,7 @@ export function TrackingResult(): ReactElement {
             : null;
 
         return (
-          <React.Fragment key={`trk-${track.id}`}>
+          <Fragment key={`trk-${track.id}`}>
             {lastPoint && typeof lastPoint.accuracy === 'number' && (
               <Circle
                 weight={2}
@@ -182,7 +182,7 @@ export function TrackingResult(): ReactElement {
                 />
               ),
             )}
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </>

@@ -1,10 +1,6 @@
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 import { useDropzone } from 'react-dropzone';
-
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
 
 import { useMessages } from 'fm3/l10nInjector';
 
@@ -18,6 +14,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import 'fm3/styles/trackViewer.scss';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { Button, Modal } from 'react-bootstrap';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 export function TrackViewerUploadModal(): ReactElement {
   const m = useMessages();
@@ -77,7 +75,7 @@ export function TrackViewerUploadModal(): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
+          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

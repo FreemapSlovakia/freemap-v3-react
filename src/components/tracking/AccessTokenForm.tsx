@@ -1,11 +1,5 @@
 import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import FormControl from 'react-bootstrap/lib/FormControl';
+import { FormEvent, ReactElement, useState } from 'react';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
@@ -14,6 +8,13 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import {
+  Button,
+  FormControl,
+  FormGroup,
+  FormLabel,
+  Modal,
+} from 'react-bootstrap';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();
@@ -40,11 +41,11 @@ export function AccessTokenForm(): ReactElement {
 
   const [note, setNote] = useTextInputState(accessToken?.note ?? '');
 
-  const [timeFrom, setTimeFrom] = React.useState(
+  const [timeFrom, setTimeFrom] = useState(
     accessToken?.timeFrom ? toDatetimeLocal(accessToken.timeFrom) : '',
   );
 
-  const [timeTo, setTimeTo] = React.useState(
+  const [timeTo, setTimeTo] = useState(
     accessToken?.timeTo ? toDatetimeLocal(accessToken.timeTo) : '',
   );
 
@@ -52,7 +53,7 @@ export function AccessTokenForm(): ReactElement {
   //   accessToken?.listingLabel ?? '',
   // );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
 
     dispatch(
@@ -80,15 +81,15 @@ export function AccessTokenForm(): ReactElement {
       </Modal.Header>
       <Modal.Body>
         <FormGroup>
-          <ControlLabel>{m?.tracking.accessToken.timeFrom}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.timeFrom}</FormLabel>
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{m?.tracking.accessToken.timeTo}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.timeTo}</FormLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
         {/* <FormGroup>
-          <ControlLabel>{m?.tracking.accessToken.listingLabel}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.listingLabel}</FormLabel>
           <FormControl
             value={listingLabel}
             onChange={setListingLabel}
@@ -96,7 +97,7 @@ export function AccessTokenForm(): ReactElement {
           />
         </FormGroup> */}
         <FormGroup>
-          <ControlLabel>{m?.tracking.accessToken.note}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.note}</FormLabel>
           <FormControl value={note} onChange={setNote} maxLength={255} />
         </FormGroup>
       </Modal.Body>

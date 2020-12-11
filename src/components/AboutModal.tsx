@@ -1,14 +1,10 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useDispatch } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
+import { Button, FormGroup, Modal } from 'react-bootstrap';
 
 export function AboutModal(): ReactElement {
   const m = useMessages();
@@ -93,7 +89,7 @@ export function AboutModal(): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.close}
+            <FontAwesomeIcon icon="close" /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>

@@ -1,15 +1,12 @@
-import React, { ReactElement, useCallback } from 'react';
+import { ReactElement, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Button, DropdownButton } from 'react-bootstrap';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 export function TrackingMenu(): ReactElement {
   const m = useMessages();
@@ -76,15 +73,15 @@ export function TrackingMenu(): ReactElement {
         id="tracking-visual-dropdown"
         title={visual && m?.tracking.visual[visual]}
       >
-        <MenuItem eventKey="points" onSelect={handleVisualChange}>
+        <DropdownItem eventKey="points" onSelect={handleVisualChange}>
           {m?.tracking.visual.points}
-        </MenuItem>
-        <MenuItem eventKey="line" onSelect={handleVisualChange}>
+        </DropdownItem>
+        <DropdownItem eventKey="line" onSelect={handleVisualChange}>
           {m?.tracking.visual.line}
-        </MenuItem>
-        <MenuItem eventKey="line+points" onSelect={handleVisualChange}>
+        </DropdownItem>
+        <DropdownItem eventKey="line+points" onSelect={handleVisualChange}>
           {m?.tracking.visual['line+points']}
-        </MenuItem>
+        </DropdownItem>
       </DropdownButton>
     </>
   );

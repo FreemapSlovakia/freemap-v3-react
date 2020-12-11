@@ -1,18 +1,19 @@
-import React, { useCallback } from 'react';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import 'fm3/styles/react-tag-autocomplete.css';
-
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import Alert from 'react-bootstrap/lib/Alert';
 
 import { DateTime } from '../DateTime';
 import { GalleryTag } from 'fm3/actions/galleryActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { getMessageByKey } from 'fm3/l10nInjector';
+import {
+  Alert,
+  Button,
+  FormControl,
+  FormGroup,
+  InputGroup,
+} from 'react-bootstrap';
 
 export interface PictureModel {
   title: string;
@@ -31,14 +32,14 @@ interface Props {
   m?: Messages;
 }
 
-export const GalleryEditForm: React.FC<Props> = ({
+export function GalleryEditForm({
   model,
   allTags,
   errors,
   onPositionPick,
   m,
   onModelChange,
-}) => {
+}: Props): ReactElement {
   const changeModel = useCallback(
     (key: keyof PictureModel, value: any) => {
       onModelChange({ ...model, [key]: value });
@@ -47,18 +48,15 @@ export const GalleryEditForm: React.FC<Props> = ({
   );
 
   const handleTitleChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      changeModel('title', (e.target as HTMLInputElement).value || null);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      changeModel('title', e.currentTarget.value || null);
     },
     [changeModel],
   );
 
   const handleDescriptionChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      changeModel(
-        'description',
-        (e.target as HTMLTextAreaElement).value || null,
-      );
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      changeModel('description', e.currentTarget.value || null);
     },
     [changeModel],
   );
@@ -71,11 +69,8 @@ export const GalleryEditForm: React.FC<Props> = ({
   );
 
   const handlePositionChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      changeModel(
-        'dirtyPosition',
-        (e.target as HTMLTextAreaElement).value || null,
-      );
+    (e: ChangeEvent<HTMLInputElement>) => {
+      changeModel('dirtyPosition', e.currentTarget.value || null);
     },
     [changeModel],
   );
@@ -105,7 +100,7 @@ export const GalleryEditForm: React.FC<Props> = ({
   return (
     <div>
       {errors?.map((error) => (
-        <Alert bsStyle="danger" key={error}>
+        <Alert variant="danger" key={error}>
           {error.startsWith('~')
             ? error.slice(1)
             : (() => {
@@ -126,7 +121,7 @@ export const GalleryEditForm: React.FC<Props> = ({
       <FormGroup>
         <FormControl
           placeholder={m?.gallery.editForm.description}
-          componentClass="textarea"
+          as="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
           maxLength={4096}
@@ -153,12 +148,12 @@ export const GalleryEditForm: React.FC<Props> = ({
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
-          <InputGroup.Button>
+          <InputGroup.Append>
             <Button onClick={onPositionPick}>
               <FontAwesomeIcon icon="dot-circle-o" />
               {m?.gallery.editForm.setLocation}
             </Button>
-          </InputGroup.Button>
+          </InputGroup.Append>
         </InputGroup>
       </FormGroup>
       <FormGroup>
@@ -173,4 +168,4 @@ export const GalleryEditForm: React.FC<Props> = ({
       </FormGroup>
     </div>
   );
-};
+}

@@ -1,13 +1,5 @@
-import React, { useState, ReactElement } from 'react';
+import { useState, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import Form from 'react-bootstrap/lib/Form';
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 
@@ -16,6 +8,16 @@ import {
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
 import { RootState } from 'fm3/storeCreator';
+import {
+  Button,
+  ButtonGroup,
+  DropdownButton,
+  Form,
+  FormControl,
+  FormGroup,
+  InputGroup,
+} from 'react-bootstrap';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
@@ -51,7 +53,7 @@ export function ChangesetsMenu(): ReactElement {
       <ButtonGroup>
         <DropdownButton
           id="days"
-          onSelect={(d: unknown) => {
+          onSelect={(d) => {
             if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
               dispatch(changesetsSetDays(days));
             }
@@ -59,13 +61,13 @@ export function ChangesetsMenu(): ReactElement {
           title={m?.changesets.olderThanFull({ days })}
         >
           {[3, 7, 14, 30].map((d) => (
-            <MenuItem
+            <DropdownItem
               key={d}
               eventKey={d}
               disabled={!canSearchWithThisAmountOfDays(d)}
             >
               {m?.changesets.olderThan({ days: d })}
-            </MenuItem>
+            </DropdownItem>
           ))}
         </DropdownButton>
       </ButtonGroup>{' '}
@@ -75,11 +77,11 @@ export function ChangesetsMenu(): ReactElement {
             type="text"
             placeholder={m?.changesets.allAuthors}
             onChange={(e) => {
-              setAuthorName((e.target as HTMLInputElement).value || null);
+              setAuthorName(e.target.value || null);
             }}
             value={authorName ?? ''}
           />
-          <InputGroup.Button>
+          <InputGroup.Append>
             <Button
               disabled={!authorName}
               onClick={() => {
@@ -88,7 +90,7 @@ export function ChangesetsMenu(): ReactElement {
             >
               <FontAwesomeIcon icon="times" />
             </Button>
-          </InputGroup.Button>
+          </InputGroup.Append>
         </InputGroup>
       </FormGroup>{' '}
       <Button

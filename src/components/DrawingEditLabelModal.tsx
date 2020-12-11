@@ -1,18 +1,25 @@
-import React, { useState, useCallback, ReactElement } from 'react';
+import {
+  useState,
+  useCallback,
+  ReactElement,
+  FormEvent,
+  ChangeEvent,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Alert from 'react-bootstrap/lib/Alert';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
 
 import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import {
+  Alert,
+  Button,
+  FormControl,
+  FormGroup,
+  FormLabel,
+  Modal,
+} from 'react-bootstrap';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 export function DrawingEditLabelModal(): ReactElement {
   const m = useMessages();
@@ -38,7 +45,7 @@ export function DrawingEditLabelModal(): ReactElement {
   }, [dispatch]);
 
   const saveLabel = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
       dispatch(drawingChangeLabel({ label: editedLabel }));
@@ -49,8 +56,8 @@ export function DrawingEditLabelModal(): ReactElement {
   );
 
   const handleLocalLabelChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setEditedLabel((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setEditedLabel(e.currentTarget.value);
     },
     [],
   );
@@ -63,7 +70,7 @@ export function DrawingEditLabelModal(): ReactElement {
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{m?.drawing.edit.label}</ControlLabel>
+            <FormLabel>{m?.drawing.edit.label}</FormLabel>
             <FormControl
               autoFocus
               type="text"
@@ -74,11 +81,11 @@ export function DrawingEditLabelModal(): ReactElement {
           <Alert>{m?.drawing.edit.hint}</Alert>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" bsStyle="info">
+          <Button type="submit" variant="info">
             <Glyphicon glyph="floppy-disk" /> {m?.general.save}
           </Button>
           <Button type="button" onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>

@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 import { RootState } from 'fm3/storeCreator';

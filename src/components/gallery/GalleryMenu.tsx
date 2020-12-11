@@ -1,4 +1,4 @@
-import React, { ReactElement } from 'react';
+import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { useMessages } from 'fm3/l10nInjector';
@@ -10,14 +10,11 @@ import {
   GalleryListOrder,
 } from 'fm3/actions/galleryActions';
 
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Form from 'react-bootstrap/lib/Form';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { is } from 'typescript-is';
+import { Button, DropdownButton, Form } from 'react-bootstrap';
+import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function GalleryMenu(): ReactElement {
   const m = useMessages();
@@ -48,12 +45,22 @@ export function GalleryMenu(): ReactElement {
           }
         }}
       >
-        <MenuItem eventKey="+createdAt">{m?.gallery.f.firstUploaded}</MenuItem>
-        <MenuItem eventKey="-createdAt">{m?.gallery.f.lastUploaded}</MenuItem>
-        <MenuItem eventKey="+takenAt">{m?.gallery.f.firstCaptured}</MenuItem>
-        <MenuItem eventKey="-takenAt">{m?.gallery.f.lastCaptured}</MenuItem>
-        <MenuItem eventKey="+rating">{m?.gallery.f.leastRated}</MenuItem>
-        <MenuItem eventKey="-rating">{m?.gallery.f.mostRated}</MenuItem>
+        <DropdownItem eventKey="+createdAt">
+          {m?.gallery.f.firstUploaded}
+        </DropdownItem>
+        <DropdownItem eventKey="-createdAt">
+          {m?.gallery.f.lastUploaded}
+        </DropdownItem>
+        <DropdownItem eventKey="+takenAt">
+          {m?.gallery.f.firstCaptured}
+        </DropdownItem>
+        <DropdownItem eventKey="-takenAt">
+          {m?.gallery.f.lastCaptured}
+        </DropdownItem>
+        <DropdownItem eventKey="+rating">
+          {m?.gallery.f.leastRated}
+        </DropdownItem>
+        <DropdownItem eventKey="-rating">{m?.gallery.f.mostRated}</DropdownItem>
       </DropdownButton>{' '}
       <Button
         onClick={() => {
