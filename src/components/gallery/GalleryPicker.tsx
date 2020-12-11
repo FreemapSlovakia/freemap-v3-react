@@ -1,12 +1,11 @@
-import React, { useEffect, useCallback, useState, ReactElement } from 'react';
+import React, { useCallback, useState, ReactElement } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Circle } from 'react-leaflet';
-
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
+import { Circle, useMapEvent } from 'react-leaflet';
 
 import { galleryRequestImages } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
+import { LeafletMouseEvent } from 'leaflet';
 
 export function GalleryPicker(): ReactElement | null {
   const zoom = useSelector((state: RootState) => state.map.zoom);
@@ -16,21 +15,21 @@ export function GalleryPicker(): ReactElement | null {
   const [latLon, setLatLon] = useState<LatLon>();
 
   const handleMapClick = useCallback(
-    (lat: number, lon: number) => {
-      dispatch(galleryRequestImages({ lat, lon }));
+    ({ latlng }: LeafletMouseEvent) => {
+      dispatch(galleryRequestImages({ lat: latlng.lat, lon: latlng.lng }));
     },
     [dispatch],
   );
 
   const handleMouseMove = useCallback(
-    (lat: number, lon: number, originalEvent: MouseEvent) => {
+    ({ latlng, originalEvent }: LeafletMouseEvent) => {
       if (
         originalEvent.target &&
         (originalEvent.target as HTMLElement).classList.contains(
           'leaflet-container',
         )
       ) {
-        setLatLon({ lat, lon });
+        setLatLon({ lat: latlng.lat, lon: latlng.lng });
       } else {
         setLatLon(undefined);
       }
@@ -42,16 +41,11 @@ export function GalleryPicker(): ReactElement | null {
     setLatLon(undefined);
   }, []);
 
-  useEffect(() => {
-    mapEventEmitter.on('mapClick', handleMapClick);
-    mapEventEmitter.on('mouseMove', handleMouseMove);
-    mapEventEmitter.on('mouseOut', handleMouseOut);
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handleMapClick);
-      mapEventEmitter.removeListener('mouseMove', handleMouseMove);
-      mapEventEmitter.removeListener('mouseOut', handleMouseOut);
-    };
-  }, [handleMapClick, handleMouseMove, handleMouseOut]);
+  useMapEvent('click', handleMapClick);
+
+  useMapEvent('mousemove', handleMouseMove);
+
+  useMapEvent('mouseout', handleMouseOut);
 
   return !latLon ? null : (
     <Circle

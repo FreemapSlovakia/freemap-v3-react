@@ -1,8 +1,8 @@
 import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
-import React, { useEffect, useRef, useCallback, ReactElement } from 'react';
-import { Map, ScaleControl } from 'react-leaflet';
+import React, { useEffect, useCallback, ReactElement, useState } from 'react';
+import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Button from 'react-bootstrap/lib/Button';
@@ -64,8 +64,6 @@ import {
   AsyncTrackViewerUploadModal,
 } from 'fm3/components/AsyncComponents';
 
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
-
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
 import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
 
@@ -76,7 +74,7 @@ import 'fm3/styles/leaflet.scss';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
 import { RootState } from 'fm3/storeCreator';
-import { LeafletMouseEvent } from 'leaflet';
+import Leaflet from 'leaflet';
 
 import fmLogo from '../images/freemap-logo-print.png';
 import { useDropzone } from 'react-dropzone';
@@ -191,35 +189,35 @@ export function Main(): ReactElement {
 
   // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
 
-  const mapRef = useRef<Map | null>();
-
-  const setMap = useCallback(
-    (map: Map | null) => {
-      mapRef.current = map;
-    },
-    [mapRef],
-  );
+  const [map, setMap] = useState<Leaflet.Map | null>(null);
 
   useEffect(() => {
-    setMapLeafletElement(mapRef.current ? mapRef.current.leafletElement : null);
-  }, []);
+    setMapLeafletElement(map);
+  }, [map]);
 
-  const handleMapMoveEnd = useCallback(() => {
-    // TODO analyze why this can be null
-    if (!mapRef.current) {
+  useEffect(() => {
+    if (!map) {
       return;
     }
 
-    const map = mapRef.current.leafletElement;
+    const m = map;
 
-    const { lat: newLat, lng: newLon } = map.getCenter();
+    function handleMapMoveEnd() {
+      const { lat: newLat, lng: newLon } = m.getCenter();
 
-    const newZoom = map.getZoom();
+      const newZoom = m.getZoom();
 
-    if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
-      dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+      if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
+        dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+      }
     }
-  }, [dispatch, lat, lon, zoom]);
+
+    m.on('moveend', handleMapMoveEnd);
+
+    return () => {
+      m.off('moveend', handleMapMoveEnd);
+    };
+  }, [dispatch, lat, lon, map, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (embed) {
@@ -339,94 +337,6 @@ export function Main(): ReactElement {
 
       <Toasts />
 
-      <div className="header">
-        {/* {showInfoBar && language === 'sk' && !embed && (
-          <div className="info-bar">
-            <CloseButton onClick={handleInfoBarCloseClick} />
-            {m?.main.p2}
-          </div>
-        )} */}
-        <div className="menus">
-          <Panel className="fm-toolbar">
-            <Button
-              id="freemap-logo"
-              className={progress ? 'in-progress' : 'idle'}
-              onClick={handleLogoClick}
-            />
-            {!embed && showMenu && (
-              <>
-                <MoreMenuButton />{' '}
-              </>
-            )}
-            {(!embed || embedFeatures.includes('search')) && (
-              <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
-            )}
-          </Panel>
-          {showMenu && (!embed || tool) && (
-            <Panel className="fm-toolbar">
-              {embed ? (
-                embedToolDef && (
-                  <>
-                    <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                    {m?.tools[embedToolDef.msgKey]}{' '}
-                  </>
-                )
-              ) : (
-                <ToolsMenuButton />
-              )}
-              {tool === 'objects' && <ObjectsMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu />}
-              {tool &&
-                ['draw-lines', 'draw-points', 'draw-polygons'].includes(
-                  tool,
-                ) && <DrawingMenu />}
-              {tool === 'track-viewer' && <TrackViewerMenu />}
-              {tool === 'changesets' && <ChangesetsMenu />}
-              {tool === 'photos' && <GalleryMenu />}
-              {tool === 'map-details' && <MapDetailsMenu />}
-              {tool === 'tracking' && <TrackingMenu />}
-              {tool === 'maps' && <MapsMenu />}{' '}
-              {canDelete && (
-                <Button title={m?.general.delete} onClick={handleDeleteClick}>
-                  <FontAwesomeIcon icon="trash" />
-                  <span className="hidden-xs">
-                    {' '}
-                    {m?.general.delete} <kbd>Del</kbd>
-                  </span>
-                </Button>
-              )}
-            </Panel>
-          )}
-          <GalleryPositionPickingMenu />
-          <GalleryShowPositionMenu />
-          <HomeLocationPickingMenu />
-        </div>
-      </div>
-
-      <div className="fm-type-zoom-control">
-        <Copyright />
-        <MapControls />
-      </div>
-
-      {activeModal === 'settings' && <Settings />}
-      {activeModal &&
-        [
-          ...(isUserValidated ? ['tracking-my'] : []),
-          'tracking-watched',
-        ].includes(activeModal) && <AsyncTrackingModal />}
-      {activeModal === 'embed' && <AsyncEmbedMapModal />}
-      {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
-      {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
-      {activeModal === 'tips' && <AsyncTipsModal />}
-      {activeModal === 'about' && <AsyncAboutModal />}
-      {activeModal === 'supportUs' && <AsyncSupportUsModal />}
-      {activeModal === 'legend' &&
-        (mapType === 'X' ? <AsyncLegendOutdoorModal /> : <AsyncLegendModal />)}
-      {activeModal === 'edit-label' && <AsyncDrawingEditLabelModal />}
-      {activeModal === 'upload-track' && <AsyncTrackViewerUploadModal />}
-      {showLoginModal && <AsyncLoginModal />}
-      <GalleryModals />
-
       <div
         {...getRootProps({
           onClick: handleDropzoneClick,
@@ -443,23 +353,97 @@ export function Main(): ReactElement {
               left: 0,
               zIndex: 20000,
             }}
-          ></div>
+          />
         )}
+
         <input {...getInputProps()} />
-        <Map
+
+        <MapContainer
           zoomControl={false}
           attributionControl={false}
           maxZoom={20}
-          ref={setMap}
+          whenCreated={setMap}
           center={{ lat, lng: lon }}
           zoom={zoom}
-          onmoveend={handleMapMoveEnd}
-          onmousemove={handleMapMouseMove}
-          onmouseover={handleMapMouseOver}
-          onmouseout={handleMapMouseOut}
-          onclick={handleMapClick}
           style={{ cursor: mouseCursor }}
         >
+          <div className="header">
+            {/* {showInfoBar && language === 'sk' && !embed && (
+          <div className="info-bar">
+            <CloseButton onClick={handleInfoBarCloseClick} />
+            {m?.main.p2}
+          </div>
+        )} */}
+            <div className="menus">
+              <Panel className="fm-toolbar">
+                <Button
+                  id="freemap-logo"
+                  className={progress ? 'in-progress' : 'idle'}
+                  onClick={handleLogoClick}
+                />
+                {!embed && showMenu && (
+                  <>
+                    <MoreMenuButton />{' '}
+                  </>
+                )}
+                {(!embed || embedFeatures.includes('search')) && (
+                  <SearchMenu
+                    hidden={!showMenu}
+                    preventShortcut={!!activeModal}
+                  />
+                )}
+              </Panel>
+
+              {showMenu && (!embed || tool) && (
+                <Panel className="fm-toolbar">
+                  {embed ? (
+                    embedToolDef && (
+                      <>
+                        <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
+                        {m?.tools[embedToolDef.msgKey]}{' '}
+                      </>
+                    )
+                  ) : (
+                    <ToolsMenuButton />
+                  )}
+                  {tool === 'objects' && <ObjectsMenu />}
+                  {tool === 'route-planner' && <RoutePlannerMenu />}
+                  {tool &&
+                    ['draw-lines', 'draw-points', 'draw-polygons'].includes(
+                      tool,
+                    ) && <DrawingMenu />}
+                  {tool === 'track-viewer' && <TrackViewerMenu />}
+                  {tool === 'changesets' && <ChangesetsMenu />}
+                  {tool === 'photos' && <GalleryMenu />}
+                  {tool === 'map-details' && <MapDetailsMenu />}
+                  {tool === 'tracking' && <TrackingMenu />}
+                  {tool === 'maps' && <MapsMenu />}{' '}
+                  {canDelete && (
+                    <Button
+                      title={m?.general.delete}
+                      onClick={handleDeleteClick}
+                    >
+                      <FontAwesomeIcon icon="trash" />
+                      <span className="hidden-xs">
+                        {' '}
+                        {m?.general.delete} <kbd>Del</kbd>
+                      </span>
+                    </Button>
+                  )}
+                </Panel>
+              )}
+
+              <GalleryPositionPickingMenu />
+              <GalleryShowPositionMenu />
+              <HomeLocationPickingMenu />
+            </div>
+          </div>
+
+          <div className="fm-type-zoom-control">
+            <Copyright />
+            <MapControls />
+          </div>
+
           <ScaleControl imperial={false} position="bottomleft" />
 
           <Layers />
@@ -488,39 +472,32 @@ export function Main(): ReactElement {
           {/* TODO should not be extra just because for position picking */}
 
           <GalleryResult />
-        </Map>
+
+          {activeModal === 'settings' && <Settings />}
+          {activeModal &&
+            [
+              ...(isUserValidated ? ['tracking-my'] : []),
+              'tracking-watched',
+            ].includes(activeModal) && <AsyncTrackingModal />}
+          {activeModal === 'embed' && <AsyncEmbedMapModal />}
+          {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
+          {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
+          {activeModal === 'tips' && <AsyncTipsModal />}
+          {activeModal === 'about' && <AsyncAboutModal />}
+          {activeModal === 'supportUs' && <AsyncSupportUsModal />}
+          {activeModal === 'legend' &&
+            (mapType === 'X' ? (
+              <AsyncLegendOutdoorModal />
+            ) : (
+              <AsyncLegendModal />
+            ))}
+          {activeModal === 'edit-label' && <AsyncDrawingEditLabelModal />}
+          {activeModal === 'upload-track' && <AsyncTrackViewerUploadModal />}
+          {showLoginModal && <AsyncLoginModal />}
+          <GalleryModals />
+        </MapContainer>
         {showElevationChart && <AsyncElevationChart />}
       </div>
     </>
   );
-}
-
-function handleMapClick(e: LeafletMouseEvent) {
-  // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-  const target = e.originalEvent.target;
-
-  if (
-    !window.preventMapClick &&
-    target instanceof HTMLDivElement &&
-    target.classList.contains('leaflet-container')
-  ) {
-    mapEventEmitter.emit('mapClick', e.latlng.lat, e.latlng.lng);
-  }
-}
-
-function handleMapMouseMove(e: LeafletMouseEvent) {
-  mapEventEmitter.emit(
-    'mouseMove',
-    e.latlng.lat,
-    e.latlng.lng,
-    e.originalEvent,
-  );
-}
-
-function handleMapMouseOver(e: LeafletMouseEvent) {
-  mapEventEmitter.emit('mouseOver', e.latlng.lat, e.latlng.lng);
-}
-
-function handleMapMouseOut(e: LeafletMouseEvent) {
-  mapEventEmitter.emit('mouseOut', e.latlng.lat, e.latlng.lng);
 }

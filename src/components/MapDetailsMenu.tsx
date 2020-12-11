@@ -1,4 +1,4 @@
-import React, { useEffect, ReactElement } from 'react';
+import React, { ReactElement, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
@@ -8,10 +8,11 @@ import {
   mapDetailsSetSubtool,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { useMapEvent } from 'react-leaflet';
+import { LeafletMouseEvent } from 'leaflet';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();
@@ -20,19 +21,21 @@ export function MapDetailsMenu(): ReactElement {
 
   const subtool = useSelector((state: RootState) => state.mapDetails.subtool);
 
-  useEffect(() => {
-    function setUserSelectedPosition(lat: number, lon: number) {
+  const handleMapClick = useCallback(
+    ({ latlng }: LeafletMouseEvent) => {
       if (subtool !== null) {
-        dispatch(mapDetailsSetUserSelectedPosition({ lat, lon }));
+        dispatch(
+          mapDetailsSetUserSelectedPosition({
+            lat: latlng.lat,
+            lon: latlng.lng,
+          }),
+        );
       }
-    }
+    },
+    [dispatch, subtool],
+  );
 
-    mapEventEmitter.on('mapClick', setUserSelectedPosition);
-
-    return () => {
-      mapEventEmitter.removeListener('mapClick', setUserSelectedPosition);
-    };
-  }, [dispatch, subtool]);
+  useMapEvent('click', handleMapClick);
 
   return (
     <Button

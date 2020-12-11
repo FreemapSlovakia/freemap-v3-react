@@ -1,7 +1,5 @@
-import React, { useEffect, useCallback, ReactElement } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import {
   AsyncGalleryFilterModal,
@@ -14,6 +12,8 @@ import { RootState } from 'fm3/storeCreator';
 import { showGalleryViewer as shouldShowGalleryViewer } from 'fm3/selectors/mainSelectors';
 
 import 'fm3/styles/gallery.scss';
+import { useMapEvent } from 'react-leaflet';
+import { LeafletMouseEvent } from 'leaflet';
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
@@ -38,21 +38,17 @@ export function GalleryModals(): ReactElement {
   );
 
   const handleMapClick = useCallback(
-    (lat: number, lon: number) => {
+    ({ latlng }: LeafletMouseEvent) => {
       if (isPickingPosition) {
-        dispatch(gallerySetPickingPosition({ lat, lon }));
+        dispatch(
+          gallerySetPickingPosition({ lat: latlng.lat, lon: latlng.lng }),
+        );
       }
     },
     [isPickingPosition, dispatch],
   );
 
-  useEffect(() => {
-    mapEventEmitter.on('mapClick', handleMapClick);
-
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handleMapClick);
-    };
-  }, [handleMapClick]);
+  useMapEvent('click', handleMapClick);
 
   return (
     <>

@@ -92,7 +92,7 @@ export interface LayerDef {
   showOnlyInExpertMode?: boolean;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
-  subdomains?: string;
+  subdomains?: string | string[];
   strava?: boolean;
   tms?: boolean;
   extraScales?: number[];
@@ -159,22 +159,19 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'S',
+    url:
+      'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: ['server', 'services'],
     icon: 'plane',
     minZoom: 0,
-    maxNativeZoom: 18,
+    maxNativeZoom: isHdpi ? 18 : 19,
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
     key: 's',
     attribution: [
       {
         type: 'map',
-        name: '©\xa0Bing',
-      },
-      {
-        type: 'map',
-        name: '©\xa0Earthstar Geographics SIO',
-      },
-      {
-        type: 'map',
-        name: '©\xa02017 Microsoft Corporation',
+        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
       },
     ],
     primary: '!sk',

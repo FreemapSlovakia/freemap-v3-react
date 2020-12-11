@@ -43,8 +43,10 @@ export function ObjectsResult(): ReactElement {
             key={`poi-${id}`}
             position={{ lat, lng: lon }}
             image={img}
-            onclick={() => {
-              dispatch(selectFeature({ type: 'objects', id }));
+            eventHandlers={{
+              click() {
+                dispatch(selectFeature({ type: 'objects', id }));
+              },
             }}
             color={activeId === id ? colors.selected : undefined}
           >

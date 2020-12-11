@@ -74,7 +74,11 @@ export function ChangesetsResult(): ReactElement {
             key={changeset.id}
             faIconLeftPadding="2px"
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
-            onclick={() => showChangesetDetail(changeset)}
+            eventHandlers={{
+              click() {
+                showChangesetDetail(changeset);
+              },
+            }}
           >
             <Tooltip
               opacity={opacity}

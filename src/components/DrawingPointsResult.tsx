@@ -1,17 +1,39 @@
 import React, { useCallback, useMemo, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
+import { Tooltip, useMapEvent } from 'react-leaflet';
 
-import { drawingPointChangePosition } from 'fm3/actions/drawingPointActions';
+import {
+  drawingPointAdd,
+  drawingPointChangePosition,
+} from 'fm3/actions/drawingPointActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
-import { Point, DragEndEvent } from 'leaflet';
+import { Point, DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import { colors } from 'fm3/constants';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
+
+  const selection = useSelector((state: RootState) => state.main.selection);
+
+  const handlePoiAdd = useCallback(
+    ({ latlng }: LeafletMouseEvent) => {
+      const tool = selection?.type;
+
+      if (tool === 'draw-points') {
+        dispatch(
+          drawingPointAdd({ lat: latlng.lat, lon: latlng.lng, label: '' }),
+        );
+        dispatch(drawingPointMeasure(true));
+        return;
+      }
+    },
+    [selection?.type, dispatch],
+  );
+
+  useMapEvent('click', handlePoiAdd);
 
   const activeIndex = useSelector((state: RootState) =>
     state.main.selection?.type === 'draw-points'
@@ -67,11 +89,13 @@ export function DrawingPointsResult(): ReactElement {
         <RichMarker
           key={`${change}-${i}`}
           faIconLeftPadding="2px"
-          ondragstart={onSelects[i]}
-          ondragend={handleDragEnd}
-          ondrag={handleDrag}
+          eventHandlers={{
+            dragstart: onSelects[i],
+            dragend: handleDragEnd,
+            drag: handleDrag,
+            click: onSelects[i],
+          }}
           position={{ lat, lng: lon }}
-          onclick={onSelects[i]}
           color={activeIndex === i ? colors.selected : undefined}
           draggable
         >

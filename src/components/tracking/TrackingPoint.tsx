@@ -48,9 +48,11 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
         radius={width}
         color={color}
         fillOpacity={1}
-        onMouseOver={handleMouseOver}
-        onMouseOut={handleMouseOut}
-        onClick={onClick}
+        eventHandlers={{
+          mouseover: handleMouseOver,
+          mouseout: handleMouseOut,
+          click: onClick,
+        }}
       >
         <Tooltip direction="top" offset={[0, -1.5 * width]}>
           {tooltipText(df, nf, tp)}

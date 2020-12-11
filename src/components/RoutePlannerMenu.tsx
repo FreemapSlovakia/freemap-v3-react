@@ -1,4 +1,4 @@
-import React, { useMemo, useEffect, useCallback, ReactElement } from 'react';
+import React, { useMemo, useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import DropdownButton from 'react-bootstrap/lib/DropdownButton';
 import MenuItem from 'react-bootstrap/lib/MenuItem';
@@ -27,7 +27,6 @@ import { setActiveModal, convertToDrawing } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
 import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
 import { Checkbox } from 'react-bootstrap';
@@ -40,10 +39,6 @@ export function RoutePlannerMenu(): ReactElement {
 
   const milestones = useSelector(
     (state: RootState) => state.routePlanner.milestones,
-  );
-
-  const pickMode = useSelector(
-    (state: RootState) => state.routePlanner.pickMode,
   );
 
   const homeLocation = useSelector(
@@ -88,24 +83,6 @@ export function RoutePlannerMenu(): ReactElement {
     (state: RootState) =>
       !!(state.routePlanner.start && state.routePlanner.finish),
   );
-
-  const handlePoiAdd = useCallback(
-    (lat: number, lon: number) => {
-      if (pickMode === 'start') {
-        dispatch(routePlannerSetStart({ start: { lat, lon } }));
-      } else if (pickMode === 'finish') {
-        dispatch(routePlannerSetFinish({ finish: { lat, lon } }));
-      }
-    },
-    [pickMode, dispatch],
-  );
-
-  useEffect(() => {
-    mapEventEmitter.on('mapClick', handlePoiAdd);
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handlePoiAdd);
-    };
-  }, [handlePoiAdd]);
 
   function setFromHomeLocation(pointType: PickMode) {
     if (!homeLocation) {
