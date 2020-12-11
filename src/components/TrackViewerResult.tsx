@@ -229,7 +229,9 @@ export function TrackViewerResult(): ReactElement | null {
             lat: geometry.coordinates[1],
             lng: geometry.coordinates[0],
           }}
-          onclick={handlePointClick}
+          eventHandlers={{
+            click: handlePointClick,
+          }}
         >
           {properties && properties.name && (
             <Tooltip
@@ -251,7 +253,9 @@ export function TrackViewerResult(): ReactElement | null {
           color="#409a40"
           interactive={false}
           position={{ lat: p.lat, lng: p.lon }}
-          onclick={handlePointClick}
+          eventHandlers={{
+            click: handlePointClick,
+          }}
         >
           {p.startTime && (
             <Tooltip
@@ -273,7 +277,9 @@ export function TrackViewerResult(): ReactElement | null {
           color="#d9534f"
           interactive={false}
           position={{ lat: p.lat, lng: p.lon }}
-          onclick={handlePointClick}
+          eventHandlers={{
+            click: handlePointClick,
+          }}
         >
           <Tooltip
             className="compact"
@@ -296,7 +302,9 @@ export function TrackViewerResult(): ReactElement | null {
           color="grey"
           interactive={false}
           position={{ lat: infoLat, lng: infoLon }}
-          onclick={handlePointClick}
+          eventHandlers={{
+            click: handlePointClick,
+          }}
         >
           <Tooltip
             className="compact"

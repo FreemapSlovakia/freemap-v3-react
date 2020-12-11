@@ -2,6 +2,7 @@ import React, { useRef, useEffect, useMemo, ReactElement } from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
 import { DivIcon, divIcon } from 'leaflet';
 import { colors } from 'fm3/constants';
+import Leaflet from 'leaflet';
 
 interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;
@@ -19,11 +20,11 @@ export function RichMarker({
   autoOpenPopup,
   ...restProps
 }: Props): ReactElement {
-  const markerRef = useRef<Marker | null>(null);
+  const markerRef = useRef<Leaflet.Marker | null>(null);
 
   useEffect(() => {
     if (autoOpenPopup && markerRef.current) {
-      markerRef.current.leafletElement.openPopup();
+      markerRef.current.openPopup();
     }
   }, [autoOpenPopup]);
 

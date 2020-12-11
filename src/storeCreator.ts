@@ -102,6 +102,7 @@ import { wikiLayerProcessor } from './processors/wikiLayerProcessor';
 import { wikiLoadPreviewProcessor } from './processors/wikiLoadPreviewProcessor';
 import { wikiReducer } from './reducers/wikiReducer';
 import { legendProcessor } from './processors/legendProcessor';
+import { mapRefocusProcessor } from './processors/mapRefocusProcessor';
 
 const reducers = {
   auth: authReducer,
@@ -144,6 +145,7 @@ processors.push(
   errorProcessor,
   cancelProcessor,
   authLogoutProcessor,
+  mapRefocusProcessor,
   searchProcessor,
   searchHighlightProcessor,
   tipsPreventProcessor,

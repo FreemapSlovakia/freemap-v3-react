@@ -3,11 +3,11 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
 import { MapSwitchButton } from './MapSwitchButton';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/storeCreator';
 import { useMessages } from 'fm3/l10nInjector';
 import { MapViewState, mapRefocus } from 'fm3/actions/mapActions';
 import { toggleLocate } from 'fm3/actions/mainActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();
@@ -31,7 +31,7 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  const leafletElement = getMapLeafletElement();
+  const map = getMapLeafletElement();
 
   const handleFullscreenClick = useCallback(() => {
     if (!document.exitFullscreen) {
@@ -57,7 +57,7 @@ export function MapControls(): ReactElement | null {
     };
   }, [forceUpdate, setForceUpdate]);
 
-  if (!leafletElement) {
+  if (!map) {
     return null;
   }
 
@@ -75,7 +75,7 @@ export function MapControls(): ReactElement | null {
               onMapRefocus({ zoom: zoom + 1 });
             }}
             title={m?.main.zoomIn}
-            disabled={zoom >= leafletElement.getMaxZoom()}
+            disabled={zoom >= map.getMaxZoom()}
           >
             <FontAwesomeIcon icon="plus" />
           </Button>
@@ -84,7 +84,7 @@ export function MapControls(): ReactElement | null {
               onMapRefocus({ zoom: zoom - 1 });
             }}
             title={m?.main.zoomOut}
-            disabled={zoom <= leafletElement.getMinZoom()}
+            disabled={zoom <= map.getMinZoom()}
           >
             <FontAwesomeIcon icon="minus" />
           </Button>

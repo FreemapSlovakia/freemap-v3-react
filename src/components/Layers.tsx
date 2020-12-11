@@ -9,7 +9,7 @@ import {
   OverlayLayerDef,
   overlayLayers,
 } from 'fm3/mapDefinitions';
-import { BingLayer } from 'react-leaflet-bing';
+// import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
 
 import missingTile from '../images/missing-tile-256x256.png';
@@ -44,17 +44,17 @@ export function Layers(): ReactElement {
     tileSize = 256,
     zoomOffset = 0,
   }: BaseLayerDef | OverlayLayerDef) => {
-    if (type === 'S') {
-      return (
-        <BingLayer
-          key="S"
-          bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-          maxNativeZoom={maxNativeZoom}
-          maxZoom={20}
-          zIndex={zIndex}
-        />
-      );
-    }
+    // if (type === 'S') {
+    //   return (
+    //     <BingLayer
+    //       key="S"
+    //       bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
+    //       maxNativeZoom={maxNativeZoom}
+    //       maxZoom={20}
+    //       zIndex={zIndex}
+    //     />
+    //   );
+    // }
 
     if (type === 'I') {
       return (

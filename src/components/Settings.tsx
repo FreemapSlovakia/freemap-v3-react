@@ -27,10 +27,11 @@ import {
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { overlayLayers } from 'fm3/mapDefinitions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { LeafletMouseEvent } from 'leaflet';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function Settings(): ReactElement {
   const init = {
@@ -81,15 +82,21 @@ export function Settings(): ReactElement {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    const handleHomeLocationSelected = (lat: number, lon: number) => {
-      setHomeLocation({ lat, lon });
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
+    }
+
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
+      setHomeLocation({ lat: latlng.lat, lon: latlng.lng });
       dispatch(setSelectingHomeLocation(false));
     };
 
-    mapEventEmitter.on('mapClick', handleHomeLocationSelected);
+    map.on('click', handleMapClick);
 
     return () => {
-      mapEventEmitter.removeListener('mapClick', handleHomeLocationSelected);
+      map.off('click', handleMapClick);
     };
   }, [dispatch]);
 

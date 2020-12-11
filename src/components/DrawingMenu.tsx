@@ -1,11 +1,10 @@
-import React, { useEffect, useCallback, ReactElement } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { lineString } from '@turf/helpers';
 
 import { useMessages } from 'fm3/l10nInjector';
 
 import { selectFeature, Tool } from 'fm3/actions/mainActions';
-import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
 
 import {
   elevationChartSetTrackGeojson,
@@ -15,12 +14,7 @@ import {
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
 import Button from 'react-bootstrap/lib/Button';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 import { RootState } from 'fm3/storeCreator';
-import {
-  drawingPointAdd,
-  drawingPointMeasure,
-} from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 export function DrawingMenu(): ReactElement {
@@ -45,55 +39,6 @@ export function DrawingMenu(): ReactElement {
   const elevationChartTrackGeojson = useSelector(
     (state: RootState) => state.elevationChart.trackGeojson,
   );
-
-  const handlePoiAdd = useCallback(
-    (lat: number, lon: number, position?: number, id0?: number) => {
-      const tool = selection?.type;
-      if (tool === 'draw-points') {
-        dispatch(drawingPointAdd({ lat, lon, label: '' }));
-        dispatch(drawingPointMeasure(true));
-        return;
-      }
-
-      const points = linePoints;
-
-      const pos = position ? Math.ceil(position / 2) : points.length;
-
-      let id: number;
-
-      if (id0) {
-        id = id0;
-      } else if (pos === 0) {
-        id = points.length ? points[pos].id - 1 : 0;
-      } else if (pos === points.length) {
-        id = points[pos - 1].id + 1;
-      } else {
-        id = (points[pos - 1].id + points[pos].id) / 2;
-      }
-
-      dispatch(
-        drawingLineAddPoint({
-          index:
-            selection?.type === 'draw-lines' ||
-            selection?.type === 'draw-polygons'
-              ? selection?.id
-              : undefined,
-          point: { lat, lon, id },
-          position: pos,
-          type: tool === 'draw-lines' ? 'line' : 'polygon',
-        }),
-      );
-      dispatch(drawingPointMeasure(true));
-    },
-    [selection?.type, selection?.id, linePoints, dispatch],
-  );
-
-  useEffect(() => {
-    mapEventEmitter.on('mapClick', handlePoiAdd);
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handlePoiAdd);
-    };
-  });
 
   const toggleElevationChart = useCallback(() => {
     // TODO to logic

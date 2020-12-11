@@ -1,4 +1,4 @@
-import React, { useEffect, ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
@@ -8,10 +8,11 @@ import {
   mapDetailsSetSubtool,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { LeafletMouseEvent } from 'leaflet';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();
@@ -21,16 +22,27 @@ export function MapDetailsMenu(): ReactElement {
   const subtool = useSelector((state: RootState) => state.mapDetails.subtool);
 
   useEffect(() => {
-    function setUserSelectedPosition(lat: number, lon: number) {
-      if (subtool !== null) {
-        dispatch(mapDetailsSetUserSelectedPosition({ lat, lon }));
-      }
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
     }
 
-    mapEventEmitter.on('mapClick', setUserSelectedPosition);
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
+      if (subtool !== null) {
+        dispatch(
+          mapDetailsSetUserSelectedPosition({
+            lat: latlng.lat,
+            lon: latlng.lng,
+          }),
+        );
+      }
+    };
+
+    map.on('click', handleMapClick);
 
     return () => {
-      mapEventEmitter.removeListener('mapClick', setUserSelectedPosition);
+      map.off('click', handleMapClick);
     };
   }, [dispatch, subtool]);
 

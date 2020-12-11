@@ -1,7 +1,5 @@
-import React, { useEffect, useCallback, ReactElement } from 'react';
+import React, { useCallback, ReactElement } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
 
 import { RichMarker } from 'fm3/components/RichMarker';
 
@@ -9,7 +7,8 @@ import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 
 import 'fm3/styles/gallery.scss';
 import { RootState } from 'fm3/storeCreator';
-import { DragEndEvent } from 'leaflet';
+import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import { useMapEvent } from 'react-leaflet';
 
 export function GalleryResult(): ReactElement {
   const dispatch = useDispatch();
@@ -37,21 +36,15 @@ export function GalleryResult(): ReactElement {
 
   // TODO mode to GalleryMenu to be consistent with other tools
   const handleMapClick = useCallback(
-    (lat: number, lon: number) => {
+    ({ latlng }: LeafletMouseEvent) => {
       if (isPickingPosition) {
-        handlePositionPick(lat, lon);
+        handlePositionPick(latlng.lat, latlng.lng);
       }
     },
     [isPickingPosition, handlePositionPick],
   );
 
-  useEffect(() => {
-    mapEventEmitter.on('mapClick', handleMapClick);
-
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handleMapClick);
-    };
-  }, [handleMapClick]);
+  useMapEvent('click', handleMapClick);
 
   const handlePositionMarkerDragEnd = useCallback(
     (e: DragEndEvent) => {
@@ -67,7 +60,9 @@ export function GalleryResult(): ReactElement {
         <RichMarker
           draggable
           position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
-          ondragend={handlePositionMarkerDragEnd}
+          eventHandlers={{
+            dragend: handlePositionMarkerDragEnd,
+          }}
         />
       )}
       {showPosition && image && (

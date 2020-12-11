@@ -144,7 +144,9 @@ export function TrackingResult(): ReactElement {
                   positions={toLatLngArr(segment)}
                   weight={width}
                   color={color}
-                  onClick={handleClick}
+                  eventHandlers={{
+                    click: handleClick,
+                  }}
                 />
               ))}
 
@@ -159,7 +161,9 @@ export function TrackingResult(): ReactElement {
                     track.trackPoints[track.trackPoints.length - 1],
                   )}
                   color={color}
-                  onclick={handleClick}
+                  eventHandlers={{
+                    click: handleClick,
+                  }}
                   faIcon={track.id === activeTrackId ? 'user' : 'user-o'}
                 >
                   <Tooltip direction="top" offset={[0, -36]} permanent>
