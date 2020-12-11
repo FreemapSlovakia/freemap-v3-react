@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback, useState } from 'react';
+import React, { ReactElement, useCallback, useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Modal from 'react-bootstrap/lib/Modal';
@@ -30,8 +30,8 @@ import { latLonToString } from 'fm3/geoutils';
 import { overlayLayers } from 'fm3/mapDefinitions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { useMapEvent } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function Settings(): ReactElement {
   const init = {
@@ -81,15 +81,24 @@ export function Settings(): ReactElement {
 
   const dispatch = useDispatch();
 
-  const handleHomeLocationSelected = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
+  useEffect(() => {
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
+    }
+
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
       setHomeLocation({ lat: latlng.lat, lon: latlng.lng });
       dispatch(setSelectingHomeLocation(false));
-    },
-    [dispatch],
-  );
+    };
 
-  useMapEvent('click', handleHomeLocationSelected);
+    map.on('click', handleMapClick);
+
+    return () => {
+      map.off('click', handleMapClick);
+    };
+  }, [dispatch]);
 
   const userMadeChanges =
     homeLocation !== init.homeLocation ||

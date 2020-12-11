@@ -1,4 +1,4 @@
-import React, { ReactElement, useCallback } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
@@ -11,8 +11,8 @@ import {
 
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { useMapEvent } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();
@@ -21,8 +21,14 @@ export function MapDetailsMenu(): ReactElement {
 
   const subtool = useSelector((state: RootState) => state.mapDetails.subtool);
 
-  const handleMapClick = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
+  useEffect(() => {
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
+    }
+
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
       if (subtool !== null) {
         dispatch(
           mapDetailsSetUserSelectedPosition({
@@ -31,11 +37,14 @@ export function MapDetailsMenu(): ReactElement {
           }),
         );
       }
-    },
-    [dispatch, subtool],
-  );
+    };
 
-  useMapEvent('click', handleMapClick);
+    map.on('click', handleMapClick);
+
+    return () => {
+      map.off('click', handleMapClick);
+    };
+  }, [dispatch, subtool]);
 
   return (
     <Button

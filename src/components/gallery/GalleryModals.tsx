@@ -1,4 +1,4 @@
-import React, { useCallback, ReactElement } from 'react';
+import React, { ReactElement, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -12,8 +12,8 @@ import { RootState } from 'fm3/storeCreator';
 import { showGalleryViewer as shouldShowGalleryViewer } from 'fm3/selectors/mainSelectors';
 
 import 'fm3/styles/gallery.scss';
-import { useMapEvent } from 'react-leaflet';
 import { LeafletMouseEvent } from 'leaflet';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();
@@ -37,18 +37,27 @@ export function GalleryModals(): ReactElement {
       !state.auth.user.notValidated,
   );
 
-  const handleMapClick = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
+  useEffect(() => {
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
+    }
+
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
       if (isPickingPosition) {
         dispatch(
           gallerySetPickingPosition({ lat: latlng.lat, lon: latlng.lng }),
         );
       }
-    },
-    [isPickingPosition, dispatch],
-  );
+    };
 
-  useMapEvent('click', handleMapClick);
+    map.on('click', handleMapClick);
+
+    return () => {
+      map.off('click', handleMapClick);
+    };
+  }, [dispatch, isPickingPosition]);
 
   return (
     <>

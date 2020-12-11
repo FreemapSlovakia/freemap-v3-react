@@ -337,6 +337,77 @@ export function Main(): ReactElement {
 
       <Toasts />
 
+      <div className="header">
+        {/* {showInfoBar && language === 'sk' && !embed && (
+          <div className="info-bar">
+            <CloseButton onClick={handleInfoBarCloseClick} />
+            {m?.main.p2}
+          </div>
+        )} */}
+        <div className="menus">
+          <Panel className="fm-toolbar">
+            <Button
+              id="freemap-logo"
+              className={progress ? 'in-progress' : 'idle'}
+              onClick={handleLogoClick}
+            />
+            {!embed && showMenu && (
+              <>
+                <MoreMenuButton />{' '}
+              </>
+            )}
+            {(!embed || embedFeatures.includes('search')) && (
+              <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
+            )}
+          </Panel>
+
+          {showMenu && (!embed || tool) && (
+            <Panel className="fm-toolbar">
+              {embed ? (
+                embedToolDef && (
+                  <>
+                    <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
+                    {m?.tools[embedToolDef.msgKey]}{' '}
+                  </>
+                )
+              ) : (
+                <ToolsMenuButton />
+              )}
+              {tool === 'objects' && <ObjectsMenu />}
+              {tool === 'route-planner' && <RoutePlannerMenu />}
+              {tool &&
+                ['draw-lines', 'draw-points', 'draw-polygons'].includes(
+                  tool,
+                ) && <DrawingMenu />}
+              {tool === 'track-viewer' && <TrackViewerMenu />}
+              {tool === 'changesets' && <ChangesetsMenu />}
+              {tool === 'photos' && <GalleryMenu />}
+              {tool === 'map-details' && <MapDetailsMenu />}
+              {tool === 'tracking' && <TrackingMenu />}
+              {tool === 'maps' && <MapsMenu />}{' '}
+              {canDelete && (
+                <Button title={m?.general.delete} onClick={handleDeleteClick}>
+                  <FontAwesomeIcon icon="trash" />
+                  <span className="hidden-xs">
+                    {' '}
+                    {m?.general.delete} <kbd>Del</kbd>
+                  </span>
+                </Button>
+              )}
+            </Panel>
+          )}
+
+          <GalleryPositionPickingMenu />
+          <GalleryShowPositionMenu />
+          <HomeLocationPickingMenu />
+        </div>
+      </div>
+
+      <div className="fm-type-zoom-control">
+        <Copyright />
+        <MapControls />
+      </div>
+
       <div
         {...getRootProps({
           onClick: handleDropzoneClick,
@@ -367,83 +438,6 @@ export function Main(): ReactElement {
           zoom={zoom}
           style={{ cursor: mouseCursor }}
         >
-          <div className="header">
-            {/* {showInfoBar && language === 'sk' && !embed && (
-          <div className="info-bar">
-            <CloseButton onClick={handleInfoBarCloseClick} />
-            {m?.main.p2}
-          </div>
-        )} */}
-            <div className="menus">
-              <Panel className="fm-toolbar">
-                <Button
-                  id="freemap-logo"
-                  className={progress ? 'in-progress' : 'idle'}
-                  onClick={handleLogoClick}
-                />
-                {!embed && showMenu && (
-                  <>
-                    <MoreMenuButton />{' '}
-                  </>
-                )}
-                {(!embed || embedFeatures.includes('search')) && (
-                  <SearchMenu
-                    hidden={!showMenu}
-                    preventShortcut={!!activeModal}
-                  />
-                )}
-              </Panel>
-
-              {showMenu && (!embed || tool) && (
-                <Panel className="fm-toolbar">
-                  {embed ? (
-                    embedToolDef && (
-                      <>
-                        <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                        {m?.tools[embedToolDef.msgKey]}{' '}
-                      </>
-                    )
-                  ) : (
-                    <ToolsMenuButton />
-                  )}
-                  {tool === 'objects' && <ObjectsMenu />}
-                  {tool === 'route-planner' && <RoutePlannerMenu />}
-                  {tool &&
-                    ['draw-lines', 'draw-points', 'draw-polygons'].includes(
-                      tool,
-                    ) && <DrawingMenu />}
-                  {tool === 'track-viewer' && <TrackViewerMenu />}
-                  {tool === 'changesets' && <ChangesetsMenu />}
-                  {tool === 'photos' && <GalleryMenu />}
-                  {tool === 'map-details' && <MapDetailsMenu />}
-                  {tool === 'tracking' && <TrackingMenu />}
-                  {tool === 'maps' && <MapsMenu />}{' '}
-                  {canDelete && (
-                    <Button
-                      title={m?.general.delete}
-                      onClick={handleDeleteClick}
-                    >
-                      <FontAwesomeIcon icon="trash" />
-                      <span className="hidden-xs">
-                        {' '}
-                        {m?.general.delete} <kbd>Del</kbd>
-                      </span>
-                    </Button>
-                  )}
-                </Panel>
-              )}
-
-              <GalleryPositionPickingMenu />
-              <GalleryShowPositionMenu />
-              <HomeLocationPickingMenu />
-            </div>
-          </div>
-
-          <div className="fm-type-zoom-control">
-            <Copyright />
-            <MapControls />
-          </div>
-
           <ScaleControl imperial={false} position="bottomleft" />
 
           <Layers />

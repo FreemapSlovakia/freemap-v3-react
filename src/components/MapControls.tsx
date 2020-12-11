@@ -7,7 +7,7 @@ import { RootState } from 'fm3/storeCreator';
 import { useMessages } from 'fm3/l10nInjector';
 import { MapViewState, mapRefocus } from 'fm3/actions/mapActions';
 import { toggleLocate } from 'fm3/actions/mainActions';
-import { useMap } from 'react-leaflet';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();
@@ -31,7 +31,7 @@ export function MapControls(): ReactElement | null {
     [dispatch],
   );
 
-  const map = useMap();
+  const map = getMapLeafletElement();
 
   const handleFullscreenClick = useCallback(() => {
     if (!document.exitFullscreen) {
