@@ -33,8 +33,9 @@ export function GalleryModals(): ReactElement {
   const showUploadModal = useSelector(
     (state: RootState) =>
       state.gallery.showUploadModal &&
-      state.auth.user &&
-      !state.auth.user.notValidated,
+      !!state.auth.user &&
+      !state.auth.user.notValidated &&
+      state.gallery.pickingPositionForId === null,
   );
 
   useEffect(() => {
@@ -61,9 +62,9 @@ export function GalleryModals(): ReactElement {
 
   return (
     <>
-      {showGalleryViewer && <AsyncGalleryViewerModal />}
-      {showFilter && <AsyncGalleryFilterModal />}
-      {showUploadModal && <AsyncGalleryUploadModal />}
+      {<AsyncGalleryViewerModal show={showGalleryViewer} />}
+      {<AsyncGalleryFilterModal show={showFilter} />}
+      {<AsyncGalleryUploadModal show={showUploadModal} />}
     </>
   );
 }

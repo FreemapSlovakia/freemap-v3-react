@@ -4,8 +4,8 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Button, DropdownButton } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import { Button, ButtonGroup, DropdownButton } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 export function TrackingMenu(): ReactElement {
@@ -53,7 +53,7 @@ export function TrackingMenu(): ReactElement {
         }}
       >
         <FontAwesomeIcon icon="eye" />
-        <span className="hidden-md hidden-sm hidden-xs">
+        <span className="d-none d-md-inline">
           {' '}
           {m?.tracking.trackedDevices.button}
         </span>
@@ -64,24 +64,25 @@ export function TrackingMenu(): ReactElement {
         }}
       >
         <FontAwesomeIcon icon="mobile" />
-        <span className="hidden-md hidden-sm hidden-xs">
+        <span className="d-none d-md-inline">
           {' '}
           {m?.tracking.devices.button}
         </span>
       </Button>{' '}
       <DropdownButton
+        as={ButtonGroup}
         id="tracking-visual-dropdown"
         title={visual && m?.tracking.visual[visual]}
       >
-        <DropdownItem eventKey="points" onSelect={handleVisualChange}>
+        <Dropdown.Item eventKey="points" onSelect={handleVisualChange}>
           {m?.tracking.visual.points}
-        </DropdownItem>
-        <DropdownItem eventKey="line" onSelect={handleVisualChange}>
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="line" onSelect={handleVisualChange}>
           {m?.tracking.visual.line}
-        </DropdownItem>
-        <DropdownItem eventKey="line+points" onSelect={handleVisualChange}>
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="line+points" onSelect={handleVisualChange}>
           {m?.tracking.visual['line+points']}
-        </DropdownItem>
+        </Dropdown.Item>
       </DropdownButton>
     </>
   );

@@ -7,7 +7,7 @@ import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { is } from 'typescript-is';
 import { Button, Overlay, Popover } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function ToolsMenuButton(): ReactElement {
   const m = useMessages();
@@ -66,7 +66,7 @@ export function ToolsMenuButton(): ReactElement {
         variant="primary"
       >
         <FontAwesomeIcon icon={toolDef ? toolDef.icon : 'briefcase'} />
-        <span className="hidden-xs">
+        <span className="d-none d-sm-inline">
           {' '}
           {m?.tools[tool && toolDef ? toolDef.msgKey : 'tools']}
         </span>
@@ -83,24 +83,25 @@ export function ToolsMenuButton(): ReactElement {
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <Popover.Content>
             {tool && (
-              <DropdownItem onSelect={handleToolSelect}>
+              <Dropdown.Item onSelect={handleToolSelect}>
                 <FontAwesomeIcon icon="briefcase" /> {m?.tools.none}{' '}
                 <kbd>Esc</kbd>
-              </DropdownItem>
+              </Dropdown.Item>
             )}
 
-            <DropdownItem onSelect={handleMapClear}>
+            <Dropdown.Item onSelect={handleMapClear}>
               <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap} <kbd>g</kbd>{' '}
               <kbd>c</kbd>
-            </DropdownItem>
-            <DropdownItem divider />
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
 
             {toolDefinitions
               .filter(({ expertOnly }) => expertMode || !expertOnly)
               .map(
                 ({ tool: newTool, icon, msgKey, kbd }) =>
                   newTool && (
-                    <DropdownItem
+                    <Dropdown.Item
                       key={newTool}
                       eventKey={newTool}
                       onSelect={handleToolSelect}
@@ -112,7 +113,7 @@ export function ToolsMenuButton(): ReactElement {
                           <kbd>g</kbd> <kbd>{kbd}</kbd>
                         </>
                       )}
-                    </DropdownItem>
+                    </Dropdown.Item>
                   ),
               )}
           </Popover.Content>

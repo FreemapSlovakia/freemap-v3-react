@@ -1,5 +1,35 @@
-import React, { lazy, ReactElement, Suspense } from 'react';
+import React, {
+  lazy,
+  ReactElement,
+  Suspense,
+  useEffect,
+  useState,
+} from 'react';
 import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
+
+type ShowProps = { show: boolean };
+
+// this hook is to prevent loading hidden components (modals)
+// we could render async component conditionaly but this would break fade-out animation of closing dialogs
+function useShow(show: boolean) {
+  const [shown, setShown] = useState(false);
+
+  useEffect(() => {
+    if (show) {
+      setShown(true);
+    } else {
+      // this is to get rid of modal state after closing (and fade-out animation)
+      const t = setTimeout(() => {
+        setShown(false);
+      }, 1000);
+      return () => {
+        clearTimeout(t);
+      };
+    }
+  }, [show]);
+
+  return show || shown || null;
+}
 
 const LoginModal = lazy(() =>
   import(
@@ -7,9 +37,9 @@ const LoginModal = lazy(() =>
   ).then(({ LoginModal }) => ({ default: LoginModal })),
 );
 
-export const AsyncLoginModal = (): ReactElement => (
+export const AsyncLoginModal = ({ show }: ShowProps): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
-    <LoginModal />
+    <LoginModal show={show} />
   </Suspense>
 );
 
@@ -31,9 +61,9 @@ const ExportGpxModal = lazy(() =>
   ).then(({ ExportGpxModal }) => ({ default: ExportGpxModal })),
 );
 
-export const AsyncExportGpxModal = (): ReactElement => (
+export const AsyncExportGpxModal = ({ show }: ShowProps): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
-    <ExportGpxModal />
+    <ExportGpxModal show={show} />
   </Suspense>
 );
 
@@ -43,9 +73,9 @@ const ExportPdfModal = lazy(() =>
   ).then(({ ExportPdfModal }) => ({ default: ExportPdfModal })),
 );
 
-export const AsyncExportPdfModal = (): ReactElement => (
+export const AsyncExportPdfModal = ({ show }: ShowProps): ReactElement => (
   <Suspense fallback={<AsyncLoadingIndicator />}>
-    <ExportPdfModal />
+    <ExportPdfModal show={show} />
   </Suspense>
 );
 
@@ -55,11 +85,15 @@ const LegendModal = lazy(() =>
   ).then(({ LegendModal }) => ({ default: LegendModal })),
 );
 
-export const AsyncLegendModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <LegendModal />
-  </Suspense>
-);
+export function AsyncLegendModal({ show }: ShowProps): ReactElement | null {
+  return (
+    useShow(show) && (
+      <Suspense fallback={<AsyncLoadingIndicator />}>
+        <LegendModal show={show} />
+      </Suspense>
+    )
+  );
+}
 
 const LegendOutdoorModal = lazy(() =>
   import(
@@ -67,11 +101,14 @@ const LegendOutdoorModal = lazy(() =>
   ).then(({ LegendOutdoorModal }) => ({ default: LegendOutdoorModal })),
 );
 
-export const AsyncLegendOutdoorModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <LegendOutdoorModal />
-  </Suspense>
-);
+export const AsyncLegendOutdoorModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <LegendOutdoorModal show={show} />
+    </Suspense>
+  );
 
 const EmbedMapModal = lazy(() =>
   import(
@@ -79,11 +116,12 @@ const EmbedMapModal = lazy(() =>
   ).then(({ EmbedMapModal }) => ({ default: EmbedMapModal })),
 );
 
-export const AsyncEmbedMapModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <EmbedMapModal />
-  </Suspense>
-);
+export const AsyncEmbedMapModal = ({ show }: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <EmbedMapModal show={show} />
+    </Suspense>
+  );
 
 const TipsModal = lazy(() =>
   import(
@@ -91,11 +129,12 @@ const TipsModal = lazy(() =>
   ).then(({ TipsModal }) => ({ default: TipsModal })),
 );
 
-export const AsyncTipsModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <TipsModal />
-  </Suspense>
-);
+export const AsyncTipsModal = ({ show }: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <TipsModal show={show} />
+    </Suspense>
+  );
 
 const AboutModal = lazy(() =>
   import(
@@ -103,11 +142,12 @@ const AboutModal = lazy(() =>
   ).then(({ AboutModal }) => ({ default: AboutModal })),
 );
 
-export const AsyncAboutModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <AboutModal />
-  </Suspense>
-);
+export const AsyncAboutModal = ({ show }: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <AboutModal show={show} />
+    </Suspense>
+  );
 
 const SupportUsModal = lazy(() =>
   import(
@@ -115,11 +155,15 @@ const SupportUsModal = lazy(() =>
   ).then(({ SupportUsModal }) => ({ default: SupportUsModal })),
 );
 
-export const AsyncSupportUsModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <SupportUsModal />
-  </Suspense>
-);
+export function AsyncSupportUsModal({ show }: ShowProps): ReactElement | null {
+  return (
+    useShow(show) && (
+      <Suspense fallback={<AsyncLoadingIndicator />}>
+        <SupportUsModal show={show} />
+      </Suspense>
+    )
+  );
+}
 
 const GalleryUploadModal = lazy(() =>
   import(
@@ -127,11 +171,14 @@ const GalleryUploadModal = lazy(() =>
   ).then(({ GalleryUploadModal }) => ({ default: GalleryUploadModal })),
 );
 
-export const AsyncGalleryUploadModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <GalleryUploadModal />
-  </Suspense>
-);
+export const AsyncGalleryUploadModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <GalleryUploadModal show={show} />
+    </Suspense>
+  );
 
 const GalleryViewerModal = lazy(() =>
   import(
@@ -139,11 +186,14 @@ const GalleryViewerModal = lazy(() =>
   ).then(({ GalleryViewerModal }) => ({ default: GalleryViewerModal })),
 );
 
-export const AsyncGalleryViewerModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <GalleryViewerModal />
-  </Suspense>
-);
+export const AsyncGalleryViewerModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <GalleryViewerModal show={show} />
+    </Suspense>
+  );
 
 const GalleryFilterModal = lazy(() =>
   import(
@@ -151,11 +201,14 @@ const GalleryFilterModal = lazy(() =>
   ).then(({ GalleryFilterModal }) => ({ default: GalleryFilterModal })),
 );
 
-export const AsyncGalleryFilterModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <GalleryFilterModal />
-  </Suspense>
-);
+export const AsyncGalleryFilterModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <GalleryFilterModal show={show} />
+    </Suspense>
+  );
 
 const TrackingModal = lazy(() =>
   import(
@@ -163,11 +216,12 @@ const TrackingModal = lazy(() =>
   ).then(({ TrackingModal }) => ({ default: TrackingModal })),
 );
 
-export const AsyncTrackingModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <TrackingModal />
-  </Suspense>
-);
+export const AsyncTrackingModal = ({ show }: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <TrackingModal show={show} />
+    </Suspense>
+  );
 
 const DrawingEditLabelModal = lazy(() =>
   import(
@@ -175,11 +229,14 @@ const DrawingEditLabelModal = lazy(() =>
   ).then(({ DrawingEditLabelModal }) => ({ default: DrawingEditLabelModal })),
 );
 
-export const AsyncDrawingEditLabelModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <DrawingEditLabelModal />
-  </Suspense>
-);
+export const AsyncDrawingEditLabelModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <DrawingEditLabelModal show={show} />
+    </Suspense>
+  );
 
 const TrackViewerUploadModal = lazy(() =>
   import(
@@ -187,8 +244,24 @@ const TrackViewerUploadModal = lazy(() =>
   ).then(({ TrackViewerUploadModal }) => ({ default: TrackViewerUploadModal })),
 );
 
-export const AsyncTrackViewerUploadModal = (): ReactElement => (
-  <Suspense fallback={<AsyncLoadingIndicator />}>
-    <TrackViewerUploadModal />
-  </Suspense>
+export const AsyncTrackViewerUploadModal = ({
+  show,
+}: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <TrackViewerUploadModal show={show} />
+    </Suspense>
+  );
+
+const SettingsModal = lazy(() =>
+  import(
+    /* webpackChunkName: "settingsModal" */ 'fm3/components/SettingsModal'
+  ).then(({ SettingsModal }) => ({ default: SettingsModal })),
 );
+
+export const AsyncSettingsModal = ({ show }: ShowProps): ReactElement | null =>
+  useShow(show) && (
+    <Suspense fallback={<AsyncLoadingIndicator />}>
+      <SettingsModal show={show} />
+    </Suspense>
+  );

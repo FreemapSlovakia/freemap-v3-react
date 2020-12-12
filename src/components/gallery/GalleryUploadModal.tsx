@@ -24,16 +24,14 @@ import { PictureModel } from './GalleryEditForm';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
 import { Button, FormCheck, Modal } from 'react-bootstrap';
 
-export function GalleryUploadModal(): ReactElement {
+type Props = { show: boolean };
+
+export function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
   const items = useSelector((state: RootState) => state.gallery.items);
-
-  const visible = useSelector(
-    (state: RootState) => state.gallery.pickingPositionForId === null,
-  );
 
   const uploading = useSelector(
     (state: RootState) => !!state.gallery.uploadingId,
@@ -121,7 +119,7 @@ export function GalleryUploadModal(): ReactElement {
   );
 
   return (
-    <Modal show={visible} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>
@@ -170,9 +168,8 @@ export function GalleryUploadModal(): ReactElement {
               }}
               checked={showPreview}
               disabled={!!items.length}
-            >
-              {m?.gallery.uploadModal.showPreview}
-            </FormCheck>
+              label={m?.gallery.uploadModal.showPreview}
+            />
 
             <div
               {...getRootProps()}

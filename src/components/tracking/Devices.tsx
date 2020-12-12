@@ -27,7 +27,7 @@ export function Devices(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="info">{m?.tracking.devices.desc}</Alert>
+        <Alert variant="info">{m?.tracking.devices.desc()}</Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>

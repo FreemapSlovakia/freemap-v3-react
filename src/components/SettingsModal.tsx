@@ -31,9 +31,11 @@ import {
   Tabs,
   Tooltip,
 } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
-export function Settings(): ReactElement {
+type Props = { show: boolean };
+
+export function SettingsModal({ show }: Props): ReactElement {
   const init = {
     homeLocation: useSelector((state: RootState) => state.main.homeLocation),
     overlayOpacity: useSelector((state: RootState) => state.map.overlayOpacity),
@@ -126,7 +128,7 @@ export function Settings(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show={!selectingHomeLocation} onHide={close}>
+    <Modal show={show && !selectingHomeLocation} onHide={close}>
       <form
         onSubmit={(e) => {
           e.preventDefault();
@@ -155,31 +157,34 @@ export function Settings(): ReactElement {
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <FormCheck
-            type="checkbox"
-            onChange={(e) => {
-              setExpertMode(e.currentTarget.checked);
-            }}
-            checked={expertMode}
-          >
-            {m?.settings.expert.switch}{' '}
-            <OverlayTrigger
-              placement="right"
-              overlay={
-                m && (
-                  <Tooltip id="tooltip">
-                    <div
-                      dangerouslySetInnerHTML={{
-                        __html: m.settings.expertInfo,
-                      }}
-                    />
-                  </Tooltip>
-                )
+          <FormGroup>
+            <FormCheck
+              type="checkbox"
+              onChange={(e) => {
+                setExpertMode(e.currentTarget.checked);
+              }}
+              checked={expertMode}
+              label={
+                <>
+                  {m?.settings.expert.switch}{' '}
+                  <OverlayTrigger
+                    placement="right"
+                    overlay={
+                      <Tooltip id="tooltip">
+                        <div
+                          dangerouslySetInnerHTML={{
+                            __html: m?.settings.expertInfo ?? '…',
+                          }}
+                        />
+                      </Tooltip>
+                    }
+                  >
+                    <FontAwesomeIcon icon="question-circle-o" />
+                  </OverlayTrigger>
+                </>
               }
-            >
-              <FontAwesomeIcon icon="question-circle-o" />
-            </OverlayTrigger>
-          </FormCheck>
+            />
+          </FormGroup>
           <Tabs id="setting-tabs">
             <Tab title={m?.settings.tab.map} eventKey="1">
               <div>
@@ -221,11 +226,11 @@ export function Settings(): ReactElement {
                       }
                     >
                       {overlayLayers.map(({ type, icon }) => (
-                        <DropdownItem key={type} eventKey={type}>
+                        <Dropdown.Item key={type} eventKey={type}>
                           {icon && <FontAwesomeIcon icon={icon} />}{' '}
                           {m?.mapLayers.letters[type]}{' '}
                           {nf0.format((overlayOpacity[type] || 1) * 100)} %
-                        </DropdownItem>
+                        </Dropdown.Item>
                       ))}
                     </DropdownButton>
                     <Slider
@@ -320,9 +325,8 @@ export function Settings(): ReactElement {
                   setPreventTips(!e.currentTarget.checked);
                 }}
                 checked={!preventTips}
-              >
-                {m?.settings.general.tips}
-              </FormCheck>
+                label={m?.settings.general.tips}
+              />
             </Tab>
           </Tabs>
         </Modal.Body>

@@ -6,7 +6,9 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { Button, FormGroup, Modal } from 'react-bootstrap';
 
-export function AboutModal(): ReactElement {
+type Props = { show: boolean };
+
+export function AboutModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -16,7 +18,7 @@ export function AboutModal(): ReactElement {
   }
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}

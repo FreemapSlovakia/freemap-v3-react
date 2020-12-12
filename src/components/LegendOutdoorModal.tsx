@@ -6,14 +6,16 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import { useMessages } from 'fm3/l10nInjector';
-import { Button, FormGroup, Modal } from 'react-bootstrap';
+import { Accordion, Button, Card, FormGroup, Modal } from 'react-bootstrap';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
 const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
 
-export function LegendOutdoorModal(): ReactElement {
+type Props = { show: boolean };
+
+export function LegendOutdoorModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const [legend, setLegend] = useState<Item[]>([]);
@@ -49,7 +51,7 @@ export function LegendOutdoorModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
@@ -57,35 +59,43 @@ export function LegendOutdoorModal(): ReactElement {
       </Modal.Header>
       <Modal.Body>
         <p>{m?.legend.body}</p>
-        <PanelGroup accordion id="pg1">
+        <Accordion>
           {[...legend].map((c: Item, i: number) => (
-            <Panel key={c.name} eventKey={i}>
-              <Panel.Heading>
-                <Panel.Title toggle>{c.name}</Panel.Title>
-              </Panel.Heading>
-              <Panel.Body collapsible>
-                {c.items.map(({ id, name }) => (
-                  <div key={id} className="legend-item">
-                    <div>
-                      <img
-                        src={`${fmMapserverUrl}/legend-image/${id}`}
-                        srcSet={[1, 2, 3]
-                          .map(
-                            (s) =>
-                              `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
-                                s > 1 ? ` ${s}x` : ''
-                              }`,
-                          )
-                          .join(', ')}
-                      />
+            <Card key={c.name}>
+              <Card.Header>
+                <Accordion.Toggle
+                  as={Button}
+                  variant="link"
+                  eventKey={String(i)}
+                >
+                  {c.name}
+                </Accordion.Toggle>
+              </Card.Header>
+              <Accordion.Collapse eventKey={String(i)}>
+                <Card.Body>
+                  {c.items.map(({ id, name }) => (
+                    <div key={id} className="legend-item">
+                      <div>
+                        <img
+                          src={`${fmMapserverUrl}/legend-image/${id}`}
+                          srcSet={[1, 2, 3]
+                            .map(
+                              (s) =>
+                                `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
+                                  s > 1 ? ` ${s}x` : ''
+                                }`,
+                            )
+                            .join(', ')}
+                        />
+                      </div>
+                      <div>{name}</div>
                     </div>
-                    <div>{name}</div>
-                  </div>
-                ))}
-              </Panel.Body>
-            </Panel>
+                  ))}
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
           ))}
-        </PanelGroup>
+        </Accordion>
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>

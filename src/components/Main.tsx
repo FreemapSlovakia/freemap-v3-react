@@ -37,7 +37,6 @@ import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
 import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
 import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
 
-import { Settings } from 'fm3/components/Settings';
 import { Copyright } from 'fm3/components/Copyright';
 import { MapControls } from 'fm3/components/MapControls';
 import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
@@ -63,6 +62,7 @@ import {
   AsyncTrackingModal,
   AsyncDrawingEditLabelModal,
   AsyncTrackViewerUploadModal,
+  AsyncSettingsModal,
 } from 'fm3/components/AsyncComponents';
 
 import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
@@ -388,9 +388,13 @@ export function Main(): ReactElement {
               {tool === 'tracking' && <TrackingMenu />}
               {tool === 'maps' && <MapsMenu />}{' '}
               {canDelete && (
-                <Button title={m?.general.delete} onClick={handleDeleteClick}>
+                <Button
+                  variant="danger"
+                  title={m?.general.delete}
+                  onClick={handleDeleteClick}
+                >
                   <FontAwesomeIcon icon="trash" />
-                  <span className="hidden-xs">
+                  <span className="d-none d-sm-inline">
                     {' '}
                     {m?.general.delete} <kbd>Del</kbd>
                   </span>
@@ -469,27 +473,30 @@ export function Main(): ReactElement {
 
           <GalleryResult />
 
-          {activeModal === 'settings' && <Settings />}
-          {activeModal &&
-            [
-              ...(isUserValidated ? ['tracking-my'] : []),
-              'tracking-watched',
-            ].includes(activeModal) && <AsyncTrackingModal />}
-          {activeModal === 'embed' && <AsyncEmbedMapModal />}
-          {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
-          {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
-          {activeModal === 'tips' && <AsyncTipsModal />}
-          {activeModal === 'about' && <AsyncAboutModal />}
-          {activeModal === 'supportUs' && <AsyncSupportUsModal />}
-          {activeModal === 'legend' &&
-            (mapType === 'X' ? (
-              <AsyncLegendOutdoorModal />
-            ) : (
-              <AsyncLegendModal />
-            ))}
-          {activeModal === 'edit-label' && <AsyncDrawingEditLabelModal />}
-          {activeModal === 'upload-track' && <AsyncTrackViewerUploadModal />}
-          {showLoginModal && <AsyncLoginModal />}
+          <AsyncSettingsModal show={activeModal === 'settings'} />
+          <AsyncTrackingModal
+            show={
+              !!activeModal &&
+              [
+                ...(isUserValidated ? ['tracking-my'] : []),
+                'tracking-watched',
+              ].includes(activeModal)
+            }
+          />
+          <AsyncEmbedMapModal show={activeModal === 'embed'} />
+          <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
+          <AsyncExportPdfModal show={activeModal === 'export-pdf'} />
+          <AsyncTipsModal show={activeModal === 'tips'} />
+          <AsyncAboutModal show={activeModal === 'about'} />
+          <AsyncSupportUsModal show={activeModal === 'supportUs'} />
+          {mapType === 'X' ? (
+            <AsyncLegendOutdoorModal show={activeModal === 'legend'} />
+          ) : (
+            <AsyncLegendModal show={activeModal === 'legend'} />
+          )}
+          <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
+          <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
+          <AsyncLoginModal show={showLoginModal} />
           <GalleryModals />
         </MapContainer>
         {showElevationChart && <AsyncElevationChart />}

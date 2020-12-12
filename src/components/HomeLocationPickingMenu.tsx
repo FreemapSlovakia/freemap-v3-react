@@ -23,7 +23,7 @@ export function HomeLocationPickingMenu(): ReactElement | null {
         }}
       >
         <FontAwesomeIcon icon="times" />
-        <span className="hidden-xs"> Zrušiť</span>
+        <span className="d-none d-sm-inline"> Zrušiť</span>
       </Button>
     </Card>
   );

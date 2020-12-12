@@ -1,4 +1,10 @@
-import { useState, useMemo, useCallback, ReactElement, FormEvent } from 'react';
+import {
+  useState,
+  useMemo,
+  useCallback,
+  ReactElement,
+  ChangeEvent,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import Slider from 'react-rangeslider';
@@ -14,12 +20,15 @@ import {
   Button,
   ButtonGroup,
   FormCheck,
+  FormControl,
   FormGroup,
   FormLabel,
   Modal,
 } from 'react-bootstrap';
 
-export function ExportPdfModal(): ReactElement {
+type Props = { show: boolean };
+
+export function ExportPdfModal({ show }: Props): ReactElement {
   const language = useSelector((state: RootState) => state.l10n.language);
 
   const expertMode = useSelector((state: RootState) => state.main.expertMode);
@@ -164,9 +173,12 @@ export function ExportPdfModal(): ReactElement {
 ]
 `);
 
-  const handleStyleChange = useCallback((e: FormEvent<HTMLInputElement>) => {
-    setStyle(e.currentTarget.value);
-  }, []);
+  const handleStyleChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      setStyle(e.currentTarget.value);
+    },
+    [],
+  );
 
   const nf = useMemo(
     () =>
@@ -184,7 +196,7 @@ export function ExportPdfModal(): ReactElement {
   }
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}
@@ -232,9 +244,8 @@ export function ExportPdfModal(): ReactElement {
           onChange={() => {
             setContours((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.contours}
-        </FormCheck>
+          label={m?.pdfExport.layers.contours}
+        />
         <FormCheck
           type="checkbox"
           checked={shadedRelief}
@@ -248,62 +259,55 @@ export function ExportPdfModal(): ReactElement {
           onChange={() => {
             setHikingTrails((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.hikingTrails}
-        </FormCheck>
+          label={m?.pdfExport.layers.hikingTrails}
+        />
         <FormCheck
           checked={bicycleTrails}
           onChange={() => {
             setBicycleTrails((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.bicycleTrails}
-        </FormCheck>
+          label={m?.pdfExport.layers.bicycleTrails}
+        />
         <FormCheck
           type="checkbox"
           checked={skiTrails}
           onChange={() => {
             setSkiTrails((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.skiTrails}
-        </FormCheck>
+          label={m?.pdfExport.layers.skiTrails}
+        />
         <FormCheck
           type="checkbox"
           checked={horseTrails}
           onChange={() => {
             setHorseTrails((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.horseTrails}
-        </FormCheck>
+          label={m?.pdfExport.layers.horseTrails}
+        />
         <FormCheck
           type="checkbox"
           checked={drawing}
           onChange={() => {
             setDrawing((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.drawing}
-        </FormCheck>
+          label={m?.pdfExport.layers.drawing}
+        />
         <FormCheck
           type="checkbox"
           checked={plannedRoute}
           onChange={() => {
             setPlannedRoute((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.plannedRoute}
-        </FormCheck>
+          label={m?.pdfExport.layers.plannedRoute}
+        />
         <FormCheck
           type="checkbox"
           checked={track}
           onChange={() => {
             setTrack((b) => !b);
           }}
-        >
-          {m?.pdfExport.layers.track}
-        </FormCheck>
+          label={m?.pdfExport.layers.track}
+        />
         <hr />
         <p>
           {m?.pdfExport.mapScale} {nf.format(scale * 96)} DPI

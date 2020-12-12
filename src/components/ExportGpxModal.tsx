@@ -9,7 +9,7 @@ import {
 } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Button, FormCheck, Modal } from 'react-bootstrap';
+import { Alert, Button, FormCheck, Modal } from 'react-bootstrap';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
@@ -26,7 +26,9 @@ const exportableDefinitions = [
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ] as const;
 
-export function ExportGpxModal(): ReactElement | null {
+type Props = { show: boolean };
+
+export function ExportGpxModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -134,45 +136,55 @@ export function ExportGpxModal(): ReactElement | null {
     [exportables],
   );
 
-  return !exportables ? null : (
-    <Modal show onHide={close} bsSize="large">
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Alert variant="warning">{m?.gpxExport.disabledAlert}</Alert>
-        {exportableDefinitions.map(({ type, icon }) => (
-          <FormCheck
-            type="checkbox"
-            key={type}
-            checked={exportables.includes(type)}
-            disabled={!initExportables.includes(type)}
-            onChange={() => handleCheckboxChange(type)}
-          >
-            {m?.gpxExport.export} <FontAwesomeIcon icon={icon} />{' '}
-            {m?.gpxExport.what[type]}
-          </FormCheck>
-        ))}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={handleExportClick} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="download" /> {m?.gpxExport.export}
-        </Button>{' '}
-        <Button
-          onClick={handleExportToDriveClick}
-          disabled={!exportables.length}
-        >
-          <FontAwesomeIcon icon="google" /> {m?.gpxExport.exportToDrive}
-        </Button>{' '}
-        <Button onClick={handleExportToDropbox} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
-        </Button>{' '}
-        <Button onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+  return (
+    <Modal show={show && !!exportables} onHide={close} size="lg">
+      {exportables && (
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert variant="warning">{m?.gpxExport.disabledAlert}</Alert>
+            {exportableDefinitions.map(({ type, icon }) => (
+              <FormCheck
+                type="checkbox"
+                key={type}
+                checked={exportables.includes(type)}
+                disabled={!initExportables.includes(type)}
+                onChange={() => handleCheckboxChange(type)}
+                label={
+                  <>
+                    {m?.gpxExport.export} <FontAwesomeIcon icon={icon} />{' '}
+                    {m?.gpxExport.what[type]}
+                  </>
+                }
+              />
+            ))}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleExportClick} disabled={!exportables.length}>
+              <FontAwesomeIcon icon="download" /> {m?.gpxExport.export}
+            </Button>{' '}
+            <Button
+              onClick={handleExportToDriveClick}
+              disabled={!exportables.length}
+            >
+              <FontAwesomeIcon icon="google" /> {m?.gpxExport.exportToDrive}
+            </Button>{' '}
+            <Button
+              onClick={handleExportToDropbox}
+              disabled={!exportables.length}
+            >
+              <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
+            </Button>{' '}
+            <Button onClick={close}>
+              <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+            </Button>
+          </Modal.Footer>
+        </>
+      )}
     </Modal>
   );
 }

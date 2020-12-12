@@ -50,7 +50,9 @@ import {
   Modal,
 } from 'react-bootstrap';
 
-export function GalleryViewerModal(): ReactElement {
+type Props = { show: boolean };
+
+export function GalleryViewerModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -228,7 +230,7 @@ export function GalleryViewerModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close} bsSize="large" keyboard={false}>
+    <Modal show={show} onHide={close} size="lg" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>
           {m?.gallery.viewer.title}{' '}
@@ -432,7 +434,7 @@ export function GalleryViewerModal(): ReactElement {
               active={!!editModel}
             >
               <FontAwesomeIcon icon="pencil" />
-              <span className="hidden-xs">
+              <span className="d-none d-sm-inline">
                 {' '}
                 {m?.general.modify} <kbd>M</kbd>
               </span>
@@ -462,7 +464,7 @@ export function GalleryViewerModal(): ReactElement {
               variant="danger"
             >
               <FontAwesomeIcon icon="trash" />
-              <span className="hidden-xs"> {m?.general.delete}</span>
+              <span className="d-none d-sm-inline"> {m?.general.delete}</span>
             </Button>
           </>
         )}
@@ -472,7 +474,7 @@ export function GalleryViewerModal(): ReactElement {
           }}
         >
           <FontAwesomeIcon icon="dot-circle-o" />
-          <span className="hidden-xs hidden-sm">
+          <span className="d-none d-sm-none">
             {' '}
             {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
           </span>
@@ -480,10 +482,7 @@ export function GalleryViewerModal(): ReactElement {
         {'exitFullscreen' in document && (
           <Button onClick={handleFullscreen}>
             <FontAwesomeIcon icon="arrows-alt" />
-            <span className="hidden-xs hidden-sm">
-              {' '}
-              {m?.general.fullscreen}
-            </span>
+            <span className="d-none d-sm-none"> {m?.general.fullscreen}</span>
           </Button>
         )}
         {lat !== undefined && lon !== undefined && (
@@ -500,7 +499,7 @@ export function GalleryViewerModal(): ReactElement {
             url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
           >
             <FontAwesomeIcon icon="external-link" />
-            <span className="hidden-sm hidden-xs">
+            <span className="d-sm-none d-none">
               {' '}
               {m?.gallery.viewer.openInNewWindow}
             </span>
@@ -508,7 +507,7 @@ export function GalleryViewerModal(): ReactElement {
         )}
         <Button onClick={close}>
           <FontAwesomeIcon icon="close" />
-          <span className="hidden-xs hidden-sm">
+          <span className="d-none d-sm-none">
             {' '}
             {m?.general.close} <kbd>Esc</kbd>
           </span>

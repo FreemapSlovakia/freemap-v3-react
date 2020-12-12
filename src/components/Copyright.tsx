@@ -1,12 +1,6 @@
 import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import {
-  ButtonToolbar,
-  OverlayTrigger,
-  Popover,
-  Button,
-  Card,
-} from 'react-bootstrap';
+import { OverlayTrigger, Popover, Button, Card } from 'react-bootstrap';
 import { Attribution } from './Attribution';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
@@ -38,35 +32,33 @@ export function Copyright(): ReactElement {
       className="fm-toolbar"
       style={{ float: 'right', marginRight: '10px' }}
     >
-      <ButtonToolbar>
-        {showLegendButton && (
-          <Button
-            title={m?.more.mapLegend}
-            onClick={() => dispatch(setActiveModal('legend'))}
-          >
-            <FontAwesomeIcon icon="question" />
-          </Button>
-        )}
-        <OverlayTrigger
-          trigger="click"
-          rootClose
-          placement="top"
-          overlay={
-            <Popover id="popover-positioned-right" className="fm-attr-popover">
-              <Attribution
-                m={m}
-                mapType={mapType}
-                overlays={overlays}
-                // imhd={imhd}
-              />
-            </Popover>
-          }
+      {showLegendButton && (
+        <Button
+          title={m?.more.mapLegend}
+          onClick={() => dispatch(setActiveModal('legend'))}
         >
-          <Button title={m?.main.copyright}>
-            <FontAwesomeIcon icon="copyright" />
-          </Button>
-        </OverlayTrigger>
-      </ButtonToolbar>
+          <FontAwesomeIcon icon="question" />
+        </Button>
+      )}{' '}
+      <OverlayTrigger
+        trigger="click"
+        rootClose
+        placement="top"
+        overlay={
+          <Popover id="popover-positioned-right" className="fm-attr-popover">
+            <Attribution
+              m={m}
+              mapType={mapType}
+              overlays={overlays}
+              // imhd={imhd}
+            />
+          </Popover>
+        }
+      >
+        <Button title={m?.main.copyright}>
+          <FontAwesomeIcon icon="copyright" />
+        </Button>
+      </OverlayTrigger>
     </Card>
   );
 }

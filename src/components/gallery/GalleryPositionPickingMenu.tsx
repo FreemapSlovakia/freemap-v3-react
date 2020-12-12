@@ -27,7 +27,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
         }}
       >
         <FontAwesomeIcon icon="check" />
-        <span className="hidden-xs"> {m?.general.ok}</span>
+        <span className="d-none d-sm-inline"> {m?.general.ok}</span>
       </Button>{' '}
       <Button
         onClick={() => {
@@ -35,7 +35,8 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
         }}
       >
         <FontAwesomeIcon icon="times" />
-        <span className="hidden-xs"> {m?.general.cancel}</span> <kbd>Esc</kbd>
+        <span className="d-none d-sm-inline"> {m?.general.cancel}</span>{' '}
+        <kbd>Esc</kbd>
       </Button>
     </Card>
   );

@@ -17,8 +17,8 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { convertToDrawing } from 'fm3/actions/mainActions';
-import { Button, Dropdown, FormControl, FormGroup } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import { Button, FormControl, FormGroup } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function ObjectsMenu(): ReactElement {
   const m = useMessages();
@@ -73,7 +73,7 @@ export function ObjectsMenu(): ReactElement {
         className="dropdown-long"
         id="objectsMenuDropdown"
         onToggle={handleToggle}
-        open={dropdownOpened}
+        show={dropdownOpened}
       >
         <FormGroup role="toggle">
           <FormControl
@@ -96,7 +96,7 @@ export function ObjectsMenu(): ReactElement {
                     .indexOf(filter.toLowerCase()) !== -1,
               )
               .map(({ group, id, icon }) => (
-                <DropdownItem
+                <Dropdown.Item
                   key={id}
                   eventKey={String(id)}
                   onSelect={handleSelect}
@@ -106,13 +106,13 @@ export function ObjectsMenu(): ReactElement {
                     alt={`${group}-${icon}`}
                   />{' '}
                   {m?.objects.subcategories[id]}
-                </DropdownItem>
+                </Dropdown.Item>
               ));
 
             return items.length === 0 ? null : (
               <Fragment key={gid}>
-                {i > 0 && <DropdownItem divider />}
-                <DropdownItem header>{m?.objects.categories[gid]}</DropdownItem>
+                {i > 0 && <Dropdown.Divider />}
+                <Dropdown.Header>{m?.objects.categories[gid]}</Dropdown.Header>
                 {items}
               </Fragment>
             );
@@ -127,7 +127,10 @@ export function ObjectsMenu(): ReactElement {
         title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.convertToDrawing}
+        </span>
       </Button>
     </>
   );

@@ -24,8 +24,8 @@ import { getType } from 'typesafe-actions';
 
 import 'fm3/styles/trackViewer.scss';
 import { assertType } from 'typescript-is';
-import { Button, DropdownButton } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import { Button, ButtonGroup, DropdownButton } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
@@ -64,7 +64,7 @@ export function TrackViewerMenu(): ReactElement {
         }}
       >
         <FontAwesomeIcon icon="upload" />
-        <span className="hidden-xs"> {m?.trackViewer.upload}</span>
+        <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
       </Button>{' '}
       <Button
         active={elevationChartActive}
@@ -74,9 +74,13 @@ export function TrackViewerMenu(): ReactElement {
         disabled={!trackGeojsonIsSuitableForElevationChart}
       >
         <FontAwesomeIcon icon="bar-chart" />
-        <span className="hidden-xs"> {m?.general.elevationProfile}</span>
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.elevationProfile}
+        </span>
       </Button>{' '}
       <DropdownButton
+        as={ButtonGroup}
         id="colorizing_mode"
         onSelect={(approach: unknown) => {
           dispatch(
@@ -93,13 +97,13 @@ export function TrackViewerMenu(): ReactElement {
         }
       >
         {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
-          <DropdownItem
+          <Dropdown.Item
             eventKey={mode}
             key={mode || 'none'}
             active={mode === colorizeTrackBy}
           >
             {m?.trackViewer.colorizingMode[mode ?? 'none']}
-          </DropdownItem>
+          </Dropdown.Item>
         ))}
       </DropdownButton>{' '}
       <Button
@@ -116,7 +120,7 @@ export function TrackViewerMenu(): ReactElement {
         disabled={!trackGeojsonIsSuitableForElevationChart}
       >
         <FontAwesomeIcon icon="info-circle" />
-        <span className="hidden-xs"> {m?.trackViewer.moreInfo}</span>
+        <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
       </Button>{' '}
       <Button
         onClick={() => {
@@ -125,7 +129,7 @@ export function TrackViewerMenu(): ReactElement {
         disabled={!hasTrack}
       >
         <FontAwesomeIcon icon="cloud-upload" />
-        <span className="hidden-xs"> {m?.trackViewer.share}</span>
+        <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
       </Button>{' '}
       <Button
         onClick={handleConvertToDrawing}
@@ -133,7 +137,10 @@ export function TrackViewerMenu(): ReactElement {
         title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.convertToDrawing}
+        </span>
       </Button>
     </>
   );

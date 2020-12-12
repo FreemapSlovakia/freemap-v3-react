@@ -55,7 +55,7 @@ export function MapDetailsMenu(): ReactElement {
       title={m?.mapDetails.road}
     >
       <FontAwesomeIcon icon="road" />
-      <span className="hidden-xs"> {m?.mapDetails.road}</span>
+      <span className="d-none d-sm-inline"> {m?.mapDetails.road}</span>
     </Button>
   );
 }

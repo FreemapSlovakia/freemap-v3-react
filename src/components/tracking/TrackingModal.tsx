@@ -18,7 +18,9 @@ import { Modal } from 'react-bootstrap';
 //   | 'trackedDevices'
 //   | 'trackedDeviceForm';
 
-export function TrackingModal(): ReactElement {
+type Props = { show: boolean };
+
+export function TrackingModal({ show }: Props): ReactElement {
   const view = useSelector((state: RootState) =>
     state.main.activeModal === 'tracking-my'
       ? state.tracking.modifiedDeviceId !== undefined
@@ -40,7 +42,7 @@ export function TrackingModal(): ReactElement {
       onHide={() => {
         dispatch(setActiveModal(null));
       }}
-      show
+      show={show}
       className="dynamic"
     >
       {view === 'devices' && <Devices />}

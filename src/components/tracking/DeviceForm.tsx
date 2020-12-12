@@ -14,7 +14,7 @@ import {
 } from 'react-bootstrap';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
@@ -119,9 +119,9 @@ export function DeviceForm(): ReactElement {
               disabled={!!device?.id}
             >
               {Object.entries(types).map(([key, value]) => (
-                <DropdownItem key={key} eventKey={key} active={type === key}>
+                <Dropdown.Item key={key} eventKey={key} active={type === key}>
                   {value}
-                </DropdownItem>
+                </Dropdown.Item>
               ))}
             </DropdownButton>
             <FormControl

@@ -18,7 +18,9 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Button, FormCheck, FormGroup, Modal } from 'react-bootstrap';
 
-export function TipsModal(): ReactElement {
+type Props = { show: boolean };
+
+export function TipsModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -66,7 +68,7 @@ export function TipsModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="lightbulb-o" />
@@ -107,9 +109,12 @@ export function TipsModal(): ReactElement {
           >
             <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
           </Button>{' '}
-          <FormCheck inline onChange={handleNextTimePrevent} type="checkbox">
-            {m?.tips.prevent}
-          </FormCheck>{' '}
+          <FormCheck
+            inline
+            onChange={handleNextTimePrevent}
+            type="checkbox"
+            label={m?.tips.prevent}
+          />{' '}
           <Button onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
           </Button>

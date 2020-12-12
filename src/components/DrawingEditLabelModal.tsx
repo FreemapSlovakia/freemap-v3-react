@@ -21,7 +21,9 @@ import {
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
-export function DrawingEditLabelModal(): ReactElement {
+type Props = { show: boolean };
+
+export function DrawingEditLabelModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const label = useSelector((state: RootState) => {
@@ -63,7 +65,7 @@ export function DrawingEditLabelModal(): ReactElement {
   );
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <form onSubmit={saveLabel}>
         <Modal.Header closeButton>
           <Modal.Title>{m?.drawing.edit.title}</Modal.Title>

@@ -14,7 +14,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { is } from 'typescript-is';
 import { Button, DropdownButton, Form } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function GalleryMenu(): ReactElement {
   const m = useMessages();
@@ -34,7 +34,7 @@ export function GalleryMenu(): ReactElement {
         active={filterIsActive}
       >
         <FontAwesomeIcon icon="filter" />
-        <span className="hidden-xs"> {m?.gallery.filter}</span>
+        <span className="d-none d-sm-inline"> {m?.gallery.filter}</span>
       </Button>{' '}
       <DropdownButton
         id="all-pics"
@@ -45,22 +45,24 @@ export function GalleryMenu(): ReactElement {
           }
         }}
       >
-        <DropdownItem eventKey="+createdAt">
+        <Dropdown.Item eventKey="+createdAt">
           {m?.gallery.f.firstUploaded}
-        </DropdownItem>
-        <DropdownItem eventKey="-createdAt">
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="-createdAt">
           {m?.gallery.f.lastUploaded}
-        </DropdownItem>
-        <DropdownItem eventKey="+takenAt">
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="+takenAt">
           {m?.gallery.f.firstCaptured}
-        </DropdownItem>
-        <DropdownItem eventKey="-takenAt">
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="-takenAt">
           {m?.gallery.f.lastCaptured}
-        </DropdownItem>
-        <DropdownItem eventKey="+rating">
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="+rating">
           {m?.gallery.f.leastRated}
-        </DropdownItem>
-        <DropdownItem eventKey="-rating">{m?.gallery.f.mostRated}</DropdownItem>
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="-rating">
+          {m?.gallery.f.mostRated}
+        </Dropdown.Item>
       </DropdownButton>{' '}
       <Button
         onClick={() => {
@@ -68,7 +70,7 @@ export function GalleryMenu(): ReactElement {
         }}
       >
         <FontAwesomeIcon icon="upload" />
-        <span className="hidden-xs"> {m?.gallery.upload}</span>
+        <span className="d-none d-sm-inline"> {m?.gallery.upload}</span>
       </Button>
     </Form>
   );

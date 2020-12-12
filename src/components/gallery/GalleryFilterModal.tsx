@@ -23,7 +23,9 @@ import {
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
-export function GalleryFilterModal(): ReactElement | null {
+type Props = { show: boolean };
+
+export function GalleryFilterModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
@@ -191,7 +193,7 @@ export function GalleryFilterModal(): ReactElement | null {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
       </Modal.Header>

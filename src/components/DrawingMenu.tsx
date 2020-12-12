@@ -65,39 +65,46 @@ export function DrawingMenu(): ReactElement {
     <>
       <ButtonGroup>
         <Button
+          variant="secondary"
           onClick={() => setTool('draw-lines')}
           active={tool === 'draw-lines'}
           title={m?.measurement.distance}
         >
           <FontAwesomeIcon icon="arrows-h" />
-          <span className="hidden-xs"> {m?.measurement.distance}</span>
+          <span className="d-none d-sm-inline"> {m?.measurement.distance}</span>
         </Button>
         <Button
+          variant="secondary"
           onClick={() => setTool('draw-points')}
           active={tool === 'draw-points'}
           title={m?.measurement.elevation}
         >
           <FontAwesomeIcon icon="map-marker" />
-          <span className="hidden-xs"> {m?.measurement.elevation}</span>
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.measurement.elevation}
+          </span>
         </Button>
         <Button
+          variant="secondary"
           onClick={() => setTool('draw-polygons')}
           active={tool === 'draw-polygons'}
           title={m?.measurement.area}
         >
           <FontAwesomeIcon icon="square-o" />
-          <span className="hidden-xs"> {m?.measurement.area}</span>
+          <span className="d-none d-sm-inline"> {m?.measurement.area}</span>
         </Button>
       </ButtonGroup>
       {isActive && (
         <>
           {' '}
           <Button
+            variant="secondary"
             onClick={() => dispatch(setActiveModal('edit-label'))}
             disabled={!isActive}
           >
             <FontAwesomeIcon icon="tag" />
-            <span className="hidden-xs"> {m?.drawing.modify}</span>
+            <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
           </Button>
         </>
       )}
@@ -105,11 +112,15 @@ export function DrawingMenu(): ReactElement {
         <>
           {' '}
           <Button
+            variant="secondary"
             active={elevationChartTrackGeojson !== null}
             onClick={toggleElevationChart}
           >
             <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> {m?.general.elevationProfile}</span>
+            <span className="d-none d-sm-inline">
+              {' '}
+              {m?.general.elevationProfile}
+            </span>
           </Button>
         </>
       )}

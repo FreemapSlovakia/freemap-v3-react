@@ -11,7 +11,7 @@ import { point } from '@turf/helpers';
 import { loadFb } from 'fm3/fbLoader';
 import popupCentered from 'popup-centered';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 interface Props extends LatLon {
   lat: number;
@@ -256,76 +256,76 @@ export function OpenInExternalAppDropdownItems({
     <>
       {url && (
         <>
-          <DropdownItem eventKey="window" onSelect={handleDropdownItemSelect}>
+          <Dropdown.Item eventKey="window" onSelect={handleDropdownItemSelect}>
             <FontAwesomeIcon icon="window-maximize" /> {m?.external.window}
-          </DropdownItem>
+          </Dropdown.Item>
           {hasShare && (
-            <DropdownItem eventKey="url" onSelect={handleDropdownItemSelect}>
+            <Dropdown.Item eventKey="url" onSelect={handleDropdownItemSelect}>
               <FontAwesomeIcon icon="link" /> {m?.external.url}
-            </DropdownItem>
+            </Dropdown.Item>
           )}
           {(navigator as any).canShare && (
-            <DropdownItem eventKey="image" onSelect={handleDropdownItemSelect}>
+            <Dropdown.Item eventKey="image" onSelect={handleDropdownItemSelect}>
               <FontAwesomeIcon icon="share-alt" /> {m?.external.image}
-            </DropdownItem>
+            </Dropdown.Item>
           )}
-          <DropdownItem divider />
+          <Dropdown.Divider />
         </>
       )}
       {!url && hasClipboard && (
-        <DropdownItem eventKey="copy" onSelect={handleDropdownItemSelect}>
+        <Dropdown.Item eventKey="copy" onSelect={handleDropdownItemSelect}>
           <FontAwesomeIcon icon="clipboard" /> {m?.external.copy}
-        </DropdownItem>
+        </Dropdown.Item>
       )}
       {!url && hasShare && (
-        <DropdownItem eventKey="url" onSelect={handleDropdownItemSelect}>
+        <Dropdown.Item eventKey="url" onSelect={handleDropdownItemSelect}>
           <FontAwesomeIcon icon="link" /> {m?.external.url}
-        </DropdownItem>
+        </Dropdown.Item>
       )}
-      {!url && (hasClipboard || hasShare) && <DropdownItem divider />}
-      <DropdownItem eventKey="facebook" onSelect={handleDropdownItemSelect}>
+      {!url && (hasClipboard || hasShare) && <Dropdown.Divider />}
+      <Dropdown.Item eventKey="facebook" onSelect={handleDropdownItemSelect}>
         <FontAwesomeIcon icon="facebook-official" /> Facebook
-      </DropdownItem>
-      <DropdownItem eventKey="twitter" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="twitter" onSelect={handleDropdownItemSelect}>
         <FontAwesomeIcon icon="twitter" /> Twitter
-      </DropdownItem>
-      <DropdownItem divider />
-      <DropdownItem eventKey="osm.org" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item eventKey="osm.org" onSelect={handleDropdownItemSelect}>
         {m?.external.osm}
-      </DropdownItem>
-      <DropdownItem eventKey="mapy.cz" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="mapy.cz" onSelect={handleDropdownItemSelect}>
         {m?.external.mapy_cz}
-      </DropdownItem>
-      <DropdownItem eventKey="google" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="google" onSelect={handleDropdownItemSelect}>
         {m?.external.googleMaps}
-      </DropdownItem>
-      <DropdownItem eventKey="mapillary" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="mapillary" onSelect={handleDropdownItemSelect}>
         Mapillary
-      </DropdownItem>
-      <DropdownItem
+      </Dropdown.Item>
+      <Dropdown.Item
         eventKey="openstreetcam"
         onSelect={handleDropdownItemSelect}
       >
         OpenStreetCam
-      </DropdownItem>
-      <DropdownItem eventKey="oma.sk" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="oma.sk" onSelect={handleDropdownItemSelect}>
         {m?.external.oma} (SK)
-      </DropdownItem>
-      <DropdownItem eventKey="hiking.sk" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="hiking.sk" onSelect={handleDropdownItemSelect}>
         {m?.external.hiking_sk} (SK)
-      </DropdownItem>{' '}
-      <DropdownItem eventKey="zbgis" onSelect={handleDropdownItemSelect}>
+      </Dropdown.Item>{' '}
+      <Dropdown.Item eventKey="zbgis" onSelect={handleDropdownItemSelect}>
         {m?.external.zbgis} (SK)
-      </DropdownItem>
-      <DropdownItem divider />
+      </Dropdown.Item>
+      <Dropdown.Divider />
       {expertMode && (
-        <DropdownItem eventKey="josm" onSelect={handleDropdownItemSelect}>
+        <Dropdown.Item eventKey="josm" onSelect={handleDropdownItemSelect}>
           {m?.external.josm}
-        </DropdownItem>
+        </Dropdown.Item>
       )}
-      <DropdownItem eventKey="osm.org/id" onSelect={handleDropdownItemSelect}>
+      <Dropdown.Item eventKey="osm.org/id" onSelect={handleDropdownItemSelect}>
         {m?.external.id}
-      </DropdownItem>
+      </Dropdown.Item>
     </>
   );
 }

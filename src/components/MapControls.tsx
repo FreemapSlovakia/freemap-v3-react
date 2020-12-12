@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Panel, ButtonToolbar, ButtonGroup, Button } from 'react-bootstrap';
+import { ButtonGroup, Button, Card } from 'react-bootstrap';
 import { MapSwitchButton } from './MapSwitchButton';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
@@ -64,58 +64,56 @@ export function MapControls(): ReactElement | null {
   const embed = window.self !== window.top;
 
   return (
-    <Panel className="fm-toolbar">
-      <ButtonToolbar>
-        {(!embed || !embedFeatures.includes('noMapSwitch')) && (
-          <MapSwitchButton />
-        )}
-        <ButtonGroup>
-          <Button
-            onClick={() => {
-              onMapRefocus({ zoom: zoom + 1 });
-            }}
-            title={m?.main.zoomIn}
-            disabled={zoom >= map.getMaxZoom()}
-          >
-            <FontAwesomeIcon icon="plus" />
-          </Button>
-          <Button
-            onClick={() => {
-              onMapRefocus({ zoom: zoom - 1 });
-            }}
-            title={m?.main.zoomOut}
-            disabled={zoom <= map.getMinZoom()}
-          >
-            <FontAwesomeIcon icon="minus" />
-          </Button>
-        </ButtonGroup>
-        {(!embed || !embedFeatures.includes('noLocateMe')) && (
-          <Button
-            onClick={() => {
-              dispatch(toggleLocate());
-            }}
-            title={m?.main.locateMe}
-            active={locate}
-            variant={gpsTracked ? 'warning' : 'default'}
-          >
-            <FontAwesomeIcon icon="dot-circle-o" />
-          </Button>
-        )}
-        {'exitFullscreen' in document && (
-          <Button
-            onClick={handleFullscreenClick}
-            title={
-              document.fullscreenElement
-                ? m?.general.exitFullscreen
-                : m?.general.fullscreen
-            }
-          >
-            <FontAwesomeIcon
-              icon={document.fullscreenElement ? 'compress' : 'expand'}
-            />
-          </Button>
-        )}
-      </ButtonToolbar>
-    </Panel>
+    <Card className="fm-toolbar">
+      {(!embed || !embedFeatures.includes('noMapSwitch')) && (
+        <MapSwitchButton />
+      )}{' '}
+      <ButtonGroup>
+        <Button
+          onClick={() => {
+            onMapRefocus({ zoom: zoom + 1 });
+          }}
+          title={m?.main.zoomIn}
+          disabled={zoom >= map.getMaxZoom()}
+        >
+          <FontAwesomeIcon icon="plus" />
+        </Button>
+        <Button
+          onClick={() => {
+            onMapRefocus({ zoom: zoom - 1 });
+          }}
+          title={m?.main.zoomOut}
+          disabled={zoom <= map.getMinZoom()}
+        >
+          <FontAwesomeIcon icon="minus" />
+        </Button>
+      </ButtonGroup>{' '}
+      {(!embed || !embedFeatures.includes('noLocateMe')) && (
+        <Button
+          onClick={() => {
+            dispatch(toggleLocate());
+          }}
+          title={m?.main.locateMe}
+          active={locate}
+          variant={gpsTracked ? 'warning' : 'default'}
+        >
+          <FontAwesomeIcon icon="dot-circle-o" />
+        </Button>
+      )}{' '}
+      {'exitFullscreen' in document && (
+        <Button
+          onClick={handleFullscreenClick}
+          title={
+            document.fullscreenElement
+              ? m?.general.exitFullscreen
+              : m?.general.fullscreen
+          }
+        >
+          <FontAwesomeIcon
+            icon={document.fullscreenElement ? 'compress' : 'expand'}
+          />
+        </Button>
+      )}
+    </Card>
   );
 }

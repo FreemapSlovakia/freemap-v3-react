@@ -10,7 +10,9 @@ import {
 import { useMessages } from 'fm3/l10nInjector';
 import { Button, Modal } from 'react-bootstrap';
 
-export function LoginModal(): ReactElement {
+type Props = { show: boolean };
+
+export function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -32,7 +34,7 @@ export function LoginModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}

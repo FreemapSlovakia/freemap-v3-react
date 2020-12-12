@@ -13,11 +13,9 @@ import {
   ButtonGroup,
   DropdownButton,
   Form,
-  FormControl,
-  FormGroup,
   InputGroup,
 } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
@@ -50,56 +48,53 @@ export function ChangesetsMenu(): ReactElement {
         dispatch(changesetsSetAuthorName(authorName));
       }}
     >
-      <ButtonGroup>
-        <DropdownButton
-          id="days"
-          onSelect={(d) => {
-            if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
-              dispatch(changesetsSetDays(days));
-            }
+      <DropdownButton
+        as={ButtonGroup}
+        id="days"
+        onSelect={(d) => {
+          if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
+            dispatch(changesetsSetDays(days));
+          }
+        }}
+        title={m?.changesets.olderThanFull({ days })}
+      >
+        {[3, 7, 14, 30].map((d) => (
+          <Dropdown.Item
+            key={d}
+            eventKey={String(d)}
+            disabled={!canSearchWithThisAmountOfDays(d)}
+          >
+            {m?.changesets.olderThan({ days: d })}
+          </Dropdown.Item>
+        ))}
+      </DropdownButton>
+      <InputGroup>
+        <Form.Control
+          type="text"
+          placeholder={m?.changesets.allAuthors}
+          onChange={(e) => {
+            setAuthorName(e.target.value || null);
           }}
-          title={m?.changesets.olderThanFull({ days })}
-        >
-          {[3, 7, 14, 30].map((d) => (
-            <DropdownItem
-              key={d}
-              eventKey={String(d)}
-              disabled={!canSearchWithThisAmountOfDays(d)}
-            >
-              {m?.changesets.olderThan({ days: d })}
-            </DropdownItem>
-          ))}
-        </DropdownButton>
-      </ButtonGroup>{' '}
-      <FormGroup>
-        <InputGroup>
-          <FormControl
-            type="text"
-            placeholder={m?.changesets.allAuthors}
-            onChange={(e) => {
-              setAuthorName(e.target.value || null);
+          value={authorName ?? ''}
+        />
+        <InputGroup.Append>
+          <Button
+            disabled={!authorName}
+            onClick={() => {
+              setAuthorName(null);
             }}
-            value={authorName ?? ''}
-          />
-          <InputGroup.Append>
-            <Button
-              disabled={!authorName}
-              onClick={() => {
-                setAuthorName(null);
-              }}
-            >
-              <FontAwesomeIcon icon="times" />
-            </Button>
-          </InputGroup.Append>
-        </InputGroup>
-      </FormGroup>{' '}
+          >
+            <FontAwesomeIcon icon="times" />
+          </Button>
+        </InputGroup.Append>
+      </InputGroup>
       <Button
         type="submit"
         disabled={!canSearchWithThisAmountOfDays(days)}
         title={m?.changesets.download}
       >
         <FontAwesomeIcon icon="refresh" />
-        <span className="hidden-xs"> {m?.changesets.download}</span>
+        <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
       </Button>
     </Form>
   );

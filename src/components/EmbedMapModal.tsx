@@ -15,7 +15,9 @@ import {
   Modal,
 } from 'react-bootstrap';
 
-export function EmbedMapModal(): ReactElement {
+type Props = { show: boolean };
+
+export function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -115,7 +117,7 @@ export function EmbedMapModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close} className="dynamic">
+    <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="code" /> {m?.more.embedMap}
@@ -159,27 +161,24 @@ export function EmbedMapModal(): ReactElement {
             setEnableSearch(currentTarget.checked);
           }}
           checked={enableSearch}
-        >
-          {m?.embed.enableSearch}
-        </FormCheck>
+          label={m?.embed.enableSearch}
+        />
         <FormCheck
           type="checkbox"
           onChange={({ currentTarget }) => {
             setEnableMapSwitch(currentTarget.checked);
           }}
           checked={enableMapSwitch}
-        >
-          {m?.embed.enableMapSwitch}
-        </FormCheck>
+          label={m?.embed.enableMapSwitch}
+        />
         <FormCheck
           type="checkbox"
           onChange={({ currentTarget }) => {
             setEnableLocateMe(currentTarget.checked);
           }}
           checked={enableLocateMe}
-        >
-          {m?.embed.enableLocateMe}
-        </FormCheck>
+          label={m?.embed.enableLocateMe}
+        />
         <hr />
         <p>{m?.embed.code}</p>
         <FormControl

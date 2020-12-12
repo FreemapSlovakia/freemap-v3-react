@@ -51,7 +51,7 @@ export function ElevationChart(): ReactElement | null {
     <div className="elevationChart">
       <Button
         style={styles.closeButton}
-        bsSize="small"
+        size="sm"
         onClick={() => dispatch(elevationChartClose())}
       >
         <FontAwesomeIcon icon="times" />

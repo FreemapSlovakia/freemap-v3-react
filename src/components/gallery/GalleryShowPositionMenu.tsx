@@ -43,7 +43,8 @@ export function GalleryShowPositionMenu(): ReactElement | null {
     <Card className="fm-toolbar">
       <Button onClick={close}>
         <FontAwesomeIcon icon="chevron-left" />
-        <span className="hidden-xs"> {m?.general.back}</span> <kbd>Esc</kbd>
+        <span className="d-none d-sm-inline"> {m?.general.back}</span>{' '}
+        <kbd>Esc</kbd>
       </Button>
     </Card>
   );

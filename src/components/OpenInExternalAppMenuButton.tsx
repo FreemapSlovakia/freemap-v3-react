@@ -3,7 +3,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { Button, Overlay, Popover } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
-import { Placement } from 'react-bootstrap/esm/Overlay';
+import { Placement } from 'react-bootstrap/Overlay';
 
 interface Props extends LatLon {
   lat: number;

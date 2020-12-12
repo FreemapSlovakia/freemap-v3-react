@@ -12,8 +12,8 @@ import {
 } from 'fm3/actions/mapsActions';
 import { deleteFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
-import { Button, DropdownButton } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import { Button, ButtonGroup, DropdownButton } from 'react-bootstrap';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -30,6 +30,7 @@ export function MapsMenu(): ReactElement {
     <>
       <DropdownButton
         id="maps-dropdown"
+        as={ButtonGroup}
         title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
         disabled={!authenticated}
         onSelect={(id: unknown) => {
@@ -38,12 +39,12 @@ export function MapsMenu(): ReactElement {
           }
         }}
       >
-        <DropdownItem eventKey={undefined}>{m?.maps.noMap}</DropdownItem>
+        <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
 
         {maps.map((map) => (
-          <DropdownItem key={map.id} eventKey={String(map.id)}>
+          <Dropdown.Item key={map.id} eventKey={String(map.id)}>
             {map.name}
-          </DropdownItem>
+          </Dropdown.Item>
         ))}
       </DropdownButton>
       {authenticated && id !== undefined && (
@@ -55,10 +56,7 @@ export function MapsMenu(): ReactElement {
             }}
           >
             <FontAwesomeIcon icon="floppy-o" />
-            <span className="hidden-md hidden-sm hidden-xs">
-              {' '}
-              {m?.maps.save}
-            </span>
+            <span className="d-md-none d-sm-none d-none"> {m?.maps.save}</span>
           </Button>
         </>
       )}{' '}
@@ -69,7 +67,7 @@ export function MapsMenu(): ReactElement {
         disabled={!authenticated}
       >
         <FontAwesomeIcon icon="plus" />
-        <span className="hidden-md hidden-sm hidden-xs"> {m?.maps.create}</span>
+        <span className="d-md-none d-sm-none d-none"> {m?.maps.create}</span>
       </Button>
       {authenticated && id !== undefined && (
         <>
@@ -80,7 +78,7 @@ export function MapsMenu(): ReactElement {
             }}
           >
             <FontAwesomeIcon icon="pencil" />
-            <span className="hidden-md hidden-sm hidden-xs">
+            <span className="d-md-none d-sm-none d-none">
               {' '}
               {m?.maps.rename}
             </span>
@@ -96,7 +94,7 @@ export function MapsMenu(): ReactElement {
             }}
           >
             <FontAwesomeIcon icon="trash" />
-            <span className="hidden-md hidden-sm hidden-xs">
+            <span className="d-md-none d-sm-none d-none">
               {' '}
               {m?.maps.delete} <kbd>Del</kbd>
             </span>

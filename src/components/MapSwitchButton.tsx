@@ -14,7 +14,7 @@ import { RootState } from 'fm3/storeCreator';
 import useMedia from 'use-media';
 import { is } from 'typescript-is';
 import { Button, ButtonGroup, Overlay, Popover } from 'react-bootstrap';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
@@ -118,7 +118,7 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <ButtonGroup className="dropup hidden-xs">
+      <ButtonGroup className="dropup d-none d-sm-inline">
         {baseLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
             title={m?.mapLayers.letters[type]}
@@ -149,9 +149,9 @@ export function MapSwitchButton(): ReactElement {
         >
           <span className="caret" />
         </Button>
-      </ButtonGroup>
+      </ButtonGroup>{' '}
       <Button
-        className="hidden-sm hidden-md hidden-lg"
+        className="d-sm-none d-md-none d-lg-none"
         ref={button2Ref}
         onClick={handleButtonClick}
         title={m?.mapLayers.layers}
@@ -177,7 +177,7 @@ export function MapSwitchButton(): ReactElement {
                 )
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key }) => (
-                  <DropdownItem
+                  <Dropdown.Item
                     key={type}
                     onClick={() => handleMapSelect(type)}
                   >
@@ -207,10 +207,10 @@ export function MapSwitchButton(): ReactElement {
                         />
                       </>
                     )}
-                  </DropdownItem>
+                  </Dropdown.Item>
                 ))
             }
-            <DropdownItem divider />
+            <Dropdown.Divider />
             {overlayLayers
               .filter(
                 ({ showOnlyInExpertMode }) =>
@@ -218,7 +218,7 @@ export function MapSwitchButton(): ReactElement {
               )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .map(({ type, icon, minZoom, key }) => (
-                <DropdownItem
+                <Dropdown.Item
                   key={type}
                   eventKey={type}
                   onSelect={handleOverlaySelect}
@@ -267,7 +267,7 @@ export function MapSwitchButton(): ReactElement {
                       />
                     </>
                   )}
-                </DropdownItem>
+                </Dropdown.Item>
               ))}
           </Popover.Content>
         </Popover>

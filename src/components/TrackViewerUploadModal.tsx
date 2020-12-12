@@ -17,7 +17,9 @@ import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
 import { Button, Modal } from 'react-bootstrap';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
-export function TrackViewerUploadModal(): ReactElement {
+type Props = { show: boolean };
+
+export function TrackViewerUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -60,7 +62,7 @@ export function TrackViewerUploadModal(): ReactElement {
 
   // {activeModal === 'upload-track' && // TODO move to separate component
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>{m?.trackViewer.uploadModal.title}</Modal.Title>
       </Modal.Header>

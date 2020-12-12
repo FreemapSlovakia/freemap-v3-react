@@ -27,14 +27,14 @@ import {
   FormControl,
   FormGroup,
   Form,
-  Dropdown,
   InputGroup,
   Button,
   ButtonGroup,
+  DropdownProps,
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
-import DropdownItem from 'react-bootstrap/esm/DropdownItem';
+import Dropdown from 'react-bootstrap/Dropdown';
 
 type Props = {
   hidden?: boolean;
@@ -84,8 +84,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [setValue, dispatch, results],
   );
 
-  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
-
   const handleSelect = useCallback(
     (eventKey: unknown) => {
       const found = results.find((item) => item.id === eventKey);
@@ -101,7 +99,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [results, dispatch, selectedResult],
   );
 
-  const f: DropdownBaseProps['onToggle'] = (open, _, { source }) => {
+  const f: DropdownProps['onToggle'] = (open, _, { source }) => {
     if (!open && source !== 'select') {
       setOpen(false);
     } else if (open && results.length > 0) {
@@ -167,12 +165,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     <span style={{ display: hidden ? 'none' : 'inline' }}>
       <Form inline onSubmit={handleSearch}>
         <Dropdown
+          as={ButtonGroup}
           // className="dropdown-long"
-          id="objectsMenuDropdown"
-          open={open}
+          show={open}
           onToggle={handleToggle}
         >
-          <FormGroup2 bsRole="toggle">
+          <FormGroup role="toggle">
             <InputGroup>
               <FormControl
                 className="fm-search-input"
@@ -201,10 +199,10 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 </Button>
               </InputGroup.Append>
             </InputGroup>
-          </FormGroup2>
+          </FormGroup>
           <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
             {results.map((result) => (
-              <DropdownItem
+              <Dropdown.Item
                 key={result.id}
                 eventKey={String(result.id)}
                 onSelect={handleSelect}
@@ -217,7 +215,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     {result.class}={result.type}
                   </small>
                 )}
-              </DropdownItem>
+              </Dropdown.Item>
             ))}
           </Dropdown.Menu>
         </Dropdown>{' '}
