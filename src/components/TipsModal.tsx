@@ -98,14 +98,14 @@ export function TipsModal(): ReactElement {
               dispatch(tipsShow('prev'));
             }}
           >
-            <Glyphicon glyph="chevron-left" /> {m?.tips.previous}
+            <FontAwesomeIcon icon="chevron-left" /> {m?.tips.previous}
           </Button>
           <Button
             onClick={() => {
               dispatch(tipsShow('next'));
             }}
           >
-            <Glyphicon glyph="chevron-right" /> {m?.tips.next}
+            <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
           </Button>{' '}
           <FormCheck inline onChange={handleNextTimePrevent} type="checkbox">
             {m?.tips.prevent}

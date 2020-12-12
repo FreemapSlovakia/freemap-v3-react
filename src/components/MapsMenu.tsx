@@ -41,7 +41,7 @@ export function MapsMenu(): ReactElement {
         <DropdownItem eventKey={undefined}>{m?.maps.noMap}</DropdownItem>
 
         {maps.map((map) => (
-          <DropdownItem key={map.id} eventKey={map.id}>
+          <DropdownItem key={map.id} eventKey={String(map.id)}>
             {map.name}
           </DropdownItem>
         ))}

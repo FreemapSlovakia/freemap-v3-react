@@ -82,7 +82,7 @@ export function DrawingEditLabelModal(): ReactElement {
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit" variant="info">
-            <Glyphicon glyph="floppy-disk" /> {m?.general.save}
+            <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
           </Button>
           <Button type="button" onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>

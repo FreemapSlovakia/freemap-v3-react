@@ -13,8 +13,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import useMedia from 'use-media';
 import { is } from 'typescript-is';
-import { Button, ButtonGroup, Popover } from 'react-bootstrap';
-import Overlay from 'react-overlays/esm/Overlay';
+import { Button, ButtonGroup, Overlay, Popover } from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function MapSwitchButton(): ReactElement {
@@ -165,10 +164,10 @@ export function MapSwitchButton(): ReactElement {
         placement="top"
         show={show}
         onHide={handleHide}
-        target={(isWide ? buttonRef.current : button2Ref.current) ?? undefined}
+        target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {
               // TODO base and overlay layers have too much duplicate code
               baseLayers
@@ -270,7 +269,7 @@ export function MapSwitchButton(): ReactElement {
                   )}
                 </DropdownItem>
               ))}
-          </ul>
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>

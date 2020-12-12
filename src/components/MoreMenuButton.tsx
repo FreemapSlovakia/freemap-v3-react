@@ -12,9 +12,8 @@ import {
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { RootState } from 'fm3/storeCreator';
-import { OpenInExternalAppDropdownItems } from './OpenInExternalAppDropdownItems';
-import { Button, Popover } from 'react-bootstrap';
-import Overlay from 'react-overlays/esm/Overlay';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
+import { Button, Overlay, Popover } from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function MoreMenuButton(): ReactElement {
@@ -40,7 +39,7 @@ export function MoreMenuButton(): ReactElement {
 
   const [submenu, setSubmenu] = useState<any>(null);
 
-  const button = useRef<Button | null>(null);
+  const button = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -102,11 +101,11 @@ export function MoreMenuButton(): ReactElement {
         placement="bottom"
         show={show}
         onHide={close}
-        target={button.current ?? undefined}
-        shouldUpdatePosition
+        target={button.current}
+        // shouldUpdatePosition
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {submenu === null ? (
               <>
                 <DropdownItem eventKey="language" onSelect={setSubmenu}>
@@ -296,7 +295,6 @@ export function MoreMenuButton(): ReactElement {
                 </DropdownItem>
                 <DropdownItem divider />
                 <DropdownItem
-                  eventKey={null}
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
@@ -332,7 +330,8 @@ export function MoreMenuButton(): ReactElement {
                 </DropdownItem>
               </>
             ) : null}
-          </ul>
+          </Popover.Content>
+
           {submenu === null && (
             <div style={{ margin: '4px 18px', fontSize: '18px' }}>
               <a

@@ -1,4 +1,10 @@
-import { Fragment, ReactElement, useCallback, useState } from 'react';
+import {
+  ChangeEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
@@ -69,7 +75,7 @@ export function ObjectsMenu(): ReactElement {
         onToggle={handleToggle}
         open={dropdownOpened}
       >
-        <FormGroup bsRole="toggle">
+        <FormGroup role="toggle">
           <FormControl
             type="text"
             placeholder={m?.objects.type}
@@ -90,7 +96,11 @@ export function ObjectsMenu(): ReactElement {
                     .indexOf(filter.toLowerCase()) !== -1,
               )
               .map(({ group, id, icon }) => (
-                <DropdownItem key={id} eventKey={id} onSelect={handleSelect}>
+                <DropdownItem
+                  key={id}
+                  eventKey={String(id)}
+                  onSelect={handleSelect}
+                >
                   <img
                     src={require(`../images/mapIcons/${icon}.png`)}
                     alt={`${group}-${icon}`}

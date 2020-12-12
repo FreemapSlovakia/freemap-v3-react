@@ -6,8 +6,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { is } from 'typescript-is';
-import { Button, Popover } from 'react-bootstrap';
-import Overlay from 'react-overlays/esm/Overlay';
+import { Button, Overlay, Popover } from 'react-bootstrap';
 import DropdownItem from 'react-bootstrap/esm/DropdownItem';
 
 export function ToolsMenuButton(): ReactElement {
@@ -21,7 +20,7 @@ export function ToolsMenuButton(): ReactElement {
 
   const [show, setShow] = useState(false);
 
-  const button = useRef<HTMLElement | null>(null);
+  const button = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -55,6 +54,8 @@ export function ToolsMenuButton(): ReactElement {
         : tool),
   ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
+  const ref = useRef(null);
+
   return (
     <>
       <Button
@@ -77,9 +78,10 @@ export function ToolsMenuButton(): ReactElement {
         show={show}
         onHide={handleHide}
         target={button.current}
+        container={ref.current}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {tool && (
               <DropdownItem onSelect={handleToolSelect}>
                 <FontAwesomeIcon icon="briefcase" /> {m?.tools.none}{' '}
@@ -113,7 +115,7 @@ export function ToolsMenuButton(): ReactElement {
                     </DropdownItem>
                   ),
               )}
-          </ul>
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>

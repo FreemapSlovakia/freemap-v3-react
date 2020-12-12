@@ -63,7 +63,7 @@ export function ChangesetsMenu(): ReactElement {
           {[3, 7, 14, 30].map((d) => (
             <DropdownItem
               key={d}
-              eventKey={d}
+              eventKey={String(d)}
               disabled={!canSearchWithThisAmountOfDays(d)}
             >
               {m?.changesets.olderThan({ days: d })}

@@ -209,7 +209,7 @@ export function EmbedMapModal(): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
-          <Glyphicon glyph="copy" /> {m?.general.copyCode}
+          <FontAwesomeIcon icon="clipboard" /> {m?.general.copyCode}
         </Button>{' '}
         <Button onClick={close}>
           <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>

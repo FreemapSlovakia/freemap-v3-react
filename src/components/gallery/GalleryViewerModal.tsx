@@ -8,6 +8,7 @@ import {
   useEffect,
   FormEvent,
   Fragment,
+  ChangeEvent,
 } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import ReactStars from 'react-stars';
@@ -130,7 +131,7 @@ export function GalleryViewerModal(): ReactElement {
   );
 
   const handleIndexChange = useCallback(
-    (e: ChangeEvent<HTMLFormElement>) => {
+    (e: ChangeEvent<HTMLSelectElement>) => {
       if (imageIds) {
         const idx = parseInt(e.currentTarget.value, 10);
 
@@ -292,7 +293,7 @@ export function GalleryViewerModal(): ReactElement {
                   dispatch(galleryRequestImage('prev'));
                 }}
               >
-                <Glyphicon glyph="chevron-left" />
+                <FontAwesomeIcon icon="chevron-left" />
               </a>
             )}
             {imageIds && (
@@ -305,7 +306,7 @@ export function GalleryViewerModal(): ReactElement {
                   dispatch(galleryRequestImage('next'));
                 }}
               >
-                <Glyphicon glyph="chevron-right" />
+                <FontAwesomeIcon icon="chevron-right" />
               </a>
             )}
           </div>
@@ -364,7 +365,7 @@ export function GalleryViewerModal(): ReactElement {
                     onModelChange={handleEditModelChange}
                   />
                   <Button variant="primary" type="submit">
-                    <Glyphicon glyph="save" /> {m?.general.save}
+                    <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
                   </Button>
                 </form>
               )}
@@ -430,7 +431,7 @@ export function GalleryViewerModal(): ReactElement {
               }}
               active={!!editModel}
             >
-              <Glyphicon glyph="edit" />
+              <FontAwesomeIcon icon="pencil" />
               <span className="hidden-xs">
                 {' '}
                 {m?.general.modify} <kbd>M</kbd>
@@ -460,7 +461,7 @@ export function GalleryViewerModal(): ReactElement {
               }}
               variant="danger"
             >
-              <Glyphicon glyph="trash" />
+              <FontAwesomeIcon icon="trash" />
               <span className="hidden-xs"> {m?.general.delete}</span>
             </Button>
           </>
@@ -478,7 +479,7 @@ export function GalleryViewerModal(): ReactElement {
         </Button>
         {'exitFullscreen' in document && (
           <Button onClick={handleFullscreen}>
-            <Glyphicon glyph="fullscreen" />
+            <FontAwesomeIcon icon="arrows-alt" />
             <span className="hidden-xs hidden-sm">
               {' '}
               {m?.general.fullscreen}

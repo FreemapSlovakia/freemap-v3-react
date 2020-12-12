@@ -1,11 +1,11 @@
 import { ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  Panel,
   ButtonToolbar,
   OverlayTrigger,
   Popover,
   Button,
+  Card,
 } from 'react-bootstrap';
 import { Attribution } from './Attribution';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
@@ -34,7 +34,7 @@ export function Copyright(): ReactElement {
   );
 
   return (
-    <Panel
+    <Card
       className="fm-toolbar"
       style={{ float: 'right', marginRight: '10px' }}
     >
@@ -67,6 +67,6 @@ export function Copyright(): ReactElement {
           </Button>
         </OverlayTrigger>
       </ButtonToolbar>
-    </Panel>
+    </Card>
   );
 }

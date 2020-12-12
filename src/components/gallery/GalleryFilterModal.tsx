@@ -281,10 +281,10 @@ export function GalleryFilterModal(): ReactElement | null {
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit">
-            <Glyphicon glyph="ok" /> {m?.general.apply}
+            <FontAwesomeIcon icon="check" /> {m?.general.apply}
           </Button>
           <Button type="button" onClick={handleEraseClick}>
-            <Glyphicon glyph="erase" /> {m?.general.clear}
+            <FontAwesomeIcon icon="eraser" /> {m?.general.clear}
           </Button>
           <Button type="button" onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.cancel}

@@ -237,7 +237,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               dispatch(routePlannerSetStart({ start }));
             }}
           >
-            <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
+            <FontAwesomeIcon icon="play" style={{ color: '#32CD32' }} />
           </Button>
           <Button
             title={m?.search.routeTo}
@@ -252,7 +252,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               dispatch(routePlannerSetFinish({ finish }));
             }}
           >
-            <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
+            <FontAwesomeIcon icon="stop" style={{ color: '#FF6347' }} />
           </Button>
         </ButtonGroup>
       )}

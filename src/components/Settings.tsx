@@ -181,7 +181,7 @@ export function Settings(): ReactElement {
             </OverlayTrigger>
           </FormCheck>
           <Tabs id="setting-tabs">
-            <Tab title={m?.settings.tab.map} eventKey={1}>
+            <Tab title={m?.settings.tab.map} eventKey="1">
               <div>
                 <p>
                   {m?.settings.map.overlayPaneOpacity}{' '}
@@ -328,7 +328,7 @@ export function Settings(): ReactElement {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="info" type="submit" disabled={!userMadeChanges}>
-            <Glyphicon glyph="floppy-disk" /> {m?.general.save}
+            <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
           </Button>
           <Button type="button" onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>

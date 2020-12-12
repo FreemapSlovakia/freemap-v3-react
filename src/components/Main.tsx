@@ -1,7 +1,12 @@
-import 'fm3/bootstrap/css/bootstrap.css';
 import 'leaflet/dist/leaflet.css';
 
-import { useEffect, useCallback, ReactElement, useState } from 'react';
+import {
+  useEffect,
+  useCallback,
+  ReactElement,
+  useState,
+  MouseEvent,
+} from 'react';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -100,7 +105,7 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { MapsMenu } from './MapsMenu';
 import { WikiLayer } from './WikiLayer';
-import { Button } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 
 const embed = window.self !== window.top;
 
@@ -342,7 +347,7 @@ export function Main(): ReactElement {
           </div>
         )} */}
         <div className="menus">
-          <Panel className="fm-toolbar">
+          <Card className="fm-toolbar">
             <Button
               id="freemap-logo"
               className={progress ? 'in-progress' : 'idle'}
@@ -356,10 +361,10 @@ export function Main(): ReactElement {
             {(!embed || embedFeatures.includes('search')) && (
               <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
             )}
-          </Panel>
+          </Card>
 
           {showMenu && (!embed || tool) && (
-            <Panel className="fm-toolbar">
+            <Card className="fm-toolbar">
               {embed ? (
                 embedToolDef && (
                   <>
@@ -391,7 +396,7 @@ export function Main(): ReactElement {
                   </span>
                 </Button>
               )}
-            </Panel>
+            </Card>
           )}
 
           <GalleryPositionPickingMenu />

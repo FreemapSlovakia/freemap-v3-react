@@ -2,7 +2,8 @@ import { ReactElement, useCallback, useRef, useState } from 'react';
 import { useMessages } from 'fm3/l10nInjector';
 import { Button, Overlay, Popover } from 'react-bootstrap';
 import { LatLon } from 'fm3/types/common';
-import { OpenInExternalAppDropdownItems } from './OpenInExternalAppDropdownItems';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
+import { Placement } from 'react-bootstrap/esm/Overlay';
 
 interface Props extends LatLon {
   lat: number;
@@ -10,7 +11,7 @@ interface Props extends LatLon {
   zoom: number;
   mapType: string;
   expertMode: boolean;
-  placement?: string;
+  placement?: Placement;
   includePoint?: boolean;
   pointTitle?: string;
   pointDescription?: string;
@@ -51,8 +52,6 @@ export function OpenInExternalAppMenuButton({
 
   const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
 
-  const Ovl = Overlay as any; // because trigger is missing
-
   return (
     <>
       <Button
@@ -62,16 +61,16 @@ export function OpenInExternalAppMenuButton({
       >
         {children}
       </Button>
-      <Ovl
+      <Overlay
         rootClose
-        placement={placement || 'bottom'}
-        trigger="focus"
+        placement={placement ?? 'bottom'}
+        // trigger="focus"
         show={show}
         onHide={handleHide}
         target={getTarget}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             <OpenInExternalAppDropdownItems
               lat={lat}
               lon={lon}
@@ -84,9 +83,9 @@ export function OpenInExternalAppMenuButton({
               url={url}
               onSelect={handleDropdownItemClick}
             />
-          </ul>
+          </Popover.Content>
         </Popover>
-      </Ovl>
+      </Overlay>
     </>
   );
 }
