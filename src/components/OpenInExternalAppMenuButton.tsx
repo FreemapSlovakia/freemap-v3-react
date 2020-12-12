@@ -55,6 +55,7 @@ export function OpenInExternalAppMenuButton({
   return (
     <>
       <Button
+        variant="secondary"
         ref={buttonRef}
         onClick={handleButtonClick}
         title={m?.external.openInExternal}
@@ -63,6 +64,7 @@ export function OpenInExternalAppMenuButton({
       </Button>
       <Overlay
         rootClose
+        rootCloseEvent="mousedown"
         placement={placement ?? 'bottom'}
         // trigger="focus"
         show={show}

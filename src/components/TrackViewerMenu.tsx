@@ -24,7 +24,7 @@ import { getType } from 'typesafe-actions';
 
 import 'fm3/styles/trackViewer.scss';
 import { assertType } from 'typescript-is';
-import { Button, ButtonGroup, DropdownButton } from 'react-bootstrap';
+import { Button, DropdownButton } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function TrackViewerMenu(): ReactElement {
@@ -59,14 +59,17 @@ export function TrackViewerMenu(): ReactElement {
   return (
     <>
       <Button
+        variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('upload-track'));
         }}
       >
         <FontAwesomeIcon icon="upload" />
         <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
-      </Button>{' '}
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         active={elevationChartActive}
         onClick={() => {
           dispatch(trackViewerToggleElevationChart());
@@ -78,9 +81,11 @@ export function TrackViewerMenu(): ReactElement {
           {' '}
           {m?.general.elevationProfile}
         </span>
-      </Button>{' '}
+      </Button>
       <DropdownButton
-        as={ButtonGroup}
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="colorizing_mode"
         onSelect={(approach: unknown) => {
           dispatch(
@@ -91,7 +96,7 @@ export function TrackViewerMenu(): ReactElement {
         }}
         title={
           <>
-            <FontAwesomeIcon icon="paint-brush" />{' '}
+            <FontAwesomeIcon icon="paint-brush" />
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </>
         }
@@ -105,8 +110,10 @@ export function TrackViewerMenu(): ReactElement {
             {m?.trackViewer.colorizingMode[mode ?? 'none']}
           </Dropdown.Item>
         ))}
-      </DropdownButton>{' '}
+      </DropdownButton>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(
             toastsAdd({
@@ -121,8 +128,10 @@ export function TrackViewerMenu(): ReactElement {
       >
         <FontAwesomeIcon icon="info-circle" />
         <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
-      </Button>{' '}
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(trackViewerUploadTrack());
         }}
@@ -130,8 +139,10 @@ export function TrackViewerMenu(): ReactElement {
       >
         <FontAwesomeIcon icon="cloud-upload" />
         <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
-      </Button>{' '}
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={handleConvertToDrawing}
         disabled={!hasTrack}
         title={m?.general.convertToDrawing}

@@ -121,6 +121,7 @@ export function MapSwitchButton(): ReactElement {
       <ButtonGroup className="dropup d-none d-sm-inline">
         {baseLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
+            variant="secondary"
             title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
@@ -132,6 +133,7 @@ export function MapSwitchButton(): ReactElement {
         ))}
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
+            variant="secondary"
             title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
@@ -142,13 +144,12 @@ export function MapSwitchButton(): ReactElement {
           </Button>
         ))}
         <Button
+          variant="secondary"
           className="dropdown-toggle"
           ref={buttonRef}
           onClick={handleButtonClick}
           title={m?.mapLayers.layers}
-        >
-          <span className="caret" />
-        </Button>
+        />
       </ButtonGroup>{' '}
       <Button
         className="d-sm-none d-md-none d-lg-none"
@@ -161,6 +162,7 @@ export function MapSwitchButton(): ReactElement {
       </Button>
       <Overlay
         rootClose
+        rootCloseEvent="mousedown"
         placement="top"
         show={show}
         onHide={handleHide}

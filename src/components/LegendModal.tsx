@@ -5,7 +5,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 
 import legend from 'fm3/legend/index.json';
-import { Accordion, Button, Card, FormGroup, Modal } from 'react-bootstrap';
+import { Accordion, Button, Card, Modal } from 'react-bootstrap';
 
 interface LegendItem {
   n: string;
@@ -38,15 +38,9 @@ export function LegendModal({ show }: Props): ReactElement {
         <Accordion>
           {legend.map((c: LegendItem, i: number) => (
             <Card key={c.n}>
-              <Card.Header>
-                <Accordion.Toggle
-                  as={Button}
-                  variant="link"
-                  eventKey={String(i)}
-                >
-                  {c.n}
-                </Accordion.Toggle>
-              </Card.Header>
+              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
+                {c.n}
+              </Accordion.Toggle>
               <Accordion.Collapse eventKey={String(i)}>
                 <Card.Body>
                   {c.items.map((e) => (
@@ -66,11 +60,9 @@ export function LegendModal({ show }: Props): ReactElement {
         </Accordion>
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button onClick={close}>
-            <FontAwesomeIcon icon="close" /> Zavrieť
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> Zavrieť
+        </Button>
       </Modal.Footer>
     </Modal>
   );

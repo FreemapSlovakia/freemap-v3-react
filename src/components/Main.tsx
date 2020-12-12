@@ -105,7 +105,7 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { MapsMenu } from './MapsMenu';
 import { WikiLayer } from './WikiLayer';
-import { Button, Card } from 'react-bootstrap';
+import { Button, ButtonToolbar, Card } from 'react-bootstrap';
 
 const embed = window.self !== window.top;
 
@@ -365,41 +365,44 @@ export function Main(): ReactElement {
 
           {showMenu && (!embed || tool) && (
             <Card className="fm-toolbar">
-              {embed ? (
-                embedToolDef && (
-                  <>
-                    <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                    {m?.tools[embedToolDef.msgKey]}{' '}
-                  </>
-                )
-              ) : (
-                <ToolsMenuButton />
-              )}
-              {tool === 'objects' && <ObjectsMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu />}
-              {tool &&
-                ['draw-lines', 'draw-points', 'draw-polygons'].includes(
-                  tool,
-                ) && <DrawingMenu />}
-              {tool === 'track-viewer' && <TrackViewerMenu />}
-              {tool === 'changesets' && <ChangesetsMenu />}
-              {tool === 'photos' && <GalleryMenu />}
-              {tool === 'map-details' && <MapDetailsMenu />}
-              {tool === 'tracking' && <TrackingMenu />}
-              {tool === 'maps' && <MapsMenu />}{' '}
-              {canDelete && (
-                <Button
-                  variant="danger"
-                  title={m?.general.delete}
-                  onClick={handleDeleteClick}
-                >
-                  <FontAwesomeIcon icon="trash" />
-                  <span className="d-none d-sm-inline">
-                    {' '}
-                    {m?.general.delete} <kbd>Del</kbd>
-                  </span>
-                </Button>
-              )}
+              <ButtonToolbar>
+                {embed ? (
+                  embedToolDef && (
+                    <>
+                      <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
+                      {m?.tools[embedToolDef.msgKey]}{' '}
+                    </>
+                  )
+                ) : (
+                  <ToolsMenuButton />
+                )}
+                {tool === 'objects' && <ObjectsMenu />}
+                {tool === 'route-planner' && <RoutePlannerMenu />}
+                {tool &&
+                  ['draw-lines', 'draw-points', 'draw-polygons'].includes(
+                    tool,
+                  ) && <DrawingMenu />}
+                {tool === 'track-viewer' && <TrackViewerMenu />}
+                {tool === 'changesets' && <ChangesetsMenu />}
+                {tool === 'photos' && <GalleryMenu />}
+                {tool === 'map-details' && <MapDetailsMenu />}
+                {tool === 'tracking' && <TrackingMenu />}
+                {tool === 'maps' && <MapsMenu />}{' '}
+                {canDelete && (
+                  <Button
+                    className="ml-1"
+                    variant="danger"
+                    title={m?.general.delete}
+                    onClick={handleDeleteClick}
+                  >
+                    <FontAwesomeIcon icon="trash" />
+                    <span className="d-none d-sm-inline">
+                      {' '}
+                      {m?.general.delete} <kbd>Del</kbd>
+                    </span>
+                  </Button>
+                )}
+              </ButtonToolbar>
             </Card>
           )}
 

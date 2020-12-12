@@ -199,7 +199,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
-        <Button onClick={handleClose} variant="danger">
+        <Button onClick={handleClose} variant="dark">
           <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>

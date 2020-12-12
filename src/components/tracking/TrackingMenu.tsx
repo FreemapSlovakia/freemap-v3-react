@@ -4,7 +4,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Button, ButtonGroup, DropdownButton } from 'react-bootstrap';
+import { Button, DropdownButton } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
@@ -48,6 +48,7 @@ export function TrackingMenu(): ReactElement {
   return (
     <>
       <Button
+        variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('tracking-watched'));
         }}
@@ -57,8 +58,10 @@ export function TrackingMenu(): ReactElement {
           {' '}
           {m?.tracking.trackedDevices.button}
         </span>
-      </Button>{' '}
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('tracking-my'));
         }}
@@ -68,9 +71,11 @@ export function TrackingMenu(): ReactElement {
           {' '}
           {m?.tracking.devices.button}
         </span>
-      </Button>{' '}
+      </Button>
       <DropdownButton
-        as={ButtonGroup}
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="tracking-visual-dropdown"
         title={visual && m?.tracking.visual[visual]}
       >

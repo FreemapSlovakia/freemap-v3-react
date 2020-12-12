@@ -8,13 +8,7 @@ import {
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
 import { RootState } from 'fm3/storeCreator';
-import {
-  Button,
-  ButtonGroup,
-  DropdownButton,
-  Form,
-  InputGroup,
-} from 'react-bootstrap';
+import { Button, DropdownButton, Form, InputGroup } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function ChangesetsMenu(): ReactElement {
@@ -40,16 +34,10 @@ export function ChangesetsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   return (
-    <Form
-      inline
-      onSubmit={(e) => {
-        e.preventDefault();
-        dispatch(changesetsSetDays(days));
-        dispatch(changesetsSetAuthorName(authorName));
-      }}
-    >
+    <>
       <DropdownButton
-        as={ButtonGroup}
+        rootCloseEvent="mousedown"
+        variant="secondary"
         id="days"
         onSelect={(d) => {
           if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
@@ -68,27 +56,40 @@ export function ChangesetsMenu(): ReactElement {
           </Dropdown.Item>
         ))}
       </DropdownButton>
-      <InputGroup>
-        <Form.Control
-          type="text"
-          placeholder={m?.changesets.allAuthors}
-          onChange={(e) => {
-            setAuthorName(e.target.value || null);
-          }}
-          value={authorName ?? ''}
-        />
-        <InputGroup.Append>
-          <Button
-            disabled={!authorName}
-            onClick={() => {
-              setAuthorName(null);
+      <Form
+        className="ml-1"
+        inline
+        onSubmit={(e) => {
+          e.preventDefault();
+          dispatch(changesetsSetDays(days));
+          dispatch(changesetsSetAuthorName(authorName));
+        }}
+      >
+        <InputGroup>
+          <Form.Control
+            type="text"
+            placeholder={m?.changesets.allAuthors}
+            onChange={(e) => {
+              setAuthorName(e.target.value || null);
             }}
-          >
-            <FontAwesomeIcon icon="times" />
-          </Button>
-        </InputGroup.Append>
-      </InputGroup>
+            value={authorName ?? ''}
+          />
+          <InputGroup.Append>
+            <Button
+              variant="secondary"
+              disabled={!authorName}
+              onClick={() => {
+                setAuthorName(null);
+              }}
+            >
+              <FontAwesomeIcon icon="times" />
+            </Button>
+          </InputGroup.Append>
+        </InputGroup>
+      </Form>
       <Button
+        className="ml-1"
+        variant="secondary"
         type="submit"
         disabled={!canSearchWithThisAmountOfDays(days)}
         title={m?.changesets.download}
@@ -96,6 +97,6 @@ export function ChangesetsMenu(): ReactElement {
         <FontAwesomeIcon icon="refresh" />
         <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
       </Button>
-    </Form>
+    </>
   );
 }

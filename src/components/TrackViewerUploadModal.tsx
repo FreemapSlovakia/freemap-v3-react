@@ -76,7 +76,7 @@ export function TrackViewerUploadModal({ show }: Props): ReactElement {
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={close}>
+        <Button variant="dark" onClick={close}>
           <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>

@@ -34,15 +34,17 @@ export function Copyright(): ReactElement {
     >
       {showLegendButton && (
         <Button
+          variant="secondary"
           title={m?.more.mapLegend}
           onClick={() => dispatch(setActiveModal('legend'))}
         >
           <FontAwesomeIcon icon="question" />
         </Button>
-      )}{' '}
+      )}
       <OverlayTrigger
         trigger="click"
         rootClose
+        rootCloseEvent="mousedown"
         placement="top"
         overlay={
           <Popover id="popover-positioned-right" className="fm-attr-popover">
@@ -55,7 +57,7 @@ export function Copyright(): ReactElement {
           </Popover>
         }
       >
-        <Button title={m?.main.copyright}>
+        <Button className="ml-1" variant="secondary" title={m?.main.copyright}>
           <FontAwesomeIcon icon="copyright" />
         </Button>
       </OverlayTrigger>

@@ -67,7 +67,7 @@ export function LoginModal({ show }: Props): ReactElement {
         </Button>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={close}>
+        <Button variant="dark" onClick={close}>
           <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>

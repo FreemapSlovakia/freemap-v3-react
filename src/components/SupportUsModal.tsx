@@ -88,11 +88,9 @@ export function SupportUsModal({ show }: Props): ReactElement {
         </address>
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button onClick={close}>
-            <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+        </Button>
       </Modal.Footer>
     </Modal>
   );

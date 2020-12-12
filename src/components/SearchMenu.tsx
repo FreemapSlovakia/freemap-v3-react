@@ -25,7 +25,6 @@ import 'fm3/styles/search.scss';
 import { RootState } from 'fm3/storeCreator';
 import {
   FormControl,
-  FormGroup,
   Form,
   InputGroup,
   Button,
@@ -170,36 +169,35 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           show={open}
           onToggle={handleToggle}
         >
-          <FormGroup role="toggle">
-            <InputGroup>
-              <FormControl
-                className="fm-search-input"
-                onChange={handleChange}
-                value={value}
-                placeholder="Brusno"
-                ref={inputRef}
-                onFocus={handleInputFocus}
-              />
-              <InputGroup.Append style={{ width: 'auto' }}>
-                {!!selectedResult && (
-                  <Button
-                    type="button"
-                    title={m?.general.clear}
-                    onClick={handleClearClick}
-                  >
-                    <FontAwesomeIcon icon="times" />
-                  </Button>
-                )}
+          <InputGroup>
+            <FormControl
+              className="fm-search-input"
+              onChange={handleChange}
+              value={value}
+              placeholder="Brusno"
+              ref={inputRef}
+              onFocus={handleInputFocus}
+            />
+            <InputGroup.Append style={{ width: 'auto' }}>
+              {!!selectedResult && (
                 <Button
-                  type="submit"
-                  title={m?.search.buttonTitle}
-                  disabled={!value}
+                  type="button"
+                  title={m?.general.clear}
+                  onClick={handleClearClick}
                 >
-                  <FontAwesomeIcon icon="search" />
+                  <FontAwesomeIcon icon="times" />
                 </Button>
-              </InputGroup.Append>
-            </InputGroup>
-          </FormGroup>
+              )}
+              <Button
+                variant="secondary"
+                type="submit"
+                title={m?.search.buttonTitle}
+                disabled={!value}
+              >
+                <FontAwesomeIcon icon="search" />
+              </Button>
+            </InputGroup.Append>
+          </InputGroup>
           <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
             {results.map((result) => (
               <Dropdown.Item
@@ -223,31 +221,37 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       {selectedResult && !embed && (
         <ButtonGroup>
           <Button
+            variant="secondary"
             title={m?.search.routeFrom}
             onClick={() => {
-              const start = {
-                lat: selectedResult.lat,
-                lon: selectedResult.lon,
-              };
-
               dispatch(selectFeature({ type: 'route-planner' }));
 
-              dispatch(routePlannerSetStart({ start }));
+              dispatch(
+                routePlannerSetStart({
+                  start: {
+                    lat: selectedResult.lat,
+                    lon: selectedResult.lon,
+                  },
+                }),
+              );
             }}
           >
             <FontAwesomeIcon icon="play" style={{ color: '#32CD32' }} />
           </Button>
           <Button
+            variant="secondary"
             title={m?.search.routeTo}
             onClick={() => {
-              const finish = {
-                lat: selectedResult.lat,
-                lon: selectedResult.lon,
-              };
-
               dispatch(selectFeature({ type: 'route-planner' }));
 
-              dispatch(routePlannerSetFinish({ finish }));
+              dispatch(
+                routePlannerSetFinish({
+                  finish: {
+                    lat: selectedResult.lat,
+                    lon: selectedResult.lon,
+                  },
+                }),
+              );
             }}
           >
             <FontAwesomeIcon icon="stop" style={{ color: '#FF6347' }} />

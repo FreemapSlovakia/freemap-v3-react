@@ -94,31 +94,31 @@ export function TipsModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button
-            onClick={() => {
-              dispatch(tipsShow('prev'));
-            }}
-          >
-            <FontAwesomeIcon icon="chevron-left" /> {m?.tips.previous}
-          </Button>
-          <Button
-            onClick={() => {
-              dispatch(tipsShow('next'));
-            }}
-          >
-            <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
-          </Button>{' '}
-          <FormCheck
-            inline
-            onChange={handleNextTimePrevent}
-            type="checkbox"
-            label={m?.tips.prevent}
-          />{' '}
-          <Button onClick={close}>
-            <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </FormGroup>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            dispatch(tipsShow('prev'));
+          }}
+        >
+          <FontAwesomeIcon icon="chevron-left" /> {m?.tips.previous}
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            dispatch(tipsShow('next'));
+          }}
+        >
+          <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
+        </Button>
+        <FormCheck
+          inline
+          onChange={handleNextTimePrevent}
+          type="checkbox"
+          label={m?.tips.prevent}
+        />
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+        </Button>
       </Modal.Footer>
     </Modal>
   );

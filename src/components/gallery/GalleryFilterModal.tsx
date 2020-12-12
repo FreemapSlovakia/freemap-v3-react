@@ -285,10 +285,10 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
           <Button type="submit">
             <FontAwesomeIcon icon="check" /> {m?.general.apply}
           </Button>
-          <Button type="button" onClick={handleEraseClick}>
+          <Button variant="warning" type="button" onClick={handleEraseClick}>
             <FontAwesomeIcon icon="eraser" /> {m?.general.clear}
           </Button>
-          <Button type="button" onClick={close}>
+          <Button variant="dark" type="button" onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.cancel}
           </Button>
         </Modal.Footer>

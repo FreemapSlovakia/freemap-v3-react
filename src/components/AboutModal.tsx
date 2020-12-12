@@ -89,11 +89,9 @@ export function AboutModal({ show }: Props): ReactElement {
         </ul>
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button onClick={close}>
-            <FontAwesomeIcon icon="close" /> {m?.general.close}
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

@@ -13,7 +13,7 @@ import {
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { is } from 'typescript-is';
-import { Button, DropdownButton, Form } from 'react-bootstrap';
+import { Button, DropdownButton } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function GalleryMenu(): ReactElement {
@@ -26,8 +26,9 @@ export function GalleryMenu(): ReactElement {
   );
 
   return (
-    <Form inline>
+    <>
       <Button
+        variant="secondary"
         onClick={() => {
           dispatch(galleryShowFilter());
         }}
@@ -35,8 +36,11 @@ export function GalleryMenu(): ReactElement {
       >
         <FontAwesomeIcon icon="filter" />
         <span className="d-none d-sm-inline"> {m?.gallery.filter}</span>
-      </Button>{' '}
+      </Button>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="all-pics"
         title={m?.gallery.allPhotos}
         onSelect={(order: unknown) => {
@@ -63,8 +67,10 @@ export function GalleryMenu(): ReactElement {
         <Dropdown.Item eventKey="-rating">
           {m?.gallery.f.mostRated}
         </Dropdown.Item>
-      </DropdownButton>{' '}
+      </DropdownButton>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(galleryShowUploadModal());
         }}
@@ -72,6 +78,6 @@ export function GalleryMenu(): ReactElement {
         <FontAwesomeIcon icon="upload" />
         <span className="d-none d-sm-inline"> {m?.gallery.upload}</span>
       </Button>
-    </Form>
+    </>
   );
 }

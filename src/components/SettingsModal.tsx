@@ -208,6 +208,8 @@ export function SettingsModal({ show }: Props): ReactElement {
                   <div>
                     <p>{m?.settings.expert.overlayOpacity}</p>
                     <DropdownButton
+                      rootCloseEvent="mousedown"
+                      variant="secondary"
                       id="overlayOpacity"
                       onSelect={(o: unknown) => {
                         if (typeof o === 'string') {
@@ -280,6 +282,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                   : m?.settings.map.homeLocation.undefined}
               </p>
               <Button
+                variant="secondary"
                 onClick={() => {
                   dispatch(setSelectingHomeLocation(true));
                 }}
@@ -331,10 +334,10 @@ export function SettingsModal({ show }: Props): ReactElement {
           </Tabs>
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="info" type="submit" disabled={!userMadeChanges}>
+          <Button variant="primary" type="submit" disabled={!userMadeChanges}>
             <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
           </Button>
-          <Button type="button" onClick={close}>
+          <Button variant="dark" type="button" onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>

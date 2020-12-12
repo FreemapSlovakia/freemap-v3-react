@@ -71,9 +71,12 @@ export function ToolsMenuButton(): ReactElement {
           {m?.tools[tool && toolDef ? toolDef.msgKey : 'tools']}
         </span>
       </Button>
-      {tool && <FontAwesomeIcon icon="chevron-right" />}
+      {tool && (
+        <FontAwesomeIcon icon="chevron-right" className="align-self-center" />
+      )}
       <Overlay
         rootClose
+        rootCloseEvent="mousedown"
         placement="bottom"
         show={show}
         onHide={handleHide}

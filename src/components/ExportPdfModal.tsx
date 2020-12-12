@@ -203,16 +203,18 @@ export function ExportPdfModal({ show }: Props): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="warning">{m?.pdfExport.alert}</Alert>
+        <Alert variant="warning">{m?.pdfExport.alert()}</Alert>
         <p>{m?.pdfExport.area}</p>
         <ButtonGroup>
           <Button
+            variant="secondary"
             active={area === 'visible'}
             onClick={() => setArea('visible')}
           >
             {m?.pdfExport.areas.visible}
           </Button>
           <Button
+            variant="secondary"
             active={area === 'selected'}
             onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
@@ -223,16 +225,32 @@ export function ExportPdfModal({ show }: Props): ReactElement {
         <hr />
         <p>{m?.pdfExport.format}</p>
         <ButtonGroup>
-          <Button onClick={() => setFormat('jpeg')} active={format === 'jpeg'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('jpeg')}
+            active={format === 'jpeg'}
+          >
             JPEG
           </Button>
-          <Button onClick={() => setFormat('png')} active={format === 'png'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('png')}
+            active={format === 'png'}
+          >
             PNG
           </Button>
-          <Button onClick={() => setFormat('pdf')} active={format === 'pdf'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('pdf')}
+            active={format === 'pdf'}
+          >
             PDF
           </Button>
-          <Button onClick={() => setFormat('svg')} active={format === 'svg'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('svg')}
+            active={format === 'svg'}
+          >
             SVG
           </Button>
         </ButtonGroup>
@@ -250,9 +268,8 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           type="checkbox"
           checked={shadedRelief}
           onChange={() => setShadedRelief((b) => !b)}
-        >
-          {m?.pdfExport.layers.shading}
-        </FormCheck>
+          label={m?.pdfExport.layers.shading}
+        />
         <FormCheck
           type="checkbox"
           checked={hikingTrails}
@@ -367,8 +384,8 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           }}
         >
           <FontAwesomeIcon icon="download" /> {m?.pdfExport.export}
-        </Button>{' '}
-        <Button onClick={close}>
+        </Button>
+        <Button variant="dark" onClick={close}>
           <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>

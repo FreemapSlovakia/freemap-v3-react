@@ -98,6 +98,7 @@ export function MoreMenuButton(): ReactElement {
       </Button>
       <Overlay
         rootClose
+        rootCloseEvent="mousedown"
         placement="bottom"
         show={show}
         onHide={close}

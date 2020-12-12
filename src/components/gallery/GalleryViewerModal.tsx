@@ -428,6 +428,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
         {image && user && (user.isAdmin || user.id === image.user.id) && (
           <>
             <Button
+              variant="secondary"
               onClick={() => {
                 dispatch(galleryEditPicture());
               }}
@@ -469,20 +470,21 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           </>
         )}
         <Button
+          variant="secondary"
           onClick={() => {
             dispatch(galleryShowOnTheMap());
           }}
         >
           <FontAwesomeIcon icon="dot-circle-o" />
-          <span className="d-none d-sm-none">
+          <span className="d-none d-md-inline">
             {' '}
             {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
           </span>
         </Button>
         {'exitFullscreen' in document && (
-          <Button onClick={handleFullscreen}>
+          <Button variant="secondary" onClick={handleFullscreen}>
             <FontAwesomeIcon icon="arrows-alt" />
-            <span className="d-none d-sm-none"> {m?.general.fullscreen}</span>
+            <span className="d-none d-md-inline"> {m?.general.fullscreen}</span>
           </Button>
         )}
         {lat !== undefined && lon !== undefined && (
@@ -499,15 +501,15 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
           >
             <FontAwesomeIcon icon="external-link" />
-            <span className="d-sm-none d-none">
+            <span className="d-none d-md-inline">
               {' '}
               {m?.gallery.viewer.openInNewWindow}
             </span>
           </OpenInExternalAppMenuButton>
         )}
-        <Button onClick={close}>
+        <Button variant="dark" onClick={close}>
           <FontAwesomeIcon icon="close" />
-          <span className="d-none d-sm-none">
+          <span className="d-none d-md-inline">
             {' '}
             {m?.general.close} <kbd>Esc</kbd>
           </span>

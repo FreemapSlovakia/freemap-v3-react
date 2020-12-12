@@ -48,6 +48,7 @@ export function MapDetailsMenu(): ReactElement {
 
   return (
     <Button
+      variant="secondary"
       onClick={() => {
         dispatch(mapDetailsSetSubtool('track-info'));
       }}

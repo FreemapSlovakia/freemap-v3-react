@@ -166,20 +166,22 @@ export function ExportGpxModal({ show }: Props): ReactElement {
           <Modal.Footer>
             <Button onClick={handleExportClick} disabled={!exportables.length}>
               <FontAwesomeIcon icon="download" /> {m?.gpxExport.export}
-            </Button>{' '}
+            </Button>
             <Button
+              variant="secondary"
               onClick={handleExportToDriveClick}
               disabled={!exportables.length}
             >
               <FontAwesomeIcon icon="google" /> {m?.gpxExport.exportToDrive}
-            </Button>{' '}
+            </Button>
             <Button
+              variant="secondary"
               onClick={handleExportToDropbox}
               disabled={!exportables.length}
             >
               <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
-            </Button>{' '}
-            <Button onClick={close}>
+            </Button>
+            <Button variant="dark" onClick={close}>
               <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
             </Button>
           </Modal.Footer>

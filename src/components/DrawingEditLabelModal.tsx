@@ -86,7 +86,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
           <Button type="submit" variant="info">
             <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
           </Button>
-          <Button type="button" onClick={close}>
+          <Button variant="dark" type="button" onClick={close}>
             <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>

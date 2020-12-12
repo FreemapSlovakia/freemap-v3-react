@@ -17,7 +17,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { convertToDrawing } from 'fm3/actions/mainActions';
-import { Button, FormControl, FormGroup } from 'react-bootstrap';
+import { Button, FormControl } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function ObjectsMenu(): ReactElement {
@@ -75,14 +75,12 @@ export function ObjectsMenu(): ReactElement {
         onToggle={handleToggle}
         show={dropdownOpened}
       >
-        <FormGroup role="toggle">
-          <FormControl
-            type="text"
-            placeholder={m?.objects.type}
-            onChange={handleFilterSet}
-            value={filter}
-          />
-        </FormGroup>
+        <FormControl
+          type="text"
+          placeholder={m?.objects.type}
+          onChange={handleFilterSet}
+          value={filter}
+        />
         <Dropdown.Menu>
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
@@ -118,8 +116,9 @@ export function ObjectsMenu(): ReactElement {
             );
           })}
         </Dropdown.Menu>
-      </Dropdown>{' '}
+      </Dropdown>
       <Button
+        className="ml-1"
         onClick={() => {
           dispatch(convertToDrawing(undefined));
         }}

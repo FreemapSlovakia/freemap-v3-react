@@ -137,8 +137,9 @@ export function RoutePlannerMenu(): ReactElement {
     <>
       <ButtonGroup>
         <DropdownButton
+          rootCloseEvent="mousedown"
+          variant={pickPointMode === 'start' ? 'dark' : 'secondary'}
           as={ButtonGroup}
-          variant="secondary"
           title={
             <span>
               <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
@@ -152,7 +153,6 @@ export function RoutePlannerMenu(): ReactElement {
           onClick={() => {
             dispatch(routePlannerSetPickMode('start'));
           }}
-          // TODO active={pickPointMode === 'start'}
         >
           <Dropdown.Item>
             <FontAwesomeIcon icon="map-marker" /> {m?.routePlanner.point.pick}
@@ -175,6 +175,7 @@ export function RoutePlannerMenu(): ReactElement {
         {mode !== 'roundtrip' && (
           <>
             <Button
+              as={ButtonGroup}
               variant="secondary"
               onClick={() => {
                 dispatch(routePlannerSwapEnds());
@@ -185,8 +186,9 @@ export function RoutePlannerMenu(): ReactElement {
               ⇆
             </Button>
             <DropdownButton
-              variant="secondary"
+              rootCloseEvent="mousedown"
               as={ButtonGroup}
+              variant={pickPointMode === 'finish' ? 'dark' : 'secondary'}
               title={
                 <span>
                   <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
@@ -200,10 +202,9 @@ export function RoutePlannerMenu(): ReactElement {
               onClick={() => {
                 dispatch(routePlannerSetPickMode('finish'));
               }}
-              // TODO active={pickPointMode === 'finish'}
             >
               <Dropdown.Item>
-                <FontAwesomeIcon icon="map-marker" />{' '}
+                <FontAwesomeIcon icon="map-marker" />
                 {m?.routePlanner.point.pick}
               </Dropdown.Item>
               <Dropdown.Item
@@ -211,7 +212,7 @@ export function RoutePlannerMenu(): ReactElement {
                   dispatch(routePlannerSetFromCurrentPosition('finish'));
                 }}
               >
-                <FontAwesomeIcon icon="bullseye" />{' '}
+                <FontAwesomeIcon icon="bullseye" />
                 {m?.routePlanner.point.current}
               </Dropdown.Item>
               <Dropdown.Item
@@ -224,10 +225,11 @@ export function RoutePlannerMenu(): ReactElement {
             </DropdownButton>
           </>
         )}
-      </ButtonGroup>{' '}
+      </ButtonGroup>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
         variant="secondary"
-        as={ButtonGroup}
         id="transport-type"
         onSelect={(transportType: unknown) => {
           dispatch(
@@ -292,10 +294,11 @@ export function RoutePlannerMenu(): ReactElement {
               )}
             </Dropdown.Item>
           ))}
-      </DropdownButton>{' '}
+      </DropdownButton>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
         variant="secondary"
-        as={ButtonGroup}
         id="mode"
         onSelect={(mode: unknown) => {
           dispatch(routePlannerSetMode(mode as RoutingMode));
@@ -315,52 +318,51 @@ export function RoutePlannerMenu(): ReactElement {
         ))}
       </DropdownButton>
       {alternatives.length > 1 && (
-        <>
-          {' '}
-          <DropdownButton
-            variant="secondary"
-            id="transport-type"
-            onSelect={(index: unknown) => {
-              if (typeof index === 'number') {
-                dispatch(
-                  routePlannerSetActiveAlternativeIndex(index as number),
-                );
-              }
-            }}
-            title={
-              transportType === 'imhd' &&
-              activeAlternative.extra &&
-              activeAlternative.extra.price
-                ? imhdSummary(m, language, activeAlternative.extra)
-                : m?.routePlanner.summary({
-                    distance: nf.format(activeAlternative.distance / 1000),
-                    h: Math.floor(
-                      Math.round(activeAlternative.duration / 60) / 60,
-                    ),
-                    m: Math.round(activeAlternative.duration / 60) % 60,
-                  })
+        <DropdownButton
+          rootCloseEvent="mousedown"
+          className="ml-1"
+          variant="secondary"
+          id="transport-type"
+          onSelect={(index: unknown) => {
+            if (typeof index === 'number') {
+              dispatch(routePlannerSetActiveAlternativeIndex(index as number));
             }
-          >
-            {alternatives.map(({ duration, distance, extra }, i) => (
-              <Dropdown.Item
-                eventKey={String(i)}
-                key={i}
-                active={i === activeAlternativeIndex}
-              >
-                {transportType === 'imhd' && extra?.price
-                  ? imhdSummary(m, language, extra)
-                  : m?.routePlanner.summary({
-                      distance: nf.format(distance / 1000),
-                      h: Math.floor(Math.round(duration / 60) / 60),
-                      m: Math.round(duration / 60) % 60,
-                    })}
-              </Dropdown.Item>
-            ))}
-          </DropdownButton>
-        </>
+          }}
+          title={
+            transportType === 'imhd' &&
+            activeAlternative.extra &&
+            activeAlternative.extra.price
+              ? imhdSummary(m, language, activeAlternative.extra)
+              : m?.routePlanner.summary({
+                  distance: nf.format(activeAlternative.distance / 1000),
+                  h: Math.floor(
+                    Math.round(activeAlternative.duration / 60) / 60,
+                  ),
+                  m: Math.round(activeAlternative.duration / 60) % 60,
+                })
+          }
+        >
+          {alternatives.map(({ duration, distance, extra }, i) => (
+            <Dropdown.Item
+              eventKey={String(i)}
+              key={i}
+              active={i === activeAlternativeIndex}
+            >
+              {transportType === 'imhd' && extra?.price
+                ? imhdSummary(m, language, extra)
+                : m?.routePlanner.summary({
+                    distance: nf.format(distance / 1000),
+                    h: Math.floor(Math.round(duration / 60) / 60),
+                    m: Math.round(duration / 60) % 60,
+                  })}
+            </Dropdown.Item>
+          ))}
+        </DropdownButton>
       )}
       {/* ' '}
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(routePlannerToggleItineraryVisibility());
         }}
@@ -371,6 +373,7 @@ export function RoutePlannerMenu(): ReactElement {
       </Button>
       */}{' '}
       <Button
+        className="ml-1"
         variant="secondary"
         onClick={() => {
           dispatch(routePlannerToggleElevationChart());
@@ -384,8 +387,9 @@ export function RoutePlannerMenu(): ReactElement {
           {' '}
           {m?.general.elevationProfile}
         </span>
-      </Button>{' '}
+      </Button>
       <Button
+        className="ml-1"
         variant="secondary"
         onClick={handleConvertToDrawing}
         disabled={!routeFound}
@@ -396,8 +400,9 @@ export function RoutePlannerMenu(): ReactElement {
           {' '}
           {m?.general.convertToDrawing}
         </span>
-      </Button>{' '}
+      </Button>
       <FormCheck
+        className="ml-1"
         type="checkbox"
         inline
         onChange={() => {

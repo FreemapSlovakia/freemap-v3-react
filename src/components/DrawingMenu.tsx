@@ -96,33 +96,29 @@ export function DrawingMenu(): ReactElement {
         </Button>
       </ButtonGroup>
       {isActive && (
-        <>
-          {' '}
-          <Button
-            variant="secondary"
-            onClick={() => dispatch(setActiveModal('edit-label'))}
-            disabled={!isActive}
-          >
-            <FontAwesomeIcon icon="tag" />
-            <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
-          </Button>
-        </>
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => dispatch(setActiveModal('edit-label'))}
+          disabled={!isActive}
+        >
+          <FontAwesomeIcon icon="tag" />
+          <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
+        </Button>
       )}
       {tool === 'draw-lines' && linePoints.length >= 2 && (
-        <>
-          {' '}
-          <Button
-            variant="secondary"
-            active={elevationChartTrackGeojson !== null}
-            onClick={toggleElevationChart}
-          >
-            <FontAwesomeIcon icon="bar-chart" />
-            <span className="d-none d-sm-inline">
-              {' '}
-              {m?.general.elevationProfile}
-            </span>
-          </Button>
-        </>
+        <Button
+          className="ml-1"
+          variant="secondary"
+          active={elevationChartTrackGeojson !== null}
+          onClick={toggleElevationChart}
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.general.elevationProfile}
+          </span>
+        </Button>
       )}
     </>
   );
