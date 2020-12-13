@@ -1,23 +1,37 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useCallback, useState, useRef, ReactElement } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import {
-  baseLayers,
-  overlayLayers,
-  LayerDef,
-  OverlayLetters,
-  BaseLayerLetters,
-} from 'fm3/mapDefinitions';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  LayerDef,
+  overlayLayers,
+  OverlayLetters,
+} from 'fm3/mapDefinitions';
 import { RootState } from 'fm3/storeCreator';
-import useMedia from 'use-media';
+import { MouseEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
+import useMedia from 'use-media';
+
+function getKbdShortcut(key?: [string, boolean]) {
+  return (
+    key && (
+      <>
+        {' '}
+        <kbd>
+          {key[1] ? 'shift + ' : ''}
+          {key[0].replace(/Key|Digit/, '').toLowerCase()}
+        </kbd>
+      </>
+    )
+  );
+}
 
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
@@ -31,7 +45,8 @@ export function MapSwitchButton(): ReactElement {
   const expertMode = useSelector((state: RootState) => state.main.expertMode);
 
   const pictureFilterIsActive = useSelector(
-    (state: RootState) => Object.keys(state.gallery.filter).length > 0,
+    (state: RootState) =>
+      Object.values(state.gallery.filter).filter((x) => x).length > 0,
   );
 
   const isAdmin = useSelector(
@@ -44,9 +59,9 @@ export function MapSwitchButton(): ReactElement {
 
   const [show, setShow] = useState(false);
 
-  const buttonRef = useRef<Button | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const button2Ref = useRef<Button | null>(null);
+  const button2Ref = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -68,7 +83,7 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: unknown) => {
+    (overlay) => {
       const s = new Set(overlays);
 
       if (!is<OverlayLetters>(overlay)) {
@@ -84,16 +99,16 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, overlays],
   );
 
-  const handleBaseClick = (e: React.MouseEvent<Button>) => {
+  const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
     dispatch(
       mapRefocus({
-        mapType: (e.currentTarget as any).dataset.type,
+        mapType: e.currentTarget.dataset.type as BaseLayerLetters,
       }),
     );
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<Button>) => {
-    const { type } = (e.currentTarget as any).dataset;
+  const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const { type } = e.currentTarget.dataset;
 
     if (!is<OverlayLetters>(type)) {
       return;
@@ -121,9 +136,10 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <ButtonGroup className="dropup hidden-xs">
+      <ButtonGroup className="dropup d-none d-sm-inline">
         {baseLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
+            variant="secondary"
             title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
@@ -135,6 +151,7 @@ export function MapSwitchButton(): ReactElement {
         ))}
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
+            variant="secondary"
             title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
@@ -145,32 +162,32 @@ export function MapSwitchButton(): ReactElement {
           </Button>
         ))}
         <Button
+          variant="secondary"
           className="dropdown-toggle"
           ref={buttonRef}
           onClick={handleButtonClick}
           title={m?.mapLayers.layers}
-        >
-          <span className="caret" />
-        </Button>
-      </ButtonGroup>
+        />
+      </ButtonGroup>{' '}
       <Button
-        className="hidden-sm hidden-md hidden-lg"
+        className="d-sm-none d-md-none d-lg-none"
         ref={button2Ref}
         onClick={handleButtonClick}
         title={m?.mapLayers.layers}
-        bsStyle="primary"
+        variant="primary"
       >
         <FontAwesomeIcon icon="map-o" />
       </Button>
       <Overlay
         rootClose
+        rootCloseEvent="mousedown"
         placement="top"
         show={show}
         onHide={handleHide}
-        target={(isWide ? buttonRef.current : button2Ref.current) ?? undefined}
+        target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {
               // TODO base and overlay layers have too much duplicate code
               baseLayers
@@ -180,7 +197,10 @@ export function MapSwitchButton(): ReactElement {
                 )
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key }) => (
-                  <MenuItem key={type} onClick={() => handleMapSelect(type)}>
+                  <Dropdown.Item
+                    key={type}
+                    onClick={() => handleMapSelect(type)}
+                  >
                     <FontAwesomeIcon
                       icon={mapType === type ? 'check-circle-o' : 'circle-o'}
                     />{' '}
@@ -195,8 +215,7 @@ export function MapSwitchButton(): ReactElement {
                     >
                       {m?.mapLayers.letters[type]}
                     </span>
-                    {key && ' '}
-                    {key && <kbd>{key}</kbd>}
+                    {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
                       <>
                         {' '}
@@ -207,10 +226,10 @@ export function MapSwitchButton(): ReactElement {
                         />
                       </>
                     )}
-                  </MenuItem>
+                  </Dropdown.Item>
                 ))
             }
-            <MenuItem divider />
+            <Dropdown.Divider />
             {overlayLayers
               .filter(
                 ({ showOnlyInExpertMode }) =>
@@ -218,7 +237,7 @@ export function MapSwitchButton(): ReactElement {
               )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .map(({ type, icon, minZoom, key }) => (
-                <MenuItem
+                <Dropdown.Item
                   key={type}
                   eventKey={type}
                   onSelect={handleOverlaySelect}
@@ -245,8 +264,7 @@ export function MapSwitchButton(): ReactElement {
                   >
                     {m?.mapLayers.letters[type]}
                   </span>
-                  {key && ' '}
-                  {key && <kbd>{key}</kbd>}
+                  {getKbdShortcut(key)}
                   {minZoom !== undefined && zoom < minZoom && (
                     <>
                       {' '}
@@ -267,9 +285,9 @@ export function MapSwitchButton(): ReactElement {
                       />
                     </>
                   )}
-                </MenuItem>
+                </Dropdown.Item>
               ))}
-          </ul>
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>

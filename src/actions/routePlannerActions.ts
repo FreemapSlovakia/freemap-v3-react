@@ -1,7 +1,7 @@
-import { LatLon } from 'fm3/types/common';
-import { createAction } from 'typesafe-actions';
 import { RouteMode } from 'fm3/reducers/routePlannerReducer';
 import { TransportType } from 'fm3/transportTypeDefs';
+import { LatLon } from 'fm3/types/common';
+import { createAction } from 'typesafe-actions';
 
 export type PickMode = 'start' | 'finish';
 

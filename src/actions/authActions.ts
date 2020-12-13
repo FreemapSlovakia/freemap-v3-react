@@ -1,5 +1,5 @@
-import { createAction } from 'typesafe-actions';
 import { User } from 'fm3/types/common';
+import { createAction } from 'typesafe-actions';
 
 export const authCheckLogin = createAction('AUTH_CHECK_LOGIN')();
 

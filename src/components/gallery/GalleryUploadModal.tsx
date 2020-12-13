@@ -1,42 +1,36 @@
-import React, { ReactElement, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { useDispatch, useSelector } from 'react-redux';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-
 import {
   galleryAddItem,
-  galleryRemoveItem,
-  galleryMergeItem,
-  gallerySetItemForPositionPicking,
-  galleryUpload,
   galleryHideUploadModal,
-  galleryToggleShowPreview,
   GalleryItem,
+  galleryMergeItem,
+  galleryRemoveItem,
+  gallerySetItemForPositionPicking,
+  galleryToggleShowPreview,
+  galleryUpload,
 } from 'fm3/actions/galleryActions';
-
 import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useMessages } from 'fm3/l10nInjector';
+import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { PictureModel } from './GalleryEditForm';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDropzone } from 'react-dropzone';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { PictureModel } from './GalleryEditForm';
 
-export function GalleryUploadModal(): ReactElement {
+type Props = { show: boolean };
+
+export function GalleryUploadModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
 
   const items = useSelector((state: RootState) => state.gallery.items);
-
-  const visible = useSelector(
-    (state: RootState) => state.gallery.pickingPositionForId === null,
-  );
 
   const uploading = useSelector(
     (state: RootState) => !!state.gallery.uploadingId,
@@ -124,7 +118,7 @@ export function GalleryUploadModal(): ReactElement {
   );
 
   return (
-    <Modal show={visible} onHide={handleClose}>
+    <Modal show={show} onHide={handleClose}>
       <Modal.Header closeButton>
         <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
       </Modal.Header>
@@ -166,15 +160,15 @@ export function GalleryUploadModal(): ReactElement {
         )}
         {!uploading && (
           <>
-            <Checkbox
+            <FormCheck
+              type="checkbox"
               onChange={() => {
                 dispatch(galleryToggleShowPreview());
               }}
               checked={showPreview}
               disabled={!!items.length}
-            >
-              {m?.gallery.uploadModal.showPreview}
-            </Checkbox>
+              label={m?.gallery.uploadModal.showPreview}
+            />
 
             <div
               {...getRootProps()}
@@ -204,8 +198,8 @@ export function GalleryUploadModal(): ReactElement {
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
-        <Button onClick={handleClose} bsStyle="danger">
-          <Glyphicon glyph="remove" /> {m?.general.cancel} <kbd>Esc</kbd>
+        <Button onClick={handleClose} variant="dark">
+          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

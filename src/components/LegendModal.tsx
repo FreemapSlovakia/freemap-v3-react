@@ -1,17 +1,12 @@
-import React, { ReactElement, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import PanelGroup from 'react-bootstrap/lib/PanelGroup';
-import Panel from 'react-bootstrap/lib/Panel';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import legend from 'fm3/legend/index.json';
+import { ReactElement, useCallback } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
 interface LegendItem {
   n: string;
@@ -21,7 +16,9 @@ interface LegendItem {
   }[];
 }
 
-export function LegendModal(): ReactElement {
+type Props = { show: boolean };
+
+export function LegendModal({ show }: Props): ReactElement {
   const dispatch = useDispatch();
 
   const close = useCallback(() => {
@@ -29,7 +26,7 @@ export function LegendModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close} bsSize="small">
+    <Modal show={show} onHide={close} size="sm">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="map-o" /> Legenda mapy
@@ -39,34 +36,34 @@ export function LegendModal(): ReactElement {
         <p>
           Legenda k vrstvám <i>Automapa, Turistická, Cyklomapa a Lyžiarska</i>:
         </p>
-        <PanelGroup accordion id="pg1">
+        <Accordion>
           {legend.map((c: LegendItem, i: number) => (
-            <Panel key={c.n} eventKey={i}>
-              <Panel.Heading>
-                <Panel.Title toggle>{c.n}</Panel.Title>
-              </Panel.Heading>
-              <Panel.Body collapsible>
-                {c.items.map((e) => (
-                  <div key={e.n} className="legend-item">
-                    <div>
+            <Card key={c.n}>
+              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
+                {c.n}
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey={String(i)}>
+                <Card.Body>
+                  {c.items.map((e) => (
+                    <div key={e.n} className="legend-item">
                       <div>
-                        <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+                        <div>
+                          <img src={require(`fm3/legend/${e.i}`)} alt={e.n} />
+                        </div>
                       </div>
+                      <div>{e.n}</div>
                     </div>
-                    <div>{e.n}</div>
-                  </div>
-                ))}
-              </Panel.Body>
-            </Panel>
+                  ))}
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
           ))}
-        </PanelGroup>
+        </Accordion>
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button onClick={close}>
-            <Glyphicon glyph="remove" /> Zavrieť
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> Zavrieť
+        </Button>
       </Modal.Footer>
     </Modal>
   );

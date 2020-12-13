@@ -1,67 +1,65 @@
-import queryString, { ParsedQuery } from 'query-string';
-import { history } from 'fm3/historyHolder';
-
-import { getMapStateFromUrl, getMapStateDiffFromUrl } from 'fm3/urlMapUtils';
+import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
 import {
-  getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
-  getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
-} from 'fm3/oldFreemapUtils';
-import refModals from 'fm3/refModals.json';
-import tips from 'fm3/tips/index.json';
-
-import {
-  setActiveModal,
-  selectFeature,
-  setEmbedFeatures,
-  Tool,
-} from 'fm3/actions/mainActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
-import {
-  trackViewerDownloadTrack,
-  trackViewerColorizeTrackBy,
-  trackViewerGpxLoad,
-  ColorizingMode,
-} from 'fm3/actions/trackViewerActions';
-import {
-  osmLoadNode,
-  osmLoadWay,
-  osmLoadRelation,
-  osmClear,
-} from 'fm3/actions/osmActions';
+  changesetsSet,
+  changesetsSetAuthorName,
+  changesetsSetDays,
+} from 'fm3/actions/changesetsActions';
+import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
 import {
   drawingPointAdd,
   drawingPointSetAll,
 } from 'fm3/actions/drawingPointActions';
 import {
+  galleryClear,
+  GalleryFilter,
+  galleryHideFilter,
+  galleryHideUploadModal,
   galleryRequestImage,
   gallerySetFilter,
   galleryShowFilter,
   galleryShowUploadModal,
-  galleryClear,
-  galleryHideFilter,
-  galleryHideUploadModal,
-  GalleryFilter,
 } from 'fm3/actions/galleryActions';
 import {
-  changesetsSetDays,
-  changesetsSetAuthorName,
-  changesetsSet,
-} from 'fm3/actions/changesetsActions';
-import { drawingLineSetLines, Line } from 'fm3/actions/drawingLineActions';
+  selectFeature,
+  setActiveModal,
+  setEmbedFeatures,
+  Tool,
+} from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import {
+  osmClear,
+  osmLoadNode,
+  osmLoadRelation,
+  osmLoadWay,
+} from 'fm3/actions/osmActions';
+import { routePlannerSetParams } from 'fm3/actions/routePlannerActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
-import { authChooseLoginMethod, authLoginClose } from 'fm3/actions/authActions';
-import { trackingActions } from './actions/trackingActions';
-import { RootAction } from './actions';
-import { MyStore, RootState } from './storeCreator';
+import {
+  ColorizingMode,
+  trackViewerColorizeTrackBy,
+  trackViewerDownloadTrack,
+  trackViewerGpxLoad,
+} from 'fm3/actions/trackViewerActions';
+import { history } from 'fm3/historyHolder';
+import {
+  getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2,
+  getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
+} from 'fm3/oldFreemapUtils';
+import refModals from 'fm3/refModals.json';
+import tips from 'fm3/tips/index.json';
+import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
-import { TrackedDevice } from './types/trackingTypes';
-import { LatLon } from './types/common';
+import queryString, { ParsedQuery } from 'query-string';
 import { Dispatch } from 'redux';
-import { isTransportType } from './transportTypeDefs';
+import { is } from 'typescript-is';
+import { RootAction } from './actions';
 import { mapsLoad } from './actions/mapsActions';
 import { searchSetQuery } from './actions/searchActions';
-import { is } from 'typescript-is';
+import { trackingActions } from './actions/trackingActions';
+import { MyStore, RootState } from './storeCreator';
+import { isTransportType } from './transportTypeDefs';
+import { LatLon } from './types/common';
+import { TrackedDevice } from './types/trackingTypes';
 
 const tipKeys = tips.map(([key]) => key);
 

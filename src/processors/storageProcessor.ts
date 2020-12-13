@@ -1,5 +1,5 @@
-import { storage } from 'fm3/storage';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { storage } from 'fm3/storage';
 import { AppState } from 'fm3/types/common';
 
 export const storageProcessor: Processor = {

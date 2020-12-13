@@ -1,12 +1,11 @@
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { getPoiType } from 'fm3/poiTypes';
-
-import { objectsSetResult, objectsSetFilter } from 'fm3/actions/objectsActions';
-import { selectFeature, clearMap } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { objectsSetFilter, objectsSetResult } from 'fm3/actions/objectsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { getPoiType } from 'fm3/poiTypes';
 import { OverpassResult } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 export const objectsFetchProcessor: Processor<typeof objectsSetFilter> = {
   actionCreator: objectsSetFilter,

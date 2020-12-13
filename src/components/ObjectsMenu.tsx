@@ -1,22 +1,24 @@
-import React, { ReactElement, useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { objectsSetFilter } from 'fm3/actions/objectsActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import Dropdown from 'react-bootstrap/lib/Dropdown';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { convertToDrawing } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { objectsSetFilter } from 'fm3/actions/objectsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { RootState } from 'fm3/storeCreator';
+import {
+  ChangeEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
+import FormControl from 'react-bootstrap/FormControl';
+import { useDispatch, useSelector } from 'react-redux';
+import { HideArrow } from './SearchMenu';
 
 export function ObjectsMenu(): ReactElement {
   const m = useMessages();
@@ -33,16 +35,12 @@ export function ObjectsMenu(): ReactElement {
 
   const [dropdownOpened, setDropdownOpened] = useState(false);
 
-  const handleFilterSet = useCallback((e: React.FormEvent<FormControl>) => {
-    setFilter((e.target as HTMLInputElement).value);
+  const handleFilterSet = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.currentTarget.value);
   }, []);
 
-  const handleToggle = useCallback(() => {
-    setDropdownOpened(!dropdownOpened);
-  }, [dropdownOpened]);
-
   const handleSelect = useCallback(
-    (id: unknown) => {
+    (id: string | null) => {
       if (zoom < 12) {
         dispatch(
           toastsAdd({
@@ -58,32 +56,53 @@ export function ObjectsMenu(): ReactElement {
             ],
           }),
         );
-      } else if (typeof id === 'number') {
-        dispatch(objectsSetFilter(id));
+      } else if (id !== null) {
+        dispatch(objectsSetFilter(Number(id)));
+
+        setDropdownOpened(false);
+        setFilter('');
       }
     },
     [zoom, dispatch],
   );
 
-  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+    if (!isOpen) {
+      setDropdownOpened(false);
+
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      inputRef.current?.blur();
+    }
+  };
 
   return (
     <>
       <Dropdown
         className="dropdown-long"
         id="objectsMenuDropdown"
+        show={dropdownOpened}
+        onSelect={handleSelect}
         onToggle={handleToggle}
-        open={dropdownOpened}
       >
-        <FormGroup2 bsRole="toggle">
+        <Dropdown.Toggle as={HideArrow}>
           <FormControl
             type="text"
             placeholder={m?.objects.type}
             onChange={handleFilterSet}
             value={filter}
+            onFocus={() => {
+              setDropdownOpened(true);
+            }}
+            ref={inputRef}
           />
-        </FormGroup2>
-        <Dropdown.Menu>
+        </Dropdown.Toggle>
+        <Dropdown.Menu rootCloseEvent="mousedown">
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
 
@@ -96,26 +115,28 @@ export function ObjectsMenu(): ReactElement {
                     .indexOf(filter.toLowerCase()) !== -1,
               )
               .map(({ group, id, icon }) => (
-                <MenuItem key={id} eventKey={id} onSelect={handleSelect}>
+                <Dropdown.Item key={id} eventKey={String(id)}>
                   <img
                     src={require(`../images/mapIcons/${icon}.png`)}
                     alt={`${group}-${icon}`}
                   />{' '}
                   {m?.objects.subcategories[id]}
-                </MenuItem>
+                </Dropdown.Item>
               ));
 
             return items.length === 0 ? null : (
-              <React.Fragment key={gid}>
-                {i > 0 && <MenuItem divider />}
-                <MenuItem header>{m?.objects.categories[gid]}</MenuItem>
+              <Fragment key={gid}>
+                {i > 0 && <Dropdown.Divider />}
+                <Dropdown.Header>{m?.objects.categories[gid]}</Dropdown.Header>
                 {items}
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </Dropdown.Menu>
-      </Dropdown>{' '}
+      </Dropdown>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(convertToDrawing(undefined));
         }}
@@ -123,7 +144,10 @@ export function ObjectsMenu(): ReactElement {
         title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.convertToDrawing}
+        </span>
       </Button>
     </>
   );

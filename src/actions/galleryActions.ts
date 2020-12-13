@@ -1,6 +1,6 @@
-import { createAction } from 'typesafe-actions';
-import { LatLon, User } from 'fm3/types/common';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
+import { LatLon, User } from 'fm3/types/common';
+import { createAction } from 'typesafe-actions';
 
 export interface GalleryItem {
   id: number;

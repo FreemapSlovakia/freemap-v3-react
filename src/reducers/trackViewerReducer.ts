@@ -1,24 +1,24 @@
-import { createReducer } from 'typesafe-actions';
+import { FeatureCollection, Geometries } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
-import { clearMap, setAppState, deleteFeature } from 'fm3/actions/mainActions';
-import {
-  trackViewerSetData,
-  trackViewerSetTrackUID,
-  trackViewerDownloadTrack,
-  trackViewerColorizeTrackBy,
-  trackViewerGpxLoad,
-  TrackPoint,
-} from 'fm3/actions/trackViewerActions';
+import { clearMap, deleteFeature, setAppState } from 'fm3/actions/mainActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   osmClear,
   osmLoadNode,
-  osmLoadWay,
   osmLoadRelation,
+  osmLoadWay,
 } from 'fm3/actions/osmActions';
-import produce from 'immer';
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
-import { FeatureCollection, Geometries } from '@turf/helpers';
+import {
+  TrackPoint,
+  trackViewerColorizeTrackBy,
+  trackViewerDownloadTrack,
+  trackViewerGpxLoad,
+  trackViewerSetData,
+  trackViewerSetTrackUID,
+} from 'fm3/actions/trackViewerActions';
+import produce from 'immer';
+import { createReducer } from 'typesafe-actions';
 
 export interface TrackViewerState {
   trackGeojson: FeatureCollection<Geometries> | null;

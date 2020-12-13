@@ -1,5 +1,5 @@
-import { LatLon } from './types/common';
 import { assertType } from 'typescript-is';
+import { LatLon } from './types/common';
 
 // TODO publish as npm package
 

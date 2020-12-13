@@ -1,9 +1,9 @@
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import {
-  routePlannerSetStart,
   routePlannerSetFinish,
+  routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';

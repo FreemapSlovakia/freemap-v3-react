@@ -1,22 +1,17 @@
-import React, { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { useMessages } from 'fm3/l10nInjector';
-
 import {
-  galleryShowFilter,
-  galleryShowUploadModal,
   galleryList,
   GalleryListOrder,
+  galleryShowFilter,
+  galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
-
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Form from 'react-bootstrap/lib/Form';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 
 export function GalleryMenu(): ReactElement {
@@ -29,40 +24,58 @@ export function GalleryMenu(): ReactElement {
   );
 
   return (
-    <Form inline>
+    <>
       <Button
+        variant="secondary"
         onClick={() => {
           dispatch(galleryShowFilter());
         }}
         active={filterIsActive}
       >
         <FontAwesomeIcon icon="filter" />
-        <span className="hidden-xs"> {m?.gallery.filter}</span>
-      </Button>{' '}
+        <span className="d-none d-sm-inline"> {m?.gallery.filter}</span>
+      </Button>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="all-pics"
         title={m?.gallery.allPhotos}
-        onSelect={(order: unknown) => {
+        onSelect={(order) => {
           if (is<GalleryListOrder>(order)) {
             dispatch(galleryList(order));
           }
         }}
       >
-        <MenuItem eventKey="+createdAt">{m?.gallery.f.firstUploaded}</MenuItem>
-        <MenuItem eventKey="-createdAt">{m?.gallery.f.lastUploaded}</MenuItem>
-        <MenuItem eventKey="+takenAt">{m?.gallery.f.firstCaptured}</MenuItem>
-        <MenuItem eventKey="-takenAt">{m?.gallery.f.lastCaptured}</MenuItem>
-        <MenuItem eventKey="+rating">{m?.gallery.f.leastRated}</MenuItem>
-        <MenuItem eventKey="-rating">{m?.gallery.f.mostRated}</MenuItem>
-      </DropdownButton>{' '}
+        <Dropdown.Item eventKey="+createdAt">
+          {m?.gallery.f.firstUploaded}
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="-createdAt">
+          {m?.gallery.f.lastUploaded}
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="+takenAt">
+          {m?.gallery.f.firstCaptured}
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="-takenAt">
+          {m?.gallery.f.lastCaptured}
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="+rating">
+          {m?.gallery.f.leastRated}
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="-rating">
+          {m?.gallery.f.mostRated}
+        </Dropdown.Item>
+      </DropdownButton>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(galleryShowUploadModal());
         }}
       >
         <FontAwesomeIcon icon="upload" />
-        <span className="hidden-xs"> {m?.gallery.upload}</span>
+        <span className="d-none d-sm-inline"> {m?.gallery.upload}</span>
       </Button>
-    </Form>
+    </>
   );
 }

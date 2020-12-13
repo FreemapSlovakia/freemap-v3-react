@@ -1,20 +1,18 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement, useCallback, useState } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { InputGroup } from 'react-bootstrap';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { FormEvent, ReactElement, useCallback, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
@@ -56,7 +54,7 @@ export function DeviceForm(): ReactElement {
   const [regenerateToken, setRegenerateToken] = useState(false);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    (e: FormEvent) => {
       e.preventDefault();
 
       dispatch(
@@ -98,7 +96,7 @@ export function DeviceForm(): ReactElement {
       </Modal.Header>
       <Modal.Body>
         <FormGroup className="required">
-          <ControlLabel>{m?.tracking.device.name}</ControlLabel>
+          <FormLabel>{m?.tracking.device.name}</FormLabel>
           <FormControl
             type="text"
             value={name}
@@ -109,19 +107,21 @@ export function DeviceForm(): ReactElement {
           />
         </FormGroup>
         <FormGroup className="required">
-          <ControlLabel>Token</ControlLabel>
+          <FormLabel>Token</FormLabel>
           <InputGroup>
             <DropdownButton
-              componentClass={InputGroup.Button}
+              variant="secondary"
+              rootCloseEvent="mousedown"
+              as={InputGroup.Append}
               id="input-dropdown-addon"
               title={types[type]}
               onSelect={onSelect}
               disabled={!!device?.id}
             >
               {Object.entries(types).map(([key, value]) => (
-                <MenuItem key={key} eventKey={key} active={type === key}>
+                <Dropdown.Item key={key} eventKey={key} active={type === key}>
                   {value}
-                </MenuItem>
+                </Dropdown.Item>
               ))}
             </DropdownButton>
             <FormControl
@@ -142,19 +142,19 @@ export function DeviceForm(): ReactElement {
               onChange={setToken}
             />
             {type === 'url' && !!device?.id && (
-              <InputGroup.Button>
+              <InputGroup.Append>
                 <Button
                   active={regenerateToken}
                   onClick={handleRegenerateTokenClick}
                 >
                   <FontAwesomeIcon icon="refresh" /> Regenerate
                 </Button>
-              </InputGroup.Button>
+              </InputGroup.Append>
             )}
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{m?.tracking.device.maxCount}</ControlLabel>
+          <FormLabel>{m?.tracking.device.maxCount}</FormLabel>
           <FormControl
             type="number"
             min="0"
@@ -164,7 +164,7 @@ export function DeviceForm(): ReactElement {
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{m?.tracking.device.maxAge}</ControlLabel>
+          <FormLabel>{m?.tracking.device.maxAge}</FormLabel>
           <InputGroup>
             <FormControl
               type="number"
@@ -173,7 +173,9 @@ export function DeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Addon>{m?.general.minutes}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
@@ -181,6 +183,7 @@ export function DeviceForm(): ReactElement {
         <Button type="submit">{m?.general.save}</Button>
         <Button
           type="button"
+          variant="dark"
           onClick={() => {
             dispatch(trackingActions.modifyDevice(undefined));
           }}

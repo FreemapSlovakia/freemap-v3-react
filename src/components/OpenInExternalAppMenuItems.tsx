@@ -1,16 +1,16 @@
+import bbox from '@turf/bbox';
+import buffer from '@turf/buffer';
+import { point } from '@turf/helpers';
 import axios from 'axios';
-import React, { ReactElement, useCallback } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { loadFb } from 'fm3/fbLoader';
 import { useMessages } from 'fm3/l10nInjector';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
-import qs, { StringifiableRecord } from 'query-string';
-import buffer from '@turf/buffer';
-import bbox from '@turf/bbox';
-import { point } from '@turf/helpers';
-import { loadFb } from 'fm3/fbLoader';
 import popupCentered from 'popup-centered';
+import qs, { StringifiableRecord } from 'query-string';
+import { ReactElement, useCallback } from 'react';
+import Dropdown from 'react-bootstrap/Dropdown';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 interface Props extends LatLon {
@@ -27,7 +27,7 @@ interface Props extends LatLon {
   onSelect?: (where: string) => void;
 }
 
-export function OpenInExternalAppMenuItems({
+export function OpenInExternalAppDropdownItems({
   lat,
   lon,
   zoom,
@@ -42,9 +42,9 @@ export function OpenInExternalAppMenuItems({
 }: Props): ReactElement {
   const m = useMessages();
 
-  const handleMenuItemSelect = useCallback(
-    (where: unknown) => {
-      if (onSelect && typeof where === 'string') {
+  const handleDropdownItemSelect = useCallback(
+    (where: string | null) => {
+      if (onSelect && where !== null) {
         onSelect(where);
       }
 
@@ -256,73 +256,76 @@ export function OpenInExternalAppMenuItems({
     <>
       {url && (
         <>
-          <MenuItem eventKey="window" onSelect={handleMenuItemSelect}>
+          <Dropdown.Item eventKey="window" onSelect={handleDropdownItemSelect}>
             <FontAwesomeIcon icon="window-maximize" /> {m?.external.window}
-          </MenuItem>
+          </Dropdown.Item>
           {hasShare && (
-            <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
+            <Dropdown.Item eventKey="url" onSelect={handleDropdownItemSelect}>
               <FontAwesomeIcon icon="link" /> {m?.external.url}
-            </MenuItem>
+            </Dropdown.Item>
           )}
           {(navigator as any).canShare && (
-            <MenuItem eventKey="image" onSelect={handleMenuItemSelect}>
+            <Dropdown.Item eventKey="image" onSelect={handleDropdownItemSelect}>
               <FontAwesomeIcon icon="share-alt" /> {m?.external.image}
-            </MenuItem>
+            </Dropdown.Item>
           )}
-          <MenuItem divider />
+          <Dropdown.Divider />
         </>
       )}
       {!url && hasClipboard && (
-        <MenuItem eventKey="copy" onSelect={handleMenuItemSelect}>
+        <Dropdown.Item eventKey="copy" onSelect={handleDropdownItemSelect}>
           <FontAwesomeIcon icon="clipboard" /> {m?.external.copy}
-        </MenuItem>
+        </Dropdown.Item>
       )}
       {!url && hasShare && (
-        <MenuItem eventKey="url" onSelect={handleMenuItemSelect}>
+        <Dropdown.Item eventKey="url" onSelect={handleDropdownItemSelect}>
           <FontAwesomeIcon icon="link" /> {m?.external.url}
-        </MenuItem>
+        </Dropdown.Item>
       )}
-      {!url && (hasClipboard || hasShare) && <MenuItem divider />}
-      <MenuItem eventKey="facebook" onSelect={handleMenuItemSelect}>
+      {!url && (hasClipboard || hasShare) && <Dropdown.Divider />}
+      <Dropdown.Item eventKey="facebook" onSelect={handleDropdownItemSelect}>
         <FontAwesomeIcon icon="facebook-official" /> Facebook
-      </MenuItem>
-      <MenuItem eventKey="twitter" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="twitter" onSelect={handleDropdownItemSelect}>
         <FontAwesomeIcon icon="twitter" /> Twitter
-      </MenuItem>
-      <MenuItem divider />
-      <MenuItem eventKey="osm.org" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Divider />
+      <Dropdown.Item eventKey="osm.org" onSelect={handleDropdownItemSelect}>
         {m?.external.osm}
-      </MenuItem>
-      <MenuItem eventKey="mapy.cz" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="mapy.cz" onSelect={handleDropdownItemSelect}>
         {m?.external.mapy_cz}
-      </MenuItem>
-      <MenuItem eventKey="google" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="google" onSelect={handleDropdownItemSelect}>
         {m?.external.googleMaps}
-      </MenuItem>
-      <MenuItem eventKey="mapillary" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="mapillary" onSelect={handleDropdownItemSelect}>
         Mapillary
-      </MenuItem>
-      <MenuItem eventKey="openstreetcam" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item
+        eventKey="openstreetcam"
+        onSelect={handleDropdownItemSelect}
+      >
         OpenStreetCam
-      </MenuItem>
-      <MenuItem eventKey="oma.sk" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="oma.sk" onSelect={handleDropdownItemSelect}>
         {m?.external.oma} (SK)
-      </MenuItem>
-      <MenuItem eventKey="hiking.sk" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>
+      <Dropdown.Item eventKey="hiking.sk" onSelect={handleDropdownItemSelect}>
         {m?.external.hiking_sk} (SK)
-      </MenuItem>{' '}
-      <MenuItem eventKey="zbgis" onSelect={handleMenuItemSelect}>
+      </Dropdown.Item>{' '}
+      <Dropdown.Item eventKey="zbgis" onSelect={handleDropdownItemSelect}>
         {m?.external.zbgis} (SK)
-      </MenuItem>
-      <MenuItem divider />
+      </Dropdown.Item>
+      <Dropdown.Divider />
       {expertMode && (
-        <MenuItem eventKey="josm" onSelect={handleMenuItemSelect}>
+        <Dropdown.Item eventKey="josm" onSelect={handleDropdownItemSelect}>
           {m?.external.josm}
-        </MenuItem>
+        </Dropdown.Item>
       )}
-      <MenuItem eventKey="osm.org/id" onSelect={handleMenuItemSelect}>
+      <Dropdown.Item eventKey="osm.org/id" onSelect={handleDropdownItemSelect}>
         {m?.external.id}
-      </MenuItem>
+      </Dropdown.Item>
     </>
   );
 }

@@ -1,36 +1,33 @@
-import React, { useMemo, useCallback, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-
-import { useMessages } from 'fm3/l10nInjector';
-
+import { convertToDrawing, setActiveModal } from 'fm3/actions/mainActions';
 import {
-  routePlannerSetStart,
+  PickMode,
+  RouteAlternativeExtra,
+  routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
-  routePlannerSetTransportType,
+  routePlannerSetFromCurrentPosition,
   routePlannerSetMode,
   routePlannerSetPickMode,
+  routePlannerSetStart,
+  routePlannerSetTransportType,
+  routePlannerSwapEnds,
   // routePlannerToggleItineraryVisibility,
   routePlannerToggleElevationChart,
-  routePlannerSetActiveAlternativeIndex,
-  routePlannerSwapEnds,
-  routePlannerSetFromCurrentPosition,
   routePlannerToggleMilestones,
-  RouteAlternativeExtra,
-  PickMode,
   RoutingMode,
 } from 'fm3/actions/routePlannerActions';
-import { setActiveModal, convertToDrawing } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
-import { Checkbox } from 'react-bootstrap';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
+import { MouseEvent, ReactElement, useCallback, useMemo } from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import FormCheck from 'react-bootstrap/FormCheck';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
@@ -119,9 +116,7 @@ export function RoutePlannerMenu(): ReactElement {
     maximumFractionDigits: 1,
   });
 
-  const DropdownButton2 = DropdownButton as any; // because active is missing
-
-  const stopPropagation = useCallback((e: React.MouseEvent) => {
+  const stopPropagation = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);
 
@@ -136,87 +131,105 @@ export function RoutePlannerMenu(): ReactElement {
   return (
     <>
       <ButtonGroup>
-        <DropdownButton2
+        <DropdownButton
+          rootCloseEvent="mousedown"
+          variant={pickPointMode === 'start' ? 'dark' : 'secondary'}
+          as={ButtonGroup}
           title={
             <span>
               <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
-              <span className="hidden-xs"> {m?.routePlanner.start}</span>
+              <span className="d-none d-md-inline">
+                {' '}
+                {m?.routePlanner.start ?? '…'}
+              </span>
             </span>
           }
           id="set-start-dropdown"
           onClick={() => {
             dispatch(routePlannerSetPickMode('start'));
           }}
-          active={pickPointMode === 'start'}
         >
-          <MenuItem>
-            <FontAwesomeIcon icon="map-marker" /> {m?.routePlanner.point.pick}
-          </MenuItem>
-          <MenuItem
+          <Dropdown.Item>
+            <FontAwesomeIcon icon="map-marker" />{' '}
+            {m?.routePlanner.point.pick ?? '…'}
+          </Dropdown.Item>
+          <Dropdown.Item
             onSelect={() => {
               dispatch(routePlannerSetFromCurrentPosition('start'));
             }}
           >
-            <FontAwesomeIcon icon="bullseye" /> {m?.routePlanner.point.current}
-          </MenuItem>
-          <MenuItem
+            <FontAwesomeIcon icon="bullseye" />{' '}
+            {m?.routePlanner.point.current ?? '…'}
+          </Dropdown.Item>
+          <Dropdown.Item
             onSelect={() => {
               setFromHomeLocation('start');
             }}
           >
-            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
-          </MenuItem>
-        </DropdownButton2>
+            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home ?? '…'}
+          </Dropdown.Item>
+        </DropdownButton>
         {mode !== 'roundtrip' && (
           <>
             <Button
+              as={ButtonGroup}
+              variant="secondary"
               onClick={() => {
                 dispatch(routePlannerSwapEnds());
               }}
               disabled={!canSwap}
-              title={m?.routePlanner.swap}
+              title={m?.routePlanner.swap ?? '…'}
             >
               ⇆
             </Button>
-            <DropdownButton2
+            <DropdownButton
+              rootCloseEvent="mousedown"
+              as={ButtonGroup}
+              variant={pickPointMode === 'finish' ? 'dark' : 'secondary'}
               title={
                 <span>
                   <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
-                  <span className="hidden-xs"> {m?.routePlanner.finish}</span>
+                  <span className="d-none d-md-inline">
+                    {' '}
+                    {m?.routePlanner.finish ?? '…'}
+                  </span>
                 </span>
               }
               id="set-finish-dropdown"
               onClick={() => {
                 dispatch(routePlannerSetPickMode('finish'));
               }}
-              active={pickPointMode === 'finish'}
             >
-              <MenuItem>
-                <FontAwesomeIcon icon="map-marker" />{' '}
-                {m?.routePlanner.point.pick}
-              </MenuItem>
-              <MenuItem
+              <Dropdown.Item>
+                <FontAwesomeIcon icon="map-marker" />
+                {m?.routePlanner.point.pick ?? '…'}
+              </Dropdown.Item>
+              <Dropdown.Item
                 onSelect={() => {
                   dispatch(routePlannerSetFromCurrentPosition('finish'));
                 }}
               >
-                <FontAwesomeIcon icon="bullseye" />{' '}
-                {m?.routePlanner.point.current}
-              </MenuItem>
-              <MenuItem
+                <FontAwesomeIcon icon="bullseye" />
+                {m?.routePlanner.point.current ?? '…'}
+              </Dropdown.Item>
+              <Dropdown.Item
                 onSelect={() => {
                   setFromHomeLocation('finish');
                 }}
               >
-                <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
-              </MenuItem>
-            </DropdownButton2>
+                <FontAwesomeIcon icon="home" />{' '}
+                {m?.routePlanner.point.home ?? '…'}
+              </Dropdown.Item>
+            </DropdownButton>
           </>
         )}
-      </ButtonGroup>{' '}
+      </ButtonGroup>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="transport-type"
-        onSelect={(transportType: unknown) => {
+        onSelect={(transportType) => {
           dispatch(
             routePlannerSetTransportType(transportType as TransportType),
           );
@@ -228,11 +241,11 @@ export function RoutePlannerMenu(): ReactElement {
               {['car', 'bikesharing'].includes(activeTransportType.type) && (
                 <FontAwesomeIcon icon="money" />
               )}
-              <span className="hidden-xs">
+              <span className="d-none d-md-inline">
                 {' '}
                 {m?.routePlanner.transportType[
                   activeTransportType.type
-                ].replace(/\s*,.*/, '')}
+                ].replace(/\s*,.*/, '') ?? '…'}
               </span>
             </>
           ) : (
@@ -243,23 +256,23 @@ export function RoutePlannerMenu(): ReactElement {
         {transportTypeDefs
           .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
           .map(({ type, icon, development }) => (
-            <MenuItem
+            <Dropdown.Item
               eventKey={type}
               key={type}
-              title={m?.routePlanner.transportType[type]}
+              title={m?.routePlanner.transportType[type] ?? '…'}
               active={transportType === type}
             >
               <FontAwesomeIcon icon={icon} />
               {['car', 'bikesharing'].includes(type) && (
                 <FontAwesomeIcon icon="money" />
               )}{' '}
-              {m?.routePlanner.transportType[type]}
+              {m?.routePlanner.transportType[type] ?? '…'}
               {development && (
                 <>
                   {' '}
                   <FontAwesomeIcon
                     icon="flask"
-                    title={m?.routePlanner.development}
+                    title={m?.routePlanner.development ?? '…'}
                     className="text-warning"
                   />
                 </>
@@ -277,111 +290,125 @@ export function RoutePlannerMenu(): ReactElement {
                   </a>
                 </>
               )}
-            </MenuItem>
+            </Dropdown.Item>
           ))}
-      </DropdownButton>{' '}
+      </DropdownButton>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="mode"
-        onSelect={(mode: unknown) => {
+        onSelect={(mode) => {
           dispatch(routePlannerSetMode(mode as RoutingMode));
         }}
-        title={m?.routePlanner.mode[mode]}
+        title={m?.routePlanner.mode[mode] ?? '…'}
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
         {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
-          <MenuItem
+          <Dropdown.Item
             eventKey={mode1}
             key={mode1}
-            title={m?.routePlanner.mode[mode1]}
+            title={m?.routePlanner.mode[mode1] ?? '…'}
             active={mode === mode1}
           >
-            {m?.routePlanner.mode[mode1]}
-          </MenuItem>
+            {m?.routePlanner.mode[mode1] ?? '…'}
+          </Dropdown.Item>
         ))}
       </DropdownButton>
       {alternatives.length > 1 && (
-        <>
-          {' '}
-          <DropdownButton
-            id="transport-type"
-            onSelect={(index: unknown) => {
-              if (typeof index === 'number') {
-                dispatch(
-                  routePlannerSetActiveAlternativeIndex(index as number),
-                );
-              }
-            }}
-            title={
-              transportType === 'imhd' &&
-              activeAlternative.extra &&
-              activeAlternative.extra.price
-                ? imhdSummary(m, language, activeAlternative.extra)
-                : m?.routePlanner.summary({
-                    distance: nf.format(activeAlternative.distance / 1000),
-                    h: Math.floor(
-                      Math.round(activeAlternative.duration / 60) / 60,
-                    ),
-                    m: Math.round(activeAlternative.duration / 60) % 60,
-                  })
+        <DropdownButton
+          rootCloseEvent="mousedown"
+          className="ml-1"
+          variant="secondary"
+          id="transport-type"
+          onSelect={(index) => {
+            if (index !== null) {
+              dispatch(routePlannerSetActiveAlternativeIndex(Number(index)));
             }
-          >
-            {alternatives.map(({ duration, distance, extra }, i) => (
-              <MenuItem
-                eventKey={i}
-                key={i}
-                active={i === activeAlternativeIndex}
-              >
-                {transportType === 'imhd' && extra?.price
-                  ? imhdSummary(m, language, extra)
-                  : m?.routePlanner.summary({
-                      distance: nf.format(distance / 1000),
-                      h: Math.floor(Math.round(duration / 60) / 60),
-                      m: Math.round(duration / 60) % 60,
-                    })}
-              </MenuItem>
-            ))}
-          </DropdownButton>
-        </>
+          }}
+          title={
+            transportType === 'imhd' &&
+            activeAlternative.extra &&
+            activeAlternative.extra.price
+              ? imhdSummary(m, language, activeAlternative.extra)
+              : m?.routePlanner.summary({
+                  distance: nf.format(activeAlternative.distance / 1000),
+                  h: Math.floor(
+                    Math.round(activeAlternative.duration / 60) / 60,
+                  ),
+                  m: Math.round(activeAlternative.duration / 60) % 60,
+                }) ?? '…'
+          }
+        >
+          {alternatives.map(({ duration, distance, extra }, i) => (
+            <Dropdown.Item
+              eventKey={String(i)}
+              key={i}
+              active={i === activeAlternativeIndex}
+            >
+              {transportType === 'imhd' && extra?.price
+                ? imhdSummary(m, language, extra)
+                : m?.routePlanner.summary({
+                    distance: nf.format(distance / 1000),
+                    h: Math.floor(Math.round(duration / 60) / 60),
+                    m: Math.round(duration / 60) % 60,
+                  }) ?? '…'}
+            </Dropdown.Item>
+          ))}
+        </DropdownButton>
       )}
       {/* ' '}
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(routePlannerToggleItineraryVisibility());
         }}
         active={itineraryIsVisible}
         title="Itinerár"
       >
-        <FontAwesomeIcon icon="list-ol" /><span className="hidden-xs"> Itinerár</span>
+        <FontAwesomeIcon icon="list-ol" /><span className="d-none d-md-inline"> Itinerár</span>
       </Button>
       */}{' '}
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(routePlannerToggleElevationChart());
         }}
         active={elevationProfileIsVisible}
         disabled={!routeFound}
-        title={m?.general.elevationProfile}
+        title={m?.general.elevationProfile ?? '…'}
       >
         <FontAwesomeIcon icon="bar-chart" />
-        <span className="hidden-xs"> {m?.general.elevationProfile}</span>
-      </Button>{' '}
+        <span className="d-none d-md-inline">
+          {' '}
+          {m?.general.elevationProfile ?? '…'}
+        </span>
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={handleConvertToDrawing}
         disabled={!routeFound}
-        title={m?.general.convertToDrawing}
+        title={m?.general.convertToDrawing ?? '…'}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
-      </Button>{' '}
-      <Checkbox
+        <span className="d-none d-md-inline">
+          {' '}
+          {m?.general.convertToDrawing ?? '…'}
+        </span>
+      </Button>
+      <FormCheck
+        className="ml-1"
+        type="checkbox"
         inline
         onChange={() => {
           dispatch(routePlannerToggleMilestones(undefined));
         }}
         checked={milestones}
-      >
-        {m?.routePlanner.milestones}
-      </Checkbox>
+        label={m?.routePlanner.milestones ?? '…'}
+      />
     </>
   );
 }
@@ -398,15 +425,17 @@ function imhdSummary(
 
   const { price, arrival, numbers } = extra;
 
-  return m?.routePlanner.imhd.total.short({
-    price:
-      price === undefined
-        ? undefined
-        : Intl.NumberFormat(language, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(price),
-    arrival: dateFormat.format(arrival * 1000),
-    numbers,
-  });
+  return (
+    m?.routePlanner.imhd.total.short({
+      price:
+        price === undefined
+          ? undefined
+          : Intl.NumberFormat(language, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(price),
+      arrival: dateFormat.format(arrival * 1000),
+      numbers,
+    }) ?? '…'
+  );
 }

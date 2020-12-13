@@ -1,12 +1,12 @@
-import React from 'react';
 import {
-  baseLayers,
-  overlayLayers,
   AttributionDef,
   BaseLayerLetters,
+  baseLayers,
+  overlayLayers,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { ReactElement } from 'react';
 
 interface Props {
   m?: Messages;
@@ -15,12 +15,12 @@ interface Props {
   overlays: OverlayLetters[];
 }
 
-export const Attribution: React.FC<Props> = ({
+export function Attribution({
   m,
   mapType,
   overlays,
-  // imhd,
-}) => {
+}: // imhd,
+Props): ReactElement {
   return (
     <ul style={{ padding: '10px 0 0 20px' }}>
       {categorize(
@@ -62,7 +62,7 @@ export const Attribution: React.FC<Props> = ({
       )} */}
     </ul>
   );
-};
+}
 
 function categorize(
   attributions: AttributionDef[],

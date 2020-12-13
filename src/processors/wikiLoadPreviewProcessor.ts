@@ -1,11 +1,11 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
 import {
-  wikiSetPoints,
   wikiLoadPreview,
-  wikiSetPreview,
   WikiPreview,
+  wikiSetPoints,
+  wikiSetPreview,
 } from 'fm3/actions/wikiActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse1 {

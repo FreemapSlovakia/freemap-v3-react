@@ -1,34 +1,26 @@
+import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import {
-  KEY_ESCAPE,
-  KEY_LEFT,
-  KEY_RIGHT,
-  KEY_M,
-  KEY_S,
-  KEY_DELETE,
-} from 'keycode-js';
-import { MyStore } from './storeCreator';
-import {
-  selectFeature,
-  setSelectingHomeLocation,
-  setActiveModal,
-  clearMap,
-  deleteFeature,
-} from './actions/mainActions';
-import { showGalleryViewer } from './selectors/mainSelectors';
-import {
+  galleryClear,
+  galleryEditPicture,
   galleryRequestImage,
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
-  galleryEditPicture,
-  galleryClear,
 } from './actions/galleryActions';
-import { tipsShow } from './actions/tipsActions';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import {
+  clearMap,
+  deleteFeature,
+  selectFeature,
+  setActiveModal,
+  setSelectingHomeLocation,
+} from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
+import { tipsShow } from './actions/tipsActions';
+import { showGalleryViewer } from './selectors/mainSelectors';
+import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
 
 let keyTimer: number | null = null;
-let initKey: 'e' | 'g' | null = null;
+let initCode: 'KeyE' | 'KeyG' | null = null;
 
 export function attachKeyboardHandler(store: MyStore): void {
   document.addEventListener('keydown', (event: KeyboardEvent) => {
@@ -40,7 +32,16 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     const state = store.getState();
 
-    if (showGalleryViewer(state) && event.keyCode === KEY_ESCAPE) {
+    const showingModal =
+      !state.gallery.showPosition &&
+      !state.gallery.pickingPositionForId &&
+      !state.main.selectingHomeLocation &&
+      (state.gallery.showFilter ||
+        !!state.main.activeModal ||
+        state.gallery.showUploadModal ||
+        state.gallery.activeImageId);
+
+    if (showGalleryViewer(state) && event.code === 'Escape') {
       if (state.gallery.editModel) {
         store.dispatch(galleryEditPicture());
       } else {
@@ -50,7 +51,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       return;
     }
 
-    if (event.keyCode === KEY_ESCAPE && !embed) {
+    if (event.code === 'Escape' && !embed) {
       if (state.main.selectingHomeLocation) {
         store.dispatch(setSelectingHomeLocation(false));
         event.preventDefault();
@@ -60,8 +61,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         event.preventDefault();
         return;
       } else if (
-        !state.main.activeModal &&
-        !state.gallery.activeImageId &&
+        !showingModal &&
         !state.gallery.showPosition &&
         state.main.selection
       ) {
@@ -87,11 +87,11 @@ export function attachKeyboardHandler(store: MyStore): void {
     }
 
     if (showGalleryViewer(state)) {
-      if (event.keyCode === KEY_S) {
+      if (event.code === 'KeyS') {
         store.dispatch(galleryShowOnTheMap());
         event.preventDefault();
         return;
-      } else if (!state.gallery.editModel && event.keyCode === KEY_M) {
+      } else if (!state.gallery.editModel && event.code === 'KeyM') {
         store.dispatch(galleryEditPicture());
         event.preventDefault();
         return;
@@ -103,11 +103,11 @@ export function attachKeyboardHandler(store: MyStore): void {
       state.gallery.imageIds &&
       state.gallery.imageIds.length > 1
     ) {
-      if (event.keyCode === KEY_LEFT) {
+      if (event.code === 'ArrowLeft') {
         store.dispatch(galleryRequestImage('prev'));
         event.preventDefault();
         return;
-      } else if (event.keyCode === KEY_RIGHT) {
+      } else if (event.code === 'ArrowRight') {
         store.dispatch(galleryRequestImage('next'));
         event.preventDefault();
         return;
@@ -115,11 +115,11 @@ export function attachKeyboardHandler(store: MyStore): void {
     }
 
     if (state.main.activeModal === 'tips') {
-      if (event.keyCode === KEY_LEFT) {
+      if (event.code === 'ArrowLeft') {
         store.dispatch(tipsShow('prev'));
         event.preventDefault();
         return;
-      } else if (event.keyCode === KEY_RIGHT) {
+      } else if (event.code === 'ArrowRight') {
         store.dispatch(tipsShow('next'));
         event.preventDefault();
         return;
@@ -128,13 +128,12 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       !keyTimer &&
-      !state.main.activeModal &&
-      (!state.gallery.activeImageId ||
-        state.gallery.showPosition ||
-        state.gallery.pickingPositionForId) &&
+      !showingModal &&
       (!embed || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
-      const baseLayer = baseLayers.find((l) => l.key === event.key);
+      const baseLayer = baseLayers.find(
+        (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
+      );
       if (
         baseLayer &&
         (!baseLayer.adminOnly || state.auth.user?.isAdmin) &&
@@ -145,7 +144,9 @@ export function attachKeyboardHandler(store: MyStore): void {
         return;
       }
 
-      const overlayLayer = overlayLayers.find((l) => l.key === event.key);
+      const overlayLayer = overlayLayers.find(
+        (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
+      );
       if (
         overlayLayer &&
         (!overlayLayer.adminOnly || state.auth.user?.isAdmin) &&
@@ -166,13 +167,12 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       !keyTimer &&
-      !state.main.activeModal &&
-      !state.gallery.activeImageId &&
+      !showingModal &&
       !state.gallery.showPosition &&
       !state.gallery.pickingPositionForId &&
       !state.main.selectingHomeLocation
     ) {
-      if (event.keyCode === KEY_DELETE) {
+      if (event.code === 'Delete') {
         const { selection } = store.getState().main;
         if (selection) {
           store.dispatch(deleteFeature(selection));
@@ -182,6 +182,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       state.main.activeModal ||
+      state.gallery.showUploadModal ||
       state.main.selectingHomeLocation ||
       state.gallery.activeImageId ||
       state.gallery.showPosition ||
@@ -191,25 +192,25 @@ export function attachKeyboardHandler(store: MyStore): void {
         window.clearTimeout(keyTimer);
 
         keyTimer = null;
-        initKey = null;
+        initCode = null;
       }
-    } else if (!keyTimer && (event.key === 'g' || event.key === 'e')) {
-      initKey = event.key;
+    } else if (!keyTimer && (event.code === 'KeyG' || event.code === 'KeyE')) {
+      initCode = event.code;
 
       keyTimer = window.setTimeout(() => {
         keyTimer = null;
-        initKey = null;
+        initCode = null;
       }, 2000);
     } else if (keyTimer) {
-      if (initKey === 'g') {
-        if (event.key === 'c') {
+      if (initCode === 'KeyG') {
+        if (event.code === 'KeyC') {
           store.dispatch(clearMap());
           event.preventDefault();
           return;
         }
 
         const toolDefinition = toolDefinitions.find(
-          (td) => td.kbd === event.key,
+          (td) => td.kbd === event.code,
         );
 
         if (toolDefinition?.kbd) {
@@ -217,21 +218,21 @@ export function attachKeyboardHandler(store: MyStore): void {
           event.preventDefault();
           return;
         }
-      } else if (initKey === 'e') {
-        switch (event.key) {
-          case 's':
+      } else if (initCode === 'KeyE') {
+        switch (event.code) {
+          case 'KeyS':
             store.dispatch(setActiveModal('settings'));
             event.preventDefault();
             return;
-          case 'g':
+          case 'KeyG':
             store.dispatch(setActiveModal('export-gpx'));
             event.preventDefault();
             return;
-          case 'p':
+          case 'KeyP':
             store.dispatch(setActiveModal('export-pdf'));
             event.preventDefault();
             return;
-          case 'e':
+          case 'KeyE':
             store.dispatch(setActiveModal('embed'));
             event.preventDefault();
             return;
@@ -240,7 +241,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
       window.clearTimeout(keyTimer);
       keyTimer = null;
-      initKey = null;
+      initCode = null;
     }
   });
 }

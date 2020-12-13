@@ -1,7 +1,7 @@
 import { MapStateBase } from 'fm3/actions/mapActions';
+import { MainState } from 'fm3/reducers/mainReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { MainState } from 'fm3/reducers/mainReducer';
 import { Messages } from 'fm3/translations/messagesInterface';
 
 export interface LatLon {

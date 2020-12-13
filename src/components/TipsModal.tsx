@@ -1,28 +1,25 @@
-import React, {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  ReactElement,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import tips from 'fm3/tips/index.json';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import tips from 'fm3/tips/index.json';
+import {
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import Button from 'react-bootstrap/Button';
+import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
-export function TipsModal(): ReactElement {
+type Props = { show: boolean };
+
+export function TipsModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -49,8 +46,8 @@ export function TipsModal(): ReactElement {
   }, [tip, m]);
 
   const handleNextTimePrevent = useCallback(
-    (e: React.FormEvent<Checkbox>) => {
-      dispatch(tipsPreventNextTime((e.target as HTMLInputElement).checked));
+    (e: FormEvent<HTMLInputElement>) => {
+      dispatch(tipsPreventNextTime(e.currentTarget.checked));
     },
     [dispatch],
   );
@@ -70,7 +67,7 @@ export function TipsModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="lightbulb-o" />
@@ -96,28 +93,31 @@ export function TipsModal(): ReactElement {
         )}
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button
-            onClick={() => {
-              dispatch(tipsShow('prev'));
-            }}
-          >
-            <Glyphicon glyph="chevron-left" /> {m?.tips.previous}
-          </Button>
-          <Button
-            onClick={() => {
-              dispatch(tipsShow('next'));
-            }}
-          >
-            <Glyphicon glyph="chevron-right" /> {m?.tips.next}
-          </Button>{' '}
-          <Checkbox inline onChange={handleNextTimePrevent}>
-            {m?.tips.prevent}
-          </Checkbox>{' '}
-          <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
-          </Button>
-        </FormGroup>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            dispatch(tipsShow('prev'));
+          }}
+        >
+          <FontAwesomeIcon icon="chevron-left" /> {m?.tips.previous}
+        </Button>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            dispatch(tipsShow('next'));
+          }}
+        >
+          <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
+        </Button>
+        <FormCheck
+          inline
+          onChange={handleNextTimePrevent}
+          type="checkbox"
+          label={m?.tips.prevent}
+        />
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+        </Button>
       </Modal.Footer>
     </Modal>
   );

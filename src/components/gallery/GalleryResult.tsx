@@ -1,14 +1,11 @@
-import React, { useCallback, ReactElement } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-
-import 'fm3/styles/gallery.scss';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
+import 'fm3/styles/gallery.scss';
 import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import { ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function GalleryResult(): ReactElement {
   const dispatch = useDispatch();

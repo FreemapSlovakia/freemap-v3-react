@@ -1,15 +1,13 @@
-import React, { ReactElement, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 export function TrackingMenu(): ReactElement {
   const m = useMessages();
@@ -27,7 +25,7 @@ export function TrackingMenu(): ReactElement {
   );
 
   const handleVisualChange = useCallback(
-    (visual: unknown) => {
+    (visual: string | null) => {
       switch (visual) {
         case 'line':
           dispatch(trackingActions.setShowPoints(false));
@@ -51,40 +49,46 @@ export function TrackingMenu(): ReactElement {
   return (
     <>
       <Button
+        variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('tracking-watched'));
         }}
       >
         <FontAwesomeIcon icon="eye" />
-        <span className="hidden-md hidden-sm hidden-xs">
+        <span className="d-none d-md-inline">
           {' '}
           {m?.tracking.trackedDevices.button}
         </span>
-      </Button>{' '}
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('tracking-my'));
         }}
       >
         <FontAwesomeIcon icon="mobile" />
-        <span className="hidden-md hidden-sm hidden-xs">
+        <span className="d-none d-md-inline">
           {' '}
           {m?.tracking.devices.button}
         </span>
-      </Button>{' '}
+      </Button>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="tracking-visual-dropdown"
         title={visual && m?.tracking.visual[visual]}
       >
-        <MenuItem eventKey="points" onSelect={handleVisualChange}>
+        <Dropdown.Item eventKey="points" onSelect={handleVisualChange}>
           {m?.tracking.visual.points}
-        </MenuItem>
-        <MenuItem eventKey="line" onSelect={handleVisualChange}>
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="line" onSelect={handleVisualChange}>
           {m?.tracking.visual.line}
-        </MenuItem>
-        <MenuItem eventKey="line+points" onSelect={handleVisualChange}>
+        </Dropdown.Item>
+        <Dropdown.Item eventKey="line+points" onSelect={handleVisualChange}>
           {m?.tracking.visual['line+points']}
-        </MenuItem>
+        </Dropdown.Item>
       </DropdownButton>
     </>
   );

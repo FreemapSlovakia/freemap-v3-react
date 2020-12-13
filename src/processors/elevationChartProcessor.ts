@@ -1,22 +1,20 @@
 import turfAlong from '@turf/along';
+import { Feature, Geometries, LineString } from '@turf/helpers';
+import { getCoord, getCoords } from '@turf/invariant';
 import turfLength from '@turf/length';
-import { getCoords, getCoord } from '@turf/invariant';
-
-import { distance, containsElevations } from 'fm3/geoutils';
-
+import { RootAction } from 'fm3/actions';
 import {
+  elevationChartClose,
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
-  elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
 import { selectFeature } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
-import { Feature, Geometries, LineString } from '@turf/helpers';
+import { containsElevations, distance } from 'fm3/geoutils';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/storeCreator';
+import { Dispatch } from 'redux';
+import { assertType } from 'typescript-is';
 
 export const elevationChartProcessor: Processor = {
   actionCreator: elevationChartSetTrackGeojson,

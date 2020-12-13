@@ -1,12 +1,12 @@
-import React, { ReactElement, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { DrawingLineResult } from './DrawingLineResult';
-import { RootState } from 'fm3/storeCreator';
-import { LeafletMouseEvent } from 'leaflet';
 import { drawingLineAddPoint } from 'fm3/actions/drawingLineActions';
 import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { RootState } from 'fm3/storeCreator';
+import { LeafletMouseEvent } from 'leaflet';
+import { ReactElement, useCallback } from 'react';
 import { useMapEvent } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
+import { DrawingLineResult } from './DrawingLineResult';
 
 export function DrawingLinesResult(): ReactElement {
   const lines = useSelector((state: RootState) => state.drawingLines.lines);

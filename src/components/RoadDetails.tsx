@@ -1,12 +1,13 @@
-import React, { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import { useMessages } from 'fm3/l10nInjector';
 import {
-  resolveTrackSurface,
-  resolveTrackClass,
   resolveBicycleTypeSuitableForTrack,
+  resolveTrackClass,
+  resolveTrackSurface,
 } from 'fm3/osmOntologyTools';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import { useSelector } from 'react-redux';
 
 type Props = {
   way: {
@@ -54,14 +55,14 @@ export function RoadDetails({ way }: Props): ReactElement {
         <dd>{lastEditAt}</dd>
       </dl>
       <p>
-        <a
+        <Alert.Link
           key="allDetails"
           href={`https://www.openstreetmap.org/way/${way.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >
           {m?.roadDetails.showDetails}
-        </a>
+        </Alert.Link>
       </p>
     </div>
   );

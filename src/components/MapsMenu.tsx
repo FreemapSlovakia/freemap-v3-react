@@ -1,20 +1,18 @@
-import React, { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
-import { useMessages } from 'fm3/l10nInjector';
+import { deleteFeature } from 'fm3/actions/mainActions';
 import {
   mapsCreate,
+  mapsLoad,
   mapsRename,
   mapsSave,
-  mapsLoad,
 } from 'fm3/actions/mapsActions';
-import { deleteFeature } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();
@@ -30,79 +28,74 @@ export function MapsMenu(): ReactElement {
   return (
     <>
       <DropdownButton
+        rootCloseEvent="mousedown"
         id="maps-dropdown"
+        variant="secondary"
         title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
         disabled={!authenticated}
-        onSelect={(id: unknown) => {
-          if (typeof id === 'number') {
-            dispatch(mapsLoad({ id }));
+        onSelect={(id) => {
+          if (id !== null) {
+            dispatch(mapsLoad({ id: Number(id) }));
           }
         }}
       >
-        <MenuItem eventKey={undefined}>{m?.maps.noMap}</MenuItem>
+        <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
 
         {maps.map((map) => (
-          <MenuItem key={map.id} eventKey={map.id}>
+          <Dropdown.Item key={map.id} eventKey={String(map.id)}>
             {map.name}
-          </MenuItem>
+          </Dropdown.Item>
         ))}
       </DropdownButton>
       {authenticated && id !== undefined && (
-        <>
-          {' '}
-          <Button
-            onClick={() => {
-              dispatch(mapsSave());
-            }}
-          >
-            <FontAwesomeIcon icon="floppy-o" />
-            <span className="hidden-md hidden-sm hidden-xs">
-              {' '}
-              {m?.maps.save}
-            </span>
-          </Button>
-        </>
-      )}{' '}
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(mapsSave());
+          }}
+        >
+          <FontAwesomeIcon icon="floppy-o" />
+          <span className="d-none d-md-inline"> {m?.maps.save}</span>
+        </Button>
+      )}
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(mapsCreate());
         }}
         disabled={!authenticated}
       >
         <FontAwesomeIcon icon="plus" />
-        <span className="hidden-md hidden-sm hidden-xs"> {m?.maps.create}</span>
+        <span className="d-none d-md-inline"> {m?.maps.create}</span>
       </Button>
       {authenticated && id !== undefined && (
-        <>
-          {' '}
-          <Button
-            onClick={() => {
-              dispatch(mapsRename());
-            }}
-          >
-            <FontAwesomeIcon icon="pencil" />
-            <span className="hidden-md hidden-sm hidden-xs">
-              {' '}
-              {m?.maps.rename}
-            </span>
-          </Button>
-        </>
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(mapsRename());
+          }}
+        >
+          <FontAwesomeIcon icon="pencil" />
+          <span className="d-none d-md-inline"> {m?.maps.rename}</span>
+        </Button>
       )}
       {authenticated && id !== undefined && (
-        <>
-          {' '}
-          <Button
-            onClick={() => {
-              dispatch(deleteFeature({ type: 'maps' }));
-            }}
-          >
-            <FontAwesomeIcon icon="trash" />
-            <span className="hidden-md hidden-sm hidden-xs">
-              {' '}
-              {m?.maps.delete} <kbd>Del</kbd>
-            </span>
-          </Button>
-        </>
+        <Button
+          className="ml-1"
+          variant="danger"
+          onClick={() => {
+            dispatch(deleteFeature({ type: 'maps' }));
+          }}
+        >
+          <FontAwesomeIcon icon="trash" />
+          <span className="d-none d-md-inline">
+            {' '}
+            {m?.maps.delete} <kbd>Del</kbd>
+          </span>
+        </Button>
       )}
     </>
   );

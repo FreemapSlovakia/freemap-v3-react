@@ -1,13 +1,11 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement } from 'react';
-
-import Button from 'react-bootstrap/lib/Button';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = {
   device: TrackedDeviceType;
@@ -28,11 +26,11 @@ export function TrackedDevice({ device }: Props): ReactElement {
     minute: '2-digit',
   });
 
-  const handleModify = React.useCallback(() => {
+  const handleModify = useCallback(() => {
     dispatch(trackingActions.modifyTrackedDevice(device.id));
   }, [device.id, dispatch]);
 
-  const handleDelete = React.useCallback(() => {
+  const handleDelete = useCallback(() => {
     dispatch(trackingActions.deleteTrackedDevice(device.id));
   }, [device.id, dispatch]);
 
@@ -62,7 +60,7 @@ export function TrackedDevice({ device }: Props): ReactElement {
       <td>{device.splitDuration}</td>
       <td>
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
           onClick={handleModify}
           title={m?.general.modify}
@@ -70,8 +68,8 @@ export function TrackedDevice({ device }: Props): ReactElement {
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
         <Button
-          bsStyle="danger"
-          bsSize="small"
+          variant="danger"
+          size="sm"
           type="button"
           onClick={handleDelete}
           title={m?.general.delete}

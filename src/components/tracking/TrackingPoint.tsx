@@ -1,8 +1,8 @@
-import React from 'react';
-import { Tooltip, CircleMarker } from 'react-leaflet';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { TrackPoint } from 'fm3/types/trackingTypes';
 import { toLatLng } from 'fm3/geoutils';
+import { TrackPoint } from 'fm3/types/trackingTypes';
+import { Fragment, memo, useCallback } from 'react';
+import { CircleMarker, Tooltip } from 'react-leaflet';
 
 interface TrackingPointProps {
   tp: TrackPoint;
@@ -14,7 +14,7 @@ interface TrackingPointProps {
 }
 
 // TODO to separate file
-export const TrackingPoint = React.memo<TrackingPointProps>(
+export const TrackingPoint = memo<TrackingPointProps>(
   ({ tp, width, color, language, onActivePointSet, onClick }) => {
     const df = new Intl.DateTimeFormat(language, {
       month: 'short',
@@ -29,13 +29,13 @@ export const TrackingPoint = React.memo<TrackingPointProps>(
       maximumFractionDigits: 1,
     });
 
-    const handleMouseOver = React.useCallback(() => {
+    const handleMouseOver = useCallback(() => {
       if (onActivePointSet) {
         onActivePointSet(tp);
       }
     }, [tp, onActivePointSet]);
 
-    const handleMouseOut = React.useCallback(() => {
+    const handleMouseOut = useCallback(() => {
       if (onActivePointSet) {
         onActivePointSet(null);
       }
@@ -113,10 +113,10 @@ export function tooltipText(
       </div>
       <div>
         {items.map(([icon, text], i) => (
-          <React.Fragment key={icon}>
+          <Fragment key={icon}>
             <FontAwesomeIcon key={icon} icon={icon} /> {text}
             {i < items.length - 1 ? '｜' : null}
-          </React.Fragment>
+          </Fragment>
         ))}
       </div>
       {message && (

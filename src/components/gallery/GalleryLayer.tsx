@@ -1,16 +1,15 @@
+import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
 import axios from 'axios';
-
+import { GalleryFilter } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
+import { LatLon } from 'fm3/types/common';
 import {
-  DomUtil,
-  GridLayer as LGridLayer,
   Coords,
+  DomUtil,
   DoneCallback,
+  GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
-import { LatLon } from 'fm3/types/common';
-import { GalleryFilter } from 'fm3/actions/galleryActions';
-import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
 
 type GalleryLayerOptions = GridLayerOptions & {
   filter: GalleryFilter;

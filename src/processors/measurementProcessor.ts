@@ -1,17 +1,17 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
+import area from '@turf/area';
+import { lineString, polygon } from '@turf/helpers';
+import length from '@turf/length';
+import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import {
   clearMap,
-  selectFeature,
   deleteFeature,
+  selectFeature,
 } from 'fm3/actions/mainActions';
-import { assertType } from 'typescript-is';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
-import area from '@turf/area';
-import length from '@turf/length';
-import { polygon, lineString } from '@turf/helpers';
+import { assertType } from 'typescript-is';
 
 export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
   actionCreator: drawingPointMeasure,
@@ -43,7 +43,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
                 ),
               ),
             },
-            timeout: 5000,
+            timeout: 500000,
             id: 'measurementInfo',
             cancelType: [getType(selectFeature), getType(deleteFeature)],
           }),
@@ -61,7 +61,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
                 lineString(points.map((point) => [point.lon, point.lat])),
               ),
             },
-            timeout: 5000,
+            timeout: 500000,
             id: 'measurementInfo',
             cancelType: [getType(selectFeature), getType(deleteFeature)],
           }),
@@ -77,7 +77,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
           toastsAdd({
             messageKey: 'measurement.elevationInfo',
             messageParams: { point, elevation: null },
-            timeout: 5000,
+            timeout: 500000,
             id: 'measurementInfo',
             cancelType: [getType(selectFeature), getType(deleteFeature)],
           }),
@@ -101,7 +101,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
           id: 'measurementInfo',
           messageKey: 'measurement.elevationInfo',
           messageParams: { point, elevation },
-          timeout: 5000,
+          timeout: 500000,
           cancelType: [getType(selectFeature), getType(deleteFeature)],
         }),
       );

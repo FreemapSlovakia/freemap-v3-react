@@ -1,19 +1,17 @@
-import React, { useCallback, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
-  changesetsSetAuthorName,
   Changeset,
+  changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
-
+import { selectFeature } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { RichMarker } from 'fm3/components/RichMarker';
+import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
-import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
-import { selectFeature } from 'fm3/actions/mainActions';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 

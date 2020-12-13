@@ -1,11 +1,12 @@
 /* eslint-disable */
 
-import React, { Fragment } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { latLonToString } from 'fm3/geoutils';
+import { Fragment } from 'react';
+import Alert from 'react-bootstrap/Alert';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('hu', {
@@ -1306,9 +1307,9 @@ const hu: Messages = {
     exported: ({ url }) => (
       <>
         Map export has finished.{' '}
-        <a href={url} target="_blank">
+        <Alert.Link href={url} target="_blank">
           Open.
-        </a>
+        </Alert.Link>
       </>
     ),
     area: 'Exportálandó terület:',

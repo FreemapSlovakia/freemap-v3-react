@@ -38,6 +38,7 @@ module.exports = {
     // '@typescript-eslint/explicit-module-boundary-types': 0,
     '@typescript-eslint/no-explicit-any': 0, // TODO remove one day
     'react/prop-types': 0,
+    'react/react-in-jsx-scope': 0,
     'react-hooks/rules-of-hooks': 'error',
     'react-hooks/exhaustive-deps': 'warn',
   },

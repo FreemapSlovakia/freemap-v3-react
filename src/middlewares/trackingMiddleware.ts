@@ -1,12 +1,12 @@
-import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
+import { RootAction } from 'fm3/actions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { Middleware, Dispatch } from 'redux';
-import { isActionOf } from 'typesafe-actions';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
 import { RootState } from 'fm3/storeCreator';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
-import { RootAction } from 'fm3/actions';
+import { Dispatch, Middleware } from 'redux';
+import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
 
 let reopenTs: number | undefined;

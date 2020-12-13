@@ -1,9 +1,9 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { Line, Point } from 'fm3/actions/drawingLineActions';
 import { MapData, mapsDataLoaded, mapsLoad } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
-import { Line, Point } from 'fm3/actions/drawingLineActions';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 interface OldLine {
   type: 'area' | 'distance';

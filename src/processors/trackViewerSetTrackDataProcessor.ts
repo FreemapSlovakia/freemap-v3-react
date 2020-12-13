@@ -1,11 +1,11 @@
-import turfLength from '@turf/length';
 import toGeoJSON from '@mapbox/togeojson';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { trackViewerSetData, TrackPoint } from 'fm3/actions/trackViewerActions';
-import { assertType } from 'typescript-is';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { geoJSON } from 'leaflet';
 import { FeatureCollection, Geometries } from '@turf/helpers';
+import turfLength from '@turf/length';
+import { TrackPoint, trackViewerSetData } from 'fm3/actions/trackViewerActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { geoJSON } from 'leaflet';
+import { assertType } from 'typescript-is';
 
 export const trackViewerSetTrackDataProcessor: Processor<
   typeof trackViewerSetData

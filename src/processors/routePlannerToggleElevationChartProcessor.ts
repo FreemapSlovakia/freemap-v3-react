@@ -1,11 +1,11 @@
 import { lineString } from '@turf/helpers';
 import {
-  elevationChartSetTrackGeojson,
   elevationChartClose,
+  elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
 import {
-  routePlannerToggleElevationChart,
   routePlannerSetActiveAlternativeIndex,
+  routePlannerToggleElevationChart,
 } from 'fm3/actions/routePlannerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';

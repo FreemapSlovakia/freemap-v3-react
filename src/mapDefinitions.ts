@@ -1,5 +1,5 @@
-import white1x1 from './images/1x1-white.png';
 import transparent1x1 from './images/1x1-transparent.png';
+import white1x1 from './images/1x1-white.png';
 
 export interface AttributionDef {
   type: 'map' | 'data' | 'photos';
@@ -88,7 +88,6 @@ export interface LayerDef {
   minZoom?: number;
   minNativeZoom?: number;
   maxNativeZoom?: number;
-  key: string | undefined; // TODO undefined only in overlays
   showOnlyInExpertMode?: boolean;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
@@ -104,10 +103,12 @@ export interface LayerDef {
 
 export interface BaseLayerDef extends LayerDef {
   type: BaseLayerLetters;
+  key: [code: string, shift: boolean];
 }
 
 export interface OverlayLayerDef extends LayerDef {
   type: OverlayLetters;
+  key?: [code: string, shift: boolean];
 }
 
 const isHdpi = (window.devicePixelRatio || 1) > 1.4;
@@ -124,7 +125,7 @@ function legacyFreemap(
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: type.toLowerCase(),
+    key: ['Key' + type, false],
     showOnlyInExpertMode,
   };
 }
@@ -140,7 +141,7 @@ export const baseLayers: BaseLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
     minZoom: 6,
     maxNativeZoom: 19,
-    key: 'x' as const,
+    key: ['KeyX', false],
     primary: true,
   },
   legacyFreemap('A', 'car', true),
@@ -154,7 +155,7 @@ export const baseLayers: BaseLayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 19,
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    key: 'o',
+    key: ['KeyO', false],
     primary: true,
   },
   {
@@ -167,7 +168,7 @@ export const baseLayers: BaseLayerDef[] = [
     maxNativeZoom: isHdpi ? 18 : 19,
     tileSize: isHdpi ? 128 : 256,
     zoomOffset: isHdpi ? 1 : 0,
-    key: 's',
+    key: ['KeyS', false],
     attribution: [
       {
         type: 'map',
@@ -189,7 +190,7 @@ export const baseLayers: BaseLayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
       },
     ],
-    key: 'z',
+    key: ['KeyZ', false],
     primary: 'sk',
     errorTileUrl: white1x1,
     tileSize: isHdpi ? 128 : 256,
@@ -211,7 +212,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: 'm',
+    key: ['KeyM', false],
   },
   {
     type: 'p',
@@ -229,7 +230,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: 'p',
+    key: ['KeyP', false],
   },
   {
     type: 'd',
@@ -246,7 +247,7 @@ export const baseLayers: BaseLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: 'd',
+    key: ['KeyD', false],
   },
   {
     type: 'h',
@@ -256,7 +257,7 @@ export const baseLayers: BaseLayerDef[] = [
     icon: 'institution',
     showOnlyInExpertMode: true,
     attribution: [],
-    key: 'h',
+    key: ['KeyH', false],
   },
 ];
 
@@ -264,7 +265,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'i',
     icon: 'pencil',
-    key: 'I',
+    key: ['KeyI', true],
     attribution: [],
     showOnlyInExpertMode: true,
   },
@@ -272,7 +273,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     type: 'I',
     icon: 'picture-o',
     minZoom: 0,
-    key: 'F',
+    key: ['KeyF', true],
     zIndex: 3,
     attribution: [
       {
@@ -286,7 +287,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     type: 'w',
     icon: 'wikipedia-w',
     minZoom: 12,
-    key: 'W',
+    key: ['KeyW', true],
     zIndex: 3,
     attribution: [],
   },
@@ -297,7 +298,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
-    key: 'N',
+    key: ['KeyN', true],
     zIndex: 2,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
@@ -317,7 +318,9 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [STRAVA_ATTR],
     minZoom: 0,
     maxNativeZoom: isHdpi ? 15 : 16,
-    key: stravaType === 'both' ? 'H' : undefined,
+    key: (stravaType === 'both' ? ['KeyH', true] : undefined) as
+      | [string, boolean]
+      | undefined,
     showOnlyInExpertMode: stravaType !== 'both',
     zIndex: 2,
     strava: true,
@@ -330,7 +333,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     minZoom: 0,
     maxNativeZoom: 20,
-    key: 'G',
+    key: ['KeyG', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
@@ -341,7 +344,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: 'T',
+    key: ['KeyT', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
@@ -352,7 +355,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: 'C',
+    key: ['KeyC', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
@@ -369,14 +372,14 @@ export const overlayLayers: OverlayLayerDef[] = [
     ],
     minZoom: 0,
     maxNativeZoom: 18,
-    key: 'S',
+    key: ['KeyS', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
   ...([
-    ['n1', '1', ''],
-    ['n2', '2', 'h'],
-    ['n3', '3', 'c'],
+    ['n1', ['Digit1', false], ''],
+    ['n2', ['Digit2', false], 'h'],
+    ['n3', ['Digit3', false], 'c'],
   ] as const).map(([type, key, suffix]) => ({
     type,
     icon: 'font',
@@ -384,7 +387,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key,
+    key: key as [string, boolean] | undefined,
     showOnlyInExpertMode: true,
     zIndex: 2,
   })),
@@ -394,7 +397,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     url: '//old.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
     minZoom: 8,
     maxNativeZoom: 12,
-    key: 'R',
+    key: ['KeyR', true],
     showOnlyInExpertMode: true,
     zIndex: 4,
     attribution: [FM_ATTR],

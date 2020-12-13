@@ -1,25 +1,24 @@
 import axios from 'axios';
-import React, { ReactElement, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import PanelGroup from 'react-bootstrap/lib/PanelGroup';
-import Panel from 'react-bootstrap/lib/Panel';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { RootState } from 'fm3/storeCreator';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import FormGroup from 'react-bootstrap/FormGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
 const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
 
-export function LegendOutdoorModal(): ReactElement {
+type Props = { show: boolean };
+
+export function LegendOutdoorModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const [legend, setLegend] = useState<Item[]>([]);
@@ -55,7 +54,7 @@ export function LegendOutdoorModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
@@ -63,40 +62,42 @@ export function LegendOutdoorModal(): ReactElement {
       </Modal.Header>
       <Modal.Body>
         <p>{m?.legend.body}</p>
-        <PanelGroup accordion id="pg1">
+        <Accordion>
           {[...legend].map((c: Item, i: number) => (
-            <Panel key={c.name} eventKey={i}>
-              <Panel.Heading>
-                <Panel.Title toggle>{c.name}</Panel.Title>
-              </Panel.Heading>
-              <Panel.Body collapsible>
-                {c.items.map(({ id, name }) => (
-                  <div key={id} className="legend-item">
-                    <div>
-                      <img
-                        src={`${fmMapserverUrl}/legend-image/${id}`}
-                        srcSet={[1, 2, 3]
-                          .map(
-                            (s) =>
-                              `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
-                                s > 1 ? ` ${s}x` : ''
-                              }`,
-                          )
-                          .join(', ')}
-                      />
+            <Card key={c.name}>
+              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
+                {c.name}
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey={String(i)}>
+                <Card.Body>
+                  {c.items.map(({ id, name }) => (
+                    <div key={id} className="legend-item">
+                      <div>
+                        <img
+                          src={`${fmMapserverUrl}/legend-image/${id}`}
+                          srcSet={[1, 2, 3]
+                            .map(
+                              (s) =>
+                                `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
+                                  s > 1 ? ` ${s}x` : ''
+                                }`,
+                            )
+                            .join(', ')}
+                        />
+                      </div>
+                      <div>{name}</div>
                     </div>
-                    <div>{name}</div>
-                  </div>
-                ))}
-              </Panel.Body>
-            </Panel>
+                  ))}
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
           ))}
-        </PanelGroup>
+        </Accordion>
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
           <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.close}
+            <FontAwesomeIcon icon="times" /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>

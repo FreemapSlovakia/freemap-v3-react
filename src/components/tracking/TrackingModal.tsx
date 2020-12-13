@@ -1,16 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Devices } from './Devices';
-import { DeviceForm } from './DeviceForm';
-import { AccessTokens } from './AccessTokens';
-import { AccessTokenForm } from './AccessTokenForm';
-import { TrackedDevices } from './TrackedDevices';
-import { TrackedDeviceForm } from './TrackedDeviceForm';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import { AccessTokenForm } from './AccessTokenForm';
+import { AccessTokens } from './AccessTokens';
+import { DeviceForm } from './DeviceForm';
+import { Devices } from './Devices';
+import { TrackedDeviceForm } from './TrackedDeviceForm';
+import { TrackedDevices } from './TrackedDevices';
 
 // type Views =
 //   | 'devices'
@@ -20,7 +18,9 @@ import { RootState } from 'fm3/storeCreator';
 //   | 'trackedDevices'
 //   | 'trackedDeviceForm';
 
-export function TrackingModal(): ReactElement {
+type Props = { show: boolean };
+
+export function TrackingModal({ show }: Props): ReactElement {
   const view = useSelector((state: RootState) =>
     state.main.activeModal === 'tracking-my'
       ? state.tracking.modifiedDeviceId !== undefined
@@ -42,7 +42,7 @@ export function TrackingModal(): ReactElement {
       onHide={() => {
         dispatch(setActiveModal(null));
       }}
-      show
+      show={show}
       className="dynamic"
     >
       {view === 'devices' && <Devices />}

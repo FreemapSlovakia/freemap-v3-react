@@ -1,18 +1,15 @@
-import React, { ReactElement, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-
 import {
   mapDetailsSetSubtool,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
-
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { ReactElement, useEffect } from 'react';
+import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();
@@ -48,6 +45,7 @@ export function MapDetailsMenu(): ReactElement {
 
   return (
     <Button
+      variant="secondary"
       onClick={() => {
         dispatch(mapDetailsSetSubtool('track-info'));
       }}
@@ -55,7 +53,7 @@ export function MapDetailsMenu(): ReactElement {
       title={m?.mapDetails.road}
     >
       <FontAwesomeIcon icon="road" />
-      <span className="hidden-xs"> {m?.mapDetails.road}</span>
+      <span className="d-none d-sm-inline"> {m?.mapDetails.road}</span>
     </Button>
   );
 }

@@ -1,14 +1,14 @@
-import { User } from 'fm3/types/common';
 import { RootAction } from 'fm3/actions';
 import {
-  authSetUser,
-  authLogout,
   authChooseLoginMethod,
-  authLoginWithFacebook,
   authLoginClose,
+  authLoginWithFacebook,
   authLoginWithGoogle,
   authLoginWithOsm,
+  authLogout,
+  authSetUser,
 } from 'fm3/actions/authActions';
+import { User } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
 export interface AuthState {

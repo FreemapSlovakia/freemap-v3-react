@@ -14,7 +14,15 @@ export interface Toast {
   messageKey?: MessagePaths;
   messageParams?: Record<string, unknown>;
   timeout?: number;
-  style?: 'info' | 'warning' | 'danger';
+  style?:
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'danger'
+    | 'warning'
+    | 'info'
+    | 'light'
+    | 'dark';
   actions?: ToastAction[];
   id?: string;
   cancelType?: string | string[] | RegExp;

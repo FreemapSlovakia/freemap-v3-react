@@ -1,15 +1,15 @@
-import React, { ReactElement, useMemo, useState, useRef } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Polyline, Tooltip, Circle } from 'react-leaflet';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
-import { TrackPoint } from 'fm3/types/trackingTypes';
-import {
-  TrackingPoint,
-  tooltipText,
-} from 'fm3/components/tracking/TrackingPoint';
-import { RootState } from 'fm3/storeCreator';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { RichMarker } from 'fm3/components/RichMarker';
+import {
+  tooltipText,
+  TrackingPoint,
+} from 'fm3/components/tracking/TrackingPoint';
+import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
+import { RootState } from 'fm3/storeCreator';
+import { TrackPoint } from 'fm3/types/trackingTypes';
+import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
+import { Circle, Polyline, Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 // TODO functional component with hooks was causing massive re-rendering
 export function TrackingResult(): ReactElement {
@@ -115,7 +115,7 @@ export function TrackingResult(): ReactElement {
             : null;
 
         return (
-          <React.Fragment key={`trk-${track.id}`}>
+          <Fragment key={`trk-${track.id}`}>
             {lastPoint && typeof lastPoint.accuracy === 'number' && (
               <Circle
                 weight={2}
@@ -182,7 +182,7 @@ export function TrackingResult(): ReactElement {
                 />
               ),
             )}
-          </React.Fragment>
+          </Fragment>
         );
       })}
     </>

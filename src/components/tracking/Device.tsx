@@ -1,17 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { ReactElement, useCallback } from 'react';
-
-import Button from 'react-bootstrap/lib/Button';
-import OverlayTrigger from 'react-bootstrap/lib/OverlayTrigger';
-import Tooltip from 'react-bootstrap/lib/Tooltip';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { trackingActions } from 'fm3/actions/trackingActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Device as DeviceType } from 'fm3/types/trackingTypes';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { Device as DeviceType } from 'fm3/types/trackingTypes';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
 
 type Props = {
@@ -102,8 +100,9 @@ export function Device({ device }: Props): ReactElement {
               <span>
                 {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? (
                   <Button
+                    variant="secondary"
                     onClick={handleCopyClick}
-                    bsSize="xs"
+                    size="sm"
                     title={m?.external.copy}
                     type="button"
                   >
@@ -126,33 +125,35 @@ export function Device({ device }: Props): ReactElement {
       <td>{dateFormat.format(device.createdAt)}</td>
       <td>
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
+          variant="secondary"
           onClick={handleModify}
           title={m?.general.modify}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
-          bsStyle="primary"
+          variant="secondary"
           onClick={handleShowAccessTokens}
           title={m?.tracking.devices.watchTokens}
         >
           <FontAwesomeIcon icon="key" />
         </Button>{' '}
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
+          variant="secondary"
           onClick={handleView}
           title={m?.tracking.devices.watchPrivately}
         >
           <FontAwesomeIcon icon="eye" />
         </Button>{' '}
         <Button
-          bsStyle="danger"
-          bsSize="small"
+          variant="danger"
+          size="sm"
           type="button"
           onClick={handleDelete}
           title={m?.general.delete}

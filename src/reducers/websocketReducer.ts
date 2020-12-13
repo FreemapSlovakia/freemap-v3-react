@@ -1,6 +1,6 @@
 import { RootAction } from 'fm3/actions';
-import { createReducer } from 'typesafe-actions';
 import { wsStateChanged } from 'fm3/actions/websocketActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface WebsocketState {
   state: number;

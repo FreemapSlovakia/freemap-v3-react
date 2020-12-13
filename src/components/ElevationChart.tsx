@@ -1,16 +1,15 @@
-import React, { CSSProperties, ReactElement } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Line } from 'react-chartjs-2';
-import Button from 'react-bootstrap/lib/Button';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import {
-  elevationChartSetActivePoint,
+  elevationChartClose,
   elevationChartRemoveActivePoint,
+  elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
 import { useMessages } from 'fm3/l10nInjector';
-
-import 'fm3/styles/elevationChart.scss';
 import { RootState } from 'fm3/storeCreator';
+import 'fm3/styles/elevationChart.scss';
+import { CSSProperties, ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import { Line } from 'react-chartjs-2';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 const styles: Record<string, CSSProperties> = {
@@ -51,7 +50,7 @@ export function ElevationChart(): ReactElement | null {
     <div className="elevationChart">
       <Button
         style={styles.closeButton}
-        bsSize="small"
+        size="sm"
         onClick={() => dispatch(elevationChartClose())}
       >
         <FontAwesomeIcon icon="times" />

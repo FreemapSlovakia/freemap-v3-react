@@ -1,8 +1,7 @@
-import React, { useRef, useEffect, useMemo, ReactElement } from 'react';
-import { Marker, MarkerProps } from 'react-leaflet';
-import { DivIcon, divIcon } from 'leaflet';
 import { colors } from 'fm3/constants';
-import Leaflet from 'leaflet';
+import Leaflet, { DivIcon, divIcon } from 'leaflet';
+import { ReactElement, useEffect, useMemo, useRef } from 'react';
+import { Marker, MarkerProps } from 'react-leaflet';
 
 interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;

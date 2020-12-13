@@ -1,16 +1,13 @@
-import React from 'react';
 import 'fm3/font/styles.css';
+import { DetailedHTMLProps, HTMLAttributes, ReactElement } from 'react';
 
 interface Props
-  extends React.DetailedHTMLProps<
-    React.HTMLAttributes<HTMLElement>,
-    HTMLElement
-  > {
+  extends DetailedHTMLProps<HTMLAttributes<HTMLElement>, HTMLElement> {
   icon: string;
   className?: string;
 }
 
-export const FontAwesomeIcon: React.FC<Props> = ({ icon, ...props }) => {
+export function FontAwesomeIcon({ icon, ...props }: Props): ReactElement {
   return (
     <i
       {...props}
@@ -20,4 +17,4 @@ export const FontAwesomeIcon: React.FC<Props> = ({ icon, ...props }) => {
       aria-hidden="true"
     />
   );
-};
+}

@@ -1,32 +1,26 @@
-import React, { ReactElement, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
-import { useMessages } from 'fm3/l10nInjector';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
 import {
-  setActiveModal,
   clearMap,
   convertToDrawing,
+  setActiveModal,
 } from 'fm3/actions/mainActions';
-import {
-  trackViewerUploadTrack,
-  trackViewerColorizeTrackBy,
-  trackViewerToggleElevationChart,
-  ColorizingMode,
-  trackViewerSetData,
-} from 'fm3/actions/trackViewerActions';
-
-import { RootState } from 'fm3/storeCreator';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getType } from 'typesafe-actions';
-
+import {
+  ColorizingMode,
+  trackViewerColorizeTrackBy,
+  trackViewerSetData,
+  trackViewerToggleElevationChart,
+  trackViewerUploadTrack,
+} from 'fm3/actions/trackViewerActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/trackViewer.scss';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
 export function TrackViewerMenu(): ReactElement {
@@ -61,14 +55,17 @@ export function TrackViewerMenu(): ReactElement {
   return (
     <>
       <Button
+        variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('upload-track'));
         }}
       >
         <FontAwesomeIcon icon="upload" />
-        <span className="hidden-xs"> {m?.trackViewer.upload}</span>
-      </Button>{' '}
+        <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         active={elevationChartActive}
         onClick={() => {
           dispatch(trackViewerToggleElevationChart());
@@ -76,11 +73,17 @@ export function TrackViewerMenu(): ReactElement {
         disabled={!trackGeojsonIsSuitableForElevationChart}
       >
         <FontAwesomeIcon icon="bar-chart" />
-        <span className="hidden-xs"> {m?.general.elevationProfile}</span>
-      </Button>{' '}
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.elevationProfile}
+        </span>
+      </Button>
       <DropdownButton
+        rootCloseEvent="mousedown"
+        className="ml-1"
+        variant="secondary"
         id="colorizing_mode"
-        onSelect={(approach: unknown) => {
+        onSelect={(approach) => {
           dispatch(
             trackViewerColorizeTrackBy(
               assertType<ColorizingMode | null>(approach),
@@ -89,22 +92,24 @@ export function TrackViewerMenu(): ReactElement {
         }}
         title={
           <>
-            <FontAwesomeIcon icon="paint-brush" />{' '}
+            <FontAwesomeIcon icon="paint-brush" />
             {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
           </>
         }
       >
-        {([null, 'elevation', 'steepness'] as const).map((mode) => (
-          <MenuItem
+        {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
+          <Dropdown.Item
             eventKey={mode}
             key={mode || 'none'}
             active={mode === colorizeTrackBy}
           >
             {m?.trackViewer.colorizingMode[mode ?? 'none']}
-          </MenuItem>
+          </Dropdown.Item>
         ))}
-      </DropdownButton>{' '}
+      </DropdownButton>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(
             toastsAdd({
@@ -118,24 +123,31 @@ export function TrackViewerMenu(): ReactElement {
         disabled={!trackGeojsonIsSuitableForElevationChart}
       >
         <FontAwesomeIcon icon="info-circle" />
-        <span className="hidden-xs"> {m?.trackViewer.moreInfo}</span>
-      </Button>{' '}
+        <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(trackViewerUploadTrack());
         }}
         disabled={!hasTrack}
       >
         <FontAwesomeIcon icon="cloud-upload" />
-        <span className="hidden-xs"> {m?.trackViewer.share}</span>
-      </Button>{' '}
+        <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
+      </Button>
       <Button
+        className="ml-1"
+        variant="secondary"
         onClick={handleConvertToDrawing}
         disabled={!hasTrack}
         title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {m?.general.convertToDrawing}</span>
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.convertToDrawing}
+        </span>
       </Button>
     </>
   );

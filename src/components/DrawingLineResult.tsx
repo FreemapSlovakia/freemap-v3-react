@@ -1,35 +1,34 @@
-import React, {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
+import {
+  drawingLineAddPoint,
+  drawingLineRemovePoint,
+  drawingLineUpdatePoint,
+  Point,
+} from 'fm3/actions/drawingLineActions';
+import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { selectFeature } from 'fm3/actions/mainActions';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { colors } from 'fm3/constants';
+import { distance } from 'fm3/geoutils';
+import { RootState } from 'fm3/storeCreator';
+import { LatLon } from 'fm3/types/common';
+import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
+import {
+  Fragment,
   ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Marker,
-  Tooltip,
-  Polyline,
   Polygon,
+  Polyline,
+  Tooltip,
   useMap,
   useMapEvent,
 } from 'react-leaflet';
-import { DomEvent, LeafletMouseEvent } from 'leaflet';
-import {
-  drawingLineAddPoint,
-  drawingLineUpdatePoint,
-  drawingLineRemovePoint,
-  Point,
-} from 'fm3/actions/drawingLineActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { distance } from 'fm3/geoutils';
-import { divIcon } from 'leaflet';
-import { RootState } from 'fm3/storeCreator';
-
-import { selectFeature } from 'fm3/actions/mainActions';
-import { LatLon } from 'fm3/types/common';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
-import { colors } from 'fm3/constants';
+import { useDispatch, useSelector } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],
@@ -218,7 +217,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   return (
     <>
       {ps.length > 2 && line.type === 'line' && (
-        <React.Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
+        <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
             weight={12}
             opacity={0}
@@ -234,7 +233,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
           <Polyline
             weight={4}
-            color={selected ? colors.selected : colors.normal}
+            pathOptions={{
+              color: selected ? colors.selected : colors.normal,
+            }}
             interactive={false}
             positions={ps
               .filter((_, i) => i % 2 === 0)
@@ -246,13 +247,15 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               </Tooltip>
             )}
           </Polyline>
-        </React.Fragment>
+        </Fragment>
       )}
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           weight={4}
-          color={selected ? colors.selected : colors.normal}
+          pathOptions={{
+            color: selected ? colors.selected : colors.normal,
+          }}
           interactive
           bubblingMouseEvents={false}
           eventHandlers={{

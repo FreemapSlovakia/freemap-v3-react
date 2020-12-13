@@ -1,13 +1,13 @@
 import axios, {
-  AxiosRequestConfig,
-  CancelTokenSource,
-  Canceler,
   AxiosInstance,
+  AxiosRequestConfig,
   AxiosResponse,
+  Canceler,
+  CancelTokenSource,
 } from 'axios';
-import { RootState } from './storeCreator';
-import { setActiveModal, clearMap, selectFeature } from './actions/mainActions';
 import { ActionCreator } from 'typesafe-actions';
+import { clearMap, selectFeature, setActiveModal } from './actions/mainActions';
+import { RootState } from './storeCreator';
 
 export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
   const cfg: AxiosRequestConfig = {

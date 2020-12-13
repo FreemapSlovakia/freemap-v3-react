@@ -1,12 +1,12 @@
 import {
-  gallerySetImageIds,
-  galleryRequestImage,
-  gallerySetLayerDirty,
   galleryClear,
   galleryDeletePicture,
+  galleryRequestImage,
+  gallerySetImageIds,
+  gallerySetLayerDirty,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const galleryDeletePictureProcessor: Processor = {
   actionCreator: galleryDeletePicture,

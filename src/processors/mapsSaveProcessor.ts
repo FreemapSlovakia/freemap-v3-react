@@ -1,6 +1,6 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsSave, MapData } from 'fm3/actions/mapsActions';
+import { MapData, mapsSave } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/storeCreator';
 
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {

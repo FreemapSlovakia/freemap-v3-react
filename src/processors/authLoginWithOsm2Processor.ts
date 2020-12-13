@@ -1,10 +1,10 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { authLoginWithOsm2, authSetUser } from 'fm3/actions/authActions';
-import { httpRequest } from 'fm3/authAxios';
 import { setHomeLocation } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { assertType } from 'typescript-is';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 export const authLoginWithOsm2Processor: Processor<typeof authLoginWithOsm2> = {
   actionCreator: authLoginWithOsm2,

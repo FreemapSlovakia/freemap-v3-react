@@ -1,10 +1,10 @@
+import { authLoginWithFacebook, authSetUser } from 'fm3/actions/authActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { authSetUser, authLoginWithFacebook } from 'fm3/actions/authActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { loadFb } from 'fm3/fbLoader';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
-import { loadFb } from 'fm3/fbLoader';
 
 export const authLoginWithFacebookProcessor: Processor = {
   actionCreator: authLoginWithFacebook,

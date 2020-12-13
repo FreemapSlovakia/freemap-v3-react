@@ -1,9 +1,9 @@
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { assertType } from 'typescript-is';
 import { StringDates } from 'fm3/types/common';
 import { AccessToken } from 'fm3/types/trackingTypes';
+import { assertType } from 'typescript-is';
 
 export const saveAccessTokenProcessor: Processor<
   typeof trackingActions.saveAccessToken

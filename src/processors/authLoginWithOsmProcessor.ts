@@ -1,8 +1,8 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { authLoginWithOsm } from 'fm3/actions/authActions';
-import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { assertType } from 'typescript-is';
 
 interface LoginResponse {
   redirect: string;

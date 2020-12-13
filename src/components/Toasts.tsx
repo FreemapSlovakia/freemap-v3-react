@@ -1,19 +1,17 @@
-import React, { ReactElement, ReactNode, useCallback, useMemo } from 'react';
-
+import { RootAction } from 'fm3/actions';
 import {
-  toastsRemove,
-  toastsStopTimeout,
-  toastsRestartTimeout,
   ToastAction,
+  toastsRemove,
+  toastsRestartTimeout,
+  toastsStopTimeout,
 } from 'fm3/actions/toastsActions';
 import { Toast } from 'fm3/components/Toast';
 import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
-
-import 'fm3/styles/toasts.scss';
 import { RootState } from 'fm3/storeCreator';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootAction } from 'fm3/actions';
+import 'fm3/styles/toasts.scss';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 function tx(m: Messages | undefined, { name, nameKey }: ToastAction) {
   if (name !== undefined) {
@@ -88,7 +86,7 @@ export function Toasts(): ReactElement {
   );
 
   return (
-    <div className="toasts">
+    <div className="fm-toasts">
       {items.map(({ id, actions, style, msg }) => {
         return (
           <Toast

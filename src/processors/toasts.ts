@@ -1,6 +1,6 @@
+import { RootAction } from 'fm3/actions';
 import { toastsRemove } from 'fm3/actions/toastsActions';
 import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 
 export const timeoutMap = new Map<
   string,

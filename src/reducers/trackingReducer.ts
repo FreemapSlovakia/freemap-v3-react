@@ -1,24 +1,24 @@
-import produce from 'immer';
-import { createReducer } from 'typesafe-actions';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import {
-  Track,
-  TrackedDevice,
-  Device,
-  AccessToken,
-  TrackPoint,
-} from 'fm3/types/trackingTypes';
 import { RootAction } from 'fm3/actions';
 import {
-  setActiveModal,
   clearMap,
   deleteFeature,
+  setActiveModal,
 } from 'fm3/actions/mainActions';
-import { wsStateChanged } from 'fm3/actions/websocketActions';
-import { rpcResponse, rpcEvent } from 'fm3/actions/rpcActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
-import { is } from 'typescript-is';
+import { rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { wsStateChanged } from 'fm3/actions/websocketActions';
 import { StringDates } from 'fm3/types/common';
+import {
+  AccessToken,
+  Device,
+  Track,
+  TrackedDevice,
+  TrackPoint,
+} from 'fm3/types/trackingTypes';
+import produce from 'immer';
+import { createReducer } from 'typesafe-actions';
+import { is } from 'typescript-is';
 
 export interface TrackingState {
   devices: Device[];

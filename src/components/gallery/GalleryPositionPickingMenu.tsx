@@ -1,17 +1,14 @@
-import React, { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Panel from 'react-bootstrap/lib/Panel';
-
 import {
-  gallerySetItemForPositionPicking,
   galleryConfirmPickedPosition,
+  gallerySetItemForPositionPicking,
 } from 'fm3/actions/galleryActions';
-
-import Button from 'react-bootstrap/lib/Button';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function GalleryPositionPickingMenu(): ReactElement | null {
   const m = useMessages();
@@ -23,7 +20,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
   );
 
   return !pickingPosition ? null : (
-    <Panel className="fm-toolbar">
+    <Card className="fm-toolbar">
       {m?.gallery.locationPicking.title}{' '}
       <Button
         onClick={() => {
@@ -31,7 +28,7 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
         }}
       >
         <FontAwesomeIcon icon="check" />
-        <span className="hidden-xs"> {m?.general.ok}</span>
+        <span className="d-none d-sm-inline"> {m?.general.ok}</span>
       </Button>{' '}
       <Button
         onClick={() => {
@@ -39,8 +36,9 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
         }}
       >
         <FontAwesomeIcon icon="times" />
-        <span className="hidden-xs"> {m?.general.cancel}</span> <kbd>Esc</kbd>
+        <span className="d-none d-sm-inline"> {m?.general.cancel}</span>{' '}
+        <kbd>Esc</kbd>
       </Button>
-    </Panel>
+    </Card>
   );
 }

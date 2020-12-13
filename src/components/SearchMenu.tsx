@@ -1,45 +1,53 @@
-import React, {
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  MouseEvent,
-  ReactElement,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import {
-  searchSetQuery,
-  searchSelectResult,
-  searchSetResults,
-} from 'fm3/actions/searchActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import {
-  routePlannerSetStart,
   routePlannerSetFinish,
+  routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
-import { useMessages } from 'fm3/l10nInjector';
-
-import 'fm3/styles/search.scss';
-import { RootState } from 'fm3/storeCreator';
 import {
-  FormControl,
-  FormGroup,
-  Form,
-  Dropdown,
-  MenuItem,
-  InputGroup,
-} from 'react-bootstrap';
+  searchSelectResult,
+  searchSetQuery,
+  searchSetResults,
+} from 'fm3/actions/searchActions';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import 'fm3/styles/search.scss';
+import {
+  ChangeEvent,
+  Children,
+  forwardRef,
+  MouseEvent,
+  ReactElement,
+  ReactNode,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import SafeAnchor from 'react-bootstrap/SafeAnchor';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
-import { DropdownBaseProps } from 'react-bootstrap/lib/Dropdown';
 
 type Props = {
   hidden?: boolean;
   preventShortcut?: boolean;
 };
+
+export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
+  function HiddenInt({ children }, ref) {
+    return (
+      <span className="fm-no-after" ref={ref}>
+        {children}
+      </span>
+    );
+  },
+);
 
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
@@ -56,6 +64,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   // const inProgress = useSelector((state: RootState) => state.search.inProgress);
 
+  const tRef = useRef<number>();
+
   const embed = window.self !== window.top;
 
   const [value, setValue] = useState('');
@@ -65,16 +75,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleSearch = useCallback(
-    (e: React.FormEvent<Form>) => {
+    (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
+
       dispatch(searchSetQuery({ query: value }));
     },
     [dispatch, value],
   );
 
   const handleChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setValue((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setValue(e.currentTarget.value);
 
       if (results.length > 0) {
         dispatch(searchSetResults([]));
@@ -83,39 +94,37 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [setValue, dispatch, results],
   );
 
-  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
-
   const handleSelect = useCallback(
-    (eventKey: unknown) => {
-      const found = results.find((item) => item.id === eventKey);
-
-      if (found) {
-        dispatch(searchSelectResult(found));
+    (eventKey: string | null, _: unknown, preserve?: boolean) => {
+      if (tRef.current) {
+        window.clearTimeout(tRef.current);
       }
 
-      if (selectedResult?.id === eventKey) {
-        setOpen(false);
-      }
+      tRef.current = window.setTimeout(
+        () => {
+          const found = results.find((item) => item.id === Number(eventKey));
+
+          if (found) {
+            dispatch(searchSelectResult(found));
+          }
+
+          if (!preserve) {
+            setOpen(false);
+          }
+        },
+        preserve ? 300 : 0,
+      );
     },
-    [results, dispatch, selectedResult],
+    [results, dispatch],
   );
 
-  const f: DropdownBaseProps['onToggle'] = (open, _, { source }) => {
-    if (!open && source !== 'select') {
-      setOpen(false);
-    } else if (open && results.length > 0) {
-      setOpen(true);
+  useEffect(() => {
+    if (tRef.current) {
+      window.clearTimeout(tRef.current);
+
+      tRef.current = undefined;
     }
-  };
-
-  const handleToggle = useCallback(f, [setOpen, results]);
-
-  const setInputRef = useCallback(
-    (ref: HTMLInputElement | null) => {
-      inputRef.current = ref;
-    },
-    [inputRef],
-  );
+  }, [open]);
 
   useEffect(() => {
     if (results.length) {
@@ -127,7 +136,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, setOpen, inputRef]);
+  }, [results]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -137,12 +146,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     const handler = (e: KeyboardEvent) => {
       if (inputRef.current) {
         if (
-          e.keyCode === KEY_F3 ||
-          ((e.ctrlKey || e.metaKey) && e.keyCode === KEY_F)
+          e.code === 'F3' ||
+          ((e.ctrlKey || e.metaKey) && e.code === 'KeyF')
         ) {
           inputRef.current.focus();
           e.preventDefault();
-        } else if (e.keyCode === KEY_ESCAPE) {
+        } else if (e.code === 'Escape') {
           inputRef.current.blur();
           e.preventDefault();
         }
@@ -154,43 +163,83 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     return () => {
       document.removeEventListener('keydown', handler);
     };
-  }, [hidden, inputRef, preventShortcut]);
+  }, [hidden, preventShortcut]);
 
-  const handleInputFocus = useCallback((e: React.FocusEvent<FormControl>) => {
-    ((e.target as any) as HTMLInputElement).select();
-  }, []);
+  const handleInputFocus = useCallback(() => {
+    setOpen(results.length > 0);
+  }, [results]);
 
   const handleClearClick = useCallback(
-    (e: MouseEvent<Button>) => {
+    (e: MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();
       dispatch(searchSelectResult(null));
+      dispatch(searchSetResults([]));
       setValue('');
     },
     [dispatch],
   );
 
+  const HoverableMenuItem = useMemo(
+    () =>
+      forwardRef<HTMLAnchorElement, { children: ReactNode }>(function HiddenInt(
+        { children, ...props },
+        ref,
+      ) {
+        function handleFocus() {
+          const ch = Children.only(children);
+
+          handleSelect((ch as any).props['data-id'], undefined, true);
+        }
+
+        return (
+          <SafeAnchor
+            ref={ref}
+            {...props}
+            onFocus={handleFocus}
+            onMouseMove={handleFocus}
+          >
+            {children}
+          </SafeAnchor>
+        );
+      }),
+    [handleSelect],
+  );
+
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+    if (!isOpen) {
+      setOpen(false);
+
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  };
+
   return (
     <span style={{ display: hidden ? 'none' : 'inline' }}>
       <Form inline onSubmit={handleSearch}>
         <Dropdown
+          as={ButtonGroup}
           // className="dropdown-long"
-          id="objectsMenuDropdown"
-          open={open}
+          show={open}
+          onSelect={handleSelect}
           onToggle={handleToggle}
         >
-          <FormGroup2 bsRole="toggle">
+          <Dropdown.Toggle as={HideArrow}>
             <InputGroup>
               <FormControl
                 className="fm-search-input"
                 onChange={handleChange}
                 value={value}
                 placeholder="Brusno"
-                inputRef={setInputRef}
+                ref={inputRef}
                 onFocus={handleInputFocus}
               />
-              <InputGroup.Button style={{ width: 'auto' }}>
+              <InputGroup.Append style={{ width: 'auto' }}>
                 {!!selectedResult && (
                   <Button
+                    variant="secondary"
                     type="button"
                     title={m?.general.clear}
                     onClick={handleClearClick}
@@ -199,66 +248,79 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   </Button>
                 )}
                 <Button
+                  variant="secondary"
                   type="submit"
                   title={m?.search.buttonTitle}
                   disabled={!value}
                 >
                   <FontAwesomeIcon icon="search" />
                 </Button>
-              </InputGroup.Button>
+              </InputGroup.Append>
             </InputGroup>
-          </FormGroup2>
-          <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
+          </Dropdown.Toggle>
+          <Dropdown.Menu
+            key={searchSeq}
+            rootCloseEvent="mousedown"
+            className="fm-search-dropdown"
+          >
             {results.map((result) => (
-              <MenuItem
+              <Dropdown.Item
                 key={result.id}
-                eventKey={result.id}
-                onSelect={handleSelect}
+                eventKey={String(result.id)}
                 active={!!selectedResult && result.id === selectedResult.id}
+                as={HoverableMenuItem}
               >
-                {result.label}
-                <br />
-                {!!(result.class && result.type) && (
-                  <small>
-                    {result.class}={result.type}
-                  </small>
-                )}
-              </MenuItem>
+                <span data-id={result.id}>
+                  {result.label}
+                  <br />
+                  {!!(result.class && result.type) && (
+                    <small>
+                      {result.class}={result.type}
+                    </small>
+                  )}
+                </span>
+              </Dropdown.Item>
             ))}
           </Dropdown.Menu>
-        </Dropdown>{' '}
+        </Dropdown>
       </Form>{' '}
       {selectedResult && !embed && (
         <ButtonGroup>
           <Button
+            variant="secondary"
             title={m?.search.routeFrom}
             onClick={() => {
-              const start = {
-                lat: selectedResult.lat,
-                lon: selectedResult.lon,
-              };
-
               dispatch(selectFeature({ type: 'route-planner' }));
 
-              dispatch(routePlannerSetStart({ start }));
+              dispatch(
+                routePlannerSetStart({
+                  start: {
+                    lat: selectedResult.lat,
+                    lon: selectedResult.lon,
+                  },
+                }),
+              );
             }}
           >
-            <Glyphicon glyph="triangle-right" style={{ color: '#32CD32' }} />
+            <FontAwesomeIcon icon="play" style={{ color: '#32CD32' }} />
           </Button>
           <Button
+            variant="secondary"
             title={m?.search.routeTo}
             onClick={() => {
-              const finish = {
-                lat: selectedResult.lat,
-                lon: selectedResult.lon,
-              };
-
               dispatch(selectFeature({ type: 'route-planner' }));
 
-              dispatch(routePlannerSetFinish({ finish }));
+              dispatch(
+                routePlannerSetFinish({
+                  finish: {
+                    lat: selectedResult.lat,
+                    lon: selectedResult.lon,
+                  },
+                }),
+              );
             }}
           >
-            <Glyphicon glyph="record" style={{ color: '#FF6347' }} />
+            <FontAwesomeIcon icon="stop" style={{ color: '#FF6347' }} />
           </Button>
         </ButtonGroup>
       )}

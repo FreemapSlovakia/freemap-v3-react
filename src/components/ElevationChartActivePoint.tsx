@@ -1,11 +1,10 @@
-import React, { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
-
 import { RichMarker } from 'fm3/components/RichMarker';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
+import { ReactElement } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useSelector } from 'react-redux';
 
 export function ElevationChartActivePoint(): ReactElement | null {
   const m = useMessages();

@@ -1,27 +1,19 @@
-import React, {
-  ReactElement,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import FormCheck from 'react-bootstrap/FormCheck';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
 import { useDispatch } from 'react-redux';
 
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
+type Props = { show: boolean };
 
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useMessages } from 'fm3/l10nInjector';
-
-export function EmbedMapModal(): ReactElement {
+export function EmbedMapModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -63,7 +55,7 @@ export function EmbedMapModal(): ReactElement {
 
   const iframe = useRef<HTMLIFrameElement | null>(null);
 
-  const textarea = useRef<HTMLInputElement | null>(null);
+  const textarea = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (iframe.current?.contentWindow) {
@@ -98,7 +90,7 @@ export function EmbedMapModal(): ReactElement {
     });
   }, [getUrl]);
 
-  const setFormControl = (ta: HTMLInputElement | null): void => {
+  const setFormControl = (ta: HTMLTextAreaElement | null): void => {
     textarea.current = ta;
   };
 
@@ -121,7 +113,7 @@ export function EmbedMapModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close} className="dynamic">
+    <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="code" /> {m?.more.embedMap}
@@ -129,9 +121,11 @@ export function EmbedMapModal(): ReactElement {
       </Modal.Header>
       <Modal.Body>
         <FormGroup style={{ maxWidth: '542px' }}>
-          <ControlLabel>{m?.embed.dimensions}</ControlLabel>
+          <FormLabel>{m?.embed.dimensions}</FormLabel>
           <InputGroup>
-            <InputGroup.Addon>{m?.embed.width}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
+            </InputGroup.Append>
             <FormControl
               type="number"
               value={width}
@@ -139,11 +133,13 @@ export function EmbedMapModal(): ReactElement {
               max={1600}
               step={10}
               required
-              onChange={({ target }) => {
-                setWidth((target as HTMLInputElement).value);
+              onChange={({ currentTarget }) => {
+                setWidth(currentTarget.value);
               }}
             />
-            <InputGroup.Addon>{m?.embed.height}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
+            </InputGroup.Append>
             <FormControl
               type="number"
               value={height}
@@ -151,43 +147,43 @@ export function EmbedMapModal(): ReactElement {
               max={1200}
               step={10}
               required
-              onChange={({ target }) => {
-                setHeight((target as HTMLInputElement).value);
+              onChange={({ currentTarget }) => {
+                setHeight(currentTarget.value);
               }}
             />
           </InputGroup>
         </FormGroup>
 
         <strong>{m?.embed.enableFeatures}</strong>
-        <Checkbox
-          onChange={({ target }) => {
-            setEnableSearch((target as HTMLInputElement).checked);
+        <FormCheck
+          type="checkbox"
+          onChange={({ currentTarget }) => {
+            setEnableSearch(currentTarget.checked);
           }}
           checked={enableSearch}
-        >
-          {m?.embed.enableSearch}
-        </Checkbox>
-        <Checkbox
-          onChange={({ target }) => {
-            setEnableMapSwitch((target as HTMLInputElement).checked);
+          label={m?.embed.enableSearch}
+        />
+        <FormCheck
+          type="checkbox"
+          onChange={({ currentTarget }) => {
+            setEnableMapSwitch(currentTarget.checked);
           }}
           checked={enableMapSwitch}
-        >
-          {m?.embed.enableMapSwitch}
-        </Checkbox>
-        <Checkbox
-          onChange={({ target }) => {
-            setEnableLocateMe((target as HTMLInputElement).checked);
+          label={m?.embed.enableMapSwitch}
+        />
+        <FormCheck
+          type="checkbox"
+          onChange={({ currentTarget }) => {
+            setEnableLocateMe(currentTarget.checked);
           }}
           checked={enableLocateMe}
-        >
-          {m?.embed.enableLocateMe}
-        </Checkbox>
+          label={m?.embed.enableLocateMe}
+        />
         <hr />
         <p>{m?.embed.code}</p>
         <FormControl
-          inputRef={setFormControl}
-          componentClass="textarea"
+          ref={setFormControl}
+          as="textarea"
           value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen></iframe>`}
           readOnly
           rows={3}
@@ -212,10 +208,10 @@ export function EmbedMapModal(): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
-          <Glyphicon glyph="copy" /> {m?.general.copyCode}
+          <FontAwesomeIcon icon="clipboard" /> {m?.general.copyCode}
         </Button>{' '}
-        <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

@@ -1,16 +1,14 @@
-import React, { ReactElement } from 'react';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import { useDispatch } from 'react-redux';
 
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
+type Props = { show: boolean };
 
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { setActiveModal } from 'fm3/actions/mainActions';
-import { useMessages } from 'fm3/l10nInjector';
-
-export function AboutModal(): ReactElement {
+export function AboutModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -20,7 +18,7 @@ export function AboutModal(): ReactElement {
   }
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
@@ -91,11 +89,9 @@ export function AboutModal(): ReactElement {
         </ul>
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button onClick={close}>
-            <Glyphicon glyph="remove" /> {m?.general.close}
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close}
+        </Button>
       </Modal.Footer>
     </Modal>
   );

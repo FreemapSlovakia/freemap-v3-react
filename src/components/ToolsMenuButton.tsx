@@ -1,14 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useState, useCallback, useRef, ReactElement } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
+import { clearMap, selectFeature, Tool } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { selectFeature, Tool, clearMap } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
+import { ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 
 export function ToolsMenuButton(): ReactElement {
@@ -22,7 +22,7 @@ export function ToolsMenuButton(): ReactElement {
 
   const [show, setShow] = useState(false);
 
-  const button = useRef<Button | null>(null);
+  const button = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -33,7 +33,7 @@ export function ToolsMenuButton(): ReactElement {
   }, []);
 
   const handleToolSelect = useCallback(
-    (tool: unknown) => {
+    (tool: string | null) => {
       if (is<Tool | null>(tool)) {
         setShow(false);
 
@@ -56,6 +56,8 @@ export function ToolsMenuButton(): ReactElement {
         : tool),
   ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
+  const ref = useRef(null);
+
   return (
     <>
       <Button
@@ -63,43 +65,48 @@ export function ToolsMenuButton(): ReactElement {
         onClick={handleButtonClick}
         title={m?.tools.tools}
         id="tools-button"
-        bsStyle="primary"
+        variant="primary"
       >
         <FontAwesomeIcon icon={toolDef ? toolDef.icon : 'briefcase'} />
-        <span className="hidden-xs">
+        <span className="d-none d-sm-inline">
           {' '}
           {m?.tools[tool && toolDef ? toolDef.msgKey : 'tools']}
         </span>
       </Button>
-      {tool && <FontAwesomeIcon icon="chevron-right" />}
+      {tool && (
+        <FontAwesomeIcon icon="chevron-right" className="align-self-center" />
+      )}
       <Overlay
         rootClose
+        rootCloseEvent="mousedown"
         placement="bottom"
         show={show}
         onHide={handleHide}
-        target={button.current ?? undefined}
+        target={button.current}
+        container={ref.current}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {tool && (
-              <MenuItem eventKey={null} onSelect={handleToolSelect}>
+              <Dropdown.Item onSelect={handleToolSelect}>
                 <FontAwesomeIcon icon="briefcase" /> {m?.tools.none}{' '}
                 <kbd>Esc</kbd>
-              </MenuItem>
+              </Dropdown.Item>
             )}
 
-            <MenuItem onSelect={handleMapClear}>
+            <Dropdown.Item onSelect={handleMapClear}>
               <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap} <kbd>g</kbd>{' '}
               <kbd>c</kbd>
-            </MenuItem>
-            <MenuItem divider />
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
 
             {toolDefinitions
               .filter(({ expertOnly }) => expertMode || !expertOnly)
               .map(
                 ({ tool: newTool, icon, msgKey, kbd }) =>
                   newTool && (
-                    <MenuItem
+                    <Dropdown.Item
                       key={newTool}
                       eventKey={newTool}
                       onSelect={handleToolSelect}
@@ -108,13 +115,14 @@ export function ToolsMenuButton(): ReactElement {
                       <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
                       {kbd && (
                         <>
-                          <kbd>g</kbd> <kbd>{kbd}</kbd>
+                          <kbd>g</kbd>{' '}
+                          <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
                         </>
                       )}
-                    </MenuItem>
+                    </Dropdown.Item>
                   ),
               )}
-          </ul>
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>

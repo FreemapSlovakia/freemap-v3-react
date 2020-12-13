@@ -1,11 +1,10 @@
 import { lineString } from '@turf/helpers';
-
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadWay } from 'fm3/actions/osmActions';
+import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OsmResult } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 export const osmLoadWayProcessor: Processor = {
   actionCreator: osmLoadWay,

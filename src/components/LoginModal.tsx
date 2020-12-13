@@ -1,18 +1,19 @@
-import React, { useCallback, ReactElement } from 'react';
-import { useDispatch } from 'react-redux';
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
-  authLoginWithOsm,
+  authLoginClose,
   authLoginWithFacebook,
   authLoginWithGoogle,
-  authLoginClose,
+  authLoginWithOsm,
 } from 'fm3/actions/authActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
-export function LoginModal(): ReactElement {
+type Props = { show: boolean };
+
+export function LoginModal({ show }: Props): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
@@ -34,7 +35,7 @@ export function LoginModal(): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show onHide={close}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
           <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
@@ -43,7 +44,7 @@ export function LoginModal(): ReactElement {
       <Modal.Body>
         <Button
           onClick={loginWithFacebook}
-          bsSize="large"
+          size="lg"
           block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
         >
@@ -51,7 +52,7 @@ export function LoginModal(): ReactElement {
         </Button>
         <Button
           onClick={loginWithGoogle}
-          bsSize="large"
+          size="lg"
           block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
         >
@@ -59,7 +60,7 @@ export function LoginModal(): ReactElement {
         </Button>
         <Button
           onClick={loginWithOsm}
-          bsSize="large"
+          size="lg"
           block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
         >
@@ -67,8 +68,8 @@ export function LoginModal(): ReactElement {
         </Button>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={close}>
-          <Glyphicon glyph="remove" /> {m?.general.close} <kbd>Esc</kbd>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

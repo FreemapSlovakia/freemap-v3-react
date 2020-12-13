@@ -1,21 +1,16 @@
-import React, { useCallback, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { lineString } from '@turf/helpers';
-
-import { useMessages } from 'fm3/l10nInjector';
-
-import { selectFeature, Tool } from 'fm3/actions/mainActions';
-
 import {
-  elevationChartSetTrackGeojson,
   elevationChartClose,
+  elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-
+import { selectFeature, setActiveModal, Tool } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Button from 'react-bootstrap/lib/Button';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function DrawingMenu(): ReactElement {
   const dispatch = useDispatch();
@@ -66,53 +61,60 @@ export function DrawingMenu(): ReactElement {
     <>
       <ButtonGroup>
         <Button
+          variant="secondary"
           onClick={() => setTool('draw-lines')}
           active={tool === 'draw-lines'}
           title={m?.measurement.distance}
         >
           <FontAwesomeIcon icon="arrows-h" />
-          <span className="hidden-xs"> {m?.measurement.distance}</span>
+          <span className="d-none d-sm-inline"> {m?.measurement.distance}</span>
         </Button>
         <Button
+          variant="secondary"
           onClick={() => setTool('draw-points')}
           active={tool === 'draw-points'}
           title={m?.measurement.elevation}
         >
           <FontAwesomeIcon icon="map-marker" />
-          <span className="hidden-xs"> {m?.measurement.elevation}</span>
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.measurement.elevation}
+          </span>
         </Button>
         <Button
+          variant="secondary"
           onClick={() => setTool('draw-polygons')}
           active={tool === 'draw-polygons'}
           title={m?.measurement.area}
         >
           <FontAwesomeIcon icon="square-o" />
-          <span className="hidden-xs"> {m?.measurement.area}</span>
+          <span className="d-none d-sm-inline"> {m?.measurement.area}</span>
         </Button>
       </ButtonGroup>
       {isActive && (
-        <>
-          {' '}
-          <Button
-            onClick={() => dispatch(setActiveModal('edit-label'))}
-            disabled={!isActive}
-          >
-            <FontAwesomeIcon icon="tag" />
-            <span className="hidden-xs"> {m?.drawing.modify}</span>
-          </Button>
-        </>
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => dispatch(setActiveModal('edit-label'))}
+          disabled={!isActive}
+        >
+          <FontAwesomeIcon icon="tag" />
+          <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
+        </Button>
       )}
       {tool === 'draw-lines' && linePoints.length >= 2 && (
-        <>
-          {' '}
-          <Button
-            active={elevationChartTrackGeojson !== null}
-            onClick={toggleElevationChart}
-          >
-            <FontAwesomeIcon icon="bar-chart" />
-            <span className="hidden-xs"> {m?.general.elevationProfile}</span>
-          </Button>
-        </>
+        <Button
+          className="ml-1"
+          variant="secondary"
+          active={elevationChartTrackGeojson !== null}
+          onClick={toggleElevationChart}
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.general.elevationProfile}
+          </span>
+        </Button>
       )}
     </>
   );

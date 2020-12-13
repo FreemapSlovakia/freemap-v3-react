@@ -1,6 +1,6 @@
-import { Middleware, Dispatch } from 'redux';
-import { RootState } from 'fm3/storeCreator';
 import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch, Middleware } from 'redux';
 
 export const loggerMiddleware: Middleware<
   RootAction,

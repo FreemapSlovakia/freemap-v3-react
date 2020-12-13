@@ -1,17 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux';
-import React, { useEffect, ReactElement } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Table from 'react-bootstrap/lib/Table';
-import Button from 'react-bootstrap/lib/Button';
-import Alert from 'react-bootstrap/lib/Alert';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { Device } from './Device';
-import { RootState } from 'fm3/storeCreator';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useEffect } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import Table from 'react-bootstrap/Table';
+import { useDispatch, useSelector } from 'react-redux';
+import { Device } from './Device';
 
 export function Devices(): ReactElement {
   const m = useMessages();
@@ -32,7 +30,7 @@ export function Devices(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="info">{m?.tracking.devices.desc}</Alert>
+        <Alert variant="secondary">{m?.tracking.devices.desc()}</Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>
@@ -61,6 +59,7 @@ export function Devices(): ReactElement {
           {m?.general.add}
         </Button>
         <Button
+          variant="dark"
           type="button"
           onClick={() => {
             dispatch(setActiveModal(null));
