@@ -20,23 +20,22 @@ export function GalleryShowPositionMenu(): ReactElement | null {
     dispatch(galleryCancelShowOnTheMap());
   }, [dispatch]);
 
-  const handleKeyUp = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.code === 'Escape') {
-        close();
-      }
-    },
-    [close],
-  );
-
   useEffect(() => {
-    // can't use keydown because it would close themodal
-    document.addEventListener('keyup', handleKeyUp);
+    if (showPosition) {
+      const handleKeyUp = (event: KeyboardEvent) => {
+        if (event.code === 'Escape') {
+          close();
+        }
+      };
 
-    return () => {
-      document.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [handleKeyUp]);
+      // can't use keydown because it would close the modal
+      document.addEventListener('keyup', handleKeyUp);
+
+      return () => {
+        document.removeEventListener('keyup', handleKeyUp);
+      };
+    }
+  }, [close, showPosition]);
 
   return !showPosition ? null : (
     <Card className="fm-toolbar">

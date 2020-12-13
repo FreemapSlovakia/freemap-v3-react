@@ -32,6 +32,15 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     const state = store.getState();
 
+    const showingModal =
+      !state.gallery.showPosition &&
+      !state.gallery.pickingPositionForId &&
+      !state.main.selectingHomeLocation &&
+      (state.gallery.showFilter ||
+        !!state.main.activeModal ||
+        state.gallery.showUploadModal ||
+        state.gallery.activeImageId);
+
     if (showGalleryViewer(state) && event.code === 'Escape') {
       if (state.gallery.editModel) {
         store.dispatch(galleryEditPicture());
@@ -52,8 +61,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         event.preventDefault();
         return;
       } else if (
-        !state.main.activeModal &&
-        !state.gallery.activeImageId &&
+        !showingModal &&
         !state.gallery.showPosition &&
         state.main.selection
       ) {
@@ -120,10 +128,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       !keyTimer &&
-      !state.main.activeModal &&
-      (!state.gallery.activeImageId ||
-        state.gallery.showPosition ||
-        state.gallery.pickingPositionForId) &&
+      !showingModal &&
       (!embed || !state.main.embedFeatures.includes('noMapSwitch'))
     ) {
       const baseLayer = baseLayers.find(
@@ -162,8 +167,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       !keyTimer &&
-      !state.main.activeModal &&
-      !state.gallery.activeImageId &&
+      !showingModal &&
       !state.gallery.showPosition &&
       !state.gallery.pickingPositionForId &&
       !state.main.selectingHomeLocation
@@ -178,6 +182,7 @@ export function attachKeyboardHandler(store: MyStore): void {
 
     if (
       state.main.activeModal ||
+      state.gallery.showUploadModal ||
       state.main.selectingHomeLocation ||
       state.gallery.activeImageId ||
       state.gallery.showPosition ||
