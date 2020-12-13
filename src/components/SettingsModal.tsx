@@ -24,8 +24,6 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Tooltip from 'react-bootstrap/Tooltip';
-import Slider from 'react-rangeslider';
-import 'react-rangeslider/lib/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
@@ -181,112 +179,126 @@ export function SettingsModal({ show }: Props): ReactElement {
             />
           </FormGroup>
           <Tabs id="setting-tabs">
-            <Tab title={m?.settings.tab.map} eventKey="1">
-              <div>
-                <p>
+            <Tab title={m?.settings.tab.map} eventKey="1" className="pt-2">
+              <FormGroup>
+                <FormLabel>
                   {m?.settings.map.overlayPaneOpacity}{' '}
                   {nf0.format(overlayPaneOpacity * 100)}
                   {' %'}
-                </p>
-                <Slider
+                </FormLabel>
+                <FormControl
+                  type="range"
+                  custom
                   value={overlayPaneOpacity}
                   min={0}
                   max={1}
                   step={0.05}
-                  tooltip={false}
-                  onChange={(newValue) => setOverlayPaneOpacity(newValue)}
+                  onChange={(e) =>
+                    setOverlayPaneOpacity(Number(e.currentTarget.value))
+                  }
                 />
-              </div>
+              </FormGroup>
               {expertMode && selectedOverlayDetails && (
                 <>
                   <hr />
-                  <div>
-                    <p>{m?.settings.expert.overlayOpacity}</p>
-                    <DropdownButton
-                      rootCloseEvent="mousedown"
-                      variant="secondary"
-                      id="overlayOpacity"
-                      onSelect={(o: unknown) => {
-                        if (typeof o === 'string') {
-                          setSelectedOverlay(o);
+                  <FormGroup>
+                    <FormLabel>
+                      <p>{m?.settings.expert.overlayOpacity}</p>
+                      <DropdownButton
+                        rootCloseEvent="mousedown"
+                        variant="secondary"
+                        id="overlayOpacity"
+                        onSelect={(o: unknown) => {
+                          if (typeof o === 'string') {
+                            setSelectedOverlay(o);
+                          }
+                        }}
+                        title={
+                          <>
+                            <FontAwesomeIcon
+                              icon={selectedOverlayDetails.icon}
+                            />{' '}
+                            {m?.mapLayers.letters[selectedOverlayDetails.type]}{' '}
+                            {nf0.format(
+                              (overlayOpacity[selectedOverlay] || 1) * 100,
+                            )}{' '}
+                            %
+                          </>
                         }
-                      }}
-                      title={
-                        <>
-                          <FontAwesomeIcon icon={selectedOverlayDetails.icon} />{' '}
-                          {m?.mapLayers.letters[selectedOverlayDetails.type]}{' '}
-                          {nf0.format(
-                            (overlayOpacity[selectedOverlay] || 1) * 100,
-                          )}{' '}
-                          %
-                        </>
-                      }
-                    >
-                      {overlayLayers.map(({ type, icon }) => (
-                        <Dropdown.Item key={type} eventKey={type}>
-                          {icon && <FontAwesomeIcon icon={icon} />}{' '}
-                          {m?.mapLayers.letters[type]}{' '}
-                          {nf0.format((overlayOpacity[type] || 1) * 100)} %
-                        </Dropdown.Item>
-                      ))}
-                    </DropdownButton>
-                    <Slider
+                      >
+                        {overlayLayers.map(({ type, icon }) => (
+                          <Dropdown.Item key={type} eventKey={type}>
+                            {icon && <FontAwesomeIcon icon={icon} />}{' '}
+                            {m?.mapLayers.letters[type]}{' '}
+                            {nf0.format((overlayOpacity[type] || 1) * 100)} %
+                          </Dropdown.Item>
+                        ))}
+                      </DropdownButton>
+                    </FormLabel>
+                    <FormControl
+                      type="range"
+                      custom
                       value={overlayOpacity[selectedOverlay] || 1}
                       min={0.1}
                       max={1.0}
                       step={0.1}
-                      tooltip={false}
-                      onChange={(newOpacity) => {
+                      onChange={(e) => {
                         setOverlayOpacity({
                           ...overlayOpacity,
-                          [selectedOverlay]: newOpacity,
+                          [selectedOverlay]: Number(e.currentTarget.value),
                         });
                       }}
                     />
-                  </div>
+                  </FormGroup>
                 </>
               )}
               {expertMode && (
                 <>
                   <hr />
-                  <div>
-                    <p>
+                  <FormGroup>
+                    <FormLabel>
                       {m?.settings.expert.trackViewerEleSmoothing.label(
                         eleSmoothingFactor,
                       )}
-                    </p>
-                    <Slider
+                    </FormLabel>
+                    <FormControl
+                      type="range"
+                      custom
                       value={eleSmoothingFactor}
                       min={1}
                       max={10}
                       step={1}
-                      tooltip={false}
-                      onChange={(newValue) => setEleSmoothingFactor(newValue)}
+                      onChange={(e) =>
+                        setEleSmoothingFactor(Number(e.currentTarget.value))
+                      }
                     />
-                  </div>
+                  </FormGroup>
                   <Alert variant="secondary">
                     {m?.settings.expert.trackViewerEleSmoothing.info}
                   </Alert>
                 </>
               )}
               <hr />
-              <p>
-                {m?.settings.map.homeLocation.label}{' '}
-                {homeLocation
-                  ? latLonToString(homeLocation, language)
-                  : m?.settings.map.homeLocation.undefined}
-              </p>
-              <Button
-                variant="secondary"
-                onClick={() => {
-                  dispatch(setSelectingHomeLocation(true));
-                }}
-              >
-                <FontAwesomeIcon icon="crosshairs" />{' '}
-                {m?.settings.map.homeLocation.select}
-              </Button>
+              <FormGroup>
+                <FormLabel>
+                  {m?.settings.map.homeLocation.label}{' '}
+                  {homeLocation
+                    ? latLonToString(homeLocation, language)
+                    : m?.settings.map.homeLocation.undefined}
+                </FormLabel>
+                <Button
+                  className="d-block"
+                  variant="secondary"
+                  onClick={() => {
+                    dispatch(setSelectingHomeLocation(true));
+                  }}
+                >
+                  <FontAwesomeIcon icon="crosshairs" />{' '}
+                  {m?.settings.map.homeLocation.select}
+                </Button>
+              </FormGroup>
             </Tab>
-            <Tab title={m?.settings.tab.account} eventKey="2">
+            <Tab title={m?.settings.tab.account} eventKey="2" className="pt-2">
               {user ? (
                 <>
                   <FormGroup>
@@ -318,7 +330,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                 </Alert>
               )}
             </Tab>
-            <Tab title={m?.settings.tab.general} eventKey="3">
+            <Tab title={m?.settings.tab.general} eventKey="3" className="pt-2">
               <FormCheck
                 type="checkbox"
                 onChange={(e) => {

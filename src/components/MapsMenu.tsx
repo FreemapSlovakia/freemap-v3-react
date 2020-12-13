@@ -33,9 +33,9 @@ export function MapsMenu(): ReactElement {
         variant="secondary"
         title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
         disabled={!authenticated}
-        onSelect={(id: unknown) => {
-          if (typeof id === 'number') {
-            dispatch(mapsLoad({ id }));
+        onSelect={(id) => {
+          if (id !== null) {
+            dispatch(mapsLoad({ id: Number(id) }));
           }
         }}
       >
@@ -79,18 +79,19 @@ export function MapsMenu(): ReactElement {
           }}
         >
           <FontAwesomeIcon icon="pencil" />
-          <span className="d-md-none d-sm-none d-none"> {m?.maps.rename}</span>
+          <span className="d-none d-md-inline"> {m?.maps.rename}</span>
         </Button>
       )}
       {authenticated && id !== undefined && (
         <Button
           className="ml-1"
+          variant="danger"
           onClick={() => {
             dispatch(deleteFeature({ type: 'maps' }));
           }}
         >
           <FontAwesomeIcon icon="trash" />
-          <span className="d-md-none d-sm-none d-none">
+          <span className="d-none d-md-inline">
             {' '}
             {m?.maps.delete} <kbd>Del</kbd>
           </span>

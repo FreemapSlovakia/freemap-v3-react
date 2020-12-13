@@ -44,20 +44,18 @@ export function Toast({
 
   return (
     <Alert
-      className="toast"
-      variant={style}
+      className="fm-toast"
+      variant={style ?? 'primary'}
       onClick={clickHandler}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
       onClose={handleAlertDismiss}
+      dismissible
     >
       {typeof message === 'string' && message.startsWith('!HTML!') ? (
-        <div
-          className="toast-message"
-          dangerouslySetInnerHTML={{ __html: message.substring(6) }}
-        />
+        <div dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
       ) : (
-        <div className="toast-message">{message}</div>
+        <div>{message}</div>
       )}
       {buttonActions.length > 0 && (
         <>

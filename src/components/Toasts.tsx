@@ -86,7 +86,7 @@ export function Toasts(): ReactElement {
   );
 
   return (
-    <div className="toasts">
+    <div className="fm-toasts">
       {items.map(({ id, actions, style, msg }) => {
         return (
           <Toast

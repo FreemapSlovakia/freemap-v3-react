@@ -42,7 +42,7 @@ export function ObjectsMenu(): ReactElement {
   }, [dropdownOpened]);
 
   const handleSelect = useCallback(
-    (id: unknown) => {
+    (id: string | null) => {
       if (zoom < 12) {
         dispatch(
           toastsAdd({
@@ -58,8 +58,8 @@ export function ObjectsMenu(): ReactElement {
             ],
           }),
         );
-      } else if (typeof id === 'number') {
-        dispatch(objectsSetFilter(id));
+      } else if (id !== null) {
+        dispatch(objectsSetFilter(Number(id)));
       }
     },
     [zoom, dispatch],
@@ -79,7 +79,7 @@ export function ObjectsMenu(): ReactElement {
           onChange={handleFilterSet}
           value={filter}
         />
-        <Dropdown.Menu>
+        <Dropdown.Menu onSelect={handleSelect}>
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
 
@@ -92,11 +92,7 @@ export function ObjectsMenu(): ReactElement {
                     .indexOf(filter.toLowerCase()) !== -1,
               )
               .map(({ group, id, icon }) => (
-                <Dropdown.Item
-                  key={id}
-                  eventKey={String(id)}
-                  onSelect={handleSelect}
-                >
+                <Dropdown.Item key={id} eventKey={String(id)}>
                   <img
                     src={require(`../images/mapIcons/${icon}.png`)}
                     alt={`${group}-${icon}`}

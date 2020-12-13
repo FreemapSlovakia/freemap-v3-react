@@ -18,8 +18,6 @@ import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
-import Slider from 'react-rangeslider';
-import 'react-rangeslider/lib/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
@@ -325,13 +323,16 @@ export function ExportPdfModal({ show }: Props): ReactElement {
         <p>
           {m?.pdfExport.mapScale} {nf.format(scale * 96)} DPI
         </p>
-        <Slider
+        <FormControl
+          type="range"
+          custom
           value={scale}
           min={0.5}
           max={8}
           step={0.05}
-          tooltip={false}
-          onChange={setScale}
+          onChange={(e) => {
+            setScale(Number(e.currentTarget.value));
+          }}
         />
         {expertMode && (
           <>

@@ -6,6 +6,7 @@ import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
+import Alert from 'react-bootstrap/Alert';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('en', {
@@ -1284,9 +1285,9 @@ const en: Messages = {
     exported: ({ url }) => (
       <>
         Map export has finished.{' '}
-        <a href={url} target="_blank">
+        <Alert.Link href={url} target="_blank">
           Open.
-        </a>
+        </Alert.Link>
       </>
     ),
     area: 'Export area:',

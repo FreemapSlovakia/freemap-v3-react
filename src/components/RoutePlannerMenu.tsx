@@ -321,9 +321,9 @@ export function RoutePlannerMenu(): ReactElement {
           className="ml-1"
           variant="secondary"
           id="transport-type"
-          onSelect={(index: unknown) => {
-            if (typeof index === 'number') {
-              dispatch(routePlannerSetActiveAlternativeIndex(index as number));
+          onSelect={(index) => {
+            if (index !== null) {
+              dispatch(routePlannerSetActiveAlternativeIndex(Number(index)));
             }
           }}
           title={

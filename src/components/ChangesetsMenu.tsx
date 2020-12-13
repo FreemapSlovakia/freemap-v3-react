@@ -42,7 +42,7 @@ export function ChangesetsMenu(): ReactElement {
         variant="secondary"
         id="days"
         onSelect={(d) => {
-          if (typeof d === 'number' && canSearchWithThisAmountOfDays(d)) {
+          if (canSearchWithThisAmountOfDays(Number(d))) {
             dispatch(changesetsSetDays(days));
           }
         }}

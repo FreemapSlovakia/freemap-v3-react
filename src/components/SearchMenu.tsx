@@ -79,14 +79,14 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   );
 
   const handleSelect = useCallback(
-    (eventKey: unknown) => {
-      const found = results.find((item) => item.id === eventKey);
+    (eventKey) => {
+      const found = results.find((item) => item.id === Number(eventKey));
 
       if (found) {
         dispatch(searchSelectResult(found));
       }
 
-      if (selectedResult?.id === eventKey) {
+      if (selectedResult?.id === Number(eventKey)) {
         setOpen(false);
       }
     },
@@ -193,12 +193,15 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </Button>
             </InputGroup.Append>
           </InputGroup>
-          <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
+          <Dropdown.Menu
+            key={searchSeq}
+            className="fm-search-dropdown"
+            onSelect={handleSelect}
+          >
             {results.map((result) => (
               <Dropdown.Item
                 key={result.id}
                 eventKey={String(result.id)}
-                onSelect={handleSelect}
                 active={!!selectedResult && result.id === selectedResult.id}
               >
                 {result.label}
