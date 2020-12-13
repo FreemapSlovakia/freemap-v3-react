@@ -54,21 +54,19 @@ export function MoreMenuButton(): ReactElement {
   const dispatch = useDispatch();
 
   const handleLanguageClick = useCallback(
-    (language: unknown) => {
+    (language: string | null) => {
       close();
 
-      if (language === null || typeof language === 'string') {
-        dispatch(l10nSetChosenLanguage(language));
-      }
+      dispatch(l10nSetChosenLanguage(language));
     },
     [dispatch, close],
   );
 
   const handleTipSelect = useCallback(
-    (tip: unknown) => {
+    (tip: string | null) => {
       close();
 
-      if (typeof tip === 'string') {
+      if (tip !== null) {
         dispatch(tipsShow(tip));
       }
     },

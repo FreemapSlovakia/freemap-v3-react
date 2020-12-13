@@ -208,8 +208,8 @@ export function SettingsModal({ show }: Props): ReactElement {
                         rootCloseEvent="mousedown"
                         variant="secondary"
                         id="overlayOpacity"
-                        onSelect={(o: unknown) => {
-                          if (typeof o === 'string') {
+                        onSelect={(o) => {
+                          if (o !== null) {
                             setSelectedOverlay(o);
                           }
                         }}

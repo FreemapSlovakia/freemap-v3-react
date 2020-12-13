@@ -229,7 +229,7 @@ export function RoutePlannerMenu(): ReactElement {
         className="ml-1"
         variant="secondary"
         id="transport-type"
-        onSelect={(transportType: unknown) => {
+        onSelect={(transportType) => {
           dispatch(
             routePlannerSetTransportType(transportType as TransportType),
           );
@@ -298,7 +298,7 @@ export function RoutePlannerMenu(): ReactElement {
         className="ml-1"
         variant="secondary"
         id="mode"
-        onSelect={(mode: unknown) => {
+        onSelect={(mode) => {
           dispatch(routePlannerSetMode(mode as RoutingMode));
         }}
         title={m?.routePlanner.mode[mode] ?? '…'}

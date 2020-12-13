@@ -214,7 +214,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>
-        </Dropdown>{' '}
+        </Dropdown>
       </Form>{' '}
       {selectedResult && !embed && (
         <ButtonGroup>

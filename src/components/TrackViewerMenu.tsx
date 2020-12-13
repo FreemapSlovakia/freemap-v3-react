@@ -83,7 +83,7 @@ export function TrackViewerMenu(): ReactElement {
         className="ml-1"
         variant="secondary"
         id="colorizing_mode"
-        onSelect={(approach: unknown) => {
+        onSelect={(approach) => {
           dispatch(
             trackViewerColorizeTrackBy(
               assertType<ColorizingMode | null>(approach),

@@ -33,7 +33,7 @@ export function ToolsMenuButton(): ReactElement {
   }, []);
 
   const handleToolSelect = useCallback(
-    (tool: unknown) => {
+    (tool: string | null) => {
       if (is<Tool | null>(tool)) {
         setShow(false);
 

@@ -41,7 +41,7 @@ export function GalleryMenu(): ReactElement {
         variant="secondary"
         id="all-pics"
         title={m?.gallery.allPhotos}
-        onSelect={(order: unknown) => {
+        onSelect={(order) => {
           if (is<GalleryListOrder>(order)) {
             dispatch(galleryList(order));
           }

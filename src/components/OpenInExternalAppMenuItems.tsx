@@ -43,8 +43,8 @@ export function OpenInExternalAppDropdownItems({
   const m = useMessages();
 
   const handleDropdownItemSelect = useCallback(
-    (where: unknown) => {
-      if (onSelect && typeof where === 'string') {
+    (where: string | null) => {
+      if (onSelect && where !== null) {
         onSelect(where);
       }
 

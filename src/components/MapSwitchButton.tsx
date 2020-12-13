@@ -82,7 +82,7 @@ export function MapSwitchButton(): ReactElement {
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: unknown) => {
+    (overlay) => {
       const s = new Set(overlays);
 
       if (!is<OverlayLetters>(overlay)) {

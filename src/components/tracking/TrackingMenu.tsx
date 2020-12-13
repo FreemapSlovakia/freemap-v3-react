@@ -25,7 +25,7 @@ export function TrackingMenu(): ReactElement {
   );
 
   const handleVisualChange = useCallback(
-    (visual: unknown) => {
+    (visual: string | null) => {
       switch (visual) {
         case 'line':
           dispatch(trackingActions.setShowPoints(false));
