@@ -1,8 +1,8 @@
 import {
-  baseLayers,
-  overlayLayers,
   AttributionDef,
   BaseLayerLetters,
+  baseLayers,
+  overlayLayers,
   OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { Messages } from 'fm3/translations/messagesInterface';

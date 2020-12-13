@@ -1,14 +1,14 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
-  galleryRemoveItem,
-  galleryUpload,
-  gallerySetLayerDirty,
-  gallerySetItemError,
   galleryHideUploadModal,
+  galleryRemoveItem,
+  gallerySetItemError,
+  gallerySetLayerDirty,
+  galleryUpload,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const galleryItemUploadProcessor: Processor = {
   actionCreator: galleryUpload,

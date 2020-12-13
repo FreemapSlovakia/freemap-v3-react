@@ -1,36 +1,34 @@
 import {
-  useEffect,
-  useState,
-  useCallback,
-  useMemo,
-  ReactElement,
+  drawingLineAddPoint,
+  drawingLineRemovePoint,
+  drawingLineUpdatePoint,
+  Point,
+} from 'fm3/actions/drawingLineActions';
+import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { selectFeature } from 'fm3/actions/mainActions';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { colors } from 'fm3/constants';
+import { distance } from 'fm3/geoutils';
+import { RootState } from 'fm3/storeCreator';
+import { LatLon } from 'fm3/types/common';
+import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
+import {
   Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
   Marker,
-  Tooltip,
-  Polyline,
   Polygon,
+  Polyline,
+  Tooltip,
   useMap,
   useMapEvent,
 } from 'react-leaflet';
-import { DomEvent, LeafletMouseEvent } from 'leaflet';
-import {
-  drawingLineAddPoint,
-  drawingLineUpdatePoint,
-  drawingLineRemovePoint,
-  Point,
-} from 'fm3/actions/drawingLineActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { distance } from 'fm3/geoutils';
-import { divIcon } from 'leaflet';
-import { RootState } from 'fm3/storeCreator';
-
-import { selectFeature } from 'fm3/actions/mainActions';
-import { LatLon } from 'fm3/types/common';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
-import { colors } from 'fm3/constants';
+import { useDispatch, useSelector } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],

@@ -1,7 +1,7 @@
-import { ChangeEvent, ReactElement, useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import InputGroup from 'react-bootstrap/InputGroup';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
 import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 function checkDatetimeLocalInput(): boolean {
   const input = document.createElement('input');

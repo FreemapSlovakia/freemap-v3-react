@@ -1,14 +1,14 @@
 import { RootAction } from 'fm3/actions';
-import { createReducer } from 'typesafe-actions';
-import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
+  DrawingPoint,
   drawingPointAdd,
   drawingPointChangePosition,
   drawingPointSetAll,
-  DrawingPoint,
 } from 'fm3/actions/drawingPointActions';
-import produce from 'immer';
+import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import produce from 'immer';
+import { createReducer } from 'typesafe-actions';
 
 export interface DrawingPointsState {
   points: DrawingPoint[];

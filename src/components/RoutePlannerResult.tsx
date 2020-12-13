@@ -1,51 +1,50 @@
+import along from '@turf/along';
+import { Feature, lineString, Point, Properties } from '@turf/helpers';
+import length from '@turf/length';
+import { selectFeature } from 'fm3/actions/mainActions';
 import {
-  useState,
-  useEffect,
-  useRef,
-  useCallback,
-  useMemo,
-  ReactElement,
-  Fragment,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  Polyline,
-  Tooltip,
-  Marker,
-  CircleMarker,
-  useMapEvent,
-} from 'react-leaflet';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import {
-  routePlannerSetStart,
-  routePlannerSetFinish,
-  routePlannerAddMidpoint,
-  routePlannerSetMidpoint,
-  routePlannerRemoveMidpoint,
-  routePlannerSetActiveAlternativeIndex,
   Alternative,
   RouteAlternativeExtra,
+  routePlannerAddMidpoint,
+  routePlannerRemoveMidpoint,
+  routePlannerSetActiveAlternativeIndex,
+  routePlannerSetFinish,
+  routePlannerSetMidpoint,
+  routePlannerSetStart,
   RouteStepExtra,
   Step,
 } from 'fm3/actions/routePlannerActions';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { RichMarker } from 'fm3/components/RichMarker';
+import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { isSpecial } from 'fm3/transportTypeDefs';
 import {
   divIcon,
   DragEndEvent,
-  LeafletMouseEvent,
   LeafletEvent,
+  LeafletMouseEvent,
   Polyline as LPolyline,
 } from 'leaflet';
-import { isSpecial } from 'fm3/transportTypeDefs';
-import { lineString, Point, Properties, Feature } from '@turf/helpers';
-import along from '@turf/along';
-import length from '@turf/length';
-import { selectFeature } from 'fm3/actions/mainActions';
-import { Messages } from 'fm3/translations/messagesInterface';
-import { colors } from 'fm3/constants';
+import {
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import {
+  CircleMarker,
+  Marker,
+  Polyline,
+  Tooltip,
+  useMapEvent,
+} from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 const circularIcon = divIcon({
   iconSize: [14, 14],

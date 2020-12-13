@@ -1,13 +1,11 @@
-import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
-
-import { RootState } from 'fm3/storeCreator';
-import { divIcon } from 'leaflet';
-import { Popup, Marker } from 'react-leaflet';
 import { wikiLoadPreview } from 'fm3/actions/wikiActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { divIcon } from 'leaflet';
+import { ReactElement } from 'react';
+import { Marker, Popup, Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 const icon = divIcon({
   iconSize: [19, 19],

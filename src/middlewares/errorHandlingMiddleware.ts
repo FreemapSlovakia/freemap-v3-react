@@ -1,7 +1,7 @@
-import { sendError } from 'fm3/globalErrorHandler';
-import { Middleware, Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
+import { sendError } from 'fm3/globalErrorHandler';
 import { RootState } from 'fm3/storeCreator';
+import { Dispatch, Middleware } from 'redux';
 
 export const errorHandlingMiddleware: Middleware<
   RootAction | null,

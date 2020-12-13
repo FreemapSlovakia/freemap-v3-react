@@ -1,23 +1,23 @@
-import produce from 'immer';
+import turfFlatten from '@turf/flatten';
+import { AllGeoJSON, lineString } from '@turf/helpers';
 import simplify from '@turf/simplify';
-import { lineString, AllGeoJSON } from '@turf/helpers';
-import { isActionOf } from 'typesafe-actions';
-import { convertToDrawing } from 'fm3/actions/mainActions';
 import { RootAction } from 'fm3/actions';
-import { RootState } from 'fm3/storeCreator';
 import {
   drawingLineAddPoint,
-  drawingLineUpdatePoint,
   drawingLineRemovePoint,
+  drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
+import {
+  drawingChangeLabel,
+  drawingPointAdd,
+} from 'fm3/actions/drawingPointActions';
+import { convertToDrawing } from 'fm3/actions/mainActions';
+import { RootState } from 'fm3/storeCreator';
+import produce from 'immer';
+import { isActionOf } from 'typesafe-actions';
 import { cleanState as routePlannerCleanState } from './routePlannerReducer';
 import { cleanState as trackViewerCleanState } from './trackViewerReducer';
-import {
-  drawingPointAdd,
-  drawingChangeLabel,
-} from 'fm3/actions/drawingPointActions';
-import turfFlatten from '@turf/flatten';
 
 export function globalReducer(state: RootState, action: RootAction): RootState {
   if (isActionOf(convertToDrawing, action)) {

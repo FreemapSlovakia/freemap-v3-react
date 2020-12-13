@@ -1,8 +1,5 @@
-import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
-
 import {
   BaseLayerDef,
   baseLayers,
@@ -11,7 +8,8 @@ import {
 } from 'fm3/mapDefinitions';
 // import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
-
+import { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import missingTile from '../images/missing-tile-256x256.png';
 
 export function Layers(): ReactElement {

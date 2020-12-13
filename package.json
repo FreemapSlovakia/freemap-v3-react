@@ -101,6 +101,7 @@
     "node-sass": "5.0.0",
     "optimize-css-assets-webpack-plugin": "5.0.4",
     "prettier": "2.2.1",
+    "prettier-plugin-organize-imports": "1.1.1",
     "raw-loader": "4.0.2",
     "redux-devtools-extension": "2.13.8",
     "sass-loader": "10.1.0",

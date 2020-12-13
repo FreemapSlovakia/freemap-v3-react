@@ -3,8 +3,8 @@ import {
   galleryShowFilter,
   GalleryUser,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 export const galleryFetchUsersProcessor: Processor = {

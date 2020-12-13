@@ -1,15 +1,15 @@
-import { useCallback, useState, useEffect, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { toggleLocate } from 'fm3/actions/mainActions';
+import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
+import { useMessages } from 'fm3/l10nInjector';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Card from 'react-bootstrap/Card';
-import { MapSwitchButton } from './MapSwitchButton';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { RootState } from 'fm3/storeCreator';
-import { useMessages } from 'fm3/l10nInjector';
-import { MapViewState, mapRefocus } from 'fm3/actions/mapActions';
-import { toggleLocate } from 'fm3/actions/mainActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { MapSwitchButton } from './MapSwitchButton';
 
 export function MapControls(): ReactElement | null {
   const m = useMessages();

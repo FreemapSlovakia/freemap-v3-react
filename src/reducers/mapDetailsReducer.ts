@@ -1,11 +1,11 @@
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
 import {
   mapDetailsSetSubtool,
-  mapDetailsSetUserSelectedPosition,
   mapDetailsSetTrackInfoPoints,
+  mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface MapDetailsState {
   userSelectedLat: number | null;

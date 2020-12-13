@@ -1,14 +1,14 @@
-import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import {
-  gallerySetItemForPositionPicking,
   galleryConfirmPickedPosition,
+  gallerySetItemForPositionPicking,
 } from 'fm3/actions/galleryActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function GalleryPositionPickingMenu(): ReactElement | null {
   const m = useMessages();

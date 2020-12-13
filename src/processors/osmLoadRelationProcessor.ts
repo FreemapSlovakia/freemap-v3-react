@@ -1,18 +1,17 @@
 import {
-  lineString,
-  point,
   Feature,
   featureCollection,
-  Point,
+  lineString,
   LineString,
+  point,
+  Point,
 } from '@turf/helpers';
-
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
+import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { OsmRelation, OsmResult } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
-import { OsmResult, OsmRelation } from 'fm3/types/common';
 
 export const osmLoadRelationProcessor: Processor = {
   actionCreator: osmLoadRelation,

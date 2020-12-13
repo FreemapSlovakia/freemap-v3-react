@@ -1,11 +1,11 @@
-import { CSSProperties, ReactElement } from 'react';
 import {
-  changesetsSetAuthorName,
   Changeset,
+  changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
-import { useDispatch, useSelector } from 'react-redux';
-import { RootState } from 'fm3/storeCreator';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { CSSProperties, ReactElement } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { changeset: Changeset };
 

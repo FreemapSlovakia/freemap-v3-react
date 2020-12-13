@@ -1,11 +1,10 @@
-import { ReactElement, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 

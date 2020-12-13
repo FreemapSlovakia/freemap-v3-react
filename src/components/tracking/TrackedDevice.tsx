@@ -1,11 +1,11 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { ReactElement, useCallback } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = {
   device: TrackedDeviceType;

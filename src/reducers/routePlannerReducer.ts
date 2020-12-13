@@ -1,34 +1,34 @@
-import produce from 'immer';
-import { LatLon } from 'fm3/types/common';
 import { RootAction } from 'fm3/actions';
-import { createReducer } from 'typesafe-actions';
 import {
   clearMap,
+  deleteFeature,
   selectFeature,
   setAppState,
-  deleteFeature,
 } from 'fm3/actions/mainActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
-  routePlannerSetParams,
-  routePlannerSetStart,
-  routePlannerSetFinish,
-  routePlannerSwapEnds,
-  routePlannerAddMidpoint,
-  routePlannerSetMidpoint,
-  routePlannerRemoveMidpoint,
-  routePlannerSetTransportType,
-  routePlannerSetMode,
-  routePlannerSetPickMode,
-  routePlannerToggleItineraryVisibility,
-  routePlannerSetResult,
-  routePlannerSetActiveAlternativeIndex,
-  routePlannerToggleMilestones,
   Alternative,
-  Waypoint,
   PickMode,
+  routePlannerAddMidpoint,
+  routePlannerRemoveMidpoint,
+  routePlannerSetActiveAlternativeIndex,
+  routePlannerSetFinish,
+  routePlannerSetMidpoint,
+  routePlannerSetMode,
+  routePlannerSetParams,
+  routePlannerSetPickMode,
+  routePlannerSetResult,
+  routePlannerSetStart,
+  routePlannerSetTransportType,
+  routePlannerSwapEnds,
+  routePlannerToggleItineraryVisibility,
+  routePlannerToggleMilestones,
+  Waypoint,
 } from 'fm3/actions/routePlannerActions';
 import { isSpecial, TransportType } from 'fm3/transportTypeDefs';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { LatLon } from 'fm3/types/common';
+import produce from 'immer';
+import { createReducer } from 'typesafe-actions';
 
 export type RouteMode = 'trip' | 'roundtrip' | 'route';
 

@@ -1,17 +1,15 @@
-import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
-import { useDispatch } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
+import FormCheck from 'react-bootstrap/FormCheck';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import FormCheck from 'react-bootstrap/FormCheck';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 

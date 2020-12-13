@@ -1,9 +1,9 @@
-import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
-import { smoothElevations, distance } from 'fm3/geoutils';
+import { distance, smoothElevations } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 
 export function TrackViewerDetails(): ReactElement | null {
   const m = useMessages();

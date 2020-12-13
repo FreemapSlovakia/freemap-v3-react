@@ -1,17 +1,17 @@
-import {
-  searchSetResults,
-  searchSetQuery,
-  searchSelectResult,
-} from 'fm3/actions/searchActions';
-import { clearMap } from 'fm3/actions/mainActions';
-import { parseCoordinates } from 'fm3/coordinatesParser';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
-import { LatLon } from 'fm3/types/common';
 import { point } from '@turf/helpers';
+import { clearMap } from 'fm3/actions/mainActions';
+import {
+  searchSelectResult,
+  searchSetQuery,
+  searchSetResults,
+} from 'fm3/actions/searchActions';
+import { httpRequest } from 'fm3/authAxios';
+import { parseCoordinates } from 'fm3/coordinatesParser';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { assertType } from 'typescript-is';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { LatLon } from 'fm3/types/common';
 import { GeoJsonObject } from 'geojson';
+import { assertType } from 'typescript-is';
 
 interface NominatimResult {
   osm_id: number;

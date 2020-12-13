@@ -1,17 +1,16 @@
-import { CSSProperties, ReactElement } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { Line } from 'react-chartjs-2';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import {
-  elevationChartSetActivePoint,
+  elevationChartClose,
   elevationChartRemoveActivePoint,
+  elevationChartSetActivePoint,
 } from 'fm3/actions/elevationChartActions';
 import { useMessages } from 'fm3/l10nInjector';
-
-import 'fm3/styles/elevationChart.scss';
 import { RootState } from 'fm3/storeCreator';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
+import 'fm3/styles/elevationChart.scss';
+import { CSSProperties, ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
+import { Line } from 'react-chartjs-2';
+import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 const styles: Record<string, CSSProperties> = {
   closeButtonStyle: { position: 'absolute', right: 0, marginRight: '10px' },

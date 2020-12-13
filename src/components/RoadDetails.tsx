@@ -1,12 +1,12 @@
-import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
 import { useMessages } from 'fm3/l10nInjector';
 import {
-  resolveTrackSurface,
-  resolveTrackClass,
   resolveBicycleTypeSuitableForTrack,
+  resolveTrackClass,
+  resolveTrackSurface,
 } from 'fm3/osmOntologyTools';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 
 type Props = {
   way: {

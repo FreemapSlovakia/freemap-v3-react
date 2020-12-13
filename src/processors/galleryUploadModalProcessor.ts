@@ -1,14 +1,14 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
-  gallerySetTags,
-  galleryShowUploadModal,
-  galleryShowFilter,
   galleryEditPicture,
+  gallerySetTags,
+  galleryShowFilter,
+  galleryShowUploadModal,
   GalleryTag,
 } from 'fm3/actions/galleryActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
-import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
 export const galleryUploadModalTransformer: Processor = {

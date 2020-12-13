@@ -1,6 +1,6 @@
 import { searchSelectResult } from 'fm3/actions/searchActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { geoJSON } from 'leaflet';
 
 export const searchHighlightProcessor: Processor<typeof searchSelectResult> = {

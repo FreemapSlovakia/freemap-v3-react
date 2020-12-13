@@ -1,8 +1,8 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapsCreate, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapDataFromState } from './mapsSaveProcessor';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
+import { getMapDataFromState } from './mapsSaveProcessor';
 
 export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
   actionCreator: mapsCreate,

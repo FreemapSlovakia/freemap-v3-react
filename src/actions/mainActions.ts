@@ -1,5 +1,5 @@
+import { AppState, LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
-import { LatLon, AppState } from 'fm3/types/common';
 
 export type Tool =
   | 'objects'

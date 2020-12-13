@@ -1,9 +1,9 @@
+import { RootState } from 'fm3/storeCreator';
+import { Feature } from 'geojson';
+import { LatLng, marker } from 'leaflet';
 import { ReactElement } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useSelector } from 'react-redux';
-import { RootState } from 'fm3/storeCreator';
-import { LatLng, marker } from 'leaflet';
-import { Feature } from 'geojson';
 import { createMarkerIcon } from './RichMarker';
 
 const ptl = (_: Feature, latLng: LatLng) =>

@@ -1,12 +1,12 @@
-import { ReactElement, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 export function TrackingMenu(): ReactElement {

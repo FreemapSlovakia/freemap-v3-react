@@ -1,22 +1,22 @@
-import { MyStore } from './storeCreator';
+import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import {
-  selectFeature,
-  setSelectingHomeLocation,
-  setActiveModal,
-  clearMap,
-  deleteFeature,
-} from './actions/mainActions';
-import { showGalleryViewer } from './selectors/mainSelectors';
-import {
+  galleryClear,
+  galleryEditPicture,
   galleryRequestImage,
   gallerySetItemForPositionPicking,
   galleryShowOnTheMap,
-  galleryEditPicture,
-  galleryClear,
 } from './actions/galleryActions';
-import { tipsShow } from './actions/tipsActions';
-import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import {
+  clearMap,
+  deleteFeature,
+  selectFeature,
+  setActiveModal,
+  setSelectingHomeLocation,
+} from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
+import { tipsShow } from './actions/tipsActions';
+import { showGalleryViewer } from './selectors/mainSelectors';
+import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
 
 let keyTimer: number | null = null;

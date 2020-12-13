@@ -1,35 +1,32 @@
-import { ReactElement, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import Slider from 'react-rangeslider';
-import 'react-rangeslider/lib/index.css';
-
 import {
+  saveSettings,
   setActiveModal,
   setSelectingHomeLocation,
-  saveSettings,
 } from 'fm3/actions/mainActions';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
-import { overlayLayers } from 'fm3/mapDefinitions';
 import { useMessages } from 'fm3/l10nInjector';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { overlayLayers } from 'fm3/mapDefinitions';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import Dropdown from 'react-bootstrap/Dropdown';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import FormControl from 'react-bootstrap/FormControl';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import FormCheck from 'react-bootstrap/FormCheck';
+import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
-import FormCheck from 'react-bootstrap/FormCheck';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Tooltip from 'react-bootstrap/Tooltip';
-import Tab from 'react-bootstrap/Tab';
+import Slider from 'react-rangeslider';
+import 'react-rangeslider/lib/index.css';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 

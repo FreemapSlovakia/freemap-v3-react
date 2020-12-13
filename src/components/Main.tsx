@@ -1,111 +1,93 @@
-import 'leaflet/dist/leaflet.css';
-
+import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import {
-  useEffect,
-  useCallback,
-  ReactElement,
-  useState,
-  MouseEvent,
-} from 'react';
-import { MapContainer, ScaleControl } from 'react-leaflet';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { useMessages } from 'fm3/l10nInjector';
-
-import { Layers } from 'fm3/components/Layers';
-import { Toasts } from 'fm3/components/Toasts';
-
-import { SearchMenu } from 'fm3/components/SearchMenu';
-import { SearchResults } from 'fm3/components/SearchResults';
-
-import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
-import { ObjectsResult } from 'fm3/components/ObjectsResult';
-
-import { DrawingMenu } from 'fm3/components/DrawingMenu';
-import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { LocationResult } from 'fm3/components/LocationResult';
-
-import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
-import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
-
-import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
-import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
-
-import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
-import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
-import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
-import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
-import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
-
-import { Copyright } from 'fm3/components/Copyright';
-import { MapControls } from 'fm3/components/MapControls';
-import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
-
-import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-
-import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
-import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
-
-import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
-
+  galleryAddItem,
+  GalleryItem,
+  galleryMergeItem,
+  galleryShowUploadModal,
+} from 'fm3/actions/galleryActions';
+import { deleteFeature, setActiveModal } from 'fm3/actions/mainActions';
+import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
+  trackViewerSetData,
+  trackViewerSetTrackUID,
+} from 'fm3/actions/trackViewerActions';
+import {
+  AsyncAboutModal,
+  AsyncDrawingEditLabelModal,
   AsyncElevationChart,
+  AsyncEmbedMapModal,
   AsyncExportGpxModal,
   AsyncExportPdfModal,
-  AsyncLoginModal,
   AsyncLegendModal,
   AsyncLegendOutdoorModal,
-  AsyncEmbedMapModal,
-  AsyncTipsModal,
-  AsyncAboutModal,
-  AsyncSupportUsModal,
-  AsyncTrackingModal,
-  AsyncDrawingEditLabelModal,
-  AsyncTrackViewerUploadModal,
+  AsyncLoginModal,
   AsyncSettingsModal,
+  AsyncSupportUsModal,
+  AsyncTipsModal,
+  AsyncTrackingModal,
+  AsyncTrackViewerUploadModal,
 } from 'fm3/components/AsyncComponents';
-
-import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
-import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
-
-import { setMapLeafletElement } from 'fm3/leafletElementHolder';
-
-import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
+import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
+import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
+import { Copyright } from 'fm3/components/Copyright';
+import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
+import { DrawingMenu } from 'fm3/components/DrawingMenu';
+import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
+import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
+import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
+import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
+import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
+import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
+import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
+import { Layers } from 'fm3/components/Layers';
+import { LocationResult } from 'fm3/components/LocationResult';
+import { MapControls } from 'fm3/components/MapControls';
+import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
+import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
+import { ObjectsResult } from 'fm3/components/ObjectsResult';
+import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
+import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
+import { SearchMenu } from 'fm3/components/SearchMenu';
+import { SearchResults } from 'fm3/components/SearchResults';
+import { Toasts } from 'fm3/components/Toasts';
 import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
-import { RootState } from 'fm3/storeCreator';
-import Leaflet from 'leaflet';
-
-import fmLogo from '../images/freemap-logo-print.png';
-import { useDropzone } from 'react-dropzone';
-import {
-  trackViewerSetTrackUID,
-  trackViewerSetData,
-} from 'fm3/actions/trackViewerActions';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
+import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
+import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
+import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
+import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useShareFile } from 'fm3/hooks/shareFileHook';
+import { useMessages } from 'fm3/l10nInjector';
+import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
   mouseCursorSelector,
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
-import {
-  GalleryItem,
-  galleryAddItem,
-  galleryMergeItem,
-  galleryShowUploadModal,
-} from 'fm3/actions/galleryActions';
-import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
-import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { GalleryModals } from './gallery/GalleryModals';
-import { MoreMenuButton } from './MoreMenuButton';
-import { ToolsMenuButton } from './ToolsMenuButton';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
+import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
-import { useShareFile } from 'fm3/hooks/shareFileHook';
-import { MapsMenu } from './MapsMenu';
-import { WikiLayer } from './WikiLayer';
+import Leaflet from 'leaflet';
+import 'leaflet/dist/leaflet.css';
+import {
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
+import { useDropzone } from 'react-dropzone';
+import { MapContainer, ScaleControl } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
+import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
+import fmLogo from '../images/freemap-logo-print.png';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
+import { GalleryModals } from './gallery/GalleryModals';
+import { MapsMenu } from './MapsMenu';
+import { MoreMenuButton } from './MoreMenuButton';
+import { ToolsMenuButton } from './ToolsMenuButton';
+import { WikiLayer } from './WikiLayer';
 
 const embed = window.self !== window.top;
 

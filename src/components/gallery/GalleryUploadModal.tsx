@@ -1,30 +1,27 @@
-import { ReactElement, useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { useDispatch, useSelector } from 'react-redux';
-
 import {
   galleryAddItem,
-  galleryRemoveItem,
-  galleryMergeItem,
-  gallerySetItemForPositionPicking,
-  galleryUpload,
   galleryHideUploadModal,
-  galleryToggleShowPreview,
   GalleryItem,
+  galleryMergeItem,
+  galleryRemoveItem,
+  gallerySetItemForPositionPicking,
+  galleryToggleShowPreview,
+  galleryUpload,
 } from 'fm3/actions/galleryActions';
-
 import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { useMessages } from 'fm3/l10nInjector';
+import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { PictureModel } from './GalleryEditForm';
-import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDropzone } from 'react-dropzone';
+import { useDispatch, useSelector } from 'react-redux';
+import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { PictureModel } from './GalleryEditForm';
 
 type Props = { show: boolean };
 

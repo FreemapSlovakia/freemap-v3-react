@@ -1,16 +1,16 @@
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
-  lineString,
-  point,
-  polygon,
   Feature,
   FeatureCollection,
   Geometries,
+  lineString,
+  point,
+  polygon,
 } from '@turf/helpers';
+import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 const fmMapserverUrl =

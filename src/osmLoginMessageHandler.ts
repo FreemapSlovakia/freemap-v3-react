@@ -1,6 +1,5 @@
-import qs from 'query-string';
-
 import { authLoginWithOsm2 } from 'fm3/actions/authActions';
+import qs from 'query-string';
 import { MyStore } from './storeCreator';
 
 export function attachOsmLoginMessageHandler(store: MyStore): void {

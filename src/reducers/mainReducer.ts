@@ -1,28 +1,28 @@
-import { LatLon } from 'fm3/types/common';
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
+import { authLogout, authSetUser } from 'fm3/actions/authActions';
+import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
 import {
-  setAppState,
+  clearMap,
+  deleteFeature,
+  enableUpdatingUrl,
+  selectFeature,
+  Selection,
   setActiveModal,
+  setAppState,
+  setEmbedFeatures,
+  setErrorTicketId,
+  setExpertMode,
   setHomeLocation,
+  setLocation,
+  setSelectingHomeLocation,
   startProgress,
   stopProgress,
-  setLocation,
-  setExpertMode,
-  setSelectingHomeLocation,
-  enableUpdatingUrl,
-  setErrorTicketId,
-  setEmbedFeatures,
   toggleLocate,
-  selectFeature,
-  deleteFeature,
-  Selection,
-  clearMap,
 } from 'fm3/actions/mainActions';
-import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
-import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
+import { LatLon } from 'fm3/types/common';
+import { createReducer } from 'typesafe-actions';
 
 interface Location extends LatLon {
   accuracy: number;

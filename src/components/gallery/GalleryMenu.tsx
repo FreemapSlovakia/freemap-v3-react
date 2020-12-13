@@ -1,21 +1,18 @@
-import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { useMessages } from 'fm3/l10nInjector';
-
 import {
-  galleryShowFilter,
-  galleryShowUploadModal,
   galleryList,
   GalleryListOrder,
+  galleryShowFilter,
+  galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { is } from 'typescript-is';
+import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { is } from 'typescript-is';
 
 export function GalleryMenu(): ReactElement {
   const m = useMessages();

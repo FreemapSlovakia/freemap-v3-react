@@ -1,8 +1,8 @@
-import { Tooltip, CircleMarker } from 'react-leaflet';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { TrackPoint } from 'fm3/types/trackingTypes';
 import { toLatLng } from 'fm3/geoutils';
+import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, memo, useCallback } from 'react';
+import { CircleMarker, Tooltip } from 'react-leaflet';
 
 interface TrackingPointProps {
   tp: TrackPoint;

@@ -1,18 +1,17 @@
-import { Fragment, ReactElement, useState } from 'react';
-import { useSelector } from 'react-redux';
-import { Tooltip, Polyline } from 'react-leaflet';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { Hotline } from 'fm3/components/Hotline';
 // import turfLineSlice from '@turf/line-slice';
 // import turfLength from '@turf/length';
 import turfFlatten from '@turf/flatten';
-import { Feature, Properties, LineString, Point } from '@turf/helpers';
+import { Feature, LineString, Point, Properties } from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
-
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { Hotline } from 'fm3/components/Hotline';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { distance, smoothElevations } from 'fm3/geoutils';
-import { Point as LPoint } from 'leaflet';
 import { RootState } from 'fm3/storeCreator';
+import { Point as LPoint } from 'leaflet';
+import { Fragment, ReactElement, useState } from 'react';
+import { Polyline, Tooltip } from 'react-leaflet';
+import { useSelector } from 'react-redux';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString, Properties>[];

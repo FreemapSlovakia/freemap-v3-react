@@ -1,14 +1,12 @@
-import { ReactElement, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import legend from 'fm3/legend/index.json';
+import { ReactElement, useCallback } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import Modal from 'react-bootstrap/Modal';
-import Accordion from 'react-bootstrap/Accordion';
+import { useDispatch } from 'react-redux';
 
 interface LegendItem {
   n: string;

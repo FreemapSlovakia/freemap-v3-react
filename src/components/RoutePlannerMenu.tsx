@@ -1,36 +1,33 @@
-import { useMemo, useCallback, ReactElement, MouseEvent } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { useMessages } from 'fm3/l10nInjector';
-
+import { convertToDrawing, setActiveModal } from 'fm3/actions/mainActions';
 import {
-  routePlannerSetStart,
+  PickMode,
+  RouteAlternativeExtra,
+  routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
-  routePlannerSetTransportType,
+  routePlannerSetFromCurrentPosition,
   routePlannerSetMode,
   routePlannerSetPickMode,
+  routePlannerSetStart,
+  routePlannerSetTransportType,
+  routePlannerSwapEnds,
   // routePlannerToggleItineraryVisibility,
   routePlannerToggleElevationChart,
-  routePlannerSetActiveAlternativeIndex,
-  routePlannerSwapEnds,
-  routePlannerSetFromCurrentPosition,
   routePlannerToggleMilestones,
-  RouteAlternativeExtra,
-  PickMode,
   RoutingMode,
 } from 'fm3/actions/routePlannerActions';
-import { setActiveModal, convertToDrawing } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
+import { MouseEvent, ReactElement, useCallback, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import FormCheck from 'react-bootstrap/FormCheck';
-import { Messages } from 'fm3/translations/messagesInterface';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();

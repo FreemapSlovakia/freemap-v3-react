@@ -1,17 +1,16 @@
-import { useCallback, useMemo, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Tooltip, useMapEvent } from 'react-leaflet';
-
 import {
   drawingPointAdd,
   drawingPointChangePosition,
+  drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
-import { RichMarker } from 'fm3/components/RichMarker';
-import { RootState } from 'fm3/storeCreator';
-import { Point, DragEndEvent, LeafletMouseEvent } from 'leaflet';
 import { selectFeature } from 'fm3/actions/mainActions';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { RootState } from 'fm3/storeCreator';
+import { DragEndEvent, LeafletMouseEvent, Point } from 'leaflet';
+import { ReactElement, useCallback, useMemo } from 'react';
+import { Tooltip, useMapEvent } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();

@@ -1,28 +1,26 @@
-import {
-  useState,
-  useMemo,
-  useCallback,
-  ReactElement,
-  ChangeEvent,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import Slider from 'react-rangeslider';
-import 'react-rangeslider/lib/index.css';
-
+import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
+import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { colors } from 'fm3/constants';
+import {
+  ChangeEvent,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import FormCheck from 'react-bootstrap/FormCheck';
 import FormControl from 'react-bootstrap/FormControl';
-import Alert from 'react-bootstrap/Alert';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
-import FormCheck from 'react-bootstrap/FormCheck';
+import Slider from 'react-rangeslider';
+import 'react-rangeslider/lib/index.css';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 

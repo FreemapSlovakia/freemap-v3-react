@@ -1,6 +1,6 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 let prevMapType: string | undefined;
 let prevOverlays: string[] = [];

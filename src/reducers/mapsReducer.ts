@@ -1,6 +1,6 @@
 import { RootAction } from 'fm3/actions';
+import { MapMeta, mapsLoad, mapsSetList } from 'fm3/actions/mapsActions';
 import { createReducer } from 'typesafe-actions';
-import { MapMeta, mapsSetList, mapsLoad } from 'fm3/actions/mapsActions';
 
 export interface MapsState {
   maps: MapMeta[];

@@ -1,18 +1,17 @@
-import { useState, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import {
+  changesetsSetAuthorName,
+  changesetsSetDays,
+} from 'fm3/actions/changesetsActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
-
-import {
-  changesetsSetDays,
-  changesetsSetAuthorName,
-} from 'fm3/actions/changesetsActions';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function ChangesetsMenu(): ReactElement {
   const m = useMessages();

@@ -1,3 +1,11 @@
+import { convertToDrawing } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { objectsSetFilter } from 'fm3/actions/objectsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { RootState } from 'fm3/storeCreator';
 import {
   ChangeEvent,
   Fragment,
@@ -5,21 +13,10 @@ import {
   useCallback,
   useState,
 } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { objectsSetFilter } from 'fm3/actions/objectsActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
-import { convertToDrawing } from 'fm3/actions/mainActions';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import FormControl from 'react-bootstrap/FormControl';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function ObjectsMenu(): ReactElement {
   const m = useMessages();

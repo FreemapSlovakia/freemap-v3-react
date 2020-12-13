@@ -1,5 +1,5 @@
-import { storage } from 'fm3/storage';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { storage } from 'fm3/storage';
 import { User } from 'fm3/types/common';
 
 let prevUser: User | null = null;

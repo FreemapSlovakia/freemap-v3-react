@@ -1,8 +1,8 @@
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import { galleryPreventLayerHint } from 'fm3/actions/galleryActions';
-import { storage } from 'fm3/storage';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { storage } from 'fm3/storage';
 
 export const galleryShowLayerHintProcessor: Processor = {
   actionCreator: selectFeature,

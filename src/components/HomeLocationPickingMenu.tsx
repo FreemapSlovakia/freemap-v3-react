@@ -1,12 +1,10 @@
-import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
 import { setSelectingHomeLocation } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();

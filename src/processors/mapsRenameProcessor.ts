@@ -1,6 +1,6 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapsRename, mapsLoadList } from 'fm3/actions/mapsActions';
+import { mapsLoadList, mapsRename } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const mapsRenameProcessor: Processor<typeof mapsRename> = {
   actionCreator: mapsRename,

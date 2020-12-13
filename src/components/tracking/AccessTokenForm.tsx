@@ -1,18 +1,17 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { FormEvent, ReactElement, useState } from 'react';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { FormEvent, ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();

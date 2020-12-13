@@ -1,13 +1,13 @@
-import { Fragment, ReactElement, useCallback } from 'react';
+import { GalleryTag } from 'fm3/actions/galleryActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import 'fm3/styles/react-tag-autocomplete.css';
 import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
-import { GalleryTag } from 'fm3/actions/galleryActions';
 import spinnerbar from 'fm3/images/spinnerbar.gif';
+import 'fm3/styles/react-tag-autocomplete.css';
 import { Messages } from 'fm3/translations/messagesInterface';
+import { Fragment, ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 
 interface Props {

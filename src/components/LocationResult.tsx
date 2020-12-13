@@ -1,8 +1,8 @@
-import { ReactElement } from 'react';
-import { useSelector } from 'react-redux';
-import { Circle } from 'react-leaflet';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import { Circle } from 'react-leaflet';
+import { useSelector } from 'react-redux';
 
 export function LocationResult(): ReactElement | null {
   const gpsLocation = useSelector((state: RootState) => state.main.location);

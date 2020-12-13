@@ -1,15 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useEffect, ReactElement } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { Device } from './Device';
-import { RootState } from 'fm3/storeCreator';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
-import Button from 'react-bootstrap/Button';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useEffect } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
+import { useDispatch, useSelector } from 'react-redux';
+import { Device } from './Device';
 
 export function Devices(): ReactElement {
   const m = useMessages();

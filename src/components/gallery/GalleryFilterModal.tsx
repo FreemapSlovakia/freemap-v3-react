@@ -1,25 +1,24 @@
 import {
-  useState,
-  useEffect,
-  useCallback,
-  ReactElement,
-  FormEvent,
-  ChangeEvent,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { useMessages } from 'fm3/l10nInjector';
-import {
-  gallerySetFilter,
   galleryHideFilter,
+  gallerySetFilter,
 } from 'fm3/actions/galleryActions';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 type Props = { show: boolean };

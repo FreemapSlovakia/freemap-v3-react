@@ -1,21 +1,18 @@
-import { ReactElement, useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { useDropzone } from 'react-dropzone';
-
-import { useMessages } from 'fm3/l10nInjector';
-
+import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from 'fm3/actions/trackViewerActions';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import 'fm3/styles/trackViewer.scss';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useMessages } from 'fm3/l10nInjector';
+import 'fm3/styles/trackViewer.scss';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useDropzone } from 'react-dropzone';
+import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = { show: boolean };

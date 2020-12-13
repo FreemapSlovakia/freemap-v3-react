@@ -1,22 +1,20 @@
-import { shallowEqual, useDispatch, useSelector } from 'react-redux';
-import { FormEvent, ReactElement, useState } from 'react';
-import { DateTime } from 'fm3/components/DateTime';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { selectFeature } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { DateTime } from 'fm3/components/DateTime';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { TrackedDevice } from 'fm3/types/trackingTypes';
+import { FormEvent, ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-
-import { RootState } from 'fm3/storeCreator';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 export function TrackedDeviceForm(): ReactElement {
   const m = useMessages();

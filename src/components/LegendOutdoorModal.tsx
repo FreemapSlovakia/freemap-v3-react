@@ -1,16 +1,15 @@
 import axios from 'axios';
-import { ReactElement, useCallback, useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { RootState } from 'fm3/storeCreator';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
-import Accordion from 'react-bootstrap/Accordion';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 

@@ -1,9 +1,9 @@
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import {
   l10nSetChosenLanguage,
   l10nSetLanguage,
 } from 'fm3/actions/l10nActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface L10nState {
   chosenLanguage: string | null;

@@ -1,10 +1,10 @@
-import { ReactElement, useCallback, useRef, useState } from 'react';
 import { useMessages } from 'fm3/l10nInjector';
-import Button from 'react-bootstrap/Button';
-import Popover from 'react-bootstrap/Popover';
 import { LatLon } from 'fm3/types/common';
+import { ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Overlay, { Placement } from 'react-bootstrap/esm/Overlay';
+import Popover from 'react-bootstrap/Popover';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
-import { Placement } from 'react-bootstrap/esm/Overlay';
 
 interface Props extends LatLon {
   lat: number;

@@ -1,17 +1,16 @@
-import { ChangeEvent, ReactElement, useCallback } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import ReactTags, { Tag } from 'react-tag-autocomplete';
-import 'fm3/styles/react-tag-autocomplete.css';
-
-import { DateTime } from '../DateTime';
 import { GalleryTag } from 'fm3/actions/galleryActions';
-import { Messages } from 'fm3/translations/messagesInterface';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { getMessageByKey } from 'fm3/l10nInjector';
-import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
+import 'fm3/styles/react-tag-autocomplete.css';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
+import InputGroup from 'react-bootstrap/InputGroup';
+import ReactTags, { Tag } from 'react-tag-autocomplete';
+import { DateTime } from '../DateTime';
 
 export interface PictureModel {
   title: string;

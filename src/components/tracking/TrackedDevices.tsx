@@ -1,15 +1,15 @@
-import { useSelector, useDispatch } from 'react-redux';
-import { ReactElement } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { TrackedDevice } from './TrackedDevice';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import Button from 'react-bootstrap/Button';
+import { ReactElement } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
+import { useDispatch, useSelector } from 'react-redux';
+import { TrackedDevice } from './TrackedDevice';
 
 export function TrackedDevices(): ReactElement {
   const m = useMessages();

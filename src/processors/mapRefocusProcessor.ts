@@ -1,6 +1,6 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const mapRefocusProcessor: Processor = {
   actionCreator: mapRefocus,

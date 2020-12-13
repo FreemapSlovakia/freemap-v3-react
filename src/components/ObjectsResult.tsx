@@ -1,13 +1,12 @@
-import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import { Popup } from 'react-leaflet';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-import { getPoiType } from 'fm3/poiTypes';
-import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { useMessages } from 'fm3/l10nInjector';
+import { getPoiType } from 'fm3/poiTypes';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import { Popup } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function ObjectsResult(): ReactElement {
   const m = useMessages();

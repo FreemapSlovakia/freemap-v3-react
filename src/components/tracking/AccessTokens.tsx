@@ -1,14 +1,14 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { ReactElement, useEffect } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import Button from 'react-bootstrap/Button';
+import { ReactElement, useEffect } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();

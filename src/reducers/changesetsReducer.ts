@@ -1,12 +1,12 @@
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
 import {
-  changesetsSetDays,
-  changesetsSetAuthorName,
-  changesetsSet,
   Changeset,
+  changesetsSet,
+  changesetsSetAuthorName,
+  changesetsSetDays,
 } from 'fm3/actions/changesetsActions';
+import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface ChangesetsState {
   changesets: Changeset[];

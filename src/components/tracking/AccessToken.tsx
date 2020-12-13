@@ -1,15 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { ReactElement, useCallback } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { AccessToken as AccessTokenType } from 'fm3/types/trackingTypes';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
 
 type Props = {

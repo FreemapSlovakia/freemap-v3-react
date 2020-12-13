@@ -1,13 +1,12 @@
-import queryString from 'query-string';
-
 import { BaseLayerLetters, overlayLetters } from 'fm3/mapDefinitions';
 import {
-  getTrasformedParamsIfIsOldFreemapUrl,
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
+  getTrasformedParamsIfIsOldFreemapUrl,
 } from 'fm3/oldFreemapUtils';
 import { Location } from 'history';
-import { MapViewState } from './actions/mapActions';
+import queryString from 'query-string';
 import { is } from 'typescript-is';
+import { MapViewState } from './actions/mapActions';
 
 export function getMapStateFromUrl(
   location: Location,

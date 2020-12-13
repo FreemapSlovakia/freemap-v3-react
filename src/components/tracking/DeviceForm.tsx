@@ -1,19 +1,18 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { FormEvent, ReactElement, useCallback, useState } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { FormEvent, ReactElement, useCallback, useState } from 'react';
 import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import InputGroup from 'react-bootstrap/InputGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-
-import { useMessages } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
+import { useDispatch, useSelector } from 'react-redux';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',

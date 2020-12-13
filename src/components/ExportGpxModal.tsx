@@ -1,18 +1,17 @@
-import { useState, useCallback, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
-  setActiveModal,
-  exportGpx,
   Destination,
+  exportGpx,
+  setActiveModal,
 } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import Button from 'react-bootstrap/Button';
+import { ReactElement, useCallback, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
-import Modal from 'react-bootstrap/Modal';
+import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },

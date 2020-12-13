@@ -1,12 +1,12 @@
-import { createReducer } from 'typesafe-actions';
+import { RootAction } from 'fm3/actions';
 import {
+  wikiLoadPreview,
   WikiPoint,
+  WikiPreview,
   wikiSetPoints,
   wikiSetPreview,
-  wikiLoadPreview,
-  WikiPreview,
 } from 'fm3/actions/wikiActions';
-import { RootAction } from 'fm3/actions';
+import { createReducer } from 'typesafe-actions';
 
 export interface WikiState {
   points: WikiPoint[];

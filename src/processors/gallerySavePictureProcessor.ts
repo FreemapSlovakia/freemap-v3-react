@@ -1,11 +1,11 @@
 import {
   galleryRequestImage,
-  gallerySetLayerDirty,
   gallerySavePicture,
+  gallerySetLayerDirty,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const gallerySavePictureProcessor: Processor = {
   actionCreator: gallerySavePicture,

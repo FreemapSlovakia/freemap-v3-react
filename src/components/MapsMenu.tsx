@@ -1,20 +1,18 @@
-import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import { useMessages } from 'fm3/l10nInjector';
+import { deleteFeature } from 'fm3/actions/mainActions';
 import {
   mapsCreate,
+  mapsLoad,
   mapsRename,
   mapsSave,
-  mapsLoad,
 } from 'fm3/actions/mapsActions';
-import { deleteFeature } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function MapsMenu(): ReactElement {
   const m = useMessages();

@@ -1,6 +1,6 @@
 import {
-  trackViewerSetData,
   trackViewerDownloadTrack,
+  trackViewerSetData,
 } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';

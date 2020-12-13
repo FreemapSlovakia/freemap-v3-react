@@ -1,21 +1,16 @@
-import { useCallback, ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import { lineString } from '@turf/helpers';
-
-import { useMessages } from 'fm3/l10nInjector';
-
-import { selectFeature, Tool } from 'fm3/actions/mainActions';
-
 import {
-  elevationChartSetTrackGeojson,
   elevationChartClose,
+  elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-
+import { selectFeature, setActiveModal, Tool } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { setActiveModal } from 'fm3/actions/mainActions';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function DrawingMenu(): ReactElement {
   const dispatch = useDispatch();

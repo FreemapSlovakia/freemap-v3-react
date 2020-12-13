@@ -1,22 +1,21 @@
 import FileSaver from 'file-saver';
+import { Picture } from 'fm3/actions/galleryActions';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
+import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { addAttribute, createElement, GPX_NS } from 'fm3/gpxExporter';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import qs from 'query-string';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { LatLon } from 'fm3/types/common';
-import { ObjectsState } from 'fm3/reducers/objectsReducer';
-import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
+import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
+import { ObjectsState } from 'fm3/reducers/objectsReducer';
+import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { getAuth2, loadGapi } from 'fm3/gapiLoader';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { LatLon, StringDates } from 'fm3/types/common';
+import qs from 'query-string';
 import { assertType } from 'typescript-is';
-import { StringDates } from 'fm3/types/common';
-import { Picture } from 'fm3/actions/galleryActions';
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,

@@ -1,6 +1,6 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { setErrorTicketId } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const errorProcessor: Processor<typeof setErrorTicketId> = {
   actionCreator: setErrorTicketId,

@@ -1,27 +1,27 @@
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
-  routePlannerSetResult,
-  routePlannerPreventHint,
-  routePlannerSetStart,
-  routePlannerSetFinish,
-  routePlannerSwapEnds,
+  Alternative,
   routePlannerAddMidpoint,
-  routePlannerSetMidpoint,
+  routePlannerPreventHint,
   routePlannerRemoveMidpoint,
-  routePlannerSetTransportType,
+  routePlannerSetFinish,
+  routePlannerSetMidpoint,
   routePlannerSetMode,
   routePlannerSetParams,
-  Alternative,
+  routePlannerSetResult,
+  routePlannerSetStart,
+  routePlannerSetTransportType,
+  routePlannerSwapEnds,
   Step,
   Waypoint,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { storage } from 'fm3/storage';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { storage } from 'fm3/storage';
+import { transportTypeDefs } from 'fm3/transportTypeDefs';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
-import { transportTypeDefs } from 'fm3/transportTypeDefs';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 
 const updateRouteTypes = [
   routePlannerSetStart,

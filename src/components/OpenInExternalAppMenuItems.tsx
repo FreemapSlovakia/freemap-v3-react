@@ -1,17 +1,17 @@
+import bbox from '@turf/bbox';
+import buffer from '@turf/buffer';
+import { point } from '@turf/helpers';
 import axios from 'axios';
-import { ReactElement, useCallback } from 'react';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { loadFb } from 'fm3/fbLoader';
 import { useMessages } from 'fm3/l10nInjector';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { LatLon } from 'fm3/types/common';
 import { CRS } from 'leaflet';
-import qs, { StringifiableRecord } from 'query-string';
-import buffer from '@turf/buffer';
-import bbox from '@turf/bbox';
-import { point } from '@turf/helpers';
-import { loadFb } from 'fm3/fbLoader';
 import popupCentered from 'popup-centered';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
+import qs, { StringifiableRecord } from 'query-string';
+import { ReactElement, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 interface Props extends LatLon {
   lat: number;

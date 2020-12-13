@@ -1,9 +1,9 @@
-import { toggleLocate, setLocation } from 'fm3/actions/mainActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { setLocation, toggleLocate } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { LatLng } from 'leaflet';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { LatLng } from 'leaflet';
 
 let watch: number | undefined;
 

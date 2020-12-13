@@ -2,15 +2,15 @@ import { Feature, LineString } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
-  drawingLineUpdatePoint,
   drawingLineRemovePoint,
+  drawingLineUpdatePoint,
 } from 'fm3/actions/drawingLineActions';
 import {
+  elevationChartClose,
   elevationChartRemoveActivePoint,
   elevationChartSetActivePoint,
   elevationChartSetElevationProfile,
   elevationChartSetTrackGeojson,
-  elevationChartClose,
 } from 'fm3/actions/elevationChartActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { routePlannerSetResult } from 'fm3/actions/routePlannerActions';

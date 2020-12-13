@@ -1,19 +1,16 @@
-import { ReactElement, useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
+import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 import {
   AsyncGalleryFilterModal,
-  AsyncGalleryViewerModal,
   AsyncGalleryUploadModal,
+  AsyncGalleryViewerModal,
 } from 'fm3/components/AsyncComponents';
-
-import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-import { RootState } from 'fm3/storeCreator';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { showGalleryViewer as shouldShowGalleryViewer } from 'fm3/selectors/mainSelectors';
-
+import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/gallery.scss';
 import { LeafletMouseEvent } from 'leaflet';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { ReactElement, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
 export function GalleryModals(): ReactElement {
   const dispatch = useDispatch();

@@ -1,32 +1,27 @@
-import { ReactElement, useCallback } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { useMessages } from 'fm3/l10nInjector';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
 import {
-  setActiveModal,
   clearMap,
   convertToDrawing,
+  setActiveModal,
 } from 'fm3/actions/mainActions';
-import {
-  trackViewerUploadTrack,
-  trackViewerColorizeTrackBy,
-  trackViewerToggleElevationChart,
-  ColorizingMode,
-  trackViewerSetData,
-} from 'fm3/actions/trackViewerActions';
-
-import { RootState } from 'fm3/storeCreator';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { getType } from 'typesafe-actions';
-
+import {
+  ColorizingMode,
+  trackViewerColorizeTrackBy,
+  trackViewerSetData,
+  trackViewerToggleElevationChart,
+  trackViewerUploadTrack,
+} from 'fm3/actions/trackViewerActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/trackViewer.scss';
-import { assertType } from 'typescript-is';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
+import { getType } from 'typesafe-actions';
+import { assertType } from 'typescript-is';
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();

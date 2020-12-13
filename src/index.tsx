@@ -1,36 +1,30 @@
-import 'font-awesome/scss/font-awesome.scss';
-import 'fm3/styles/index.scss';
-
-import { setDefaultGetErrorObject } from 'typescript-is';
-import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
-import 'fullscreen-api-polyfill';
-import { render } from 'react-dom';
-import { Provider } from 'react-redux';
-
-import { Main } from 'fm3/components/Main';
-import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
-
+// import { errorSetError } from 'fm3/actions/errorActions';
+import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import {
   enableUpdatingUrl,
   setAppState,
   setEmbedFeatures,
 } from 'fm3/actions/mainActions';
-// import { errorSetError } from 'fm3/actions/errorActions';
-import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
-
+import { ErrorCatcher } from 'fm3/components/ErrorCatcher';
+import { Main } from 'fm3/components/Main';
+import 'fm3/fbLoader';
+import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
+import 'fm3/googleAnalytics';
 import { history } from 'fm3/historyHolder';
+import { attachKeyboardHandler } from 'fm3/keyboardHandler';
 import { handleLocationChange } from 'fm3/locationChangeHandler';
 import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
-import { attachKeyboardHandler } from 'fm3/keyboardHandler';
-import 'fm3/googleAnalytics';
-import 'fm3/fbLoader';
-import { createReduxStore } from 'fm3/storeCreator';
 import { storage } from 'fm3/storage';
-
-import { authInit, authCheckLogin } from './actions/authActions';
-import { assertType } from 'typescript-is';
-import { AppState } from './types/common';
+import { createReduxStore } from 'fm3/storeCreator';
+import 'fm3/styles/index.scss';
+import 'font-awesome/scss/font-awesome.scss';
+import 'fullscreen-api-polyfill';
+import { render } from 'react-dom';
+import { Provider } from 'react-redux';
+import { assertType, setDefaultGetErrorObject } from 'typescript-is';
+import { authCheckLogin, authInit } from './actions/authActions';
 import { MessagesProvider } from './components/TranslationProvider';
+import { AppState } from './types/common';
 
 setDefaultGetErrorObject(() => null);
 

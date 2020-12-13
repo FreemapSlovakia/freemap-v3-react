@@ -1,15 +1,15 @@
-import { createReducer } from 'typesafe-actions';
+import { RootAction } from 'fm3/actions';
+import { authSetUser } from 'fm3/actions/authActions';
+import { selectFeature, Selection, setAppState } from 'fm3/actions/mainActions';
 import {
-  MapStateBase,
   mapRefocus,
   mapReset,
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
+  MapStateBase,
 } from 'fm3/actions/mapActions';
-import { RootAction } from 'fm3/actions';
-import { authSetUser } from 'fm3/actions/authActions';
-import { selectFeature, setAppState, Selection } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;

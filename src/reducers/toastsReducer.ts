@@ -1,10 +1,10 @@
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import {
+  ResolvedToast,
   toastsAdd,
   toastsRemove,
-  ResolvedToast,
 } from 'fm3/actions/toastsActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface ToastsState {
   toasts: ResolvedToast[];

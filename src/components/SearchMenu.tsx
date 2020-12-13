@@ -1,35 +1,34 @@
-import 'fm3/styles/search.scss';
-import {
-  useCallback,
-  useState,
-  useEffect,
-  useRef,
-  MouseEvent,
-  ReactElement,
-  FocusEvent,
-  ChangeEvent,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import {
-  searchSetQuery,
-  searchSelectResult,
-  searchSetResults,
-} from 'fm3/actions/searchActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import {
-  routePlannerSetStart,
   routePlannerSetFinish,
+  routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
+import {
+  searchSelectResult,
+  searchSetQuery,
+  searchSetResults,
+} from 'fm3/actions/searchActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import 'fm3/styles/search.scss';
+import {
+  ChangeEvent,
+  FocusEvent,
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
-import Form from 'react-bootstrap/Form';
-import InputGroup from 'react-bootstrap/InputGroup';
-import FormControl from 'react-bootstrap/FormControl';
-
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
+import Form from 'react-bootstrap/Form';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
+import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = {
   hidden?: boolean;

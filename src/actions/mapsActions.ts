@@ -1,12 +1,12 @@
+import { MapState } from 'fm3/reducers/mapReducer';
+import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
+import { TrackingState } from 'fm3/reducers/trackingReducer';
+import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
 import { createAction } from 'typesafe-actions';
 import { Line } from './drawingLineActions';
-import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { ObjectsResult } from './objectsActions';
-import { GalleryFilter } from './galleryActions';
 import { DrawingPoint } from './drawingPointActions';
-import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { MapState } from 'fm3/reducers/mapReducer';
+import { GalleryFilter } from './galleryActions';
+import { ObjectsResult } from './objectsActions';
 
 export interface MapMeta {
   id: number;

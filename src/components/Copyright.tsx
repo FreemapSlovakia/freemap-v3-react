@@ -1,15 +1,14 @@
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Popover from 'react-bootstrap/Popover';
-
+import { useDispatch, useSelector } from 'react-redux';
 import { Attribution } from './Attribution';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { RootState } from 'fm3/storeCreator';
-import { useMessages } from 'fm3/l10nInjector';
-import { setActiveModal } from 'fm3/actions/mainActions';
 
 export function Copyright(): ReactElement {
   const m = useMessages();

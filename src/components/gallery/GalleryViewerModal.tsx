@@ -1,52 +1,47 @@
 /* eslint-disable react/display-name */
 
 import {
-  useCallback,
-  ReactElement,
-  useRef,
-  useState,
-  useEffect,
-  FormEvent,
-  Fragment,
-  ChangeEvent,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-import ReactStars from 'react-stars';
-
-import { useMessages } from 'fm3/l10nInjector';
-
+  galleryClear,
+  galleryDeletePicture,
+  galleryEditPicture,
+  galleryRequestImage,
+  gallerySavePicture,
+  gallerySetComment,
+  gallerySetEditModel,
+  gallerySetItemForPositionPicking,
+  galleryShowOnTheMap,
+  gallerySubmitComment,
+  gallerySubmitStars,
+} from 'fm3/actions/galleryActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
-
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import {
-  galleryClear,
-  galleryRequestImage,
-  galleryShowOnTheMap,
-  gallerySetComment,
-  gallerySubmitComment,
-  gallerySubmitStars,
-  galleryEditPicture,
-  galleryDeletePicture,
-  gallerySetEditModel,
-  gallerySavePicture,
-  gallerySetItemForPositionPicking,
-} from 'fm3/actions/galleryActions';
-
-import 'fm3/styles/gallery.scss';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { getType } from 'typesafe-actions';
-import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
+import 'fm3/styles/gallery.scss';
+import {
+  ChangeEvent,
+  FormEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import Badge from 'react-bootstrap/Badge';
 import Button from 'react-bootstrap/Button';
-import InputGroup from 'react-bootstrap/InputGroup';
 import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
-import Badge from 'react-bootstrap/Badge';
+import { useDispatch, useSelector } from 'react-redux';
+import ReactStars from 'react-stars';
+import { getType } from 'typesafe-actions';
+import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 
 type Props = { show: boolean };
 

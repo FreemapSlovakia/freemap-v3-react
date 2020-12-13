@@ -1,22 +1,21 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useState, useRef, useCallback, ReactElement } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import tips from 'fm3/tips/index.json';
-import { useMessages } from 'fm3/l10nInjector';
-
-import { setActiveModal } from 'fm3/actions/mainActions';
 import {
-  authStartLogout,
   authChooseLoginMethod,
+  authStartLogout,
 } from 'fm3/actions/authActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
+import tips from 'fm3/tips/index.json';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
-import Dropdown from 'react-bootstrap/Dropdown';
+import { useDispatch, useSelector } from 'react-redux';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
 export function MoreMenuButton(): ReactElement {
   const user = useSelector((state: RootState) => state.auth.user);

@@ -1,24 +1,21 @@
-import {
-  useState,
-  useEffect,
-  useCallback,
-  useMemo,
-  ReactElement,
-  FormEvent,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import tips from 'fm3/tips/index.json';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
+import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import tips from 'fm3/tips/index.json';
+import {
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
 import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
 

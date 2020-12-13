@@ -1,11 +1,11 @@
-import { Middleware, Dispatch } from 'redux';
-import { RootState } from 'fm3/storeCreator';
-import { isActionOf } from 'typesafe-actions';
+import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { storage } from 'fm3/storage';
-import { RootAction } from 'fm3/actions';
+import { RootState } from 'fm3/storeCreator';
+import { Dispatch, Middleware } from 'redux';
+import { isActionOf } from 'typesafe-actions';
 
 // TODO to processors
 

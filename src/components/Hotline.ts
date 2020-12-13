@@ -1,6 +1,6 @@
-import 'leaflet-hotline';
 import { createPathComponent, PathProps } from '@react-leaflet/core';
 import { PropsWithChildren } from '@react-leaflet/core/types/component';
+import 'leaflet-hotline';
 
 interface Props extends PathProps, PropsWithChildren {
   positions: (readonly [number, number, number])[];

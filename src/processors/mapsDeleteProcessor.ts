@@ -1,7 +1,7 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
-import { mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { deleteFeature } from 'fm3/actions/mainActions';
+import { mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
   actionCreator: deleteFeature,

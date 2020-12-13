@@ -1,48 +1,48 @@
-import produce from 'immer';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
-import { clearMap } from 'fm3/actions/mainActions';
 import {
-  gallerySetImageIds,
-  galleryClear,
-  gallerySetImage,
-  galleryRequestImage,
   galleryAddItem,
-  galleryRemoveItem,
-  galleryMergeItem,
-  gallerySetItemError,
-  gallerySetPickingPosition,
+  galleryCancelShowOnTheMap,
+  galleryClear,
   galleryConfirmPickedPosition,
+  galleryEditPicture,
+  GalleryFilter,
+  galleryHideFilter,
+  galleryHideUploadModal,
+  GalleryItem,
+  galleryMergeItem,
+  galleryRemoveItem,
+  galleryRequestImage,
+  gallerySavePicture,
+  gallerySetComment,
+  gallerySetEditModel,
+  gallerySetFilter,
+  gallerySetImage,
+  gallerySetImageIds,
+  gallerySetItemError,
   gallerySetItemForPositionPicking,
-  galleryUpload,
+  gallerySetLayerDirty,
+  gallerySetPickingPosition,
   gallerySetTags,
   gallerySetUsers,
-  gallerySetLayerDirty,
-  gallerySetComment,
   galleryShowFilter,
-  galleryHideFilter,
-  gallerySetFilter,
-  galleryShowUploadModal,
-  galleryHideUploadModal,
-  galleryEditPicture,
-  gallerySetEditModel,
   galleryShowOnTheMap,
-  galleryCancelShowOnTheMap,
-  galleryToggleShowPreview,
-  GalleryFilter,
-  Picture,
+  galleryShowUploadModal,
   GalleryTag,
+  galleryToggleShowPreview,
+  galleryUpload,
   GalleryUser,
-  GalleryItem,
-  gallerySavePicture,
+  Picture,
 } from 'fm3/actions/galleryActions';
-import { LatLon } from 'fm3/types/common';
+import { l10nSetLanguage } from 'fm3/actions/l10nActions';
+import { clearMap } from 'fm3/actions/mainActions';
+import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { parseCoordinates } from 'fm3/coordinatesParser';
+import { toDatetimeLocal } from 'fm3/dateUtils';
 import { latLonToString } from 'fm3/geoutils';
-import { l10nSetLanguage } from 'fm3/actions/l10nActions';
-import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { LatLon } from 'fm3/types/common';
+import produce from 'immer';
+import { createReducer } from 'typesafe-actions';
 
 export interface GalleryState {
   imageIds: number[] | null;

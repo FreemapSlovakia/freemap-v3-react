@@ -1,4 +1,4 @@
-import { createBrowserHistory, BrowserHistory } from 'history';
+import { BrowserHistory, createBrowserHistory } from 'history';
 
 export const history = createBrowserHistory() as BrowserHistory<{
   sq?: string;

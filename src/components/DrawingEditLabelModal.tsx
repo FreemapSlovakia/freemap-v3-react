@@ -1,22 +1,21 @@
-import {
-  useState,
-  useCallback,
-  ReactElement,
-  FormEvent,
-  ChangeEvent,
-} from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
 import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
+import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import FormControl from 'react-bootstrap/FormControl';
-import Alert from 'react-bootstrap/Alert';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = { show: boolean };

@@ -1,14 +1,15 @@
-import { useDispatch, useSelector } from 'react-redux';
-import { useState, useCallback, useRef, ReactElement } from 'react';
+import { clearMap, selectFeature, Tool } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { selectFeature, Tool, clearMap } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
-import { is } from 'typescript-is';
+import { ReactElement, useCallback, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
+import { is } from 'typescript-is';
 
 export function ToolsMenuButton(): ReactElement {
   const m = useMessages();

@@ -1,14 +1,14 @@
-import {
-  wsInvalidState,
-  wsReceived,
-  wsStateChanged,
-  wsOpen,
-  wsSend,
-  wsClose,
-} from 'fm3/actions/websocketActions';
-import { Middleware, Dispatch } from 'redux';
 import { RootAction } from 'fm3/actions';
+import {
+  wsClose,
+  wsInvalidState,
+  wsOpen,
+  wsReceived,
+  wsSend,
+  wsStateChanged,
+} from 'fm3/actions/websocketActions';
 import { RootState } from 'fm3/storeCreator';
+import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 
 let ws: WebSocket | null = null;

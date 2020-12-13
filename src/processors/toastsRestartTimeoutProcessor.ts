@@ -1,6 +1,6 @@
-import { timeoutMap, setupTimeout } from 'fm3/processors/toasts';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { toastsRestartTimeout } from 'fm3/actions/toastsActions';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { setupTimeout, timeoutMap } from 'fm3/processors/toasts';
 
 export const toastsRestartTimeoutProcessor: Processor<
   typeof toastsRestartTimeout

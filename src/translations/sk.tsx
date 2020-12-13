@@ -1,11 +1,11 @@
 /* eslint-disable */
 
-import { Fragment } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { latLonToString } from 'fm3/geoutils';
+import { Fragment } from 'react';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('sk', {

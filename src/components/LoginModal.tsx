@@ -1,15 +1,15 @@
-import { useCallback, ReactElement } from 'react';
-import { useDispatch } from 'react-redux';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
-  authLoginWithOsm,
+  authLoginClose,
   authLoginWithFacebook,
   authLoginWithGoogle,
-  authLoginClose,
+  authLoginWithOsm,
 } from 'fm3/actions/authActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
 

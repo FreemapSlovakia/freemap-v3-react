@@ -1,12 +1,12 @@
 import {
-  gallerySetImage,
   galleryRequestImage,
+  gallerySetImage,
   Picture,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { StringDates } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 // TODO react only on getState().gallery.activeImageId change
 export const galleryRequestImageProcessor: Processor = {

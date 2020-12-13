@@ -1,17 +1,17 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
+import area from '@turf/area';
+import { lineString, polygon } from '@turf/helpers';
+import length from '@turf/length';
+import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import {
   clearMap,
-  selectFeature,
   deleteFeature,
+  selectFeature,
 } from 'fm3/actions/mainActions';
-import { assertType } from 'typescript-is';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
-import area from '@turf/area';
-import length from '@turf/length';
-import { polygon, lineString } from '@turf/helpers';
+import { assertType } from 'typescript-is';
 
 export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
   actionCreator: drawingPointMeasure,
