@@ -180,6 +180,14 @@ export function Main(): ReactElement {
   }, [map]);
 
   useEffect(() => {
+    const style = map?.getContainer().style;
+
+    if (style) {
+      style.cursor = mouseCursor;
+    }
+  }, [map, mouseCursor]);
+
+  useEffect(() => {
     if (!map) {
       return;
     }
@@ -427,7 +435,6 @@ export function Main(): ReactElement {
           whenCreated={setMap}
           center={{ lat, lng: lon }}
           zoom={zoom}
-          style={{ cursor: mouseCursor }}
         >
           <ScaleControl imperial={false} position="bottomleft" />
 
