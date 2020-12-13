@@ -23,7 +23,7 @@ export function GalleryShowPositionMenu(): ReactElement | null {
 
   const handleKeyUp = useCallback(
     (event: KeyboardEvent) => {
-      if (event.keyCode === 27 /* escape key */) {
+      if (event.code === 'Escape') {
         close();
       }
     },

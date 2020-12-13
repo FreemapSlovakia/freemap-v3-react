@@ -16,7 +16,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Button, FormCheck, FormGroup, Modal } from 'react-bootstrap';
+import { Button, FormCheck, Modal } from 'react-bootstrap';
 
 type Props = { show: boolean };
 

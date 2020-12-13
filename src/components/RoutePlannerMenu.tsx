@@ -145,7 +145,7 @@ export function RoutePlannerMenu(): ReactElement {
               <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
               <span className="d-none d-md-inline">
                 {' '}
-                {m?.routePlanner.start}
+                {m?.routePlanner.start ?? '…'}
               </span>
             </span>
           }
@@ -155,21 +155,23 @@ export function RoutePlannerMenu(): ReactElement {
           }}
         >
           <Dropdown.Item>
-            <FontAwesomeIcon icon="map-marker" /> {m?.routePlanner.point.pick}
+            <FontAwesomeIcon icon="map-marker" />{' '}
+            {m?.routePlanner.point.pick ?? '…'}
           </Dropdown.Item>
           <Dropdown.Item
             onSelect={() => {
               dispatch(routePlannerSetFromCurrentPosition('start'));
             }}
           >
-            <FontAwesomeIcon icon="bullseye" /> {m?.routePlanner.point.current}
+            <FontAwesomeIcon icon="bullseye" />{' '}
+            {m?.routePlanner.point.current ?? '…'}
           </Dropdown.Item>
           <Dropdown.Item
             onSelect={() => {
               setFromHomeLocation('start');
             }}
           >
-            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
+            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home ?? '…'}
           </Dropdown.Item>
         </DropdownButton>
         {mode !== 'roundtrip' && (
@@ -181,7 +183,7 @@ export function RoutePlannerMenu(): ReactElement {
                 dispatch(routePlannerSwapEnds());
               }}
               disabled={!canSwap}
-              title={m?.routePlanner.swap}
+              title={m?.routePlanner.swap ?? '…'}
             >
               ⇆
             </Button>
@@ -194,7 +196,7 @@ export function RoutePlannerMenu(): ReactElement {
                   <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
                   <span className="d-none d-md-inline">
                     {' '}
-                    {m?.routePlanner.finish}
+                    {m?.routePlanner.finish ?? '…'}
                   </span>
                 </span>
               }
@@ -205,7 +207,7 @@ export function RoutePlannerMenu(): ReactElement {
             >
               <Dropdown.Item>
                 <FontAwesomeIcon icon="map-marker" />
-                {m?.routePlanner.point.pick}
+                {m?.routePlanner.point.pick ?? '…'}
               </Dropdown.Item>
               <Dropdown.Item
                 onSelect={() => {
@@ -213,14 +215,15 @@ export function RoutePlannerMenu(): ReactElement {
                 }}
               >
                 <FontAwesomeIcon icon="bullseye" />
-                {m?.routePlanner.point.current}
+                {m?.routePlanner.point.current ?? '…'}
               </Dropdown.Item>
               <Dropdown.Item
                 onSelect={() => {
                   setFromHomeLocation('finish');
                 }}
               >
-                <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home}
+                <FontAwesomeIcon icon="home" />{' '}
+                {m?.routePlanner.point.home ?? '…'}
               </Dropdown.Item>
             </DropdownButton>
           </>
@@ -247,7 +250,7 @@ export function RoutePlannerMenu(): ReactElement {
                 {' '}
                 {m?.routePlanner.transportType[
                   activeTransportType.type
-                ].replace(/\s*,.*/, '')}
+                ].replace(/\s*,.*/, '') ?? '…'}
               </span>
             </>
           ) : (
@@ -261,20 +264,20 @@ export function RoutePlannerMenu(): ReactElement {
             <Dropdown.Item
               eventKey={type}
               key={type}
-              title={m?.routePlanner.transportType[type]}
+              title={m?.routePlanner.transportType[type] ?? '…'}
               active={transportType === type}
             >
               <FontAwesomeIcon icon={icon} />
               {['car', 'bikesharing'].includes(type) && (
                 <FontAwesomeIcon icon="money" />
               )}{' '}
-              {m?.routePlanner.transportType[type]}
+              {m?.routePlanner.transportType[type] ?? '…'}
               {development && (
                 <>
                   {' '}
                   <FontAwesomeIcon
                     icon="flask"
-                    title={m?.routePlanner.development}
+                    title={m?.routePlanner.development ?? '…'}
                     className="text-warning"
                   />
                 </>
@@ -303,17 +306,17 @@ export function RoutePlannerMenu(): ReactElement {
         onSelect={(mode: unknown) => {
           dispatch(routePlannerSetMode(mode as RoutingMode));
         }}
-        title={m?.routePlanner.mode[mode]}
+        title={m?.routePlanner.mode[mode] ?? '…'}
         disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
         {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
           <Dropdown.Item
             eventKey={mode1}
             key={mode1}
-            title={m?.routePlanner.mode[mode1]}
+            title={m?.routePlanner.mode[mode1] ?? '…'}
             active={mode === mode1}
           >
-            {m?.routePlanner.mode[mode1]}
+            {m?.routePlanner.mode[mode1] ?? '…'}
           </Dropdown.Item>
         ))}
       </DropdownButton>
@@ -339,7 +342,7 @@ export function RoutePlannerMenu(): ReactElement {
                     Math.round(activeAlternative.duration / 60) / 60,
                   ),
                   m: Math.round(activeAlternative.duration / 60) % 60,
-                })
+                }) ?? '…'
           }
         >
           {alternatives.map(({ duration, distance, extra }, i) => (
@@ -354,7 +357,7 @@ export function RoutePlannerMenu(): ReactElement {
                     distance: nf.format(distance / 1000),
                     h: Math.floor(Math.round(duration / 60) / 60),
                     m: Math.round(duration / 60) % 60,
-                  })}
+                  }) ?? '…'}
             </Dropdown.Item>
           ))}
         </DropdownButton>
@@ -380,12 +383,12 @@ export function RoutePlannerMenu(): ReactElement {
         }}
         active={elevationProfileIsVisible}
         disabled={!routeFound}
-        title={m?.general.elevationProfile}
+        title={m?.general.elevationProfile ?? '…'}
       >
         <FontAwesomeIcon icon="bar-chart" />
         <span className="d-none d-md-inline">
           {' '}
-          {m?.general.elevationProfile}
+          {m?.general.elevationProfile ?? '…'}
         </span>
       </Button>
       <Button
@@ -393,12 +396,12 @@ export function RoutePlannerMenu(): ReactElement {
         variant="secondary"
         onClick={handleConvertToDrawing}
         disabled={!routeFound}
-        title={m?.general.convertToDrawing}
+        title={m?.general.convertToDrawing ?? '…'}
       >
         <FontAwesomeIcon icon="pencil" />
         <span className="d-none d-md-inline">
           {' '}
-          {m?.general.convertToDrawing}
+          {m?.general.convertToDrawing ?? '…'}
         </span>
       </Button>
       <FormCheck
@@ -409,7 +412,7 @@ export function RoutePlannerMenu(): ReactElement {
           dispatch(routePlannerToggleMilestones(undefined));
         }}
         checked={milestones}
-        label={m?.routePlanner.milestones}
+        label={m?.routePlanner.milestones ?? '…'}
       />
     </>
   );
@@ -427,15 +430,17 @@ function imhdSummary(
 
   const { price, arrival, numbers } = extra;
 
-  return m?.routePlanner.imhd.total.short({
-    price:
-      price === undefined
-        ? undefined
-        : Intl.NumberFormat(language, {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          }).format(price),
-    arrival: dateFormat.format(arrival * 1000),
-    numbers,
-  });
+  return (
+    m?.routePlanner.imhd.total.short({
+      price:
+        price === undefined
+          ? undefined
+          : Intl.NumberFormat(language, {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            }).format(price),
+      arrival: dateFormat.format(arrival * 1000),
+      numbers,
+    }) ?? '…'
+  );
 }

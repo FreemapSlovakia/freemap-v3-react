@@ -32,7 +32,6 @@ import {
   DropdownProps,
 } from 'react-bootstrap';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { KEY_F3, KEY_F, KEY_ESCAPE } from 'keycode-js';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 type Props = {
@@ -128,12 +127,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     const handler = (e: KeyboardEvent) => {
       if (inputRef.current) {
         if (
-          e.keyCode === KEY_F3 ||
-          ((e.ctrlKey || e.metaKey) && e.keyCode === KEY_F)
+          e.code === 'F3' ||
+          ((e.ctrlKey || e.metaKey) && e.code === 'KeyF')
         ) {
           inputRef.current.focus();
           e.preventDefault();
-        } else if (e.keyCode === KEY_ESCAPE) {
+        } else if (e.code === 'Escape') {
           inputRef.current.blur();
           e.preventDefault();
         }

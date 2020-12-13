@@ -16,6 +16,20 @@ import { is } from 'typescript-is';
 import { Button, ButtonGroup, Overlay, Popover } from 'react-bootstrap';
 import Dropdown from 'react-bootstrap/Dropdown';
 
+function getKbdShortcut(key?: [string, boolean]) {
+  return (
+    key && (
+      <>
+        {' '}
+        <kbd>
+          {key[1] ? 'shift + ' : ''}
+          {key[0].replace(/Key|Digit/, '').toLowerCase()}
+        </kbd>
+      </>
+    )
+  );
+}
+
 export function MapSwitchButton(): ReactElement {
   const m = useMessages();
 
@@ -197,8 +211,7 @@ export function MapSwitchButton(): ReactElement {
                     >
                       {m?.mapLayers.letters[type]}
                     </span>
-                    {key && ' '}
-                    {key && <kbd>{key}</kbd>}
+                    {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
                       <>
                         {' '}
@@ -247,8 +260,7 @@ export function MapSwitchButton(): ReactElement {
                   >
                     {m?.mapLayers.letters[type]}
                   </span>
-                  {key && ' '}
-                  {key && <kbd>{key}</kbd>}
+                  {getKbdShortcut(key)}
                   {minZoom !== undefined && zoom < minZoom && (
                     <>
                       {' '}

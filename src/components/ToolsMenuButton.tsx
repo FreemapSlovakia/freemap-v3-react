@@ -113,7 +113,8 @@ export function ToolsMenuButton(): ReactElement {
                       <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
                       {kbd && (
                         <>
-                          <kbd>g</kbd> <kbd>{kbd}</kbd>
+                          <kbd>g</kbd>{' '}
+                          <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
                         </>
                       )}
                     </Dropdown.Item>
