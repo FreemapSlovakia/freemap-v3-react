@@ -136,7 +136,7 @@ export function MapSwitchButton(): ReactElement {
 
   return (
     <>
-      <ButtonGroup className="dropup d-none d-sm-inline">
+      <ButtonGroup className="dropup d-none d-sm-inline-flex">
         {baseLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
             variant="secondary"
@@ -168,7 +168,7 @@ export function MapSwitchButton(): ReactElement {
           onClick={handleButtonClick}
           title={m?.mapLayers.layers}
         />
-      </ButtonGroup>{' '}
+      </ButtonGroup>
       <Button
         className="d-sm-none"
         ref={button2Ref}
