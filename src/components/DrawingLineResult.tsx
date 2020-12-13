@@ -233,7 +233,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
           <Polyline
             weight={4}
-            color={selected ? colors.selected : colors.normal}
+            pathOptions={{
+              color: selected ? colors.selected : colors.normal,
+            }}
             interactive={false}
             positions={ps
               .filter((_, i) => i % 2 === 0)
@@ -251,7 +253,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           weight={4}
-          color={selected ? colors.selected : colors.normal}
+          pathOptions={{
+            color: selected ? colors.selected : colors.normal,
+          }}
           interactive
           bubblingMouseEvents={false}
           eventHandlers={{

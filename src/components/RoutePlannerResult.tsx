@@ -647,13 +647,14 @@ export function RoutePlannerResult(): ReactElement {
                 ref={bringToFront}
                 positions={routeSlice.geometry.coordinates.map(reverse)}
                 weight={6}
-                color={
-                  alt !== activeAlternativeIndex
-                    ? '#868e96'
-                    : !special && routeSlice.legIndex % 2
-                    ? 'hsl(211, 100%, 66%)'
-                    : 'hsl(211, 100%, 50%)'
-                }
+                pathOptions={{
+                  color:
+                    alt !== activeAlternativeIndex
+                      ? '#868e96'
+                      : !special && routeSlice.legIndex % 2
+                      ? 'hsl(211, 100%, 66%)'
+                      : 'hsl(211, 100%, 50%)',
+                }}
                 opacity={/* alt === activeAlternativeIndex ? 1 : 0.5 */ 1}
                 dashArray={
                   ['foot', 'pushing bike', 'ferry'].includes(routeSlice.mode)

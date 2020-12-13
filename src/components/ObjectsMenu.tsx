@@ -136,6 +136,7 @@ export function ObjectsMenu(): ReactElement {
       </Dropdown>
       <Button
         className="ml-1"
+        variant="secondary"
         onClick={() => {
           dispatch(convertToDrawing(undefined));
         }}
