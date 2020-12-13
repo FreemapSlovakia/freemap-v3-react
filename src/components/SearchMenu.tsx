@@ -13,11 +13,14 @@ import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/search.scss';
 import {
   ChangeEvent,
-  FocusEvent,
+  Children,
+  forwardRef,
   MouseEvent,
   ReactElement,
+  ReactNode,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
@@ -27,6 +30,7 @@ import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
+import SafeAnchor from 'react-bootstrap/SafeAnchor';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
@@ -34,6 +38,16 @@ type Props = {
   hidden?: boolean;
   preventShortcut?: boolean;
 };
+
+const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
+  function HiddenInt({ children }, ref) {
+    return (
+      <span className="fm-no-after" ref={ref}>
+        {children}
+      </span>
+    );
+  },
+);
 
 export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const m = useMessages();
@@ -79,18 +93,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   );
 
   const handleSelect = useCallback(
-    (eventKey) => {
+    (eventKey: string | null, _: unknown, preserve?: boolean) => {
       const found = results.find((item) => item.id === Number(eventKey));
 
       if (found) {
         dispatch(searchSelectResult(found));
       }
 
-      if (selectedResult?.id === Number(eventKey)) {
+      if (!preserve) {
         setOpen(false);
       }
     },
-    [results, dispatch, selectedResult],
+    [results, dispatch],
   );
 
   const f: DropdownProps['onToggle'] = (open, _, { source }) => {
@@ -142,17 +156,44 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     };
   }, [hidden, inputRef, preventShortcut]);
 
-  const handleInputFocus = useCallback((e: FocusEvent<HTMLInputElement>) => {
-    e.currentTarget.select();
-  }, []);
+  const handleInputFocus = useCallback(() => {
+    setOpen(results.length > 0);
+  }, [results]);
 
   const handleClearClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();
       dispatch(searchSelectResult(null));
+      dispatch(searchSetResults([]));
       setValue('');
     },
     [dispatch],
+  );
+
+  const HoverableMenuItem = useMemo(
+    () =>
+      forwardRef<HTMLAnchorElement, { children: ReactNode }>(function HiddenInt(
+        { children, ...props },
+        ref,
+      ) {
+        function handleFocus() {
+          const ch = Children.only(children);
+
+          handleSelect((ch as any).props['data-id'], undefined, true);
+        }
+
+        return (
+          <SafeAnchor
+            ref={ref}
+            {...props}
+            onFocus={handleFocus}
+            onMouseMove={handleFocus}
+          >
+            {children}
+          </SafeAnchor>
+        );
+      }),
+    [handleSelect],
   );
 
   return (
@@ -163,54 +204,61 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           // className="dropdown-long"
           show={open}
           onToggle={handleToggle}
+          onSelect={handleSelect}
         >
-          <InputGroup>
-            <FormControl
-              className="fm-search-input"
-              onChange={handleChange}
-              value={value}
-              placeholder="Brusno"
-              ref={inputRef}
-              onFocus={handleInputFocus}
-            />
-            <InputGroup.Append style={{ width: 'auto' }}>
-              {!!selectedResult && (
+          <Dropdown.Toggle as={HideArrow}>
+            <InputGroup>
+              <FormControl
+                className="fm-search-input"
+                onChange={handleChange}
+                value={value}
+                placeholder="Brusno"
+                ref={inputRef}
+                onFocus={handleInputFocus}
+              />
+              <InputGroup.Append style={{ width: 'auto' }}>
+                {!!selectedResult && (
+                  <Button
+                    variant="secondary"
+                    type="button"
+                    title={m?.general.clear}
+                    onClick={handleClearClick}
+                  >
+                    <FontAwesomeIcon icon="times" />
+                  </Button>
+                )}
                 <Button
-                  type="button"
-                  title={m?.general.clear}
-                  onClick={handleClearClick}
+                  variant="secondary"
+                  type="submit"
+                  title={m?.search.buttonTitle}
+                  disabled={!value}
                 >
-                  <FontAwesomeIcon icon="times" />
+                  <FontAwesomeIcon icon="search" />
                 </Button>
-              )}
-              <Button
-                variant="secondary"
-                type="submit"
-                title={m?.search.buttonTitle}
-                disabled={!value}
-              >
-                <FontAwesomeIcon icon="search" />
-              </Button>
-            </InputGroup.Append>
-          </InputGroup>
+              </InputGroup.Append>
+            </InputGroup>
+          </Dropdown.Toggle>
           <Dropdown.Menu
             key={searchSeq}
+            rootCloseEvent="mousedown"
             className="fm-search-dropdown"
-            onSelect={handleSelect}
           >
             {results.map((result) => (
               <Dropdown.Item
                 key={result.id}
                 eventKey={String(result.id)}
                 active={!!selectedResult && result.id === selectedResult.id}
+                as={HoverableMenuItem}
               >
-                {result.label}
-                <br />
-                {!!(result.class && result.type) && (
-                  <small>
-                    {result.class}={result.type}
-                  </small>
-                )}
+                <span data-id={result.id}>
+                  {result.label}
+                  <br />
+                  {!!(result.class && result.type) && (
+                    <small>
+                      {result.class}={result.type}
+                    </small>
+                  )}
+                </span>
               </Dropdown.Item>
             ))}
           </Dropdown.Menu>

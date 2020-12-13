@@ -242,3 +242,7 @@ button#freemap-logo {
 .fm-attr-popover {
   max-width: 400px;
 }
+
+.fm-no-after::after {
+  display: none !important;
+}

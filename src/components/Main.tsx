@@ -316,7 +316,7 @@ export function Main(): ReactElement {
         width="150"
         height="54"
         alt="freemap logo"
-        style={{ display: 'none' }}
+        className="d-none"
       />
 
       <Toasts />

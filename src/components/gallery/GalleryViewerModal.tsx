@@ -264,7 +264,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               {!!nextImageId && !loading && (
                 <img
                   key={`next-${imgKey}`}
-                  style={{ display: 'none' }}
+                  className="d-none"
                   src={getImageUrl(nextImageId)}
                   alt="next"
                 />
@@ -272,7 +272,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               {!!prevImageId && !loading && (
                 <img
                   key={`prev-${imgKey}`}
-                  style={{ display: 'none' }}
+                  className="d-none"
                   src={getImageUrl(prevImageId)}
                   alt="prev"
                 />
