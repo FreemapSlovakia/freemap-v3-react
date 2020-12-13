@@ -251,57 +251,69 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
           className={isFullscreen ? 'fullscreen' : ''}
         >
           <div className="carousel">
-            <div className="item active">
-              {!!activeImageId && (
-                <img
-                  key={imgKey}
-                  ref={setImageElement}
-                  className={`gallery-image ${loading ? 'loading' : ''}`}
-                  src={getImageUrl(activeImageId)}
-                  alt={title ?? undefined}
-                />
-              )}
-              {!!nextImageId && !loading && (
-                <img
-                  key={`next-${imgKey}`}
-                  className="d-none"
-                  src={getImageUrl(nextImageId)}
-                  alt="next"
-                />
-              )}
-              {!!prevImageId && !loading && (
-                <img
-                  key={`prev-${imgKey}`}
-                  className="d-none"
-                  src={getImageUrl(prevImageId)}
-                  alt="prev"
-                />
-              )}
+            <div className="carousel-inner">
+              <div className="carousel-item active">
+                {!!activeImageId && (
+                  <img
+                    key={imgKey}
+                    ref={setImageElement}
+                    className={`gallery-image ${loading ? 'loading' : ''}`}
+                    src={getImageUrl(activeImageId)}
+                    alt={title ?? undefined}
+                  />
+                )}
+                {!!nextImageId && !loading && (
+                  <img
+                    key={`next-${imgKey}`}
+                    className="d-none"
+                    src={getImageUrl(nextImageId)}
+                    alt="next"
+                  />
+                )}
+                {!!prevImageId && !loading && (
+                  <img
+                    key={`prev-${imgKey}`}
+                    className="d-none"
+                    src={getImageUrl(prevImageId)}
+                    alt="prev"
+                  />
+                )}
+              </div>
             </div>
             {imageIds && (
               <a
-                className={`left carousel-control ${
-                  index < 1 ? 'disabled' : ''
+                className={`carousel-control-prev ${
+                  index < 1 ? 'carousel-control-disabled' : ''
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
                   dispatch(galleryRequestImage('prev'));
                 }}
               >
-                <FontAwesomeIcon icon="chevron-left" />
+                <span
+                  className="carousel-control-prev-icon"
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Previous</span>
               </a>
             )}
             {imageIds && (
               <a
-                className={`right carousel-control ${
-                  index >= imageIds.length - 1 ? 'disabled' : ''
+                className={`carousel-control-next ${
+                  index >= imageIds.length - 1
+                    ? 'carousel-control-disabled'
+                    : ''
                 }`}
                 onClick={(e) => {
                   e?.preventDefault();
                   dispatch(galleryRequestImage('next'));
                 }}
               >
-                <FontAwesomeIcon icon="chevron-right" />
+                <span
+                  className="carousel-control-next-icon"
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Next</span>
               </a>
             )}
           </div>

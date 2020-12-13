@@ -46,6 +46,16 @@
   }
 }
 
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: hsla(0, 0%, 0%, 0.2);
+  border-radius: 50%;
+  background-origin: content-box;
+  padding: 5px;
+  width: 30px;
+  height: 30px;
+}
+
 // // https://stackoverflow.com/a/28331791/289827
 // .input-group-addon {
 //   border-left-width: 0;
