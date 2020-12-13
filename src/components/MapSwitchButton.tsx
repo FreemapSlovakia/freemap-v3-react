@@ -45,7 +45,8 @@ export function MapSwitchButton(): ReactElement {
   const expertMode = useSelector((state: RootState) => state.main.expertMode);
 
   const pictureFilterIsActive = useSelector(
-    (state: RootState) => Object.keys(state.gallery.filter).length > 0,
+    (state: RootState) =>
+      Object.values(state.gallery.filter).filter((x) => x).length > 0,
   );
 
   const isAdmin = useSelector(
