@@ -96,7 +96,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={close}>
+          <Button variant="dark" onClick={close}>
             <FontAwesomeIcon icon="times" /> {m?.general.close}
           </Button>
         </FormGroup>

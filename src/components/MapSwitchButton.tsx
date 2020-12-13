@@ -125,7 +125,7 @@ export function MapSwitchButton(): ReactElement {
     dispatch(mapRefocus({ overlays: [...s] }));
   };
 
-  const isWide = useMedia({ minWidth: '768px' });
+  const isWide = useMedia({ minWidth: '576px' });
 
   const isPrimary = (layer: LayerDef) =>
     layer.primary === true ||
@@ -170,7 +170,7 @@ export function MapSwitchButton(): ReactElement {
         />
       </ButtonGroup>{' '}
       <Button
-        className="d-sm-none d-md-none d-lg-none"
+        className="d-sm-none"
         ref={button2Ref}
         onClick={handleButtonClick}
         title={m?.mapLayers.layers}

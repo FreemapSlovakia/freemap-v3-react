@@ -103,7 +103,9 @@ export function TrackedDeviceForm(): ReactElement {
           <FontAwesomeIcon icon="bullseye" />{' '}
           {device && !forceNew
             ? m?.tracking.trackedDevices.modifyTitle(device.label || device.id)
-            : m?.tracking.trackedDevices.createTitle}
+            : m?.tracking.trackedDevices.createTitle(
+                device?.label ?? device?.id,
+              )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

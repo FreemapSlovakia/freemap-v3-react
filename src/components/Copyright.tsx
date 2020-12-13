@@ -50,7 +50,10 @@ export function Copyright(): ReactElement {
         rootCloseEvent="mousedown"
         placement="top"
         overlay={
-          <Popover id="popover-positioned-right" className="fm-attr-popover">
+          <Popover
+            id="popover-positioned-right"
+            className="fm-attr-popover pl-2 pr-3"
+          >
             <Attribution
               m={m}
               mapType={mapType}

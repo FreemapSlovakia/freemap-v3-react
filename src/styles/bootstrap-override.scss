@@ -1,36 +1,28 @@
-// .popover {
-//   max-width: 290px;
-// }
+.popover-body {
+  max-width: 290px;
+}
 
-// .popover-content {
-//   max-height: calc(
-//     100vh - 120px
-//   ); // hack to prevent popovers go outside view on mobiles
-//   overflow-y: auto;
-// }
+.popover-body {
+  max-height: calc(
+    100vh - 120px
+  ); // hack to prevent popovers go outside view on mobiles
+  overflow-y: auto;
+}
 
-// .tab-content {
-//   border-radius: 4px;
-//   border-left: 1px solid #ddd;
-//   border-right: 1px solid #ddd;
-//   border-bottom: 1px solid #ddd;
-//   padding: 10px;
-// }
+.dropdown-menu {
+  z-index: 10000;
+}
 
-// .dropdown-menu {
-//   z-index: 10000;
-// }
+@media (min-width: 768px) {
+  .dropdown-long .dropdown-menu {
+    overflow-x: auto;
+    height: calc(100vh - 64px);
+  }
+}
 
-// @media (min-width: 768px) {
-//   .dropdown-long .dropdown-menu {
-//     overflow-x: auto;
-//     height: calc(100vh - 64px);
-//   }
-// }
-
-// .panel-title > a {
-//   cursor: pointer;
-// }
+.accordion > .card > .card-header {
+  cursor: pointer;
+}
 
 // dynamic modal width
 @media (min-width: 768px) {
@@ -56,36 +48,13 @@
   height: 30px;
 }
 
-// // https://stackoverflow.com/a/28331791/289827
-// .input-group-addon {
-//   border-left-width: 0;
-//   border-right-width: 0;
-// }
-// .input-group-addon:first-child {
-//   border-left-width: 1px;
-// }
-// .input-group-addon:last-child {
-//   border-right-width: 1px;
-// }
+.form-group.required .form-label:after {
+  content: ' *';
+  color: red;
+}
 
-// // fixes displacement in FF
-// input[type='date'],
-// input[type='time'] {
-//   padding-top: 0;
-// }
-
-// .form-group.required .control-label:after {
-//   content: ' *';
-//   color: red;
-// }
-
-// @media (max-width: 767px) {
-//   kbd {
-//     display: none;
-//   }
-// }
-
-// kbd {
-//   color: black;
-//   background-color: #ddd;
-// }
+@media (max-width: 767px) {
+  kbd {
+    display: none;
+  }
+}

@@ -49,6 +49,7 @@ export function ElevationChart(): ReactElement | null {
   return (
     <div className="elevationChart">
       <Button
+        variant="dark"
         style={styles.closeButton}
         size="sm"
         onClick={() => dispatch(elevationChartClose())}
