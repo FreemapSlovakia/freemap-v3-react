@@ -11,12 +11,14 @@ import {
   Fragment,
   ReactElement,
   useCallback,
+  useRef,
   useState,
 } from 'react';
 import Button from 'react-bootstrap/Button';
-import Dropdown from 'react-bootstrap/Dropdown';
+import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 import FormControl from 'react-bootstrap/FormControl';
 import { useDispatch, useSelector } from 'react-redux';
+import { HideArrow } from './SearchMenu';
 
 export function ObjectsMenu(): ReactElement {
   const m = useMessages();
@@ -37,10 +39,6 @@ export function ObjectsMenu(): ReactElement {
     setFilter(e.currentTarget.value);
   }, []);
 
-  const handleToggle = useCallback(() => {
-    setDropdownOpened(!dropdownOpened);
-  }, [dropdownOpened]);
-
   const handleSelect = useCallback(
     (id: string | null) => {
       if (zoom < 12) {
@@ -60,26 +58,51 @@ export function ObjectsMenu(): ReactElement {
         );
       } else if (id !== null) {
         dispatch(objectsSetFilter(Number(id)));
+
+        setDropdownOpened(false);
+        setFilter('');
       }
     },
     [zoom, dispatch],
   );
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+    if (!isOpen) {
+      setDropdownOpened(false);
+
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      inputRef.current?.blur();
+    }
+  };
 
   return (
     <>
       <Dropdown
         className="dropdown-long"
         id="objectsMenuDropdown"
-        onToggle={handleToggle}
         show={dropdownOpened}
+        onSelect={handleSelect}
+        onToggle={handleToggle}
       >
-        <FormControl
-          type="text"
-          placeholder={m?.objects.type}
-          onChange={handleFilterSet}
-          value={filter}
-        />
-        <Dropdown.Menu onSelect={handleSelect}>
+        <Dropdown.Toggle as={HideArrow}>
+          <FormControl
+            type="text"
+            placeholder={m?.objects.type}
+            onChange={handleFilterSet}
+            value={filter}
+            onFocus={() => {
+              setDropdownOpened(true);
+            }}
+            ref={inputRef}
+          />
+        </Dropdown.Toggle>
+        <Dropdown.Menu rootCloseEvent="mousedown">
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
 

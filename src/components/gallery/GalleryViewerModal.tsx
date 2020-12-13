@@ -391,7 +391,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                             maxLength={4096}
                           />
                           <InputGroup.Append>
-                            <Button type="submit" disabled={comment.length < 1}>
+                            <Button
+                              variant="secondary"
+                              type="submit"
+                              disabled={comment.length < 1}
+                            >
                               {m?.gallery.viewer.addComment}
                             </Button>
                           </InputGroup.Append>

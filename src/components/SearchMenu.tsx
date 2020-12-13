@@ -39,7 +39,7 @@ type Props = {
   preventShortcut?: boolean;
 };
 
-const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
+export const HideArrow = forwardRef<HTMLSpanElement, { children: ReactNode }>(
   function HiddenInt({ children }, ref) {
     return (
       <span className="fm-no-after" ref={ref}>
@@ -126,16 +126,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   }, [open]);
 
-  const f: DropdownProps['onToggle'] = (open, _, { source }) => {
-    if (!open && source !== 'select') {
-      setOpen(false);
-    } else if (open && results.length > 0) {
-      setOpen(true);
-    }
-  };
-
-  const handleToggle = useCallback(f, [setOpen, results]);
-
   useEffect(() => {
     if (results.length) {
       setOpen(true);
@@ -215,6 +205,17 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [handleSelect],
   );
 
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+    if (!isOpen) {
+      setOpen(false);
+
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+    }
+  };
+
   return (
     <span style={{ display: hidden ? 'none' : 'inline' }}>
       <Form inline onSubmit={handleSearch}>
@@ -222,8 +223,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           as={ButtonGroup}
           // className="dropdown-long"
           show={open}
-          onToggle={handleToggle}
           onSelect={handleSelect}
+          onToggle={handleToggle}
         >
           <Dropdown.Toggle as={HideArrow}>
             <InputGroup>
