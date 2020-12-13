@@ -64,6 +64,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   // const inProgress = useSelector((state: RootState) => state.search.inProgress);
 
+  const tRef = useRef<number>();
+
   const embed = window.self !== window.top;
 
   const [value, setValue] = useState('');
@@ -94,18 +96,35 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const handleSelect = useCallback(
     (eventKey: string | null, _: unknown, preserve?: boolean) => {
-      const found = results.find((item) => item.id === Number(eventKey));
-
-      if (found) {
-        dispatch(searchSelectResult(found));
+      if (tRef.current) {
+        window.clearTimeout(tRef.current);
       }
 
-      if (!preserve) {
-        setOpen(false);
-      }
+      tRef.current = window.setTimeout(
+        () => {
+          const found = results.find((item) => item.id === Number(eventKey));
+
+          if (found) {
+            dispatch(searchSelectResult(found));
+          }
+
+          if (!preserve) {
+            setOpen(false);
+          }
+        },
+        preserve ? 300 : 0,
+      );
     },
     [results, dispatch],
   );
+
+  useEffect(() => {
+    if (tRef.current) {
+      window.clearTimeout(tRef.current);
+
+      tRef.current = undefined;
+    }
+  }, [open]);
 
   const f: DropdownProps['onToggle'] = (open, _, { source }) => {
     if (!open && source !== 'select') {
@@ -127,7 +146,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       setOpen(false);
       // setValue(''); TODO
     }
-  }, [results, setOpen, inputRef]);
+  }, [results]);
 
   useEffect(() => {
     if (hidden || preventShortcut) {
@@ -154,7 +173,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     return () => {
       document.removeEventListener('keydown', handler);
     };
-  }, [hidden, inputRef, preventShortcut]);
+  }, [hidden, preventShortcut]);
 
   const handleInputFocus = useCallback(() => {
     setOpen(results.length > 0);
