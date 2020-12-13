@@ -5,7 +5,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Button } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 
 type Props = {
   device: TrackedDeviceType;

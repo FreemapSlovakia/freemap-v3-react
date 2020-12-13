@@ -8,7 +8,10 @@ import {
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
 import { RootState } from 'fm3/storeCreator';
-import { Button, DropdownButton, Form, InputGroup } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function ChangesetsMenu(): ReactElement {

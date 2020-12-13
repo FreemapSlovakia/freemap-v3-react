@@ -14,7 +14,8 @@ import {
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Button, ButtonGroup } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 
 export function DrawingMenu(): ReactElement {
   const dispatch = useDispatch();

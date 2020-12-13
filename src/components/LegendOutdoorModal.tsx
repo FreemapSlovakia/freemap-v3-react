@@ -6,7 +6,11 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import { useMessages } from 'fm3/l10nInjector';
-import { Accordion, Button, Card, FormGroup, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import FormGroup from 'react-bootstrap/FormGroup';
+import Modal from 'react-bootstrap/Modal';
+import Accordion from 'react-bootstrap/Accordion';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 

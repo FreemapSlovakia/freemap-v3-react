@@ -15,16 +15,14 @@ import { setActiveModal, exportPdf } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { colors } from 'fm3/constants';
-import {
-  Alert,
-  Button,
-  ButtonGroup,
-  FormCheck,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import Alert from 'react-bootstrap/Alert';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+import FormCheck from 'react-bootstrap/FormCheck';
 
 type Props = { show: boolean };
 

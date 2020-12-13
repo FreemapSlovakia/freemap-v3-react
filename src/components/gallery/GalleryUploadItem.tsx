@@ -8,7 +8,7 @@ import {
 import { GalleryTag } from 'fm3/actions/galleryActions';
 import spinnerbar from 'fm3/images/spinnerbar.gif';
 import { Messages } from 'fm3/translations/messagesInterface';
-import { Button } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 
 interface Props {
   id: number;

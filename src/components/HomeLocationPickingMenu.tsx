@@ -5,7 +5,8 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setSelectingHomeLocation } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
-import { Button, Card } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 export function HomeLocationPickingMenu(): ReactElement | null {
   const dispatch = useDispatch();

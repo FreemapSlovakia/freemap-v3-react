@@ -8,7 +8,8 @@ import {
   authLoginClose,
 } from 'fm3/actions/authActions';
 import { useMessages } from 'fm3/l10nInjector';
-import { Button, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 
 type Props = { show: boolean };
 

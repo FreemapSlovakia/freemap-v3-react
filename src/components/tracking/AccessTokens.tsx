@@ -5,7 +5,10 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { AccessToken } from 'fm3/components/tracking/AccessToken';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
+import Modal from 'react-bootstrap/Modal';
+import Table from 'react-bootstrap/Table';
 
 export function AccessTokens(): ReactElement {
   const m = useMessages();

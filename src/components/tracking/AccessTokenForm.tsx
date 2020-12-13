@@ -8,13 +8,11 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import {
-  Button,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
 
 export function AccessTokenForm(): ReactElement {
   const m = useMessages();

@@ -3,7 +3,9 @@ import { ReactElement, ReactNode, useCallback } from 'react';
 import 'fm3/styles/toasts.scss';
 import { RootAction } from 'fm3/actions';
 import { ResolvedToast } from 'fm3/actions/toastsActions';
-import { Alert, Button, ButtonToolbar } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
 interface Props extends Pick<ResolvedToast, 'id' | 'actions' | 'style'> {
   onAction: (id: string, action?: RootAction | RootAction[]) => void;

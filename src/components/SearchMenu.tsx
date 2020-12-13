@@ -1,3 +1,4 @@
+import 'fm3/styles/search.scss';
 import {
   useCallback,
   useState,
@@ -20,19 +21,15 @@ import {
   routePlannerSetFinish,
 } from 'fm3/actions/routePlannerActions';
 import { useMessages } from 'fm3/l10nInjector';
-
-import 'fm3/styles/search.scss';
 import { RootState } from 'fm3/storeCreator';
-import {
-  FormControl,
-  Form,
-  InputGroup,
-  Button,
-  ButtonGroup,
-  DropdownProps,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Form from 'react-bootstrap/Form';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-import Dropdown from 'react-bootstrap/Dropdown';
+import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
 
 type Props = {
   hidden?: boolean;

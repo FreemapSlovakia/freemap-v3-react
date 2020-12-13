@@ -70,8 +70,6 @@ import { setActiveModal, deleteFeature } from 'fm3/actions/mainActions';
 
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 
-import 'fm3/styles/main.scss';
-import 'fm3/styles/leaflet.scss';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
 import { RootState } from 'fm3/storeCreator';
@@ -105,7 +103,9 @@ import { toolDefinitions } from 'fm3/toolDefinitions';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { MapsMenu } from './MapsMenu';
 import { WikiLayer } from './WikiLayer';
-import { Button, ButtonToolbar, Card } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Card from 'react-bootstrap/Card';
 
 const embed = window.self !== window.top;
 

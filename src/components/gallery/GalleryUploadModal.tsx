@@ -22,7 +22,9 @@ import { toDatetimeLocal } from 'fm3/dateUtils';
 import { RootState } from 'fm3/storeCreator';
 import { PictureModel } from './GalleryEditForm';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
-import { Button, FormCheck, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import FormCheck from 'react-bootstrap/FormCheck';
 
 type Props = { show: boolean };
 

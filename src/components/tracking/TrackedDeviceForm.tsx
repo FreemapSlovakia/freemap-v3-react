@@ -8,14 +8,13 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
 import { useMessages } from 'fm3/l10nInjector';
-import {
-  Button,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+
 import { RootState } from 'fm3/storeCreator';
 import { selectFeature } from 'fm3/actions/mainActions';
 

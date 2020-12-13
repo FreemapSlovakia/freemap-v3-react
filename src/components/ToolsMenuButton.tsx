@@ -6,8 +6,9 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import { is } from 'typescript-is';
-import { Button, Overlay, Popover } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Popover from 'react-bootstrap/Popover';
 
 export function ToolsMenuButton(): ReactElement {
   const m = useMessages();

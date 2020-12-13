@@ -14,7 +14,8 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 
 import 'fm3/styles/trackViewer.scss';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
-import { Button, Modal } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = { show: boolean };

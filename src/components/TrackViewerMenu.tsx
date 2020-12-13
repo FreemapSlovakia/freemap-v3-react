@@ -24,7 +24,8 @@ import { getType } from 'typesafe-actions';
 
 import 'fm3/styles/trackViewer.scss';
 import { assertType } from 'typescript-is';
-import { Button, DropdownButton } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function TrackViewerMenu(): ReactElement {

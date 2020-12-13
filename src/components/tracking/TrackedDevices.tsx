@@ -6,7 +6,10 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import { TrackedDevice } from './TrackedDevice';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Alert, Button, Modal, Table } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Alert from 'react-bootstrap/Alert';
+import Modal from 'react-bootstrap/Modal';
+import Table from 'react-bootstrap/Table';
 
 export function TrackedDevices(): ReactElement {
   const m = useMessages();

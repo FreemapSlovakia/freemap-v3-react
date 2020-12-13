@@ -12,7 +12,8 @@ import {
 } from 'fm3/actions/mapsActions';
 import { deleteFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
-import { Button, DropdownButton } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function MapsMenu(): ReactElement {

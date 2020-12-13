@@ -8,7 +8,7 @@ import { AccessTokenForm } from './AccessTokenForm';
 import { TrackedDevices } from './TrackedDevices';
 import { TrackedDeviceForm } from './TrackedDeviceForm';
 import { RootState } from 'fm3/storeCreator';
-import { Modal } from 'react-bootstrap';
+import Modal from 'react-bootstrap/Modal';
 
 // type Views =
 //   | 'devices'

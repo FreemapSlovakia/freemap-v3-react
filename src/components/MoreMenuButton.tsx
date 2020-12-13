@@ -13,7 +13,9 @@ import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
 import { RootState } from 'fm3/storeCreator';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
-import { Button, Overlay, Popover } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Popover from 'react-bootstrap/Popover';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function MoreMenuButton(): ReactElement {

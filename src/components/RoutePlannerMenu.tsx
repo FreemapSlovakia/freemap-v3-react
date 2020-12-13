@@ -25,14 +25,12 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { transportTypeDefs, TransportType } from 'fm3/transportTypeDefs';
-import {
-  Button,
-  ButtonGroup,
-  DropdownButton,
-  FormCheck,
-} from 'react-bootstrap';
-import { Messages } from 'fm3/translations/messagesInterface';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import FormCheck from 'react-bootstrap/FormCheck';
+import { Messages } from 'fm3/translations/messagesInterface';
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();

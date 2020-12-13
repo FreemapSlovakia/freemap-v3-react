@@ -13,14 +13,13 @@ import {
   galleryHideFilter,
 } from 'fm3/actions/galleryActions';
 import { RootState } from 'fm3/storeCreator';
-import {
-  Button,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+
 import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 type Props = { show: boolean };

@@ -13,7 +13,8 @@ import {
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';
 import { is } from 'typescript-is';
-import { Button, DropdownButton } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
 
 export function GalleryMenu(): ReactElement {

@@ -5,15 +5,13 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
-import {
-  Button,
-  FormCheck,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+import FormCheck from 'react-bootstrap/FormCheck';
 
 type Props = { show: boolean };
 

@@ -7,13 +7,11 @@ import { DateTime } from '../DateTime';
 import { GalleryTag } from 'fm3/actions/galleryActions';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { getMessageByKey } from 'fm3/l10nInjector';
-import {
-  Alert,
-  Button,
-  FormControl,
-  FormGroup,
-  InputGroup,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import Alert from 'react-bootstrap/Alert';
+import FormGroup from 'react-bootstrap/FormGroup';
 
 export interface PictureModel {
   title: string;

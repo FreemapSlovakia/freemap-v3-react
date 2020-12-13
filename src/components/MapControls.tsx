@@ -1,6 +1,8 @@
 import { useCallback, useState, useEffect, ReactElement } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { ButtonGroup, Button, Card } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Card from 'react-bootstrap/Card';
 import { MapSwitchButton } from './MapSwitchButton';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { RootState } from 'fm3/storeCreator';

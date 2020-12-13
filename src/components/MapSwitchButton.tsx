@@ -13,8 +13,10 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import useMedia from 'use-media';
 import { is } from 'typescript-is';
-import { Button, ButtonGroup, Overlay, Popover } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
+import Popover from 'react-bootstrap/Popover';
 
 function getKbdShortcut(key?: [string, boolean]) {
   return (

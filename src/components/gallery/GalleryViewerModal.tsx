@@ -41,14 +41,12 @@ import 'fm3/styles/gallery.scss';
 import { RootState } from 'fm3/storeCreator';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
-import {
-  Badge,
-  Button,
-  FormControl,
-  FormGroup,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import InputGroup from 'react-bootstrap/InputGroup';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import Modal from 'react-bootstrap/Modal';
+import Badge from 'react-bootstrap/Badge';
 
 type Props = { show: boolean };
 

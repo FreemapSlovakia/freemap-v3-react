@@ -3,18 +3,17 @@ import { FormEvent, ReactElement, useCallback, useState } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import {
-  Button,
-  DropdownButton,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  InputGroup,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import Dropdown from 'react-bootstrap/Dropdown';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',

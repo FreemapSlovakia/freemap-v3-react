@@ -11,14 +11,12 @@ import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import {
-  Alert,
-  Button,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  Modal,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import Alert from 'react-bootstrap/Alert';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = { show: boolean };

@@ -12,7 +12,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { Button } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();

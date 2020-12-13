@@ -1,3 +1,6 @@
+import 'font-awesome/scss/font-awesome.scss';
+import 'fm3/styles/index.scss';
+
 import { setDefaultGetErrorObject } from 'typescript-is';
 import { setStore as setErrorHandlerStore } from 'fm3/globalErrorHandler';
 import 'fullscreen-api-polyfill';
@@ -24,8 +27,6 @@ import 'fm3/fbLoader';
 import { createReduxStore } from 'fm3/storeCreator';
 import { storage } from 'fm3/storage';
 
-import 'font-awesome/scss/font-awesome.scss';
-import 'fm3/styles/bootstrap-override.scss';
 import { authInit, authCheckLogin } from './actions/authActions';
 import { assertType } from 'typescript-is';
 import { AppState } from './types/common';

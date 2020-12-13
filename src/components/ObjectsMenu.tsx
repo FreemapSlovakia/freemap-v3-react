@@ -17,8 +17,9 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { convertToDrawing } from 'fm3/actions/mainActions';
-import { Button, FormControl } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
+import FormControl from 'react-bootstrap/FormControl';
 
 export function ObjectsMenu(): ReactElement {
   const m = useMessages();

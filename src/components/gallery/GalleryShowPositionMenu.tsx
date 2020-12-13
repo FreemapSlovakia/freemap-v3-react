@@ -6,7 +6,8 @@ import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Button, Card } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 export function GalleryShowPositionMenu(): ReactElement | null {
   const m = useMessages();

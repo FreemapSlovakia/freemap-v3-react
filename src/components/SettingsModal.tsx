@@ -17,21 +17,19 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { LeafletMouseEvent } from 'leaflet';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import {
-  Alert,
-  Button,
-  DropdownButton,
-  FormCheck,
-  FormControl,
-  FormGroup,
-  FormLabel,
-  Modal,
-  OverlayTrigger,
-  Tab,
-  Tabs,
-  Tooltip,
-} from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import DropdownButton from 'react-bootstrap/DropdownButton';
 import Dropdown from 'react-bootstrap/Dropdown';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import FormControl from 'react-bootstrap/FormControl';
+import Alert from 'react-bootstrap/Alert';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+import FormCheck from 'react-bootstrap/FormCheck';
+import Tabs from 'react-bootstrap/Tabs';
+import Tooltip from 'react-bootstrap/Tooltip';
+import Tab from 'react-bootstrap/Tab';
 
 type Props = { show: boolean };
 
