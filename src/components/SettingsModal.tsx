@@ -152,6 +152,7 @@ export function SettingsModal({ show }: Props): ReactElement {
         <Modal.Body>
           <FormGroup>
             <FormCheck
+              id="chk-expert"
               type="checkbox"
               onChange={(e) => {
                 setExpertMode(e.currentTarget.checked);
@@ -332,6 +333,7 @@ export function SettingsModal({ show }: Props): ReactElement {
             </Tab>
             <Tab title={m?.settings.tab.general} eventKey="3" className="pt-2">
               <FormCheck
+                id="chk-preventTips"
                 type="checkbox"
                 onChange={(e) => {
                   setPreventTips(!e.currentTarget.checked);

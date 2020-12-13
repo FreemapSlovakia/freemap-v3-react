@@ -400,6 +400,7 @@ export function RoutePlannerMenu(): ReactElement {
         </span>
       </Button>
       <FormCheck
+        id="chk-milestones"
         className="ml-1"
         type="checkbox"
         inline

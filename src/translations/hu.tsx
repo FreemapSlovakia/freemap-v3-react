@@ -1343,21 +1343,21 @@ const hu: Messages = {
             <br />
             <em>
               térkép ©{' '}
-              <a
+              <Alert.Link
                 href="https://www.freemap.sk/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Freemap Szlovákia
-              </a>
+              </Alert.Link>
               , adatok{' '}
-              <a
+              <Alert.Link
                 href="https://osm.org/copyright"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 © OpenStreetMap közreműködők
-              </a>
+              </Alert.Link>
               , © SRTM
             </em>
           </li>

@@ -110,6 +110,7 @@ export function TipsModal({ show }: Props): ReactElement {
           <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
         </Button>
         <FormCheck
+          id="chk-prevent"
           inline
           onChange={handleNextTimePrevent}
           type="checkbox"

@@ -63,7 +63,7 @@ export function Toast({
           <ButtonToolbar>
             {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
               <Button
-                className={i > 0 ? 'ml-1' : ''}
+                className={i > 0 ? 'ml-2' : ''}
                 key={name}
                 variant={buttonStyle}
                 onClick={() => onAction(id, action)}

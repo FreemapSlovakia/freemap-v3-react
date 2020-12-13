@@ -251,6 +251,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
         <hr />
         <p>{m?.pdfExport.layersTitle}</p>
         <FormCheck
+          id="contours"
           type="checkbox"
           checked={contours}
           onChange={() => {
@@ -259,12 +260,14 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.contours}
         />
         <FormCheck
+          id="shading"
           type="checkbox"
           checked={shadedRelief}
           onChange={() => setShadedRelief((b) => !b)}
           label={m?.pdfExport.layers.shading}
         />
         <FormCheck
+          id="hikingTrails"
           type="checkbox"
           checked={hikingTrails}
           onChange={() => {
@@ -273,6 +276,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.hikingTrails}
         />
         <FormCheck
+          id="bicycleTrails"
           checked={bicycleTrails}
           onChange={() => {
             setBicycleTrails((b) => !b);
@@ -280,6 +284,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.bicycleTrails}
         />
         <FormCheck
+          id="skiTrails"
           type="checkbox"
           checked={skiTrails}
           onChange={() => {
@@ -288,6 +293,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.skiTrails}
         />
         <FormCheck
+          id="horseTrails"
           type="checkbox"
           checked={horseTrails}
           onChange={() => {
@@ -296,6 +302,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.horseTrails}
         />
         <FormCheck
+          id="drawing"
           type="checkbox"
           checked={drawing}
           onChange={() => {
@@ -304,6 +311,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.drawing}
         />
         <FormCheck
+          id="plannedRoute"
           type="checkbox"
           checked={plannedRoute}
           onChange={() => {
@@ -312,6 +320,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
           label={m?.pdfExport.layers.plannedRoute}
         />
         <FormCheck
+          id="track"
           type="checkbox"
           checked={track}
           onChange={() => {

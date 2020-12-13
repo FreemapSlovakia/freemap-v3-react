@@ -161,6 +161,7 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
         {!uploading && (
           <>
             <FormCheck
+              id="chk-preview"
               type="checkbox"
               onChange={() => {
                 dispatch(galleryToggleShowPreview());

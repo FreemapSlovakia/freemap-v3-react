@@ -156,6 +156,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
 
         <strong>{m?.embed.enableFeatures}</strong>
         <FormCheck
+          id="enableSearch"
           type="checkbox"
           onChange={({ currentTarget }) => {
             setEnableSearch(currentTarget.checked);
@@ -164,6 +165,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           label={m?.embed.enableSearch}
         />
         <FormCheck
+          id="enableMapSwitch"
           type="checkbox"
           onChange={({ currentTarget }) => {
             setEnableMapSwitch(currentTarget.checked);
@@ -172,6 +174,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
           label={m?.embed.enableMapSwitch}
         />
         <FormCheck
+          id="enableLocateMe"
           type="checkbox"
           onChange={({ currentTarget }) => {
             setEnableLocateMe(currentTarget.checked);

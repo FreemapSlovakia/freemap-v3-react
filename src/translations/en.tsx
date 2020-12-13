@@ -1321,21 +1321,21 @@ const en: Messages = {
             <br />
             <em>
               map ©{' '}
-              <a
+              <Alert.Link
                 href="https://www.freemap.sk/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Freemap Slovakia
-              </a>
+              </Alert.Link>
               , data{' '}
-              <a
+              <Alert.Link
                 href="https://osm.org/copyright"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 © OpenStreetMap contributors
-              </a>
+              </Alert.Link>
               , © SRTM
             </em>
           </li>

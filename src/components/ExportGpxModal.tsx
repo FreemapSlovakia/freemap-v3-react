@@ -151,6 +151,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
             <Alert variant="warning">{m?.gpxExport.disabledAlert}</Alert>
             {exportableDefinitions.map(({ type, icon }) => (
               <FormCheck
+                id={'chk-' + type}
                 type="checkbox"
                 key={type}
                 checked={exportables.includes(type)}
