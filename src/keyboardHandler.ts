@@ -215,19 +215,19 @@ export function attachKeyboardHandler(store: MyStore): void {
         }
       } else if (initCode === 'KeyE') {
         switch (event.code) {
-          case 's':
+          case 'KeyS':
             store.dispatch(setActiveModal('settings'));
             event.preventDefault();
             return;
-          case 'g':
+          case 'KeyG':
             store.dispatch(setActiveModal('export-gpx'));
             event.preventDefault();
             return;
-          case 'p':
+          case 'KeyP':
             store.dispatch(setActiveModal('export-pdf'));
             event.preventDefault();
             return;
-          case 'e':
+          case 'KeyE':
             store.dispatch(setActiveModal('embed'));
             event.preventDefault();
             return;

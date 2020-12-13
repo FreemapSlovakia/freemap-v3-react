@@ -100,6 +100,7 @@ export function Device({ device }: Props): ReactElement {
               <span>
                 {/iPhone|iPad|iPod|Android/i.test(navigator.userAgent) ? (
                   <Button
+                    variant="secondary"
                     onClick={handleCopyClick}
                     size="sm"
                     title={m?.external.copy}
@@ -126,6 +127,7 @@ export function Device({ device }: Props): ReactElement {
         <Button
           size="sm"
           type="button"
+          variant="secondary"
           onClick={handleModify}
           title={m?.general.modify}
         >
@@ -134,7 +136,7 @@ export function Device({ device }: Props): ReactElement {
         <Button
           size="sm"
           type="button"
-          variant="primary"
+          variant="secondary"
           onClick={handleShowAccessTokens}
           title={m?.tracking.devices.watchTokens}
         >
@@ -143,6 +145,7 @@ export function Device({ device }: Props): ReactElement {
         <Button
           size="sm"
           type="button"
+          variant="secondary"
           onClick={handleView}
           title={m?.tracking.devices.watchPrivately}
         >

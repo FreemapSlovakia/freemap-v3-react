@@ -77,7 +77,7 @@ export function DrawingEditLabelModal({ show }: Props): ReactElement {
               onChange={handleLocalLabelChange}
             />
           </FormGroup>
-          <Alert>{m?.drawing.edit.hint}</Alert>
+          <Alert variant="secondary">{m?.drawing.edit.hint}</Alert>
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit" variant="info">

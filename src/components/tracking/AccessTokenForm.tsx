@@ -101,6 +101,7 @@ export function AccessTokenForm(): ReactElement {
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
         <Button
+          variant="dark"
           type="button"
           onClick={() => {
             dispatch(trackingActions.modifyAccessToken(undefined));

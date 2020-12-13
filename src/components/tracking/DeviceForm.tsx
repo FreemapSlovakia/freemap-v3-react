@@ -110,6 +110,7 @@ export function DeviceForm(): ReactElement {
           <FormLabel>Token</FormLabel>
           <InputGroup>
             <DropdownButton
+              variant="secondary"
               rootCloseEvent="mousedown"
               as={InputGroup.Append}
               id="input-dropdown-addon"
@@ -172,7 +173,9 @@ export function DeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Append>{m?.general.minutes}</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
@@ -180,6 +183,7 @@ export function DeviceForm(): ReactElement {
         <Button type="submit">{m?.general.save}</Button>
         <Button
           type="button"
+          variant="dark"
           onClick={() => {
             dispatch(trackingActions.modifyDevice(undefined));
           }}

@@ -70,7 +70,9 @@ export function DateTime({
   ) : (
     <InputGroup>
       <InputGroup.Append>
-        <FontAwesomeIcon icon="calendar" />
+        <InputGroup.Text>
+          <FontAwesomeIcon icon="calendar" />
+        </InputGroup.Text>
       </InputGroup.Append>
       <FormControl
         type="date"
@@ -81,7 +83,9 @@ export function DateTime({
         required={!!timePart}
       />
       <InputGroup.Append>
-        <FontAwesomeIcon icon="clock-o" />
+        <InputGroup.Text>
+          <FontAwesomeIcon icon="clock-o" />
+        </InputGroup.Text>
       </InputGroup.Append>
       <FormControl
         type="time"

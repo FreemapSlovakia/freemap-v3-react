@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
-import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
@@ -29,7 +28,7 @@ export function TrackedDevices(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="info">{m?.tracking.trackedDevices.desc}</Alert>
+        <p>{m?.tracking.trackedDevices.desc}</p>
         <Table striped bordered responsive>
           <thead>
             <tr>
@@ -60,6 +59,7 @@ export function TrackedDevices(): ReactElement {
           {m?.general.add}
         </Button>
         <Button
+          variant="dark"
           type="button"
           onClick={() => {
             dispatch(setActiveModal(null));

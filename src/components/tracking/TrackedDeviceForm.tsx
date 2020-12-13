@@ -120,7 +120,9 @@ export function TrackedDeviceForm(): ReactElement {
           <FormLabel>{m?.tracking.trackedDevice.color}</FormLabel>
           <InputGroup>
             <FormControl value={color} onChange={setColor} />
-            <InputGroup.Append>HTML</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>HTML</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
@@ -132,7 +134,9 @@ export function TrackedDeviceForm(): ReactElement {
               type="number"
               min="1"
             />
-            <InputGroup.Append>px</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>px</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
@@ -149,7 +153,9 @@ export function TrackedDeviceForm(): ReactElement {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Append>{m?.general.minutes}</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
@@ -172,7 +178,9 @@ export function TrackedDeviceForm(): ReactElement {
               value={splitDistance}
               onChange={setSplitDistance}
             />
-            <InputGroup.Append>{m?.general.meters}</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
@@ -185,13 +193,16 @@ export function TrackedDeviceForm(): ReactElement {
               value={splitDuration}
               onChange={setSplitDuration}
             />
-            <InputGroup.Append>{m?.general.minutes}</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
         <Button type="submit">{m?.general.save}</Button>
         <Button
+          variant="dark"
           type="button"
           onClick={() => {
             dispatch(trackingActions.modifyTrackedDevice(undefined));

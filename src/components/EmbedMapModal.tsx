@@ -123,7 +123,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
         <FormGroup style={{ maxWidth: '542px' }}>
           <FormLabel>{m?.embed.dimensions}</FormLabel>
           <InputGroup>
-            <InputGroup.Append>{m?.embed.width}</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
+            </InputGroup.Append>
             <FormControl
               type="number"
               value={width}
@@ -135,7 +137,9 @@ export function EmbedMapModal({ show }: Props): ReactElement {
                 setWidth(currentTarget.value);
               }}
             />
-            <InputGroup.Append>{m?.embed.height}</InputGroup.Append>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
+            </InputGroup.Append>
             <FormControl
               type="number"
               value={height}

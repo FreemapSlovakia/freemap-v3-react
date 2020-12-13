@@ -41,7 +41,7 @@ export function AccessTokens(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="info">
+        <Alert variant="secondary">
           {m?.tracking.accessTokens.desc(deviceName)}
         </Alert>
         <Table striped bordered responsive>
@@ -74,6 +74,7 @@ export function AccessTokens(): ReactElement {
         </Button>
         <Button
           type="button"
+          variant="dark"
           onClick={() => {
             dispatch(trackingActions.showAccessTokens(undefined));
           }}

@@ -232,7 +232,9 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 value={createdAtFrom}
                 onChange={handleCreatedAtFromChange}
               />
-              <InputGroup.Append> - </InputGroup.Append>
+              <InputGroup.Append>
+                <InputGroup.Text> - </InputGroup.Text>
+              </InputGroup.Append>
               <FormControl
                 type="date"
                 value={createdAtTo}
@@ -248,7 +250,9 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 value={takenAtFrom}
                 onChange={handleTakenAtFromChange}
               />
-              <InputGroup.Append> - </InputGroup.Append>
+              <InputGroup.Append>
+                <InputGroup.Text> - </InputGroup.Text>
+              </InputGroup.Append>
               <FormControl
                 type="date"
                 value={takenAtTo}
@@ -267,7 +271,9 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
                 value={ratingFrom}
                 onChange={handleRatingFromChange}
               />
-              <InputGroup.Append> - </InputGroup.Append>
+              <InputGroup.Append>
+                <InputGroup.Text> - </InputGroup.Text>
+              </InputGroup.Append>
               <FormControl
                 type="number"
                 min={ratingFrom || 1}

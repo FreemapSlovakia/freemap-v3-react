@@ -264,7 +264,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                       onChange={(newValue) => setEleSmoothingFactor(newValue)}
                     />
                   </div>
-                  <Alert>
+                  <Alert variant="secondary">
                     {m?.settings.expert.trackViewerEleSmoothing.info}
                   </Alert>
                 </>
@@ -313,7 +313,9 @@ export function SettingsModal({ show }: Props): ReactElement {
                   </FormGroup>
                 </>
               ) : (
-                <Alert>{m?.settings.account.noAuthInfo}</Alert>
+                <Alert variant="warning">
+                  {m?.settings.account.noAuthInfo}
+                </Alert>
               )}
             </Tab>
             <Tab title={m?.settings.tab.general} eventKey="3">

@@ -30,7 +30,7 @@ export function Devices(): ReactElement {
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert variant="info">{m?.tracking.devices.desc()}</Alert>
+        <Alert variant="secondary">{m?.tracking.devices.desc()}</Alert>
         <Table striped bordered responsive>
           <thead>
             <tr>
@@ -59,6 +59,7 @@ export function Devices(): ReactElement {
           {m?.general.add}
         </Button>
         <Button
+          variant="dark"
           type="button"
           onClick={() => {
             dispatch(setActiveModal(null));
