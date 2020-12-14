@@ -1009,7 +1009,7 @@ const sk: Messages = {
       T: 'Turistická',
       C: 'Cyklomapa',
       K: 'Bežkárska',
-      S: 'Z lietadla (Bing)',
+      S: 'Z lietadla',
       Z: 'Ortofotomozaika SR',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',

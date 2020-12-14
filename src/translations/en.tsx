@@ -987,7 +987,7 @@ const en: Messages = {
       T: 'Hiking',
       C: 'Bicycle',
       K: 'Crosscountry Ski',
-      S: 'Aerial (Bing)',
+      S: 'Aerial',
       Z: 'Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
