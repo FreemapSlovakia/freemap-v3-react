@@ -79,7 +79,6 @@ export function TrackViewerMenu(): ReactElement {
         </span>
       </Button>
       <DropdownButton
-        rootCloseEvent="mousedown"
         className="ml-1"
         variant="secondary"
         id="colorizing_mode"

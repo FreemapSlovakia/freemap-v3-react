@@ -38,7 +38,6 @@ export function ChangesetsMenu(): ReactElement {
   return (
     <>
       <DropdownButton
-        rootCloseEvent="mousedown"
         variant="secondary"
         id="days"
         onSelect={(d) => {

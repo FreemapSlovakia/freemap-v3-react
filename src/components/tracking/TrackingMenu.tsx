@@ -74,7 +74,6 @@ export function TrackingMenu(): ReactElement {
         </span>
       </Button>
       <DropdownButton
-        rootCloseEvent="mousedown"
         className="ml-1"
         variant="secondary"
         id="tracking-visual-dropdown"

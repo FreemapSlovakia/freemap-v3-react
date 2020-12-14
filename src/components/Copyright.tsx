@@ -48,7 +48,6 @@ export function Copyright(): ReactElement {
       <OverlayTrigger
         trigger="click"
         rootClose
-        rootCloseEvent="mousedown"
         placement="top"
         overlay={
           <Popover

@@ -102,7 +102,7 @@ export function ObjectsMenu(): ReactElement {
             ref={inputRef}
           />
         </Dropdown.Toggle>
-        <Dropdown.Menu rootCloseEvent="mousedown">
+        <Dropdown.Menu>
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
 

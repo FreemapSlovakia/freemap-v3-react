@@ -28,7 +28,6 @@ export function MapsMenu(): ReactElement {
   return (
     <>
       <DropdownButton
-        rootCloseEvent="mousedown"
         id="maps-dropdown"
         variant="secondary"
         title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}

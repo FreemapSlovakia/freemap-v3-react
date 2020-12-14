@@ -111,7 +111,6 @@ export function DeviceForm(): ReactElement {
           <InputGroup>
             <DropdownButton
               variant="secondary"
-              rootCloseEvent="mousedown"
               as={InputGroup.Append}
               id="input-dropdown-addon"
               title={types[type]}

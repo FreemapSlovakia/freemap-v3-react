@@ -78,7 +78,6 @@ export function ToolsMenuButton(): ReactElement {
       )}
       <Overlay
         rootClose
-        rootCloseEvent="mousedown"
         placement="bottom"
         show={show}
         onHide={handleHide}

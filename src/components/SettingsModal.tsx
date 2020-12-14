@@ -206,7 +206,6 @@ export function SettingsModal({ show }: Props): ReactElement {
                     <FormLabel>
                       <p>{m?.settings.expert.overlayOpacity}</p>
                       <DropdownButton
-                        rootCloseEvent="mousedown"
                         variant="secondary"
                         id="overlayOpacity"
                         onSelect={(o) => {

@@ -258,11 +258,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </InputGroup.Append>
             </InputGroup>
           </Dropdown.Toggle>
-          <Dropdown.Menu
-            key={searchSeq}
-            rootCloseEvent="mousedown"
-            className="fm-search-dropdown"
-          >
+          <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
             {results.map((result) => (
               <Dropdown.Item
                 key={result.id}

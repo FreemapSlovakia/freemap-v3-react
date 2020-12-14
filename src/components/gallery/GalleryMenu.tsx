@@ -36,7 +36,6 @@ export function GalleryMenu(): ReactElement {
         <span className="d-none d-sm-inline"> {m?.gallery.filter}</span>
       </Button>
       <DropdownButton
-        rootCloseEvent="mousedown"
         className="ml-1"
         variant="secondary"
         id="all-pics"

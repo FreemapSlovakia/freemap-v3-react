@@ -132,7 +132,6 @@ export function RoutePlannerMenu(): ReactElement {
     <>
       <ButtonGroup>
         <DropdownButton
-          rootCloseEvent="mousedown"
           variant={pickPointMode === 'start' ? 'dark' : 'secondary'}
           as={ButtonGroup}
           title={
@@ -183,7 +182,6 @@ export function RoutePlannerMenu(): ReactElement {
               ⇆
             </Button>
             <DropdownButton
-              rootCloseEvent="mousedown"
               as={ButtonGroup}
               variant={pickPointMode === 'finish' ? 'dark' : 'secondary'}
               title={
@@ -225,7 +223,6 @@ export function RoutePlannerMenu(): ReactElement {
         )}
       </ButtonGroup>
       <DropdownButton
-        rootCloseEvent="mousedown"
         className="ml-1"
         variant="secondary"
         id="transport-type"
@@ -294,7 +291,6 @@ export function RoutePlannerMenu(): ReactElement {
           ))}
       </DropdownButton>
       <DropdownButton
-        rootCloseEvent="mousedown"
         className="ml-1"
         variant="secondary"
         id="mode"
@@ -317,7 +313,6 @@ export function RoutePlannerMenu(): ReactElement {
       </DropdownButton>
       {alternatives.length > 1 && (
         <DropdownButton
-          rootCloseEvent="mousedown"
           className="ml-1"
           variant="secondary"
           id="transport-type"

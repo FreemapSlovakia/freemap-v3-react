@@ -311,6 +311,28 @@ export function Main(): ReactElement {
 
   const embedToolDef = embed && toolDefinitions.find((td) => td.tool === tool);
 
+  // this is workaround to prevent map click events if popper is active (Overlay is shown)
+  useEffect(() => {
+    const mo = new MutationObserver(() => {
+      document.body.classList.toggle(
+        'fm-overlay-backdrop-enable',
+        document.querySelector('*[data-popper-reference-hidden=false]') !==
+          null,
+      );
+    });
+
+    mo.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['data-popper-reference-hidden'],
+    });
+
+    return () => {
+      mo.disconnect();
+    };
+  }, []);
+
   return (
     <>
       <style>
@@ -493,6 +515,7 @@ export function Main(): ReactElement {
         </MapContainer>
         {showElevationChart && <AsyncElevationChart />}
       </div>
+      <div className="fm-overlay-backdrop" />
     </>
   );
 }

@@ -180,7 +180,6 @@ export function MapSwitchButton(): ReactElement {
       </Button>
       <Overlay
         rootClose
-        rootCloseEvent="mousedown"
         placement="top"
         show={show}
         onHide={handleHide}

@@ -97,12 +97,10 @@ export function MoreMenuButton(): ReactElement {
       </Button>
       <Overlay
         rootClose
-        rootCloseEvent="mousedown"
         placement="bottom"
         show={show}
         onHide={close}
         target={button.current}
-        // shouldUpdatePosition
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
           <Popover.Content>

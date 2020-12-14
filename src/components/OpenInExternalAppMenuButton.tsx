@@ -65,7 +65,6 @@ export function OpenInExternalAppMenuButton({
       </Button>
       <Overlay
         rootClose
-        rootCloseEvent="mousedown"
         placement={placement ?? 'bottom'}
         // trigger="focus"
         show={show}
