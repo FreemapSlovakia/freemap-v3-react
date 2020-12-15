@@ -173,6 +173,7 @@ export const baseLayers: BaseLayerDef[] = [
       {
         type: 'map',
         name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
+        url: 'https://www.esri.com/',
       },
     ],
     primary: '!sk',
