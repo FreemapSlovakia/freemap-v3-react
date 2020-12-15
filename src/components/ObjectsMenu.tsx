@@ -66,9 +66,17 @@ export function ObjectsMenu(): ReactElement {
     [zoom, dispatch],
   );
 
+  // ugly hack not to close dropdown on open
+  const justOpenedRef = useRef(false);
+
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+    if (justOpenedRef.current) {
+      justOpenedRef.current = false;
+      return;
+    }
+
     if (!isOpen) {
       setDropdownOpened(false);
 
@@ -97,6 +105,7 @@ export function ObjectsMenu(): ReactElement {
             onChange={handleFilterSet}
             value={filter}
             onFocus={() => {
+              justOpenedRef.current = true;
               setDropdownOpened(true);
             }}
             ref={inputRef}
