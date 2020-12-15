@@ -129,6 +129,6 @@ export type Selection =
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
 
-export const convertToDrawing = createAction('CONVERT_TO_MEASUREMENT')<
+export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
   number | undefined
 >();

@@ -32,19 +32,11 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
           return;
         }
 
-        const points: Point[] = [];
+        const coords = alt.legs.flatMap((leg) =>
+          leg.steps.flatMap((step) => step.geometry.coordinates),
+        );
 
-        const coords: number[][] = [];
-
-        for (const leg of alt.legs) {
-          for (const step of leg.steps) {
-            coords.push(...step.geometry.coordinates);
-          }
-        }
-
-        let id = 0;
-
-        const ls = lineString(coords);
+        const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
 
         if (action.payload !== undefined) {
           simplify(ls, {
@@ -54,19 +46,13 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
           });
         }
 
-        for (const p of ls.geometry.coordinates) {
-          points.push({
+        draft.drawingLines.lines.push({
+          type: 'line',
+          points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
             id,
-          });
-
-          id++;
-        }
-
-        draft.drawingLines.lines.push({
-          type: 'line',
-          points,
+          })),
         });
 
         draft.main.selection = {
