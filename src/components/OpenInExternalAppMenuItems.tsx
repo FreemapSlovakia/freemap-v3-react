@@ -274,7 +274,7 @@ export function OpenInExternalAppDropdownItems({
       )}
       {!url && hasClipboard && (
         <Dropdown.Item eventKey="copy" onSelect={handleDropdownItemSelect}>
-          <FontAwesomeIcon icon="clipboard" /> {m?.external.copy}
+          <FontAwesomeIcon icon="clipboard" /> {m?.general.copyUrl}
         </Dropdown.Item>
       )}
       {!url && hasShare && (

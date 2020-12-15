@@ -1,3 +1,4 @@
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -8,7 +9,7 @@ export const saveDeviceProcessor: Processor<
   typeof trackingActions.saveDevice
 > = {
   actionCreator: trackingActions.saveDevice,
-  errorKey: 'tracking.savingError', // TODO
+  errorKey: 'general.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const { modifiedDeviceId } = getState().tracking;
 
@@ -31,6 +32,14 @@ export const saveDeviceProcessor: Processor<
 
       dispatch(trackingActions.modifyDevice(undefined));
     }
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved',
+      }),
+    );
   },
 };
 
@@ -38,7 +47,7 @@ export const loadDevicesProcessor: Processor<
   typeof trackingActions.loadDevices
 > = {
   actionCreator: trackingActions.loadDevices,
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.loadError',
   handle: async ({ dispatch, getState }) => {
     const { data } = await httpRequest({
       getState,
@@ -62,7 +71,7 @@ export const deleteDeviceProcessor: Processor<
   typeof trackingActions.deleteDevice
 > = {
   actionCreator: trackingActions.deleteDevice,
-  errorKey: 'tracking.deleteError', // TODO
+  errorKey: 'general.deleteError',
   handle: async ({ dispatch, getState, action }) => {
     await httpRequest({
       getState,
@@ -70,6 +79,14 @@ export const deleteDeviceProcessor: Processor<
       url: `/tracking/devices/${encodeURIComponent(action.payload)}`,
       expectedStatus: 204,
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.deleted',
+      }),
+    );
 
     dispatch(trackingActions.loadDevices());
   },

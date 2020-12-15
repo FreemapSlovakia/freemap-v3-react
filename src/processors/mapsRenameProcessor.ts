@@ -1,4 +1,5 @@
 import { mapsLoadList, mapsRename } from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
@@ -21,6 +22,14 @@ export const mapsRenameProcessor: Processor<typeof mapsRename> = {
         name,
       },
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved', // TODO
+      }),
+    );
 
     dispatch(mapsLoadList());
   },

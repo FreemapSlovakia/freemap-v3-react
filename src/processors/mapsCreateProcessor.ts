@@ -1,4 +1,5 @@
 import { mapsCreate, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
@@ -25,6 +26,14 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
         data: getMapDataFromState(getState()),
       },
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved',
+      }),
+    );
 
     dispatch(mapsLoadList());
 

@@ -70,6 +70,12 @@ const en: Messages = {
     convertToDrawing: 'Convert to drawing',
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.',
+    copyUrl: 'Copy URL',
+    savingError: ({ err }) => `Save error: ${err}`,
+    loadError: ({ err }) => `Loading error: ${err}`,
+    deleteError: ({ err }) => `Deleting error: ${err}`,
+    deleted: 'Deleted.',
+    saved: 'Saved.',
   },
 
   tools: {
@@ -896,7 +902,6 @@ const en: Messages = {
     window: 'New window',
     url: 'Share URL',
     image: 'Share photo',
-    copy: 'Copy URL',
   },
 
   search: {
@@ -1104,9 +1109,6 @@ const en: Messages = {
   },
 
   tracking: {
-    savingError: ({ err }) => `Save error: ${err}`,
-    loadError: ({ err }) => `Loading error: ${err}`,
-    deleteError: ({ err }) => `Deleting error: ${err}`,
     unauthenticatedError: 'Please log-in to manage your devices.',
     trackedDevices: {
       button: 'Watched',

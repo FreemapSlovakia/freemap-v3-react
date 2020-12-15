@@ -37,6 +37,12 @@ export type Messages = {
     clear: string;
     convertToDrawing: string;
     simplifyPrompt: string;
+    copyUrl: string;
+    savingError: ({ err }: Err) => string;
+    loadError: ({ err }: Err) => string;
+    deleteError: ({ err }: Err) => string;
+    saved: string;
+    deleted: string;
   };
   tools: {
     none: string;
@@ -499,7 +505,6 @@ export type Messages = {
     window: string;
     url: string;
     image: string;
-    copy: string;
   };
   search: {
     inProgress: string;
@@ -616,9 +621,6 @@ export type Messages = {
     };
   };
   tracking: {
-    savingError: ({ err }: Err) => string;
-    loadError: ({ err }: Err) => string;
-    deleteError: ({ err }: Err) => string;
     unauthenticatedError: string;
     trackedDevices: {
       button: string;

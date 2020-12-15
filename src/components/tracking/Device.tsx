@@ -103,7 +103,7 @@ export function Device({ device }: Props): ReactElement {
                     variant="secondary"
                     onClick={handleCopyClick}
                     size="sm"
-                    title={m?.external.copy}
+                    title={m?.general.copyUrl}
                     type="button"
                   >
                     <FontAwesomeIcon icon="clipboard" />

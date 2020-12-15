@@ -30,7 +30,7 @@ const delay = (ms: number) =>
 
 export const wikiLayerProcessor: Processor = {
   actionCreator: [mapRefocus, enableUpdatingUrl /* for initial */],
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.loadError',
   handle: async ({ getState, dispatch, action }) => {
     const moved =
       isActionOf(mapRefocus, action) &&

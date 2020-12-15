@@ -6,9 +6,9 @@ export const toastsStopTimeoutProcessor: Processor<typeof toastsStopTimeout> = {
   actionCreator: toastsStopTimeout,
   handle: async ({ action: { payload: id } }) => {
     const tm = timeoutMap.get(id);
-    if (tm) {
+    if (tm?.timeoutId != null) {
       clearTimeout(tm.timeoutId);
-      tm.timeoutId = null as any; // TODO fix
+      tm.timeoutId = null;
     }
   },
 };

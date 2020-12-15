@@ -1,5 +1,6 @@
 import { deleteFeature } from 'fm3/actions/mainActions';
 import { mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
@@ -22,6 +23,15 @@ export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
     });
 
     dispatch(mapsLoad({}));
+
     dispatch(mapsLoadList());
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.deleted',
+      }),
+    );
   },
 };

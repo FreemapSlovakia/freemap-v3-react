@@ -71,6 +71,12 @@ const sk: Messages = {
     convertToDrawing: 'Skonvertovať na kreslenie',
     simplifyPrompt:
       'Prosím zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
+    copyUrl: 'Kopírovať URL',
+    savingError: ({ err }) => `Chyba ukladania: ${err}`,
+    loadError: ({ err }) => `Chyba načítania: ${err}`,
+    deleteError: ({ err }) => `Chyba mazania: ${err}`,
+    deleted: 'Zmazané.',
+    saved: 'Uložené.',
   },
 
   tools: {
@@ -916,7 +922,6 @@ const sk: Messages = {
     window: 'Nové okno',
     url: 'Zdieľať URL',
     image: 'Zdieľať fotografiu',
-    copy: 'Kopírovať URL', // TODO move to general
   },
 
   search: {
@@ -1124,10 +1129,6 @@ const sk: Messages = {
   },
 
   tracking: {
-    savingError: ({ err }) => `Chyba ukladania: ${err}`,
-    loadError: ({ err }) => `Chyba načítania: ${err}`,
-    deleteError: ({ err }) => `Chyba mazania: ${err}`,
-
     unauthenticatedError:
       'Prosím, prihláste sa, aby ste mohli spravovať vaše zariadenia.',
     trackedDevices: {

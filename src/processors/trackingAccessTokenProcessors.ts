@@ -1,3 +1,4 @@
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
@@ -9,7 +10,7 @@ export const saveAccessTokenProcessor: Processor<
   typeof trackingActions.saveAccessToken
 > = {
   actionCreator: trackingActions.saveAccessToken,
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.savingError',
   handle: async ({ dispatch, getState, action }) => {
     const { modifiedAccessTokenId } = getState().tracking;
 
@@ -34,6 +35,14 @@ export const saveAccessTokenProcessor: Processor<
 
       dispatch(trackingActions.modifyAccessToken(undefined));
     }
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved',
+      }),
+    );
   },
 };
 
@@ -41,7 +50,7 @@ export const loadAccessTokensProcessor: Processor<
   typeof trackingActions.loadAccessTokens
 > = {
   actionCreator: trackingActions.loadAccessTokens,
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.loadError',
   handle: async ({ dispatch, getState }) => {
     const { data } = await httpRequest({
       getState,
@@ -70,13 +79,21 @@ export const deleteAccessTokenProcessor: Processor<
   typeof trackingActions.deleteAccessToken
 > = {
   actionCreator: trackingActions.deleteAccessToken,
-  errorKey: 'tracking.deleteError', // TODO
+  errorKey: 'general.deleteError',
   handle: async ({ dispatch, getState, action }) => {
     await httpRequest({
       getState,
       method: 'DELETE',
       url: `/tracking/access-tokens/${encodeURIComponent(action.payload)}`,
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.deleted',
+      }),
+    );
 
     dispatch(trackingActions.loadAccessTokens());
   },

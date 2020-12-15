@@ -91,7 +91,7 @@ export function AccessToken({ accessToken }: Props): ReactElement {
             <Button
               onClick={handleCopyClick}
               size="sm"
-              title={m?.external.copy}
+              title={m?.general.copyUrl}
               type="button"
             >
               <FontAwesomeIcon icon="clipboard" />

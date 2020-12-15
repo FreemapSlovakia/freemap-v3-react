@@ -72,6 +72,12 @@ const cs: Messages = {
     convertToDrawing: 'Zkonvertovat na kreslení',
     simplifyPrompt:
       'Prosím zadejte faktor zjednodušení. Zadejte nulu pro vynechání zjednodušení.',
+    copyUrl: 'Kopírovat URL',
+    savingError: ({ err }) => `Chyba ukládání: ${err}`,
+    loadError: ({ err }) => `Chyba nahrávání: ${err}`,
+    deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
+    deleted: 'Smazané.',
+    saved: 'Uložené.',
   },
 
   tools: {
@@ -906,7 +912,6 @@ const cs: Messages = {
     window: 'Nové okno',
     url: 'Sdílet URL',
     image: 'Sdílet fotografii',
-    copy: 'Kopírovat URL',
   },
 
   search: {
@@ -1112,9 +1117,6 @@ const cs: Messages = {
   },
 
   tracking: {
-    savingError: ({ err }) => `Chyba ukládání: ${err}`,
-    loadError: ({ err }) => `Chyba nahrávání: ${err}`,
-    deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
     unauthenticatedError: 'Pro správu zařízení se musíte přihlásit.',
     trackedDevices: {
       button: 'Sledované',

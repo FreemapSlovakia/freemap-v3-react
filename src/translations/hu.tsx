@@ -71,6 +71,12 @@ const hu: Messages = {
     convertToDrawing: 'Átalakítás rajzzá',
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.', // TODO translate
+    copyUrl: 'URL másolása',
+    savingError: ({ err }) => `Mentési hiba: ${err}`,
+    loadError: ({ err }) => `Betöltési hiba: ${err}`,
+    deleteError: ({ err }) => `Törlési hiba: ${err}`,
+    deleted: 'Deleted.', // TODO translate
+    saved: 'Saved.', // TODO translate
   },
 
   tools: {
@@ -912,7 +918,6 @@ const hu: Messages = {
     window: 'Új ablakban',
     url: 'URL megosztása',
     image: 'Fénykép megosztása',
-    copy: 'URL másolása',
   },
 
   search: {
@@ -1122,9 +1127,6 @@ const hu: Messages = {
   },
 
   tracking: {
-    savingError: ({ err }) => `Mentési hiba: ${err}`,
-    loadError: ({ err }) => `Betöltési hiba: ${err}`,
-    deleteError: ({ err }) => `Törlési hiba: ${err}`,
     unauthenticatedError: 'Eszközei kezeléséhez kérjük, jelentkezzék be.',
     trackedDevices: {
       button: 'Figyelt',

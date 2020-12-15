@@ -4,7 +4,7 @@ import { Dispatch } from 'redux';
 
 export const timeoutMap = new Map<
   string,
-  { timeoutId: number; dispatch: Dispatch<RootAction> }
+  { timeoutId: number | null; dispatch: Dispatch<RootAction> }
 >();
 
 export function setupTimeout(
@@ -26,7 +26,7 @@ export function setupTimeout(
 export function removeTimeout(id: string): void {
   const tm = timeoutMap.get(id);
 
-  if (tm) {
+  if (tm?.timeoutId != null) {
     timeoutMap.delete(id);
     clearTimeout(tm.timeoutId);
   }

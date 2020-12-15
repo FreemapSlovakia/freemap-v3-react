@@ -30,7 +30,7 @@ interface WikiResponse2 {
 
 export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   actionCreator: wikiLoadPreview,
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.loadError',
   handle: async ({ getState, dispatch, action }) => {
     const p = action.payload.indexOf(':');
     let lang = action.payload.slice(0, p);

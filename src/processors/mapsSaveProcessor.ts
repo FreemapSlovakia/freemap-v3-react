@@ -1,4 +1,5 @@
 import { MapData, mapsSave } from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { RootState } from 'fm3/storeCreator';
@@ -6,7 +7,7 @@ import { RootState } from 'fm3/storeCreator';
 export const mapsSaveProcessor: Processor<typeof mapsSave> = {
   actionCreator: mapsSave,
   errorKey: 'maps.saveError',
-  handle: async ({ getState }) => {
+  handle: async ({ getState, dispatch }) => {
     await httpRequest({
       getState,
       method: 'PATCH',
@@ -14,6 +15,14 @@ export const mapsSaveProcessor: Processor<typeof mapsSave> = {
       expectedStatus: 204,
       data: { data: getMapDataFromState(getState()) },
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved',
+      }),
+    );
   },
 };
 
