@@ -50,7 +50,8 @@ export function sendError(errDetails: ErrorDetails): void {
     return;
   }
 
-  console.error('Application error:', errDetails);
+  console.error('Application error');
+  console.error(errDetails);
 
   if (errDetails.error) {
     window.TrackJS?.console.error(errDetails.error);
