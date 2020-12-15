@@ -41,7 +41,7 @@ export const webSocketMiddleware: Middleware<unknown, RootState, Dispatch> = ({
 
     ws = new WebSocket(
       `${process.env.API_URL?.replace(/^http/, 'ws')}/ws?pingInterval=30000${
-        user ? `&authToken=${user.authToken}` : ''
+        user ? `&authToken=${encodeURIComponent(user.authToken)}` : ''
       }`,
     );
 
