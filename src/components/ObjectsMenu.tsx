@@ -74,10 +74,7 @@ export function ObjectsMenu(): ReactElement {
   const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
     if (justOpenedRef.current) {
       justOpenedRef.current = false;
-      return;
-    }
-
-    if (!isOpen) {
+    } else if (!isOpen) {
       setDropdownOpened(false);
 
       if (e) {

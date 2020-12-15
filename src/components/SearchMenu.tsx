@@ -165,10 +165,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     };
   }, [hidden, preventShortcut]);
 
-  const handleInputFocus = useCallback(() => {
-    setOpen(results.length > 0);
-  }, [results]);
-
   const handleClearClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();
@@ -205,8 +201,18 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     [handleSelect],
   );
 
+  // ugly hack not to close dropdown on open
+  const justOpenedRef = useRef(false);
+
+  const handleInputFocus = useCallback(() => {
+    setOpen(results.length > 0);
+    justOpenedRef.current = true;
+  }, [results]);
+
   const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
-    if (!isOpen) {
+    if (justOpenedRef.current) {
+      justOpenedRef.current = false;
+    } else if (!isOpen) {
       setOpen(false);
 
       if (e) {
