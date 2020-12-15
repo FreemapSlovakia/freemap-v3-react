@@ -36,19 +36,21 @@ export function TrackedDevice({ device }: Props): ReactElement {
 
   return (
     <tr>
+      <td>{device.id}</td>
       <td>
         <div
           style={{
             display: 'inline-block',
             backgroundColor: device.color || '#7239a8',
-            width: `${device.width}px`,
-            height: '15px',
+            // width: `${device.width ?? 4}px`,
+            width: '20px',
+            height: '20px',
             marginRight: `${14 - (device.width || 4)}px`,
+            verticalAlign: 'bottom',
           }}
         />
-        {device.id}
+        {device.label}
       </td>
-      <td>{device.label}</td>
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
       <td>
         {typeof device.maxAge === 'number'

@@ -46,7 +46,7 @@ export function TrackedDeviceForm(): ReactElement {
 
   const [label, setLabel] = useTextInputState(device?.label ?? '');
 
-  const [color, setColor] = useTextInputState(device?.color ?? '');
+  const [color, setColor] = useTextInputState(device?.color ?? '#7239a8');
 
   const [width, setWidth] = useTextInputState(device?.width?.toString() ?? '');
 
@@ -81,7 +81,7 @@ export function TrackedDeviceForm(): ReactElement {
       trackingActions.saveTrackedDevice({
         id: did,
         label: label.trim() || null,
-        color: color.trim() || null,
+        color: color === '#7239a8' ? null : color.trim() || null,
         fromTime: fromTime === '' ? null : new Date(fromTime),
         maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
         maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
