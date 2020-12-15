@@ -289,11 +289,11 @@ export const urlProcessor: Processor = {
       }
 
       if (color) {
-        parts.push(`c:${encodeURIComponent(color.replace(/\//g, '_'))}`);
+        parts.push(`c:${color.replace(/\//g, '_')}`);
       }
 
       if (label) {
-        parts.push(`l:${encodeURIComponent(label.replace(/\//g, '_'))}`);
+        parts.push(`l:${label.replace(/\//g, '_')}`);
       }
 
       historyParts.push(['track', parts.join('/')]);
