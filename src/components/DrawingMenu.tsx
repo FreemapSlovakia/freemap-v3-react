@@ -36,7 +36,7 @@ export function DrawingMenu(): ReactElement {
   );
 
   const toggleElevationChart = useCallback(() => {
-    // TODO to logic
+    // TODO to processor
 
     if (elevationChartTrackGeojson) {
       dispatch(elevationChartClose());
