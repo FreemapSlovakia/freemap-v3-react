@@ -121,10 +121,7 @@ export function TrackedDeviceForm(): ReactElement {
         <FormGroup>
           <FormLabel>{m?.tracking.trackedDevice.color}</FormLabel>
           <InputGroup>
-            <FormControl value={color} onChange={setColor} />
-            <InputGroup.Append>
-              <InputGroup.Text>HTML</InputGroup.Text>
-            </InputGroup.Append>
+            <FormControl type="color" value={color} onChange={setColor} />
           </InputGroup>
         </FormGroup>
         <FormGroup>
