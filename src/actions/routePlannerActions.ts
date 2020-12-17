@@ -80,7 +80,8 @@ export interface Step {
       | 'rotary'
       | 'roundabout turn'
       | 'exit rotary'
-      | 'exit roundabout';
+      | 'exit roundabout'
+      | 'notification';
     modifier?: ManeuerModifier;
   };
   distance: number;
