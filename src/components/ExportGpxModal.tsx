@@ -6,7 +6,7 @@ import {
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { ReactElement, useCallback, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
 import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
@@ -71,7 +71,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
       exportables.push('tracking');
     }
 
-    if (state.trackViewer.trackGpx) {
+    if (state.trackViewer.trackGpx || state.trackViewer.trackGeojson) {
       exportables.push('gpx');
     }
 
@@ -86,9 +86,13 @@ export function ExportGpxModal({ show }: Props): ReactElement {
     return exportables;
   });
 
-  const [exportables, setExportables] = useState<string[] | undefined>(
-    initExportables,
-  );
+  const [exportables, setExportables] = useState<string[] | undefined>();
+
+  useEffect(() => {
+    if (show) {
+      setExportables(initExportables);
+    }
+  }, [show, initExportables]);
 
   const onExport = useCallback(
     (exportables: string[] | null, destination: Destination) => {

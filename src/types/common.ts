@@ -60,6 +60,7 @@ export type StringDates<T> = {
 
 interface OsmElement {
   id: number;
+  tags?: Record<string, string>;
 }
 
 export interface OsmNode extends OsmElement, LatLon {
