@@ -6,7 +6,7 @@ import {
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
 import { deleteFeature, setActiveModal } from 'fm3/actions/mainActions';
-import { mapRefocus, mapReset } from 'fm3/actions/mapActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetData,
@@ -215,7 +215,14 @@ export function Main(): ReactElement {
     if (embed) {
       window.open(window.location.href, '_blank');
     } else {
-      dispatch(mapReset());
+      dispatch(
+        mapRefocus({
+          lat: 48.70714,
+          lon: 19.4995,
+          zoom: 8,
+          gpsTracked: false,
+        }),
+      );
     }
   }, [dispatch]);
 

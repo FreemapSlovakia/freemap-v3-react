@@ -14,8 +14,6 @@ export interface MapStateBase extends MapViewState {
   overlayPaneOpacity: number;
 }
 
-export const mapReset = createAction('MAP_RESET')();
-
 export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }
 >();

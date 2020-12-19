@@ -3,7 +3,6 @@ import { authSetUser } from 'fm3/actions/authActions';
 import { selectFeature, Selection, setAppState } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
-  mapReset,
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
   MapStateBase,
@@ -34,13 +33,6 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.map };
   })
-  .handleAction(mapReset, (state) => ({
-    ...state,
-    zoom: initialState.zoom,
-    lat: initialState.lat,
-    lon: initialState.lon,
-    gpsTracked: false,
-  }))
   .handleAction(mapSetOverlayOpacity, (state, action) => ({
     ...state,
     overlayOpacity: action.payload,
