@@ -88,11 +88,13 @@ export function ExportGpxModal({ show }: Props): ReactElement {
 
   const [exportables, setExportables] = useState<string[] | undefined>();
 
+  const initJoined = initExportables.join(',');
+
   useEffect(() => {
     if (show) {
-      setExportables(initExportables);
+      setExportables(initJoined.split(','));
     }
-  }, [show, initExportables]);
+  }, [show, initJoined]);
 
   const onExport = useCallback(
     (exportables: string[] | null, destination: Destination) => {
