@@ -20,7 +20,7 @@ import { trackingActions } from 'fm3/actions/trackingActions';
 import * as trackViewer from 'fm3/actions/trackViewerActions';
 import * as ws from 'fm3/actions/websocketActions';
 import * as wiki from 'fm3/actions/wikiActions';
-import { ActionType } from 'typesafe-actions';
+import { Action } from 'typesafe-actions';
 
 export const actions = {
   tracking: trackingActions,
@@ -47,4 +47,4 @@ export const actions = {
   wiki,
 };
 
-export type RootAction = ActionType<typeof actions>;
+export type RootAction = Action; // much slower but typesafe:  ActionType<typeof actions>;
