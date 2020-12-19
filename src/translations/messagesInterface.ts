@@ -158,6 +158,8 @@ export type Messages = {
         'roundabout turn': string;
         'exit rotary': string;
         'exit roundabout': string;
+        notification: string;
+        'use lane': string;
       };
       modifiers: {
         uturn: string;

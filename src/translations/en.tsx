@@ -186,6 +186,8 @@ const en: Messages = {
         // 'notification':
         'exit rotary': 'exit the circle', // undocumented
         'exit roundabout': 'exit the roundabout', // undocumented
+        notification: 'notification',
+        'use lane':'use lane'
       },
 
       modifiers: {

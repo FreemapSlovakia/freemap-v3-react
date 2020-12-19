@@ -189,6 +189,8 @@ const cs: Messages = {
         // 'notification':
         'exit rotary': 'opusťte okružní cestu', // undocumented
         'exit roundabout': 'opusťte kruhový objezd', // undocumented
+        notification: 'poznámka',
+        'use lane': 'použij jízdní pruh',
       },
 
       modifiers: {

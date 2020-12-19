@@ -188,6 +188,8 @@ const hu: Messages = {
         // 'notification':
         'exit rotary': 'hajtson ki a körforgalomból', // undocumented
         'exit roundabout': 'hajtson ki a körforgalomból', // undocumented
+        notification: 'notification', // TODO translate
+        'use lane': 'use lane', // TODO translate
       },
 
       modifiers: {

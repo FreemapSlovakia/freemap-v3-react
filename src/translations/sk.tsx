@@ -188,6 +188,8 @@ const sk: Messages = {
         // 'notification':
         'exit rotary': 'opusťte okružnú cestu', // undocumented
         'exit roundabout': 'opusťte kruhový objazd', // undocumented
+        notification: 'poznámka',
+        'use lane': 'použi jazdný pruh',
       },
 
       modifiers: {
