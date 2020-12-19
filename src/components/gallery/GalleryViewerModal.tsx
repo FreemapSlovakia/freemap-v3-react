@@ -355,7 +355,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
                 tags.map((tag) => (
                   <Fragment key={tag}>
                     {' '}
-                    <Badge>{tag}</Badge>
+                    <Badge variant="secondary">{tag}</Badge>
                   </Fragment>
                 ))}
               {!isFullscreen && editModel && (
