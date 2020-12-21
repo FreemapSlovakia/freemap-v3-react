@@ -324,6 +324,7 @@ export const urlProcessor: Processor = {
         {
           pathname: '/',
           search: search,
+          hash: '',
         },
         { sq },
       );
