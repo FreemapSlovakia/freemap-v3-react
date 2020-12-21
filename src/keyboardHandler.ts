@@ -20,12 +20,13 @@ import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
 
 let keyTimer: number | null = null;
+
 let initCode: 'KeyE' | 'KeyG' | null = null;
+
+const embed = window.self !== window.top;
 
 export function attachKeyboardHandler(store: MyStore): void {
   document.addEventListener('keydown', (event: KeyboardEvent) => {
-    const embed = window.self !== window.top;
-
     if (event.ctrlKey || event.altKey || event.metaKey || event.isComposing) {
       return;
     }
@@ -194,7 +195,11 @@ export function attachKeyboardHandler(store: MyStore): void {
         keyTimer = null;
         initCode = null;
       }
-    } else if (!keyTimer && (event.code === 'KeyG' || event.code === 'KeyE')) {
+    } else if (
+      !embed &&
+      !keyTimer &&
+      (event.code === 'KeyG' || event.code === 'KeyE')
+    ) {
       initCode = event.code;
 
       keyTimer = window.setTimeout(() => {

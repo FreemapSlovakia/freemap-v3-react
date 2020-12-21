@@ -46,6 +46,8 @@ import {
 } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
+const embed = window.self !== window.top;
+
 const circularIcon = divIcon({
   iconSize: [14, 14],
   iconAnchor: [7, 7],
@@ -117,7 +119,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const handlePoiAdd = useCallback(
     ({ latlng }: LeafletMouseEvent) => {
-      if (dragging) {
+      if (embed || dragging) {
         // nothing
       } else if (selection?.type !== 'route-planner') {
         // nothing
@@ -525,7 +527,7 @@ export function RoutePlannerResult(): ReactElement {
           zIndexOffset={10}
           faIconLeftPadding="2px"
           color="#409a40"
-          draggable
+          draggable={!embed}
           position={{ lat: start.lat, lng: start.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -566,7 +568,7 @@ export function RoutePlannerResult(): ReactElement {
           }
           color={mode !== 'roundtrip' ? '#d9534f' : undefined}
           zIndexOffset={10}
-          draggable
+          draggable={!embed}
           position={{ lat: finish.lat, lng: finish.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -707,16 +709,20 @@ export function RoutePlannerResult(): ReactElement {
     () =>
       midpoints.map(({ lat, lon }, i) => (
         <RichMarker
-          draggable
-          eventHandlers={{
-            dragstart: handleDragStart,
-            dragend(e) {
-              handleRouteMarkerDragEnd('midpoint', i, e);
-            },
-            click() {
-              handleMidpointClick(i);
-            },
-          }}
+          draggable={!embed}
+          eventHandlers={
+            embed
+              ? {}
+              : {
+                  dragstart: handleDragStart,
+                  dragend(e) {
+                    handleRouteMarkerDragEnd('midpoint', i, e);
+                  },
+                  click() {
+                    handleMidpointClick(i);
+                  },
+                }
+          }
           key={`midpoint-${i}`}
           zIndexOffset={9}
           label={mode === 'route' ? i + 1 : waypoints[i + 1]?.waypoint_index}
@@ -745,9 +751,9 @@ export function RoutePlannerResult(): ReactElement {
     <>
       {startMarker}
 
-      {dragLat !== undefined && dragLon !== undefined && (
+      {!embed && dragLat !== undefined && dragLon !== undefined && (
         <Marker
-          draggable
+          draggable={!embed}
           icon={circularIcon}
           eventHandlers={{
             dragstart: handleDragStart,

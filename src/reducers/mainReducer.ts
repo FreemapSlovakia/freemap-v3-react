@@ -24,6 +24,8 @@ import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions
 import { LatLon } from 'fm3/types/common';
 import { createReducer } from 'typesafe-actions';
 
+const embed = window.self !== window.top;
+
 interface Location extends LatLon {
   accuracy: number;
 }
@@ -70,6 +72,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   })
   .handleAction(authSetUser, (state, action) => {
     const p = action.payload;
+
     return {
       ...state,
       homeLocation: !p
@@ -145,10 +148,14 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     embedFeatures: action.payload,
   }))
-  .handleAction(selectFeature, (state, action) => ({
-    ...state,
-    selection: action.payload,
-  }))
+  .handleAction(selectFeature, (state, action) =>
+    embed
+      ? state
+      : {
+          ...state,
+          selection: action.payload,
+        },
+  )
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
     selection: state.selection ? { type: state.selection.type } : null,

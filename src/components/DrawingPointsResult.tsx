@@ -12,6 +12,8 @@ import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip, useMapEvent } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
+const embed = window.self !== window.top;
+
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
 
@@ -96,7 +98,7 @@ export function DrawingPointsResult(): ReactElement {
           }}
           position={{ lat, lng: lon }}
           color={activeIndex === i ? colors.selected : undefined}
-          draggable
+          draggable={!embed}
         >
           {label && (
             <Tooltip

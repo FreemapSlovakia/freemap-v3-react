@@ -42,7 +42,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     (url: string) => {
       const embedFeatures = getEmbedFeatures();
 
-      return `${url.replace(/&(show|embed)=[^&]*/, '')}${
+      return `${url.replace(/&(show|embed|tool)=[^&]*/g, '')}${
         embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''
       }`;
     },
