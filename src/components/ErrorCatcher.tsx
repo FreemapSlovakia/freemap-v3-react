@@ -1,48 +1,38 @@
-import { connect } from 'react-redux';
-import React from 'react';
-
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-
-type Props = ReturnType<typeof mapStateToProps> & {
-  t: Translator;
-  children: JSX.Element | JSX.Element[];
-};
+import { Component, ReactNode } from 'react';
+import { useSelector } from 'react-redux';
 
 interface State {
   error?: Error;
 }
 
-class ErrorCatcherInt extends React.Component<Props, State> {
+function Error() {
+  const m = useMessages();
+
+  const errorTicketId = useSelector(
+    (state: RootState) => state.main.errorTicketId,
+  );
+
+  return m ? (
+    <div
+      style={{ padding: '10px' }}
+      dangerouslySetInnerHTML={{
+        __html: m.errorCatcher.html(errorTicketId ?? '???'),
+      }}
+    />
+  ) : null;
+}
+
+export class ErrorCatcher extends Component<unknown, State> {
   state: State = {};
 
-  componentDidCatch(error: Error) {
+  componentDidCatch(error: Error): void {
     console.error(error);
     this.setState({ error });
   }
 
-  render() {
-    const { t, children, errorTicketId } = this.props;
-
-    if (!this.state.error) {
-      return children;
-    }
-
-    return (
-      <div
-        style={{ padding: '10px' }}
-        dangerouslySetInnerHTML={{
-          __html: t('errorCatcher.html', { ticketId: errorTicketId || '...' }),
-        }}
-      />
-    );
+  render(): ReactNode {
+    return this.state.error ? <Error /> : this.props.children;
   }
 }
-
-const mapStateToProps = (state: RootState) => ({
-  errorTicketId: state.main.errorTicketId,
-});
-
-export const ErrorCatcher = connect(mapStateToProps)(
-  withTranslator(ErrorCatcherInt),
-);

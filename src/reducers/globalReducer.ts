@@ -1,23 +1,23 @@
-import produce from 'immer';
+import turfFlatten from '@turf/flatten';
+import { AllGeoJSON, lineString } from '@turf/helpers';
 import simplify from '@turf/simplify';
-import { lineString, AllGeoJSON } from '@turf/helpers';
-import { isActionOf } from 'typesafe-actions';
-import { convertToDrawing } from 'fm3/actions/mainActions';
 import { RootAction } from 'fm3/actions';
-import { RootState } from 'fm3/storeCreator';
 import {
   drawingLineAddPoint,
-  drawingLineUpdatePoint,
   drawingLineRemovePoint,
+  drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
+import {
+  drawingChangeLabel,
+  drawingPointAdd,
+} from 'fm3/actions/drawingPointActions';
+import { convertToDrawing } from 'fm3/actions/mainActions';
+import { RootState } from 'fm3/storeCreator';
+import produce from 'immer';
+import { isActionOf } from 'typesafe-actions';
 import { cleanState as routePlannerCleanState } from './routePlannerReducer';
 import { cleanState as trackViewerCleanState } from './trackViewerReducer';
-import {
-  drawingPointAdd,
-  drawingChangeLabel,
-} from 'fm3/actions/drawingPointActions';
-import turfFlatten from '@turf/flatten';
 
 export function globalReducer(state: RootState, action: RootAction): RootState {
   if (isActionOf(convertToDrawing, action)) {
@@ -32,19 +32,11 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
           return;
         }
 
-        const points: Point[] = [];
+        const coords = alt.legs.flatMap((leg) =>
+          leg.steps.flatMap((step) => step.geometry.coordinates),
+        );
 
-        const coords: number[][] = [];
-
-        for (const leg of alt.legs) {
-          for (const step of leg.steps) {
-            coords.push(...step.geometry.coordinates);
-          }
-        }
-
-        let id = 0;
-
-        const ls = lineString(coords);
+        const ls = lineString(coords.map(([lat, lon]) => [lon, lat]));
 
         if (action.payload !== undefined) {
           simplify(ls, {
@@ -54,19 +46,13 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
           });
         }
 
-        for (const p of ls.geometry.coordinates) {
-          points.push({
+        draft.drawingLines.lines.push({
+          type: 'line',
+          points: ls.geometry.coordinates.map((p, id) => ({
             lat: p[0],
             lon: p[1],
             id,
-          });
-
-          id++;
-        }
-
-        draft.drawingLines.lines.push({
-          type: 'line',
-          points,
+          })),
         });
 
         draft.main.selection = {

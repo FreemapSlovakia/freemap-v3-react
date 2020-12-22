@@ -1,22 +1,22 @@
 import FileSaver from 'file-saver';
+import { Picture } from 'fm3/actions/galleryActions';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
+import { getAuth2, loadGapi } from 'fm3/gapiLoader';
 import { addAttribute, createElement, GPX_NS } from 'fm3/gpxExporter';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import qs from 'query-string';
-import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
-import { LatLon } from 'fm3/types/common';
-import { ObjectsState } from 'fm3/reducers/objectsReducer';
-import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
 import { DrawingLinesState } from 'fm3/reducers/drawingLinesReducer';
+import { DrawingPointsState } from 'fm3/reducers/drawingPointsReducer';
+import { ObjectsState } from 'fm3/reducers/objectsReducer';
+import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
-import { getAuth2, loadGapi } from 'fm3/gapiLoader';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
+import { LatLon, StringDates } from 'fm3/types/common';
+import qs from 'query-string';
 import { assertType } from 'typescript-is';
-import { StringDates } from 'fm3/types/common';
-import { Picture } from 'fm3/actions/galleryActions';
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
@@ -452,6 +452,7 @@ function addPlannedRoute(
         undefined,
         toLatLon(start),
       );
+
       createElement(startWptEle, 'name', 'Štart');
     }
 
@@ -462,6 +463,7 @@ function addPlannedRoute(
         undefined,
         toLatLon(finish),
       );
+
       createElement(finishWptEle, 'name', 'Cieľ');
     }
 
@@ -537,6 +539,7 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
         undefined,
         toLatLon({ lat, lon }),
       );
+
       createElement(ptEle, 'time', ts.toISOString());
 
       if (typeof altitude === 'number') {
@@ -584,25 +587,148 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   }
 }
 
-function addGpx(doc: Document, { trackGpx }: { trackGpx: string | null }) {
-  if (!trackGpx) {
-    return;
-  }
+function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
+  if (trackGpx) {
+    const domParser = new DOMParser();
+    const gpxDoc: XMLDocument = domParser.parseFromString(trackGpx, 'text/xml');
 
-  const domParser = new DOMParser();
-  const gpxDoc: XMLDocument = domParser.parseFromString(trackGpx, 'text/xml');
+    const r = getSupportedGpxElements(gpxDoc);
 
-  const r = getSupportedGpxElements(gpxDoc);
+    const nodes: Node[] = [];
 
-  const nodes: Node[] = [];
+    let curr: Node | null;
+    while ((curr = r.iterateNext())) {
+      nodes.push(curr);
+    }
 
-  let curr: Node | null;
-  while ((curr = r.iterateNext())) {
-    nodes.push(curr);
-  }
+    for (const node of nodes) {
+      doc.documentElement.appendChild(node);
+    }
+  } else if (trackGeojson) {
+    for (const pass of ['wpt', 'trk'] as const) {
+      for (const feature of trackGeojson.features) {
+        const g = feature.geometry;
+        switch (g.type) {
+          case 'Point':
+            if (pass === 'wpt') {
+              const wptEle = createElement(
+                doc.documentElement,
+                'wpt',
+                undefined,
+                toLatLon({
+                  lat: g.coordinates[1],
+                  lon: g.coordinates[0],
+                }),
+              );
 
-  for (const x of nodes) {
-    doc.documentElement.appendChild(x);
+              if (feature.properties?.ele) {
+                createElement(wptEle, 'ele', feature.properties.ele);
+              }
+
+              if (feature.properties?.name) {
+                createElement(wptEle, 'name', feature.properties.name);
+              }
+            }
+            break;
+          case 'MultiPoint': {
+            if (pass === 'wpt') {
+              for (const pt of g.coordinates) {
+                const wptEle = createElement(
+                  doc.documentElement,
+                  'wpt',
+                  undefined,
+                  toLatLon({
+                    lat: pt[1],
+                    lon: pt[0],
+                  }),
+                );
+
+                if (feature.properties?.ele) {
+                  createElement(wptEle, 'ele', feature.properties.ele);
+                }
+
+                if (feature.properties?.name) {
+                  createElement(wptEle, 'name', feature.properties.name);
+                }
+              }
+            }
+
+            break;
+          }
+          case 'LineString': {
+            if (pass === 'trk') {
+              const trkEle = createElement(doc.documentElement, 'trk');
+
+              if (feature.properties?.name) {
+                createElement(trkEle, 'name', feature.properties.name);
+              }
+
+              const trksegEle = createElement(trkEle, 'trkseg');
+
+              for (const pt of g.coordinates) {
+                createElement(
+                  trksegEle,
+                  'trkpt',
+                  undefined,
+                  toLatLon({ lat: pt[1], lon: pt[0] }),
+                );
+              }
+            }
+
+            break;
+          }
+          case 'Polygon':
+          case 'MultiLineString':
+            if (pass === 'trk') {
+              const trkEle = createElement(doc.documentElement, 'trk');
+
+              if (feature.properties?.name) {
+                createElement(trkEle, 'name', feature.properties.name);
+              }
+
+              for (const seg of g.coordinates) {
+                const trksegEle = createElement(trkEle, 'trkseg');
+
+                for (const pt of seg) {
+                  createElement(
+                    trksegEle,
+                    'trkpt',
+                    undefined,
+                    toLatLon({ lat: pt[1], lon: pt[0] }),
+                  );
+                }
+              }
+            }
+
+            break;
+          case 'MultiPolygon':
+            if (pass === 'trk') {
+              const trkEle = createElement(doc.documentElement, 'trk');
+
+              if (feature.properties?.name) {
+                createElement(trkEle, 'name', feature.properties.name);
+              }
+
+              for (const seg0 of g.coordinates) {
+                for (const seg of seg0) {
+                  const trksegEle = createElement(trkEle, 'trkseg');
+
+                  for (const pt of seg) {
+                    createElement(
+                      trksegEle,
+                      'trkpt',
+                      undefined,
+                      toLatLon({ lat: pt[1], lon: pt[0] }),
+                    );
+                  }
+                }
+              }
+            }
+
+            break;
+        }
+      }
+    }
   }
 }
 

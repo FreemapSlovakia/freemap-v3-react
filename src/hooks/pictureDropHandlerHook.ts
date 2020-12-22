@@ -1,7 +1,7 @@
-import pica from 'pica';
 import ExifReader from 'exifreader';
-import { latLonToString } from 'fm3/geoutils';
 import { GalleryItem } from 'fm3/actions/galleryActions';
+import { latLonToString } from 'fm3/geoutils';
+import pica from 'pica';
 import { useCallback } from 'react';
 import { is } from 'typescript-is';
 

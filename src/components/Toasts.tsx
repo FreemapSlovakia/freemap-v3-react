@@ -1,82 +1,113 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
+import { RootAction } from 'fm3/actions';
 import {
+  ToastAction,
   toastsRemove,
-  toastsStopTimeout,
   toastsRestartTimeout,
+  toastsStopTimeout,
 } from 'fm3/actions/toastsActions';
 import { Toast } from 'fm3/components/Toast';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
-import 'fm3/styles/toasts.scss';
-import { RootAction } from 'fm3/actions';
+import { getMessageByKey, useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import 'fm3/styles/toasts.scss';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { ReactElement, ReactNode, useCallback, useMemo } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+function tx(m: Messages | undefined, { name, nameKey }: ToastAction) {
+  if (name !== undefined) {
+    return name;
+  } else if (nameKey) {
+    const v = getMessageByKey(m, nameKey);
 
-const ToastsInt: React.FC<Props> = ({
-  toasts,
-  onAction,
-  onTimeoutStop,
-  onTimeoutRestart,
-  t,
-}) => {
+    if (typeof v === 'string') {
+      return v;
+    } else if (v instanceof Function) {
+      return v.call(undefined);
+    } else {
+      return '???';
+    }
+  }
+
+  return '???';
+}
+
+export function Toasts(): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const toasts = useSelector((state: RootState) => state.toasts.toasts);
+
+  const items = useMemo(
+    () =>
+      toasts.map(
+        ({ id, actions, style, message, messageKey, messageParams }) => {
+          let msg: ReactNode;
+
+          if (message !== undefined) {
+            msg = message;
+          } else if (messageKey) {
+            const v = getMessageByKey(m, messageKey);
+
+            if (typeof v === 'string') {
+              msg = v;
+            } else if (v instanceof Function) {
+              msg = v.call(undefined, messageParams);
+            } else {
+              msg = '???';
+            }
+          }
+
+          return {
+            id,
+            actions,
+            style,
+            msg,
+          };
+        },
+      ),
+    [m, toasts],
+  );
+
+  const handleAction = useCallback(
+    (id: string, action?: RootAction | RootAction[]) => {
+      // TODO use some action flag to indicate that we want the action to close the toast
+      dispatch(toastsRemove(id));
+
+      if (action) {
+        if (Array.isArray(action)) {
+          action.forEach((a) => dispatch(a));
+        } else {
+          dispatch(action);
+        }
+      }
+    },
+    [dispatch],
+  );
+
   return (
-    <div className="toasts">
-      {toasts.map(
-        ({ message, messageKey, messageParams, id, actions, style }) => (
+    <div className="fm-toasts">
+      {items.map(({ id, actions, style, msg }) => {
+        return (
           <Toast
             key={id}
             id={id}
-            message={
-              message ||
-              (messageKey ? t(messageKey, messageParams, message) : '???')
-            }
+            message={msg}
             style={style}
-            onAction={onAction}
+            onAction={handleAction}
             actions={actions.map((action) => ({
               ...action,
-              name: action.nameKey ? t(action.nameKey) : action.name,
+              name: tx(m, action),
             }))}
-            onTimeoutStop={onTimeoutStop}
-            onTimeoutRestart={onTimeoutRestart}
+            onTimeoutStop={() => {
+              dispatch(toastsStopTimeout(id));
+            }}
+            onTimeoutRestart={() => {
+              dispatch(toastsRestartTimeout(id));
+            }}
           />
-        ),
-      )}
+        );
+      })}
     </div>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  toasts: state.toasts.toasts,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onAction(id: string, action?: RootAction | RootAction[]) {
-    // TODO use some action flag to indicate that we want the action to close the toast
-    dispatch(toastsRemove(id));
-    if (action) {
-      if (Array.isArray(action)) {
-        action.forEach((a) => dispatch(a));
-      } else {
-        dispatch(action);
-      }
-    }
-  },
-  onTimeoutStop(id: string) {
-    dispatch(toastsStopTimeout(id));
-  },
-  onTimeoutRestart(id: string) {
-    dispatch(toastsRestartTimeout(id));
-  },
-});
-
-export const Toasts = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ToastsInt));
+}

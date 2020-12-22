@@ -1,19 +1,18 @@
+import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
 import { createAction } from 'typesafe-actions';
 
 export interface MapViewState {
-  mapType: string;
+  mapType: BaseLayerLetters;
   lat: number;
   lon: number;
   zoom: number;
-  overlays: string[];
+  overlays: OverlayLetters[];
 }
 
 export interface MapStateBase extends MapViewState {
   overlayOpacity: { [type: string]: number };
   overlayPaneOpacity: number;
 }
-
-export const mapReset = createAction('MAP_RESET')();
 
 export const mapRefocus = createAction('MAP_REFOCUS')<
   Partial<MapViewState> & { gpsTracked?: boolean }

@@ -1,18 +1,17 @@
 import {
-  lineString,
-  point,
   Feature,
   featureCollection,
-  Point,
+  lineString,
   LineString,
+  point,
+  Point,
 } from '@turf/helpers';
-
-import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { osmLoadRelation } from 'fm3/actions/osmActions';
+import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { OsmNode, OsmRelation, OsmResult, OsmWay } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
-import { OsmResult, OsmRelation } from 'fm3/types/common';
 
 export const osmLoadRelationProcessor: Processor = {
   actionCreator: osmLoadRelation,
@@ -27,14 +26,14 @@ export const osmLoadRelationProcessor: Processor = {
       expectedStatus: 200,
     });
 
-    const nodes: Record<number, [number, number]> = {};
-    const ways: Record<number, [number, number][]> = {};
+    const nodes: Record<number, OsmNode> = {};
+    const ways: Record<number, OsmWay> = {};
 
     for (const item of assertType<OsmResult>(data).elements) {
       if (item.type === 'node') {
-        nodes[item.id] = [item.lon, item.lat];
+        nodes[item.id] = item;
       } else if (item.type === 'way') {
-        ways[item.id] = item.nodes.map((ref) => nodes[ref]);
+        ways[item.id] = item;
       }
     }
 
@@ -50,16 +49,36 @@ export const osmLoadRelationProcessor: Processor = {
 
         switch (type) {
           case 'node':
-            if (nodes[ref]) {
-              features.push(point(nodes[ref]));
+            const n = nodes[ref];
+
+            if (n) {
+              const props: Record<string, string> = {};
+
+              if (n.tags?.name) {
+                props.name = n.tags.name;
+              }
+
+              if (n.tags?.ele) {
+                props.ele = n.tags.ele;
+              }
+
+              features.push(point([n.lon, n.lat], props));
             }
             break;
           case 'way':
-            if (ways[ref]) {
-              features.push(lineString(ways[ref]));
+            const w = ways[ref];
+
+            if (w) {
+              features.push(
+                lineString(
+                  w.nodes.map((ref) => [nodes[ref].lon, nodes[ref].lat]),
+                  // no street names pls // w.tags?.name ? { name: w.tags.name } : {},
+                ),
+              );
             }
             break;
           case 'relation':
+          // TODO add support for relations in relation
           default:
             break;
         }

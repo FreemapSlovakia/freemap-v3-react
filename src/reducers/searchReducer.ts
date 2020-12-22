@@ -1,11 +1,11 @@
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
 import { clearMap } from 'fm3/actions/mainActions';
 import {
-  searchSetResults,
   SearchResult,
   searchSelectResult,
+  searchSetResults,
 } from 'fm3/actions/searchActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface SearchState {
   results: SearchResult[];

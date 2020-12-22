@@ -1,10 +1,10 @@
-import React, { useCallback, useRef, useState } from 'react';
-import Button from 'react-bootstrap/lib/Button';
-import Popover from 'react-bootstrap/lib/Popover';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Overlay } from 'react-bootstrap';
+import { useMessages } from 'fm3/l10nInjector';
 import { LatLon } from 'fm3/types/common';
-import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
+import { ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Overlay, { Placement } from 'react-bootstrap/esm/Overlay';
+import Popover from 'react-bootstrap/Popover';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
 interface Props extends LatLon {
   lat: number;
@@ -12,21 +12,19 @@ interface Props extends LatLon {
   zoom: number;
   mapType: string;
   expertMode: boolean;
-  placement?: string;
+  placement?: Placement;
   includePoint?: boolean;
   pointTitle?: string;
   pointDescription?: string;
   url?: string;
-  t: Translator;
   children: JSX.Element | JSX.Element[];
 }
 
-const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
+export function OpenInExternalAppMenuButton({
   lat,
   lon,
   zoom,
   mapType,
-  t,
   expertMode,
   placement,
   includePoint,
@@ -34,11 +32,14 @@ const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
   pointDescription,
   url,
   children,
-}) => {
-  const buttonRef = useRef<Button>();
+}: Props): ReactElement {
+  const m = useMessages();
+
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
+
   const [show, setShow] = useState(false);
 
-  const handleMenuItemClick = useCallback(() => {
+  const handleDropdownItemClick = useCallback(() => {
     setShow(false);
   }, [setShow]);
 
@@ -52,28 +53,27 @@ const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
 
   const getTarget = useCallback(() => buttonRef.current, [buttonRef]);
 
-  const Ovl = Overlay as any; // because trigger is missing
-
   return (
     <>
       <Button
-        ref={buttonRef as React.MutableRefObject<Button>}
+        variant="secondary"
+        ref={buttonRef}
         onClick={handleButtonClick}
-        title={t('external.openInExternal')}
+        title={m?.external.openInExternal}
       >
         {children}
       </Button>
-      <Ovl
+      <Overlay
         rootClose
-        placement={placement || 'bottom'}
-        trigger="focus"
+        placement={placement ?? 'bottom'}
+        // trigger="focus"
         show={show}
         onHide={handleHide}
         target={getTarget}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
-            <OpenInExternalAppMenuItems
+          <Popover.Content>
+            <OpenInExternalAppDropdownItems
               lat={lat}
               lon={lon}
               zoom={zoom}
@@ -83,15 +83,11 @@ const OpenInExternalAppMenuButtonInt: React.FC<Props> = ({
               pointTitle={pointTitle}
               pointDescription={pointDescription}
               url={url}
-              onSelect={handleMenuItemClick}
+              onSelect={handleDropdownItemClick}
             />
-          </ul>
+          </Popover.Content>
         </Popover>
-      </Ovl>
+      </Overlay>
     </>
   );
-};
-
-export const OpenInExternalAppMenuButton = withTranslator(
-  OpenInExternalAppMenuButtonInt,
-);
+}

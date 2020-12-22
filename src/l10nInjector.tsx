@@ -1,45 +1,30 @@
-import React from 'react';
-import { translate, splitAndSubstitute } from 'fm3/stringUtils';
-import { Diff } from 'utility-types';
-import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { RootState } from './storeCreator';
+import { Messages } from './translations/messagesInterface';
 
-function tx(key: string, params: { [key: string]: unknown } = {}, dflt = '') {
-  const t = translate(window.translations, key, dflt);
-  return typeof t === 'function' ? t(params) : splitAndSubstitute(t, params);
+export function useMessages(): Messages | undefined {
+  // force applying english language on load
+  useSelector((state: RootState) => state.l10n.counter);
+
+  return window.translations;
 }
 
-export type Translator = typeof tx;
+export function getMessageByKey(m: Messages | undefined, key: string): unknown {
+  if (m === undefined) {
+    return;
+  }
 
-interface InjectedProps {
-  t: Translator;
-}
+  const path = key.split('.');
 
-// eslint-disable-next-line
-export const withTranslator = <BaseProps extends InjectedProps>(
-  BaseComponent: React.ComponentType<BaseProps>,
-) => {
-  const mapStateToProps = (state: RootState) => ({
-    languageCounter: state.l10n.counter, // force applying english language on load
-  });
+  let cur = m as unknown;
 
-  type HocProps = ReturnType<typeof mapStateToProps>;
-
-  class Hoc extends React.Component<HocProps> {
-    static displayName = `injectL10n(${BaseComponent.name})`;
-    static readonly WrappedComponent = BaseComponent;
-
-    render() {
-      // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      const { languageCounter, ...restProps } = this.props;
-
-      return <BaseComponent {...(restProps as BaseProps)} t={tx} />;
+  for (const item of path) {
+    if (cur instanceof Object) {
+      cur = (cur as Record<string, unknown>)[item];
+    } else {
+      return '???';
     }
   }
 
-  type OwnProps = Diff<BaseProps, InjectedProps>;
-
-  return connect<HocProps, undefined, OwnProps, RootState>(mapStateToProps)(
-    Hoc,
-  );
-};
+  return cur;
+}

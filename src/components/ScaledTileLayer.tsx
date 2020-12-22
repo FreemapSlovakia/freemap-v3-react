@@ -1,14 +1,11 @@
-import { GridLayer, TileLayerProps, withLeaflet } from 'react-leaflet';
+import { createTileLayerComponent } from '@react-leaflet/core';
+import { Coords, DoneCallback, TileLayer, TileLayerOptions } from 'leaflet';
+import { TileLayerProps } from 'react-leaflet';
 
-import {
-  TileLayer as LTileLayer,
-  Coords,
-  DoneCallback,
-  TileLayerOptions,
-} from 'leaflet';
+type Props = TileLayerProps & { extraScales?: number[] };
 
-class LScaledTileLayer extends LTileLayer {
-  extraScales?: number[];
+class LScaledTileLayer extends TileLayer {
+  extraScales;
 
   constructor(
     urlTemplate: string,
@@ -61,23 +58,19 @@ class LScaledTileLayer extends LTileLayer {
   }
 }
 
-type Props = TileLayerProps & { extraScales?: number[] };
+export const ScaledTileLayer = createTileLayerComponent<TileLayer, Props>(
+  (props, context) => {
+    const { url, extraScales, ...rest } = props;
 
-class ScaledTileLayerInt extends GridLayer<Props, LScaledTileLayer> {
-  createLeafletElement(props: Props): LScaledTileLayer {
-    return new LScaledTileLayer(
-      props.url,
-      props.extraScales,
-      this.getOptions(props),
-    );
-  }
+    return {
+      instance: new LScaledTileLayer(url, extraScales, rest),
+      context,
+    };
+  },
 
-  updateLeafletElement(fromProps: Props, toProps: Props) {
-    super.updateLeafletElement(fromProps, toProps);
-    if (toProps.url !== fromProps.url) {
-      this.leafletElement.setUrl(toProps.url);
+  (instance, props, prevProps) => {
+    if (props.url !== prevProps.url) {
+      instance.setUrl(props.url);
     }
-  }
-}
-
-export const ScaledTileLayer = withLeaflet(ScaledTileLayerInt);
+  },
+);

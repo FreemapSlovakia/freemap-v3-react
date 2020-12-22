@@ -1,43 +1,40 @@
-import React, { useState, useMemo, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import FormControl from 'react-bootstrap/lib/FormControl';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import Alert from 'react-bootstrap/lib/Alert';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-
-import Slider from 'react-rangeslider';
-import 'react-rangeslider/lib/index.css';
-
+import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import {
-  setActiveModal,
-  exportPdf,
-  PdfExportOptions,
-} from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { colors } from 'fm3/constants';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import {
+  ChangeEvent,
+  ReactElement,
+  useCallback,
+  useMemo,
+  useState,
+} from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import FormCheck from 'react-bootstrap/FormCheck';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+type Props = { show: boolean };
 
-function ExportPdfModalInt({
-  onExport,
-  onModalClose,
-  t,
-  language,
-  canExportByPolygon,
-  expertMode,
-}: Props) {
+export function ExportPdfModal({ show }: Props): ReactElement {
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
+  const canExportByPolygon = useSelector(
+    (state: RootState) =>
+      state.main.selection?.type === 'draw-polygons' &&
+      state.main.selection.id !== undefined,
+  );
+
+  const m = useMessages();
+
   const [area, setArea] = useState('visible');
 
   const [scale, setScale] = useState(1);
@@ -69,7 +66,7 @@ function ExportPdfModalInt({
       "Rule": [
         {
           "PolygonSymbolizer": {
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@fill-opacity": 0.2,
             "@stroke-linecap": "round",
             "@stroke-linejoin": "round"
@@ -77,7 +74,7 @@ function ExportPdfModalInt({
         },
         {
           "LineSymbolizer": {
-            "@stroke": "#007bff",
+            "@stroke": "${colors.normal}",
             "@stroke-width": 4,
             "@stroke-opacity": 0.8,
             "@stroke-linecap": "round",
@@ -88,7 +85,7 @@ function ExportPdfModalInt({
         {
           "TextSymbolizer": {
             "@fontset-name": "regular",
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@halo-fill": "white",
             "@halo-radius": "1.5",
             "@halo-opacity": "0.75",
@@ -109,7 +106,7 @@ function ExportPdfModalInt({
       "Rule": [
         {
           "LineSymbolizer": {
-            "@stroke": "#007bff",
+            "@stroke": "${colors.normal}",
             "@stroke-width": 4,
             "@stroke-opacity": 0.8,
             "@stroke-linecap": "round",
@@ -120,7 +117,7 @@ function ExportPdfModalInt({
         {
           "TextSymbolizer": {
             "@fontset-name": "regular",
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@halo-fill": "white",
             "@halo-radius": "1.5",
             "@halo-opacity": "0.75",
@@ -141,7 +138,7 @@ function ExportPdfModalInt({
       "Rule": [
         {
           "MarkersSymbolizer": {
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@width": 10,
             "@height": 10,
             "@stroke-width": 1.5,
@@ -152,7 +149,7 @@ function ExportPdfModalInt({
         {
           "TextSymbolizer": {
             "@fontset-name": "regular",
-            "@fill": "#007bff",
+            "@fill": "${colors.normal}",
             "@halo-fill": "white",
             "@halo-radius": "1.5",
             "@halo-opacity": "0.75",
@@ -170,9 +167,12 @@ function ExportPdfModalInt({
 ]
 `);
 
-  const handleStyleChange = useCallback((e: React.FormEvent<FormControl>) => {
-    setStyle((e.target as HTMLInputElement).value);
-  }, []);
+  const handleStyleChange = useCallback(
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      setStyle(e.currentTarget.value);
+    },
+    [],
+  );
 
   const nf = useMemo(
     () =>
@@ -183,136 +183,171 @@ function ExportPdfModalInt({
     [language],
   );
 
+  const dispatch = useDispatch();
+
+  function close() {
+    dispatch(setActiveModal(null));
+  }
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}
+          <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <Alert bsStyle="warning">{t('pdfExport.alert')}</Alert>
-        <p>{t('pdfExport.area')}</p>
+        <Alert variant="warning">{m?.pdfExport.alert()}</Alert>
+        <p>{m?.pdfExport.area}</p>
         <ButtonGroup>
           <Button
+            variant="secondary"
             active={area === 'visible'}
             onClick={() => setArea('visible')}
           >
-            {t('pdfExport.areas.visible')}
+            {m?.pdfExport.areas.visible}
           </Button>
           <Button
+            variant="secondary"
             active={area === 'selected'}
             onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
           >
-            {t('pdfExport.areas.pinned')} <FontAwesomeIcon icon="square-o" />
+            {m?.pdfExport.areas.pinned} <FontAwesomeIcon icon="square-o" />
           </Button>
         </ButtonGroup>
         <hr />
-        <p>{t('pdfExport.format')}</p>
+        <p>{m?.pdfExport.format}</p>
         <ButtonGroup>
-          <Button onClick={() => setFormat('jpeg')} active={format === 'jpeg'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('jpeg')}
+            active={format === 'jpeg'}
+          >
             JPEG
           </Button>
-          <Button onClick={() => setFormat('png')} active={format === 'png'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('png')}
+            active={format === 'png'}
+          >
             PNG
           </Button>
-          <Button onClick={() => setFormat('pdf')} active={format === 'pdf'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('pdf')}
+            active={format === 'pdf'}
+          >
             PDF
           </Button>
-          <Button onClick={() => setFormat('svg')} active={format === 'svg'}>
+          <Button
+            variant="secondary"
+            onClick={() => setFormat('svg')}
+            active={format === 'svg'}
+          >
             SVG
           </Button>
         </ButtonGroup>
         <hr />
-        <p>{t('pdfExport.layersTitle')}</p>
-        <Checkbox
+        <p>{m?.pdfExport.layersTitle}</p>
+        <FormCheck
+          id="contours"
+          type="checkbox"
           checked={contours}
           onChange={() => {
             setContours((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.contours')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.contours}
+        />
+        <FormCheck
+          id="shading"
+          type="checkbox"
           checked={shadedRelief}
           onChange={() => setShadedRelief((b) => !b)}
-        >
-          {t('pdfExport.layers.shading')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.shading}
+        />
+        <FormCheck
+          id="hikingTrails"
+          type="checkbox"
           checked={hikingTrails}
           onChange={() => {
             setHikingTrails((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.hikingTrails')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.hikingTrails}
+        />
+        <FormCheck
+          id="bicycleTrails"
           checked={bicycleTrails}
           onChange={() => {
             setBicycleTrails((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.bicycleTrails')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.bicycleTrails}
+        />
+        <FormCheck
+          id="skiTrails"
+          type="checkbox"
           checked={skiTrails}
           onChange={() => {
             setSkiTrails((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.skiTrails')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.skiTrails}
+        />
+        <FormCheck
+          id="horseTrails"
+          type="checkbox"
           checked={horseTrails}
           onChange={() => {
             setHorseTrails((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.horseTrails')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.horseTrails}
+        />
+        <FormCheck
+          id="drawing"
+          type="checkbox"
           checked={drawing}
           onChange={() => {
             setDrawing((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.drawing')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.drawing}
+        />
+        <FormCheck
+          id="plannedRoute"
+          type="checkbox"
           checked={plannedRoute}
           onChange={() => {
             setPlannedRoute((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.plannedRoute')}
-        </Checkbox>
-        <Checkbox
+          label={m?.pdfExport.layers.plannedRoute}
+        />
+        <FormCheck
+          id="track"
+          type="checkbox"
           checked={track}
           onChange={() => {
             setTrack((b) => !b);
           }}
-        >
-          {t('pdfExport.layers.track')}
-        </Checkbox>
+          label={m?.pdfExport.layers.track}
+        />
         <hr />
         <p>
-          {t('pdfExport.mapScale')} {nf.format(scale * 96)} DPI
+          {m?.pdfExport.mapScale} {nf.format(scale * 96)} DPI
         </p>
-        <Slider
+        <FormControl
+          type="range"
+          custom
           value={scale}
           min={0.5}
           max={8}
           step={0.05}
-          tooltip={false}
-          onChange={setScale}
+          onChange={(e) => {
+            setScale(Number(e.currentTarget.value));
+          }}
         />
         {expertMode && (
           <>
             <hr />
             <FormGroup>
-              <ControlLabel>
+              <FormLabel>
                 Interactive layer styles{' '}
                 <a
                   href="http://mapnik.org/mapnik-reference/"
@@ -320,9 +355,9 @@ function ExportPdfModalInt({
                 >
                   <FontAwesomeIcon icon="question-circle" />
                 </a>
-              </ControlLabel>
+              </FormLabel>
               <FormControl
-                componentClass="textarea"
+                as="textarea"
                 value={style}
                 onChange={handleStyleChange}
                 rows={6}
@@ -335,51 +370,31 @@ function ExportPdfModalInt({
       <Modal.Footer>
         <Button
           onClick={() => {
-            onExport({
-              area: area as any,
-              scale,
-              format: format as any,
-              contours,
-              shadedRelief,
-              hikingTrails,
-              bicycleTrails,
-              skiTrails,
-              horseTrails,
-              drawing,
-              plannedRoute,
-              track,
-              style,
-            });
+            dispatch(
+              exportPdf({
+                area: area as any,
+                scale,
+                format: format as any,
+                contours,
+                shadedRelief,
+                hikingTrails,
+                bicycleTrails,
+                skiTrails,
+                horseTrails,
+                drawing,
+                plannedRoute,
+                track,
+                style,
+              }),
+            );
           }}
         >
-          <FontAwesomeIcon icon="download" /> {t('pdfExport.export')}
-        </Button>{' '}
-        <Button onClick={onModalClose}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+          <FontAwesomeIcon icon="download" /> {m?.pdfExport.export}
+        </Button>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
 }
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-  canExportByPolygon:
-    state.main.selection?.type === 'draw-polygons' &&
-    state.main.selection.id !== undefined,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-  onExport(options: PdfExportOptions) {
-    dispatch(exportPdf(options));
-  },
-});
-
-export const ExportPdfModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ExportPdfModalInt));

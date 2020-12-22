@@ -1,266 +1,262 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import ReactStars from 'react-stars';
+/* eslint-disable react/display-name */
 
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
+import {
+  galleryClear,
+  galleryDeletePicture,
+  galleryEditPicture,
+  galleryRequestImage,
+  gallerySavePicture,
+  gallerySetComment,
+  gallerySetEditModel,
+  gallerySetItemForPositionPicking,
+  galleryShowOnTheMap,
+  gallerySubmitComment,
+  gallerySubmitStars,
+} from 'fm3/actions/galleryActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Label from 'react-bootstrap/lib/Label';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import {
-  galleryClear,
-  galleryRequestImage,
-  galleryShowOnTheMap,
-  gallerySetComment,
-  gallerySubmitComment,
-  gallerySubmitStars,
-  galleryEditPicture,
-  galleryDeletePicture,
-  gallerySetEditModel,
-  gallerySavePicture,
-  gallerySetItemForPositionPicking,
-} from 'fm3/actions/galleryActions';
-
-import 'fm3/styles/gallery.scss';
-import { RootAction } from 'fm3/actions';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import 'fm3/styles/gallery.scss';
+import {
+  ChangeEvent,
+  FormEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
+import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import ReactStars from 'react-stars';
 import { getType } from 'typesafe-actions';
 import { OpenInExternalAppMenuButton } from '../OpenInExternalAppMenuButton';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+type Props = { show: boolean };
 
-interface State {
-  loading: boolean;
-  isFullscreen: boolean;
-  imgKey: number;
-  activeImageId: number | null;
-}
+export function GalleryViewerModal({ show }: Props): ReactElement {
+  const m = useMessages();
 
-class GalleryViewerModalInt extends React.Component<Props, State> {
-  state: State = {
-    loading: true,
-    isFullscreen: false,
-    imgKey: 0,
-    activeImageId: null,
-  };
+  const dispatch = useDispatch();
 
-  imageElement?: HTMLImageElement;
+  const imageIds = useSelector((state: RootState) => state.gallery.imageIds);
 
-  fullscreenElement?: HTMLDivElement;
+  const image = useSelector((state: RootState) => state.gallery.image);
 
-  static getDerivedStateFromProps(props: Props, state: State) {
-    if (props.activeImageId !== state.activeImageId) {
-      return {
-        loading: true,
-        activeImageId: props.activeImageId,
-      };
-    }
+  const activeImageId2 = useSelector(
+    (state: RootState) => state.gallery.activeImageId,
+  );
 
-    return null;
+  const comment = useSelector((state: RootState) => state.gallery.comment);
+
+  const editModel = useSelector((state: RootState) => state.gallery.editModel);
+
+  const saveErrors = useSelector(
+    (state: RootState) => state.gallery.saveErrors,
+  );
+
+  const user = useSelector((state: RootState) => state.auth.user);
+
+  const allTags = useSelector((state: RootState) => state.gallery.tags);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
+  const [loading, setLoading] = useState(true);
+
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const [imgKey, setImgKey] = useState(0);
+
+  const [activeImageId, setActiveImageId] = useState<number | null>(null);
+
+  const imageElement = useRef<HTMLImageElement>();
+
+  const fullscreenElement = useRef<HTMLDivElement>();
+
+  if (activeImageId2 !== activeImageId) {
+    setLoading(true);
+    setActiveImageId(activeImageId2);
   }
 
-  componentDidMount() {
-    document.addEventListener('fullscreenchange', this.handleFullscreenChange);
-  }
+  useEffect(() => {
+    function handleFullscreenChange() {
+      setIsFullscreen(document.fullscreenElement === fullscreenElement.current);
+      setImgKey((imgKey) => imgKey + 1);
+    }
 
-  componentWillUnmount() {
-    document.removeEventListener(
-      'fullscreenchange',
-      this.handleFullscreenChange,
-    );
-  }
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
 
-  setImageElement = (imageElement: HTMLImageElement) => {
-    this.imageElement = imageElement;
-    if (imageElement) {
-      imageElement.addEventListener('load', this.handleImageLoad);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    };
+  }, []);
+
+  const setImageElement = (element: HTMLImageElement) => {
+    imageElement.current = element;
+
+    if (element) {
+      element.addEventListener('load', () => {
+        setLoading(false);
+      });
     }
   };
 
-  setFullscreenElement = (element: HTMLDivElement) => {
-    this.fullscreenElement = element;
+  const setFullscreenElement = (element: HTMLDivElement) => {
+    fullscreenElement.current = element;
   };
 
-  handleFullscreenChange = () => {
-    this.setState((state) => ({
-      isFullscreen: document.fullscreenElement === this.fullscreenElement,
-      imgKey: state.imgKey + 1,
-    }));
+  const handleEditModelChange = useCallback(
+    (editModel: PictureModel) => {
+      dispatch(gallerySetEditModel(editModel));
+    },
+    [dispatch],
+  );
 
-    this.forceUpdate();
-  };
+  const handleIndexChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      if (imageIds) {
+        const idx = parseInt(e.currentTarget.value, 10);
 
-  handleEditModelChange = (editModel: PictureModel) => {
-    this.props.onEditModelChange(editModel);
-  };
+        if (isNaN(idx)) {
+          throw new Error();
+        }
 
-  handlePreviousClick = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
-    this.props.onImageSelect('prev');
-  };
-
-  handleNextClick = (e?: React.MouseEvent) => {
-    if (e) {
-      e.preventDefault();
-    }
-    this.props.onImageSelect('next');
-  };
-
-  handleIndexChange = (e: React.FormEvent<FormControl>) => {
-    const { imageIds, onImageSelect } = this.props;
-    if (imageIds) {
-      const idx = parseInt((e.target as HTMLSelectElement).value, 10);
-      if (isNaN(idx)) {
-        throw new Error();
+        dispatch(galleryRequestImage(imageIds[idx]));
       }
-      onImageSelect(imageIds[idx]);
-    }
-  };
+    },
+    [dispatch, imageIds],
+  );
 
-  handleCommentFormSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    this.props.onCommentSubmit();
-  };
+  const handleCommentFormSubmit = useCallback(
+    (e: FormEvent) => {
+      e.preventDefault();
+      dispatch(gallerySubmitComment());
+    },
+    [dispatch],
+  );
 
-  handleCommentChange = (e: React.FormEvent<FormControl>) => {
-    this.props.onCommentChange((e.target as HTMLInputElement).value);
-  };
-
-  handleImageLoad = () => {
-    this.setState({ loading: false });
-  };
-
-  handleFullscreen = () => {
-    if (!document.exitFullscreen || !this.fullscreenElement) {
+  const handleFullscreen = useCallback(() => {
+    if (!document.exitFullscreen || !fullscreenElement.current) {
       // unsupported
-    } else if (document.fullscreenElement === this.fullscreenElement) {
+    } else if (document.fullscreenElement === fullscreenElement.current) {
       document.exitFullscreen();
     } else {
-      this.fullscreenElement.requestFullscreen();
+      fullscreenElement.current.requestFullscreen();
     }
-  };
+  }, []);
 
-  handleSave = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    this.props.onSave();
-  };
+  const handleSave = useCallback(
+    (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault();
+      dispatch(gallerySavePicture());
+    },
+    [dispatch],
+  );
 
-  render() {
-    const {
-      imageIds,
-      activeImageId,
-      onClose,
-      onShowOnTheMap,
-      image,
-      comment,
-      onStarsChange,
-      user,
-      onDelete,
-      onEdit,
-      editModel,
-      saveError: saveErrors,
-      allTags,
-      onPositionPick,
-      language,
-      expertMode,
-      t,
-    } = this.props;
+  const index = imageIds
+    ? imageIds.findIndex((id) => id === activeImageId)
+    : -1;
 
-    const index = imageIds
-      ? imageIds.findIndex((id) => id === activeImageId)
-      : -1;
+  const {
+    title = '...',
+    description = undefined,
+    createdAt = undefined,
+    takenAt = undefined,
+    tags = undefined,
+    comments = undefined,
+    rating = undefined,
+    myStars = undefined,
+    lat,
+    lon,
+  } = image || {};
 
-    const {
-      title = '...',
-      description = undefined,
-      createdAt = undefined,
-      takenAt = undefined,
-      tags = undefined,
-      comments = undefined,
-      rating = undefined,
-      myStars = undefined,
-      lat,
-      lon,
-    } = image || {};
+  const nextImageId = imageIds && imageIds[index + 1];
 
-    const { isFullscreen, loading, imgKey } = this.state;
+  const prevImageId = index > 0 && imageIds && imageIds[index - 1];
 
-    const nextImageId = imageIds && imageIds[index + 1];
-    const prevImageId = index > 0 && imageIds && imageIds[index - 1];
+  // TODO const loadingMeta = !image || image.id !== activeImageId;
 
-    // TODO const loadingMeta = !image || image.id !== activeImageId;
+  const dateFormat = new Intl.DateTimeFormat(language, {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 
-    const dateFormat = new Intl.DateTimeFormat(language, {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+  const getImageUrl = (id: number) =>
+    `${process.env.API_URL}/gallery/pictures/${id}/image?width=${Math.round(
+      window.devicePixelRatio *
+        (isFullscreen
+          ? window.innerWidth
+          : window.matchMedia('(min-width: 992px)').matches
+          ? 868
+          : 568),
+    )}`;
 
-    const getImageUrl = (id: number) =>
-      `${process.env.API_URL}/gallery/pictures/${id}/image?width=${Math.round(
-        window.devicePixelRatio *
-          (isFullscreen
-            ? window.innerWidth
-            : window.matchMedia('(min-width: 992px)').matches
-            ? 868
-            : 568),
-      )}`;
+  const handlePositionPick = useCallback(() => {
+    dispatch(gallerySetItemForPositionPicking(-1));
+  }, [dispatch]);
 
-    return (
-      <Modal show onHide={onClose} bsSize="large" keyboard={false}>
-        <Modal.Header closeButton>
-          <Modal.Title>
-            {t('gallery.viewer.title')}{' '}
-            {imageIds && (
-              <FormControl
-                componentClass="select"
-                value={index}
-                onChange={this.handleIndexChange}
-                style={{ width: 'auto', display: 'inline-block' }}
-              >
-                {imageIds.map((_, i) => (
-                  <option key={i} value={i}>
-                    {i + 1}
-                  </option>
-                ))}
-              </FormControl>
-            )}
-            {imageIds ? ` / ${imageIds.length} ` : ''}
-            {title && `- ${title}`}
-          </Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <div
-            ref={this.setFullscreenElement}
-            className={isFullscreen ? 'fullscreen' : ''}
-          >
-            <div className="carousel">
-              <div className="item active">
+  const handleStarsChange = useCallback(
+    (stars: number) => {
+      dispatch(gallerySubmitStars(stars));
+    },
+    [dispatch],
+  );
+
+  const close = useCallback(() => {
+    dispatch(galleryClear());
+  }, [dispatch]);
+
+  return (
+    <Modal show={show} onHide={close} size="lg" keyboard={false}>
+      <Modal.Header closeButton>
+        <Modal.Title>
+          {m?.gallery.viewer.title}{' '}
+          {imageIds && (
+            <FormControl
+              as="select"
+              value={index}
+              onChange={handleIndexChange}
+              style={{ width: 'auto', display: 'inline-block' }}
+            >
+              {imageIds.map((_, i) => (
+                <option key={i} value={i}>
+                  {i + 1}
+                </option>
+              ))}
+            </FormControl>
+          )}
+          {imageIds ? ` / ${imageIds.length} ` : ''}
+          {title && `- ${title}`}
+        </Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <div
+          ref={setFullscreenElement}
+          className={isFullscreen ? 'fullscreen' : ''}
+        >
+          <div className="carousel">
+            <div className="carousel-inner">
+              <div className="carousel-item active">
                 {!!activeImageId && (
                   <img
                     key={imgKey}
-                    ref={this.setImageElement}
+                    ref={setImageElement}
                     className={`gallery-image ${loading ? 'loading' : ''}`}
                     src={getImageUrl(activeImageId)}
                     alt={title ?? undefined}
@@ -269,7 +265,7 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                 {!!nextImageId && !loading && (
                   <img
                     key={`next-${imgKey}`}
-                    style={{ display: 'none' }}
+                    className="d-none"
                     src={getImageUrl(nextImageId)}
                     alt="next"
                   />
@@ -277,282 +273,257 @@ class GalleryViewerModalInt extends React.Component<Props, State> {
                 {!!prevImageId && !loading && (
                   <img
                     key={`prev-${imgKey}`}
-                    style={{ display: 'none' }}
+                    className="d-none"
                     src={getImageUrl(prevImageId)}
                     alt="prev"
                   />
                 )}
               </div>
-              {imageIds && (
-                <a
-                  className={`left carousel-control ${
-                    index < 1 ? 'disabled' : ''
-                  }`}
-                  onClick={this.handlePreviousClick}
-                >
-                  <Glyphicon glyph="chevron-left" />
-                </a>
-              )}
-              {imageIds && (
-                <a
-                  className={`right carousel-control ${
-                    index >= imageIds.length - 1 ? 'disabled' : ''
-                  }`}
-                  onClick={this.handleNextClick}
-                >
-                  <Glyphicon glyph="chevron-right" />
-                </a>
-              )}
             </div>
-            <br />
-            {image && (
-              <div className="footer">
-                {isFullscreen && imageIds && (
-                  <>{`${index + 1} / ${imageIds.length}`} ｜ </>
-                )}
-                {isFullscreen && title && <>{title} ｜ </>}
-                {t('gallery.viewer.uploaded', {
-                  username: () => (
-                    <b key={image.user.name}>{image.user.name}</b>
-                  ),
-                  createdAt: () =>
-                    createdAt && (
-                      <b key={createdAt.getTime()}>
-                        {dateFormat.format(createdAt)}
-                      </b>
-                    ),
-                })}
-                {takenAt && (
-                  <>
-                    {' ｜ '}
-                    {t('gallery.viewer.captured', {
-                      takenAt: () =>
-                        takenAt && (
-                          <b key={takenAt.getTime()}>
-                            {dateFormat.format(takenAt)}
-                          </b>
-                        ),
-                    })}
-                  </>
-                )}
-                {' ｜ '}
-                <ReactStars
-                  className="stars"
-                  size={22}
-                  value={rating}
-                  edit={false}
+            {imageIds && (
+              <a
+                className={`carousel-control-prev ${
+                  index < 1 ? 'carousel-control-disabled' : ''
+                }`}
+                onClick={(e) => {
+                  e?.preventDefault();
+                  dispatch(galleryRequestImage('prev'));
+                }}
+              >
+                <span
+                  className="carousel-control-prev-icon"
+                  aria-hidden="true"
                 />
-                {description && ` ｜ ${description}`}
-                {tags && tags.length > 0 && ' ｜ '}
-                {tags &&
-                  tags.map((tag) => (
-                    <React.Fragment key={tag}>
-                      {' '}
-                      <Label>{tag}</Label>
-                    </React.Fragment>
-                  ))}
-                {!isFullscreen && editModel && (
-                  <form onSubmit={this.handleSave}>
-                    <hr />
-                    <h5>{t('gallery.viewer.modify')}</h5>
-
-                    <GalleryEditForm
-                      t={t}
-                      model={editModel}
-                      allTags={allTags}
-                      errors={saveErrors}
-                      onPositionPick={onPositionPick}
-                      onModelChange={this.handleEditModelChange}
-                    />
-                    <Button bsStyle="primary" type="submit">
-                      <Glyphicon glyph="save" /> {t('general.save')}
-                    </Button>
-                  </form>
-                )}
-                {!isFullscreen && (
-                  <>
-                    <hr />
-                    <h5>{t('gallery.viewer.comments')}</h5>
-                    {comments &&
-                      comments.map((c) => (
-                        <p key={c.id}>
-                          {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
-                          {c.comment}
-                        </p>
-                      ))}
-                    {user && (
-                      <form onSubmit={this.handleCommentFormSubmit}>
-                        <FormGroup>
-                          <InputGroup>
-                            <FormControl
-                              type="text"
-                              placeholder={t('gallery.viewer.newComment')}
-                              value={comment}
-                              onChange={this.handleCommentChange}
-                              maxLength={4096}
-                            />
-                            <InputGroup.Button>
-                              <Button
-                                type="submit"
-                                disabled={comment.length < 1}
-                              >
-                                {t('gallery.viewer.addComment')}
-                              </Button>
-                            </InputGroup.Button>
-                          </InputGroup>
-                        </FormGroup>
-                      </form>
-                    )}
-                    {user && (
-                      <div>
-                        {t('gallery.viewer.yourRating')}{' '}
-                        <ReactStars
-                          className="stars"
-                          size={22}
-                          half={false}
-                          value={myStars ?? 0}
-                          onChange={onStarsChange}
-                        />
-                      </div>
-                    )}
-                  </>
-                )}
-              </div>
+                <span className="sr-only">Previous</span>
+              </a>
+            )}
+            {imageIds && (
+              <a
+                className={`carousel-control-next ${
+                  index >= imageIds.length - 1
+                    ? 'carousel-control-disabled'
+                    : ''
+                }`}
+                onClick={(e) => {
+                  e?.preventDefault();
+                  dispatch(galleryRequestImage('next'));
+                }}
+              >
+                <span
+                  className="carousel-control-next-icon"
+                  aria-hidden="true"
+                />
+                <span className="sr-only">Next</span>
+              </a>
             )}
           </div>
-        </Modal.Body>
-        <Modal.Footer>
-          {image && user && (user.isAdmin || user.id === image.user.id) && (
-            <>
-              <Button onClick={onEdit} active={!!editModel}>
-                <Glyphicon glyph="edit" />
-                <span className="hidden-xs">
-                  {' '}
-                  {t('general.modify')} <kbd>M</kbd>
-                </span>
-              </Button>
-              <Button onClick={onDelete} bsStyle="danger">
-                <Glyphicon glyph="trash" />
-                <span className="hidden-xs"> {t('general.delete')}</span>
-              </Button>
-            </>
+          <br />
+          {image && (
+            <div className="footer">
+              {isFullscreen && imageIds && (
+                <>{`${index + 1} / ${imageIds.length}`} ｜ </>
+              )}
+              {isFullscreen && title && <>{title} ｜ </>}
+              {m?.gallery.viewer.uploaded({
+                username: <b key={image.user.name}>{image.user.name}</b>,
+                createdAt: createdAt ? (
+                  <b key={createdAt.getTime()}>
+                    {dateFormat.format(createdAt)}
+                  </b>
+                ) : (
+                  '-'
+                ),
+              })}
+              {takenAt && (
+                <>
+                  {' ｜ '}
+                  {m?.gallery.viewer.captured(
+                    <b key={takenAt.getTime()}>{dateFormat.format(takenAt)}</b>,
+                  )}
+                </>
+              )}
+              {' ｜ '}
+              <ReactStars
+                className="stars"
+                size={22}
+                value={rating}
+                edit={false}
+              />
+              {description && ` ｜ ${description}`}
+              {tags && tags.length > 0 && ' ｜ '}
+              {tags &&
+                tags.map((tag) => (
+                  <Fragment key={tag}>
+                    {' '}
+                    <Badge variant="secondary">{tag}</Badge>
+                  </Fragment>
+                ))}
+              {!isFullscreen && editModel && (
+                <form onSubmit={handleSave}>
+                  <hr />
+                  <h5>{m?.gallery.viewer.modify}</h5>
+
+                  <GalleryEditForm
+                    m={m}
+                    model={editModel}
+                    allTags={allTags}
+                    errors={saveErrors}
+                    onPositionPick={handlePositionPick}
+                    onModelChange={handleEditModelChange}
+                  />
+                  <Button variant="primary" type="submit">
+                    <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
+                  </Button>
+                </form>
+              )}
+              {!isFullscreen && (
+                <>
+                  <hr />
+                  <h5>{m?.gallery.viewer.comments}</h5>
+                  {comments &&
+                    comments.map((c) => (
+                      <p key={c.id}>
+                        {dateFormat.format(c.createdAt)} <b>{c.user.name}</b>:{' '}
+                        {c.comment}
+                      </p>
+                    ))}
+                  {user && (
+                    <form onSubmit={handleCommentFormSubmit}>
+                      <FormGroup>
+                        <InputGroup>
+                          <FormControl
+                            type="text"
+                            placeholder={m?.gallery.viewer.newComment}
+                            value={comment}
+                            onChange={(e) => {
+                              dispatch(
+                                gallerySetComment(e.currentTarget.value),
+                              );
+                            }}
+                            maxLength={4096}
+                          />
+                          <InputGroup.Append>
+                            <Button
+                              variant="secondary"
+                              type="submit"
+                              disabled={comment.length < 1}
+                            >
+                              {m?.gallery.viewer.addComment}
+                            </Button>
+                          </InputGroup.Append>
+                        </InputGroup>
+                      </FormGroup>
+                    </form>
+                  )}
+                  {user && (
+                    <div>
+                      {m?.gallery.viewer.yourRating}{' '}
+                      <ReactStars
+                        className="stars"
+                        size={22}
+                        half={false}
+                        value={myStars ?? 0}
+                        onChange={handleStarsChange}
+                      />
+                    </div>
+                  )}
+                </>
+              )}
+            </div>
           )}
-          <Button onClick={onShowOnTheMap}>
-            <FontAwesomeIcon icon="dot-circle-o" />
-            <span className="hidden-xs hidden-sm">
-              {' '}
-              {t('gallery.viewer.showOnTheMap')} <kbd>S</kbd>
-            </span>
-          </Button>
-          {document.exitFullscreen && (
-            <Button onClick={this.handleFullscreen}>
-              <Glyphicon glyph="fullscreen" />
-              <span className="hidden-xs hidden-sm">
+        </div>
+      </Modal.Body>
+      <Modal.Footer>
+        {image && user && (user.isAdmin || user.id === image.user.id) && (
+          <>
+            <Button
+              variant="secondary"
+              onClick={() => {
+                dispatch(galleryEditPicture());
+              }}
+              active={!!editModel}
+            >
+              <FontAwesomeIcon icon="pencil" />
+              <span className="d-none d-sm-inline">
                 {' '}
-                {t('general.fullscreen')}
+                {m?.general.modify} <kbd>M</kbd>
               </span>
             </Button>
-          )}
-          {lat !== undefined && lon !== undefined && (
-            <OpenInExternalAppMenuButton
-              lat={lat}
-              lon={lon}
-              mapType={'X'}
-              zoom={14}
-              expertMode={expertMode}
-              placement="top"
-              includePoint
-              pointTitle={title ?? undefined}
-              pointDescription={description ?? undefined}
-              url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
+            <Button
+              onClick={() => {
+                dispatch(
+                  toastsAdd({
+                    id: 'gallery.deletePicture',
+                    messageKey: 'gallery.viewer.deletePrompt',
+                    style: 'warning',
+                    cancelType: [
+                      getType(galleryClear),
+                      getType(galleryRequestImage),
+                    ],
+                    actions: [
+                      {
+                        nameKey: 'general.yes',
+                        action: galleryDeletePicture(),
+                        style: 'danger',
+                      },
+                      { nameKey: 'general.no' },
+                    ],
+                  }),
+                );
+              }}
+              variant="danger"
             >
-              <FontAwesomeIcon icon="external-link" />
-              <span className="hidden-sm hidden-xs">
-                {' '}
-                {t('gallery.viewer.openInNewWindow')}
-              </span>
-            </OpenInExternalAppMenuButton>
-          )}
-          <Button onClick={onClose}>
-            <Glyphicon glyph="remove" />
-            <span className="hidden-xs hidden-sm">
-              {' '}
-              {t('general.close')} <kbd>Esc</kbd>
-            </span>
+              <FontAwesomeIcon icon="trash" />
+              <span className="d-none d-sm-inline"> {m?.general.delete}</span>
+            </Button>
+          </>
+        )}
+        <Button
+          variant="secondary"
+          onClick={() => {
+            dispatch(galleryShowOnTheMap());
+          }}
+        >
+          <FontAwesomeIcon icon="dot-circle-o" />
+          <span className="d-none d-md-inline">
+            {' '}
+            {m?.gallery.viewer.showOnTheMap} <kbd>S</kbd>
+          </span>
+        </Button>
+        {'exitFullscreen' in document && (
+          <Button variant="secondary" onClick={handleFullscreen}>
+            <FontAwesomeIcon icon="arrows-alt" />
+            <span className="d-none d-md-inline"> {m?.general.fullscreen}</span>
           </Button>
-        </Modal.Footer>
-      </Modal>
-    );
-  }
+        )}
+        {lat !== undefined && lon !== undefined && (
+          <OpenInExternalAppMenuButton
+            lat={lat}
+            lon={lon}
+            mapType={'X'}
+            zoom={14}
+            expertMode={expertMode}
+            placement="top"
+            includePoint
+            pointTitle={title ?? undefined}
+            pointDescription={description ?? undefined}
+            url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
+          >
+            <FontAwesomeIcon icon="external-link" />
+            <span className="d-none d-md-inline">
+              {' '}
+              {m?.gallery.viewer.openInNewWindow}
+            </span>
+          </OpenInExternalAppMenuButton>
+        )}
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" />
+          <span className="d-none d-md-inline">
+            {' '}
+            {m?.general.close} <kbd>Esc</kbd>
+          </span>
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
 }
-
-const mapStateToProps = (state: RootState) => ({
-  imageIds: state.gallery.imageIds,
-  image: state.gallery.image,
-  activeImageId: state.gallery.activeImageId,
-  zoom: state.map.zoom,
-  pickingPosition: state.gallery.pickingPositionForId !== null,
-  comment: state.gallery.comment,
-  editModel: state.gallery.editModel,
-  saveError: state.gallery.saveErrors,
-  user: state.auth.user,
-  allTags: state.gallery.tags,
-  language: state.l10n.language,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(galleryClear());
-  },
-  onShowOnTheMap() {
-    dispatch(galleryShowOnTheMap());
-  },
-  onImageSelect(id: number | 'prev' | 'next') {
-    dispatch(galleryRequestImage(id));
-  },
-  onCommentChange(comment: string) {
-    dispatch(gallerySetComment(comment));
-  },
-  onCommentSubmit() {
-    dispatch(gallerySubmitComment());
-  },
-  onStarsChange(stars: number) {
-    dispatch(gallerySubmitStars(stars));
-  },
-  onEdit() {
-    dispatch(galleryEditPicture());
-  },
-  onDelete() {
-    dispatch(
-      toastsAdd({
-        id: 'gallery.deletePicture',
-        messageKey: 'gallery.viewer.deletePrompt',
-        style: 'warning',
-        cancelType: [getType(galleryClear), getType(galleryRequestImage)],
-        actions: [
-          {
-            nameKey: 'general.yes',
-            action: galleryDeletePicture(),
-            style: 'danger',
-          },
-          { nameKey: 'general.no' },
-        ],
-      }),
-    );
-  },
-  onEditModelChange(editModel: PictureModel) {
-    dispatch(gallerySetEditModel(editModel));
-  },
-  onSave() {
-    dispatch(gallerySavePicture());
-  },
-  onPositionPick() {
-    dispatch(gallerySetItemForPositionPicking(-1));
-  },
-});
-
-export const GalleryViewerModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryViewerModalInt));

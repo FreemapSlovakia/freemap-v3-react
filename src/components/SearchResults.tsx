@@ -1,34 +1,25 @@
-import React from 'react';
-import { GeoJSON } from 'react-leaflet';
-import { connect } from 'react-redux';
 import { RootState } from 'fm3/storeCreator';
-import { LatLng, marker } from 'leaflet';
 import { Feature } from 'geojson';
+import { LatLng, marker } from 'leaflet';
+import { ReactElement } from 'react';
+import { GeoJSON } from 'react-leaflet';
+import { useSelector } from 'react-redux';
 import { createMarkerIcon } from './RichMarker';
 
-type Props = ReturnType<typeof mapStateToProps>;
+const ptl = (_: Feature, latLng: LatLng) =>
+  marker(latLng, { icon: createMarkerIcon() });
 
-const ptl = (_: Feature, latLng: LatLng) => {
-  return marker(latLng, { icon: createMarkerIcon() });
-};
-
-const SearchResultsInt: React.FC<Props> = ({ selectedResult }) => {
-  return (
-    <>
-      {selectedResult && (
-        <GeoJSON
-          key={selectedResult.id}
-          data={selectedResult.geojson}
-          style={{ weight: 5 }}
-          pointToLayer={ptl}
-        />
-      )}
-    </>
+export function SearchResults(): ReactElement | null {
+  const selectedResult = useSelector(
+    (state: RootState) => state.search.selectedResult,
   );
-};
 
-const mapStateToProps = (state: RootState) => ({
-  selectedResult: state.search.selectedResult,
-});
-
-export const SearchResults = connect(mapStateToProps)(SearchResultsInt);
+  return !selectedResult ? null : (
+    <GeoJSON
+      key={selectedResult.id}
+      data={selectedResult.geojson}
+      style={{ weight: 5 }}
+      pointToLayer={ptl}
+    />
+  );
+}

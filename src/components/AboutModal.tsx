@@ -1,31 +1,31 @@
-import React from 'react';
-import { connect } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
-type Props = ReturnType<typeof mapDispatchToProps> & {
-  t: Translator;
-};
+type Props = { show: boolean };
 
-export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
+export function AboutModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  function close() {
+    dispatch(setActiveModal(null));
+  }
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
+          <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <h3>{t('contacts.ngo')}</h3>
+        <h3>{m?.contacts.ngo}</h3>
         <address>
           Freemap Slovakia
           <br />
@@ -34,7 +34,7 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
           972 32 Chrenovec-Brusno
           <br />
         </address>
-        <p>{t('contacts.registered')}</p>
+        <p>{m?.contacts.registered}</p>
         <p>
           {'IČO: '}
           <a
@@ -48,7 +48,7 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
           DIČ: 2022912870
         </p>
         <p>
-          {t('contacts.bankAccount')}: VÚB 2746389453/0200
+          {m?.contacts.bankAccount}: VÚB 2746389453/0200
           <br />
           IBAN: SK33 0200 0000 0027 4638 9453
         </p>
@@ -57,23 +57,23 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
           <a href="mailto:freemap@freemap.sk">freemap@freemap.sk</a>
         </p>
 
-        <h3>{t('contacts.generalContact')}</h3>
+        <h3>{m?.contacts.generalContact}</h3>
         <ul>
           <li>
-            {t('contacts.board')}: <a href="oz@freemap.sk">oz@freemap.sk</a>
+            {m?.contacts.board}: <a href="oz@freemap.sk">oz@freemap.sk</a>
           </li>
         </ul>
 
-        <h3>{t('contacts.boardMemebers')}</h3>
+        <h3>{m?.contacts.boardMemebers}</h3>
         <ul>
           <li>
-            {t('contacts.president')}
+            {m?.contacts.president}
             {': '}
             <a href="mailto:michal.bellovic@freemap.sk">Michal Bellovič</a>{' '}
             (Prievidza)
           </li>
           <li>
-            {t('contacts.vicepresident')}
+            {m?.contacts.vicepresident}
             {': '}
             <a href="mailto:michal.palenik@freemap.sk">
               Mgr. Ing. Michal Páleník, PhD.
@@ -81,7 +81,7 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
             (Bratislava)
           </li>
           <li>
-            {t('contacts.secretary')}
+            {m?.contacts.secretary}
             {': '}
             <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
             (Košice)
@@ -89,23 +89,10 @@ export const AboutModalInt: React.FC<Props> = ({ onModalClose, t }) => {
         </ul>
       </Modal.Body>
       <Modal.Footer>
-        <FormGroup>
-          <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
-          </Button>
-        </FormGroup>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close}
+        </Button>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const AboutModal = connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(AboutModalInt));
+}

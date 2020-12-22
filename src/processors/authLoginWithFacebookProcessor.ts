@@ -1,10 +1,10 @@
-import { toastsAdd, toastsAddError } from 'fm3/actions/toastsActions';
-import { authSetUser, authLoginWithFacebook } from 'fm3/actions/authActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { authLoginWithFacebook, authSetUser } from 'fm3/actions/authActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
+import { loadFb } from 'fm3/fbLoader';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { User } from 'fm3/types/common';
 import { assertType } from 'typescript-is';
-import { loadFb } from 'fm3/fbLoader';
 
 export const authLoginWithFacebookProcessor: Processor = {
   actionCreator: authLoginWithFacebook,
@@ -22,7 +22,12 @@ export const authLoginWithFacebookProcessor: Processor = {
       });
 
       if (response.status !== 'connected') {
-        dispatch(toastsAddError('logIn.logInError2'));
+        dispatch(
+          toastsAdd({
+            messageKey: 'logIn.logInError2',
+            style: 'danger',
+          }),
+        );
         return;
       }
     }

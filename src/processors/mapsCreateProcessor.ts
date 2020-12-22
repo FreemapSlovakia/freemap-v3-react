@@ -1,17 +1,15 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { mapsCreate, mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { getMapDataFromState } from './mapsSaveProcessor';
-import { translate } from 'fm3/stringUtils';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
+import { getMapDataFromState } from './mapsSaveProcessor';
 
 export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
   actionCreator: mapsCreate,
   errorKey: 'maps.createError',
   handle: async ({ getState, dispatch }) => {
-    const name = window.prompt(
-      translate(window.translations, 'maps.namePrompt') as string,
-    );
+    const name = window.prompt(window.translations?.maps.namePrompt);
 
     if (name === null) {
       return;
@@ -28,6 +26,14 @@ export const mapsCreateProcessor: Processor<typeof mapsCreate> = {
         data: getMapDataFromState(getState()),
       },
     });
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.saved',
+      }),
+    );
 
     dispatch(mapsLoadList());
 

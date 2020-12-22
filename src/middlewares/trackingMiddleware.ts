@@ -1,12 +1,12 @@
-import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
-import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
-import { toastsAddError, toastsAdd } from 'fm3/actions/toastsActions';
-import { Middleware, Dispatch } from 'redux';
-import { getType } from 'typesafe-actions';
+import { RootAction } from 'fm3/actions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { rpcCall, rpcResponse } from 'fm3/actions/rpcActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { wsClose, wsOpen } from 'fm3/actions/websocketActions';
 import { RootState } from 'fm3/storeCreator';
 import { TrackedDevice } from 'fm3/types/trackingTypes';
-import { RootAction } from 'fm3/actions';
+import { Dispatch, Middleware } from 'redux';
+import { isActionOf } from 'typesafe-actions';
 import { is } from 'typescript-is';
 
 let reopenTs: number | undefined;
@@ -20,14 +20,19 @@ export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
   getState,
 }) => (next: Dispatch) => (action: RootAction): unknown => {
   if (
-    action.type === getType(setActiveModal) &&
+    isActionOf(setActiveModal, action) &&
     action.payload === 'tracking-my' &&
     !getState().auth.user
   ) {
-    return next(toastsAddError('tracking.unauthenticatedError'));
+    return next(
+      toastsAdd({
+        messageKey: 'tracking.unauthenticatedError',
+        style: 'danger',
+      }),
+    );
   }
 
-  if (action.type === getType(rpcResponse)) {
+  if (isActionOf(rpcResponse, action)) {
     const { payload } = action;
 
     if (
@@ -52,11 +57,13 @@ export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
   }
 
   const prevState = getState().websocket.state;
+
   const prevTrackedDevices = getState().tracking.trackedDevices;
 
   const result = next(action);
 
   const { trackedDevices } = getState().tracking;
+
   const { state, timestamp } = getState().websocket;
 
   if (prevState === state && prevTrackedDevices === trackedDevices) {
@@ -72,6 +79,7 @@ export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
     dispatch(wsClose(null));
   } else if (trackedDevices.length > 0 && state === 3) {
     const diff = Date.now() - timestamp;
+
     if (diff > 1000) {
       // TODO scale this value
       dispatch(wsOpen(null));
@@ -110,12 +118,15 @@ export const trackingMiddleware: Middleware<unknown, RootState, Dispatch> = ({
 
 function mangle(td: TrackedDevice) {
   const { id, ...rest } = td;
+
   const isDeviceId = /^\d+$/.test(id.toString());
+
   const xxx = isDeviceId
     ? typeof id === 'number'
       ? id
       : Number.parseInt(id, 10)
     : id;
+
   return {
     deviceId: isDeviceId ? xxx : undefined,
     token: isDeviceId ? undefined : xxx,

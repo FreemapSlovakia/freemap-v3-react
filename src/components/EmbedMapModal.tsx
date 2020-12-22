@@ -1,27 +1,23 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import FormCheck from 'react-bootstrap/FormCheck';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch } from 'react-redux';
 
-type Props = ReturnType<typeof mapDispatchToProps> & {
-  t: Translator;
-};
+type Props = { show: boolean };
 
-export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
+export function EmbedMapModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
   const [width, setWidth] = useState('500');
 
   const [height, setHeight] = useState('300');
@@ -46,7 +42,7 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
     (url: string) => {
       const embedFeatures = getEmbedFeatures();
 
-      return `${url.replace(/&(show|embed)=[^&]*/, '')}${
+      return `${url.replace(/&(show|embed|tool)=[^&]*/g, '')}${
         embedFeatures.length ? `&embed=${embedFeatures.join(',')}` : ''
       }`;
     },
@@ -59,7 +55,7 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
 
   const iframe = useRef<HTMLIFrameElement | null>(null);
 
-  const textarea = useRef<HTMLInputElement | null>(null);
+  const textarea = useRef<HTMLTextAreaElement | null>(null);
 
   useEffect(() => {
     if (iframe.current?.contentWindow) {
@@ -94,7 +90,7 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
     });
   }, [getUrl]);
 
-  const setFormControl = (ta: HTMLInputElement | null): void => {
+  const setFormControl = (ta: HTMLTextAreaElement | null): void => {
     textarea.current = ta;
   };
 
@@ -112,18 +108,24 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
     }
   };
 
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onModalClose} className="dynamic">
+    <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="code" /> {t('more.embedMap')}
+          <FontAwesomeIcon icon="code" /> {m?.more.embedMap}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup style={{ maxWidth: '542px' }}>
-          <ControlLabel>{t('embed.dimensions')}</ControlLabel>
+          <FormLabel>{m?.embed.dimensions}</FormLabel>
           <InputGroup>
-            <InputGroup.Addon>{t('embed.width')}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.embed.width}</InputGroup.Text>
+            </InputGroup.Append>
             <FormControl
               type="number"
               value={width}
@@ -131,11 +133,13 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
               max={1600}
               step={10}
               required
-              onChange={({ target }) => {
-                setWidth((target as HTMLInputElement).value);
+              onChange={({ currentTarget }) => {
+                setWidth(currentTarget.value);
               }}
             />
-            <InputGroup.Addon>{t('embed.height')}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.embed.height}</InputGroup.Text>
+            </InputGroup.Append>
             <FormControl
               type="number"
               value={height}
@@ -143,49 +147,52 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
               max={1200}
               step={10}
               required
-              onChange={({ target }) => {
-                setHeight((target as HTMLInputElement).value);
+              onChange={({ currentTarget }) => {
+                setHeight(currentTarget.value);
               }}
             />
           </InputGroup>
         </FormGroup>
 
-        <strong>{t('embed.enableFeatures')}</strong>
-        <Checkbox
-          onChange={({ target }) => {
-            setEnableSearch((target as HTMLInputElement).checked);
+        <strong>{m?.embed.enableFeatures}</strong>
+        <FormCheck
+          id="enableSearch"
+          type="checkbox"
+          onChange={({ currentTarget }) => {
+            setEnableSearch(currentTarget.checked);
           }}
           checked={enableSearch}
-        >
-          {t('embed.enableSearch')}
-        </Checkbox>
-        <Checkbox
-          onChange={({ target }) => {
-            setEnableMapSwitch((target as HTMLInputElement).checked);
+          label={m?.embed.enableSearch}
+        />
+        <FormCheck
+          id="enableMapSwitch"
+          type="checkbox"
+          onChange={({ currentTarget }) => {
+            setEnableMapSwitch(currentTarget.checked);
           }}
           checked={enableMapSwitch}
-        >
-          {t('embed.enableMapSwitch')}
-        </Checkbox>
-        <Checkbox
-          onChange={({ target }) => {
-            setEnableLocateMe((target as HTMLInputElement).checked);
+          label={m?.embed.enableMapSwitch}
+        />
+        <FormCheck
+          id="enableLocateMe"
+          type="checkbox"
+          onChange={({ currentTarget }) => {
+            setEnableLocateMe(currentTarget.checked);
           }}
           checked={enableLocateMe}
-        >
-          {t('embed.enableLocateMe')}
-        </Checkbox>
+          label={m?.embed.enableLocateMe}
+        />
         <hr />
-        <p>{t('embed.code')}</p>
+        <p>{m?.embed.code}</p>
         <FormControl
-          inputRef={setFormControl}
-          componentClass="textarea"
+          ref={setFormControl}
+          as="textarea"
           value={`<iframe src="${url}" style="width: ${width}px; height: ${height}px; border: 0" allowfullscreen></iframe>`}
           readOnly
           rows={3}
         />
         <br />
-        <p>{t('embed.example')}</p>
+        <p>{m?.embed.example}</p>
         <div style={{ overflowX: 'auto' }}>
           <iframe
             title="Freemap.sk"
@@ -204,23 +211,12 @@ export const EmbedMapModalInt: React.FC<Props> = ({ t, onModalClose }) => {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
-          <Glyphicon glyph="copy" /> {t('general.copyCode')}
+          <FontAwesomeIcon icon="clipboard" /> {m?.general.copyCode}
         </Button>{' '}
-        <Button onClick={onModalClose}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const EmbedMapModal = connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(EmbedMapModalInt));
+}

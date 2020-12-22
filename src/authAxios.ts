@@ -1,13 +1,13 @@
 import axios, {
-  AxiosRequestConfig,
-  CancelTokenSource,
-  Canceler,
   AxiosInstance,
+  AxiosRequestConfig,
   AxiosResponse,
+  Canceler,
+  CancelTokenSource,
 } from 'axios';
-import { RootState } from './storeCreator';
-import { setActiveModal, clearMap, selectFeature } from './actions/mainActions';
 import { ActionCreator } from 'typesafe-actions';
+import { clearMap } from './actions/mainActions';
+import { RootState } from './storeCreator';
 
 export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
   const cfg: AxiosRequestConfig = {
@@ -59,7 +59,11 @@ export const cancelRegister = new Set<CancelItem>(); // TODO move elsewhere as i
 export async function httpRequest({
   getState,
   expectedStatus,
-  cancelActions = [selectFeature, clearMap, setActiveModal],
+  cancelActions = [
+    clearMap,
+    // selectFeature,
+    // setActiveModal -- TODO we should maybe cancel only if closing modal
+  ],
   ...rest
 }: HttpRequestParams): Promise<AxiosResponse<unknown>> {
   let source: CancelTokenSource | undefined;

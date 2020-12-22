@@ -1,15 +1,15 @@
 import {
+  Changeset,
   changesetsSet,
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
 import { clearMap, selectFeature } from 'fm3/actions/mainActions';
-import { assertType } from 'typescript-is';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
-import { Changeset } from 'fm3/actions/changesetsActions';
+import { assertType } from 'typescript-is';
 
 // interface Changeset {
 //   userName: string | null;

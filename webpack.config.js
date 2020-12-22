@@ -133,10 +133,16 @@ module.exports = {
         DEPLOYMENT: JSON.stringify(process.env.DEPLOYMENT),
         FM_MAPSERVER_URL: JSON.stringify(process.env.FM_MAPSERVER_URL),
         MAX_GPX_TRACK_SIZE_IN_MB: JSON.stringify(15),
+        BASE_URL: JSON.stringify(
+          {
+            www: 'https://www.freemap.sk',
+            next: 'https://next.freemap.sk',
+          }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:9000',
+        ),
         API_URL: JSON.stringify(
           {
             www: 'https://backend.freemap.sk',
-            next: 'http://backend.freemap.sk:3001',
+            next: 'https://backend.freemap.sk',
           }[process.env.DEPLOYMENT] || 'https://local.freemap.sk:3000',
         ),
         GA_TRACKING_CODE: JSON.stringify(

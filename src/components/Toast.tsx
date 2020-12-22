@@ -1,19 +1,19 @@
-import React, { useCallback } from 'react';
-import ButtonToolbar from 'react-bootstrap/lib/ButtonToolbar';
-import Button from 'react-bootstrap/lib/Button';
-import Alert from 'react-bootstrap/lib/Alert';
-
-import 'fm3/styles/toasts.scss';
 import { RootAction } from 'fm3/actions';
 import { ResolvedToast } from 'fm3/actions/toastsActions';
+import 'fm3/styles/toasts.scss';
+import { ReactElement, ReactNode, useCallback } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 
-interface Props extends ResolvedToast {
+interface Props extends Pick<ResolvedToast, 'id' | 'actions' | 'style'> {
   onAction: (id: string, action?: RootAction | RootAction[]) => void;
   onTimeoutStop: (id: string) => void;
   onTimeoutRestart: (id: string) => void;
+  message: ReactNode;
 }
 
-export const Toast: React.FC<Props> = ({
+export function Toast({
   message,
   actions,
   onAction,
@@ -21,7 +21,7 @@ export const Toast: React.FC<Props> = ({
   style,
   onTimeoutStop,
   onTimeoutRestart,
-}) => {
+}: Props): ReactElement {
   const handleMouseEnter = useCallback(() => {
     onTimeoutStop(id);
   }, [onTimeoutStop, id]);
@@ -44,29 +44,28 @@ export const Toast: React.FC<Props> = ({
 
   return (
     <Alert
-      className="toast"
-      bsStyle={style}
+      className="fm-toast"
+      variant={style ?? 'primary'}
       onClick={clickHandler}
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
-      onDismiss={handleAlertDismiss}
+      onClose={handleAlertDismiss}
+      dismissible
     >
       {typeof message === 'string' && message.startsWith('!HTML!') ? (
-        <div
-          className="toast-message"
-          dangerouslySetInnerHTML={{ __html: message.substring(6) }}
-        />
+        <div dangerouslySetInnerHTML={{ __html: message.substring(6) }} />
       ) : (
-        <div className="toast-message">{message}</div>
+        <div>{message}</div>
       )}
       {buttonActions.length > 0 && (
         <>
           <br />
           <ButtonToolbar>
-            {buttonActions.map(({ name, action, style: buttonStyle }) => (
+            {buttonActions.map(({ name, action, style: buttonStyle }, i) => (
               <Button
+                className={i > 0 ? 'ml-2' : ''}
                 key={name}
-                bsStyle={buttonStyle}
+                variant={buttonStyle}
                 onClick={() => onAction(id, action)}
               >
                 {name}
@@ -77,4 +76,4 @@ export const Toast: React.FC<Props> = ({
       )}
     </Alert>
   );
-};
+}

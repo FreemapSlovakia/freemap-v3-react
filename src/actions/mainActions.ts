@@ -1,5 +1,5 @@
+import { AppState, LatLon } from 'fm3/types/common';
 import { createAction } from 'typesafe-actions';
-import { LatLon, AppState } from 'fm3/types/common';
 
 export type Tool =
   | 'objects'
@@ -81,7 +81,9 @@ export const saveSettings = createAction('SAVE_SETTINGS')<{
   preventTips: boolean;
 }>();
 
-export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<string>();
+export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
+  string | undefined
+>();
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
@@ -127,6 +129,6 @@ export type Selection =
 
 export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
 
-export const convertToDrawing = createAction('CONVERT_TO_MEASUREMENT')<
+export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
   number | undefined
 >();

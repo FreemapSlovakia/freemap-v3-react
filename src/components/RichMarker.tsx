@@ -1,6 +1,7 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import { colors } from 'fm3/constants';
+import Leaflet, { DivIcon, divIcon } from 'leaflet';
+import { ReactElement, useEffect, useMemo, useRef } from 'react';
 import { Marker, MarkerProps } from 'react-leaflet';
-import { DivIcon, divIcon } from 'leaflet';
 
 interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;
@@ -14,15 +15,15 @@ interface IconProps {
   faIconLeftPadding?: string;
 }
 
-export const RichMarker: React.FC<Props> = ({
+export function RichMarker({
   autoOpenPopup,
   ...restProps
-}) => {
-  const markerRef = useRef<Marker | null>(null);
+}: Props): ReactElement {
+  const markerRef = useRef<Leaflet.Marker | null>(null);
 
   useEffect(() => {
     if (autoOpenPopup && markerRef.current) {
-      markerRef.current.leafletElement.openPopup();
+      markerRef.current.openPopup();
     }
   }, [autoOpenPopup]);
 
@@ -34,10 +35,16 @@ export const RichMarker: React.FC<Props> = ({
   );
 
   return <Marker {...restProps} icon={icon} ref={markerRef} />;
-};
+}
 
 export function createMarkerIcon(props: IconProps = {}): DivIcon {
-  const { image, faIcon, faIconLeftPadding, color = '#007bff', label } = props;
+  const {
+    image,
+    faIcon,
+    faIconLeftPadding,
+    color = colors.normal,
+    label,
+  } = props;
 
   const gradinentDef = `<defs>
       <radialGradient id="gradient-${color}" gradientUnits="userSpaceOnUse" cx="154.607" cy="160.652" r="131.625" gradientTransform="matrix(0.907588, 0, 0, 0.907588, 13.800331, 17.89466)">

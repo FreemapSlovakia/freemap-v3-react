@@ -1,8 +1,8 @@
 import { RootAction } from 'fm3/actions';
-import { createReducer } from 'typesafe-actions';
 import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
-import { objectsSetResult, ObjectsResult } from 'fm3/actions/objectsActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { ObjectsResult, objectsSetResult } from 'fm3/actions/objectsActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface ObjectsState {
   objects: ObjectsResult[];

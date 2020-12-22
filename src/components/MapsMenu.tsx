@@ -1,124 +1,101 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import { deleteFeature } from 'fm3/actions/mainActions';
 import {
   mapsCreate,
+  mapsLoad,
   mapsRename,
   mapsSave,
-  mapsLoad,
 } from 'fm3/actions/mapsActions';
-import { deleteFeature } from 'fm3/actions/mainActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function MapsMenu(): ReactElement {
+  const m = useMessages();
 
-const MapsMenuInt: React.FC<Props> = ({
-  onSelect,
-  onRename,
-  onCreate,
-  onSave,
-  onDelete,
-  maps,
-  id,
-  t,
-  authenticated,
-}) => (
-  <>
-    <DropdownButton
-      id="maps-dropdown"
-      title={maps.find((map) => map.id === id)?.name ?? t('maps.noMap')}
-      disabled={!authenticated}
-      onSelect={onSelect}
-    >
-      <MenuItem eventKey={undefined}>{t('maps.noMap')}</MenuItem>
+  const maps = useSelector((state: RootState) => state.maps.maps);
 
-      {maps.map((map) => (
-        <MenuItem key={map.id} eventKey={map.id}>
-          {map.name}
-        </MenuItem>
-      ))}
-    </DropdownButton>
-    {authenticated && id !== undefined && (
-      <>
-        {' '}
-        <Button onClick={onSave}>
+  const id = useSelector((state: RootState) => state.maps.id);
+
+  const authenticated = useSelector((state: RootState) => !!state.auth.user);
+
+  const dispatch = useDispatch();
+
+  return (
+    <>
+      <DropdownButton
+        id="maps-dropdown"
+        variant="secondary"
+        title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
+        disabled={!authenticated}
+        onSelect={(id) => {
+          if (id !== null) {
+            dispatch(mapsLoad({ id: Number(id) }));
+          }
+        }}
+      >
+        <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
+
+        {maps.map((map) => (
+          <Dropdown.Item key={map.id} eventKey={String(map.id)}>
+            {map.name}
+          </Dropdown.Item>
+        ))}
+      </DropdownButton>
+      {authenticated && id !== undefined && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(mapsSave());
+          }}
+        >
           <FontAwesomeIcon icon="floppy-o" />
-          <span className="hidden-md hidden-sm hidden-xs">
-            {' '}
-            {t('maps.save')}
-          </span>
+          <span className="d-none d-md-inline"> {m?.maps.save}</span>
         </Button>
-      </>
-    )}{' '}
-    <Button onClick={onCreate} disabled={!authenticated}>
-      <FontAwesomeIcon icon="plus" />
-      <span className="hidden-md hidden-sm hidden-xs"> {t('maps.create')}</span>
-    </Button>
-    {authenticated && id !== undefined && (
-      <>
-        {' '}
-        <Button onClick={onRename}>
+      )}
+      <Button
+        className="ml-1"
+        variant="secondary"
+        onClick={() => {
+          dispatch(mapsCreate());
+        }}
+        disabled={!authenticated}
+      >
+        <FontAwesomeIcon icon="plus" />
+        <span className="d-none d-md-inline"> {m?.maps.create}</span>
+      </Button>
+      {authenticated && id !== undefined && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(mapsRename());
+          }}
+        >
           <FontAwesomeIcon icon="pencil" />
-          <span className="hidden-md hidden-sm hidden-xs">
-            {' '}
-            {t('maps.rename')}
-          </span>
+          <span className="d-none d-md-inline"> {m?.maps.rename}</span>
         </Button>
-      </>
-    )}
-    {authenticated && id !== undefined && (
-      <>
-        {' '}
-        <Button onClick={onDelete}>
+      )}
+      {authenticated && id !== undefined && (
+        <Button
+          className="ml-1"
+          variant="danger"
+          onClick={() => {
+            dispatch(deleteFeature({ type: 'maps' }));
+          }}
+        >
           <FontAwesomeIcon icon="trash" />
-          <span className="hidden-md hidden-sm hidden-xs">
+          <span className="d-none d-md-inline">
             {' '}
-            {t('maps.delete')} <kbd>Del</kbd>
+            {m?.maps.delete} <kbd>Del</kbd>
           </span>
         </Button>
-      </>
-    )}
-  </>
-);
-
-const mapStateToProps = (state: RootState) => ({
-  maps: state.maps.maps,
-  id: state.maps.id,
-  authenticated: !!state.auth.user,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSelect(id: unknown) {
-    if (typeof id === 'number') {
-      dispatch(mapsLoad({ id }));
-    }
-  },
-  onRename() {
-    dispatch(mapsRename());
-  },
-  onCreate() {
-    dispatch(mapsCreate());
-  },
-  onSave() {
-    dispatch(mapsSave());
-  },
-  onDelete() {
-    dispatch(deleteFeature({ type: 'maps' }));
-  },
-});
-
-export const MapsMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MapsMenuInt));
+      )}
+    </>
+  );
+}

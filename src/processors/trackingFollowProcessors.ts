@@ -1,9 +1,9 @@
+import { selectFeature } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { isActionOf } from 'typesafe-actions';
-import { Track } from 'fm3/types/trackingTypes';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { trackingTrackSelector } from 'fm3/selectors/mainSelectors';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { Track } from 'fm3/types/trackingTypes';
+import { isActionOf } from 'typesafe-actions';
 
 let prevTrack: Track | undefined;
 

@@ -1,10 +1,10 @@
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetTrackUID,
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 export const trackViewerUploadTrackProcessor: Processor = {

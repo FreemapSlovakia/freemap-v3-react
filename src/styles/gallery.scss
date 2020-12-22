@@ -18,10 +18,10 @@
   }
 }
 
-.carousel-control.disabled,
-.carousel-control.disabled:hover {
+.carousel-control-disabled,
+.carousel-control-disabled:hover {
   cursor: not-allowed;
-  opacity: 0.2;
+  opacity: 0.2 !important;
 }
 
 .stars {

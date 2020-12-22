@@ -1,10 +1,10 @@
 import {
-  routePlannerSetStart,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
+  routePlannerSetStart,
 } from 'fm3/actions/routePlannerActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getCurrentPosition } from 'fm3/geoutils';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const routePlannerSetFromCurrentPositionProcessor: Processor<
   typeof routePlannerSetFromCurrentPosition

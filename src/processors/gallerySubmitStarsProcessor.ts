@@ -2,8 +2,8 @@ import {
   galleryRequestImage,
   gallerySubmitStars,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const gallerySubmitStarsProcessor: Processor<
   typeof gallerySubmitStars

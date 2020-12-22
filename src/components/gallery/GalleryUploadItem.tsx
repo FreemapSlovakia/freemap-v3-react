@@ -1,15 +1,14 @@
-import React, { useCallback } from 'react';
+import { GalleryTag } from 'fm3/actions/galleryActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import 'fm3/styles/react-tag-autocomplete.css';
-
-import Button from 'react-bootstrap/lib/Button';
 import {
   GalleryEditForm,
   PictureModel,
 } from 'fm3/components/gallery/GalleryEditForm';
-import { Translator } from 'fm3/l10nInjector';
-import { GalleryTag } from 'fm3/actions/galleryActions';
 import spinnerbar from 'fm3/images/spinnerbar.gif';
+import 'fm3/styles/react-tag-autocomplete.css';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { Fragment, ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
 
 interface Props {
   id: number;
@@ -22,11 +21,11 @@ interface Props {
   onPositionPick: (id: number) => void;
   onModelChange: (id: number, model: PictureModel) => void;
   disabled: boolean;
-  t: Translator;
+  m?: Messages;
   showPreview: boolean;
 }
 
-export const GalleryUploadItem: React.FC<Props> = ({
+export function GalleryUploadItem({
   id,
   filename,
   url,
@@ -34,12 +33,12 @@ export const GalleryUploadItem: React.FC<Props> = ({
   model,
   allTags,
   errors,
-  t,
+  m,
   showPreview,
   onRemove,
   onPositionPick,
   onModelChange,
-}) => {
+}: Props): ReactElement {
   const handleRemove = useCallback(() => {
     onRemove(id);
   }, [id, onRemove]);
@@ -56,7 +55,7 @@ export const GalleryUploadItem: React.FC<Props> = ({
   );
 
   return (
-    <React.Fragment key={id}>
+    <Fragment key={id}>
       {showPreview ? (
         <img
           className="gallery-image gallery-image-upload"
@@ -69,15 +68,15 @@ export const GalleryUploadItem: React.FC<Props> = ({
       <fieldset disabled={disabled}>
         <GalleryEditForm
           {...{ model, allTags, errors }}
-          t={t}
+          m={m}
           onPositionPick={disabled ? undefined : handlePositionPick}
           onModelChange={handleModelChange}
         />{' '}
-        <Button onClick={handleRemove} bsStyle="danger">
-          <FontAwesomeIcon icon="times" /> {t('general.remove')}
+        <Button onClick={handleRemove} variant="danger">
+          <FontAwesomeIcon icon="times" /> {m?.general.remove}
         </Button>
       </fieldset>
       <hr />
-    </React.Fragment>
+    </Fragment>
   );
-};
+}

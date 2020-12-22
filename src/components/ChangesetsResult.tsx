@@ -1,32 +1,27 @@
-import React, { useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
-  changesetsSetAuthorName,
   Changeset,
+  changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
-
+import { selectFeature } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { RichMarker } from 'fm3/components/RichMarker';
+import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
-import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { ReactElement, useCallback } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
-import { selectFeature } from 'fm3/actions/mainActions';
 
 const ONE_DAY = 1000 * 60 * 60 * 24;
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+export function ChangesetsResult(): ReactElement {
+  const changesets = useSelector(
+    (state: RootState) => state.changesets.changesets,
+  );
 
-const ChangesetsResultInt: React.FC<Props> = ({
-  changesets,
-  onShowChangesetDetail,
-  days,
-}) => {
+  const days = useSelector((state: RootState) => state.changesets.days);
+
   const opacityOf = useCallback(
     (changeset: Changeset, now: Date) => {
       if (days === null) {
@@ -47,6 +42,24 @@ const ChangesetsResultInt: React.FC<Props> = ({
 
   const now = new Date();
 
+  const dispatch = useDispatch();
+
+  function showChangesetDetail(changeset: Changeset) {
+    dispatch(
+      toastsAdd({
+        id: 'changeset.detail',
+        messageKey: 'changesets.detail',
+        messageParams: {
+          changeset,
+        },
+        cancelType: getType(changesetsSetAuthorName),
+        style: 'info',
+      }),
+    );
+
+    dispatch(selectFeature({ type: 'changesets' }));
+  }
+
   return (
     <>
       {changesets.map((changeset) => {
@@ -59,7 +72,11 @@ const ChangesetsResultInt: React.FC<Props> = ({
             key={changeset.id}
             faIconLeftPadding="2px"
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
-            onclick={() => onShowChangesetDetail(changeset)}
+            eventHandlers={{
+              click() {
+                showChangesetDetail(changeset);
+              },
+            }}
           >
             <Tooltip
               opacity={opacity}
@@ -81,32 +98,4 @@ const ChangesetsResultInt: React.FC<Props> = ({
       })}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  changesets: state.changesets.changesets,
-  days: state.changesets.days,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onShowChangesetDetail(changeset: Changeset) {
-    dispatch(
-      toastsAdd({
-        id: 'changeset.detail',
-        messageKey: 'changesets.detail',
-        messageParams: {
-          changeset,
-        },
-        cancelType: getType(changesetsSetAuthorName),
-        style: 'info',
-      }),
-    );
-
-    dispatch(selectFeature({ type: 'changesets' }));
-  },
-});
-
-export const ChangesetsResult = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(ChangesetsResultInt);
+}

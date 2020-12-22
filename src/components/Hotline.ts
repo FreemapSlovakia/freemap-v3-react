@@ -1,31 +1,28 @@
+import { createPathComponent, PathProps } from '@react-leaflet/core';
+import { PropsWithChildren } from '@react-leaflet/core/types/component';
 import 'leaflet-hotline';
-import { Path, withLeaflet, PathProps } from 'react-leaflet';
-import { Path as LPath } from 'leaflet';
-// import { Hotline as LHotline } from 'leaflet-hotline'; TODO
 
-interface Props extends PathProps {
+interface Props extends PathProps, PropsWithChildren {
   positions: (readonly [number, number, number])[];
   outlineWidth: number;
   outlineColor?: string;
   palette: Record<number, string>;
   min?: number;
   max?: number;
-  weight?: number; // TODO ingerited from PathProps; should we actually extend from Path?
+  weight?: number; // TODO inherited from PathProps; should we actually extend from Path?
 }
 
-class HotlineInt extends Path<Props, LPath> {
-  createLeafletElement(props: Props) {
-    return (window['L'] as any).hotline(
-      props.positions,
-      this.getOptions(props),
-    );
-  }
+export const Hotline = createPathComponent<any, Props>(
+  (props, context) => {
+    return {
+      instance: (window['L'] as any).hotline(props.positions, props),
+      context,
+    };
+  },
 
-  updateLeafletElement(fromProps: Props, toProps: Props) {
-    if (toProps.positions !== fromProps.positions) {
-      (this.leafletElement as any).setLatLngs(toProps.positions);
+  (instance, props, prevProps) => {
+    if (props.positions !== prevProps.positions) {
+      (instance as any).setLatLngs(props.positions);
     }
-  }
-}
-
-export const Hotline = withLeaflet(HotlineInt);
+  },
+);

@@ -1,76 +1,67 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
-
+import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
 import {
   AsyncGalleryFilterModal,
-  AsyncGalleryViewerModal,
   AsyncGalleryUploadModal,
+  AsyncGalleryViewerModal,
 } from 'fm3/components/AsyncComponents';
-
-import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { showGalleryViewer as shouldShowGalleryViewer } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { Dispatch } from 'redux';
-import { showGalleryViewer } from 'fm3/selectors/mainSelectors';
-
 import 'fm3/styles/gallery.scss';
+import { LeafletMouseEvent } from 'leaflet';
+import { ReactElement, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+export function GalleryModals(): ReactElement {
+  const dispatch = useDispatch();
 
-const GalleryModalsInt: React.FC<Props> = ({
-  showGalleryViewer,
-  showFilter,
-  showUploadModal,
-  onPositionPick,
-  isPickingPosition,
-}) => {
-  const handleMapClick = useCallback(
-    (lat: number, lon: number) => {
-      if (isPickingPosition) {
-        onPositionPick(lat, lon);
-      }
-    },
-    [isPickingPosition, onPositionPick],
+  const isPickingPosition = useSelector(
+    (state: RootState) => state.gallery.pickingPositionForId !== null,
+  );
+
+  const showFilter = useSelector(
+    (state: RootState) => state.gallery.showFilter,
+  );
+
+  const showGalleryViewer = useSelector((state: RootState) =>
+    shouldShowGalleryViewer(state),
+  );
+
+  const showUploadModal = useSelector(
+    (state: RootState) =>
+      state.gallery.showUploadModal &&
+      !!state.auth.user &&
+      !state.auth.user.notValidated &&
+      state.gallery.pickingPositionForId === null,
   );
 
   useEffect(() => {
-    mapEventEmitter.on('mapClick', handleMapClick);
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handleMapClick);
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
+    }
+
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
+      if (isPickingPosition) {
+        dispatch(
+          gallerySetPickingPosition({ lat: latlng.lat, lon: latlng.lng }),
+        );
+      }
     };
-  }, [handleMapClick]);
+
+    map.on('click', handleMapClick);
+
+    return () => {
+      map.off('click', handleMapClick);
+    };
+  }, [dispatch, isPickingPosition]);
 
   return (
     <>
-      {showGalleryViewer && <AsyncGalleryViewerModal />}
-      {showFilter && <AsyncGalleryFilterModal />}
-      {showUploadModal && <AsyncGalleryUploadModal />}
+      {<AsyncGalleryViewerModal show={showGalleryViewer} />}
+      {<AsyncGalleryFilterModal show={showFilter} />}
+      {<AsyncGalleryUploadModal show={showUploadModal} />}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  activeImageId: state.gallery.activeImageId,
-  isPickingPosition: state.gallery.pickingPositionForId !== null,
-  showFilter: state.gallery.showFilter,
-  showUploadModal:
-    state.gallery.showUploadModal &&
-    state.auth.user &&
-    !state.auth.user.notValidated,
-  showPosition: state.gallery.showPosition,
-  showGalleryViewer: showGalleryViewer(state),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPositionPick(lat: number, lon: number) {
-    dispatch(gallerySetPickingPosition({ lat, lon }));
-  },
-});
-
-export const GalleryModals = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(GalleryModalsInt);
+}

@@ -1,11 +1,12 @@
 /* eslint-disable */
 
-import React, { Fragment } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { latLonToString } from 'fm3/geoutils';
+import { Fragment } from 'react';
+import Alert from 'react-bootstrap/Alert';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('sk', {
@@ -20,10 +21,16 @@ const nf33 = Intl.NumberFormat('sk', {
 
 const masl = 'm\xa0n.\xa0m.';
 
-const errorMarkup = `<h1>Chyba aplikácie</h1>
+const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 <p>
-  Chyba nám bola automaticky reportovaná pod ID <b>{ticketId}</b>.
-  Môžeš ju nahlásiť aj na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
+  ${
+    ticketId
+      ? `Chyba nám bola automaticky reportovaná pod ID <b>${ticketId}</b>.`
+      : ''
+  }
+  Chybu môžeš nahlásiť ${
+    ticketId ? 'aj ' : ''
+  }na <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   prípadne nám poslať detaily na <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
 <p>
@@ -32,6 +39,7 @@ const errorMarkup = `<h1>Chyba aplikácie</h1>
 
 const sk: Messages = {
   general: {
+    iso: 'sk_SK',
     elevationProfile: 'Výškový profil',
     save: 'Uložiť',
     cancel: 'Zrušiť',
@@ -51,8 +59,8 @@ const sk: Messages = {
     preventShowingAgain: 'Už viac nezobrazovať',
     closeWithoutSaving: 'Zavrieť okno bez uloženia zmien?',
     back: 'Späť',
-    internalError: `!HTML!${errorMarkup}`,
-    processorError: 'Chyba aplikácie: ${error}',
+    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    processorError: ({ err }) => `Chyba aplikácie: ${err}`,
     seconds: 'sekundy',
     minutes: 'minúty',
     meters: 'metre',
@@ -63,6 +71,12 @@ const sk: Messages = {
     convertToDrawing: 'Skonvertovať na kreslenie',
     simplifyPrompt:
       'Prosím zadajte faktor zjednodušenia. Zadajte nulu pre vynechanie zjednodušenia.',
+    copyUrl: 'Kopírovať URL',
+    savingError: ({ err }) => `Chyba ukladania: ${err}`,
+    loadError: ({ err }) => `Chyba načítania: ${err}`,
+    deleteError: ({ err }) => `Chyba mazania: ${err}`,
+    deleted: 'Zmazané.',
+    saved: 'Uložené.',
   },
 
   tools: {
@@ -76,7 +90,7 @@ const sk: Messages = {
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
-    maps: () => (
+    maps: (
       <>
         Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
@@ -149,9 +163,10 @@ const sk: Messages = {
     gpsError: 'Nepodarilo sa získať aktuálnu polohu.',
     routeNotFound:
       'Cez zvolené body sa nepodarilo vyhľadať trasu. Skúste zmeniť parametre alebo posunúť body trasy.',
-    fetchingError: 'Nastala chyba pri hľadaní trasy: {err}',
-    maneuverWithName: '{type} {modifier} na {name}',
-    maneuverWithoutName: '{type} {modifier}',
+    fetchingError: ({ err }) => `Nastala chyba pri hľadaní trasy: ${err}`,
+    maneuverWithName: ({ type, modifier, name }) =>
+      `${type} ${modifier} na ${name}`,
+    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
 
     maneuver: {
       types: {
@@ -173,6 +188,8 @@ const sk: Messages = {
         // 'notification':
         'exit rotary': 'opusťte okružnú cestu', // undocumented
         'exit roundabout': 'opusťte kruhový objazd', // undocumented
+        notification: 'poznámka',
+        'use lane': 'použi jazdný pruh',
       },
 
       modifiers: {
@@ -193,7 +210,7 @@ const sk: Messages = {
         short: ({ arrival, price, numbers }) => (
           <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -205,7 +222,7 @@ const sk: Messages = {
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Príchod: <b>{arrival}</b> | Cena: <b>{price} €</b> | Spoje:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -229,9 +246,11 @@ const sk: Messages = {
         foot: ({ departure, duration, destination }) => (
           <>
             o <b>{departure}</b> pešo{' '}
-            <b>
-              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
@@ -261,9 +280,11 @@ const sk: Messages = {
         foot: ({ duration, destination }) => (
           <>
             pešo{' '}
-            <b>
-              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>do cieľa</b>
             ) : (
@@ -277,9 +298,11 @@ const sk: Messages = {
         bicycle: ({ duration, destination }) => (
           <>
             bicyklom{' '}
-            <b>
-              {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minút', 'minútu', 'minúty'])}
+              </b>
+            )}{' '}
             na <b>{destination}</b>
           </>
         ),
@@ -290,7 +313,7 @@ const sk: Messages = {
 
   more: {
     more: 'Ďalšie',
-    logOut: 'Odhlásiť {name}',
+    logOut: (name) => `Odhlásiť ${name}`,
     logIn: 'Prihlásenie',
     settings: 'Nastavenia',
     gpxExport: 'Exportovať do GPX',
@@ -359,8 +382,12 @@ const sk: Messages = {
       yourRating: 'Tvoje hodnotenie:',
       showOnTheMap: 'Ukázať na mape',
       openInNewWindow: 'Otvoriť v…',
-      uploaded: 'Nahral {username} dňa {createdAt}',
-      captured: 'Odfotené dňa {takenAt}',
+      uploaded: ({ username, createdAt }) => (
+        <>
+          Nahral {username} dňa {createdAt}
+        </>
+      ),
+      captured: (takenAt) => <>Odfotené dňa {takenAt}</>,
       deletePrompt: 'Zmazať obrázok?',
       modify: 'Úprava',
     },
@@ -378,7 +405,7 @@ const sk: Messages = {
     },
     uploadModal: {
       title: 'Nahrať fotky',
-      uploading: 'Nahrávam ({n})',
+      uploading: (n) => `Nahrávam (${n})`,
       upload: 'Nahrať',
       rules: `
         <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
@@ -400,13 +427,17 @@ const sk: Messages = {
     },
     layerHint:
       'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
-    deletingError: 'Nastala chyba pri mazaní obrázka: {err}',
-    tagsFetchingError: 'Nastala chyba pri načítavaní tagov: {err}',
-    pictureFetchingError: 'Nastala chyba pri načítavaní fotky: {err}',
-    picturesFetchingError: 'Nastala chyba pri načítavaní fotiek: {err}',
-    savingError: 'Nastala chyba pri ukladaní fotky: {err}',
-    commentAddingError: 'Nastala chyba pri pridávaní komentára: {err}',
-    ratingError: 'Nastala chyba pri hodnotení: {err}',
+    deletingError: ({ err }) => `Nastala chyba pri mazaní obrázka: ${err}`,
+    tagsFetchingError: ({ err }) =>
+      `Nastala chyba pri načítavaní tagov: ${err}`,
+    pictureFetchingError: ({ err }) =>
+      `Nastala chyba pri načítavaní fotky: ${err}`,
+    picturesFetchingError: ({ err }) =>
+      `Nastala chyba pri načítavaní fotiek: ${err}`,
+    savingError: ({ err }) => `Nastala chyba pri ukladaní fotky: ${err}`,
+    commentAddingError: ({ err }) =>
+      `Nastala chyba pri pridávaní komentára: ${err}`,
+    ratingError: ({ err }) => `Nastala chyba pri hodnotení: ${err}`,
     unauthenticatedError:
       'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
     missingPositionError: 'Chýba pozícia.',
@@ -427,7 +458,8 @@ const sk: Messages = {
     distance: 'Čiara',
     elevation: 'Bod',
     area: 'Polygón',
-    elevationFetchError: 'Nastala chyba pri získavaní výšky bodu: {err}',
+    elevationFetchError: ({ err }) =>
+      `Nastala chyba pri získavaní výšky bodu: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
@@ -481,20 +513,21 @@ const sk: Messages = {
       maxEle: 'Najvyšší bod',
       uphill: 'Celkové stúpanie',
       downhill: 'Celkové klesanie',
-      durationValue: '{h} hodín {m} minút',
+      durationValue: ({ h, m }) => `${h} hodín ${m} minút`,
     },
     uploadModal: {
       title: 'Nahrať trasu',
       drop: 'Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.',
     },
     shareToast: 'Trasa bola uložená na server a môžete ju zdieľať.',
-    fetchingError: 'Nastala chyba pri získavaní záznamu trasy: {err}',
-    savingError: 'Nepodarilo sa uložiť trasu: {err}',
-    tooBigError: 'Veľkosť nahraného súboru prevyšuje limit {maxSize} MB.',
+    fetchingError: ({ err }) =>
+      `Nastala chyba pri získavaní záznamu trasy: ${err}`,
+    savingError: ({ err }) => `Nepodarilo sa uložiť trasu: ${err}`,
     loadingError: 'Súbor sa nepodarilo načítať.',
     onlyOne: 'Očakáva sa iba jeden GPX súbor.',
     wrongFormat: 'Nahraný súbor musí mať príponu .gpx',
     info: () => <TrackViewerDetails />,
+    tooBigError: 'Nahraný súbor je príliš veľký.',
   },
 
   drawing: {
@@ -543,14 +576,14 @@ const sk: Messages = {
       switch: 'Expertný mód',
       overlayOpacity: 'Viditeľnosť vrstvy:',
       trackViewerEleSmoothing: {
-        label:
-          'Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: {value}',
+        label: (value) =>
+          `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
         info:
           'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
-    savingError: 'Nastala chyba pri ukladaní nastavení: {err}',
+    savingError: ({ err }) => `Nastala chyba pri ukladaní nastavení: ${err}`,
   },
 
   changesets: {
@@ -560,7 +593,7 @@ const sk: Messages = {
     olderThanFull: ({ days }) =>
       `Zmeny novšie ako ${days} dn${days === 3 ? 'i' : 'í'}`,
     notFound: 'Neboli nájdené žiadne zmeny.',
-    fetchError: 'Nastala chyba pri získavaní zmien: {err}',
+    fetchError: ({ err }) => `Nastala chyba pri získavaní zmien: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Autor:',
@@ -578,7 +611,8 @@ const sk: Messages = {
   mapDetails: {
     road: 'Info o ceste',
     notFound: 'Nebola nájdená žiadna cesta.',
-    fetchingError: 'Nastala chyba pri získavaní detailov o ceste: {err}',
+    fetchingError: ({ err }) =>
+      `Nastala chyba pri získavaní detailov o ceste: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
 
@@ -588,7 +622,7 @@ const sk: Messages = {
       message: 'Vyhľadávanie miest je možné až od priblíženia úrovne 12.',
       zoom: 'Priblíž',
     },
-    fetchingError: 'Nastala chyba pri získavaní objektov: {err}',
+    fetchingError: ({ err }) => `Nastala chyba pri získavaní objektov: ${err}`,
     categories: {
       1: 'Príroda',
       2: 'Služby',
@@ -621,7 +655,7 @@ const sk: Messages = {
       12: 'Zámok',
       13: 'Zrúcanina',
       14: 'Múzeum',
-      15: 'Pamätihodnosť',
+      15: 'Pomník',
       16: 'Pamätník',
       17: 'Lekáreň',
       18: 'Nemocnica',
@@ -890,7 +924,6 @@ const sk: Messages = {
     window: 'Nové okno',
     url: 'Zdieľať URL',
     image: 'Zdieľať fotografiu',
-    copy: 'Kopírovať URL', // TODO move to general
   },
 
   search: {
@@ -899,7 +932,8 @@ const sk: Messages = {
     prompt: 'Zadajte lokalitu',
     routeFrom: 'Navigovať odtiaľto',
     routeTo: 'Navigovať sem',
-    fetchingError: 'Nastala chyba pri spracovaní výsledkov vyhľadávania: {err}',
+    fetchingError: ({ err }) =>
+      `Nastala chyba pri spracovaní výsledkov vyhľadávania: ${err}`,
     buttonTitle: 'Hľadať',
   },
 
@@ -935,7 +969,7 @@ const sk: Messages = {
     export: 'Stiahnuť',
     exportToDrive: 'Uložiť do Google Drive',
     exportToDropbox: 'Uložit do Dropboxu',
-    exportError: 'Chyba exportovania GPX: {err}',
+    exportError: ({ err }) => `Chyba exportovania GPX: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
       plannedRouteWithStops: 'vyhľadanú trasu so zastávkami',
@@ -960,11 +994,13 @@ const sk: Messages = {
       google: 'Prihlásiť sa pomocou Googlu',
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
+    enablePopup:
+      'Prosím, povoľte vo vašom prehliadači pop-up okná pre túto stránku.',
     success: 'Boli ste úspešne prihlásený.',
-    logInError: 'Nepodarilo sa prihlásiť: {err}',
+    logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
     logInError2: 'Nepodarilo sa prihlásiť.',
-    logOutError: 'Nepodarilo sa odhlásiť: {err}',
-    verifyError: 'Nepodarilo sa overiť prihlásenie: {err}',
+    logOutError: ({ err }) => `Nepodarilo sa odhlásiť: ${err}`,
+    verifyError: ({ err }) => `Nepodarilo sa overiť prihlásenie: ${err}`,
   },
 
   logOut: {
@@ -974,13 +1010,13 @@ const sk: Messages = {
   mapLayers: {
     layers: 'Vrstvy',
     photoFilterWarning: 'Filter fotografií je aktívny',
-    minZoomWarning: 'Dostupné až od priblíženia {minZoom}',
-    base: {
+    minZoomWarning: (minZoom) => `Dostupné až od priblíženia ${minZoom}`,
+    letters: {
       A: 'Automapa',
       T: 'Turistická',
       C: 'Cyklomapa',
       K: 'Bežkárska',
-      S: 'Z lietadla (Bing)',
+      S: 'Z lietadla',
       Z: 'Ortofotomozaika SR',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
@@ -988,9 +1024,6 @@ const sk: Messages = {
       d: 'Verejná doprava (ÖPNV)',
       h: 'Historická',
       X: 'Turistika + Cyklo + Bežky',
-      Y: 'Turistika + Cyklo + Bežky (local)',
-    },
-    overlay: {
       i: 'Interaktívna vrstva',
       I: 'Fotografie',
       l: 'Lesné cesty NLC (SK)',
@@ -1025,11 +1058,12 @@ const sk: Messages = {
   elevationChart: {
     distance: 'Vzdialenosť [km]',
     ele: `Nadm. výška [${masl}]`,
-    fetchError: 'Nastala chyba pri získavaní výškového profilu: {err}',
+    fetchError: ({ err }) =>
+      `Nastala chyba pri získavaní výškového profilu: ${err}`,
   },
 
   errorCatcher: {
-    html: `${errorMarkup}
+    html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
         Akcie:
       </p>
@@ -1042,7 +1076,7 @@ const sk: Messages = {
   },
 
   osm: {
-    fetchingError: 'Nastala chyba pri získavaní OSM dát: {err}',
+    fetchingError: ({ err }) => `Nastala chyba pri získavaní OSM dát: ${err}`,
   },
 
   roadDetails: {
@@ -1097,10 +1131,6 @@ const sk: Messages = {
   },
 
   tracking: {
-    savingError: 'Chyba ukladania: {err}',
-    loadError: 'Chyba načítania: {err}',
-    deleteError: 'Chyba mazania: {err}',
-
     unauthenticatedError:
       'Prosím, prihláste sa, aby ste mohli spravovať vaše zariadenia.',
     trackedDevices: {
@@ -1108,8 +1138,12 @@ const sk: Messages = {
       modalTitle: 'Sledované zariadenia',
       desc:
         'Tu môžete spravovať sledované zariadenia, aby ste videli pozíciu svojich priateľov.',
-      modifyTitle: 'Upraviť sledované zariadenie',
-      createTitle: ({ name }) => (
+      modifyTitle: (name) => (
+        <>
+          Upraviť sledované zariadenie <i>{name}</i>
+        </>
+      ),
+      createTitle: (name) => (
         <>
           Sledovať zariadenie <i>{name}</i>
         </>
@@ -1124,18 +1158,18 @@ const sk: Messages = {
       delete: 'Zmazať token sledovania?',
     },
     accessTokens: {
-      modalTitle: ({ deviceName }) => (
+      modalTitle: (deviceName) => (
         <>
           Tokeny sledovania pre <i>{deviceName}</i>
         </>
       ),
-      desc: ({ deviceName }) => (
+      desc: (deviceName) => (
         <p>
           Zadefinujte tokeny sledovania, aby ste mohli zdieľať pozíciu vášho
           zariadenia <i>{deviceName}</i> s vašimi priateľmi.
         </p>
       ),
-      createTitle: ({ deviceName }) => (
+      createTitle: (deviceName) => (
         <>
           Pridať token sledovania pre <i>{deviceName}</i>
         </>
@@ -1274,14 +1308,14 @@ const sk: Messages = {
   },
   pdfExport: {
     export: 'Exportovať',
-    exportError: 'Chyba exportovania mapy: {err}',
+    exportError: ({ err }) => `Chyba exportovania mapy: ${err}`,
     exporting: 'Prosím počkajte, mapa sa exportuje…',
     exported: ({ url }) => (
       <>
         Export mapy je dokončený.{' '}
-        <a href={url} target="_blank">
+        <Alert.Link href={url} target="_blank">
           Otvoriť.
-        </a>
+        </Alert.Link>
       </>
     ),
     area: 'Exportovať oblasť:',
@@ -1314,21 +1348,21 @@ const sk: Messages = {
             <br />
             <em>
               mapa ©{' '}
-              <a
+              <Alert.Link
                 href="https://www.freemap.sk/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Freemap Slovakia
-              </a>
+              </Alert.Link>
               , dáta{' '}
-              <a
+              <Alert.Link
                 href="https://osm.org/copyright"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 © prispievatelia OpenStreetMap
-              </a>
+              </Alert.Link>
               , © SRTM
             </em>
           </li>
@@ -1345,12 +1379,12 @@ const sk: Messages = {
     delete: 'Zmazať',
     namePrompt: 'Názov mapy:',
     deleteConfirm: 'Naozaj si prajete vymazať túto mapu?',
-    fetchError: 'Nastala chyba pri načítavani mapy: {err}',
-    fetchListError: 'Nastala chyba pri načítavani máp: {err}',
-    deleteError: 'Nastala chyba pri mazaní mapy: {err}',
-    renameError: 'Nastala chyba pri premenovávani mapy: {err}',
-    createError: 'Nastala chyba pri ukladaní mapy: {err}',
-    saveError: 'Nastala chyba pri ukladaní mapy: {err}',
+    fetchError: ({ err }) => `Nastala chyba pri načítavani mapy: ${err}`,
+    fetchListError: ({ err }) => `Nastala chyba pri načítavani máp: ${err}`,
+    deleteError: ({ err }) => `Nastala chyba pri mazaní mapy: ${err}`,
+    renameError: ({ err }) => `Nastala chyba pri premenovávani mapy: ${err}`,
+    createError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
+    saveError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
   },
 
   legend: {

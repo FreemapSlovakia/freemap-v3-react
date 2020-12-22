@@ -1,5 +1,12 @@
-import white1x1 from './images/1x1-white.png';
 import transparent1x1 from './images/1x1-transparent.png';
+import white1x1 from './images/1x1-white.png';
+
+export interface AttributionDef {
+  type: 'map' | 'data' | 'photos';
+  name?: string;
+  nameKey?: 'osmData' | 'freemap' | 'srtm';
+  url?: string;
+}
 
 const OSM_MAP_ATTR: AttributionDef = {
   type: 'map',
@@ -9,18 +16,18 @@ const OSM_MAP_ATTR: AttributionDef = {
 
 const OSM_DATA_ATTR: AttributionDef = {
   type: 'data',
-  nameKey: 'mapLayers.attr.osmData',
+  nameKey: 'osmData',
   url: 'https://osm.org/copyright',
 };
 
 const FM_ATTR: AttributionDef = {
   type: 'map',
-  nameKey: 'mapLayers.attr.freemap',
+  nameKey: 'freemap',
 };
 
 const SRTM_ATTR: AttributionDef = {
   type: 'data',
-  nameKey: 'mapLayers.attr.srtm',
+  nameKey: 'srtm',
 };
 
 const STRAVA_ATTR: AttributionDef = {
@@ -35,26 +42,56 @@ const NLC_ATTR: AttributionDef = {
   url: 'http://www.nlcsk.org/',
 };
 
-export interface AttributionDef {
-  type: string;
-  name?: string;
-  nameKey?: string;
-  url?: string;
-}
+export const baseLayerLetters = [
+  'A',
+  'T',
+  'C',
+  'K',
+  'S',
+  'Z',
+  'O',
+  'M',
+  'p',
+  'd',
+  'h',
+  'X',
+] as const;
+
+export const overlayLetters = [
+  'i',
+  'I',
+  'l',
+  'n1',
+  'n2',
+  'n3',
+  'g',
+  't',
+  'c',
+  'q',
+  'r',
+  's0',
+  's1',
+  's2',
+  's3',
+  's4',
+  'w',
+] as const;
+
+export type BaseLayerLetters = typeof baseLayerLetters[number];
+
+export type OverlayLetters = typeof overlayLetters[number];
 
 export interface LayerDef {
-  type: string;
   icon: string;
   url?: string;
   attribution: AttributionDef[];
   minZoom?: number;
   minNativeZoom?: number;
   maxNativeZoom?: number;
-  key: string | undefined; // TODO undefined only in overlays
   showOnlyInExpertMode?: boolean;
   adminOnly?: boolean;
   zIndex?: number; // TODO only overlays
-  subdomains?: string;
+  subdomains?: string | string[];
   strava?: boolean;
   tms?: boolean;
   extraScales?: number[];
@@ -64,35 +101,53 @@ export interface LayerDef {
   zoomOffset?: number;
 }
 
+export interface BaseLayerDef extends LayerDef {
+  type: BaseLayerLetters;
+  key: [code: string, shift: boolean];
+}
+
+export interface OverlayLayerDef extends LayerDef {
+  type: OverlayLetters;
+  key?: [code: string, shift: boolean];
+}
+
 const isHdpi = (window.devicePixelRatio || 1) > 1.4;
 
-export const baseLayers: LayerDef[] = [
-  {
-    type: 'X',
-    icon: 'tree',
-    url: 'https://outdoor.tiles.freemap.sk/{z}/{x}/{y}',
-    extraScales: [2, 3],
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
-    minZoom: 6,
-    maxNativeZoom: 19,
-    key: 'x',
-    primary: true,
-  },
-  ...[
-    ['A', 'car', true] as const,
-    ['T', '!icon-hiking', false] as const,
-    ['C', 'bicycle', false] as const,
-    ['K', '!icon-skier-skiing', true] as const,
-  ].map(([type, icon, showOnlyInExpertMode]) => ({
+function legacyFreemap(
+  type: BaseLayerLetters,
+  icon: string,
+  showOnlyInExpertMode: boolean,
+): BaseLayerDef {
+  return {
     type,
     icon,
     url: `//tile.freemap.sk/${type}/{z}/{x}/{y}.jpeg`,
     attribution: [FM_ATTR, OSM_DATA_ATTR, ...(type === 'A' ? [] : [SRTM_ATTR])],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: type.toLowerCase(),
+    key: ['Key' + type, false],
     showOnlyInExpertMode,
-  })),
+  };
+}
+
+export const baseLayers: BaseLayerDef[] = [
+  {
+    type: 'X',
+    icon: 'tree',
+    url: `${
+      process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk'
+    }/{z}/{x}/{y}`,
+    extraScales: [2, 3],
+    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
+    minZoom: 6,
+    maxNativeZoom: 19,
+    key: ['KeyX', false],
+    primary: true,
+  },
+  legacyFreemap('A', 'car', true),
+  legacyFreemap('T', '!icon-hiking', false),
+  legacyFreemap('C', 'bicycle', false),
+  legacyFreemap('K', '!icon-skier-skiing', true),
   {
     type: 'O',
     icon: 'globe',
@@ -100,27 +155,25 @@ export const baseLayers: LayerDef[] = [
     minZoom: 0,
     maxNativeZoom: 19,
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
-    key: 'o',
+    key: ['KeyO', false],
     primary: true,
   },
   {
     type: 'S',
+    url:
+      'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+    subdomains: ['server', 'services'],
     icon: 'plane',
     minZoom: 0,
-    maxNativeZoom: 18,
-    key: 's',
+    maxNativeZoom: isHdpi ? 18 : 19,
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
+    key: ['KeyS', false],
     attribution: [
       {
         type: 'map',
-        name: '©\xa0Bing',
-      },
-      {
-        type: 'map',
-        name: '©\xa0Earthstar Geographics SIO',
-      },
-      {
-        type: 'map',
-        name: '©\xa02017 Microsoft Corporation',
+        name: '©\xa0Esri', // TODO others, see https://github.com/esri/esri-leaflet#terms
+        url: 'https://www.esri.com/',
       },
     ],
     primary: '!sk',
@@ -138,7 +191,7 @@ export const baseLayers: LayerDef[] = [
         url: 'https://www.geoportal.sk/sk/udaje/ortofotomozaika/',
       },
     ],
-    key: 'z',
+    key: ['KeyZ', false],
     primary: 'sk',
     errorTileUrl: white1x1,
     tileSize: isHdpi ? 128 : 256,
@@ -160,7 +213,7 @@ export const baseLayers: LayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: 'm',
+    key: ['KeyM', false],
   },
   {
     type: 'p',
@@ -178,7 +231,7 @@ export const baseLayers: LayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: 'p',
+    key: ['KeyP', false],
   },
   {
     type: 'd',
@@ -195,7 +248,7 @@ export const baseLayers: LayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: 'd',
+    key: ['KeyD', false],
   },
   {
     type: 'h',
@@ -205,28 +258,15 @@ export const baseLayers: LayerDef[] = [
     icon: 'institution',
     showOnlyInExpertMode: true,
     attribution: [],
-    key: 'h',
+    key: ['KeyH', false],
   },
 ];
 
-if (!process.env.NODE_ENV) {
-  baseLayers.push({
-    type: 'Y',
-    icon: 'flask',
-    url: 'http://localhost:4000/{z}/{x}/{y}',
-    extraScales: [2, 3],
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
-    minZoom: 6,
-    maxNativeZoom: 19,
-    key: 'y',
-  });
-}
-
-export const overlayLayers: LayerDef[] = [
+export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'i',
     icon: 'pencil',
-    key: 'I',
+    key: ['KeyI', true],
     attribution: [],
     showOnlyInExpertMode: true,
   },
@@ -234,7 +274,7 @@ export const overlayLayers: LayerDef[] = [
     type: 'I',
     icon: 'picture-o',
     minZoom: 0,
-    key: 'F',
+    key: ['KeyF', true],
     zIndex: 3,
     attribution: [
       {
@@ -248,7 +288,7 @@ export const overlayLayers: LayerDef[] = [
     type: 'w',
     icon: 'wikipedia-w',
     minZoom: 12,
-    key: 'W',
+    key: ['KeyW', true],
     zIndex: 3,
     attribution: [],
   },
@@ -259,22 +299,30 @@ export const overlayLayers: LayerDef[] = [
     attribution: [NLC_ATTR],
     minZoom: 11,
     maxNativeZoom: 15,
-    key: 'N',
+    key: ['KeyN', true],
     zIndex: 2,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
   },
-  ...['both', 'ride', 'run', 'water', 'winter'].map((type, i) => ({
-    type: `s${i}`,
+  ...([
+    ['s0', 'both'],
+    ['s1', 'ride'],
+    ['s2', 'run'],
+    ['s3', 'water'],
+    ['s4', 'winter'],
+  ] as const).map(([type, stravaType]) => ({
+    type,
     icon: 'scribd', // TODO use correct logo
-    url: `//strava-heatmap.tiles.freemap.sk/${type}/bluered/{z}/{x}/{y}.png?px=${
+    url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/bluered/{z}/{x}/{y}.png?px=${
       isHdpi ? 512 : 256
     }`,
     attribution: [STRAVA_ATTR],
     minZoom: 0,
     maxNativeZoom: isHdpi ? 15 : 16,
-    key: type === 'both' ? 'H' : undefined,
-    showOnlyInExpertMode: type !== 'both',
+    key: (stravaType === 'both' ? ['KeyH', true] : undefined) as
+      | [string, boolean]
+      | undefined,
+    showOnlyInExpertMode: stravaType !== 'both',
     zIndex: 2,
     strava: true,
     errorTileUrl: transparent1x1,
@@ -286,7 +334,7 @@ export const overlayLayers: LayerDef[] = [
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     minZoom: 0,
     maxNativeZoom: 20,
-    key: 'G',
+    key: ['KeyG', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
@@ -297,7 +345,7 @@ export const overlayLayers: LayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: 'T',
+    key: ['KeyT', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
@@ -308,7 +356,7 @@ export const overlayLayers: LayerDef[] = [
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key: 'C',
+    key: ['KeyC', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
@@ -325,22 +373,22 @@ export const overlayLayers: LayerDef[] = [
     ],
     minZoom: 0,
     maxNativeZoom: 18,
-    key: 'S',
+    key: ['KeyS', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
   },
-  ...[
-    ['n1', '1', ''],
-    ['n2', '2', 'h'],
-    ['n3', '3', 'c'],
-  ].map(([type, key, suffix]) => ({
+  ...([
+    ['n1', ['Digit1', false], ''],
+    ['n2', ['Digit2', false], 'h'],
+    ['n3', ['Digit3', false], 'c'],
+  ] as const).map(([type, key, suffix]) => ({
     type,
     icon: 'font',
     url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
     maxNativeZoom: 16,
-    key,
+    key: key as [string, boolean] | undefined,
     showOnlyInExpertMode: true,
     zIndex: 2,
   })),
@@ -350,7 +398,7 @@ export const overlayLayers: LayerDef[] = [
     url: '//old.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
     minZoom: 8,
     maxNativeZoom: 12,
-    key: 'R',
+    key: ['KeyR', true],
     showOnlyInExpertMode: true,
     zIndex: 4,
     attribution: [FM_ATTR],

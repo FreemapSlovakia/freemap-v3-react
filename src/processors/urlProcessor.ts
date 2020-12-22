@@ -1,11 +1,11 @@
+import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { history } from 'fm3/historyHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import refModals from 'fm3/refModals.json';
 import allTips from 'fm3/tips/index.json';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { mapRefocus } from 'fm3/actions/mapActions';
 import { LatLon } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
-import { drawingLineUpdatePoint } from 'fm3/actions/drawingLineActions';
 
 const tipKeys = allTips.map(([key]) => key);
 
@@ -289,11 +289,11 @@ export const urlProcessor: Processor = {
       }
 
       if (color) {
-        parts.push(`c:${encodeURIComponent(color.replace(/\//g, '_'))}`);
+        parts.push(`c:${color.replace(/\//g, '_')}`);
       }
 
       if (label) {
-        parts.push(`l:${encodeURIComponent(label.replace(/\//g, '_'))}`);
+        parts.push(`l:${label.replace(/\//g, '_')}`);
       }
 
       historyParts.push(['track', parts.join('/')]);
@@ -324,6 +324,7 @@ export const urlProcessor: Processor = {
         {
           pathname: '/',
           search: search,
+          hash: '',
         },
         { sq },
       );

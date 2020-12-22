@@ -1,56 +1,46 @@
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import React, { useState, useRef, useCallback } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import tips from 'fm3/tips/index.json';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
-import { setActiveModal } from 'fm3/actions/mainActions';
 import {
-  authStartLogout,
   authChooseLoginMethod,
+  authStartLogout,
 } from 'fm3/actions/authActions';
-import { tipsShow } from 'fm3/actions/tipsActions';
 import { l10nSetChosenLanguage } from 'fm3/actions/l10nActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
+import { tipsShow } from 'fm3/actions/tipsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { OpenInExternalAppMenuItems } from './OpenInExternalAppMenuItems';
+import tips from 'fm3/tips/index.json';
+import { ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
+import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function MoreMenuButton(): ReactElement {
+  const user = useSelector((state: RootState) => state.auth.user);
 
-const MoreMenuButtonInt: React.FC<Props> = ({
-  user,
-  t,
-  language,
-  chosenLanguage,
-  lat,
-  lon,
-  zoom,
-  expertMode,
-  mapType,
-  onLogin,
-  onLogout,
-  onSettingsShow,
-  onGpxExport,
-  onPdfExport,
-  onEmbed,
-  onSupportUs,
-  onAbout,
-  onLegend,
-  onLanguageChange,
-  onTip,
-}) => {
+  const chosenLanguage = useSelector(
+    (state: RootState) => state.l10n.chosenLanguage,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const lat = useSelector((state: RootState) => state.map.lat);
+
+  const lon = useSelector((state: RootState) => state.map.lon);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
   const [show, setShow] = useState(false);
+
   const [submenu, setSubmenu] = useState<any>(null);
 
-  const button = useRef<Button | null>(null);
+  const button = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -61,52 +51,26 @@ const MoreMenuButtonInt: React.FC<Props> = ({
     setSubmenu(null);
   }, []);
 
-  function useMenu<T>(fn: (...args: T[]) => void, ...args: T[]) {
-    return useCallback(() => {
-      close();
-      fn(...args);
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [fn, ...args]);
-  }
-
-  const handleLoginClick = useMenu(onLogin);
-
-  const handleLogoutClick = useMenu(onLogout);
-
-  const handleSettingsShowClick = useMenu(onSettingsShow);
-
-  const handleGpxExportClick = useMenu(onGpxExport);
-
-  const handlePdfExportClick = useMenu(onPdfExport);
-
-  const handleEmbedClick = useMenu(onEmbed);
-
-  const handleSupportUsClick = useMenu(onSupportUs);
-
-  const handleAboutClick = useMenu(onAbout);
-
-  const handleLegendClick = useMenu(onLegend);
+  const dispatch = useDispatch();
 
   const handleLanguageClick = useCallback(
-    (language: unknown) => {
+    (language: string | null) => {
       close();
 
-      if (language === null || typeof language === 'string') {
-        onLanguageChange(language);
-      }
+      dispatch(l10nSetChosenLanguage(language));
     },
-    [onLanguageChange, close],
+    [dispatch, close],
   );
 
   const handleTipSelect = useCallback(
-    (tip: unknown) => {
+    (tip: string | null) => {
       close();
 
-      if (typeof tip === 'string') {
-        onTip(tip);
+      if (tip !== null) {
+        dispatch(tipsShow(tip));
       }
     },
-    [onTip, close],
+    [dispatch, close],
   );
 
   const handleBackClick = useCallback(() => {
@@ -119,13 +83,15 @@ const MoreMenuButtonInt: React.FC<Props> = ({
 
   const skCz = ['sk', 'cs'].includes(language);
 
+  const m = useMessages();
+
   return (
     <>
       <Button
         ref={button}
         onClick={handleButtonClick}
-        title={t('more.more')}
-        bsStyle="primary"
+        title={m?.more.more}
+        variant="primary"
       >
         <FontAwesomeIcon icon="bars" />
       </Button>
@@ -134,135 +100,178 @@ const MoreMenuButtonInt: React.FC<Props> = ({
         placement="bottom"
         show={show}
         onHide={close}
-        target={button.current ?? undefined}
-        shouldUpdatePosition
+        target={button.current}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {submenu === null ? (
               <>
-                <MenuItem eventKey="language" onSelect={setSubmenu}>
+                <Dropdown.Item eventKey="language" onSelect={setSubmenu}>
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv{' '}
                   <FontAwesomeIcon icon="chevron-right" />
-                </MenuItem>
+                </Dropdown.Item>
                 {user ? (
-                  <MenuItem onSelect={handleLogoutClick}>
+                  <Dropdown.Item
+                    onSelect={() => {
+                      close();
+                      dispatch(authStartLogout());
+                    }}
+                  >
                     <FontAwesomeIcon icon="sign-out" />{' '}
-                    {t('more.logOut', { name: user.name })}
-                  </MenuItem>
+                    {m?.more.logOut(user.name)}
+                  </Dropdown.Item>
                 ) : (
-                  <MenuItem onSelect={handleLoginClick}>
-                    <FontAwesomeIcon icon="sign-in" /> {t('more.logIn')}
-                  </MenuItem>
+                  <Dropdown.Item
+                    onSelect={() => {
+                      close();
+                      dispatch(authChooseLoginMethod());
+                    }}
+                  >
+                    <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
+                  </Dropdown.Item>
                 )}
-                <MenuItem onSelect={handleSettingsShowClick}>
-                  <FontAwesomeIcon icon="cog" /> {t('more.settings')}{' '}
-                  <kbd>e</kbd> <kbd>s</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem onSelect={handleOpenExternally}>
+                <Dropdown.Item
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('settings'));
+                  }}
+                >
+                  <FontAwesomeIcon icon="cog" /> {m?.more.settings} <kbd>e</kbd>{' '}
+                  <kbd>s</kbd>
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item onSelect={handleOpenExternally}>
                   <FontAwesomeIcon icon="external-link" />{' '}
-                  {t('external.openInExternal')}{' '}
+                  {m?.external.openInExternal}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
-                </MenuItem>
-                <MenuItem onSelect={handlePdfExportClick}>
-                  <FontAwesomeIcon icon="file-pdf-o" /> {t('more.pdfExport')}{' '}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('export-pdf'));
+                  }}
+                >
+                  <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}{' '}
                   <kbd>e</kbd> <kbd>p</kbd>
-                </MenuItem>
-                <MenuItem onSelect={handleGpxExportClick}>
-                  <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}{' '}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('export-gpx'));
+                  }}
+                >
+                  <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}{' '}
                   <kbd>e</kbd> <kbd>g</kbd>
-                </MenuItem>
-                <MenuItem
+                </Dropdown.Item>
+                <Dropdown.Item
                   onSelect={close}
                   href="http://wiki.freemap.sk/FileDownload"
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="!icon-gps-device" />{' '}
-                  {t('more.mapExports')}
-                </MenuItem>
-                <MenuItem onSelect={handleEmbedClick}>
-                  <FontAwesomeIcon icon="code" /> {t('more.embedMap')}{' '}
+                  {m?.more.mapExports}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('embed'));
+                  }}
+                >
+                  <FontAwesomeIcon icon="code" /> {m?.more.embedMap}{' '}
                   <kbd>e</kbd> <kbd>e</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item
                   onSelect={close}
                   href="http://wiki.freemap.sk/NahlasenieChyby"
                   target="_blank"
                 >
                   <FontAwesomeIcon icon="exclamation-triangle" />{' '}
-                  {t('more.reportMapError')}
-                </MenuItem>
-                <MenuItem
+                  {m?.more.reportMapError}
+                </Dropdown.Item>
+                <Dropdown.Item
                   onSelect={close}
                   href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
                   target="_blank"
                 >
-                  <FontAwesomeIcon icon="!icon-bug" />{' '}
-                  {t('more.reportAppError')}
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem eventKey="help" onSelect={setSubmenu}>
-                  <FontAwesomeIcon icon="book" /> {t('more.help')}{' '}
+                  <FontAwesomeIcon icon="!icon-bug" /> {m?.more.reportAppError}
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item eventKey="help" onSelect={setSubmenu}>
+                  <FontAwesomeIcon icon="book" /> {m?.more.help}{' '}
                   <FontAwesomeIcon icon="chevron-right" />
-                </MenuItem>
-                <MenuItem onSelect={handleSupportUsClick}>
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('supportUs'));
+                  }}
+                >
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
-                  {t('more.supportUs')}{' '}
+                  {m?.more.supportUs}{' '}
                   <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
-                </MenuItem>
+                </Dropdown.Item>
               </>
             ) : submenu === 'help' ? (
               <>
-                <MenuItem header>
-                  <FontAwesomeIcon icon="book" /> {t('more.help')}
-                </MenuItem>
-                <MenuItem onSelect={handleBackClick}>
-                  <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                <Dropdown.Header>
+                  <FontAwesomeIcon icon="book" /> {m?.more.help}
+                </Dropdown.Header>
+                <Dropdown.Item onSelect={handleBackClick}>
+                  <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
-                </MenuItem>
-                <MenuItem divider />
+                </Dropdown.Item>
+                <Dropdown.Divider />
                 {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
                   mapType,
                 ) && (
-                  <MenuItem onSelect={handleLegendClick}>
-                    <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
-                  </MenuItem>
+                  <Dropdown.Item
+                    onSelect={() => {
+                      close();
+                      dispatch(setActiveModal('legend'));
+                    }}
+                  >
+                    <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
+                  </Dropdown.Item>
                 )}
-                <MenuItem onSelect={handleAboutClick}>
-                  <FontAwesomeIcon icon="address-card-o" /> {t('more.contacts')}
-                </MenuItem>
+                <Dropdown.Item
+                  onSelect={() => {
+                    close();
+                    dispatch(setActiveModal('about'));
+                  }}
+                >
+                  <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
+                </Dropdown.Item>
                 {skCz && (
                   <>
-                    <MenuItem divider />
-                    <MenuItem header>
-                      <FontAwesomeIcon icon="lightbulb-o" /> {t('more.tips')}
-                    </MenuItem>
+                    <Dropdown.Divider />
+                    <Dropdown.Header>
+                      <FontAwesomeIcon icon="lightbulb-o" /> {m?.more.tips}
+                    </Dropdown.Header>
                     {tips.map(([key, name, icon]) => (
-                      <MenuItem
+                      <Dropdown.Item
                         key={key}
                         onSelect={handleTipSelect}
                         eventKey={key}
                       >
                         <FontAwesomeIcon icon={icon} /> {name}
-                      </MenuItem>
+                      </Dropdown.Item>
                     ))}
                   </>
                 )}
               </>
             ) : submenu === 'openExternally' ? (
               <>
-                <MenuItem header>
+                <Dropdown.Header>
                   <FontAwesomeIcon icon="external-link" />{' '}
-                  {t('external.openInExternal')}
-                </MenuItem>
-                <MenuItem onSelect={handleBackClick}>
-                  <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                  {m?.external.openInExternal}
+                </Dropdown.Header>
+                <Dropdown.Item onSelect={handleBackClick}>
+                  <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <OpenInExternalAppMenuItems
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <OpenInExternalAppDropdownItems
                   lat={lat}
                   lon={lon}
                   zoom={zoom}
@@ -275,52 +284,52 @@ const MoreMenuButtonInt: React.FC<Props> = ({
               </>
             ) : submenu === 'language' ? (
               <>
-                <MenuItem header>
+                <Dropdown.Header>
                   <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv
-                </MenuItem>
-                <MenuItem onSelect={handleBackClick}>
-                  <FontAwesomeIcon icon="chevron-left" /> {t('more.back')}{' '}
+                </Dropdown.Header>
+                <Dropdown.Item onSelect={handleBackClick}>
+                  <FontAwesomeIcon icon="chevron-left" /> {m?.more.back}{' '}
                   <kbd>Esc</kbd>
-                </MenuItem>
-                <MenuItem divider />
-                <MenuItem
-                  eventKey={null}
+                </Dropdown.Item>
+                <Dropdown.Divider />
+                <Dropdown.Item
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === null}
                 >
-                  {t('more.automaticLanguage')}
-                </MenuItem>
-                <MenuItem
+                  {m?.more.automaticLanguage}
+                </Dropdown.Item>
+                <Dropdown.Item
                   eventKey="en"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'en'}
                 >
                   English
-                </MenuItem>
-                <MenuItem
+                </Dropdown.Item>
+                <Dropdown.Item
                   eventKey="sk"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'sk'}
                 >
                   Slovensky
-                </MenuItem>
-                <MenuItem
+                </Dropdown.Item>
+                <Dropdown.Item
                   eventKey="cs"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'cs'}
                 >
                   Česky
-                </MenuItem>
-                <MenuItem
+                </Dropdown.Item>
+                <Dropdown.Item
                   eventKey="hu"
                   onSelect={handleLanguageClick}
                   active={chosenLanguage === 'hu'}
                 >
                   Magyar
-                </MenuItem>
+                </Dropdown.Item>
               </>
             ) : null}
-          </ul>
+          </Popover.Content>
+
           {submenu === null && (
             <div style={{ margin: '4px 18px', fontSize: '18px' }}>
               <a
@@ -329,7 +338,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#3b5998' }}
-                title={t('more.facebook')}
+                title={m?.more.facebook}
               >
                 <FontAwesomeIcon icon="facebook-official" />
               </a>{' '}
@@ -339,7 +348,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#0084b4' }}
-                title={t('more.twitter')}
+                title={m?.more.twitter}
               >
                 <FontAwesomeIcon icon="twitter" />
               </a>{' '}
@@ -349,7 +358,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#ff0000' }}
-                title={t('more.youtube')}
+                title={m?.more.youtube}
               >
                 <FontAwesomeIcon icon="youtube-play" />
               </a>{' '}
@@ -359,7 +368,7 @@ const MoreMenuButtonInt: React.FC<Props> = ({
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ color: '#333' }}
-                title={t('more.github')}
+                title={m?.more.github}
               >
                 <FontAwesomeIcon icon="github" />
               </a>
@@ -369,56 +378,4 @@ const MoreMenuButtonInt: React.FC<Props> = ({
       </Overlay>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  user: state.auth.user,
-  chosenLanguage: state.l10n.chosenLanguage,
-  language: state.l10n.language,
-  mapType: state.map.mapType,
-  lat: state.map.lat,
-  lon: state.map.lon,
-  zoom: state.map.zoom,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSettingsShow() {
-    dispatch(setActiveModal('settings'));
-  },
-  onGpxExport() {
-    dispatch(setActiveModal('export-gpx'));
-  },
-  onPdfExport() {
-    dispatch(setActiveModal('export-pdf'));
-  },
-  onEmbed() {
-    dispatch(setActiveModal('embed'));
-  },
-  onSupportUs() {
-    dispatch(setActiveModal('supportUs'));
-  },
-  onAbout() {
-    dispatch(setActiveModal('about'));
-  },
-  onLegend() {
-    dispatch(setActiveModal('legend'));
-  },
-  onLogin() {
-    dispatch(authChooseLoginMethod());
-  },
-  onLogout() {
-    dispatch(authStartLogout());
-  },
-  onTip(which: string) {
-    dispatch(tipsShow(which));
-  },
-  onLanguageChange(lang: string | null) {
-    dispatch(l10nSetChosenLanguage(lang));
-  },
-});
-
-export const MoreMenuButton = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MoreMenuButtonInt));
+}

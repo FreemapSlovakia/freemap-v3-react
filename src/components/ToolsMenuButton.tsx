@@ -1,38 +1,28 @@
-import { Dispatch } from 'redux';
-import { connect } from 'react-redux';
-import React, { useState, useCallback, useRef } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
+import { clearMap, selectFeature, Tool } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import {
-  selectFeature,
-  Tool,
-  clearMap,
-  Selection,
-} from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { toolDefinitions } from 'fm3/toolDefinitions';
+import { ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ToolsMenuButton(): ReactElement {
+  const m = useMessages();
 
-const ToolsMenuButtonInt: React.FC<Props> = ({
-  t,
-  tool,
-  expertMode,
-  onSelect,
-  onMapClear,
-}) => {
+  const dispatch = useDispatch();
+
+  const tool = useSelector((state: RootState) => state.main.selection?.type);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
   const [show, setShow] = useState(false);
 
-  const button = useRef<Button | null>(null);
+  const button = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -43,22 +33,20 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
   }, []);
 
   const handleToolSelect = useCallback(
-    (tool0: unknown) => {
-      if (is<Tool | null>(tool0)) {
-        const tool = tool0 as Tool | null;
-
+    (tool: string | null) => {
+      if (is<Tool | null>(tool)) {
         setShow(false);
 
-        onSelect(tool ? { type: tool } : null);
+        dispatch(selectFeature(tool ? { type: tool } : null));
       }
     },
-    [onSelect],
+    [dispatch],
   );
 
   const handleMapClear = useCallback(() => {
     setShow(false);
-    onMapClear();
-  }, [onMapClear]);
+    dispatch(clearMap());
+  }, [dispatch]);
 
   const toolDef = toolDefinitions.find(
     (t) =>
@@ -68,86 +56,74 @@ const ToolsMenuButtonInt: React.FC<Props> = ({
         : tool),
   ) || { tool: null, icon: 'briefcase', msgKey: 'none' };
 
+  const ref = useRef(null);
+
   return (
     <>
       <Button
         ref={button}
         onClick={handleButtonClick}
-        title={t('tools.tools')}
+        title={m?.tools.tools}
         id="tools-button"
-        bsStyle="primary"
+        variant="primary"
       >
         <FontAwesomeIcon icon={toolDef ? toolDef.icon : 'briefcase'} />
-        <span className="hidden-xs">
+        <span className="d-none d-sm-inline">
           {' '}
-          {t(`tools.${tool && toolDef ? toolDef.msgKey : 'tools'}`)}
+          {m?.tools[tool && toolDef ? toolDef.msgKey : 'tools']}
         </span>
       </Button>
-      {tool && <FontAwesomeIcon icon="chevron-right" />}
+      {tool && (
+        <FontAwesomeIcon icon="chevron-right" className="align-self-center" />
+      )}
       <Overlay
         rootClose
         placement="bottom"
         show={show}
         onHide={handleHide}
-        target={button.current ?? undefined}
+        target={button.current}
+        container={ref.current}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {tool && (
-              <MenuItem eventKey={null} onSelect={handleToolSelect}>
-                <FontAwesomeIcon icon="briefcase" /> {t('tools.none')}{' '}
+              <Dropdown.Item onSelect={handleToolSelect}>
+                <FontAwesomeIcon icon="briefcase" /> {m?.tools.none}{' '}
                 <kbd>Esc</kbd>
-              </MenuItem>
+              </Dropdown.Item>
             )}
 
-            <MenuItem onSelect={handleMapClear}>
-              <FontAwesomeIcon icon="eraser" /> {t('main.clearMap')}{' '}
-              <kbd>g</kbd> <kbd>c</kbd>
-            </MenuItem>
-            <MenuItem divider />
+            <Dropdown.Item onSelect={handleMapClear}>
+              <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap} <kbd>g</kbd>{' '}
+              <kbd>c</kbd>
+            </Dropdown.Item>
+
+            <Dropdown.Divider />
 
             {toolDefinitions
               .filter(({ expertOnly }) => expertMode || !expertOnly)
               .map(
                 ({ tool: newTool, icon, msgKey, kbd }) =>
                   newTool && (
-                    <MenuItem
+                    <Dropdown.Item
                       key={newTool}
                       eventKey={newTool}
                       onSelect={handleToolSelect}
                       active={toolDef?.tool === newTool}
                     >
-                      <FontAwesomeIcon icon={icon} /> {t(`tools.${msgKey}`)}{' '}
+                      <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
                       {kbd && (
                         <>
-                          <kbd>g</kbd> <kbd>{kbd}</kbd>
+                          <kbd>g</kbd>{' '}
+                          <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
                         </>
                       )}
-                    </MenuItem>
+                    </Dropdown.Item>
                   ),
               )}
-          </ul>
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  tool: state.main.selection?.type,
-  expertMode: state.main.expertMode,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapClear() {
-    dispatch(clearMap());
-  },
-  onSelect(selection: Selection | null) {
-    dispatch(selectFeature(selection));
-  },
-});
-
-export const ToolsMenuButton = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ToolsMenuButtonInt));
+}

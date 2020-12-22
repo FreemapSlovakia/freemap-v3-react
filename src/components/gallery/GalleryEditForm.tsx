@@ -1,17 +1,16 @@
-import React, { useCallback } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import ReactTags, { Tag } from 'react-tag-autocomplete';
-import 'fm3/styles/react-tag-autocomplete.css';
-
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import Alert from 'react-bootstrap/lib/Alert';
-
-import { DateTime } from '../DateTime';
-import { Translator } from 'fm3/l10nInjector';
 import { GalleryTag } from 'fm3/actions/galleryActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { getMessageByKey } from 'fm3/l10nInjector';
+import 'fm3/styles/react-tag-autocomplete.css';
+import { Messages } from 'fm3/translations/messagesInterface';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import InputGroup from 'react-bootstrap/InputGroup';
+import ReactTags, { Tag } from 'react-tag-autocomplete';
+import { DateTime } from '../DateTime';
 
 export interface PictureModel {
   title: string;
@@ -27,17 +26,17 @@ interface Props {
   errors: string[] | null | undefined;
   onPositionPick: undefined | (() => void);
   onModelChange: (model: PictureModel) => void;
-  t: Translator;
+  m?: Messages;
 }
 
-export const GalleryEditForm: React.FC<Props> = ({
+export function GalleryEditForm({
   model,
   allTags,
   errors,
   onPositionPick,
-  t,
+  m,
   onModelChange,
-}) => {
+}: Props): ReactElement {
   const changeModel = useCallback(
     (key: keyof PictureModel, value: any) => {
       onModelChange({ ...model, [key]: value });
@@ -46,18 +45,15 @@ export const GalleryEditForm: React.FC<Props> = ({
   );
 
   const handleTitleChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      changeModel('title', (e.target as HTMLInputElement).value || null);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      changeModel('title', e.currentTarget.value || null);
     },
     [changeModel],
   );
 
   const handleDescriptionChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      changeModel(
-        'description',
-        (e.target as HTMLTextAreaElement).value || null,
-      );
+    (e: ChangeEvent<HTMLTextAreaElement>) => {
+      changeModel('description', e.currentTarget.value || null);
     },
     [changeModel],
   );
@@ -70,11 +66,8 @@ export const GalleryEditForm: React.FC<Props> = ({
   );
 
   const handlePositionChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      changeModel(
-        'dirtyPosition',
-        (e.target as HTMLTextAreaElement).value || null,
-      );
+    (e: ChangeEvent<HTMLInputElement>) => {
+      changeModel('dirtyPosition', e.currentTarget.value || null);
     },
     [changeModel],
   );
@@ -104,13 +97,18 @@ export const GalleryEditForm: React.FC<Props> = ({
   return (
     <div>
       {errors?.map((error) => (
-        <Alert bsStyle="danger" key={error}>
-          {error.startsWith('~') ? error.slice(1) : t(error)}
+        <Alert variant="danger" key={error}>
+          {error.startsWith('~')
+            ? error.slice(1)
+            : (() => {
+                const v = getMessageByKey(m, error);
+                return typeof v === 'string' ? v : error;
+              })()}
         </Alert>
       ))}
       <FormGroup>
         <FormControl
-          placeholder={t('gallery.editForm.name')}
+          placeholder={m?.gallery.editForm.name}
           type="text"
           value={model.title}
           onChange={handleTitleChange}
@@ -119,43 +117,45 @@ export const GalleryEditForm: React.FC<Props> = ({
       </FormGroup>
       <FormGroup>
         <FormControl
-          placeholder={t('gallery.editForm.description')}
-          componentClass="textarea"
+          placeholder={m?.gallery.editForm.description}
+          as="textarea"
           value={model.description}
           onChange={handleDescriptionChange}
           maxLength={4096}
         />
       </FormGroup>
-      <FormGroup>
-        <DateTime
-          value={model.takenAt}
-          onChange={handleTakenAtChange}
-          placeholders={{
-            date: t('gallery.editForm.takenAt.date'),
-            time: t('gallery.editForm.takenAt.time'),
-            datetime: t('gallery.editForm.takenAt.datetime'),
-          }}
-        />
-      </FormGroup>
+      {m && (
+        <FormGroup>
+          <DateTime
+            value={model.takenAt}
+            onChange={handleTakenAtChange}
+            placeholders={{
+              date: m.gallery.editForm.takenAt.date,
+              time: m.gallery.editForm.takenAt.time,
+              datetime: m.gallery.editForm.takenAt.datetime,
+            }}
+          />
+        </FormGroup>
+      )}
       <FormGroup>
         <InputGroup>
           <FormControl
             type="text"
-            placeholder={t('gallery.editForm.location')}
+            placeholder={m?.gallery.editForm.location}
             onChange={handlePositionChange}
             value={model.dirtyPosition}
           />
-          <InputGroup.Button>
+          <InputGroup.Append>
             <Button onClick={onPositionPick}>
               <FontAwesomeIcon icon="dot-circle-o" />
-              {t('gallery.editForm.setLocation')}
+              {m?.gallery.editForm.setLocation}
             </Button>
-          </InputGroup.Button>
+          </InputGroup.Append>
         </InputGroup>
       </FormGroup>
       <FormGroup>
         <RT
-          placeholderText={t('gallery.editForm.tags')}
+          placeholderText={m?.gallery.editForm.tags}
           tags={model.tags.map((tag) => ({ id: tag, name: tag }))}
           suggestions={allTags.map(({ name }) => ({ id: name, name }))}
           onAddition={handleTagAddition}
@@ -165,4 +165,4 @@ export const GalleryEditForm: React.FC<Props> = ({
       </FormGroup>
     </div>
   );
-};
+}

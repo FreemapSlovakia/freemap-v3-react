@@ -1,206 +1,281 @@
-import 'fm3/bootstrap/css/bootstrap.css';
-import 'leaflet/dist/leaflet.css';
-
-import React, { useEffect, useRef, useCallback } from 'react';
-import { Map, ScaleControl } from 'react-leaflet';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import Button from 'react-bootstrap/lib/Button';
-// import CloseButton from 'react-bootstrap/lib/CloseButton';
-import Panel from 'react-bootstrap/lib/Panel';
-
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
-import { Layers } from 'fm3/components/Layers';
-import { Toasts } from 'fm3/components/Toasts';
-
-import { SearchMenu } from 'fm3/components/SearchMenu';
-import { SearchResults } from 'fm3/components/SearchResults';
-
-import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
-import { ObjectsResult } from 'fm3/components/ObjectsResult';
-
-import { DrawingMenu } from 'fm3/components/DrawingMenu';
-import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { LocationResult } from 'fm3/components/LocationResult';
-
-import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
-import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
-
-import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
-import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
-
-import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
-import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
-import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
-import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
-import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
-
-import { Settings } from 'fm3/components/Settings';
-import { Copyright } from 'fm3/components/Copyright';
-import { MapControls } from 'fm3/components/MapControls';
-import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
-
-import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-
-import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
-import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
-
-import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
-
+import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import {
+  galleryAddItem,
+  GalleryItem,
+  galleryMergeItem,
+  galleryShowUploadModal,
+} from 'fm3/actions/galleryActions';
+import { deleteFeature, setActiveModal } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import {
+  trackViewerSetData,
+  trackViewerSetTrackUID,
+} from 'fm3/actions/trackViewerActions';
+import {
+  AsyncAboutModal,
+  AsyncDrawingEditLabelModal,
   AsyncElevationChart,
+  AsyncEmbedMapModal,
   AsyncExportGpxModal,
   AsyncExportPdfModal,
-  AsyncLoginModal,
   AsyncLegendModal,
   AsyncLegendOutdoorModal,
-  AsyncEmbedMapModal,
-  AsyncTipsModal,
-  AsyncAboutModal,
+  AsyncLoginModal,
+  AsyncSettingsModal,
   AsyncSupportUsModal,
+  AsyncTipsModal,
   AsyncTrackingModal,
-  AsyncDrawingEditLabelModal,
   AsyncTrackViewerUploadModal,
 } from 'fm3/components/AsyncComponents';
-
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
-
-import { mapRefocus, mapReset, MapViewState } from 'fm3/actions/mapActions';
-import {
-  setActiveModal,
-  deleteFeature,
-  Selection,
-} from 'fm3/actions/mainActions';
-
-import { setMapLeafletElement } from 'fm3/leafletElementHolder';
-
-import 'fm3/styles/main.scss';
-import 'fm3/styles/leaflet.scss';
-import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
+import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
+import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
+import { Copyright } from 'fm3/components/Copyright';
+import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
+import { DrawingMenu } from 'fm3/components/DrawingMenu';
+import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
+import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
+import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
+import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
+import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
+import { GalleryShowPositionMenu } from 'fm3/components/gallery/GalleryShowPositionMenu';
+import { HomeLocationPickingMenu } from 'fm3/components/HomeLocationPickingMenu';
+import { Layers } from 'fm3/components/Layers';
+import { LocationResult } from 'fm3/components/LocationResult';
+import { MapControls } from 'fm3/components/MapControls';
+import { MapDetailsMenu } from 'fm3/components/MapDetailsMenu';
+import { ObjectsMenu } from 'fm3/components/ObjectsMenu';
+import { ObjectsResult } from 'fm3/components/ObjectsResult';
+import { RoutePlannerMenu } from 'fm3/components/RoutePlannerMenu';
+import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
+import { SearchMenu } from 'fm3/components/SearchMenu';
+import { SearchResults } from 'fm3/components/SearchResults';
+import { Toasts } from 'fm3/components/Toasts';
 import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
-import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { LeafletMouseEvent } from 'leaflet';
-
-import fmLogo from '../images/freemap-logo-print.png';
-import { useDropzone } from 'react-dropzone';
-import {
-  trackViewerSetTrackUID,
-  trackViewerSetData,
-} from 'fm3/actions/trackViewerActions';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
+import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
+import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
+import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
+import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useShareFile } from 'fm3/hooks/shareFileHook';
+import { useMessages } from 'fm3/l10nInjector';
+import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
   mouseCursorSelector,
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
+import { RootState } from 'fm3/storeCreator';
+import { toolDefinitions } from 'fm3/toolDefinitions';
+import Leaflet from 'leaflet';
+import 'leaflet/dist/leaflet.css';
 import {
-  GalleryItem,
-  galleryAddItem,
-  galleryMergeItem,
-  galleryShowUploadModal,
-} from 'fm3/actions/galleryActions';
+  MouseEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
+import Card from 'react-bootstrap/Card';
+import { useDropzone } from 'react-dropzone';
+import { MapContainer, ScaleControl } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
-import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
-import { toastsAdd } from 'fm3/actions/toastsActions';
+import fmLogo from '../images/freemap-logo-print.png';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { GalleryModals } from './gallery/GalleryModals';
+import { MapsMenu } from './MapsMenu';
 import { MoreMenuButton } from './MoreMenuButton';
 import { ToolsMenuButton } from './ToolsMenuButton';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
-import { toolDefinitions } from 'fm3/toolDefinitions';
-import { useShareFile } from 'fm3/hooks/shareFileHook';
-import { MapsMenu } from './MapsMenu';
 import { WikiLayer } from './WikiLayer';
-
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
 
 const embed = window.self !== window.top;
 
-const MainInt: React.FC<Props> = ({
-  lat,
-  lon,
-  zoom,
-  tool,
-  activeModal,
-  progress,
-  mouseCursor,
-  showElevationChart,
-  showGalleryPicker,
-  showLoginModal,
-  onMapReset,
-  showMenu,
-  overlayPaneOpacity,
-  embedFeatures,
-  onMapRefocus,
-  onGpxDrop,
-  onGpxLoadError,
-  onPictureUpdated,
-  onPictureAdded,
-  onPicturesDrop,
-  authenticated,
-  language,
-  t,
-  isUserValidated,
-  selection,
-  onDelete,
-  canDelete,
-  showInteractiveLayer,
-  mapType,
-}) => {
-  // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
+export function Main(): ReactElement {
+  const m = useMessages();
 
-  const mapRef = useRef<Map | null>();
+  const dispatch = useDispatch();
 
-  const setMap = useCallback(
-    (map: Map | null) => {
-      mapRef.current = map;
-    },
-    [mapRef],
+  const lat = useSelector((state: RootState) => state.map.lat);
+
+  const lon = useSelector((state: RootState) => state.map.lon);
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const showInteractiveLayer = useSelector(
+    (state: RootState) => !state.map.overlays.includes('i'),
   );
 
-  useEffect(() => {
-    setMapLeafletElement(mapRef.current ? mapRef.current.leafletElement : null);
-  }, []);
+  const tool = useSelector((state: RootState) => state.main.selection?.type);
 
-  const handleMapMoveEnd = useCallback(() => {
-    // TODO analyze why this can be null
-    if (!mapRef.current) {
+  const embedFeatures = useSelector(
+    (state: RootState) => state.main.embedFeatures,
+  );
+
+  const activeModal = useSelector((state: RootState) => state.main.activeModal);
+
+  const progress = useSelector(
+    (state: RootState) => !!state.main.progress.length,
+  );
+
+  const mouseCursor = useSelector((state: RootState) =>
+    mouseCursorSelector(state),
+  );
+
+  const authenticated = useSelector((state: RootState) => !!state.auth.user);
+
+  const showElevationChart = useSelector(
+    (state: RootState) => !!state.elevationChart.elevationProfilePoints,
+  );
+
+  const showGalleryPicker = useSelector((state: RootState) =>
+    showGalleryPickerSelector(state),
+  );
+
+  const showLoginModal = useSelector(
+    (state: RootState) => state.auth.chooseLoginMethod,
+  );
+
+  const showMenu = useSelector(
+    (state: RootState) =>
+      !state.main.selectingHomeLocation &&
+      !state.gallery.pickingPositionForId &&
+      !state.gallery.showPosition,
+  );
+
+  const overlayPaneOpacity = useSelector(
+    (state: RootState) => state.map.overlayPaneOpacity,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const isUserValidated = useSelector(
+    (state: RootState) => state.auth.user && !state.auth.user.notValidated,
+  );
+
+  const selection = useSelector((state: RootState) => state.main.selection);
+
+  const canDelete = useSelector(
+    (state: RootState) =>
+      state.main.selection?.id !== undefined ||
+      (state.main.selection?.type === 'route-planner' &&
+        (state.routePlanner.start ||
+          state.routePlanner.finish ||
+          state.routePlanner.midpoints.length > 0)) ||
+      ((state.main.selection?.type === 'map-details' ||
+        state.main.selection?.type === 'track-viewer') &&
+        state.trackViewer.trackGeojson) ||
+      (state.main.selection?.type === 'changesets' &&
+        state.changesets.changesets.length > 0),
+  );
+
+  // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
+
+  const [map, setMap] = useState<Leaflet.Map | null>(null);
+
+  useEffect(() => {
+    setMapLeafletElement(map);
+  }, [map]);
+
+  useEffect(() => {
+    const style = map?.getContainer().style;
+
+    if (style) {
+      style.cursor = mouseCursor;
+    }
+  }, [map, mouseCursor]);
+
+  useEffect(() => {
+    if (!map) {
       return;
     }
 
-    const map = mapRef.current.leafletElement;
-    const { lat: newLat, lng: newLon } = map.getCenter();
-    const newZoom = map.getZoom();
+    const m = map;
 
-    if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
-      onMapRefocus({ lat: newLat, lon: newLon, zoom: newZoom });
+    function handleMapMoveEnd() {
+      const { lat: newLat, lng: newLon } = m.getCenter();
+
+      const newZoom = m.getZoom();
+
+      if (lat !== newLat || lon !== newLon || zoom !== newZoom) {
+        dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+      }
     }
-  }, [onMapRefocus, lat, lon, zoom]);
+
+    m.on('moveend', handleMapMoveEnd);
+
+    return () => {
+      m.off('moveend', handleMapMoveEnd);
+    };
+  }, [dispatch, lat, lon, map, zoom]);
 
   const handleLogoClick = useCallback(() => {
     if (embed) {
       window.open(window.location.href, '_blank');
     } else {
-      onMapReset();
+      dispatch(
+        mapRefocus({
+          lat: 48.70714,
+          lon: 19.4995,
+          zoom: 8,
+          gpsTracked: false,
+        }),
+      );
     }
-  }, [onMapReset]);
+  }, [dispatch]);
 
   // const handleInfoBarCloseClick = useCallback(() => {
   //   setShowInfoBar(false);
   // }, [setShowInfoBar]);
 
+  const handlePictureAdded = useCallback(
+    (item: GalleryItem) => {
+      dispatch(galleryAddItem(item));
+    },
+    [dispatch],
+  );
+
+  const onPictureUpdated = useCallback(
+    (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
+      dispatch(galleryMergeItem(item));
+    },
+    [dispatch],
+  );
+
   const handlePicturesDrop = usePictureDropHandler(
     true,
     language,
-    onPictureAdded,
+    handlePictureAdded,
     onPictureUpdated,
   );
 
-  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError, t);
+  const onGpxDrop = useCallback(
+    (trackGpx: string) => {
+      dispatch(trackViewerSetTrackUID(null));
+      dispatch(trackViewerSetData({ trackGpx }));
+      dispatch(setActiveModal(null));
+      dispatch(elevationChartClose());
+    },
+    [dispatch],
+  );
+
+  const onGpxLoadError = useCallback(
+    (message: string) => {
+      dispatch(
+        toastsAdd({
+          id: 'trackViewer.loadError',
+          message,
+          style: 'danger',
+          timeout: 5000,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const handleGpxDrop = useGpxDropHandler(onGpxDrop, onGpxLoadError, m);
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -209,7 +284,8 @@ const MainInt: React.FC<Props> = ({
       );
 
       if (pictureFiles.length) {
-        onPicturesDrop(); // if no user then it displays valuable error
+        dispatch(galleryShowUploadModal()); // if no user then it displays valuable error
+
         if (authenticated) {
           handlePicturesDrop(pictureFiles);
         }
@@ -223,24 +299,46 @@ const MainInt: React.FC<Props> = ({
         handleGpxDrop(gpxFiles);
       }
     },
-    [handlePicturesDrop, handleGpxDrop, onPicturesDrop, authenticated],
+    [handlePicturesDrop, handleGpxDrop, dispatch, authenticated],
   );
 
   useShareFile(onDrop);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({ onDrop });
 
-  const handleDropzoneClick = useCallback((e: React.MouseEvent) => {
+  const handleDropzoneClick = useCallback((e: MouseEvent) => {
     e.stopPropagation();
   }, []);
 
   const handleDeleteClick = useCallback(() => {
     if (selection) {
-      onDelete(selection);
+      dispatch(deleteFeature(selection));
     }
-  }, [onDelete, selection]);
+  }, [dispatch, selection]);
 
   const embedToolDef = embed && toolDefinitions.find((td) => td.tool === tool);
+
+  // this is workaround to prevent map click events if popper is active (Overlay is shown)
+  useEffect(() => {
+    const mo = new MutationObserver(() => {
+      document.body.classList.toggle(
+        'fm-overlay-backdrop-enable',
+        document.querySelector('*[data-popper-reference-hidden=false]') !==
+          null,
+      );
+    });
+
+    mo.observe(document.body, {
+      subtree: true,
+      childList: true,
+      attributes: true,
+      attributeFilter: ['data-popper-reference-hidden'],
+    });
+
+    return () => {
+      mo.disconnect();
+    };
+  }, []);
 
   return (
     <>
@@ -255,7 +353,7 @@ const MainInt: React.FC<Props> = ({
         width="150"
         height="54"
         alt="freemap logo"
-        style={{ display: 'none' }}
+        className="d-none"
       />
 
       <Toasts />
@@ -264,11 +362,11 @@ const MainInt: React.FC<Props> = ({
         {/* {showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
-            {t('main.p2')}
+            {m?.main.p2}
           </div>
         )} */}
         <div className="menus">
-          <Panel className="fm-toolbar">
+          <Card className="fm-toolbar">
             <Button
               id="freemap-logo"
               className={progress ? 'in-progress' : 'idle'}
@@ -282,42 +380,51 @@ const MainInt: React.FC<Props> = ({
             {(!embed || embedFeatures.includes('search')) && (
               <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
             )}
-          </Panel>
+          </Card>
+
           {showMenu && (!embed || tool) && (
-            <Panel className="fm-toolbar">
-              {embed ? (
-                embedToolDef && (
-                  <>
-                    <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                    {t(`tools.${embedToolDef.msgKey}`)}{' '}
-                  </>
-                )
-              ) : (
-                <ToolsMenuButton />
-              )}
-              {tool === 'objects' && <ObjectsMenu />}
-              {tool === 'route-planner' && <RoutePlannerMenu />}
-              {tool &&
-                ['draw-lines', 'draw-points', 'draw-polygons'].includes(
-                  tool,
-                ) && <DrawingMenu />}
-              {tool === 'track-viewer' && <TrackViewerMenu />}
-              {tool === 'changesets' && <ChangesetsMenu />}
-              {tool === 'photos' && <GalleryMenu />}
-              {tool === 'map-details' && <MapDetailsMenu />}
-              {tool === 'tracking' && <TrackingMenu />}
-              {tool === 'maps' && <MapsMenu />}{' '}
-              {canDelete && (
-                <Button title={t('general.delete')} onClick={handleDeleteClick}>
-                  <FontAwesomeIcon icon="trash" />
-                  <span className="hidden-xs">
-                    {' '}
-                    {t('general.delete')} <kbd>Del</kbd>
-                  </span>
-                </Button>
-              )}
-            </Panel>
+            <Card className="fm-toolbar">
+              <ButtonToolbar>
+                {embed ? (
+                  embedToolDef && (
+                    <>
+                      <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
+                      {m?.tools[embedToolDef.msgKey]}{' '}
+                    </>
+                  )
+                ) : (
+                  <ToolsMenuButton />
+                )}
+                {tool === 'objects' && <ObjectsMenu />}
+                {tool === 'route-planner' && <RoutePlannerMenu />}
+                {tool &&
+                  ['draw-lines', 'draw-points', 'draw-polygons'].includes(
+                    tool,
+                  ) && <DrawingMenu />}
+                {tool === 'track-viewer' && <TrackViewerMenu />}
+                {tool === 'changesets' && <ChangesetsMenu />}
+                {tool === 'photos' && <GalleryMenu />}
+                {tool === 'map-details' && <MapDetailsMenu />}
+                {tool === 'tracking' && <TrackingMenu />}
+                {tool === 'maps' && <MapsMenu />}{' '}
+                {canDelete && (
+                  <Button
+                    className="ml-1"
+                    variant="danger"
+                    title={m?.general.delete}
+                    onClick={handleDeleteClick}
+                  >
+                    <FontAwesomeIcon icon="trash" />
+                    <span className="d-none d-sm-inline">
+                      {' '}
+                      {m?.general.delete} <kbd>Del</kbd>
+                    </span>
+                  </Button>
+                )}
+              </ButtonToolbar>
+            </Card>
           )}
+
           <GalleryPositionPickingMenu />
           <GalleryShowPositionMenu />
           <HomeLocationPickingMenu />
@@ -328,25 +435,6 @@ const MainInt: React.FC<Props> = ({
         <Copyright />
         <MapControls />
       </div>
-
-      {activeModal === 'settings' && <Settings />}
-      {activeModal &&
-        [
-          ...(isUserValidated ? ['tracking-my'] : []),
-          'tracking-watched',
-        ].includes(activeModal) && <AsyncTrackingModal />}
-      {activeModal === 'embed' && <AsyncEmbedMapModal />}
-      {activeModal === 'export-gpx' && <AsyncExportGpxModal />}
-      {activeModal === 'export-pdf' && <AsyncExportPdfModal />}
-      {activeModal === 'tips' && <AsyncTipsModal />}
-      {activeModal === 'about' && <AsyncAboutModal />}
-      {activeModal === 'supportUs' && <AsyncSupportUsModal />}
-      {activeModal === 'legend' &&
-        (mapType === 'X' ? <AsyncLegendOutdoorModal /> : <AsyncLegendModal />)}
-      {activeModal === 'edit-label' && <AsyncDrawingEditLabelModal />}
-      {activeModal === 'upload-track' && <AsyncTrackViewerUploadModal />}
-      {showLoginModal && <AsyncLoginModal />}
-      <GalleryModals />
 
       <div
         {...getRootProps({
@@ -364,22 +452,18 @@ const MainInt: React.FC<Props> = ({
               left: 0,
               zIndex: 20000,
             }}
-          ></div>
+          />
         )}
+
         <input {...getInputProps()} />
-        <Map
+
+        <MapContainer
           zoomControl={false}
           attributionControl={false}
           maxZoom={20}
-          ref={setMap}
+          whenCreated={setMap}
           center={{ lat, lng: lon }}
           zoom={zoom}
-          onmoveend={handleMapMoveEnd}
-          onmousemove={handleMapMouseMove}
-          onmouseover={handleMapMouseOver}
-          onmouseout={handleMapMouseOut}
-          onclick={handleMapClick}
-          style={{ cursor: mouseCursor }}
         >
           <ScaleControl imperial={false} position="bottomleft" />
 
@@ -409,117 +493,36 @@ const MainInt: React.FC<Props> = ({
           {/* TODO should not be extra just because for position picking */}
 
           <GalleryResult />
-        </Map>
+
+          <AsyncSettingsModal show={activeModal === 'settings'} />
+          <AsyncTrackingModal
+            show={
+              !!activeModal &&
+              [
+                ...(isUserValidated ? ['tracking-my'] : []),
+                'tracking-watched',
+              ].includes(activeModal)
+            }
+          />
+          <AsyncEmbedMapModal show={activeModal === 'embed'} />
+          <AsyncExportGpxModal show={activeModal === 'export-gpx'} />
+          <AsyncExportPdfModal show={activeModal === 'export-pdf'} />
+          <AsyncTipsModal show={activeModal === 'tips'} />
+          <AsyncAboutModal show={activeModal === 'about'} />
+          <AsyncSupportUsModal show={activeModal === 'supportUs'} />
+          {mapType === 'X' ? (
+            <AsyncLegendOutdoorModal show={activeModal === 'legend'} />
+          ) : (
+            <AsyncLegendModal show={activeModal === 'legend'} />
+          )}
+          <AsyncDrawingEditLabelModal show={activeModal === 'edit-label'} />
+          <AsyncTrackViewerUploadModal show={activeModal === 'upload-track'} />
+          <AsyncLoginModal show={showLoginModal} />
+          <GalleryModals />
+        </MapContainer>
         {showElevationChart && <AsyncElevationChart />}
       </div>
+      <div className="fm-overlay-backdrop" />
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  lat: state.map.lat,
-  lon: state.map.lon,
-  zoom: state.map.zoom,
-  mapType: state.map.mapType,
-  showInteractiveLayer: !state.map.overlays.includes('i'),
-  tool: state.main.selection?.type,
-  embedFeatures: state.main.embedFeatures,
-  activeModal: state.main.activeModal,
-  progress: !!state.main.progress.length,
-  mouseCursor: mouseCursorSelector(state),
-  authenticated: !!state.auth.user,
-  showElevationChart: !!state.elevationChart.elevationProfilePoints,
-  showGalleryPicker: showGalleryPickerSelector(state),
-  showLoginModal: state.auth.chooseLoginMethod,
-  showMenu:
-    !state.main.selectingHomeLocation &&
-    !state.gallery.pickingPositionForId &&
-    !state.gallery.showPosition,
-  overlayPaneOpacity: state.map.overlayPaneOpacity,
-  language: state.l10n.language,
-  isUserValidated: state.auth.user && !state.auth.user.notValidated,
-  selection: state.main.selection,
-  canDelete:
-    state.main.selection?.id !== undefined ||
-    (state.main.selection?.type === 'route-planner' &&
-      (state.routePlanner.start ||
-        state.routePlanner.finish ||
-        state.routePlanner.midpoints.length > 0)) ||
-    ((state.main.selection?.type === 'map-details' ||
-      state.main.selection?.type === 'track-viewer') &&
-      state.trackViewer.trackGeojson) ||
-    (state.main.selection?.type === 'changesets' &&
-      state.changesets.changesets.length > 0),
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapRefocus(changes: Partial<MapViewState>) {
-    dispatch(mapRefocus(changes));
-  },
-  onMapReset() {
-    dispatch(mapReset());
-  },
-  onGpxDrop(trackGpx: string) {
-    dispatch(trackViewerSetTrackUID(null));
-    dispatch(trackViewerSetData({ trackGpx }));
-    dispatch(setActiveModal(null));
-    dispatch(elevationChartClose());
-  },
-  onGpxLoadError(message: string) {
-    dispatch(
-      toastsAdd({
-        id: 'trackViewer.loadError',
-        message,
-        style: 'danger',
-        timeout: 5000,
-      }),
-    );
-  },
-  onPicturesDrop() {
-    dispatch(galleryShowUploadModal());
-  },
-  onPictureAdded(item: GalleryItem) {
-    dispatch(galleryAddItem(item));
-  },
-  onPictureUpdated(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
-    dispatch(galleryMergeItem(item));
-  },
-  onDelete(selection: Selection) {
-    dispatch(deleteFeature(selection));
-  },
-});
-
-export const Main = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MainInt));
-
-function handleMapClick(e: LeafletMouseEvent) {
-  // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
-  const target = e.originalEvent.target;
-
-  if (
-    !window.preventMapClick &&
-    target instanceof HTMLDivElement &&
-    target.classList.contains('leaflet-container')
-  ) {
-    mapEventEmitter.emit('mapClick', e.latlng.lat, e.latlng.lng);
-  }
-}
-
-function handleMapMouseMove(e: LeafletMouseEvent) {
-  mapEventEmitter.emit(
-    'mouseMove',
-    e.latlng.lat,
-    e.latlng.lng,
-    e.originalEvent,
-  );
-}
-
-function handleMapMouseOver(e: LeafletMouseEvent) {
-  mapEventEmitter.emit('mouseOver', e.latlng.lat, e.latlng.lng);
-}
-
-function handleMapMouseOut(e: LeafletMouseEvent) {
-  mapEventEmitter.emit('mouseOut', e.latlng.lat, e.latlng.lng);
 }

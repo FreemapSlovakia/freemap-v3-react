@@ -1,5 +1,5 @@
-import { createAction } from 'typesafe-actions';
 import { GeoJsonObject } from 'geojson';
+import { createAction } from 'typesafe-actions';
 
 export interface SearchResult {
   id: number;

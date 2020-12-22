@@ -1,19 +1,19 @@
+import { authSetUser } from 'fm3/actions/authActions';
+import {
+  saveSettings,
+  setActiveModal,
+  setExpertMode,
+  setHomeLocation,
+} from 'fm3/actions/mainActions';
 import {
   mapSetOverlayOpacity,
   mapSetOverlayPaneOpacity,
 } from 'fm3/actions/mapActions';
-import {
-  setHomeLocation,
-  setActiveModal,
-  setExpertMode,
-  saveSettings,
-} from 'fm3/actions/mainActions';
+import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
-import { authSetUser } from 'fm3/actions/authActions';
-import { tipsPreventNextTime } from 'fm3/actions/tipsActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const saveSettingsProcessor: Processor<typeof saveSettings> = {
   actionCreator: saveSettings,

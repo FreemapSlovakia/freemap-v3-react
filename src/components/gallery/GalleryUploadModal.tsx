@@ -1,183 +1,69 @@
-import React, { useCallback } from 'react';
-import { useDropzone } from 'react-dropzone';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-
 import {
   galleryAddItem,
-  galleryRemoveItem,
-  galleryMergeItem,
-  gallerySetItemForPositionPicking,
-  galleryUpload,
   galleryHideUploadModal,
-  galleryToggleShowPreview,
   GalleryItem,
+  galleryMergeItem,
+  galleryRemoveItem,
+  gallerySetItemForPositionPicking,
+  galleryToggleShowPreview,
+  galleryUpload,
 } from 'fm3/actions/galleryActions';
-
 import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { PictureModel } from './GalleryEditForm';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDropzone } from 'react-dropzone';
+import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
+import { PictureModel } from './GalleryEditForm';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+type Props = { show: boolean };
 
-const GalleryUploadModalInt: React.FC<Props> = ({
-  items,
-  onPositionPick,
-  visible,
-  onUpload,
-  uploading,
-  allTags,
-  t,
-  showPreview,
-  onShowPreviewToggle,
-  onItemRemove,
-  onItemMerge,
-  onItemAdd,
-  onClose,
-  language,
-}) => {
+export function GalleryUploadModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const items = useSelector((state: RootState) => state.gallery.items);
+
+  const uploading = useSelector(
+    (state: RootState) => !!state.gallery.uploadingId,
+  );
+
+  const allTags = useSelector((state: RootState) => state.gallery.tags);
+
+  const showPreview = useSelector(
+    (state: RootState) => state.gallery.showPreview,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const handleItemMerge = useCallback(
+    (item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) => {
+      dispatch(galleryMergeItem(item));
+    },
+    [dispatch],
+  );
+
   const handleModelChange = useCallback(
     (id: number, model: PictureModel) => {
-      onItemMerge({
+      handleItemMerge({
         id,
         ...model,
         takenAt: model.takenAt ? new Date(model.takenAt) : null,
       });
     },
-    [onItemMerge],
+    [handleItemMerge],
   );
 
   const handleClose = useCallback(() => {
-    onClose(!!items.length);
-  }, [onClose, items]);
-
-  const handleFileDrop = usePictureDropHandler(
-    showPreview,
-    language,
-    onItemAdd,
-    onItemMerge,
-  );
-
-  const { getRootProps, getInputProps, isDragActive } = useDropzone({
-    onDrop: handleFileDrop,
-    accept: '.jpg,.jpeg',
-  });
-
-  return (
-    <Modal show={visible} onHide={handleClose}>
-      <Modal.Header closeButton>
-        <Modal.Title>{t('gallery.uploadModal.title')}</Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        {items.map(
-          ({
-            id,
-            file,
-            url,
-            title,
-            description,
-            takenAt,
-            tags,
-            errors,
-            dirtyPosition,
-          }) => (
-            <GalleryUploadItem
-              key={id}
-              id={id}
-              t={t}
-              filename={file.name}
-              url={url}
-              model={{
-                dirtyPosition,
-                title,
-                description,
-                takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
-                tags,
-              }}
-              allTags={allTags}
-              errors={errors}
-              onRemove={onItemRemove}
-              onPositionPick={onPositionPick}
-              onModelChange={handleModelChange}
-              disabled={uploading}
-              showPreview={showPreview}
-            />
-          ),
-        )}
-        {!uploading && (
-          <>
-            <Checkbox
-              onChange={onShowPreviewToggle}
-              checked={showPreview}
-              disabled={!!items.length}
-            >
-              {t('gallery.uploadModal.showPreview')}
-            </Checkbox>
-
-            <div
-              {...getRootProps()}
-              className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
-            >
-              <input {...getInputProps()} />
-              <div
-                dangerouslySetInnerHTML={{
-                  __html: t('gallery.uploadModal.rules'),
-                }}
-              />
-            </div>
-          </>
-        )}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={onUpload} disabled={uploading}>
-          <FontAwesomeIcon icon="upload" />{' '}
-          {uploading
-            ? t('gallery.uploadModal.uploading', { n: items.length })
-            : t('gallery.uploadModal.upload')}
-        </Button>
-        <Button onClick={handleClose} bsStyle="danger">
-          <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
-    </Modal>
-  );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  items: state.gallery.items,
-  visible: state.gallery.pickingPositionForId === null,
-  uploading: !!state.gallery.uploadingId,
-  allTags: state.gallery.tags,
-  showPreview: state.gallery.showPreview,
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onItemAdd(item: GalleryItem) {
-    dispatch(galleryAddItem(item));
-  },
-  onItemRemove(id: number) {
-    dispatch(galleryRemoveItem(id));
-  },
-  onUpload() {
-    dispatch(galleryUpload());
-  },
-  onClose(ask: boolean) {
-    if (ask) {
+    if (items.length) {
       dispatch(
         toastsAdd({
           id: 'galleryUploadModal.close',
@@ -196,19 +82,127 @@ const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
     } else {
       dispatch(galleryHideUploadModal());
     }
-  },
-  onPositionPick(id: number) {
-    dispatch(gallerySetItemForPositionPicking(id));
-  },
-  onItemMerge(item: Pick<GalleryItem, 'id'> & Partial<GalleryItem>) {
-    dispatch(galleryMergeItem(item));
-  },
-  onShowPreviewToggle() {
-    dispatch(galleryToggleShowPreview());
-  },
-});
+  }, [dispatch, items]);
 
-export const GalleryUploadModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryUploadModalInt));
+  const handleItemAdd = useCallback(
+    (item: GalleryItem) => {
+      dispatch(galleryAddItem(item));
+    },
+    [dispatch],
+  );
+
+  const handleFileDrop = usePictureDropHandler(
+    showPreview,
+    language,
+    handleItemAdd,
+    handleItemMerge,
+  );
+
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
+    onDrop: handleFileDrop,
+    accept: '.jpg,.jpeg',
+  });
+
+  const handlePositionPick = useCallback(
+    (id: number) => {
+      dispatch(gallerySetItemForPositionPicking(id));
+    },
+    [dispatch],
+  );
+
+  const handleItemRemove = useCallback(
+    (id: number) => {
+      dispatch(galleryRemoveItem(id));
+    },
+    [dispatch],
+  );
+
+  return (
+    <Modal show={show} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>{m?.gallery.uploadModal.title}</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        {items.map(
+          ({
+            id,
+            file,
+            url,
+            title,
+            description,
+            takenAt,
+            tags,
+            errors,
+            dirtyPosition,
+          }) => (
+            <GalleryUploadItem
+              key={id}
+              id={id}
+              m={m}
+              filename={file.name}
+              url={url}
+              model={{
+                dirtyPosition,
+                title,
+                description,
+                takenAt: takenAt ? toDatetimeLocal(takenAt) : '',
+                tags,
+              }}
+              allTags={allTags}
+              errors={errors}
+              onRemove={handleItemRemove}
+              onPositionPick={handlePositionPick}
+              onModelChange={handleModelChange}
+              disabled={uploading}
+              showPreview={showPreview}
+            />
+          ),
+        )}
+        {!uploading && (
+          <>
+            <FormCheck
+              id="chk-preview"
+              type="checkbox"
+              onChange={() => {
+                dispatch(galleryToggleShowPreview());
+              }}
+              checked={showPreview}
+              disabled={!!items.length}
+              label={m?.gallery.uploadModal.showPreview}
+            />
+
+            <div
+              {...getRootProps()}
+              className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
+            >
+              <input {...getInputProps()} />
+              {m && (
+                <div
+                  dangerouslySetInnerHTML={{
+                    __html: m.gallery.uploadModal.rules,
+                  }}
+                />
+              )}
+            </div>
+          </>
+        )}
+      </Modal.Body>
+      <Modal.Footer>
+        <Button
+          onClick={() => {
+            dispatch(galleryUpload());
+          }}
+          disabled={uploading}
+        >
+          <FontAwesomeIcon icon="upload" />{' '}
+          {uploading
+            ? m?.gallery.uploadModal.uploading(items.length)
+            : m?.gallery.uploadModal.upload}
+        </Button>
+        <Button onClick={handleClose} variant="dark">
+          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}

@@ -1,52 +1,54 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-
 import { gallerySetPickingPosition } from 'fm3/actions/galleryActions';
-
-import 'fm3/styles/gallery.scss';
+import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
-import { Dispatch } from 'redux';
-import { DragEndEvent } from 'leaflet';
+import 'fm3/styles/gallery.scss';
+import { DragEndEvent, LeafletMouseEvent } from 'leaflet';
+import { ReactElement, useCallback } from 'react';
+import { useMapEvent } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+export function GalleryResult(): ReactElement {
+  const dispatch = useDispatch();
 
-const GalleryResultInt: React.FC<Props> = ({
-  pickingPosition,
-  showPosition,
-  image,
-  isPickingPosition,
-  onPositionPick,
-}) => {
-  // TODO mode to GalleryMenu to be consistent with other tools
-  const handleMapClick = useCallback(
-    (lat: number, lon: number) => {
-      if (isPickingPosition) {
-        onPositionPick(lat, lon);
-      }
-    },
-    [isPickingPosition, onPositionPick],
+  const image = useSelector((state: RootState) => state.gallery.image);
+
+  const isPickingPosition = useSelector(
+    (state: RootState) => state.gallery.pickingPositionForId !== null,
   );
 
-  useEffect(() => {
-    mapEventEmitter.on('mapClick', handleMapClick);
+  const pickingPosition = useSelector(
+    (state: RootState) => state.gallery.pickingPosition,
+  );
 
-    return () => {
-      mapEventEmitter.removeListener('mapClick', handleMapClick);
-    };
-  }, [handleMapClick]);
+  const showPosition = useSelector(
+    (state: RootState) => state.gallery.showPosition,
+  );
+
+  const handlePositionPick = useCallback(
+    (lat: number, lon: number) => {
+      dispatch(gallerySetPickingPosition({ lat, lon }));
+    },
+    [dispatch],
+  );
+
+  // TODO mode to GalleryMenu to be consistent with other tools
+  const handleMapClick = useCallback(
+    ({ latlng }: LeafletMouseEvent) => {
+      if (isPickingPosition) {
+        handlePositionPick(latlng.lat, latlng.lng);
+      }
+    },
+    [isPickingPosition, handlePositionPick],
+  );
+
+  useMapEvent('click', handleMapClick);
 
   const handlePositionMarkerDragEnd = useCallback(
     (e: DragEndEvent) => {
       const coords = e.target.getLatLng();
-      onPositionPick(coords.lat, coords.lng);
+      handlePositionPick(coords.lat, coords.lng);
     },
-    [onPositionPick],
+    [handlePositionPick],
   );
 
   return (
@@ -55,7 +57,9 @@ const GalleryResultInt: React.FC<Props> = ({
         <RichMarker
           draggable
           position={{ lat: pickingPosition.lat, lng: pickingPosition.lon }}
-          ondragend={handlePositionMarkerDragEnd}
+          eventHandlers={{
+            dragend: handlePositionMarkerDragEnd,
+          }}
         />
       )}
       {showPosition && image && (
@@ -63,22 +67,4 @@ const GalleryResultInt: React.FC<Props> = ({
       )}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  image: state.gallery.image,
-  isPickingPosition: state.gallery.pickingPositionForId !== null,
-  pickingPosition: state.gallery.pickingPosition,
-  showPosition: state.gallery.showPosition,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPositionPick(lat: number, lon: number) {
-    dispatch(gallerySetPickingPosition({ lat, lon }));
-  },
-});
-
-export const GalleryResult = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(GalleryResultInt);
+}

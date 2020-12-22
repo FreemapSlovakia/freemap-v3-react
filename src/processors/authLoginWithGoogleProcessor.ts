@@ -1,10 +1,10 @@
+import { authLoginWithGoogle, authSetUser } from 'fm3/actions/authActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { authSetUser, authLoginWithGoogle } from 'fm3/actions/authActions';
+import { httpRequest } from 'fm3/authAxios';
 import { getAuth2 } from 'fm3/gapiLoader';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
-import { assertType } from 'typescript-is';
 import { User } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 export const authLoginWithGoogleProcessor: Processor = {
   actionCreator: authLoginWithGoogle,

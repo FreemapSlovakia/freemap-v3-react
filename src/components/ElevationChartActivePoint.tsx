@@ -1,21 +1,20 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
-
 import { RichMarker } from 'fm3/components/RichMarker';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
+import { ReactElement } from 'react';
+import { Tooltip } from 'react-leaflet';
+import { useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> & {
-  t: Translator;
-};
+export function ElevationChartActivePoint(): ReactElement | null {
+  const m = useMessages();
 
-const ElevationChartActivePointInt: React.FC<Props> = ({
-  elevationChartActivePoint,
-  language,
-  t,
-}) => {
+  const elevationChartActivePoint = useSelector(
+    (state: RootState) => state.elevationChart.activePoint,
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const nf0 = Intl.NumberFormat(language, {
     minimumFractionDigits: 0,
     maximumFractionDigits: 0,
@@ -47,7 +46,7 @@ const ElevationChartActivePointInt: React.FC<Props> = ({
           <span>
             → {nf1.format(elevationChartActivePoint.distance / 1000)} km
             {' ▴ '}
-            {nf0.format(elevationChartActivePoint.ele)} {t('general.masl')}
+            {nf0.format(elevationChartActivePoint.ele)} {m?.general.masl}
             {typeof elevationChartActivePoint.climbUp === 'number' &&
               typeof elevationChartActivePoint.climbDown === 'number' && (
                 <>
@@ -62,13 +61,4 @@ const ElevationChartActivePointInt: React.FC<Props> = ({
       </RichMarker>
     )
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  elevationChartActivePoint: state.elevationChart.activePoint,
-  language: state.l10n.language,
-});
-
-export const ElevationChartActivePoint = connect(mapStateToProps)(
-  withTranslator(ElevationChartActivePointInt),
-);
+}

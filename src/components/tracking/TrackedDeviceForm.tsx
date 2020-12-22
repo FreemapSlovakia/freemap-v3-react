@@ -1,47 +1,56 @@
-import { connect } from 'react-redux';
-import React from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import FormControl from 'react-bootstrap/lib/FormControl';
-
-import { DateTime } from 'fm3/components/DateTime';
-import { toDatetimeLocal } from 'fm3/dateUtils';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { trackingActions } from 'fm3/actions/trackingActions';
-import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { TrackedDevice } from 'fm3/types/trackingTypes';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
-import { InputGroup } from 'react-bootstrap';
-import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { selectFeature } from 'fm3/actions/mainActions';
+import { trackingActions } from 'fm3/actions/trackingActions';
+import { DateTime } from 'fm3/components/DateTime';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { toDatetimeLocal } from 'fm3/dateUtils';
+import { useTextInputState } from 'fm3/hooks/inputHooks';
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { TrackedDevice } from 'fm3/types/trackingTypes';
+import { FormEvent, ReactElement, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function TrackedDeviceForm(): ReactElement {
+  const m = useMessages();
 
-const TrackedDeviceFormInt: React.FC<Props> = ({
-  onSave,
-  onCancel,
-  device,
-  forceNew,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const { device, forceNew } = useSelector((state: RootState) => {
+    let device: TrackedDevice | undefined;
+    let forceNew = false;
+
+    if (state.tracking.modifiedTrackedDeviceId != null) {
+      device = state.tracking.trackedDevices.find(
+        (device) => device.id === state.tracking.modifiedTrackedDeviceId,
+      );
+
+      if (!device) {
+        device = { id: state.tracking.modifiedTrackedDeviceId };
+        forceNew = true;
+      }
+    }
+
+    return {
+      device,
+      forceNew,
+    };
+  }, shallowEqual);
+
   const [id, setId] = useTextInputState(device?.id?.toString() ?? '');
 
   const [label, setLabel] = useTextInputState(device?.label ?? '');
 
-  const [color, setColor] = useTextInputState(device?.color ?? '');
+  const [color, setColor] = useTextInputState(device?.color ?? '#7239a8');
 
   const [width, setWidth] = useTextInputState(device?.width?.toString() ?? '');
 
-  const [fromTime, setFromTime] = React.useState(
+  const [fromTime, setFromTime] = useState(
     device?.fromTime ? toDatetimeLocal(device.fromTime) : '',
   );
 
@@ -61,22 +70,30 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
     device?.splitDuration?.toString() ?? '',
   );
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const id0 = id.trim();
-    onSave({
-      id: /^\d+$/.test(id0) ? Number.parseInt(id0) : id0,
-      label: label.trim() || null,
-      color: color.trim() || null,
-      fromTime: fromTime === '' ? null : new Date(fromTime),
-      maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-      maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-      width: width === '' ? null : Number.parseInt(width, 10),
-      splitDistance:
-        splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
-      splitDuration:
-        splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
-    });
+
+    const did = /^\d+$/.test(id0) ? Number.parseInt(id0) : id0;
+
+    dispatch(
+      trackingActions.saveTrackedDevice({
+        id: did,
+        label: label.trim() || null,
+        color: color === '#7239a8' ? null : color.trim() || null,
+        fromTime: fromTime === '' ? null : new Date(fromTime),
+        maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
+        maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+        width: width === '' ? null : Number.parseInt(width, 10),
+        splitDistance:
+          splitDistance === '' ? null : Number.parseInt(splitDistance, 10),
+        splitDuration:
+          splitDuration === '' ? null : Number.parseInt(splitDuration, 10),
+      }),
+    );
+
+    dispatch(selectFeature({ type: 'tracking', id: did }));
   };
 
   return (
@@ -85,31 +102,30 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
           {device && !forceNew
-            ? t('tracking.trackedDevices.modifyTitle', {
-                name: device.label || device.id,
-              })
-            : t('tracking.trackedDevices.createTitle')}
+            ? m?.tracking.trackedDevices.modifyTitle(device.label || device.id)
+            : m?.tracking.trackedDevices.createTitle(
+                device?.label ?? device?.id,
+              )}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup className="required">
           {/* TODD: or ID */}
-          <ControlLabel>{t('tracking.trackedDevice.token')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.token}</FormLabel>
           <FormControl value={id} onChange={setId} required />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.trackedDevice.label')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.label}</FormLabel>
           <FormControl value={label} onChange={setLabel} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.trackedDevice.color')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.color}</FormLabel>
           <InputGroup>
-            <FormControl value={color} onChange={setColor} />
-            <InputGroup.Addon>HTML</InputGroup.Addon>
+            <FormControl type="color" value={color} onChange={setColor} />
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.trackedDevice.width')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.width}</FormLabel>
           <InputGroup>
             <FormControl
               value={width}
@@ -117,15 +133,17 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
               type="number"
               min="1"
             />
-            <InputGroup.Addon>px</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>px</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.trackedDevice.fromTime')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.fromTime}</FormLabel>
           <DateTime value={fromTime} onChange={setFromTime} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.trackedDevice.maxAge')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.maxAge}</FormLabel>
           <InputGroup>
             <FormControl
               type="number"
@@ -134,11 +152,13 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.trackedDevice.maxCount')}</ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.maxCount}</FormLabel>
           <FormControl
             type="number"
             min="0"
@@ -148,9 +168,7 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>
-            {t('tracking.trackedDevice.splitDistance')}
-          </ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.splitDistance}</FormLabel>
           <InputGroup>
             <FormControl
               type="number"
@@ -159,13 +177,13 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
               value={splitDistance}
               onChange={setSplitDistance}
             />
-            <InputGroup.Addon>{t('general.meters')}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.meters}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>
-            {t('tracking.trackedDevice.splitDuration')}
-          </ControlLabel>
+          <FormLabel>{m?.tracking.trackedDevice.splitDuration}</FormLabel>
           <InputGroup>
             <FormControl
               type="number"
@@ -174,52 +192,24 @@ const TrackedDeviceFormInt: React.FC<Props> = ({
               value={splitDuration}
               onChange={setSplitDuration}
             />
-            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">{t('general.save')}</Button>
-        <Button type="button" onClick={onCancel}>
-          {t('general.cancel')} <kbd>Esc</kbd>
+        <Button type="submit">{m?.general.save}</Button>
+        <Button
+          variant="dark"
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.modifyTrackedDevice(undefined));
+          }}
+        >
+          {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>
   );
-};
-
-const mapStateToProps = (state: RootState) => {
-  let device: TrackedDevice | undefined;
-  let forceNew = false;
-
-  if (state.tracking.modifiedTrackedDeviceId != null) {
-    device = state.tracking.trackedDevices.find(
-      (device) => device.id === state.tracking.modifiedTrackedDeviceId,
-    );
-
-    if (!device) {
-      device = { id: state.tracking.modifiedTrackedDeviceId };
-      forceNew = true;
-    }
-  }
-
-  return {
-    device,
-    forceNew,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onCancel() {
-    dispatch(trackingActions.modifyTrackedDevice(undefined));
-  },
-  onSave(device: TrackedDevice) {
-    dispatch(trackingActions.saveTrackedDevice(device));
-    dispatch(selectFeature({ type: 'tracking', id: device.id }));
-  },
-});
-
-export const TrackedDeviceForm = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(TrackedDeviceFormInt));
+}

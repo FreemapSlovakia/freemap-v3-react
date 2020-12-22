@@ -1,28 +1,30 @@
-import { LatLon } from 'fm3/types/common';
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
+import { authLogout, authSetUser } from 'fm3/actions/authActions';
+import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
 import {
-  setAppState,
+  clearMap,
+  deleteFeature,
+  enableUpdatingUrl,
+  selectFeature,
+  Selection,
   setActiveModal,
+  setAppState,
+  setEmbedFeatures,
+  setErrorTicketId,
+  setExpertMode,
   setHomeLocation,
+  setLocation,
+  setSelectingHomeLocation,
   startProgress,
   stopProgress,
-  setLocation,
-  setExpertMode,
-  setSelectingHomeLocation,
-  enableUpdatingUrl,
-  setErrorTicketId,
-  setEmbedFeatures,
   toggleLocate,
-  selectFeature,
-  deleteFeature,
-  Selection,
-  clearMap,
 } from 'fm3/actions/mainActions';
-import { authSetUser, authLogout } from 'fm3/actions/authActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
-import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
+import { LatLon } from 'fm3/types/common';
+import { createReducer } from 'typesafe-actions';
+
+const embed = window.self !== window.top;
 
 interface Location extends LatLon {
   accuracy: number;
@@ -37,7 +39,7 @@ export interface MainState {
   locate: boolean;
   selectingHomeLocation: boolean;
   urlUpdatingEnabled: boolean;
-  errorTicketId: string | null;
+  errorTicketId: string | undefined;
   eleSmoothingFactor: number;
   embedFeatures: string[];
   selection: Selection | null;
@@ -52,7 +54,7 @@ const initialState: MainState = {
   locate: false,
   selectingHomeLocation: false,
   urlUpdatingEnabled: false,
-  errorTicketId: null,
+  errorTicketId: undefined,
   eleSmoothingFactor: 5,
   embedFeatures: [],
   selection: null,
@@ -70,6 +72,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   })
   .handleAction(authSetUser, (state, action) => {
     const p = action.payload;
+
     return {
       ...state,
       homeLocation: !p
@@ -145,10 +148,14 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     ...state,
     embedFeatures: action.payload,
   }))
-  .handleAction(selectFeature, (state, action) => ({
-    ...state,
-    selection: action.payload,
-  }))
+  .handleAction(selectFeature, (state, action) =>
+    embed
+      ? state
+      : {
+          ...state,
+          selection: action.payload,
+        },
+  )
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
     selection: state.selection ? { type: state.selection.type } : null,

@@ -1,15 +1,15 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import {
-  resolveTrackSurface,
-  resolveTrackClass,
   resolveBicycleTypeSuitableForTrack,
+  resolveTrackClass,
+  resolveTrackSurface,
 } from 'fm3/osmOntologyTools';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import { useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> & {
-  t: Translator;
+type Props = {
   way: {
     id: number;
     tags: {
@@ -19,7 +19,13 @@ type Props = ReturnType<typeof mapStateToProps> & {
   };
 };
 
-const RoadDetailsInt: React.FC<Props> = ({ way, mapType, language, t }) => {
+export function RoadDetails({ way }: Props): ReactElement {
+  const m = useMessages();
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const dateFormat = new Intl.DateTimeFormat(language, {
     day: '2-digit',
     month: '2-digit',
@@ -35,38 +41,29 @@ const RoadDetailsInt: React.FC<Props> = ({ way, mapType, language, t }) => {
   return (
     <div>
       <dl className="dl-horizontal">
-        <dt>{t('roadDetails.roadType')}</dt>
-        <dd>{t(`roadDetails.trackClasses.${trackClass}`, {}, trackClass)}</dd>
-        <dt>{t('roadDetails.surface')}</dt>
-        <dd>{t(`roadDetails.surfaces.${surface}`) || surface}</dd>
-        {isBicycleMap && <dt>{t('roadDetails.suitableBikeType')}</dt>}
+        <dt>{m?.roadDetails.roadType}</dt>
+        <dd>{m?.roadDetails.trackClasses[trackClass] ?? trackClass}</dd>
+        <dt>{m?.roadDetails.surface}</dt>
+        <dd>{m?.roadDetails.surfaces[surface] ?? surface}</dd>
+        {isBicycleMap && <dt>{m?.roadDetails.suitableBikeType}</dt>}
         {isBicycleMap && (
           <dd style={{ whiteSpace: 'nowrap' }}>
-            {t(`roadDetails.bicycleTypes.${bicycleType}`)}
+            {m?.roadDetails.bicycleTypes[bicycleType]}
           </dd>
         )}
-        <dt>{t('roadDetails.lastChange')}</dt>
+        <dt>{m?.roadDetails.lastChange}</dt>
         <dd>{lastEditAt}</dd>
       </dl>
       <p>
-        <a
+        <Alert.Link
           key="allDetails"
           href={`https://www.openstreetmap.org/way/${way.id}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          {t('roadDetails.showDetails')}
-        </a>
+          {m?.roadDetails.showDetails}
+        </Alert.Link>
       </p>
     </div>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  mapType: state.map.mapType,
-  language: state.l10n.language,
-});
-
-export const RoadDetails = connect(mapStateToProps)(
-  withTranslator(RoadDetailsInt),
-);
+}

@@ -1,11 +1,11 @@
-import { createAction } from 'typesafe-actions';
 import {
-  TrackedDevice,
-  Device,
   AccessToken,
-  EditedDevice,
   AccessTokenBase,
+  Device,
+  EditedDevice,
+  TrackedDevice,
 } from 'fm3/types/trackingTypes';
+import { createAction } from 'typesafe-actions';
 
 export const trackingActions = {
   setTrackedDevices: createAction('TRACKING_SET_TRACKED_DEVICES')<

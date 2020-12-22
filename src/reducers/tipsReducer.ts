@@ -1,8 +1,8 @@
+import { RootAction } from 'fm3/actions';
+import { authSetUser } from 'fm3/actions/authActions';
+import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
 import tips from 'fm3/tips/index.json';
 import { createReducer } from 'typesafe-actions';
-import { RootAction } from 'fm3/actions';
-import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
-import { authSetUser } from 'fm3/actions/authActions';
 
 export interface TipsState {
   tip: string | null;

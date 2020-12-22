@@ -1,59 +1,75 @@
-import React, { useState, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Alert from 'react-bootstrap/lib/Alert';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-
 import { drawingChangeLabel } from 'fm3/actions/drawingPointActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useState,
+} from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+type Props = { show: boolean };
 
-const DrawingEditLabelModalInt: React.FC<Props> = ({
-  label,
-  onSave,
-  onModalClose,
-  t,
-}) => {
+export function DrawingEditLabelModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
+  const label = useSelector((state: RootState) => {
+    const { selection } = state.main;
+
+    return selection?.type === 'draw-points' && selection.id !== undefined
+      ? state.drawingPoints.points[selection.id]?.label ?? '???'
+      : (selection?.type === 'draw-lines' ||
+          selection?.type === 'draw-polygons') &&
+        selection.id !== undefined
+      ? state.drawingLines.lines[selection.id]?.label ?? '???'
+      : '???';
+  });
+
   const [editedLabel, setEditedLabel] = useState(label);
 
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   const saveLabel = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
-      onSave(editedLabel);
-      onModalClose();
+
+      dispatch(drawingChangeLabel({ label: editedLabel }));
+
+      close();
     },
-    [editedLabel, onSave, onModalClose],
+    [editedLabel, dispatch, close],
   );
 
   const handleLocalLabelChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setEditedLabel((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setEditedLabel(e.currentTarget.value);
     },
     [],
   );
 
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show={show} onHide={close}>
       <form onSubmit={saveLabel}>
         <Modal.Header closeButton>
-          <Modal.Title>{t('drawing.edit.title')}</Modal.Title>
+          <Modal.Title>{m?.drawing.edit.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{t('drawing.edit.label')}</ControlLabel>
+            <FormLabel>{m?.drawing.edit.label}</FormLabel>
             <FormControl
               autoFocus
               type="text"
@@ -61,46 +77,17 @@ const DrawingEditLabelModalInt: React.FC<Props> = ({
               onChange={handleLocalLabelChange}
             />
           </FormGroup>
-          <Alert>{t('drawing.edit.hint')}</Alert>
+          <Alert variant="secondary">{m?.drawing.edit.hint}</Alert>
         </Modal.Body>
         <Modal.Footer>
-          <Button type="submit" bsStyle="info">
-            <Glyphicon glyph="floppy-disk" /> {t('general.save')}
+          <Button type="submit" variant="info">
+            <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
           </Button>
-          <Button type="button" onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+          <Button variant="dark" type="button" onClick={close}>
+            <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => {
-  const { selection } = state.main;
-
-  return {
-    label:
-      selection?.type === 'draw-points' && selection.id !== undefined
-        ? state.drawingPoints.points[selection.id]?.label ?? '???'
-        : (selection?.type === 'draw-lines' ||
-            selection?.type === 'draw-polygons') &&
-          selection.id !== undefined
-        ? state.drawingLines.lines[selection.id]?.label ?? '???'
-        : '???',
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSave(label: string | undefined) {
-    dispatch(drawingChangeLabel({ label }));
-  },
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const DrawingEditLabelModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(DrawingEditLabelModalInt));
+}

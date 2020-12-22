@@ -1,8 +1,8 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
-import { mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
 import { deleteFeature } from 'fm3/actions/mainActions';
-import { translate } from 'fm3/stringUtils';
+import { mapsLoad, mapsLoadList } from 'fm3/actions/mapsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
   actionCreator: deleteFeature,
@@ -10,9 +10,7 @@ export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
   handle: async ({ getState, dispatch, action }) => {
     if (
       action.payload.type !== 'maps' ||
-      !window.confirm(
-        translate(window.translations, 'maps.deleteConfirm') as string,
-      )
+      !window.confirm(window.translations?.maps.deleteConfirm)
     ) {
       return;
     }
@@ -25,6 +23,15 @@ export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
     });
 
     dispatch(mapsLoad({}));
+
     dispatch(mapsLoadList());
+
+    dispatch(
+      toastsAdd({
+        style: 'success',
+        timeout: 5000,
+        messageKey: 'general.deleted',
+      }),
+    );
   },
 };

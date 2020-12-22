@@ -1,21 +1,21 @@
+import { Messages } from 'fm3/translations/messagesInterface';
 import { useCallback } from 'react';
-import { Translator } from 'fm3/l10nInjector';
 import { FileRejection } from 'react-dropzone';
 
 export function useGpxDropHandler(
   onDrop: (gpx: string) => void,
   onLoadError: (msg: string) => void,
-  t: Translator,
+  m?: Messages,
 ): (acceptedFiles: File[], fileRejections?: FileRejection[]) => void {
   return useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[] = []) => {
       if (fileRejections.length) {
-        onLoadError(t('trackViewer.wrongFormat'));
+        onLoadError(m?.trackViewer.wrongFormat ?? 'wrong format');
         return;
       }
 
       if (acceptedFiles.length !== 1) {
-        onLoadError(t('trackViewer.onlyOne'));
+        onLoadError(m?.trackViewer.onlyOne ?? 'many files');
         return;
       }
 
@@ -25,15 +25,15 @@ export function useGpxDropHandler(
         if (typeof reader.result === 'string') {
           onDrop(reader.result);
         } else {
-          onLoadError(t('trackViewer.loadingError'));
+          onLoadError(m?.trackViewer.loadingError ?? 'loading error');
         }
       };
 
       reader.onerror = () => {
-        onLoadError(t('trackViewer.loadingError'));
+        onLoadError(m?.trackViewer.loadingError ?? 'loading error');
         reader.abort();
       };
     },
-    [onDrop, onLoadError, t],
+    [onDrop, onLoadError, m],
   );
 }

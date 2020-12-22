@@ -1,12 +1,11 @@
-import { Middleware, Dispatch } from 'redux';
-import { RootState } from 'fm3/storeCreator';
+import { RootAction } from 'fm3/actions';
 import {
-  getType,
-  isActionOf,
-  ActionCreator,
-  ActionType,
-  Action,
-} from 'typesafe-actions';
+  authLoginWithFacebook,
+  authLoginWithGoogle,
+  authLoginWithOsm,
+  authLoginWithOsm2,
+} from 'fm3/actions/authActions';
+import { galleryUpload } from 'fm3/actions/galleryActions';
 import {
   exportGpx,
   exportPdf,
@@ -16,14 +15,16 @@ import {
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
 import { dispatchAxiosErrorAsToast } from 'fm3/processors/utils';
-import { galleryUpload } from 'fm3/actions/galleryActions';
+import { RootState } from 'fm3/storeCreator';
+import { MessagePaths } from 'fm3/types/common';
+import { Dispatch, Middleware } from 'redux';
 import {
-  authLoginWithFacebook,
-  authLoginWithGoogle,
-  authLoginWithOsm,
-  authLoginWithOsm2,
-} from 'fm3/actions/authActions';
-import { RootAction } from 'fm3/actions';
+  Action,
+  ActionCreator,
+  ActionType,
+  getType,
+  isActionOf,
+} from 'typesafe-actions';
 
 export interface Processor<T extends ActionCreator = ActionCreator> {
   transform?: (params: {
@@ -39,7 +40,7 @@ export interface Processor<T extends ActionCreator = ActionCreator> {
     action: ActionType<T>;
   }) => void | Promise<void>;
   actionCreator: T | T[] | '*';
-  errorKey?: string;
+  errorKey?: MessagePaths;
   id?: string; // toast collapse key
 }
 
@@ -207,7 +208,7 @@ export const processorMiddleware: Middleware<
             style: 'danger',
             messageKey: 'general.processorError',
             messageParams: {
-              error,
+              err: error,
             },
           }),
         );

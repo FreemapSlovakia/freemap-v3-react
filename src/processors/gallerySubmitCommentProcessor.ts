@@ -2,8 +2,8 @@ import {
   galleryRequestImage,
   gallerySubmitComment,
 } from 'fm3/actions/galleryActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const gallerySubmitCommentProcessor: Processor = {
   actionCreator: gallerySubmitComment,
@@ -24,6 +24,7 @@ export const gallerySubmitCommentProcessor: Processor = {
       url: `/gallery/pictures/${id}/comments`,
       data: {
         comment: getState().gallery.comment,
+        webBaseUrl: process.env.BASE_URL,
       },
       expectedStatus: 200,
     });

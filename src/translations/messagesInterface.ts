@@ -1,7 +1,12 @@
+import { BaseLayerLetters, OverlayLetters } from 'fm3/mapDefinitions';
 import { LatLon } from 'fm3/types/common';
+import { ReactNode } from 'react';
 
-export interface Messages {
+type Err = { err: string };
+
+export type Messages = {
   general: {
+    iso: string;
     elevationProfile: string;
     save: string;
     cancel: string;
@@ -21,8 +26,8 @@ export interface Messages {
     preventShowingAgain: string;
     closeWithoutSaving: string;
     back: string;
-    internalError: string;
-    processorError: string;
+    internalError: ({ ticketId }: { ticketId?: string }) => string;
+    processorError: ({ err }: Err) => string;
     seconds: string;
     minutes: string;
     meters: string;
@@ -32,6 +37,12 @@ export interface Messages {
     clear: string;
     convertToDrawing: string;
     simplifyPrompt: string;
+    copyUrl: string;
+    savingError: ({ err }: Err) => string;
+    loadError: ({ err }: Err) => string;
+    deleteError: ({ err }: Err) => string;
+    saved: string;
+    deleted: string;
   };
   tools: {
     none: string;
@@ -44,7 +55,7 @@ export interface Messages {
     changesets: string;
     mapDetails: string;
     tracking: string;
-    maps: () => JSX.Element;
+    maps: JSX.Element;
   };
   routePlanner: {
     milestones: string;
@@ -76,7 +87,13 @@ export interface Messages {
       roundtrip: string;
     };
     alternative: string;
-    distance: ({ value, diff }: { value: number; diff: number }) => JSX.Element;
+    distance: ({
+      value,
+      diff,
+    }: {
+      value: string;
+      diff?: string;
+    }) => JSX.Element;
     duration: ({
       h,
       m,
@@ -84,7 +101,7 @@ export interface Messages {
     }: {
       h: number;
       m: number;
-      diff: {
+      diff?: {
         h: number;
         m: number;
       };
@@ -94,9 +111,9 @@ export interface Messages {
       h,
       m,
     }: {
-      distance: number;
-      h: number;
-      m: number;
+      distance: ReactNode;
+      h: ReactNode;
+      m: ReactNode;
     }) => JSX.Element;
     noHomeAlert: {
       msg: string;
@@ -105,9 +122,25 @@ export interface Messages {
     showMidpointHint: string;
     gpsError: string;
     routeNotFound: string;
-    fetchingError: string;
-    maneuverWithName: string;
-    maneuverWithoutName: string;
+    fetchingError: ({ err }: Err) => string;
+    maneuverWithName: ({
+      type,
+      modifier,
+      name,
+    }: {
+      type: string;
+      modifier: string;
+      name: string;
+    }) => string;
+    maneuverWithoutName: ({
+      type,
+      modifier,
+      name,
+    }: {
+      type: string;
+      modifier: string;
+      name: string;
+    }) => string;
     maneuver: {
       types: {
         turn: string;
@@ -125,6 +158,8 @@ export interface Messages {
         'roundabout turn': string;
         'exit rotary': string;
         'exit roundabout': string;
+        notification: string;
+        'use lane': string;
       };
       modifiers: {
         uturn: string;
@@ -145,8 +180,8 @@ export interface Messages {
           numbers,
         }: {
           arrival: string;
-          price: string;
-          numbers: number[];
+          price?: string;
+          numbers?: number[];
         }) => JSX.Element;
         full: ({
           arrival,
@@ -159,11 +194,12 @@ export interface Messages {
           wait,
         }: {
           arrival: string;
-          price: string;
-          numbers: number[];
+          price?: string;
+          numbers?: number[];
           total: number;
           home: number;
           foot: number;
+          walk: number;
           bus: number;
           wait: number;
         }) => JSX.Element;
@@ -175,7 +211,7 @@ export interface Messages {
           destination,
         }: {
           departure: string | undefined;
-          duration: number;
+          duration?: number;
           destination: string;
         }) => JSX.Element;
         bus: ({
@@ -203,14 +239,14 @@ export interface Messages {
           duration,
           destination,
         }: {
-          duration: number;
+          duration?: number;
           destination: string;
         }) => JSX.Element;
         bicycle: ({
           duration,
           destination,
         }: {
-          duration: number;
+          duration?: number;
           destination: string;
         }) => JSX.Element;
       };
@@ -219,7 +255,7 @@ export interface Messages {
   };
   more: {
     more: string;
-    logOut: string;
+    logOut: (name: string) => string;
     logIn: string;
     settings: string;
     gpxExport: string;
@@ -272,8 +308,14 @@ export interface Messages {
       yourRating: string;
       showOnTheMap: string;
       openInNewWindow: string;
-      uploaded: string;
-      captured: string;
+      uploaded: ({
+        username,
+        createdAt,
+      }: {
+        username: ReactNode;
+        createdAt: ReactNode;
+      }) => JSX.Element;
+      captured: (takenAt: JSX.Element) => JSX.Element;
       deletePrompt: string;
       modify: string;
     };
@@ -291,7 +333,7 @@ export interface Messages {
     };
     uploadModal: {
       title: string;
-      uploading: string;
+      uploading: (n: number) => string;
       upload: string;
       rules: string;
       success: string;
@@ -301,13 +343,13 @@ export interface Messages {
       title: string;
     };
     layerHint: string;
-    deletingError: string;
-    tagsFetchingError: string;
-    pictureFetchingError: string;
-    picturesFetchingError: string;
-    savingError: string;
-    commentAddingError: string;
-    ratingError: string;
+    deletingError: ({ err }: Err) => string;
+    tagsFetchingError: ({ err }: Err) => string;
+    pictureFetchingError: ({ err }: Err) => string;
+    picturesFetchingError: ({ err }: Err) => string;
+    savingError: ({ err }: Err) => string;
+    commentAddingError: ({ err }: Err) => string;
+    ratingError: ({ err }: Err) => string;
     unauthenticatedError: string;
     missingPositionError: string;
     invalidPositionError: string;
@@ -326,7 +368,7 @@ export interface Messages {
     distance: string;
     elevation: string;
     area: string;
-    elevationFetchError: string;
+    elevationFetchError: ({ err }: Err) => string;
     elevationInfo: ({
       elevation,
       point,
@@ -356,20 +398,20 @@ export interface Messages {
       maxEle: string;
       uphill: string;
       downhill: string;
-      durationValue: string;
+      durationValue: ({ h, m }: { h: number; m: number }) => string;
     };
     uploadModal: {
       title: string;
       drop: string;
     };
     shareToast: string;
-    fetchingError: string;
-    savingError: string;
-    tooBigError: string;
+    fetchingError: ({ err }: Err) => string;
+    savingError: ({ err }: Err) => string;
     loadingError: string;
     onlyOne: string;
     wrongFormat: string;
     info: () => JSX.Element;
+    tooBigError: string;
   };
   drawing: {
     modify: string;
@@ -407,12 +449,12 @@ export interface Messages {
       switch: string;
       overlayOpacity: string;
       trackViewerEleSmoothing: {
-        label: string;
+        label: (value: number) => string;
         info: string;
       };
     };
     saveSuccess: string;
-    savingError: string;
+    savingError: ({ err }: Err) => string;
   };
   changesets: {
     allAuthors: string;
@@ -420,7 +462,7 @@ export interface Messages {
     olderThan: ({ days }: { days: number }) => string;
     olderThanFull: ({ days }: { days: number }) => string;
     notFound: string;
-    fetchError: string;
+    fetchError: ({ err }: Err) => string;
     detail: ({ changeset }: { changeset: any }) => JSX.Element;
     details: {
       author: string;
@@ -431,15 +473,15 @@ export interface Messages {
         osmLink,
         achaviLink,
       }: {
-        osmLink: string;
-        achaviLink: string;
+        osmLink: JSX.Element;
+        achaviLink: JSX.Element;
       }) => JSX.Element;
     };
   };
   mapDetails: {
     road: string;
     notFound: string;
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
     detail: ({ element }: { element: any }) => JSX.Element;
   };
   objects: {
@@ -448,293 +490,9 @@ export interface Messages {
       message: string;
       zoom: string;
     };
-    fetchingError: string;
-    categories: {
-      1: string;
-      2: string;
-      3: string;
-      4: string;
-      5: string;
-      6: string;
-      7: string;
-      8: string;
-      9: string;
-      10: string;
-      11: string;
-      12: string;
-      13: string;
-      14: string;
-      15: string;
-    };
-    subcategories: {
-      1: string;
-      2: string;
-      3: string;
-      4: string;
-      5: string;
-      6: string;
-      7: string;
-      8: string;
-      9: string;
-      10: string;
-      11: string;
-      12: string;
-      13: string;
-      14: string;
-      15: string;
-      16: string;
-      17: string;
-      18: string;
-      19: string;
-      20: string;
-      21: string;
-      22: string;
-      23: string;
-      24: string;
-      26: string;
-      27: string;
-      28: string;
-      29: string;
-      30: string;
-      31: string;
-      32: string;
-      33: string;
-      34: string;
-      35: string;
-      36: string;
-      39: string;
-      40: string;
-      41: string;
-      42: string;
-      43: string;
-      44: string;
-      45: string;
-      46: string;
-      47: string;
-      48: string;
-      49: string;
-      50: string;
-      51: string;
-      52: string;
-      53: string;
-      54: string;
-      55: string;
-      56: string;
-      57: string;
-      58: string;
-      59: string;
-      60: string;
-      61: string;
-      62: string;
-      63: string;
-      64: string;
-      65: string;
-      66: string;
-      67: string;
-      68: string;
-      69: string;
-      70: string;
-      71: string;
-      72: string;
-      73: string;
-      74: string;
-      75: string;
-      76: string;
-      77: string;
-      78: string;
-      79: string;
-      80: string;
-      81: string;
-      82: string;
-      83: string;
-      84: string;
-      85: string;
-      86: string;
-      87: string;
-      89: string;
-      90: string;
-      91: string;
-      92: string;
-      93: string;
-      94: string;
-      95: string;
-      96: string;
-      98: string;
-      99: string;
-      100: string;
-      101: string;
-      102: string;
-      103: string;
-      104: string;
-      105: string;
-      106: string;
-      107: string;
-      108: string;
-      109: string;
-      110: string;
-      111: string;
-      112: string;
-      113: string;
-      114: string;
-      115: string;
-      116: string;
-      117: string;
-      118: string;
-      119: string;
-      120: string;
-      121: string;
-      122: string;
-      124: string;
-      125: string;
-      126: string;
-      127: string;
-      128: string;
-      129: string;
-      130: string;
-      131: string;
-      132: string;
-      133: string;
-      134: string;
-      135: string;
-      136: string;
-      137: string;
-      138: string;
-      139: string;
-      140: string;
-      141: string;
-      142: string;
-      143: string;
-      144: string;
-      145: string;
-      146: string;
-      147: string;
-      148: string;
-      149: string;
-      150: string;
-      151: string;
-      152: string;
-      153: string;
-      154: string;
-      155: string;
-      156: string;
-      157: string;
-      158: string;
-      159: string;
-      160: string;
-      161: string;
-      162: string;
-      163: string;
-      164: string;
-      166: string;
-      167: string;
-      168: string;
-      169: string;
-      170: string;
-      171: string;
-      172: string;
-      173: string;
-      174: string;
-      175: string;
-      176: string;
-      177: string;
-      178: string;
-      179: string;
-      180: string;
-      181: string;
-      182: string;
-      183: string;
-      184: string;
-      185: string;
-      186: string;
-      187: string;
-      188: string;
-      189: string;
-      190: string;
-      191: string;
-      192: string;
-      193: string;
-      194: string;
-      195: string;
-      196: string;
-      197: string;
-      198: string;
-      199: string;
-      200: string;
-      201: string;
-      202: string;
-      203: string;
-      204: string;
-      205: string;
-      206: string;
-      207: string;
-      208: string;
-      209: string;
-      210: string;
-      211: string;
-      212: string;
-      213: string;
-      214: string;
-      215: string;
-      216: string;
-      217: string;
-      218: string;
-      219: string;
-      220: string;
-      221: string;
-      222: string;
-      223: string;
-      224: string;
-      225: string;
-      226: string;
-      227: string;
-      228: string;
-      229: string;
-      230: string;
-      231: string;
-      232: string;
-      233: string;
-      234: string;
-      235: string;
-      236: string;
-      237: string;
-      238: string;
-      239: string;
-      240: string;
-      241: string;
-      242: string;
-      243: string;
-      244: string;
-      245: string;
-      246: string;
-      248: string;
-      249: string;
-      250: string;
-      251: string;
-      252: string;
-      253: string;
-      254: string;
-      255: string;
-      256: string;
-      257: string;
-      258: string;
-      259: string;
-      260: string;
-      261: string;
-      262: string;
-      263: string;
-      264: string;
-      265: string;
-      266: string;
-      267: string;
-      268: string;
-      269: string;
-      270: string;
-      271: string;
-      272: string;
-      273: string;
-      274: string;
-      275: string;
-    };
+    fetchingError: ({ err }: Err) => string;
+    categories: Record<number, string>;
+    subcategories: Record<number, string>;
   };
   external: {
     openInExternal: string;
@@ -749,7 +507,6 @@ export interface Messages {
     window: string;
     url: string;
     image: string;
-    copy: string;
   };
   search: {
     inProgress: string;
@@ -757,7 +514,7 @@ export interface Messages {
     prompt: string;
     routeFrom: string;
     routeTo: string;
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
     buttonTitle: string;
   };
   embed: {
@@ -788,7 +545,7 @@ export interface Messages {
     export: string;
     exportToDrive: string;
     exportToDropbox: string;
-    exportError: string;
+    exportError: ({ err }: Err) => string;
     what: {
       plannedRoute: string;
       plannedRouteWithStops: string;
@@ -811,11 +568,12 @@ export interface Messages {
       google: string;
       osm: string;
     };
+    enablePopup: string;
     success: string;
-    logInError: string;
+    logInError: ({ err }: Err) => string;
     logInError2: string;
-    logOutError: string;
-    verifyError: string;
+    logOutError: ({ err }: Err) => string;
+    verifyError: ({ err }: Err) => string;
   };
   logOut: {
     success: string;
@@ -823,41 +581,8 @@ export interface Messages {
   mapLayers: {
     layers: string;
     photoFilterWarning: string;
-    minZoomWarning: string;
-    base: {
-      A: string;
-      T: string;
-      C: string;
-      K: string;
-      S: string;
-      Z: string;
-      O: string;
-      M: string;
-      p: string;
-      d: string;
-      h: string;
-      X: string;
-      Y: string;
-    };
-    overlay: {
-      i: string;
-      I: string;
-      l: string;
-      n1: string;
-      n2: string;
-      n3: string;
-      g: string;
-      t: string;
-      c: string;
-      q: string;
-      r: string;
-      s0: string;
-      s1: string;
-      s2: string;
-      s3: string;
-      s4: string;
-      w: string;
-    };
+    minZoomWarning: (minZoom: number) => string;
+    letters: Record<BaseLayerLetters | OverlayLetters, string>;
     type: {
       map: string;
       data: string;
@@ -873,13 +598,13 @@ export interface Messages {
   elevationChart: {
     distance: string;
     ele: string;
-    fetchError: string;
+    fetchError: ({ err }: Err) => string;
   };
   errorCatcher: {
-    html: string;
+    html: (ticketId: string) => string;
   };
   osm: {
-    fetchingError: string;
+    fetchingError: ({ err }: Err) => string;
   };
   roadDetails: {
     roadType: string;
@@ -887,42 +612,8 @@ export interface Messages {
     suitableBikeType: string;
     lastChange: string;
     showDetails: string;
-    surfaces: {
-      asphalt: string;
-      gravel: string;
-      fine_gravel: string;
-      dirt: string;
-      ground: string;
-      cobblestone: string;
-      compacted: string;
-      paved: string;
-      unknown: string;
-      unpaved: string;
-      'concrete:plates': string;
-      concrete: string;
-      grass: string;
-    };
-    trackClasses: {
-      motorway: string;
-      trunk: string;
-      primary: string;
-      secondary: string;
-      tertiary: string;
-      service: string;
-      unclassified: string;
-      residential: string;
-      grade1: string;
-      grade2: string;
-      grade3: string;
-      grade4: string;
-      grade5: string;
-      path: string;
-      footway: string;
-      pedestrian: string;
-      unknown: string;
-      living_street: string;
-      construction: string;
-    };
+    surfaces: Record<string, string>;
+    trackClasses: Record<string, string>;
     bicycleTypes: {
       'road-bike': string;
       'trekking-bike': string;
@@ -932,16 +623,13 @@ export interface Messages {
     };
   };
   tracking: {
-    savingError: string;
-    loadError: string;
-    deleteError: string;
     unauthenticatedError: string;
     trackedDevices: {
       button: string;
       modalTitle: string;
       desc: string;
-      modifyTitle: string;
-      createTitle: ({ name }: { name: string }) => JSX.Element;
+      modifyTitle: (name: ReactNode) => JSX.Element;
+      createTitle: (name: ReactNode) => JSX.Element;
     };
     accessToken: {
       token: string;
@@ -952,9 +640,9 @@ export interface Messages {
       delete: string;
     };
     accessTokens: {
-      modalTitle: ({ deviceName }: { deviceName: string }) => JSX.Element;
-      desc: ({ deviceName }: { deviceName: string }) => JSX.Element;
-      createTitle: ({ deviceName }: { deviceName: string }) => JSX.Element;
+      modalTitle: (deviceName: string) => JSX.Element;
+      desc: (deviceName: string) => JSX.Element;
+      createTitle: (deviceName: string) => JSX.Element;
       modifyTitle: ({
         token,
         deviceName,
@@ -1003,7 +691,7 @@ export interface Messages {
   };
   pdfExport: {
     export: string;
-    exportError: string;
+    exportError: ({ err }: Err) => string;
     exporting: string;
     exported: ({ url }: { url: string }) => JSX.Element;
     area: string;
@@ -1035,12 +723,12 @@ export interface Messages {
     delete: string;
     namePrompt: string;
     deleteConfirm: string;
-    fetchError: string;
-    fetchListError: string;
-    deleteError: string;
-    renameError: string;
-    createError: string;
-    saveError: string;
+    fetchError: ({ err }: Err) => string;
+    fetchListError: ({ err }: Err) => string;
+    deleteError: ({ err }: Err) => string;
+    renameError: ({ err }: Err) => string;
+    createError: ({ err }: Err) => string;
+    saveError: ({ err }: Err) => string;
   };
   legend: {
     body: () => JSX.Element;
@@ -1056,4 +744,4 @@ export interface Messages {
     vicepresident: string;
     secretary: string;
   };
-}
+};

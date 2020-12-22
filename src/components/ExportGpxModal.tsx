@@ -1,22 +1,17 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Checkbox from 'react-bootstrap/lib/Checkbox';
-import Alert from 'react-bootstrap/lib/Alert';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
-  setActiveModal,
-  exportGpx,
   Destination,
+  exportGpx,
+  setActiveModal,
 } from 'fm3/actions/mainActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { ReactElement, useCallback, useEffect, useState } from 'react';
+import Alert from 'react-bootstrap/Alert';
+import Button from 'react-bootstrap/Button';
+import FormCheck from 'react-bootstrap/FormCheck';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
@@ -33,23 +28,86 @@ const exportableDefinitions = [
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ] as const;
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+type Props = { show: boolean };
 
-const ExportGpxModalInt: React.FC<Props> = ({
-  onModalClose,
-  exportables: initExportables,
-  t,
-  onExport,
-}) => {
+export function ExportGpxModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const initExportables = useSelector((state: RootState) => {
+    const exportables: string[] = [];
+
+    if (state.search.selectedResult) {
+      // exportables.push('search');
+    }
+
+    if (state.routePlanner.alternatives.length) {
+      exportables.push('plannedRoute');
+      exportables.push('plannedRouteWithStops');
+    }
+
+    if (state.objects.objects.length) {
+      exportables.push('objects');
+    }
+
+    if (state.map.overlays.includes('I')) {
+      exportables.push('pictures');
+    }
+
+    if (state.drawingLines.lines.some((line) => line.type === 'line')) {
+      exportables.push('drawingLines');
+    }
+
+    if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
+      exportables.push('areaMeasurement');
+    }
+
+    if (state.drawingPoints.points.length) {
+      exportables.push('drawingPoints');
+    }
+
+    if (state.tracking.tracks.length) {
+      exportables.push('tracking');
+    }
+
+    if (state.trackViewer.trackGpx || state.trackViewer.trackGeojson) {
+      exportables.push('gpx');
+    }
+
+    // if (state.changesets.changesets.length) {
+    //   exportables.push('changesets');
+    // }
+
+    // if (state.mapDetails.trackInfoPoints) {
+    //   exportables.push('mapDetails');
+    // }
+
+    return exportables;
+  });
+
   const [exportables, setExportables] = useState<string[] | undefined>();
 
+  const initJoined = initExportables.join(',');
+
   useEffect(() => {
-    setExportables(initExportables);
-    // eslint-disable-next-line
-  }, []);
+    if (show) {
+      setExportables(initJoined.split(','));
+    }
+  }, [show, initJoined]);
+
+  const onExport = useCallback(
+    (exportables: string[] | null, destination: Destination) => {
+      if (exportables) {
+        dispatch(exportGpx({ exportables, destination }));
+      }
+    },
+    [dispatch],
+  );
+
+  function close() {
+    dispatch(setActiveModal(null));
+  }
 
   const handleExportClick = useCallback(() => {
     if (exportables) {
@@ -86,117 +144,58 @@ const ExportGpxModalInt: React.FC<Props> = ({
     [exportables],
   );
 
-  if (!exportables) {
-    return null;
-  }
-
   return (
-    <Modal show onHide={onModalClose} bsSize="large">
-      <Modal.Header closeButton>
-        <Modal.Title>
-          <FontAwesomeIcon icon="download" /> {t('more.gpxExport')}
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <Alert bsStyle="warning">{t('gpxExport.disabledAlert')}</Alert>
-        {exportableDefinitions.map(({ type, icon }) => (
-          <Checkbox
-            key={type}
-            checked={exportables.includes(type)}
-            disabled={!initExportables.includes(type)}
-            onChange={() => handleCheckboxChange(type)}
-          >
-            {t('gpxExport.export')} <FontAwesomeIcon icon={icon} />{' '}
-            {t(`gpxExport.what.${type}`)}
-          </Checkbox>
-        ))}
-      </Modal.Body>
-      <Modal.Footer>
-        <Button onClick={handleExportClick} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="download" /> {t('gpxExport.export')}
-        </Button>{' '}
-        <Button
-          onClick={handleExportToDriveClick}
-          disabled={!exportables.length}
-        >
-          <FontAwesomeIcon icon="google" /> {t('gpxExport.exportToDrive')}
-        </Button>{' '}
-        <Button onClick={handleExportToDropbox} disabled={!exportables.length}>
-          <FontAwesomeIcon icon="dropbox" /> {t('gpxExport.exportToDropbox')}
-        </Button>{' '}
-        <Button onClick={onModalClose}>
-          <Glyphicon glyph="remove" /> {t('general.close')} <kbd>Esc</kbd>
-        </Button>
-      </Modal.Footer>
+    <Modal show={show && !!exportables} onHide={close} size="lg">
+      {exportables && (
+        <>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Alert variant="warning">{m?.gpxExport.disabledAlert}</Alert>
+            {exportableDefinitions.map(({ type, icon }) => (
+              <FormCheck
+                id={'chk-' + type}
+                type="checkbox"
+                key={type}
+                checked={exportables.includes(type)}
+                disabled={!initExportables.includes(type)}
+                onChange={() => handleCheckboxChange(type)}
+                label={
+                  <>
+                    {m?.gpxExport.export} <FontAwesomeIcon icon={icon} />{' '}
+                    {m?.gpxExport.what[type]}
+                  </>
+                }
+              />
+            ))}
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={handleExportClick} disabled={!exportables.length}>
+              <FontAwesomeIcon icon="download" /> {m?.gpxExport.export}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleExportToDriveClick}
+              disabled={!exportables.length}
+            >
+              <FontAwesomeIcon icon="google" /> {m?.gpxExport.exportToDrive}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleExportToDropbox}
+              disabled={!exportables.length}
+            >
+              <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
+            </Button>
+            <Button variant="dark" onClick={close}>
+              <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+            </Button>
+          </Modal.Footer>
+        </>
+      )}
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => {
-  const exportables: string[] = [];
-
-  if (state.search.selectedResult) {
-    // exportables.push('search');
-  }
-
-  if (state.routePlanner.alternatives.length) {
-    exportables.push('plannedRoute');
-    exportables.push('plannedRouteWithStops');
-  }
-
-  if (state.objects.objects.length) {
-    exportables.push('objects');
-  }
-
-  if (state.map.overlays.includes('I')) {
-    exportables.push('pictures');
-  }
-
-  if (state.drawingLines.lines.some((line) => line.type === 'line')) {
-    exportables.push('drawingLines');
-  }
-
-  if (state.drawingLines.lines.some((line) => line.type === 'polygon')) {
-    exportables.push('areaMeasurement');
-  }
-
-  if (state.drawingPoints.points.length) {
-    exportables.push('drawingPoints');
-  }
-
-  if (state.tracking.tracks.length) {
-    exportables.push('tracking');
-  }
-
-  if (state.trackViewer.trackGpx) {
-    exportables.push('gpx');
-  }
-
-  if (state.changesets.changesets.length) {
-    // exportables.push('changesets');
-  }
-
-  if (state.mapDetails.trackInfoPoints) {
-    // exportables.push('mapDetails');
-  }
-
-  return {
-    exportables,
-  };
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-  onExport(exportables: string[] | null, destination: Destination) {
-    if (exportables) {
-      dispatch(exportGpx({ exportables, destination }));
-    }
-  },
-});
-
-export const ExportGpxModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ExportGpxModalInt));
+}

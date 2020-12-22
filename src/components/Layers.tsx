@@ -1,24 +1,34 @@
-import React from 'react';
-import { connect } from 'react-redux';
 import { GalleryLayer } from 'fm3/components/gallery/GalleryLayer';
 import { ScaledTileLayer } from 'fm3/components/ScaledTileLayer';
-
-import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
-import { BingLayer } from 'react-leaflet-bing';
+import {
+  BaseLayerDef,
+  baseLayers,
+  OverlayLayerDef,
+  overlayLayers,
+} from 'fm3/mapDefinitions';
+// import { BingLayer } from 'react-leaflet-bing';
 import { RootState } from 'fm3/storeCreator';
-
+import { ReactElement } from 'react';
+import { useSelector } from 'react-redux';
 import missingTile from '../images/missing-tile-256x256.png';
 
-type Props = ReturnType<typeof mapStateToProps>;
+export function Layers(): ReactElement {
+  const overlays = useSelector((state: RootState) => state.map.overlays);
 
-const LayersInt: React.FC<Props> = ({
-  mapType,
-  overlays,
-  isAdmin,
-  galleryFilter,
-  galleryDirtySeq,
-  overlayOpacity,
-}) => {
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const overlayOpacity = useSelector(
+    (state: RootState) => state.map.overlayOpacity,
+  );
+
+  const galleryFilter = useSelector((state: RootState) => state.gallery.filter);
+
+  const galleryDirtySeq = useSelector(
+    (state: RootState) => state.gallery.dirtySeq,
+  );
+
+  const isAdmin = useSelector((state: RootState) => !!state.auth.user?.isAdmin);
+
   const getTileLayer = ({
     type,
     url,
@@ -31,18 +41,18 @@ const LayersInt: React.FC<Props> = ({
     errorTileUrl = missingTile,
     tileSize = 256,
     zoomOffset = 0,
-  }: LayerDef) => {
-    if (type === 'S') {
-      return (
-        <BingLayer
-          key="S"
-          bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
-          maxNativeZoom={maxNativeZoom}
-          maxZoom={20}
-          zIndex={zIndex}
-        />
-      );
-    }
+  }: BaseLayerDef | OverlayLayerDef) => {
+    // if (type === 'S') {
+    //   return (
+    //     <BingLayer
+    //       key="S"
+    //       bingkey="AuoNV1YBdiEnvsK1n4IALvpTePlzMXmn2pnLN5BvH0tdM6GujRxqbSOAYALZZptW"
+    //       maxNativeZoom={maxNativeZoom}
+    //       maxZoom={20}
+    //       zIndex={zIndex}
+    //     />
+    //   );
+    // }
 
     if (type === 'I') {
       return (
@@ -94,15 +104,4 @@ const LayersInt: React.FC<Props> = ({
       ]}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  overlays: state.map.overlays,
-  mapType: state.map.mapType,
-  overlayOpacity: state.map.overlayOpacity,
-  galleryFilter: state.gallery.filter,
-  galleryDirtySeq: state.gallery.dirtySeq,
-  isAdmin: !!state.auth.user?.isAdmin,
-});
-
-export const Layers = connect(mapStateToProps)(LayersInt);
+}

@@ -1,19 +1,19 @@
-import produce from 'immer';
-import { createReducer } from 'typesafe-actions';
 import { RootAction } from 'fm3/actions';
+import {
+  drawingLineAddPoint,
+  drawingLineRemovePoint,
+  drawingLineSetLines,
+  drawingLineUpdatePoint,
+  Line,
+} from 'fm3/actions/drawingLineActions';
 import {
   clearMap,
   deleteFeature,
   selectFeature,
 } from 'fm3/actions/mainActions';
-import {
-  drawingLineAddPoint,
-  drawingLineUpdatePoint,
-  drawingLineRemovePoint,
-  drawingLineSetLines,
-  Line,
-} from 'fm3/actions/drawingLineActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import produce from 'immer';
+import { createReducer } from 'typesafe-actions';
 
 export interface DrawingLinesState {
   lines: Line[];

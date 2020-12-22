@@ -1,11 +1,11 @@
 import {
-  gallerySetImageIds,
   galleryRequestImage,
   galleryRequestImages,
+  gallerySetImageIds,
 } from 'fm3/actions/galleryActions';
+import { httpRequest } from 'fm3/authAxios';
 import { createFilter } from 'fm3/galleryUtils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
 import { assertType } from 'typescript-is';
 
 export const galleryRequestImagesByRadiusProcessor: Processor<

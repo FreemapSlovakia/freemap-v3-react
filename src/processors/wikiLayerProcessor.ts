@@ -1,12 +1,12 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest, cancelRegister } from 'fm3/authAxios';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
-import { enableUpdatingUrl } from 'fm3/actions/mainActions';
+import { cancelRegister, httpRequest } from 'fm3/authAxios';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { OverpassElement, OverpassResult } from 'fm3/types/common';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
-import { OverpassElement, OverpassResult } from 'fm3/types/common';
 
 interface WikiResponse {
   entities?: {
@@ -30,7 +30,7 @@ const delay = (ms: number) =>
 
 export const wikiLayerProcessor: Processor = {
   actionCreator: [mapRefocus, enableUpdatingUrl /* for initial */],
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.loadError',
   handle: async ({ getState, dispatch, action }) => {
     const moved =
       isActionOf(mapRefocus, action) &&

@@ -1,16 +1,15 @@
+import { createTileLayerComponent, LayerProps } from '@react-leaflet/core';
 import axios from 'axios';
-import { GridLayer, withLeaflet, GridLayerProps } from 'react-leaflet';
-
+import { GalleryFilter } from 'fm3/actions/galleryActions';
 import { createFilter } from 'fm3/galleryUtils';
+import { LatLon } from 'fm3/types/common';
 import {
-  DomUtil,
-  GridLayer as LGridLayer,
   Coords,
+  DomUtil,
   DoneCallback,
+  GridLayer as LGridLayer,
   GridLayerOptions,
 } from 'leaflet';
-import { LatLon } from 'fm3/types/common';
-import { GalleryFilter } from 'fm3/actions/galleryActions';
 
 type GalleryLayerOptions = GridLayerOptions & {
   filter: GalleryFilter;
@@ -114,20 +113,29 @@ class LGalleryLayer extends LGridLayer {
   }
 }
 
-interface Props extends GridLayerProps {
+interface Props extends LayerProps {
   filter: GalleryFilter;
+  opacity?: number;
+  zIndex?: number;
 }
 
-class GalleryLayerInt extends GridLayer<Props, LGalleryLayer> {
-  createLeafletElement(props: Props) {
-    return new LGalleryLayer({ ...props });
-  }
+export const GalleryLayer = createTileLayerComponent<LGalleryLayer, Props>(
+  (props, context) => {
+    return {
+      instance: new LGalleryLayer(props),
+      context,
+    };
+  },
 
-  // updateLeafletElement(fromProps, toProps) {
-  //   if (['dirtySeq', 'filter'].some(p => JSON.stringify(fromProps[p]) !== JSON.stringify(toProps[p]))) {
-  //     this.leafletElement.redraw();
-  //   }
-  // }
-}
-
-export const GalleryLayer = withLeaflet(GalleryLayerInt);
+  (instance, props, prevProps) => {
+    if (
+      ['dirtySeq', 'filter'].some(
+        (p) =>
+          JSON.stringify((props as any)[p]) !==
+          JSON.stringify((prevProps as any)[p]),
+      )
+    ) {
+      instance.redraw();
+    }
+  },
+);

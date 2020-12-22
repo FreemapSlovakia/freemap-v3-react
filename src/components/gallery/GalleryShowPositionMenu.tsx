@@ -1,69 +1,49 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import Panel from 'react-bootstrap/lib/Panel';
-
 import { galleryCancelShowOnTheMap } from 'fm3/actions/galleryActions';
-import Button from 'react-bootstrap/lib/Button';
-
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import { ReactElement, useCallback, useEffect } from 'react';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function GalleryShowPositionMenu(): ReactElement | null {
+  const m = useMessages();
 
-const GalleryShowPositionMenuInt: React.FC<Props> = ({
-  onClose,
-  showPosition,
-  t,
-}) => {
-  const handleKeyUp = useCallback(
-    (event: KeyboardEvent) => {
-      if (event.keyCode === 27 /* escape key */) {
-        onClose();
-      }
-    },
-    [onClose],
+  const dispatch = useDispatch();
+
+  const showPosition = useSelector(
+    (state: RootState) => state.gallery.showPosition,
   );
+
+  const close = useCallback(() => {
+    dispatch(galleryCancelShowOnTheMap());
+  }, [dispatch]);
 
   useEffect(() => {
-    // can't use keydown because it would close themodal
-    document.addEventListener('keyup', handleKeyUp);
+    if (showPosition) {
+      const handleKeyUp = (event: KeyboardEvent) => {
+        if (event.code === 'Escape') {
+          close();
+        }
+      };
 
-    return () => {
-      document.removeEventListener('keyup', handleKeyUp);
-    };
-  }, [handleKeyUp]);
+      // can't use keydown because it would close the modal
+      document.addEventListener('keyup', handleKeyUp);
 
-  if (!showPosition) {
-    return null;
-  }
+      return () => {
+        document.removeEventListener('keyup', handleKeyUp);
+      };
+    }
+  }, [close, showPosition]);
 
-  return (
-    <Panel className="fm-toolbar">
-      <Button onClick={onClose}>
+  return !showPosition ? null : (
+    <Card className="fm-toolbar">
+      <Button onClick={close}>
         <FontAwesomeIcon icon="chevron-left" />
-        <span className="hidden-xs"> {t('general.back')}</span> <kbd>Esc</kbd>
+        <span className="d-none d-sm-inline"> {m?.general.back}</span>{' '}
+        <kbd>Esc</kbd>
       </Button>
-    </Panel>
+    </Card>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  showPosition: state.gallery.showPosition,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(galleryCancelShowOnTheMap());
-  },
-});
-
-export const GalleryShowPositionMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryShowPositionMenuInt));
+}

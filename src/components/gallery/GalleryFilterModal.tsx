@@ -1,44 +1,53 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
 import {
-  gallerySetFilter,
   galleryHideFilter,
-  GalleryFilter,
+  gallerySetFilter,
 } from 'fm3/actions/galleryActions';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import {
+  ChangeEvent,
+  FormEvent,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useState,
+} from 'react';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+type Props = { show: boolean };
 
-const GalleryFilterModalInt: React.FC<Props> = ({
-  onClose,
-  tags,
-  users,
-  onOk,
-  filter,
-  t,
-}) => {
+export function GalleryFilterModal({ show }: Props): ReactElement {
+  const dispatch = useDispatch();
+
+  const m = useMessages();
+
+  const filter = useSelector((state: RootState) => state.gallery.filter);
+
+  const users = useSelector((state: RootState) => state.gallery.users);
+
+  const tags = useSelector((state: RootState) => state.gallery.tags);
+
   const [tag, setTag] = useState('');
+
   const [userId, setUserId] = useState('');
+
   const [takenAtFrom, setTakenAtFrom] = useState('');
+
   const [takenAtTo, setTakenAtTo] = useState('');
+
   const [createdAtFrom, setCreatedAtFrom] = useState('');
+
   const [createdAtTo, setCreatedAtTo] = useState('');
+
   const [ratingFrom, setRatingFrom] = useState('');
+
   const [ratingTo, setRatingTo] = useState('');
 
   useEffect(() => {
@@ -81,73 +90,80 @@ const GalleryFilterModalInt: React.FC<Props> = ({
     );
   }, [filter]);
 
-  const handleTagChange = useCallback((e: React.FormEvent<FormControl>) => {
-    setTag((e.target as HTMLSelectElement).value);
+  const handleTagChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    setTag(e.currentTarget.value);
   }, []);
 
-  const handleUserIdChange = useCallback((e: React.FormEvent<FormControl>) => {
-    setUserId((e.target as HTMLSelectElement).value);
-  }, []);
+  const handleUserIdChange = useCallback(
+    (e: ChangeEvent<HTMLSelectElement>) => {
+      setUserId(e.currentTarget.value);
+    },
+    [],
+  );
 
   const handleTakenAtFromChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setTakenAtFrom((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTakenAtFrom(e.currentTarget.value);
     },
     [],
   );
 
   const handleTakenAtToChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setTakenAtTo((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setTakenAtTo(e.currentTarget.value);
     },
     [],
   );
 
   const handleCreatedAtFromChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setCreatedAtFrom((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setCreatedAtFrom(e.currentTarget.value);
     },
     [],
   );
 
   const handleCreatedAtToChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setCreatedAtTo((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setCreatedAtTo(e.currentTarget.value);
     },
     [],
   );
 
   const handleRatingFromChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setRatingFrom((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setRatingFrom(e.currentTarget.value);
     },
     [],
   );
 
   const handleRatingToChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      setRatingTo((e.target as HTMLInputElement).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      setRatingTo(e.currentTarget.value);
     },
     [],
   );
 
   const handleFormSubmit = useCallback(
-    (e: React.FormEvent<HTMLFormElement>) => {
+    (e: FormEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      onOk({
-        tag: tag === '⌘' ? '' : tag || undefined,
-        userId: nn(userId ? parseInt(userId, 10) : undefined),
-        takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
-        takenAtTo: nt(takenAtTo ? new Date(takenAtTo) : undefined),
-        createdAtFrom: nt(createdAtFrom ? new Date(createdAtFrom) : undefined),
-        createdAtTo: nt(createdAtTo ? new Date(createdAtTo) : undefined),
-        ratingFrom: nn(ratingFrom ? parseFloat(ratingFrom) : undefined),
-        ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
-      });
+      dispatch(
+        gallerySetFilter({
+          tag: tag === '⌘' ? '' : tag || undefined,
+          userId: nn(userId ? parseInt(userId, 10) : undefined),
+          takenAtFrom: nt(takenAtFrom ? new Date(takenAtFrom) : undefined),
+          takenAtTo: nt(takenAtTo ? new Date(takenAtTo) : undefined),
+          createdAtFrom: nt(
+            createdAtFrom ? new Date(createdAtFrom) : undefined,
+          ),
+          createdAtTo: nt(createdAtTo ? new Date(createdAtTo) : undefined),
+          ratingFrom: nn(ratingFrom ? parseFloat(ratingFrom) : undefined),
+          ratingTo: nn(ratingTo ? parseFloat(ratingTo) : undefined),
+        }),
+      );
     },
     [
-      onOk,
+      dispatch,
       tag,
       userId,
       takenAtFrom,
@@ -170,22 +186,22 @@ const GalleryFilterModalInt: React.FC<Props> = ({
     setRatingTo('');
   };
 
+  const close = useCallback(() => {
+    dispatch(galleryHideFilter());
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onClose}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{t('gallery.filterModal.title')}</Modal.Title>
+        <Modal.Title>{m?.gallery.filterModal.title}</Modal.Title>
       </Modal.Header>
       <form onSubmit={handleFormSubmit}>
         <Modal.Body>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.tag')}</ControlLabel>
-            <FormControl
-              componentClass="select"
-              value={tag}
-              onChange={handleTagChange}
-            >
+            <FormLabel>{m?.gallery.filterModal.tag}</FormLabel>
+            <FormControl as="select" value={tag} onChange={handleTagChange}>
               <option value="" />
-              <option value="⌘">« {t('gallery.filterModal.noTags')} »</option>
+              <option value="⌘">« {m?.gallery.filterModal.noTags} »</option>
               {tags.map(({ name, count }) => (
                 <option key={name} value={name}>
                   {name} ({count})
@@ -194,9 +210,9 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.author')}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.author}</FormLabel>
             <FormControl
-              componentClass="select"
+              as="select"
               value={userId}
               onChange={handleUserIdChange}
             >
@@ -209,14 +225,16 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </FormControl>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.createdAt')}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.createdAt}</FormLabel>
             <InputGroup>
               <FormControl
                 type="date"
                 value={createdAtFrom}
                 onChange={handleCreatedAtFromChange}
               />
-              <InputGroup.Addon> - </InputGroup.Addon>
+              <InputGroup.Append>
+                <InputGroup.Text> - </InputGroup.Text>
+              </InputGroup.Append>
               <FormControl
                 type="date"
                 value={createdAtTo}
@@ -225,14 +243,16 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.takenAt')}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.takenAt}</FormLabel>
             <InputGroup>
               <FormControl
                 type="date"
                 value={takenAtFrom}
                 onChange={handleTakenAtFromChange}
               />
-              <InputGroup.Addon> - </InputGroup.Addon>
+              <InputGroup.Append>
+                <InputGroup.Text> - </InputGroup.Text>
+              </InputGroup.Append>
               <FormControl
                 type="date"
                 value={takenAtTo}
@@ -241,7 +261,7 @@ const GalleryFilterModalInt: React.FC<Props> = ({
             </InputGroup>
           </FormGroup>
           <FormGroup>
-            <ControlLabel>{t('gallery.filterModal.rating')}</ControlLabel>
+            <FormLabel>{m?.gallery.filterModal.rating}</FormLabel>
             <InputGroup>
               <FormControl
                 type="number"
@@ -251,7 +271,9 @@ const GalleryFilterModalInt: React.FC<Props> = ({
                 value={ratingFrom}
                 onChange={handleRatingFromChange}
               />
-              <InputGroup.Addon> - </InputGroup.Addon>
+              <InputGroup.Append>
+                <InputGroup.Text> - </InputGroup.Text>
+              </InputGroup.Append>
               <FormControl
                 type="number"
                 min={ratingFrom || 1}
@@ -265,19 +287,19 @@ const GalleryFilterModalInt: React.FC<Props> = ({
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit">
-            <Glyphicon glyph="ok" /> {t('general.apply')}
+            <FontAwesomeIcon icon="check" /> {m?.general.apply}
           </Button>
-          <Button type="button" onClick={handleEraseClick}>
-            <Glyphicon glyph="erase" /> {t('general.clear')}
+          <Button variant="warning" type="button" onClick={handleEraseClick}>
+            <FontAwesomeIcon icon="eraser" /> {m?.general.clear}
           </Button>
-          <Button type="button" onClick={onClose}>
-            <Glyphicon glyph="remove" /> {t('general.cancel')}
+          <Button variant="dark" type="button" onClick={close}>
+            <FontAwesomeIcon icon="close" /> {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </form>
     </Modal>
   );
-};
+}
 
 function nn(value: number | undefined) {
   return value === undefined || Number.isNaN(value) ? undefined : value;
@@ -288,23 +310,3 @@ function nt(value: Date | undefined) {
     ? value
     : undefined;
 }
-
-const mapStateToProps = (state: RootState) => ({
-  filter: state.gallery.filter,
-  users: state.gallery.users,
-  tags: state.gallery.tags,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(galleryHideFilter());
-  },
-  onOk(filter: GalleryFilter) {
-    dispatch(gallerySetFilter(filter));
-  },
-});
-
-export const GalleryFilterModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(GalleryFilterModalInt));

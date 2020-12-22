@@ -1,29 +1,23 @@
-import { connect } from 'react-redux';
-import React from 'react';
-
-import Button from 'react-bootstrap/lib/Button';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { TrackedDevice as TrackedDeviceType } from 'fm3/types/trackingTypes';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    device: TrackedDeviceType;
-    t: Translator;
-  };
+type Props = {
+  device: TrackedDeviceType;
+};
 
-const TrackedDeviceInt: React.FC<Props> = ({
-  onDelete,
-  onModify,
-  device,
-  language,
-  t,
-}) => {
+export function TrackedDevice({ device }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
   const dateFormat = new Intl.DateTimeFormat(language, {
     year: 'numeric',
     month: 'short',
@@ -32,33 +26,35 @@ const TrackedDeviceInt: React.FC<Props> = ({
     minute: '2-digit',
   });
 
-  const handleModify = React.useCallback(() => {
-    onModify(device.id);
-  }, [device.id, onModify]);
+  const handleModify = useCallback(() => {
+    dispatch(trackingActions.modifyTrackedDevice(device.id));
+  }, [device.id, dispatch]);
 
-  const handleDelete = React.useCallback(() => {
-    onDelete(device.id);
-  }, [device.id, onDelete]);
+  const handleDelete = useCallback(() => {
+    dispatch(trackingActions.deleteTrackedDevice(device.id));
+  }, [device.id, dispatch]);
 
   return (
     <tr>
+      <td>{device.id}</td>
       <td>
         <div
           style={{
             display: 'inline-block',
             backgroundColor: device.color || '#7239a8',
-            width: `${device.width}px`,
-            height: '15px',
+            // width: `${device.width ?? 4}px`,
+            width: '20px',
+            height: '20px',
             marginRight: `${14 - (device.width || 4)}px`,
+            verticalAlign: 'bottom',
           }}
         />
-        {device.id}
+        {device.label}
       </td>
-      <td>{device.label}</td>
       <td>{device.fromTime && dateFormat.format(device.fromTime)}</td>
       <td>
         {typeof device.maxAge === 'number'
-          ? `${device.maxAge / 60} ${t('general.minutes')}`
+          ? `${device.maxAge / 60} ${m?.general.minutes}`
           : ''}
       </td>
       <td>{device.maxCount}</td>
@@ -66,41 +62,23 @@ const TrackedDeviceInt: React.FC<Props> = ({
       <td>{device.splitDuration}</td>
       <td>
         <Button
-          bsSize="small"
+          size="sm"
           type="button"
           onClick={handleModify}
-          title={t('general.modify')}
+          title={m?.general.modify}
         >
           <FontAwesomeIcon icon="edit" />
         </Button>{' '}
         <Button
-          bsStyle="danger"
-          bsSize="small"
+          variant="danger"
+          size="sm"
           type="button"
           onClick={handleDelete}
-          title={t('general.delete')}
+          title={m?.general.delete}
         >
           <FontAwesomeIcon icon="close" />
         </Button>
       </td>
     </tr>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModify(id: string | number) {
-    dispatch(trackingActions.modifyTrackedDevice(id));
-  },
-  onDelete(id: string | number) {
-    dispatch(trackingActions.deleteTrackedDevice(id));
-  },
-});
-
-export const TrackedDevice = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(TrackedDeviceInt));
+}

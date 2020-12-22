@@ -1,11 +1,12 @@
 /* eslint-disable */
 
-import React, { Fragment } from 'react';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { latLonToString } from 'fm3/geoutils';
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
+import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
+import { latLonToString } from 'fm3/geoutils';
+import { Fragment } from 'react';
+import Alert from 'react-bootstrap/Alert';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('en', {
@@ -20,10 +21,14 @@ const nf33 = Intl.NumberFormat('en', {
 
 const masl = 'm\xa0a.s.l.';
 
-const errorMarkup = `
+const getErrorMarkup = (ticketId?: string) => `
 <h1>Application error!</h1>
 <p>
-  The error has been automatically reported under Ticket ID <b>{ticketId}</b>.
+  ${
+    ticketId
+      ? `The error has been automatically reported under Ticket ID <b>${ticketId}</b>.`
+      : ''
+  }
   You can report the problem at <a href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new" target="_blank" rel="noopener noreferrer">GitHub</a>,
   or eventually email us the details at <a href="mailto:freemap@freemap.sk?subject=Nahlásenie%20chyby%20na%20www.freemap.sk">freemap@freemap.sk</a>.
 </p>
@@ -33,6 +38,7 @@ const errorMarkup = `
 
 const en: Messages = {
   general: {
+    iso: 'en_US',
     elevationProfile: 'Elevation profile',
     save: 'Save',
     cancel: 'Cancel',
@@ -52,8 +58,8 @@ const en: Messages = {
     preventShowingAgain: "Don't show next time",
     closeWithoutSaving: 'Close the window with unsaved changes?',
     back: 'Back',
-    internalError: `!HTML!${errorMarkup}`,
-    processorError: 'Application error: ${error}',
+    internalError: ({ ticketId }) => `!HTML!${getErrorMarkup(ticketId)}`,
+    processorError: ({ err }) => `Application error: ${err}`,
     seconds: 'seconds',
     minutes: 'minutes',
     meters: 'meters',
@@ -64,6 +70,12 @@ const en: Messages = {
     convertToDrawing: 'Convert to drawing',
     simplifyPrompt:
       'Please enter simplification factor. Set to zero for no simplification.',
+    copyUrl: 'Copy URL',
+    savingError: ({ err }) => `Save error: ${err}`,
+    loadError: ({ err }) => `Loading error: ${err}`,
+    deleteError: ({ err }) => `Deleting error: ${err}`,
+    deleted: 'Deleted.',
+    saved: 'Saved.',
   },
 
   tools: {
@@ -77,7 +89,7 @@ const en: Messages = {
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
-    maps: () => (
+    maps: (
       <>
         My maps <FontAwesomeIcon icon="flask" className="text-warning" />
       </>
@@ -149,9 +161,10 @@ const en: Messages = {
     gpsError: 'Error getting your current location.',
     routeNotFound:
       'No route found. Try to change parameters or move the route points.',
-    fetchingError: 'Error finding the route: {err}',
-    maneuverWithName: '{type} {modifier} on {name}',
-    maneuverWithoutName: '{type} {modifier}',
+    fetchingError: ({ err }) => `Error finding the route: ${err}`,
+    maneuverWithName: ({ type, modifier, name }) =>
+      `${type} ${modifier} on ${name}`,
+    maneuverWithoutName: ({ type, modifier }) => `${type} ${modifier}`,
 
     maneuver: {
       types: {
@@ -173,6 +186,8 @@ const en: Messages = {
         // 'notification':
         'exit rotary': 'exit the circle', // undocumented
         'exit roundabout': 'exit the roundabout', // undocumented
+        notification: 'notification',
+        'use lane':'use lane'
       },
 
       modifiers: {
@@ -192,7 +207,7 @@ const en: Messages = {
         short: ({ arrival, price, numbers }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -204,7 +219,7 @@ const en: Messages = {
         full: ({ arrival, price, numbers, total, home, foot, bus, wait }) => (
           <>
             Arrival: <b>{arrival}</b> | Price: <b>{price} €</b> | Lines:{' '}
-            {numbers.map((n, i) => (
+            {numbers?.map((n, i) => (
               <Fragment key={n}>
                 {i > 0 ? ', ' : ''}
                 <b>{n}</b>
@@ -228,9 +243,11 @@ const en: Messages = {
         foot: ({ departure, duration, destination }) => (
           <>
             at <b>{departure}</b> walk{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
@@ -260,9 +277,11 @@ const en: Messages = {
         foot: ({ duration, destination }) => (
           <>
             walk{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute'])}
+              </b>
+            )}{' '}
             {destination === 'TARGET' ? (
               <b>to destination</b>
             ) : (
@@ -276,9 +295,11 @@ const en: Messages = {
         bicycle: ({ duration, destination }) => (
           <>
             bicycle{' '}
-            <b>
-              {duration} {numberize(duration, ['minutes', 'minute'])}
-            </b>{' '}
+            {duration !== undefined && (
+              <b>
+                {duration} {numberize(duration, ['minutes', 'minute'])}
+              </b>
+            )}{' '}
             to <b>{destination}</b>
           </>
         ),
@@ -289,7 +310,7 @@ const en: Messages = {
 
   more: {
     more: 'More',
-    logOut: 'Log out {name}',
+    logOut: (name) => `Log out ${name}`,
     logIn: 'Log in',
     settings: 'Settings',
     gpxExport: 'Export to GPX',
@@ -348,8 +369,12 @@ const en: Messages = {
       yourRating: 'Your rating:',
       showOnTheMap: 'Show on the map',
       openInNewWindow: 'Open in…',
-      uploaded: 'Uploaded by {username} on {createdAt}',
-      captured: 'Captured on {takenAt}',
+      uploaded: ({ username, createdAt }) => (
+        <>
+          Uploaded by {username} on {createdAt}
+        </>
+      ),
+      captured: (takenAt) => <>Captured on {takenAt}</>,
       deletePrompt: 'Delete this picture?',
       modify: 'Modify',
     },
@@ -367,7 +392,7 @@ const en: Messages = {
     },
     uploadModal: {
       title: 'Upload photos',
-      uploading: 'Uploading ({n})',
+      uploading: (n) => `Uploading (${n})`,
       upload: 'Upload',
       rules: `
         <p>Drop your photos here or click here to select them.</p>
@@ -389,13 +414,13 @@ const en: Messages = {
     },
     layerHint:
       'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
-    deletingError: 'Error deleting photo: {err}',
-    tagsFetchingError: 'Error fetching tags: {err}',
-    pictureFetchingError: 'Error fetching photo: {err}',
-    picturesFetchingError: 'Error fetching photos: {err}',
-    savingError: 'Error saving photo: {err}',
-    commentAddingError: 'Error adding comment: {err}',
-    ratingError: 'Error rating photo: {err}',
+    deletingError: ({ err }) => `Error deleting photo: ${err}`,
+    tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
+    pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,
+    picturesFetchingError: ({ err }) => `Error fetching photos: ${err}`,
+    savingError: ({ err }) => `Error saving photo: ${err}`,
+    commentAddingError: ({ err }) => `Error adding comment: ${err}`,
+    ratingError: ({ err }) => `Error rating photo: ${err}`,
     unauthenticatedError: 'Please log-in to upload the photos to the gallery.',
     missingPositionError: 'Missing location.',
     invalidPositionError: 'Invalid location coordinates format.',
@@ -415,7 +440,7 @@ const en: Messages = {
     distance: 'Line',
     elevation: 'Point',
     area: 'Polygon',
-    elevationFetchError: 'Error fetching point elevation: {err}',
+    elevationFetchError: ({ err }) => `Error fetching point elevation: ${err}`,
     elevationInfo: ({ elevation, point }) => (
       <>
         {(['D', 'DM', 'DMS'] as const).map((format) => (
@@ -469,21 +494,20 @@ const en: Messages = {
       maxEle: 'Max. elevation',
       uphill: 'Total climb',
       downhill: 'Total descend',
-      durationValue: '{h} hours {m} minutes',
+      durationValue: ({ h, m }) => `${h} hours ${m} minutes`,
     },
     uploadModal: {
       title: 'Upload the track',
       drop: 'Drop your .gpx file here or click here to select it.',
     },
     shareToast: 'The track has been saved to the server and can be shared.',
-    fetchingError: 'Error fetching track data: {err}',
-    savingError: 'Error saving the track: {err}',
-    tooBigError:
-      'Size of the uploaded track is bigger than the limit {maxSize} MB.',
+    fetchingError: ({ err }) => `Error fetching track data: ${err}`,
+    savingError: ({ err }) => `Error saving the track: ${err}`,
     loadingError: 'Error loading file.',
     onlyOne: 'Only single GPX file expected.',
     wrongFormat: 'The file must have .gpx extension.',
     info: () => <TrackViewerDetails />,
+    tooBigError: 'The file is too big.',
   },
 
   drawing: {
@@ -533,14 +557,14 @@ const en: Messages = {
       switch: 'Expert mode',
       overlayOpacity: 'Layer opacity:',
       trackViewerEleSmoothing: {
-        label:
-          'Smoothing level for computing total climb/descend in Track viewer: {value}',
+        label: (value) =>
+          `Smoothing level for computing total climb/descend in Track viewer: ${value}`,
         info:
           'For value 1 all elevations are used separately. Higher values represent floating window width used to smooth elevations.',
       },
     },
     saveSuccess: 'Settings have been saved.',
-    savingError: 'Error saving settings: {err}',
+    savingError: ({ err }) => `Error saving settings: ${err}`,
   },
 
   changesets: {
@@ -549,7 +573,7 @@ const en: Messages = {
     olderThan: ({ days }) => `${days} days`,
     olderThanFull: ({ days }) => `Changesets from last ${days} days`,
     notFound: 'No changesets found.',
-    fetchError: 'Error fetching changesets: {err}',
+    fetchError: ({ err }) => `Error fetching changesets: ${err}`,
     detail: ({ changeset }) => <ChangesetDetails changeset={changeset} />,
     details: {
       author: 'Author:',
@@ -567,7 +591,7 @@ const en: Messages = {
   mapDetails: {
     road: 'Road info',
     notFound: 'No road found.',
-    fetchingError: 'Error fetching road details: {err}',
+    fetchingError: ({ err }) => `Error fetching road details: ${err}`,
     detail: ({ element }) => <RoadDetails way={element} />,
   },
 
@@ -578,7 +602,7 @@ const en: Messages = {
         'To see objects by their type, you need to zoom in to at least level 12.',
       zoom: 'Zoom-in',
     },
-    fetchingError: 'Error fetching objects (POIs): {err}',
+    fetchingError: ({ err }) => `Error fetching objects (POIs): ${err}`,
     categories: {
       1: 'Nature',
       2: 'Services',
@@ -880,7 +904,6 @@ const en: Messages = {
     window: 'New window',
     url: 'Share URL',
     image: 'Share photo',
-    copy: 'Copy URL',
   },
 
   search: {
@@ -889,7 +912,7 @@ const en: Messages = {
     prompt: 'Enter the place',
     routeFrom: 'Route from here',
     routeTo: 'Route to here',
-    fetchingError: 'Searching error: {err}',
+    fetchingError: ({ err }) => `Searching error: ${err}`,
     buttonTitle: 'Search',
   },
 
@@ -925,7 +948,7 @@ const en: Messages = {
     export: 'Download',
     exportToDrive: 'Save to Google Drive',
     exportToDropbox: 'Save to Dropbox',
-    exportError: 'Error exporting GPX: {err}',
+    exportError: ({ err }) => `Error exporting GPX: ${err}`,
     what: {
       plannedRoute: 'found route',
       plannedRouteWithStops: 'found route including stops',
@@ -950,11 +973,12 @@ const en: Messages = {
       google: 'Log in with Google',
       osm: 'Log in with OpenStreetMap',
     },
+    enablePopup: 'Please enable pop-up windows for this site in you browser.',
     success: 'You have been successfully logged in.',
-    logInError: 'Error logging in: {err}',
+    logInError: ({ err }) => `Error logging in: ${err}`,
     logInError2: 'Error logging in.',
-    logOutError: 'Error logging out: {err}',
-    verifyError: 'Error verifying authentication: {err}',
+    logOutError: ({ err }) => `Error logging out: ${err}`,
+    verifyError: ({ err }) => `Error verifying authentication: ${err}`,
   },
 
   logOut: {
@@ -964,13 +988,13 @@ const en: Messages = {
   mapLayers: {
     layers: 'Map layers',
     photoFilterWarning: 'Photo filtering is active',
-    minZoomWarning: 'Accessible from zoom {minZoom}',
-    base: {
+    minZoomWarning: (minZoom) => `Accessible from zoom ${minZoom}`,
+    letters: {
       A: 'Car',
       T: 'Hiking',
       C: 'Bicycle',
       K: 'Crosscountry Ski',
-      S: 'Aerial (Bing)',
+      S: 'Aerial',
       Z: 'Ortofotomozaika SR (Aerial, SK)',
       O: 'OpenStreetMap',
       M: 'mtbmap.cz',
@@ -978,9 +1002,6 @@ const en: Messages = {
       d: 'Public transport (ÖPNV)',
       h: 'Historic',
       X: 'Hiking + Bicycle + Ski',
-      Y: 'Hiking + Bicycle + Ski (local)',
-    },
-    overlay: {
       i: 'Interactive layer',
       I: 'Photos',
       l: 'Forest tracks NLC (SK)',
@@ -1015,11 +1036,11 @@ const en: Messages = {
   elevationChart: {
     distance: 'Distance [km]',
     ele: `Elevation [${masl}]`,
-    fetchError: 'Error fetching elevation profile data: {err}',
+    fetchError: ({ err }) => `Error fetching elevation profile data: ${err}`,
   },
 
   errorCatcher: {
-    html: `${errorMarkup}
+    html: (ticketId) => `${getErrorMarkup(ticketId)}
       <p>
         You can try:
       </p>
@@ -1032,7 +1053,7 @@ const en: Messages = {
   },
 
   osm: {
-    fetchingError: 'Error fetching OSM data: {err}',
+    fetchingError: ({ err }) => `Error fetching OSM data: ${err}`,
   },
 
   roadDetails: {
@@ -1090,16 +1111,17 @@ const en: Messages = {
   },
 
   tracking: {
-    savingError: 'Save error: {err}',
-    loadError: 'Loading error: {err}',
-    deleteError: 'Deleting error: {err}',
     unauthenticatedError: 'Please log-in to manage your devices.',
     trackedDevices: {
       button: 'Watched',
       modalTitle: 'Watched Devices',
       desc: 'Manage watched devices to see the position of your friends.',
-      modifyTitle: 'Modify Watched Device',
-      createTitle: ({ name }) => (
+      modifyTitle: (name) => (
+        <>
+          Modify Watched Device <i>{name}</i>
+        </>
+      ),
+      createTitle: (name) => (
         <>
           Watch Device <i>{name}</i>
         </>
@@ -1114,18 +1136,18 @@ const en: Messages = {
       delete: 'Delete access token?',
     },
     accessTokens: {
-      modalTitle: ({ deviceName }) => (
+      modalTitle: (deviceName) => (
         <>
           Watch Tokens for <i>{deviceName}</i>
         </>
       ),
-      desc: ({ deviceName }) => (
+      desc: (deviceName) => (
         <p>
           Define watch tokens to share position of your device{' '}
           <i>{deviceName}</i> with your friends.
         </p>
       ),
-      createTitle: ({ deviceName }) => (
+      createTitle: (deviceName) => (
         <>
           Add Watch Token for <i>{deviceName}</i>
         </>
@@ -1262,14 +1284,14 @@ const en: Messages = {
   },
   pdfExport: {
     export: 'Export',
-    exportError: 'Error exporting map: {err}',
+    exportError: ({ err }) => `Error exporting map: ${err}`,
     exporting: 'Please wait, exporting map…',
     exported: ({ url }) => (
       <>
         Map export has finished.{' '}
-        <a href={url} target="_blank">
+        <Alert.Link href={url} target="_blank">
           Open.
-        </a>
+        </Alert.Link>
       </>
     ),
     area: 'Export area:',
@@ -1303,21 +1325,21 @@ const en: Messages = {
             <br />
             <em>
               map ©{' '}
-              <a
+              <Alert.Link
                 href="https://www.freemap.sk/"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 Freemap Slovakia
-              </a>
+              </Alert.Link>
               , data{' '}
-              <a
+              <Alert.Link
                 href="https://osm.org/copyright"
                 target="_blank"
                 rel="noopener noreferrer"
               >
                 © OpenStreetMap contributors
-              </a>
+              </Alert.Link>
               , © SRTM
             </em>
           </li>
@@ -1334,12 +1356,12 @@ const en: Messages = {
     delete: 'Delete',
     namePrompt: 'Map name:',
     deleteConfirm: 'Are you sure to delete this map?',
-    fetchError: 'Error loading map: {err}',
-    fetchListError: 'Error loading maps: {err}',
-    deleteError: 'Error deleting map: {err}',
-    renameError: 'Error renaming map: {err}',
-    createError: 'Error saving map: {err}',
-    saveError: 'Error saving map: {err}',
+    fetchError: ({ err }) => `Error loading map: ${err}`,
+    fetchListError: ({ err }) => `Error loading maps: ${err}`,
+    deleteError: ({ err }) => `Error deleting map: ${err}`,
+    renameError: ({ err }) => `Error renaming map: ${err}`,
+    createError: ({ err }) => `Error saving map: ${err}`,
+    saveError: ({ err }) => `Error saving map: ${err}`,
   },
 
   legend: {

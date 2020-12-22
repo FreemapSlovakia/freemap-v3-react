@@ -1,20 +1,11 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Tooltip } from 'react-leaflet';
-
-import { RootState } from 'fm3/storeCreator';
-import { divIcon } from 'leaflet';
-import { Popup, Marker } from 'react-leaflet';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
 import { wikiLoadPreview } from 'fm3/actions/wikiActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+import { useMessages } from 'fm3/l10nInjector';
+import { RootState } from 'fm3/storeCreator';
+import { divIcon } from 'leaflet';
+import { ReactElement } from 'react';
+import { Marker, Popup, Tooltip } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 const icon = divIcon({
   iconSize: [19, 19],
@@ -30,7 +21,15 @@ const icon = divIcon({
     </div>`,
 });
 
-const WikiLayerInt: React.FC<Props> = ({ points, preview, onOpen, t }) => {
+export function WikiLayer(): ReactElement {
+  const m = useMessages();
+
+  const points = useSelector((state: RootState) => state.wiki.points);
+
+  const preview = useSelector((state: RootState) => state.wiki.preview);
+
+  const dispatch = useDispatch();
+
   // const onSelects = useMemo(() => {
   //   return new Array(points.length).fill(0).map((_, i) => () => {
   //     if (i !== activeIndex) {
@@ -63,7 +62,7 @@ const WikiLayerInt: React.FC<Props> = ({ points, preview, onOpen, t }) => {
           )}
           <Popup
             onOpen={() => {
-              onOpen(wikipedia);
+              dispatch(wikiLoadPreview(wikipedia));
             }}
           >
             <h4>
@@ -94,27 +93,11 @@ const WikiLayerInt: React.FC<Props> = ({ points, preview, onOpen, t }) => {
                 <div dangerouslySetInnerHTML={{ __html: preview.extract }} />
               </div>
             ) : (
-              t('general.loading')
+              m?.general.loading
             )}
           </Popup>
         </Marker>
       ))}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  points: state.wiki.points,
-  preview: state.wiki.preview,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onOpen(wikipedia: string) {
-    dispatch(wikiLoadPreview(wikipedia));
-  },
-});
-
-export const WikiLayer = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(WikiLayerInt));
+}

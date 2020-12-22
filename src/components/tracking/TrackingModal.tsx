@@ -1,18 +1,14 @@
-import { connect } from 'react-redux';
-import React from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Devices } from './Devices';
-import { DeviceForm } from './DeviceForm';
-import { AccessTokens } from './AccessTokens';
-import { AccessTokenForm } from './AccessTokenForm';
-import { TrackedDevices } from './TrackedDevices';
-import { TrackedDeviceForm } from './TrackedDeviceForm';
 import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { ReactElement } from 'react';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
+import { AccessTokenForm } from './AccessTokenForm';
+import { AccessTokens } from './AccessTokens';
+import { DeviceForm } from './DeviceForm';
+import { Devices } from './Devices';
+import { TrackedDeviceForm } from './TrackedDeviceForm';
+import { TrackedDevices } from './TrackedDevices';
 
 // type Views =
 //   | 'devices'
@@ -22,25 +18,10 @@ import { RootAction } from 'fm3/actions';
 //   | 'trackedDevices'
 //   | 'trackedDeviceForm';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps>;
+type Props = { show: boolean };
 
-const TrackingModalInt: React.FC<Props> = ({ onClose, view }) => {
-  return (
-    <Modal onHide={onClose} show className="dynamic">
-      {view === 'devices' && <Devices />}
-      {view === 'deviceForm' && <DeviceForm />}
-      {view === 'accessTokens' && <AccessTokens />}
-      {view === 'accessTokenForm' && <AccessTokenForm />}
-      {view === 'trackedDevices' && <TrackedDevices />}
-      {view === 'trackedDeviceForm' && <TrackedDeviceForm />}
-    </Modal>
-  );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  devices: state.tracking.devices,
-  view:
+export function TrackingModal({ show }: Props): ReactElement {
+  const view = useSelector((state: RootState) =>
     state.main.activeModal === 'tracking-my'
       ? state.tracking.modifiedDeviceId !== undefined
         ? 'deviceForm'
@@ -52,15 +33,24 @@ const mapStateToProps = (state: RootState) => ({
       : state.tracking.modifiedTrackedDeviceId !== undefined
       ? 'trackedDeviceForm'
       : 'trackedDevices',
-});
+  );
 
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(setActiveModal(null));
-  },
-});
+  const dispatch = useDispatch();
 
-export const TrackingModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(TrackingModalInt);
+  return (
+    <Modal
+      onHide={() => {
+        dispatch(setActiveModal(null));
+      }}
+      show={show}
+      className="dynamic"
+    >
+      {view === 'devices' && <Devices />}
+      {view === 'deviceForm' && <DeviceForm />}
+      {view === 'accessTokens' && <AccessTokens />}
+      {view === 'accessTokenForm' && <AccessTokenForm />}
+      {view === 'trackedDevices' && <TrackedDevices />}
+      {view === 'trackedDeviceForm' && <TrackedDeviceForm />}
+    </Modal>
+  );
+}

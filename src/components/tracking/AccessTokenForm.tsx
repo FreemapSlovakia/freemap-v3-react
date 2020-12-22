@@ -1,42 +1,48 @@
-import { connect } from 'react-redux';
-import React from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import FormControl from 'react-bootstrap/lib/FormControl';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { toDatetimeLocal } from 'fm3/dateUtils';
-import { AccessTokenBase } from 'fm3/types/trackingTypes';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
+import { FormEvent, ReactElement, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function AccessTokenForm(): ReactElement {
+  const m = useMessages();
 
-const AccessTokenFormInt: React.FC<Props> = ({
-  onSave,
-  onCancel,
-  accessToken,
-  deviceName,
-  t,
-}) => {
+  const dispatch = useDispatch();
+
+  const accessToken = useSelector((state: RootState) =>
+    state.tracking.modifiedAccessTokenId
+      ? state.tracking.accessTokens.find(
+          (accessToken) =>
+            accessToken.id === state.tracking.modifiedAccessTokenId,
+        )
+      : undefined,
+  );
+
+  const deviceName = useSelector(
+    (state: RootState) =>
+      (
+        state.tracking.devices.find(
+          (device) => device.id === state.tracking.accessTokensDeviceId,
+        ) || { name: '???' }
+      ).name,
+  );
+
   const [note, setNote] = useTextInputState(accessToken?.note ?? '');
 
-  const [timeFrom, setTimeFrom] = React.useState(
+  const [timeFrom, setTimeFrom] = useState(
     accessToken?.timeFrom ? toDatetimeLocal(accessToken.timeFrom) : '',
   );
 
-  const [timeTo, setTimeTo] = React.useState(
+  const [timeTo, setTimeTo] = useState(
     accessToken?.timeTo ? toDatetimeLocal(accessToken.timeTo) : '',
   );
 
@@ -44,14 +50,17 @@ const AccessTokenFormInt: React.FC<Props> = ({
   //   accessToken?.listingLabel ?? '',
   // );
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    onSave({
-      note: note.trim() || null,
-      timeFrom: timeFrom === '' ? null : new Date(timeFrom),
-      timeTo: timeTo === '' ? null : new Date(timeTo),
-      listingLabel: null, // listingLabel.trim() || null,
-    });
+
+    dispatch(
+      trackingActions.saveAccessToken({
+        note: note.trim() || null,
+        timeFrom: timeFrom === '' ? null : new Date(timeFrom),
+        timeTo: timeTo === '' ? null : new Date(timeTo),
+        listingLabel: null, // listingLabel.trim() || null,
+      }),
+    );
   };
 
   return (
@@ -60,24 +69,24 @@ const AccessTokenFormInt: React.FC<Props> = ({
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
           {accessToken
-            ? t('tracking.accessTokens.modifyTitle', {
+            ? m?.tracking.accessTokens.modifyTitle({
                 token: accessToken.token,
                 deviceName,
               })
-            : t('tracking.accessTokens.createTitle', { deviceName })}
+            : m?.tracking.accessTokens.createTitle(deviceName)}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.timeFrom')}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.timeFrom}</FormLabel>
           <DateTime value={timeFrom} onChange={setTimeFrom} />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.timeTo')}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.timeTo}</FormLabel>
           <DateTime value={timeTo} onChange={setTimeTo} />
         </FormGroup>
         {/* <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.listingLabel')}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.listingLabel}</FormLabel>
           <FormControl
             value={listingLabel}
             onChange={setListingLabel}
@@ -85,44 +94,22 @@ const AccessTokenFormInt: React.FC<Props> = ({
           />
         </FormGroup> */}
         <FormGroup>
-          <ControlLabel>{t('tracking.accessToken.note')}</ControlLabel>
+          <FormLabel>{m?.tracking.accessToken.note}</FormLabel>
           <FormControl value={note} onChange={setNote} maxLength={255} />
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">{t('general.save')}</Button>
-        <Button type="button" onClick={onCancel}>
-          {t('general.cancel')} <kbd>Esc</kbd>
+        <Button type="submit">{m?.general.save}</Button>
+        <Button
+          variant="dark"
+          type="button"
+          onClick={() => {
+            dispatch(trackingActions.modifyAccessToken(undefined));
+          }}
+        >
+          {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  accessToken: state.tracking.modifiedAccessTokenId
-    ? state.tracking.accessTokens.find(
-        (accessToken) =>
-          accessToken.id === state.tracking.modifiedAccessTokenId,
-      )
-    : undefined,
-  deviceName: (
-    state.tracking.devices.find(
-      (device) => device.id === state.tracking.accessTokensDeviceId,
-    ) || { name: '???' }
-  ).name,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onCancel() {
-    dispatch(trackingActions.modifyAccessToken(undefined));
-  },
-  onSave(accessToken: AccessTokenBase) {
-    dispatch(trackingActions.saveAccessToken(accessToken));
-  },
-});
-
-export const AccessTokenForm = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(AccessTokenFormInt));
+}

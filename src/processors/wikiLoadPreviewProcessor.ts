@@ -1,11 +1,11 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
 import {
-  wikiSetPoints,
   wikiLoadPreview,
-  wikiSetPreview,
   WikiPreview,
+  wikiSetPoints,
+  wikiSetPreview,
 } from 'fm3/actions/wikiActions';
+import { httpRequest } from 'fm3/authAxios';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 interface WikiResponse1 {
@@ -30,7 +30,7 @@ interface WikiResponse2 {
 
 export const wikiLoadPreviewProcessor: Processor<typeof wikiLoadPreview> = {
   actionCreator: wikiLoadPreview,
-  errorKey: 'tracking.loadError', // TODO
+  errorKey: 'general.loadError',
   handle: async ({ getState, dispatch, action }) => {
     const p = action.payload.indexOf(':');
     let lang = action.payload.slice(0, p);

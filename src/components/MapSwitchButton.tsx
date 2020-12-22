@@ -1,40 +1,67 @@
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import React, { useCallback, useState, useRef } from 'react';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-import ButtonGroup from 'react-bootstrap/lib/ButtonGroup';
-import Overlay from 'react-bootstrap/lib/Overlay';
-import Popover from 'react-bootstrap/lib/Popover';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import { baseLayers, overlayLayers, LayerDef } from 'fm3/mapDefinitions';
-import { mapRefocus, MapViewState } from 'fm3/actions/mapActions';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootAction } from 'fm3/actions';
+import { useMessages } from 'fm3/l10nInjector';
+import {
+  BaseLayerLetters,
+  baseLayers,
+  LayerDef,
+  overlayLayers,
+  OverlayLetters,
+} from 'fm3/mapDefinitions';
 import { RootState } from 'fm3/storeCreator';
+import { MouseEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import ButtonGroup from 'react-bootstrap/ButtonGroup';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Overlay from 'react-bootstrap/Overlay';
+import Popover from 'react-bootstrap/Popover';
+import { useDispatch, useSelector } from 'react-redux';
+import { is } from 'typescript-is';
 import useMedia from 'use-media';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+function getKbdShortcut(key?: [string, boolean]) {
+  return (
+    key && (
+      <>
+        {' '}
+        <kbd>
+          {key[1] ? 'shift + ' : ''}
+          {key[0].replace(/Key|Digit/, '').toLowerCase()}
+        </kbd>
+      </>
+    )
+  );
+}
 
-const MapSwitchButtonInt: React.FC<Props> = ({
-  isAdmin,
-  t,
-  mapType,
-  overlays,
-  expertMode,
-  zoom,
-  pictureFilterIsActive,
-  onMapRefocus,
-  language,
-}) => {
+export function MapSwitchButton(): ReactElement {
+  const m = useMessages();
+
+  const zoom = useSelector((state: RootState) => state.map.zoom);
+
+  const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const overlays = useSelector((state: RootState) => state.map.overlays);
+
+  const expertMode = useSelector((state: RootState) => state.main.expertMode);
+
+  const pictureFilterIsActive = useSelector(
+    (state: RootState) =>
+      Object.values(state.gallery.filter).filter((x) => x).length > 0,
+  );
+
+  const isAdmin = useSelector(
+    (state: RootState) => !!(state.auth.user && state.auth.user.isAdmin),
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const dispatch = useDispatch();
+
   const [show, setShow] = useState(false);
 
-  const buttonRef = useRef<Button | null>(null);
+  const buttonRef = useRef<HTMLButtonElement | null>(null);
 
-  const button2Ref = useRef<Button | null>(null);
+  const button2Ref = useRef<HTMLButtonElement | null>(null);
 
   const handleButtonClick = useCallback(() => {
     setShow(true);
@@ -48,18 +75,18 @@ const MapSwitchButtonInt: React.FC<Props> = ({
     (mapType1: string) => {
       setShow(false);
 
-      if (mapType !== mapType1) {
-        onMapRefocus({ mapType: mapType1 });
+      if (mapType !== mapType1 && is<BaseLayerLetters>(mapType1)) {
+        dispatch(mapRefocus({ mapType: mapType1 }));
       }
     },
-    [onMapRefocus, mapType],
+    [dispatch, mapType],
   );
 
   const handleOverlaySelect = useCallback(
-    (overlay: unknown) => {
+    (overlay) => {
       const s = new Set(overlays);
 
-      if (typeof overlay !== 'string') {
+      if (!is<OverlayLetters>(overlay)) {
         // uh-oh
       } else if (s.has(overlay)) {
         s.delete(overlay);
@@ -67,32 +94,38 @@ const MapSwitchButtonInt: React.FC<Props> = ({
         s.add(overlay);
       }
 
-      onMapRefocus({ overlays: [...s] });
+      dispatch(mapRefocus({ overlays: [...s] }));
     },
-    [onMapRefocus, overlays],
+    [dispatch, overlays],
   );
 
-  const handleBaseClick = (e: React.MouseEvent<Button>) => {
-    onMapRefocus({
-      mapType: (e.currentTarget as any).dataset.type,
-    });
+  const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
+    dispatch(
+      mapRefocus({
+        mapType: e.currentTarget.dataset.type as BaseLayerLetters,
+      }),
+    );
   };
 
-  const handleOverlayClick = (e: React.MouseEvent<Button>) => {
-    const overlay = (e.currentTarget as any).dataset.type as string;
+  const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    const { type } = e.currentTarget.dataset;
+
+    if (!is<OverlayLetters>(type)) {
+      return;
+    }
 
     const s = new Set(overlays);
 
-    if (s.has(overlay)) {
-      s.delete(overlay);
+    if (s.has(type)) {
+      s.delete(type);
     } else {
-      s.add(overlay);
+      s.add(type);
     }
 
-    onMapRefocus({ overlays: [...s] });
+    dispatch(mapRefocus({ overlays: [...s] }));
   };
 
-  const isWide = useMedia({ minWidth: '768px' });
+  const isWide = useMedia({ minWidth: '576px' });
 
   const isPrimary = (layer: LayerDef) =>
     layer.primary === true ||
@@ -103,10 +136,11 @@ const MapSwitchButtonInt: React.FC<Props> = ({
 
   return (
     <>
-      <ButtonGroup className="dropup hidden-xs">
+      <ButtonGroup className="dropup d-none d-sm-inline-flex">
         {baseLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
-            title={t(`mapLayers.base.${type}`)}
+            variant="secondary"
+            title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
             active={mapType === type}
@@ -117,7 +151,8 @@ const MapSwitchButtonInt: React.FC<Props> = ({
         ))}
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
           <Button
-            title={t(`mapLayers.overlay.${type}`)}
+            variant="secondary"
+            title={m?.mapLayers.letters[type]}
             key={type}
             data-type={type}
             active={overlays.includes(type)}
@@ -127,20 +162,19 @@ const MapSwitchButtonInt: React.FC<Props> = ({
           </Button>
         ))}
         <Button
+          variant="secondary"
           className="dropdown-toggle"
           ref={buttonRef}
           onClick={handleButtonClick}
-          title={t('mapLayers.layers')}
-        >
-          <span className="caret" />
-        </Button>
+          title={m?.mapLayers.layers}
+        />
       </ButtonGroup>
       <Button
-        className="hidden-sm hidden-md hidden-lg"
+        className="d-sm-none"
         ref={button2Ref}
         onClick={handleButtonClick}
-        title={t('mapLayers.layers')}
-        bsStyle="primary"
+        title={m?.mapLayers.layers}
+        variant="primary"
       >
         <FontAwesomeIcon icon="map-o" />
       </Button>
@@ -149,10 +183,10 @@ const MapSwitchButtonInt: React.FC<Props> = ({
         placement="top"
         show={show}
         onHide={handleHide}
-        target={(isWide ? buttonRef.current : button2Ref.current) ?? undefined}
+        target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <ul>
+          <Popover.Content>
             {
               // TODO base and overlay layers have too much duplicate code
               baseLayers
@@ -162,7 +196,10 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                 )
                 .filter(({ adminOnly }) => isAdmin || !adminOnly)
                 .map(({ type, icon, minZoom, key }) => (
-                  <MenuItem key={type} onClick={() => handleMapSelect(type)}>
+                  <Dropdown.Item
+                    key={type}
+                    onClick={() => handleMapSelect(type)}
+                  >
                     <FontAwesomeIcon
                       icon={mapType === type ? 'check-circle-o' : 'circle-o'}
                     />{' '}
@@ -175,26 +212,23 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                             : 'none',
                       }}
                     >
-                      {t(`mapLayers.base.${type}`)}
+                      {m?.mapLayers.letters[type]}
                     </span>
-                    {key && ' '}
-                    {key && <kbd>{key}</kbd>}
+                    {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
                       <>
                         {' '}
                         <FontAwesomeIcon
                           icon="exclamation-triangle"
-                          title={t('mapLayers.minZoomWarning', {
-                            minZoom: minZoom.toString(),
-                          })}
+                          title={m?.mapLayers.minZoomWarning(minZoom)}
                           className="text-warning"
                         />
                       </>
                     )}
-                  </MenuItem>
+                  </Dropdown.Item>
                 ))
             }
-            <MenuItem divider />
+            <Dropdown.Divider />
             {overlayLayers
               .filter(
                 ({ showOnlyInExpertMode }) =>
@@ -202,7 +236,7 @@ const MapSwitchButtonInt: React.FC<Props> = ({
               )
               .filter(({ adminOnly }) => isAdmin || !adminOnly)
               .map(({ type, icon, minZoom, key }) => (
-                <MenuItem
+                <Dropdown.Item
                   key={type}
                   eventKey={type}
                   onSelect={handleOverlaySelect}
@@ -227,18 +261,15 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                           : 'none',
                     }}
                   >
-                    {t(`mapLayers.overlay.${type}`)}
+                    {m?.mapLayers.letters[type]}
                   </span>
-                  {key && ' '}
-                  {key && <kbd>{key}</kbd>}
+                  {getKbdShortcut(key)}
                   {minZoom !== undefined && zoom < minZoom && (
                     <>
                       {' '}
                       <FontAwesomeIcon
                         icon="exclamation-triangle"
-                        title={t('mapLayers.minZoomWarning', {
-                          minZoom: minZoom.toString(),
-                        })}
+                        title={m?.mapLayers.minZoomWarning(minZoom)}
                         className="text-warning"
                       />
                     </>
@@ -248,37 +279,16 @@ const MapSwitchButtonInt: React.FC<Props> = ({
                       {' '}
                       <FontAwesomeIcon
                         icon="filter"
-                        title={t('mapLayers.photoFilterWarning')}
+                        title={m?.mapLayers.photoFilterWarning}
                         className="text-warning"
                       />
                     </>
                   )}
-                </MenuItem>
+                </Dropdown.Item>
               ))}
-          </ul>
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  zoom: state.map.zoom,
-  mapType: state.map.mapType,
-  overlays: state.map.overlays,
-  expertMode: state.main.expertMode,
-  pictureFilterIsActive: Object.keys(state.gallery.filter).length > 0,
-  isAdmin: !!(state.auth.user && state.auth.user.isAdmin),
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onMapRefocus(changes: Partial<MapViewState>) {
-    dispatch(mapRefocus(changes));
-  },
-});
-
-export const MapSwitchButton = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MapSwitchButtonInt));
+}

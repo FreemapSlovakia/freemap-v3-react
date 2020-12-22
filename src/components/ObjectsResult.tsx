@@ -1,34 +1,37 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Popup } from 'react-leaflet';
-
-import { RichMarker } from 'fm3/components/RichMarker';
-import { getPoiType } from 'fm3/poiTypes';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
 import { selectFeature } from 'fm3/actions/mainActions';
-import { RootAction } from 'fm3/actions';
+import { RichMarker } from 'fm3/components/RichMarker';
+import { colors } from 'fm3/constants';
+import { useMessages } from 'fm3/l10nInjector';
+import { getPoiType } from 'fm3/poiTypes';
+import { RootState } from 'fm3/storeCreator';
+import { ReactElement } from 'react';
+import { Popup } from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ObjectsResult(): ReactElement {
+  const m = useMessages();
 
-const ObjectsResultInt: React.FC<Props> = ({
-  objects,
-  t,
-  language,
-  onSelect,
-  activeId,
-}) => {
+  const dispatch = useDispatch();
+
+  const objects = useSelector((state: RootState) => state.objects.objects);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const activeId = useSelector((state: RootState) =>
+    state.main.selection?.type === 'objects'
+      ? state.main.selection.id ?? null
+      : null,
+  );
+
   return (
     <>
       {objects.map(({ id, lat, lon, tags, typeId }) => {
         const pt = getPoiType(typeId);
+
         const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
         const { name, ele } = tags;
+
         const nf = Intl.NumberFormat(language, {
           minimumFractionDigits: 0,
           maximumFractionDigits: 1,
@@ -39,18 +42,22 @@ const ObjectsResultInt: React.FC<Props> = ({
             key={`poi-${id}`}
             position={{ lat, lng: lon }}
             image={img}
-            onclick={() => onSelect(id)}
-            color={activeId === id ? '#65b2ff' : undefined}
+            eventHandlers={{
+              click() {
+                dispatch(selectFeature({ type: 'objects', id }));
+              },
+            }}
+            color={activeId === id ? colors.selected : undefined}
           >
             <Popup autoPan={false}>
               <span>
                 {pt ? (
                   <>
-                    {t(`objects.subcategories.${pt.id}`)}
+                    {m?.objects.subcategories[pt.id]}
                     {name && <br />}
                     {name}
                     {ele && <br />}
-                    {ele && `${nf.format(parseFloat(ele))} m n. m.`}
+                    {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
                   </>
                 ) : (
                   name
@@ -62,24 +69,4 @@ const ObjectsResultInt: React.FC<Props> = ({
       })}
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  objects: state.objects.objects,
-  language: state.l10n.language,
-  activeId:
-    state.main.selection?.type === 'objects'
-      ? state.main.selection.id ?? null
-      : null,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSelect(id: number) {
-    dispatch(selectFeature({ type: 'objects', id }));
-  },
-});
-
-export const ObjectsResult = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ObjectsResultInt));
+}

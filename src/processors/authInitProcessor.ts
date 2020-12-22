@@ -1,12 +1,12 @@
 import { authInit, authSetUser } from 'fm3/actions/authActions';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
-import { httpRequest } from 'fm3/authAxios';
-import { tipsShow, tipsPreventNextTime } from 'fm3/actions/tipsActions';
-import { history } from 'fm3/historyHolder';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
+import { httpRequest } from 'fm3/authAxios';
+import { history } from 'fm3/historyHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { storage } from 'fm3/storage';
-import { assertType } from 'typescript-is';
 import { User } from 'fm3/types/common';
+import { assertType } from 'typescript-is';
 
 export const authInitProcessor: Processor = {
   actionCreator: authInit,

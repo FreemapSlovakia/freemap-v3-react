@@ -50,7 +50,8 @@ export function sendError(errDetails: ErrorDetails): void {
     return;
   }
 
-  console.error('Application error:', errDetails);
+  console.error('Application error');
+  console.error(errDetails);
 
   if (errDetails.error) {
     window.TrackJS?.console.error(errDetails.error);
@@ -91,12 +92,12 @@ export function sendError(errDetails: ErrorDetails): void {
         }
       },
       () => {
-        handle('???');
+        handle();
       },
     );
 }
 
-function handle(id: string) {
+function handle(id?: string) {
   if (store) {
     store.dispatch(setErrorTicketId(id));
   } else {

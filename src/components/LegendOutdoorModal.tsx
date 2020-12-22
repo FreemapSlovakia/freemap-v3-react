@@ -1,37 +1,29 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
-import { connect } from 'react-redux';
-
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import PanelGroup from 'react-bootstrap/lib/PanelGroup';
-import Panel from 'react-bootstrap/lib/Panel';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+import { ReactElement, useCallback, useEffect, useState } from 'react';
+import Accordion from 'react-bootstrap/Accordion';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
+import FormGroup from 'react-bootstrap/FormGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 type Item = { name: string; items: { name: string; id: number }[] };
 
 const fmMapserverUrl =
   process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
 
-const LegendOutdoorModalInt: React.FC<Props> = ({
-  language,
-  onModalClose,
-  t,
-}) => {
+type Props = { show: boolean };
+
+export function LegendOutdoorModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
   const [legend, setLegend] = useState<Item[]>([]);
+
+  const language = useSelector((state: RootState) => state.l10n.language);
 
   useEffect(() => {
     axios
@@ -55,67 +47,60 @@ const LegendOutdoorModalInt: React.FC<Props> = ({
       });
   }, [language]);
 
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
   return (
-    <Modal show onHide={onModalClose}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="map-o" /> {t('more.mapLegend')}
+          <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>{t('legend.body')}</p>
-        <PanelGroup accordion id="pg1">
+        <p>{m?.legend.body}</p>
+        <Accordion>
           {[...legend].map((c: Item, i: number) => (
-            <Panel key={c.name} eventKey={i}>
-              <Panel.Heading>
-                <Panel.Title toggle>{c.name}</Panel.Title>
-              </Panel.Heading>
-              <Panel.Body collapsible>
-                {c.items.map(({ id, name }) => (
-                  <div key={id} className="legend-item">
-                    <div>
-                      <img
-                        src={`${fmMapserverUrl}/legend-image/${id}`}
-                        srcSet={[1, 2, 3]
-                          .map(
-                            (s) =>
-                              `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
-                                s > 1 ? ` ${s}x` : ''
-                              }`,
-                          )
-                          .join(', ')}
-                      />
+            <Card key={c.name}>
+              <Accordion.Toggle as={Card.Header} eventKey={String(i)}>
+                {c.name}
+              </Accordion.Toggle>
+              <Accordion.Collapse eventKey={String(i)}>
+                <Card.Body>
+                  {c.items.map(({ id, name }) => (
+                    <div key={id} className="legend-item">
+                      <div>
+                        <img
+                          src={`${fmMapserverUrl}/legend-image/${id}`}
+                          srcSet={[1, 2, 3]
+                            .map(
+                              (s) =>
+                                `${fmMapserverUrl}/legend-image/${id}?scale=${s}${
+                                  s > 1 ? ` ${s}x` : ''
+                                }`,
+                            )
+                            .join(', ')}
+                        />
+                      </div>
+                      <div>{name}</div>
                     </div>
-                    <div>{name}</div>
-                  </div>
-                ))}
-              </Panel.Body>
-            </Panel>
+                  ))}
+                </Card.Body>
+              </Accordion.Collapse>
+            </Card>
           ))}
-        </PanelGroup>
+        </Accordion>
       </Modal.Body>
       <Modal.Footer>
         <FormGroup>
-          <Button onClick={onModalClose}>
-            <Glyphicon glyph="remove" /> {t('general.close')}
+          <Button variant="dark" onClick={close}>
+            <FontAwesomeIcon icon="times" /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  language: state.l10n.language,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onModalClose() {
-    dispatch(setActiveModal(null));
-  },
-});
-
-export const LegendOutdoorModal = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(LegendOutdoorModalInt));
+}

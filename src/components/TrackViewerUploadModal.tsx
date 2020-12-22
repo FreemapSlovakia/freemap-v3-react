@@ -1,37 +1,56 @@
-import React from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { useDropzone } from 'react-dropzone';
-
-import Button from 'react-bootstrap/lib/Button';
-import Modal from 'react-bootstrap/lib/Modal';
-import Glyphicon from 'react-bootstrap/lib/Glyphicon';
-
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-
+import { elevationChartClose } from 'fm3/actions/elevationChartActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
   trackViewerSetData,
   trackViewerSetTrackUID,
 } from 'fm3/actions/trackViewerActions';
-import { elevationChartClose } from 'fm3/actions/elevationChartActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import 'fm3/styles/trackViewer.scss';
-import { RootAction } from 'fm3/actions';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useMessages } from 'fm3/l10nInjector';
+import 'fm3/styles/trackViewer.scss';
+import { ReactElement, useCallback } from 'react';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import { useDropzone } from 'react-dropzone';
+import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from './FontAwesomeIcon';
 
-type Props = ReturnType<typeof mapDispatchToProps> & {
-  t: Translator;
-};
+type Props = { show: boolean };
 
-const TrackViewerUploadModalInt: React.FC<Props> = ({
-  onUpload,
-  onLoadError,
-  onClose,
-  t,
-}) => {
-  const handleGpxDrop = useGpxDropHandler(onUpload, onLoadError, t);
+export function TrackViewerUploadModal({ show }: Props): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const close = useCallback(() => {
+    dispatch(setActiveModal(null));
+  }, [dispatch]);
+
+  const handleUpload = useCallback(
+    (trackGpx: string) => {
+      dispatch(trackViewerSetTrackUID(null));
+      dispatch(trackViewerSetData({ trackGpx, focus: true }));
+      dispatch(setActiveModal(null));
+      dispatch(elevationChartClose());
+    },
+    [dispatch],
+  );
+
+  const handleLoadError = useCallback(
+    (message: string) => {
+      dispatch(
+        toastsAdd({
+          id: 'trackViewer.loadError',
+          message,
+          style: 'danger',
+          timeout: 5000,
+        }),
+      );
+    },
+    [dispatch],
+  );
+
+  const handleGpxDrop = useGpxDropHandler(handleUpload, handleLoadError, m);
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop: handleGpxDrop,
@@ -41,9 +60,9 @@ const TrackViewerUploadModalInt: React.FC<Props> = ({
 
   // {activeModal === 'upload-track' && // TODO move to separate component
   return (
-    <Modal show onHide={onClose}>
+    <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
-        <Modal.Title>{t('trackViewer.uploadModal.title')}</Modal.Title>
+        <Modal.Title>{m?.trackViewer.uploadModal.title}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <div
@@ -51,41 +70,14 @@ const TrackViewerUploadModalInt: React.FC<Props> = ({
           className={`dropzone${isDragActive ? ' dropzone-dropping' : ''}`}
         >
           <input {...getInputProps()} />
-          {t('trackViewer.uploadModal.drop')}
+          {m?.trackViewer.uploadModal.drop}
         </div>
       </Modal.Body>
       <Modal.Footer>
-        <Button onClick={onClose}>
-          <Glyphicon glyph="remove" /> {t('general.cancel')} <kbd>Esc</kbd>
+        <Button variant="dark" onClick={close}>
+          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>
   );
-};
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onClose() {
-    dispatch(setActiveModal(null));
-  },
-  onUpload(trackGpx: string) {
-    dispatch(trackViewerSetTrackUID(null));
-    dispatch(trackViewerSetData({ trackGpx, focus: true }));
-    dispatch(setActiveModal(null));
-    dispatch(elevationChartClose());
-  },
-  onLoadError(message: string) {
-    dispatch(
-      toastsAdd({
-        id: 'trackViewer.loadError',
-        message,
-        style: 'danger',
-        timeout: 5000,
-      }),
-    );
-  },
-});
-
-export const TrackViewerUploadModal = connect(
-  null,
-  mapDispatchToProps,
-)(withTranslator(TrackViewerUploadModalInt));
+}

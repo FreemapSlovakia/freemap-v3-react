@@ -1,15 +1,14 @@
-import { createReducer } from 'typesafe-actions';
-import {
-  MapStateBase,
-  mapRefocus,
-  mapReset,
-  mapSetOverlayOpacity,
-  mapSetOverlayPaneOpacity,
-} from 'fm3/actions/mapActions';
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
-import { selectFeature, setAppState, Selection } from 'fm3/actions/mainActions';
+import { selectFeature, Selection, setAppState } from 'fm3/actions/mainActions';
+import {
+  mapRefocus,
+  mapSetOverlayOpacity,
+  mapSetOverlayPaneOpacity,
+  MapStateBase,
+} from 'fm3/actions/mapActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
+import { createReducer } from 'typesafe-actions';
 
 export interface MapState extends MapStateBase {
   selection: Selection | null;
@@ -34,13 +33,6 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.map };
   })
-  .handleAction(mapReset, (state) => ({
-    ...state,
-    zoom: initialState.zoom,
-    lat: initialState.lat,
-    lon: initialState.lon,
-    gpsTracked: false,
-  }))
   .handleAction(mapSetOverlayOpacity, (state, action) => ({
     ...state,
     overlayOpacity: action.payload,

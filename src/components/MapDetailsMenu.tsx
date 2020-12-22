@@ -1,73 +1,59 @@
-import React, { useEffect, useCallback } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import Button from 'react-bootstrap/lib/Button';
-
 import {
   mapDetailsSetSubtool,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
-
-import { withTranslator, Translator } from 'fm3/l10nInjector';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
+import { LeafletMouseEvent } from 'leaflet';
+import { ReactElement, useEffect } from 'react';
+import Button from 'react-bootstrap/Button';
+import { useDispatch, useSelector } from 'react-redux';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function MapDetailsMenu(): ReactElement {
+  const m = useMessages();
 
-const MapDetailsMenuInt: React.FC<Props> = ({
-  subtool,
-  onSubtoolChange,
-  onSetUserSelectedPosition,
-  t,
-}) => {
-  const setUserSelectedPosition = useCallback(
-    (lat: number, lon: number) => {
-      if (subtool !== null) {
-        onSetUserSelectedPosition(lat, lon);
-      }
-    },
-    [subtool, onSetUserSelectedPosition],
-  );
+  const dispatch = useDispatch();
+
+  const subtool = useSelector((state: RootState) => state.mapDetails.subtool);
 
   useEffect(() => {
-    mapEventEmitter.on('mapClick', setUserSelectedPosition);
-    return () => {
-      mapEventEmitter.removeListener('mapClick', setUserSelectedPosition);
+    const map = getMapLeafletElement();
+
+    if (!map) {
+      return;
+    }
+
+    const handleMapClick = ({ latlng }: LeafletMouseEvent) => {
+      if (subtool !== null) {
+        dispatch(
+          mapDetailsSetUserSelectedPosition({
+            lat: latlng.lat,
+            lon: latlng.lng,
+          }),
+        );
+      }
     };
-  }, [setUserSelectedPosition]);
+
+    map.on('click', handleMapClick);
+
+    return () => {
+      map.off('click', handleMapClick);
+    };
+  }, [dispatch, subtool]);
 
   return (
     <Button
-      onClick={() => onSubtoolChange('track-info')}
+      variant="secondary"
+      onClick={() => {
+        dispatch(mapDetailsSetSubtool('track-info'));
+      }}
       active={subtool === 'track-info'}
-      title={t('mapDetails.road')}
+      title={m?.mapDetails.road}
     >
       <FontAwesomeIcon icon="road" />
-      <span className="hidden-xs"> {t('mapDetails.road')}</span>
+      <span className="d-none d-sm-inline"> {m?.mapDetails.road}</span>
     </Button>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  subtool: state.mapDetails.subtool,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSubtoolChange(subtool: string) {
-    dispatch(mapDetailsSetSubtool(subtool));
-  },
-  onSetUserSelectedPosition(lat: number, lon: number) {
-    dispatch(mapDetailsSetUserSelectedPosition({ lat, lon }));
-  },
-});
-
-export const MapDetailsMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(MapDetailsMenuInt));
+}

@@ -1,21 +1,21 @@
 import {
+  featureCollection,
+  Geometries,
+  lineString,
+  point,
+} from '@turf/helpers';
+import {
   mapDetailsSetTrackInfoPoints,
   mapDetailsSetUserSelectedPosition,
 } from 'fm3/actions/mapDetailsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { trackViewerSetData } from 'fm3/actions/trackViewerActions';
-import {
-  lineString,
-  point,
-  featureCollection,
-  Geometries,
-} from '@turf/helpers';
-import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { httpRequest } from 'fm3/authAxios';
+import { getMapLeafletElement } from 'fm3/leafletElementHolder';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { LatLon } from 'fm3/types/common';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { LatLon } from 'fm3/types/common';
 
 interface OverpassNodeElement extends LatLon {
   type: 'node';

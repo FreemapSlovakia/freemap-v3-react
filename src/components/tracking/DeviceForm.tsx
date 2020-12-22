@@ -1,28 +1,18 @@
-import { connect } from 'react-redux';
-import React, { useCallback, useState } from 'react';
-
-import Modal from 'react-bootstrap/lib/Modal';
-import Button from 'react-bootstrap/lib/Button';
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import ControlLabel from 'react-bootstrap/lib/ControlLabel';
-import DropdownButton from 'react-bootstrap/lib/DropdownButton';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { EditedDevice } from 'fm3/types/trackingTypes';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
-import { InputGroup } from 'react-bootstrap';
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
+import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+import { FormEvent, ReactElement, useCallback, useState } from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown from 'react-bootstrap/Dropdown';
+import DropdownButton from 'react-bootstrap/DropdownButton';
+import FormControl from 'react-bootstrap/FormControl';
+import FormGroup from 'react-bootstrap/FormGroup';
+import FormLabel from 'react-bootstrap/FormLabel';
+import InputGroup from 'react-bootstrap/InputGroup';
+import Modal from 'react-bootstrap/Modal';
+import { useDispatch, useSelector } from 'react-redux';
 
 const types: Record<string, string> = {
   url: 'Locus / OsmAnd / …',
@@ -30,7 +20,19 @@ const types: Record<string, string> = {
   did: 'TK102B Device ID',
 };
 
-const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
+export function DeviceForm(): ReactElement {
+  const m = useMessages();
+
+  const dispatch = useDispatch();
+
+  const device = useSelector((state: RootState) =>
+    state.tracking.modifiedDeviceId
+      ? state.tracking.devices.find(
+          (device) => device.id === state.tracking.modifiedDeviceId,
+        )
+      : null,
+  );
+
   const [type, setType] = useState(
     device?.token?.includes(':') ? device?.token?.replace(/:.*/, '') : 'url',
   );
@@ -52,18 +54,21 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
   const [regenerateToken, setRegenerateToken] = useState(false);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    (e: FormEvent) => {
       e.preventDefault();
-      onSave({
-        name: name.trim(),
-        maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
-        maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
-        regenerateToken:
-          type === 'url' || !device?.id ? undefined : regenerateToken,
-        token: type === 'url' ? undefined : `${type}:${token}`,
-      });
+
+      dispatch(
+        trackingActions.saveDevice({
+          name: name.trim(),
+          maxCount: maxCount === '' ? null : Number.parseInt(maxCount, 10),
+          maxAge: maxAge === '' ? null : Number.parseInt(maxAge, 10) * 60,
+          regenerateToken:
+            type === 'url' || !device?.id ? undefined : regenerateToken,
+          token: type === 'url' ? undefined : `${type}:${token}`,
+        }),
+      );
     },
-    [onSave, name, maxCount, maxAge, regenerateToken, type, token, device],
+    [dispatch, name, maxCount, maxAge, regenerateToken, type, token, device],
   );
 
   const onSelect = useCallback(
@@ -83,15 +88,15 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
         <Modal.Title>
           <FontAwesomeIcon icon="bullseye" />{' '}
           {device
-            ? t('tracking.devices.modifyTitle', {
+            ? m?.tracking.devices.modifyTitle({
                 name: device.name,
               })
-            : t('tracking.devices.createTitle')}
+            : m?.tracking.devices.createTitle}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
         <FormGroup className="required">
-          <ControlLabel>{t('tracking.device.name')}</ControlLabel>
+          <FormLabel>{m?.tracking.device.name}</FormLabel>
           <FormControl
             type="text"
             value={name}
@@ -102,19 +107,20 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
           />
         </FormGroup>
         <FormGroup className="required">
-          <ControlLabel>Token</ControlLabel>
+          <FormLabel>Token</FormLabel>
           <InputGroup>
             <DropdownButton
-              componentClass={InputGroup.Button}
+              variant="secondary"
+              as={InputGroup.Append}
               id="input-dropdown-addon"
               title={types[type]}
               onSelect={onSelect}
               disabled={!!device?.id}
             >
               {Object.entries(types).map(([key, value]) => (
-                <MenuItem key={key} eventKey={key} active={type === key}>
+                <Dropdown.Item key={key} eventKey={key} active={type === key}>
                   {value}
-                </MenuItem>
+                </Dropdown.Item>
               ))}
             </DropdownButton>
             <FormControl
@@ -129,25 +135,25 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
               disabled={type === 'url' || !!device?.id}
               value={
                 (type === 'url' && !device?.id) || regenerateToken
-                  ? t('tracking.device.generatedToken')
+                  ? m?.tracking.device.generatedToken
                   : token
               }
               onChange={setToken}
             />
             {type === 'url' && !!device?.id && (
-              <InputGroup.Button>
+              <InputGroup.Append>
                 <Button
                   active={regenerateToken}
                   onClick={handleRegenerateTokenClick}
                 >
                   <FontAwesomeIcon icon="refresh" /> Regenerate
                 </Button>
-              </InputGroup.Button>
+              </InputGroup.Append>
             )}
           </InputGroup>
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.device.maxCount')}</ControlLabel>
+          <FormLabel>{m?.tracking.device.maxCount}</FormLabel>
           <FormControl
             type="number"
             min="0"
@@ -157,7 +163,7 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
           />
         </FormGroup>
         <FormGroup>
-          <ControlLabel>{t('tracking.device.maxAge')}</ControlLabel>
+          <FormLabel>{m?.tracking.device.maxAge}</FormLabel>
           <InputGroup>
             <FormControl
               type="number"
@@ -166,38 +172,24 @@ const DeviceFormInt: React.FC<Props> = ({ onSave, onCancel, device, t }) => {
               value={maxAge}
               onChange={setMaxAge}
             />
-            <InputGroup.Addon>{t('general.minutes')}</InputGroup.Addon>
+            <InputGroup.Append>
+              <InputGroup.Text>{m?.general.minutes}</InputGroup.Text>
+            </InputGroup.Append>
           </InputGroup>
         </FormGroup>
       </Modal.Body>
       <Modal.Footer>
-        <Button type="submit">{t('general.save')}</Button>
-        <Button type="button" onClick={onCancel}>
-          {t('general.cancel')} <kbd>Esc</kbd>
+        <Button type="submit">{m?.general.save}</Button>
+        <Button
+          type="button"
+          variant="dark"
+          onClick={() => {
+            dispatch(trackingActions.modifyDevice(undefined));
+          }}
+        >
+          {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </form>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  device: state.tracking.modifiedDeviceId
-    ? state.tracking.devices.find(
-        (device) => device.id === state.tracking.modifiedDeviceId,
-      )
-    : null,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onCancel() {
-    dispatch(trackingActions.modifyDevice(undefined));
-  },
-  onSave(device: EditedDevice) {
-    dispatch(trackingActions.saveDevice(device));
-  },
-});
-
-export const DeviceForm = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(DeviceFormInt));
+}

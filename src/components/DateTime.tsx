@@ -1,7 +1,7 @@
-import React, { useCallback } from 'react';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import InputGroup from 'react-bootstrap/lib/InputGroup';
+import { ChangeEvent, ReactElement, useCallback } from 'react';
+import FormControl from 'react-bootstrap/FormControl';
+import InputGroup from 'react-bootstrap/InputGroup';
 
 function checkDatetimeLocalInput(): boolean {
   const input = document.createElement('input');
@@ -25,11 +25,11 @@ interface Props {
   };
 }
 
-export const DateTime: React.FC<Props> = ({
+export function DateTime({
   value,
   onChange,
   placeholders,
-}) => {
+}: Props): ReactElement {
   const [, datePart, timePart] = /(.*)T(.*)/.exec(value ?? '') || ['', '', ''];
 
   const propagateChange = useCallback(
@@ -40,22 +40,22 @@ export const DateTime: React.FC<Props> = ({
   );
 
   const handleDateChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      propagateChange((e.target as any).value, timePart);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      propagateChange(e.target.value, timePart);
     },
     [timePart, propagateChange],
   );
 
   const handleTimeChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      propagateChange(datePart, (e.target as any).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      propagateChange(datePart, e.target.value);
     },
     [datePart, propagateChange],
   );
 
   const handleDatetimeChange = useCallback(
-    (e: React.FormEvent<FormControl>) => {
-      onChange((e.target as any).value);
+    (e: ChangeEvent<HTMLInputElement>) => {
+      onChange(e.target.value);
     },
     [onChange],
   );
@@ -69,9 +69,11 @@ export const DateTime: React.FC<Props> = ({
     />
   ) : (
     <InputGroup>
-      <InputGroup.Addon>
-        <FontAwesomeIcon icon="calendar" />
-      </InputGroup.Addon>
+      <InputGroup.Append>
+        <InputGroup.Text>
+          <FontAwesomeIcon icon="calendar" />
+        </InputGroup.Text>
+      </InputGroup.Append>
       <FormControl
         type="date"
         placeholder={placeholders?.date ?? 'YYY-MM-DD'}
@@ -80,9 +82,11 @@ export const DateTime: React.FC<Props> = ({
         pattern="[0-9]{4}-[0-9]{2}-[0-9]{2}"
         required={!!timePart}
       />
-      <InputGroup.Addon>
-        <FontAwesomeIcon icon="clock-o" />
-      </InputGroup.Addon>
+      <InputGroup.Append>
+        <InputGroup.Text>
+          <FontAwesomeIcon icon="clock-o" />
+        </InputGroup.Text>
+      </InputGroup.Append>
       <FormControl
         type="time"
         placeholder={placeholders?.time ?? 'HH:MM[:SS]'}
@@ -94,4 +98,4 @@ export const DateTime: React.FC<Props> = ({
       />
     </InputGroup>
   );
-};
+}

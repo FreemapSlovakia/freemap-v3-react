@@ -1,11 +1,12 @@
 import axios from 'axios';
-import { Dispatch } from 'redux';
 import { ResolvedToast, toastsAdd } from 'fm3/actions/toastsActions';
+import { MessagePaths } from 'fm3/types/common';
+import { Dispatch } from 'redux';
 import { ActionType, PayloadAction } from 'typesafe-actions';
 
 export function dispatchAxiosErrorAsToast(
   dispatch: Dispatch<ActionType<typeof toastsAdd>>,
-  messageKey: string,
+  messageKey: MessagePaths,
   err?: unknown,
   params: { [key: string]: unknown } = {},
   id?: string,

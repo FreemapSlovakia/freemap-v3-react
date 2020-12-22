@@ -1,78 +1,113 @@
-import React, { useCallback, useState } from 'react';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-
-import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
-import { objectsSetFilter } from 'fm3/actions/objectsActions';
-import { mapRefocus } from 'fm3/actions/mapActions';
-import { toastsAdd } from 'fm3/actions/toastsActions';
-
-import FormGroup from 'react-bootstrap/lib/FormGroup';
-import FormControl from 'react-bootstrap/lib/FormControl';
-import Dropdown from 'react-bootstrap/lib/Dropdown';
-import MenuItem from 'react-bootstrap/lib/MenuItem';
-import Button from 'react-bootstrap/lib/Button';
-
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
-
-import { withTranslator, Translator } from 'fm3/l10nInjector';
-import { RootState } from 'fm3/storeCreator';
-import { RootAction } from 'fm3/actions';
 import { convertToDrawing } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
+import { objectsSetFilter } from 'fm3/actions/objectsActions';
+import { toastsAdd } from 'fm3/actions/toastsActions';
+import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
+import { useMessages } from 'fm3/l10nInjector';
+import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
+import { RootState } from 'fm3/storeCreator';
+import {
+  ChangeEvent,
+  Fragment,
+  ReactElement,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
+import Button from 'react-bootstrap/Button';
+import Dropdown, { DropdownProps } from 'react-bootstrap/Dropdown';
+import FormControl from 'react-bootstrap/FormControl';
+import { useDispatch, useSelector } from 'react-redux';
+import { HideArrow } from './SearchMenu';
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> & {
-    t: Translator;
-  };
+export function ObjectsMenu(): ReactElement {
+  const m = useMessages();
 
-const ObjectsMenuInt: React.FC<Props> = ({
-  t,
-  zoom,
-  onLowZoom,
-  onSearch,
-  hasObjects,
-  onConvertToMeasurement,
-}) => {
-  const [filter, setFilter] = useState('');
-  const [dropdownOpened, setDropdownOpened] = useState(false);
+  const dispatch = useDispatch();
 
-  const handleFilterSet = useCallback((e: React.FormEvent<FormControl>) => {
-    setFilter((e.target as HTMLInputElement).value);
-  }, []);
+  const zoom = useSelector((state: RootState) => state.map.zoom);
 
-  const handleToggle = useCallback(() => {
-    setDropdownOpened(!dropdownOpened);
-  }, [dropdownOpened]);
-
-  const handleSelect = useCallback(
-    (id: unknown) => {
-      if (zoom < 12) {
-        onLowZoom();
-      } else if (typeof id === 'number') {
-        onSearch(id);
-      }
-    },
-    [zoom, onLowZoom, onSearch],
+  const hasObjects = useSelector(
+    (state: RootState) => state.objects.objects.length > 0,
   );
 
-  const FormGroup2 = FormGroup as any; // hacked missing attribute "bsRole" in type
+  const [filter, setFilter] = useState('');
+
+  const [dropdownOpened, setDropdownOpened] = useState(false);
+
+  const handleFilterSet = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    setFilter(e.currentTarget.value);
+  }, []);
+
+  const handleSelect = useCallback(
+    (id: string | null) => {
+      if (zoom < 12) {
+        dispatch(
+          toastsAdd({
+            id: 'objects.lowZoomAlert',
+            messageKey: 'objects.lowZoomAlert.message',
+            style: 'warning',
+            actions: [
+              {
+                // name: 'Priblíž a hľadaj', TODO
+                nameKey: 'objects.lowZoomAlert.zoom',
+                action: [mapRefocus({ zoom: 12 })],
+              },
+            ],
+          }),
+        );
+      } else if (id !== null) {
+        dispatch(objectsSetFilter(Number(id)));
+
+        setDropdownOpened(false);
+        setFilter('');
+      }
+    },
+    [zoom, dispatch],
+  );
+
+  // ugly hack not to close dropdown on open
+  const justOpenedRef = useRef(false);
+
+  const inputRef = useRef<HTMLInputElement | null>(null);
+
+  const handleToggle: DropdownProps['onToggle'] = (isOpen, e) => {
+    if (justOpenedRef.current) {
+      justOpenedRef.current = false;
+    } else if (!isOpen) {
+      setDropdownOpened(false);
+
+      if (e) {
+        e.preventDefault();
+        e.stopPropagation();
+      }
+
+      inputRef.current?.blur();
+    }
+  };
 
   return (
     <>
       <Dropdown
         className="dropdown-long"
         id="objectsMenuDropdown"
+        show={dropdownOpened}
+        onSelect={handleSelect}
         onToggle={handleToggle}
-        open={dropdownOpened}
       >
-        <FormGroup2 bsRole="toggle">
+        <Dropdown.Toggle as={HideArrow}>
           <FormControl
             type="text"
-            placeholder={t('objects.type')}
+            placeholder={m?.objects.type}
             onChange={handleFilterSet}
             value={filter}
+            onFocus={() => {
+              justOpenedRef.current = true;
+              setDropdownOpened(true);
+            }}
+            ref={inputRef}
           />
-        </FormGroup2>
+        </Dropdown.Toggle>
         <Dropdown.Menu>
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
@@ -81,73 +116,45 @@ const ObjectsMenuInt: React.FC<Props> = ({
               .filter(({ group }) => group === gid)
               .filter(
                 ({ id }) =>
-                  t(`objects.subcategories.${id}`)
-                    .toLowerCase()
+                  m?.objects.subcategories[id]
+                    ?.toLowerCase()
                     .indexOf(filter.toLowerCase()) !== -1,
               )
               .map(({ group, id, icon }) => (
-                <MenuItem key={id} eventKey={id} onSelect={handleSelect}>
+                <Dropdown.Item key={id} eventKey={String(id)}>
                   <img
                     src={require(`../images/mapIcons/${icon}.png`)}
                     alt={`${group}-${icon}`}
                   />{' '}
-                  {t(`objects.subcategories.${id}`)}
-                </MenuItem>
+                  {m?.objects.subcategories[id]}
+                </Dropdown.Item>
               ));
 
             return items.length === 0 ? null : (
-              <React.Fragment key={gid}>
-                {i > 0 && <MenuItem divider />}
-                <MenuItem header>{t(`objects.categories.${gid}`)}</MenuItem>
+              <Fragment key={gid}>
+                {i > 0 && <Dropdown.Divider />}
+                <Dropdown.Header>{m?.objects.categories[gid]}</Dropdown.Header>
                 {items}
-              </React.Fragment>
+              </Fragment>
             );
           })}
         </Dropdown.Menu>
-      </Dropdown>{' '}
+      </Dropdown>
       <Button
-        onClick={onConvertToMeasurement}
+        className="ml-1"
+        variant="secondary"
+        onClick={() => {
+          dispatch(convertToDrawing(undefined));
+        }}
         disabled={!hasObjects}
-        title={t('general.convertToDrawing')}
+        title={m?.general.convertToDrawing}
       >
         <FontAwesomeIcon icon="pencil" />
-        <span className="hidden-xs"> {t('general.convertToDrawing')}</span>
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.general.convertToDrawing}
+        </span>
       </Button>
     </>
   );
-};
-
-const mapStateToProps = (state: RootState) => ({
-  zoom: state.map.zoom,
-  hasObjects: state.objects.objects.length > 0,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onSearch(typeId: number) {
-    dispatch(objectsSetFilter(typeId));
-  },
-  onLowZoom() {
-    dispatch(
-      toastsAdd({
-        id: 'objects.lowZoomAlert',
-        messageKey: 'objects.lowZoomAlert.message',
-        style: 'warning',
-        actions: [
-          {
-            // name: 'Priblíž a hľadaj', TODO
-            nameKey: 'objects.lowZoomAlert.zoom',
-            action: [mapRefocus({ zoom: 12 })],
-          },
-        ],
-      }),
-    );
-  },
-  onConvertToMeasurement() {
-    dispatch(convertToDrawing(undefined));
-  },
-});
-
-export const ObjectsMenu = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(withTranslator(ObjectsMenuInt));
+}

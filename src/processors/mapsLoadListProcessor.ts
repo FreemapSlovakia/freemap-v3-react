@@ -1,7 +1,7 @@
-import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { selectFeature } from 'fm3/actions/mainActions';
 import { MapMeta, mapsLoadList, mapsSetList } from 'fm3/actions/mapsActions';
 import { httpRequest } from 'fm3/authAxios';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { isActionOf } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 

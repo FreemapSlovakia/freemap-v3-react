@@ -1,5 +1,5 @@
-import { wsSend, wsReceived } from 'fm3/actions/websocketActions';
-import { rpcResponse, rpcEvent, rpcCall } from 'fm3/actions/rpcActions';
+import { rpcCall, rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
+import { wsReceived, wsSend } from 'fm3/actions/websocketActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { is } from 'typescript-is';
 

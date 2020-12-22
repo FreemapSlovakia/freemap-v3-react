@@ -1,54 +1,66 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
-import { connect } from 'react-redux';
-import { Marker, Tooltip, Polyline, Polygon } from 'react-leaflet';
-import { LeafletEvent, DomEvent } from 'leaflet';
 import {
   drawingLineAddPoint,
-  drawingLineUpdatePoint,
   drawingLineRemovePoint,
+  drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
-import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
-import { distance } from 'fm3/geoutils';
-import { mapEventEmitter } from 'fm3/mapEventEmitter';
-import { divIcon } from 'leaflet';
-import { RootState } from 'fm3/storeCreator';
-import { Dispatch } from 'redux';
-import { RootAction } from 'fm3/actions';
-import { selectFeature } from 'fm3/actions/mainActions';
-import { LatLon } from 'fm3/types/common';
-import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { selectFeature } from 'fm3/actions/mainActions';
+import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
+import { colors } from 'fm3/constants';
+import { distance } from 'fm3/geoutils';
+import { RootState } from 'fm3/storeCreator';
+import { LatLon } from 'fm3/types/common';
+import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
+import {
+  Fragment,
+  ReactElement,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
+import {
+  Marker,
+  Polygon,
+  Polyline,
+  Tooltip,
+  useMap,
+  useMapEvent,
+} from 'react-leaflet';
+import { useDispatch, useSelector } from 'react-redux';
 
 const circularIcon = divIcon({
-  // CircleMarker is not draggable
   iconSize: [14, 14],
   iconAnchor: [7, 7],
   tooltipAnchor: [10, 0],
-  html: '<div class="circular-leaflet-marker-icon"></div>',
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
 });
 
-type OwnProps = {
+type Props = {
   index: number;
 };
 
-type Props = ReturnType<typeof mapStateToProps> &
-  ReturnType<typeof mapDispatchToProps> &
-  OwnProps;
+export function DrawingLineResult({ index }: Props): ReactElement {
+  const dispatch = useDispatch();
 
-const DrawingLineResultInt: React.FC<Props> = ({
-  line,
-  index,
-  onPointAdd,
-  onPointUpdate,
-  onPointRemove,
-  onSelect,
-  language,
-  selected,
-}) => {
-  const points = line.points;
+  const line = useSelector(
+    (state: RootState) => state.drawingLines.lines[index],
+  );
+
+  const language = useSelector((state: RootState) => state.l10n.language);
+
+  const selected = useSelector(
+    (state: RootState) =>
+      (state.main.selection?.type === 'draw-lines' ||
+        state.main.selection?.type === 'draw-polygons') &&
+      index === state.main.selection?.id,
+  );
+
+  const { points } = line;
 
   const [coords, setCoords] = useState<LatLon | undefined>();
+
   const [touching, setTouching] = useState(false);
 
   const removeCoords = !!coords && (!selected || touching);
@@ -60,23 +72,23 @@ const DrawingLineResultInt: React.FC<Props> = ({
   }, [removeCoords]);
 
   const handleMouseMove = useCallback(
-    (lat: number, lon: number, originalEvent) => {
-      if (touching) {
-        return;
+    ({ latlng, originalEvent }: LeafletMouseEvent) => {
+      if (!touching && selected) {
+        setCoords(
+          (originalEvent.target as any)?.classList.contains('leaflet-container')
+            ? { lat: latlng.lat, lon: latlng.lng }
+            : undefined,
+        );
       }
-
-      setCoords(
-        originalEvent.target.classList.contains('leaflet-container')
-          ? { lat, lon }
-          : undefined,
-      );
     },
-    [touching],
+    [touching, selected],
   );
 
   const handleMouseOut = useCallback(() => {
-    setCoords(undefined);
-  }, []);
+    if (selected) {
+      setCoords(undefined);
+    }
+  }, [selected]);
 
   const handleTouchStart = useCallback(() => {
     setTouching(true);
@@ -86,31 +98,26 @@ const DrawingLineResultInt: React.FC<Props> = ({
     setTouching(false);
   }, []);
 
+  const map = useMap();
+
+  useMapEvent('mousemove', handleMouseMove);
+
+  useMapEvent('mouseout', handleMouseOut);
+
   useEffect(() => {
-    if (!selected) {
-      return;
-    }
-
-    mapEventEmitter.on('mouseMove', handleMouseMove);
-    mapEventEmitter.on('mouseOut', handleMouseOut);
-
-    const mapContainer = getMapLeafletElement()?.getContainer();
+    const mapContainer = selected && map.getContainer();
 
     if (mapContainer) {
       DomEvent.on(mapContainer, 'touchstart', handleTouchStart);
       DomEvent.on(mapContainer, 'touchend', handleTouchEnd);
-    }
 
-    return () => {
-      mapEventEmitter.removeListener('mouseMove', handleMouseMove);
-      mapEventEmitter.removeListener('mouseOut', handleMouseOut);
-
-      if (mapContainer) {
+      return () => {
         DomEvent.off(mapContainer, 'touchstart', handleTouchStart);
         DomEvent.off(mapContainer, 'touchend', handleTouchEnd);
-      }
-    };
+      };
+    }
   }, [
+    map,
     selected,
     handleMouseMove,
     handleMouseOut,
@@ -135,23 +142,30 @@ const DrawingLineResultInt: React.FC<Props> = ({
         id = (points[pos - 1].id + points[pos].id) / 2;
       }
 
-      onPointAdd(index, { lat, lon, id }, pos);
+      dispatch(
+        drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
+      );
+
+      dispatch(drawingPointMeasure(true));
     },
-    [index, points, onPointAdd],
+    [points, dispatch, index],
   );
 
   const handleMeasureMarkerDrag = useCallback(
     ({ latlng: { lat, lng: lon } }, id: number) => {
-      onPointUpdate(index, { lat, lon, id });
+      dispatch(drawingLineUpdatePoint({ index, point: { lat, lon, id } }));
+
+      dispatch(drawingPointMeasure(true));
     },
-    [index, onPointUpdate],
+    [dispatch, index],
   );
 
   const handleMarkerClick = useCallback(
     (id: number) => {
-      onPointRemove(index, id);
+      dispatch(drawingLineRemovePoint({ index, id }));
+      dispatch(drawingPointMeasure(true));
     },
-    [index, onPointRemove],
+    [dispatch, index],
   );
 
   let prev: Point | null = null;
@@ -167,8 +181,15 @@ const DrawingLineResultInt: React.FC<Props> = ({
   );
 
   const handleSelect = useCallback(() => {
-    onSelect(line.type, index);
-  }, [onSelect, index, line]);
+    dispatch(
+      selectFeature({
+        type: line.type === 'polygon' ? 'draw-polygons' : 'draw-lines',
+        id: index,
+      }),
+    );
+
+    dispatch(drawingPointMeasure(true));
+  }, [dispatch, line.type, index]);
 
   const ps = useMemo(() => {
     const ps: Point[] = [];
@@ -196,30 +217,50 @@ const DrawingLineResultInt: React.FC<Props> = ({
   return (
     <>
       {ps.length > 2 && line.type === 'line' && (
-        <Polyline
-          weight={4}
-          color={selected ? '#65b2ff' : '#007bff'}
-          interactive
-          onclick={handleSelect}
-          positions={ps
-            .filter((_, i) => i % 2 === 0)
-            .map(({ lat, lon }) => ({ lat, lng: lon }))}
-          key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}
-        >
-          {line.label && (
-            <Tooltip className="compact" permanent>
-              <span>{line.label}</span>
-            </Tooltip>
-          )}
-        </Polyline>
+        <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
+          <Polyline
+            weight={12}
+            opacity={0}
+            interactive
+            bubblingMouseEvents={false}
+            eventHandlers={{
+              click: handleSelect,
+            }}
+            positions={ps
+              .filter((_, i) => i % 2 === 0)
+              .map(({ lat, lon }) => ({ lat, lng: lon }))}
+          />
+
+          <Polyline
+            weight={4}
+            pathOptions={{
+              color: selected ? colors.selected : colors.normal,
+            }}
+            interactive={false}
+            positions={ps
+              .filter((_, i) => i % 2 === 0)
+              .map(({ lat, lon }) => ({ lat, lng: lon }))}
+          >
+            {line.label && (
+              <Tooltip className="compact" permanent>
+                <span>{line.label}</span>
+              </Tooltip>
+            )}
+          </Polyline>
+        </Fragment>
       )}
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
           weight={4}
-          color={selected ? '#65b2ff' : '#007bff'}
+          pathOptions={{
+            color: selected ? colors.selected : colors.normal,
+          }}
           interactive
-          onclick={handleSelect}
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            click: handleSelect,
+          }}
           positions={ps
             .filter((_, i) => i % 2 === 0)
             .map(({ lat, lon }) => ({ lat, lng: lon }))}
@@ -241,6 +282,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
 
       {!!(ps.length > 0 && coords && !window.preventMapClick) && (
         <Polyline
+          color={colors.selected}
           weight={4}
           dashArray="6,8"
           interactive={false}
@@ -274,10 +316,16 @@ const DrawingLineResultInt: React.FC<Props> = ({
               // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
               icon={circularIcon}
               opacity={1}
-              ondrag={(e) => handleMeasureMarkerDrag(e as any, p.id)}
-              onclick={() => handleMarkerClick(p.id)}
-              ondragstart={handleDragStart}
-              ondragend={handleDragEnd}
+              eventHandlers={{
+                drag(e) {
+                  handleMeasureMarkerDrag(e, p.id);
+                },
+                click() {
+                  handleMarkerClick(p.id);
+                },
+                dragstart: handleDragStart,
+                dragend: handleDragEnd,
+              }}
             >
               {line.type === 'line' && (
                 <Tooltip
@@ -297,14 +345,16 @@ const DrawingLineResultInt: React.FC<Props> = ({
               position={{ lat: p.lat, lng: p.lon }}
               icon={circularIcon}
               opacity={0.5}
-              onDragstart={(e: LeafletEvent) =>
-                handlePoiAdd(
-                  e.target.getLatLng().lat,
-                  e.target.getLatLng().lng,
-                  i,
-                  p.id,
-                )
-              }
+              eventHandlers={{
+                dragstart(e) {
+                  handlePoiAdd(
+                    e.target.getLatLng().lat,
+                    e.target.getLatLng().lng,
+                    i,
+                    p.id,
+                  );
+                },
+              }}
             />
           );
         })}
@@ -312,7 +362,7 @@ const DrawingLineResultInt: React.FC<Props> = ({
       <ElevationChartActivePoint />
     </>
   );
-};
+}
 
 // see https://github.com/FreemapSlovakia/freemap-v3-react/issues/168
 function handleDragStart() {
@@ -325,41 +375,3 @@ function handleDragEnd() {
     window.preventMapClick = false;
   });
 }
-
-const mapStateToProps = (state: RootState, ownProps: OwnProps) => ({
-  line: state.drawingLines.lines[ownProps.index],
-  language: state.l10n.language,
-  selected:
-    (state.main.selection?.type === 'draw-lines' ||
-      state.main.selection?.type === 'draw-polygons') &&
-    ownProps.index === state.main.selection?.id,
-});
-
-const mapDispatchToProps = (dispatch: Dispatch<RootAction>) => ({
-  onPointAdd(index: number, point: Point, position: number) {
-    dispatch(drawingLineAddPoint({ index, point, position }));
-    dispatch(drawingPointMeasure(true));
-  },
-  onPointUpdate(index: number, point: Point) {
-    dispatch(drawingLineUpdatePoint({ index, point }));
-    dispatch(drawingPointMeasure(true));
-  },
-  onPointRemove(index: number, id: number) {
-    dispatch(drawingLineRemovePoint({ index, id }));
-    dispatch(drawingPointMeasure(true));
-  },
-  onSelect(type: 'polygon' | 'line', index: number) {
-    dispatch(
-      selectFeature({
-        type: type === 'polygon' ? 'draw-polygons' : 'draw-lines',
-        id: index,
-      }),
-    );
-    dispatch(drawingPointMeasure(true));
-  },
-});
-
-export const DrawingLineResult = connect(
-  mapStateToProps,
-  mapDispatchToProps,
-)(DrawingLineResultInt);
