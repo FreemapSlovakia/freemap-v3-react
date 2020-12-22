@@ -6,16 +6,11 @@ import {
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/elevationChart.scss';
-import { CSSProperties, ReactElement } from 'react';
+import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { Line } from 'react-chartjs-2';
 import { useDispatch, useSelector } from 'react-redux';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
-
-const styles: Record<string, CSSProperties> = {
-  closeButtonStyle: { position: 'absolute', right: 0, marginRight: '10px' },
-  pStyle: { marginLeft: '4px' },
-};
 
 export function ElevationChart(): ReactElement | null {
   const m = useMessages();
@@ -50,12 +45,12 @@ export function ElevationChart(): ReactElement | null {
     <div className="elevationChart">
       <Button
         variant="dark"
-        style={styles.closeButton}
         size="sm"
         onClick={() => dispatch(elevationChartClose())}
       >
         <FontAwesomeIcon icon="times" />
       </Button>
+
       <Line
         options={{
           tooltips: {
@@ -125,8 +120,9 @@ export function ElevationChart(): ReactElement | null {
           ],
         }}
       />
+
       {typeof climbUp === 'number' && typeof climbDown === 'number' && (
-        <p style={styles.pStyle}>
+        <p>
           {m?.trackViewer.details.uphill}: {nf0.format(climbUp)} m,{' '}
           {m?.trackViewer.details.downhill}: {nf0.format(climbDown)} m
         </p>

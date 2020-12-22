@@ -14,4 +14,14 @@
   @media ($smartphone-screen) {
     width: calc(100% - 20px);
   }
+
+  & > button {
+    position: absolute;
+    right: 0px;
+    margin-right: 10px;
+  }
+
+  & > p {
+    margin-left: 4px;
+  }
 }
