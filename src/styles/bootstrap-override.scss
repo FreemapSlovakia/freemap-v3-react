@@ -9,6 +9,12 @@
   overflow-y: auto;
 }
 
+.popover {
+  & .dropdown-item {
+    font-size: 1rem;
+  }
+}
+
 .dropdown-menu {
   z-index: 10000;
 }
