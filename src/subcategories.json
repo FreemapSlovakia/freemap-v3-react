@@ -198,10 +198,6 @@
         "operation": "!=",
         "value": "no"
       }
-      {
-        "key": "historic",
-        "value": "monument"
-      }
     ]
   },
   {
