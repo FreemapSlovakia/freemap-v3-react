@@ -12,6 +12,7 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { httpRequest } from 'fm3/authAxios';
 import { containsElevations, distance } from 'fm3/geoutils';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
+import { ElevationProfilePoint } from 'fm3/reducers/elevationChartReducer';
 import { RootState } from 'fm3/storeCreator';
 import { Dispatch } from 'redux';
 import { assertType } from 'typescript-is';
@@ -41,26 +42,26 @@ function resolveElevationProfilePointsLocally(
   dispatch: Dispatch<RootAction>,
 ) {
   let dist = 0;
-  let prevLonlatEle: null | [number, number, number] = null;
-  const elevationProfilePoints: {
-    lat: number;
-    lon: number;
-    ele: number;
-    distance: number;
-  }[] = [];
-  for (const item of getCoords(trackGeojson)) {
-    const [lon, lat, ele] = item;
-    if (prevLonlatEle) {
-      const [prevLon, prevLat] = prevLonlatEle;
-      dist += distance(lat, lon, prevLat, prevLon);
-      elevationProfilePoints.push({
-        lat,
-        lon,
-        ele,
-        distance: dist,
-      });
+
+  let prevPt: [number, number, number] | undefined;
+
+  const elevationProfilePoints: ElevationProfilePoint[] = [];
+
+  for (const pt of getCoords(trackGeojson)) {
+    const [lon, lat, ele] = pt;
+
+    if (prevPt) {
+      dist += distance(lat, lon, prevPt[1], prevPt[0]);
     }
-    prevLonlatEle = item;
+
+    elevationProfilePoints.push({
+      lat,
+      lon,
+      ele,
+      distance: dist,
+    });
+
+    prevPt = pt;
   }
 
   dispatch(elevationChartSetElevationProfile(elevationProfilePoints));
