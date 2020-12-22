@@ -11,15 +11,13 @@ export const mapRefocusProcessor: Processor = {
 
     const map = getMapLeafletElement();
 
-    const fixedLon = ((lon + 180) % 360) - 180;
-
     if (
       map &&
       (map.getZoom() !== zoom ||
         map.getCenter().lat !== lat ||
-        map.getCenter().lng !== fixedLon)
+        map.getCenter().lng !== lon)
     ) {
-      map.setView([lat, fixedLon], zoom);
+      map.setView([lat, lon], zoom);
     }
   },
 };
