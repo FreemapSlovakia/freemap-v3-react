@@ -655,7 +655,7 @@ const sk: Messages = {
       12: 'Zámok',
       13: 'Zrúcanina',
       14: 'Múzeum',
-      15: 'Pamätihodnosť',
+      15: 'Pomník',
       16: 'Pamätník',
       17: 'Lekáreň',
       18: 'Nemocnica',

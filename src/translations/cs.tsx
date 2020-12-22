@@ -645,7 +645,7 @@ const cs: Messages = {
       12: 'Zámek',
       13: 'Zřícenina',
       14: 'Muzeum',
-      15: 'Pozoruhodnosti',
+      15: 'Pomník',
       16: 'Památník',
       17: 'Lékárna',
       18: 'Nemocnice',
