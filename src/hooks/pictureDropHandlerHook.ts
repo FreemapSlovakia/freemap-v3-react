@@ -29,7 +29,12 @@ function loadPreview(
     const ratio = 618 / img.naturalWidth;
     const width = img.naturalWidth * ratio;
     const height = img.naturalHeight * ratio;
-    const o = is<HasOrientation>(tags) ? tags.Orientation.value : 1;
+    let o = is<HasOrientation>(tags) ? tags.Orientation.value : 1;
+
+    if (o < 1 || o > 8) {
+      o = 1;
+    }
+
     canvas.width = width;
     canvas.height = height;
 
@@ -181,6 +186,7 @@ export function usePictureDropHandler(
         if (showPreview) {
           loadPreview(file, tags, (err, url) => {
             if (err) {
+              cb(err);
               return;
             }
 
@@ -203,7 +209,9 @@ export function usePictureDropHandler(
       for (const accpetedFile of acceptedFiles) {
         processFile(accpetedFile, (err?: unknown) => {
           if (err) {
-            // TODO
+            console.error(err);
+
+            // TODO return it
           }
         });
       }
