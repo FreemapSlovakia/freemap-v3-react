@@ -75,6 +75,7 @@ export const overlayLetters = [
   's3',
   's4',
   'w',
+  'e',
 ] as const;
 
 export type BaseLayerLetters = typeof baseLayerLetters[number];
@@ -392,6 +393,23 @@ export const overlayLayers: OverlayLayerDef[] = [
     showOnlyInExpertMode: true,
     zIndex: 2,
   })),
+  {
+    type: 'e',
+    icon: 'rss',
+    url: '//dmr5.tiles.freemap.sk/{z}/{x}/{y}.png',
+    minZoom: 8,
+    maxNativeZoom: 17,
+    key: ['KeyE', true],
+    showOnlyInExpertMode: true,
+    zIndex: 1,
+    attribution: [
+      {
+        type: 'data',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+        name: '©\xa0Úrad geodézie, kartografie a katastra SR',
+      },
+    ],
+  },
   {
     type: 'r',
     icon: 'pencil-square-o',

@@ -187,7 +187,7 @@ const en: Messages = {
         'exit rotary': 'exit the circle', // undocumented
         'exit roundabout': 'exit the roundabout', // undocumented
         notification: 'notification',
-        'use lane':'use lane'
+        'use lane': 'use lane',
       },
 
       modifiers: {
@@ -1019,6 +1019,7 @@ const en: Messages = {
       s3: 'Strava (water activities)',
       s4: 'Strava (winter activities)',
       w: 'Wikipedia',
+      e: 'Hillshading DMR5.0 (SK)',
     },
     type: {
       map: 'map',
