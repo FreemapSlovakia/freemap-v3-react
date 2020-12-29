@@ -276,7 +276,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     icon: 'picture-o',
     minZoom: 0,
     key: ['KeyF', true],
-    zIndex: 3,
+    zIndex: 4,
     attribution: [
       {
         type: 'photos',
@@ -290,7 +290,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     icon: 'wikipedia-w',
     minZoom: 12,
     key: ['KeyW', true],
-    zIndex: 3,
+    zIndex: 4,
     attribution: [],
   },
   {
@@ -301,7 +301,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     minZoom: 11,
     maxNativeZoom: 15,
     key: ['KeyN', true],
-    zIndex: 2,
+    zIndex: 3,
     errorTileUrl: transparent1x1,
     // adminOnly: true,
   },
@@ -324,7 +324,7 @@ export const overlayLayers: OverlayLayerDef[] = [
       | [string, boolean]
       | undefined,
     showOnlyInExpertMode: stravaType !== 'both',
-    zIndex: 2,
+    zIndex: 3,
     strava: true,
     errorTileUrl: transparent1x1,
   })),
@@ -337,7 +337,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 20,
     key: ['KeyG', true],
     showOnlyInExpertMode: true,
-    zIndex: 2,
+    zIndex: 3,
   },
   {
     type: 't',
@@ -348,7 +348,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 16,
     key: ['KeyT', true],
     showOnlyInExpertMode: true,
-    zIndex: 2,
+    zIndex: 3,
   },
   {
     type: 'c',
@@ -359,7 +359,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 16,
     key: ['KeyC', true],
     showOnlyInExpertMode: true,
-    zIndex: 2,
+    zIndex: 3,
   },
   {
     type: 'q',
@@ -376,7 +376,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 18,
     key: ['KeyS', true],
     showOnlyInExpertMode: true,
-    zIndex: 2,
+    zIndex: 3,
   },
   ...([
     ['n1', ['Digit1', false], ''],
@@ -391,7 +391,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 16,
     key: key as [string, boolean] | undefined,
     showOnlyInExpertMode: true,
-    zIndex: 2,
+    zIndex: 3,
   })),
   {
     type: 'e',
@@ -401,7 +401,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 17,
     key: ['KeyE', true],
     showOnlyInExpertMode: true,
-    zIndex: 1,
+    zIndex: 2,
     attribution: [
       {
         type: 'data',
@@ -418,7 +418,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     maxNativeZoom: 12,
     key: ['KeyR', true],
     showOnlyInExpertMode: true,
-    zIndex: 4,
+    zIndex: 5,
     attribution: [FM_ATTR],
   },
 ];
