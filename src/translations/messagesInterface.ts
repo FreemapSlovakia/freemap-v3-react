@@ -501,6 +501,7 @@ export type Messages = {
     googleMaps: string;
     hiking_sk: string;
     zbgis: string;
+    of1950: string;
     mapy_cz: string;
     josm: string;
     id: string;

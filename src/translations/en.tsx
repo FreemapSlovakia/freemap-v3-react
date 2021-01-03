@@ -898,6 +898,7 @@ const en: Messages = {
     googleMaps: 'Google Maps',
     hiking_sk: 'Hiking.sk',
     zbgis: 'ZBGIS',
+    of1950: 'Historical orthophotomap',
     mapy_cz: 'Mapy.cz',
     josm: 'Edit in JOSM',
     id: 'Edit in iD',
