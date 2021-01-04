@@ -75,15 +75,15 @@ export function AboutModal({ show }: Props): ReactElement {
           <li>
             {m?.contacts.vicepresident}
             {': '}
-            <a href="mailto:michal.palenik@freemap.sk">
-              Mgr. Ing. Michal Páleník, PhD.
-            </a>{' '}
-            (Bratislava)
+            <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
+            (Žilina)
           </li>
           <li>
             {m?.contacts.secretary}
             {': '}
-            <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
+            <a href="mailto:tibor.jamecny@freemap.sk">
+              Ing. Tibor Jamečný
+            </a>{' '}
             (Košice)
           </li>
         </ul>
