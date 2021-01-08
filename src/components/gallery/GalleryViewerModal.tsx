@@ -202,9 +202,11 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
       window.devicePixelRatio *
         (isFullscreen
           ? window.innerWidth
+          : window.matchMedia('(min-width: 1200px)').matches
+          ? 1110
           : window.matchMedia('(min-width: 992px)').matches
-          ? 868
-          : 568),
+          ? 770
+          : 470),
     )}`;
 
   const handlePositionPick = useCallback(() => {
