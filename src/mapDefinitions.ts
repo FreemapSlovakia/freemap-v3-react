@@ -398,7 +398,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     icon: 'rss',
     url: '//dmr5.tiles.freemap.sk/{z}/{x}/{y}.png',
     minZoom: 8,
-    maxNativeZoom: 17,
+    maxNativeZoom: isHdpi ? 16 : 17,
     key: ['KeyE', true],
     showOnlyInExpertMode: true,
     zIndex: 2,
@@ -409,6 +409,8 @@ export const overlayLayers: OverlayLayerDef[] = [
         name: '©\xa0Úrad geodézie, kartografie a katastra SR',
       },
     ],
+    tileSize: isHdpi ? 128 : 256,
+    zoomOffset: isHdpi ? 1 : 0,
   },
   {
     type: 'r',
