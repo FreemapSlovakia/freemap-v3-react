@@ -223,7 +223,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   }, [dispatch]);
 
   return (
-    <Modal show={show} onHide={close} size="lg" keyboard={false}>
+    <Modal show={show} onHide={close} size="xl" keyboard={false}>
       <Modal.Header closeButton>
         <Modal.Title>
           {m?.gallery.viewer.title}{' '}
