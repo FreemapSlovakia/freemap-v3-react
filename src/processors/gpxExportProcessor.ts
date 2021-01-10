@@ -1,5 +1,4 @@
 import FileSaver from 'file-saver';
-import { Picture } from 'fm3/actions/galleryActions';
 import { exportGpx, setActiveModal } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
@@ -14,9 +13,18 @@ import { ObjectsState } from 'fm3/reducers/objectsReducer';
 import { RoutePlannerState } from 'fm3/reducers/routePlannerReducer';
 import { TrackingState } from 'fm3/reducers/trackingReducer';
 import { TrackViewerState } from 'fm3/reducers/trackViewerReducer';
-import { LatLon, StringDates } from 'fm3/types/common';
+import { LatLon } from 'fm3/types/common';
 import qs from 'query-string';
 import { assertType } from 'typescript-is';
+
+type Picture = {
+  lat: number;
+  lon: number;
+  id: number;
+  takenAt: string | null;
+  title: string | null;
+  description: string | null;
+};
 
 export const gpxExportProcessor: Processor<typeof exportGpx> = {
   actionCreator: exportGpx,
@@ -80,7 +88,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
         expectedStatus: 200,
       });
 
-      addPictures(doc, assertType<StringDates<Picture[]>>(data));
+      addPictures(doc, assertType<Picture[]>(data));
     }
 
     if (set.has('drawingLines')) {
@@ -344,7 +352,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
   },
 };
 
-function addPictures(doc: Document, pictures: StringDates<Picture>[]) {
+function addPictures(doc: Document, pictures: Picture[]) {
   pictures.forEach(({ lat, lon, id, takenAt, title, description }) => {
     const wptEle = createElement(doc.documentElement, 'wpt', undefined, {
       lat: String(lat),
