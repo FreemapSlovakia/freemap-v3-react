@@ -253,8 +253,8 @@ export const baseLayers: BaseLayerDef[] = [
   },
   {
     type: 'h',
-    url: 'http://tms.freemap.sk/historicke/{z}/{x}/{y}.png',
-    minNativeZoom: 12,
+    url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
+    minNativeZoom: 8,
     maxNativeZoom: 12,
     icon: 'institution',
     showOnlyInExpertMode: true,
@@ -415,7 +415,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'r',
     icon: 'pencil-square-o',
-    url: '//old.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
+    url: '//dev.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
     minZoom: 8,
     maxNativeZoom: 12,
     key: ['KeyR', true],
