@@ -42,7 +42,7 @@ export function ChangesetsMenu(): ReactElement {
         id="days"
         onSelect={(d) => {
           if (canSearchWithThisAmountOfDays(Number(d))) {
-            dispatch(changesetsSetDays(days));
+            dispatch(changesetsSetDays(Number(d)));
           }
         }}
         title={m?.changesets.olderThanFull({ days })}
@@ -52,6 +52,7 @@ export function ChangesetsMenu(): ReactElement {
             key={d}
             eventKey={String(d)}
             disabled={!canSearchWithThisAmountOfDays(d)}
+            active={d === days}
           >
             {m?.changesets.olderThan({ days: d })}
           </Dropdown.Item>
