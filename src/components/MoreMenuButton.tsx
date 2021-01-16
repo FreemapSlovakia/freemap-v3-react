@@ -38,7 +38,7 @@ export function MoreMenuButton(): ReactElement {
 
   const [show, setShow] = useState(false);
 
-  const [submenu, setSubmenu] = useState<any>(null);
+  const [submenu, setSubmenu] = useState<string | null>(null);
 
   const button = useRef<HTMLButtonElement | null>(null);
 

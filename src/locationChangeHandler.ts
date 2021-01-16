@@ -233,21 +233,26 @@ export const handleLocationChange = (
   const changesetsDay = query['changesets-days'];
   if (typeof changesetsDay === 'string') {
     const urlDays = parseInt(changesetsDay, 10);
+
     const reduxDays = getState().changesets.days;
+
     const daysDiff = reduxDays !== urlDays;
+
     if (daysDiff) {
       dispatch(changesetsSetDays(urlDays));
     }
 
     const reduxAuthor = getState().changesets.authorName;
+
     const urlAuthor = query['changesets-author'];
+
     if (
-      daysDiff ||
-      (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor)
+      (urlAuthor === null || typeof urlAuthor === 'string') &&
+      (daysDiff || (typeof urlAuthor === 'string' && reduxAuthor !== urlAuthor))
     ) {
       // we need timeout otherwise map bounds can't be read
       window.setTimeout(() => {
-        dispatch(changesetsSetAuthorName(urlAuthor as any)); // FIXME
+        dispatch(changesetsSetAuthorName(urlAuthor));
       }, 1000);
     }
   } else if (getState().changesets.changesets.length) {

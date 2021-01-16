@@ -94,9 +94,9 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         ...line,
         type:
           // compatibility
-          (line.type as any) === 'area'
+          (line.type as string) === 'area'
             ? 'polygon'
-            : (line.type as any) === 'distance'
+            : (line.type as string) === 'distance'
             ? 'line'
             : line.type,
       })),

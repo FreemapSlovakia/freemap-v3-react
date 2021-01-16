@@ -53,11 +53,11 @@ export function TipsModal({ show }: Props): ReactElement {
   );
 
   const [, title, icon] = useMemo<
-    [any, string | undefined, string | undefined]
+    [unknown, string | undefined, string | undefined]
   >(
     () =>
       tip
-        ? (tips.find(([key]) => key === tip) as [any, string, string])
+        ? (tips.find(([key]) => key === tip) as [unknown, string, string])
         : [undefined, undefined, undefined],
     [tip],
   );
