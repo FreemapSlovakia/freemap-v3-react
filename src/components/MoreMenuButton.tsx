@@ -42,13 +42,27 @@ export function MoreMenuButton(): ReactElement {
 
   const button = useRef<HTMLButtonElement | null>(null);
 
+  const tRef = useRef<number>();
+
   const handleButtonClick = useCallback(() => {
     setShow(true);
+
+    if (tRef.current) {
+      window.clearTimeout(tRef.current);
+
+      tRef.current = undefined;
+    }
   }, []);
 
   const close = useCallback(() => {
     setShow(false);
-    setSubmenu(null);
+
+    // timeout because of the animation
+    tRef.current = window.setTimeout(() => {
+      setSubmenu(null);
+
+      tRef.current = undefined;
+    }, 1000);
   }, []);
 
   const dispatch = useDispatch();
