@@ -9,7 +9,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import tips from 'fm3/tips/index.json';
-import { ReactElement, useCallback, useRef, useState } from 'react';
+import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
@@ -98,6 +98,23 @@ export function MoreMenuButton(): ReactElement {
   const skCz = ['sk', 'cs'].includes(language);
 
   const m = useMessages();
+
+  const eh = useCallback((e) => {
+    if (e.code === 'Escape') {
+      e.stopPropagation();
+      e.preventDefault();
+
+      setSubmenu(null);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.body.removeEventListener('keyup', eh);
+
+    if (submenu) {
+      document.body.addEventListener('keyup', eh);
+    }
+  }, [eh, submenu]);
 
   return (
     <>

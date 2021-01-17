@@ -52,7 +52,11 @@ export function attachKeyboardHandler(store: MyStore): void {
       return;
     }
 
-    if (event.code === 'Escape' && !embed) {
+    if (
+      event.code === 'Escape' &&
+      !embed &&
+      !document.body.classList.contains('fm-overlay-backdrop-enable')
+    ) {
       if (state.main.selectingHomeLocation) {
         store.dispatch(setSelectingHomeLocation(false));
         event.preventDefault();
