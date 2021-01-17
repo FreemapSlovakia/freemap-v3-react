@@ -20,7 +20,9 @@ export function GalleryMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const filterIsActive = useSelector(
-    (state: RootState) => Object.keys(state.gallery.filter).length > 0,
+    (state: RootState) =>
+      Object.values(state.gallery.filter).filter((v) => v !== undefined)
+        .length > 0,
   );
 
   return (
