@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { RootAction } from 'fm3/actions';
 import {
   authLoginWithFacebook,
@@ -14,7 +15,6 @@ import {
 } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { sendError } from 'fm3/globalErrorHandler';
-import { dispatchAxiosErrorAsToast } from 'fm3/processors/utils';
 import { RootState } from 'fm3/storeCreator';
 import { MessagePaths } from 'fm3/types/common';
 import { Dispatch, Middleware } from 'redux';
@@ -152,16 +152,23 @@ export const processorMiddleware: Middleware<
             errorKey === undefined
               ? p
               : p.catch((err) => {
-                  console.log('Error key: ' + errorKey);
-                  console.error(err);
+                  if (axios.isCancel(err)) {
+                    console.log('Canceled: ' + errorKey);
+                  } else {
+                    console.log('Error key: ' + errorKey);
+                    console.error(err);
 
-                  dispatchAxiosErrorAsToast(
-                    dispatch,
-                    errorKey,
-                    err,
-                    {},
-                    id ?? Math.random().toString(36).slice(2),
-                  );
+                    dispatch(
+                      toastsAdd({
+                        id: id ?? Math.random().toString(36).slice(2),
+                        messageKey: errorKey,
+                        messageParams:
+                          err instanceof Error ? { err: err.message } : {},
+
+                        style: 'danger',
+                      }),
+                    );
+                  }
                 }),
           );
         }
