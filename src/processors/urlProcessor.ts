@@ -71,6 +71,7 @@ export const urlProcessor: Processor = {
       trackViewer.osmWayId,
       trackViewer.trackUID,
       maps.id,
+      main.tool,
     ];
 
     if (
@@ -90,8 +91,8 @@ export const urlProcessor: Processor = {
       ],
     ];
 
-    if (main.selection?.type) {
-      queryParts.push(['tool', main.selection?.type]);
+    if (main.tool) {
+      queryParts.push(['tool', main.tool]);
     }
 
     const isMap = maps.id !== undefined;

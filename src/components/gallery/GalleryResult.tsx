@@ -31,7 +31,7 @@ export function GalleryResult(): ReactElement {
     [dispatch],
   );
 
-  // TODO mode to GalleryMenu to be consistent with other tools
+  // TODO move to GalleryMenu to be consistent with other tools
   const handleMapClick = useCallback(
     ({ latlng }: LeafletMouseEvent) => {
       if (isPickingPosition) {

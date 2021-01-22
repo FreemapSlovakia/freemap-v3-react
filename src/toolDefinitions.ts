@@ -7,7 +7,6 @@ export interface ToolDefinition {
     | 'maps'
     | 'routePlanner'
     | 'objects'
-    | 'photos'
     | 'measurement'
     | 'trackViewer'
     | 'mapDetails'
@@ -26,7 +25,6 @@ export const toolDefinitions: ToolDefinition[] = [
     kbd: 'KeyR',
   },
   { tool: 'objects', icon: 'map-marker', msgKey: 'objects', kbd: 'KeyO' },
-  { tool: 'photos', icon: 'picture-o', msgKey: 'photos', kbd: 'KeyP' },
   {
     tool: 'draw-lines',
     icon: 'object-ungroup',

@@ -32,9 +32,8 @@ import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { DrawingMenu } from 'fm3/components/DrawingMenu';
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
+import { DrawingSelection } from 'fm3/components/DrawingSelection';
 import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
 import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
@@ -51,7 +50,6 @@ import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
-import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
@@ -64,7 +62,6 @@ import {
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
-import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -82,11 +79,13 @@ import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
+import { DrawingLinesTool } from './DrawingLinesTool';
+import { DrawingPointsTool } from './DrawingPointsTool';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { GalleryModals } from './gallery/GalleryModals';
 import { MapsMenu } from './MapsMenu';
 import { MoreMenuButton } from './MoreMenuButton';
-import { ToolsMenuButton } from './ToolsMenuButton';
+import { ToolLabel } from './ToolsMenuButton';
 import { WikiLayer } from './WikiLayer';
 
 const embed = window.self !== window.top;
@@ -108,7 +107,11 @@ export function Main(): ReactElement {
     (state: RootState) => !state.map.overlays.includes('i'),
   );
 
-  const tool = useSelector((state: RootState) => state.main.selection?.type);
+  const selectedType = useSelector(
+    (state: RootState) => state.main.selection?.type,
+  );
+
+  const tool = useSelector((state: RootState) => state.main.tool);
 
   const embedFeatures = useSelector(
     (state: RootState) => state.main.embedFeatures,
@@ -322,8 +325,6 @@ export function Main(): ReactElement {
     }
   }, [dispatch, selection]);
 
-  const embedToolDef = embed && toolDefinitions.find((td) => td.tool === tool);
-
   // this is workaround to prevent map click events if popper is active (Overlay is shown)
   useEffect(() => {
     const mo = new MutationObserver(() => {
@@ -388,31 +389,29 @@ export function Main(): ReactElement {
             )}
           </Card>
 
-          {showMenu && (!embed || tool) && (
+          {/* tool menus */}
+          {showMenu && tool && (
             <Card className="fm-toolbar">
               <ButtonToolbar>
-                {embed ? (
-                  embedToolDef && (
-                    <>
-                      <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                      {m?.tools[embedToolDef.msgKey]}{' '}
-                    </>
-                  )
-                ) : (
-                  <ToolsMenuButton />
-                )}
+                <ToolLabel />
                 {tool === 'objects' && <ObjectsMenu />}
                 {tool === 'route-planner' && <RoutePlannerMenu />}
-                {tool &&
-                  ['draw-lines', 'draw-points', 'draw-polygons'].includes(
-                    tool,
-                  ) && <DrawingMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'photos' && <GalleryMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
-                {tool === 'tracking' && <TrackingMenu />}
-                {tool === 'maps' && <MapsMenu />}{' '}
+                {tool === 'maps' && <MapsMenu />}
+              </ButtonToolbar>
+            </Card>
+          )}
+
+          {/* selections */}
+          {showMenu && selectedType && (
+            <Card className="fm-toolbar">
+              <ButtonToolbar>
+                [{selectedType}]
+                {(tool === 'draw-lines' ||
+                  tool === 'draw-points' ||
+                  tool === 'draw-polygons') && <DrawingSelection />}
                 {canDelete && (
                   <Button
                     className="ml-1"
@@ -475,22 +474,27 @@ export function Main(): ReactElement {
 
           <Layers />
 
-          {showMenu && showInteractiveLayer && (
-            <>
-              <SearchResults />
-              <ObjectsResult />
-              <RoutePlannerResult />
-              <DrawingLinesResult />
-              <LocationResult />
-              <TrackViewerResult />
-              <DrawingPointsResult />
-              <ChangesetsResult />
-              <TrackingResult />
-            </>
-          )}
-
           {showMenu && (
             <>
+              {tool === 'draw-points' && <DrawingPointsTool />}
+              {(tool === 'draw-lines' || tool === 'draw-polygons') && (
+                <DrawingLinesTool />
+              )}
+
+              {showInteractiveLayer && (
+                <>
+                  <SearchResults />
+                  <ObjectsResult />
+                  <RoutePlannerResult />
+                  <DrawingLinesResult />
+                  <DrawingPointsResult />
+                  <LocationResult />
+                  <TrackViewerResult />
+                  <ChangesetsResult />
+                  <TrackingResult />
+                </>
+              )}
+
               {showGalleryPicker && <GalleryPicker />}
               <WikiLayer />
             </>

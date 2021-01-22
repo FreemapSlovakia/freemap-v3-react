@@ -15,9 +15,11 @@ import {
   setHomeLocation,
   setLocation,
   setSelectingHomeLocation,
+  setTool,
   startProgress,
   stopProgress,
   toggleLocate,
+  Tool,
 } from 'fm3/actions/mainActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackViewerSetEleSmoothingFactor } from 'fm3/actions/trackViewerActions';
@@ -31,6 +33,7 @@ interface Location extends LatLon {
 }
 
 export interface MainState {
+  tool: Tool | null;
   activeModal: string | null;
   homeLocation: LatLon | null;
   progress: Array<string | number>;
@@ -46,6 +49,7 @@ export interface MainState {
 }
 
 const initialState: MainState = {
+  tool: null,
   activeModal: null,
   homeLocation: null,
   progress: [],
@@ -61,10 +65,19 @@ const initialState: MainState = {
 };
 
 export const mainReducer = createReducer<MainState, RootAction>(initialState)
+  .handleAction(setTool, (state, action) => {
+    return {
+      ...state,
+      tool: action.payload,
+    };
+  })
   .handleAction(clearMap, (state) => {
     return {
       ...state,
-      selection: state.selection ? { type: state.selection.type } : null,
+      selection:
+        state.selection && state.selection.type !== 'tracking'
+          ? { type: state.selection.type }
+          : null,
     };
   })
   .handleAction(setAppState, (state, action) => {

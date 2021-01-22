@@ -412,8 +412,6 @@ const en: Messages = {
     locationPicking: {
       title: 'Select photo location',
     },
-    layerHint:
-      'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
     deletingError: ({ err }) => `Error deleting photo: ${err}`,
     tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
     pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,

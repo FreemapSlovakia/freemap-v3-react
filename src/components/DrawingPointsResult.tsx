@@ -1,5 +1,4 @@
 import {
-  drawingPointAdd,
   drawingPointChangePosition,
   drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
@@ -7,34 +6,15 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { RootState } from 'fm3/storeCreator';
-import { DragEndEvent, LeafletMouseEvent, Point } from 'leaflet';
+import { DragEndEvent, Point } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
-import { Tooltip, useMapEvent } from 'react-leaflet';
+import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
 const embed = window.self !== window.top;
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
-
-  const selection = useSelector((state: RootState) => state.main.selection);
-
-  const handlePoiAdd = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      const tool = selection?.type;
-
-      if (tool === 'draw-points') {
-        dispatch(
-          drawingPointAdd({ lat: latlng.lat, lon: latlng.lng, label: '' }),
-        );
-        dispatch(drawingPointMeasure(true));
-        return;
-      }
-    },
-    [selection?.type, dispatch],
-  );
-
-  useMapEvent('click', handlePoiAdd);
 
   const activeIndex = useSelector((state: RootState) =>
     state.main.selection?.type === 'draw-points'

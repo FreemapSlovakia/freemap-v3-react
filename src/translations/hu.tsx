@@ -415,8 +415,6 @@ const hu: Messages = {
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
     },
-    layerHint:
-      'A fényképeket tartalmazó rátétréteg megjelenítéséhez jelölje ki a Térképrétegek menüből a Fényképeket (vagy nyomja meg a Shift + F billentyűket.',
     deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Hiba történt a címkék beolvasásánál: ${err}`,

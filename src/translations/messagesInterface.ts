@@ -342,7 +342,6 @@ export type Messages = {
     locationPicking: {
       title: string;
     };
-    layerHint: string;
     deletingError: ({ err }: Err) => string;
     tagsFetchingError: ({ err }: Err) => string;
     pictureFetchingError: ({ err }: Err) => string;

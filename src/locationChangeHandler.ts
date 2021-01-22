@@ -23,6 +23,7 @@ import {
   selectFeature,
   setActiveModal,
   setEmbedFeatures,
+  setTool,
   Tool,
 } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
@@ -201,14 +202,12 @@ export const handleLocationChange = (
       ? 'draw-polygons'
       : query.tool === 'measure-dist'
       ? 'draw-lines'
-      : query.tool === 'gallery'
-      ? 'photos'
       : is<Tool>(query.tool)
       ? query.tool
       : null;
 
-  if ((getState().main.selection?.type ?? null) !== tool) {
-    dispatch(selectFeature(tool ? { type: tool } : null));
+  if (getState().main.tool !== tool) {
+    dispatch(setTool(tool));
   }
 
   const trackUID = query['track-uid'];

@@ -28,7 +28,6 @@ import { galleryRequestImagesByRadiusProcessor } from './processors/galleryReque
 import { gallerySavePictureProcessor } from './processors/gallerySavePictureProcessor';
 import { gallerySetItemForPositionPickingProcessor } from './processors/gallerySetItemForPositionPickingProcessor';
 import { galleryShowImageGaProcessor } from './processors/galleryShowImageGaProcessor';
-import { galleryShowLayerHintProcessor } from './processors/galleryShowLayerHintProcessor';
 import { galleryShowOnTheMapProcessor } from './processors/galleryShowOnTheMapProcessor';
 import { gallerySubmitCommentProcessor } from './processors/gallerySubmitCommentProcessor';
 import { gallerySubmitStarsProcessor } from './processors/gallerySubmitStarsProcessor';
@@ -182,7 +181,6 @@ processors.push(
   galleryRequestImagesByRadiusProcessor,
   gallerySavePictureProcessor,
   galleryShowImageGaProcessor,
-  galleryShowLayerHintProcessor,
   galleryShowOnTheMapProcessor,
   gallerySetItemForPositionPickingProcessor,
   gallerySubmitCommentProcessor,

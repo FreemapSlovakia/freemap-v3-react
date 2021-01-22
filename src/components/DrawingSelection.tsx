@@ -3,23 +3,18 @@ import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
-import { selectFeature, setActiveModal, Tool } from 'fm3/actions/mainActions';
+import { setActiveModal } from 'fm3/actions/mainActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import { useDispatch, useSelector } from 'react-redux';
 
-export function DrawingMenu(): ReactElement {
+export function DrawingSelection(): ReactElement {
   const dispatch = useDispatch();
 
   const m = useMessages();
-
-  function setTool(tool: Tool | null) {
-    dispatch(selectFeature(tool && { type: tool }));
-  }
 
   const selection = useSelector((state: RootState) => state.main.selection);
 
@@ -59,38 +54,6 @@ export function DrawingMenu(): ReactElement {
 
   return (
     <>
-      <ButtonGroup>
-        <Button
-          variant="secondary"
-          onClick={() => setTool('draw-lines')}
-          active={tool === 'draw-lines'}
-          title={m?.measurement.distance}
-        >
-          <FontAwesomeIcon icon="arrows-h" />
-          <span className="d-none d-sm-inline"> {m?.measurement.distance}</span>
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setTool('draw-points')}
-          active={tool === 'draw-points'}
-          title={m?.measurement.elevation}
-        >
-          <FontAwesomeIcon icon="map-marker" />
-          <span className="d-none d-sm-inline">
-            {' '}
-            {m?.measurement.elevation}
-          </span>
-        </Button>
-        <Button
-          variant="secondary"
-          onClick={() => setTool('draw-polygons')}
-          active={tool === 'draw-polygons'}
-          title={m?.measurement.area}
-        >
-          <FontAwesomeIcon icon="square-o" />
-          <span className="d-none d-sm-inline"> {m?.measurement.area}</span>
-        </Button>
-      </ButtonGroup>
       {isActive && (
         <Button
           className="ml-1"

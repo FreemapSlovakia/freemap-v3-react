@@ -10,10 +10,11 @@ export type Tool =
   | 'track-viewer'
   | 'draw-points'
   | 'changesets'
-  | 'photos'
   | 'map-details'
   | 'tracking'
   | 'maps';
+
+export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<string | null>();
 
@@ -110,7 +111,6 @@ export interface OtherSelection {
     | 'map-details'
     | 'track-viewer'
     | 'changesets'
-    | 'photos'
     | 'route-planner';
   id?: undefined;
 }

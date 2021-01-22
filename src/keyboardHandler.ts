@@ -72,7 +72,8 @@ export function attachKeyboardHandler(store: MyStore): void {
       ) {
         store.dispatch(
           selectFeature(
-            state.main.selection.id === undefined
+            state.main.selection.type === 'tracking' ||
+              state.main.selection.id === undefined
               ? null
               : { type: state.main.selection.type },
           ),

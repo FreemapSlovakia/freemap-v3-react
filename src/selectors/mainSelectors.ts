@@ -1,10 +1,10 @@
+import { Tool } from 'fm3/actions/mainActions';
 import { PickMode } from 'fm3/actions/routePlannerActions';
 import { RootState } from 'fm3/storeCreator';
 import { Track } from 'fm3/types/trackingTypes';
 import { createSelector } from 'reselect';
 
-export const toolSelector = (state: RootState): Selection['type'] | undefined =>
-  state.main.selection?.type;
+export const toolSelector = (state: RootState): Tool | null => state.main.tool;
 
 export const mapOverlaysSelector = (state: RootState): string[] =>
   state.map.overlays;

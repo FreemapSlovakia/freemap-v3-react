@@ -425,8 +425,6 @@ const sk: Messages = {
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
     },
-    layerHint:
-      'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
     deletingError: ({ err }) => `Nastala chyba pri mazaní obrázka: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Nastala chyba pri načítavaní tagov: ${err}`,
