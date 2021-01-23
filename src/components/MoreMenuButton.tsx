@@ -130,10 +130,10 @@ export function MoreMenuButton(): ReactElement {
   useEffect(() => {
     document.body.removeEventListener('keyup', eh);
 
-    if (submenu) {
+    if (submenu && show) {
       document.body.addEventListener('keyup', eh);
     }
-  }, [eh, submenu]);
+  }, [eh, submenu, show]);
 
   const tool = useSelector((state: RootState) => state.main.tool);
 
