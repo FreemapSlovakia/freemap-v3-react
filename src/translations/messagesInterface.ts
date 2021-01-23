@@ -44,6 +44,13 @@ export type Messages = {
     saved: string;
     deleted: string;
   };
+  selections: {
+    objects: string;
+    drawPoints: string;
+    drawLines: string;
+    drawPolygons: string;
+    tracking: string;
+  };
   tools: {
     none: string;
     tools: string;

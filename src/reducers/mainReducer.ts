@@ -70,6 +70,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     return {
       ...state,
       tool: action.payload,
+      selection: action.payload === 'route-planner' ? null : state.selection,
     };
   })
   .handleAction(clearMap, (state) => {

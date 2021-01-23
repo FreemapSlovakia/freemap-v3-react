@@ -78,6 +78,14 @@ const en: Messages = {
     saved: 'Saved.',
   },
 
+  selections: {
+    objects: 'Object (POI)',
+    drawPoints: 'Point',
+    drawLines: 'Line',
+    drawPolygons: 'Polygon',
+    tracking: 'Tracking',
+  },
+
   tools: {
     none: 'Close tool',
     tools: 'Tools',

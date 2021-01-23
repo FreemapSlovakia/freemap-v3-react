@@ -16,7 +16,6 @@ import { convertToDrawing, deleteFeature } from 'fm3/actions/mainActions';
 import { RootState } from 'fm3/storeCreator';
 import produce from 'immer';
 import { isActionOf } from 'typesafe-actions';
-import { initialState as changesetsInitialState } from './changesetsReducer';
 import {
   cleanState as routePlannerCleanState,
   initialState as routePlannerInitialState,
@@ -178,11 +177,6 @@ export function preGlobalReducer(
             (object) => object.id !== selection.id,
           ),
         },
-      };
-    } else if (state.main.tool === 'changesets') {
-      return {
-        ...state,
-        changesets: changesetsInitialState,
       };
     } else if (state.main.tool === 'route-planner') {
       const { routePlanner } = state;

@@ -375,6 +375,8 @@ export function Main(): ReactElement {
               <ButtonToolbar>
                 {toolDef && (
                   <span className="align-self-center ml-1 mr-2">
+                    <FontAwesomeIcon icon="briefcase" />
+                    {' / '}
                     <FontAwesomeIcon icon={toolDef.icon} />
                     <span className="d-none d-sm-inline">
                       {' '}
@@ -393,7 +395,7 @@ export function Main(): ReactElement {
                   variant="secondary"
                   onClick={() => dispatch(setTool(null))}
                 >
-                  {m?.general.close}
+                  <FontAwesomeIcon icon="times" /> {m?.general.close}
                 </Button>
               </ButtonToolbar>
             </Card>
@@ -403,7 +405,36 @@ export function Main(): ReactElement {
           {showMenu && selectionType && (
             <Card className="fm-toolbar">
               <ButtonToolbar>
-                [sel:{selectionType}]
+                <span className="align-self-center ml-1 mr-2">
+                  <FontAwesomeIcon icon="mouse-pointer" />
+                  {'/ '}
+                  {selectionType === 'draw-lines' ? (
+                    <>
+                      <FontAwesomeIcon icon="arrows-h" />{' '}
+                      {m?.selections.drawLines}
+                    </>
+                  ) : selectionType === 'draw-polygons' ? (
+                    <>
+                      <FontAwesomeIcon icon="square-o" />{' '}
+                      {m?.selections.drawPolygons}
+                    </>
+                  ) : selectionType === 'draw-points' ? (
+                    <>
+                      <FontAwesomeIcon icon="map-marker" />{' '}
+                      {m?.selections.drawPoints}
+                    </>
+                  ) : selectionType === 'objects' ? (
+                    <>
+                      <FontAwesomeIcon icon="map-marker" />{' '}
+                      {m?.selections.objects}
+                    </>
+                  ) : selectionType === 'tracking' ? (
+                    <>
+                      <FontAwesomeIcon icon="bullseye" />{' '}
+                      {m?.selections.tracking}
+                    </>
+                  ) : null}
+                </span>
                 {(selectionType === 'draw-lines' ||
                   selectionType === 'draw-points' ||
                   selectionType === 'draw-polygons') && <DrawingSelection />}

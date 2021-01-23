@@ -1,8 +1,6 @@
 import { convertToDrawing, setActiveModal } from 'fm3/actions/mainActions';
 import {
   PickMode,
-  RouteAlternativeExtra,
-  routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
   routePlannerSetFromCurrentPosition,
   routePlannerSetMode,
@@ -19,7 +17,6 @@ import { toastsAdd } from 'fm3/actions/toastsActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import { Messages } from 'fm3/translations/messagesInterface';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
 import { MouseEvent, ReactElement, useCallback, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -53,20 +50,8 @@ export function RoutePlannerMenu(): ReactElement {
     (state: RootState) => state.routePlanner.pickMode,
   );
 
-  // const itineraryIsVisible = useSelector(
-  //   (state: RootState) => state.routePlanner.itineraryIsVisible,
-  // );
-
   const routeFound = useSelector(
     (state: RootState) => !!state.routePlanner.alternatives.length,
-  );
-
-  const activeAlternativeIndex = useSelector(
-    (state: RootState) => state.routePlanner.activeAlternativeIndex,
-  );
-
-  const alternatives = useSelector(
-    (state: RootState) => state.routePlanner.alternatives,
   );
 
   const elevationProfileIsVisible = useSelector(
@@ -74,8 +59,6 @@ export function RoutePlannerMenu(): ReactElement {
   );
 
   const expertMode = useSelector((state: RootState) => state.main.expertMode);
-
-  const language = useSelector((state: RootState) => state.l10n.language);
 
   const canSwap = useSelector(
     (state: RootState) =>
@@ -118,13 +101,6 @@ export function RoutePlannerMenu(): ReactElement {
     () => transportTypeDefs.find(({ type }) => type === transportType),
     [transportType],
   );
-
-  const activeAlternative = alternatives[activeAlternativeIndex];
-
-  const nf = Intl.NumberFormat(language, {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
 
   const stopPropagation = useCallback((e: MouseEvent) => {
     e.stopPropagation();
@@ -323,7 +299,7 @@ export function RoutePlannerMenu(): ReactElement {
           </>
         )}
       </ButtonGroup>
-      {alternatives.length > 1 && (
+      {/* {alternatives.length > 1 && (
         <DropdownButton
           className="ml-1"
           variant="secondary"
@@ -363,7 +339,7 @@ export function RoutePlannerMenu(): ReactElement {
             </Dropdown.Item>
           ))}
         </DropdownButton>
-      )}
+      )} */}
       {/* ' '}
       <Button
         className="ml-1"
@@ -421,32 +397,5 @@ export function RoutePlannerMenu(): ReactElement {
         </>
       )}
     </>
-  );
-}
-
-function imhdSummary(
-  m: Messages | undefined,
-  language: string,
-  extra: RouteAlternativeExtra,
-) {
-  const dateFormat = new Intl.DateTimeFormat(language, {
-    hour: '2-digit',
-    minute: '2-digit',
-  });
-
-  const { price, arrival, numbers } = extra;
-
-  return (
-    m?.routePlanner.imhd.total.short({
-      price:
-        price === undefined
-          ? undefined
-          : Intl.NumberFormat(language, {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            }).format(price),
-      arrival: dateFormat.format(arrival * 1000),
-      numbers,
-    }) ?? '…'
   );
 }

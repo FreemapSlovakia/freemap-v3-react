@@ -79,6 +79,14 @@ const sk: Messages = {
     saved: 'Uložené.',
   },
 
+  selections: {
+    objects: 'Objekt (POI)',
+    drawPoints: 'Bod',
+    drawLines: 'Čiara',
+    drawPolygons: 'Polygón',
+    tracking: 'Sledovanie',
+  },
+
   tools: {
     none: 'Zavrieť nástroj',
     tools: 'Nástroje',

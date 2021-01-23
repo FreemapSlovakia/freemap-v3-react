@@ -80,6 +80,14 @@ const cs: Messages = {
     saved: 'Uložené.',
   },
 
+  selections: {
+    objects: 'Objekt (POI)',
+    drawPoints: 'Bod',
+    drawLines: 'Čára',
+    drawPolygons: 'Polygón',
+    tracking: 'Sledování',
+  },
+
   tools: {
     none: 'Zavřít nástroj',
     tools: 'Nástroje',
