@@ -2,13 +2,19 @@ import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
 import {
   galleryClear,
   galleryEditPicture,
+  galleryHideFilter,
+  galleryHideUploadModal,
+  galleryList,
   galleryRequestImage,
   gallerySetItemForPositionPicking,
+  galleryShowFilter,
   galleryShowOnTheMap,
+  galleryShowUploadModal,
 } from './actions/galleryActions';
 import {
   clearMap,
   deleteFeature,
+  openInExternalApp,
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
@@ -22,7 +28,7 @@ import { toolDefinitions } from './toolDefinitions';
 
 let keyTimer: number | null = null;
 
-let initCode: 'KeyE' | 'KeyG' | null = null;
+let initCode: 'KeyE' | 'KeyG' | 'KeyP' | 'KeyJ' | null = null;
 
 const embed = window.self !== window.top;
 
@@ -42,6 +48,16 @@ export function attachKeyboardHandler(store: MyStore): void {
         !!state.main.activeModal ||
         state.gallery.showUploadModal ||
         state.gallery.activeImageId);
+
+    if (state.gallery.showFilter && event.code === 'Escape') {
+      store.dispatch(galleryHideFilter());
+      return;
+    }
+
+    if (state.gallery.showUploadModal && event.code === 'Escape') {
+      store.dispatch(galleryHideUploadModal());
+      return;
+    }
 
     if (showGalleryViewerSelector(state) && event.code === 'Escape') {
       if (state.gallery.editModel) {
@@ -217,7 +233,10 @@ export function attachKeyboardHandler(store: MyStore): void {
     } else if (
       !embed &&
       !keyTimer &&
-      (event.code === 'KeyG' || event.code === 'KeyE')
+      (event.code === 'KeyG' ||
+        event.code === 'KeyE' ||
+        event.code === 'KeyP' ||
+        event.code === 'KeyJ')
     ) {
       initCode = event.code;
 
@@ -240,6 +259,49 @@ export function attachKeyboardHandler(store: MyStore): void {
         if (toolDefinition?.kbd) {
           store.dispatch(setTool(toolDefinition.tool));
           event.preventDefault();
+          return;
+        }
+      } else if (initCode === 'KeyJ') {
+        if (event.code === 'KeyC') {
+          store.dispatch(openInExternalApp({ where: 'copy' }));
+          return;
+        } else if (event.code === 'KeyG') {
+          store.dispatch(openInExternalApp({ where: 'google' }));
+          return;
+        } else if (event.code === 'KeyJ') {
+          store.dispatch(openInExternalApp({ where: 'josm' }));
+          return;
+        } else if (event.code === 'KeyO') {
+          store.dispatch(openInExternalApp({ where: 'osm.org' }));
+          return;
+        } else if (event.code === 'KeyI') {
+          store.dispatch(openInExternalApp({ where: 'osm.org/id' }));
+          return;
+        } else if (event.code === 'KeyM') {
+          store.dispatch(openInExternalApp({ where: 'mapy.cz' }));
+          return;
+        } else if (event.code === 'KeyF') {
+          store.dispatch(openInExternalApp({ where: 'facebook' }));
+          return;
+        } else if (event.code === 'KeyT') {
+          store.dispatch(openInExternalApp({ where: 'twitter' }));
+          return;
+        } else if (event.code === 'KeyH') {
+          store.dispatch(openInExternalApp({ where: 'hiking.sk' }));
+          return;
+        } else if (event.code === 'KeyZ') {
+          store.dispatch(openInExternalApp({ where: 'zbgis' }));
+          return;
+        }
+      } else if (initCode === 'KeyP') {
+        if (event.code === 'KeyL') {
+          store.dispatch(galleryList('-createdAt'));
+          return;
+        } else if (event.code === 'KeyU') {
+          store.dispatch(galleryShowUploadModal());
+          return;
+        } else if (event.code === 'KeyF') {
+          store.dispatch(galleryShowFilter());
           return;
         }
       } else if (initCode === 'KeyE') {

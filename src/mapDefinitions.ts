@@ -214,7 +214,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['KeyM', false],
+    key: ['Key1', true],
   },
   {
     type: 'p',
@@ -232,7 +232,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['KeyP', false],
+    key: ['Digit2', true],
   },
   {
     type: 'd',
@@ -249,7 +249,7 @@ export const baseLayers: BaseLayerDef[] = [
       },
       OSM_DATA_ATTR,
     ],
-    key: ['KeyD', false],
+    key: ['Digit3', true],
   },
   {
     type: 'h',
@@ -259,7 +259,7 @@ export const baseLayers: BaseLayerDef[] = [
     icon: 'institution',
     showOnlyInExpertMode: true,
     attribution: [],
-    key: ['KeyH', false],
+    key: ['Digit9', true],
   },
 ];
 

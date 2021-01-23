@@ -120,3 +120,33 @@ export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
 export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
   number | undefined
 >();
+
+export type ExternalTargets =
+  | 'window'
+  | 'facebook'
+  | 'twitter'
+  | 'copy'
+  | 'osm.org'
+  | 'osm.org/id'
+  | 'josm'
+  | 'zbgis'
+  | 'hiking.sk'
+  | 'google'
+  | 'mapy.cz'
+  | 'oma.sk'
+  | 'openstreetcam'
+  | 'mapillary'
+  | 'url'
+  | 'image';
+
+export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
+  where: ExternalTargets;
+  lat?: number;
+  lon?: number;
+  zoom?: number;
+  mapType?: string;
+  includePoint?: boolean;
+  pointTitle?: string;
+  pointDescription?: string;
+  url?: string;
+}>();

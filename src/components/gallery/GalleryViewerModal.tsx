@@ -72,8 +72,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
 
   const language = useSelector((state: RootState) => state.l10n.language);
 
-  const expertMode = useSelector((state: RootState) => state.main.expertMode);
-
   const [loading, setLoading] = useState(true);
 
   const [isFullscreen, setIsFullscreen] = useState(false);
@@ -504,7 +502,6 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             lon={lon}
             mapType={'X'}
             zoom={14}
-            expertMode={expertMode}
             placement="top"
             includePoint
             pointTitle={title ?? undefined}

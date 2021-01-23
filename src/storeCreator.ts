@@ -49,6 +49,7 @@ import { mapsSaveProcessor } from './processors/mapsSaveProcessor';
 import { mapTypeGaProcessor } from './processors/mapTypeGaProcessor';
 import { measurementProcessor } from './processors/measurementProcessor';
 import { objectsFetchProcessor } from './processors/objectsFetchProcessor';
+import { openInExternalAppProcessor } from './processors/openInExternalAppProcessor';
 import { osmLoadNodeProcessor } from './processors/osmLoadNodeProcessor';
 import { osmLoadRelationProcessor } from './processors/osmLoadRelationProcessor';
 import { osmLoadWayProcessor } from './processors/osmLoadWayProcessor';
@@ -205,6 +206,7 @@ processors.push(
   wikiLayerProcessor,
   wikiLoadPreviewProcessor,
   legendProcessor,
+  openInExternalAppProcessor,
   ...Object.values(rpcProcessors),
   urlProcessor,
 );

@@ -467,10 +467,10 @@ export function MoreMenuButton(): ReactElement {
                   lon={lon}
                   zoom={zoom}
                   mapType={mapType}
-                  expertMode={expertMode}
                   onSelect={close}
                   pointTitle={document.title}
                   pointDescription={document.title}
+                  showKbdShortcut
                 />
               </Fragment>
             ) : submenu === 'language' ? (
@@ -530,7 +530,8 @@ export function MoreMenuButton(): ReactElement {
                   }}
                   active={filterIsActive}
                 >
-                  <FontAwesomeIcon icon="filter" /> {m?.gallery.filter}
+                  <FontAwesomeIcon icon="filter" /> {m?.gallery.filter}{' '}
+                  <kbd>p</kbd> <kbd>f</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -539,7 +540,8 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="upload" /> {m?.gallery.upload}
+                  <FontAwesomeIcon icon="upload" /> {m?.gallery.upload}{' '}
+                  <kbd>p</kbd> <kbd>u</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -560,7 +562,7 @@ export function MoreMenuButton(): ReactElement {
                       overlays.includes('I') ? 'check-square-o' : 'square-o'
                     }
                   />{' '}
-                  {m?.gallery.showLayer}
+                  {m?.gallery.showLayer} <kbd>shift + p</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
@@ -575,7 +577,7 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  {m?.gallery.f.lastUploaded}
+                  {m?.gallery.f.lastUploaded} <kbd>p</kbd> <kbd>l</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
