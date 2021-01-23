@@ -59,6 +59,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
   mouseCursorSelector,
+  selectingModeSelector,
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
@@ -335,6 +336,8 @@ export function Main(): ReactElement {
 
   const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
 
+  const isSelecting = useSelector(selectingModeSelector);
+
   return (
     <>
       <style>
@@ -403,8 +406,11 @@ export function Main(): ReactElement {
                   variant="secondary"
                   onClick={() => dispatch(setTool(null))}
                 >
-                  <FontAwesomeIcon icon="times" /> {m?.general.close}{' '}
-                  <kbd>Esc</kbd>
+                  <FontAwesomeIcon icon="times" />
+                  <span className="d-none d-sm-inline">
+                    {' '}
+                    {m?.general.close} <kbd>Esc</kbd>
+                  </span>
                 </Button>
               </ButtonToolbar>
             </Card>
@@ -502,7 +508,7 @@ export function Main(): ReactElement {
               {(tool === 'draw-lines' || tool === 'draw-polygons') && (
                 <DrawingLinesTool />
               )}
-              {!tool && <SelectionTool />}
+              {isSelecting && <SelectionTool />}
 
               {showInteractiveLayer && (
                 <>
