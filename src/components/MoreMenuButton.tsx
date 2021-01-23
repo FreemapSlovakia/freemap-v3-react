@@ -185,6 +185,11 @@ export function MoreMenuButton(): ReactElement {
     setShow(false);
   }
 
+  const trackingDisplay = useSelector(
+    (state: RootState) =>
+      state.tracking.showPoints + ',' + state.tracking.showLine,
+  );
+
   return (
     <>
       <Button
@@ -589,30 +594,30 @@ export function MoreMenuButton(): ReactElement {
                 <Dropdown.Divider />
 
                 <Dropdown.Item
+                  active={trackingDisplay === 'true,false'}
                   onSelect={() => {
                     dispatch(trackingActions.setShowPoints(true));
                     dispatch(trackingActions.setShowLine(false));
-                    close();
                   }}
                 >
                   <FontAwesomeIcon icon="eye" /> {m?.tracking.visual.points}
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  active={trackingDisplay === 'false,true'}
                   onSelect={() => {
                     dispatch(trackingActions.setShowPoints(false));
                     dispatch(trackingActions.setShowLine(true));
-                    close();
                   }}
                 >
                   <FontAwesomeIcon icon="eye" /> {m?.tracking.visual.line}
                 </Dropdown.Item>
 
                 <Dropdown.Item
+                  active={trackingDisplay === 'true,true'}
                   onSelect={() => {
                     dispatch(trackingActions.setShowPoints(true));
                     dispatch(trackingActions.setShowLine(true));
-                    close();
                   }}
                 >
                   <FontAwesomeIcon icon="eye" />{' '}
@@ -627,25 +632,27 @@ export function MoreMenuButton(): ReactElement {
                 />
 
                 <Dropdown.Item
-                  onSelect={() => setToolAndClose('draw-lines')}
-                  active={tool === 'draw-lines'}
-                >
-                  <FontAwesomeIcon icon="arrows-h" /> {m?.measurement.distance}
-                </Dropdown.Item>
-
-                <Dropdown.Item
                   onSelect={() => setToolAndClose('draw-points')}
                   active={tool === 'draw-points'}
                 >
                   <FontAwesomeIcon icon="map-marker" />{' '}
-                  {m?.measurement.elevation}
+                  {m?.measurement.elevation} <kbd>g</kbd> <kbd>p</kbd>
+                </Dropdown.Item>
+
+                <Dropdown.Item
+                  onSelect={() => setToolAndClose('draw-lines')}
+                  active={tool === 'draw-lines'}
+                >
+                  <FontAwesomeIcon icon="arrows-h" /> {m?.measurement.distance}{' '}
+                  <kbd>g</kbd> <kbd>l</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
                   onSelect={() => setToolAndClose('draw-polygons')}
                   active={tool === 'draw-polygons'}
                 >
-                  <FontAwesomeIcon icon="square-o" /> {m?.measurement.area}
+                  <FontAwesomeIcon icon="square-o" /> {m?.measurement.area}{' '}
+                  <kbd>g</kbd> <kbd>n</kbd>
                 </Dropdown.Item>
               </Fragment>
             ) : null}
