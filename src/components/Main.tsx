@@ -395,7 +395,8 @@ export function Main(): ReactElement {
                   variant="secondary"
                   onClick={() => dispatch(setTool(null))}
                 >
-                  <FontAwesomeIcon icon="times" /> {m?.general.close}
+                  <FontAwesomeIcon icon="times" /> {m?.general.close}{' '}
+                  <kbd>Esc</kbd>
                 </Button>
               </ButtonToolbar>
             </Card>

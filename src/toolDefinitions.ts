@@ -7,6 +7,7 @@ export interface ToolDefinition {
   msgKey: keyof Messages['tools'];
   kbd?: string;
   expertOnly?: boolean;
+  draw?: true;
 }
 
 export const toolDefinitions: ToolDefinition[] = [
@@ -23,18 +24,21 @@ export const toolDefinitions: ToolDefinition[] = [
     icon: 'arrows-h',
     msgKey: 'drawLines',
     kbd: 'KeyL',
+    draw: true,
   },
   {
     tool: 'draw-polygons',
     icon: 'square-o',
     msgKey: 'drawPolygons',
     kbd: 'KeyN',
+    draw: true,
   },
   {
     tool: 'draw-points',
     icon: 'map-marker',
     msgKey: 'drawPoints',
     kbd: 'KeyP',
+    draw: true,
   },
   { tool: 'track-viewer', icon: 'road', msgKey: 'trackViewer', kbd: 'KeyG' },
   { tool: 'map-details', icon: 'info', msgKey: 'mapDetails', kbd: 'KeyI' },

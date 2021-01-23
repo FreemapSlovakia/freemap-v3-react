@@ -16,6 +16,7 @@ export function SearchResults(): ReactElement | null {
 
   return !selectedResult ? null : (
     <GeoJSON
+      interactive={false}
       key={selectedResult.id}
       data={selectedResult.geojson}
       style={{ weight: 5 }}

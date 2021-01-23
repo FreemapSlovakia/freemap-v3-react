@@ -41,7 +41,6 @@ type Submenu =
   | 'openExternally'
   | 'help'
   | 'language'
-  | 'tools'
   | 'photos'
   | 'tracking'
   | 'drawing'
@@ -112,14 +111,21 @@ export function MoreMenuButton(): ReactElement {
 
   const m = useMessages();
 
-  const eh = useCallback((e) => {
-    if (e.code === 'Escape') {
-      e.stopPropagation();
-      e.preventDefault();
+  const eh = useCallback(
+    (e) => {
+      if (e.code === 'Escape') {
+        e.stopPropagation();
+        e.preventDefault();
 
-      close();
-    }
-  }, []);
+        if (submenu) {
+          setSubmenu(null);
+        } else {
+          close();
+        }
+      }
+    },
+    [submenu],
+  );
 
   useEffect(() => {
     document.body.removeEventListener('keyup', eh);
@@ -244,11 +250,12 @@ export function MoreMenuButton(): ReactElement {
 
                 <Dropdown.Item
                   onSelect={() => {
-                    setSubmenu('tools');
+                    close();
+                    dispatch(clearMap());
                   }}
                 >
-                  <FontAwesomeIcon icon="briefcase" /> {m?.tools.tools}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap}{' '}
+                  <kbd>g</kbd> <kbd>c</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -269,6 +276,31 @@ export function MoreMenuButton(): ReactElement {
                   <FontAwesomeIcon icon="picture-o" /> {m?.tools.photos}
                   <FontAwesomeIcon icon="chevron-right" />
                 </Dropdown.Item>
+
+                {toolDefinitions
+                  .filter(
+                    ({ expertOnly, draw }) =>
+                      !draw && (expertMode || !expertOnly),
+                  )
+                  .map(
+                    ({ tool: newTool, icon, msgKey, kbd }) =>
+                      newTool && (
+                        <Dropdown.Item
+                          key={newTool}
+                          eventKey={newTool}
+                          onSelect={handleToolSelect}
+                          active={toolDef?.tool === newTool}
+                        >
+                          <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
+                          {kbd && (
+                            <>
+                              <kbd>g</kbd>{' '}
+                              <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
+                            </>
+                          )}
+                        </Dropdown.Item>
+                      ),
+                  )}
 
                 <Dropdown.Item
                   onSelect={() => {
@@ -331,24 +363,7 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
-                <Dropdown.Item
-                  onSelect={close}
-                  href="http://wiki.freemap.sk/NahlasenieChyby"
-                  target="_blank"
-                >
-                  <FontAwesomeIcon icon="exclamation-triangle" />{' '}
-                  {m?.more.reportMapError}
-                </Dropdown.Item>
 
-                <Dropdown.Item
-                  onSelect={close}
-                  href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
-                  target="_blank"
-                >
-                  <FontAwesomeIcon icon="!icon-bug" /> {m?.more.reportAppError}
-                </Dropdown.Item>
-
-                <Dropdown.Divider />
                 <Dropdown.Item
                   onSelect={() => {
                     setSubmenu('help');
@@ -393,6 +408,25 @@ export function MoreMenuButton(): ReactElement {
                   }}
                 >
                   <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
+                </Dropdown.Item>
+
+                <Dropdown.Divider />
+
+                <Dropdown.Item
+                  onSelect={close}
+                  href="http://wiki.freemap.sk/NahlasenieChyby"
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon="exclamation-triangle" />{' '}
+                  {m?.more.reportMapError}
+                </Dropdown.Item>
+
+                <Dropdown.Item
+                  onSelect={close}
+                  href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
+                  target="_blank"
+                >
+                  <FontAwesomeIcon icon="!icon-bug" /> {m?.more.reportAppError}
                 </Dropdown.Item>
 
                 {skCz && (
@@ -476,44 +510,6 @@ export function MoreMenuButton(): ReactElement {
                 >
                   Magyar
                 </Dropdown.Item>
-              </Fragment>
-            ) : submenu === 'tools' ? (
-              <Fragment key="tools">
-                <SubmenuHeader icon="briefcase" title={m?.tools.tools} />
-
-                <Dropdown.Item
-                  onSelect={() => {
-                    close();
-                    dispatch(clearMap());
-                  }}
-                >
-                  <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap}{' '}
-                  <kbd>g</kbd> <kbd>c</kbd>
-                </Dropdown.Item>
-
-                <Dropdown.Divider />
-
-                {toolDefinitions
-                  .filter(({ expertOnly }) => expertMode || !expertOnly)
-                  .map(
-                    ({ tool: newTool, icon, msgKey, kbd }) =>
-                      newTool && (
-                        <Dropdown.Item
-                          key={newTool}
-                          eventKey={newTool}
-                          onSelect={handleToolSelect}
-                          active={toolDef?.tool === newTool}
-                        >
-                          <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
-                          {kbd && (
-                            <>
-                              <kbd>g</kbd>{' '}
-                              <kbd>{kbd.replace(/Key/, '').toLowerCase()}</kbd>
-                            </>
-                          )}
-                        </Dropdown.Item>
-                      ),
-                  )}
               </Fragment>
             ) : submenu === 'photos' ? (
               <Fragment key="photos">
