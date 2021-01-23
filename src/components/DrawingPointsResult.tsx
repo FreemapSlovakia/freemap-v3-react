@@ -84,7 +84,7 @@ export function DrawingPointsResult(): ReactElement {
             }}
             position={{ lat, lng: lon }}
             color={activeIndex === i ? colors.selected : undefined}
-            draggable={!embed}
+            draggable={!embed && activeIndex === i}
             interactive={interactive}
           >
             {label && (

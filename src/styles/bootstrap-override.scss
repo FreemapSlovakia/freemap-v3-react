@@ -66,3 +66,7 @@
     display: none;
   }
 }
+
+.btn-secondary:not(:disabled):not(.disabled).active {
+  background-color: #17a2b8;
+}

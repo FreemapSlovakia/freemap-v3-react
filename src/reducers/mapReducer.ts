@@ -1,5 +1,6 @@
 import { RootAction } from 'fm3/actions';
 import { authSetUser } from 'fm3/actions/authActions';
+import { gallerySetFilter } from 'fm3/actions/galleryActions';
 import { Selection, setAppState } from 'fm3/actions/mainActions';
 import {
   mapRefocus,
@@ -41,6 +42,14 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     ...state,
     overlayPaneOpacity: action.payload,
   }))
+  .handleAction(gallerySetFilter, (state, action) => {
+    return {
+      ...state,
+      overlays: state.overlays.includes('I')
+        ? state.overlays
+        : [...state.overlays, 'I'],
+    };
+  })
   .handleAction(mapRefocus, (state, action) => {
     const newState: MapState = { ...state };
     const { zoom, lat, lon, mapType, overlays } = action.payload;

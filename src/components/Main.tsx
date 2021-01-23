@@ -109,8 +109,16 @@ export function Main(): ReactElement {
     (state: RootState) => !state.map.overlays.includes('i'),
   );
 
-  const selectionType = useSelector(
-    (state: RootState) => state.main.selection?.type,
+  const selectionType = useSelector((state: RootState) =>
+    state.main.selection?.type === 'draw-lines' &&
+    state.drawingLines.lines[state.drawingLines.lines.length - 1].points
+      .length < 2
+      ? null
+      : state.main.selection?.type === 'draw-polygons' &&
+        state.drawingLines.lines[state.drawingLines.lines.length - 1].points
+          .length < 3
+      ? null
+      : state.main.selection?.type,
   );
 
   const tool = useSelector((state: RootState) => state.main.tool);

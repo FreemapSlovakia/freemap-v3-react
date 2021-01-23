@@ -35,6 +35,7 @@ import {
 } from 'fm3/actions/galleryActions';
 import { l10nSetLanguage } from 'fm3/actions/l10nActions';
 import { clearMap } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import { PictureModel } from 'fm3/components/gallery/GalleryEditForm';
 import { parseCoordinates } from 'fm3/coordinatesParser';
@@ -105,6 +106,13 @@ const initialState: GalleryState = {
 export const galleryReducer = createReducer<GalleryState, RootAction>(
   initialState,
 )
+  .handleAction(mapRefocus, (state, action) => ({
+    ...state,
+    filter:
+      action.payload.overlays && !action.payload.overlays.includes('I')
+        ? initialState.filter
+        : state.filter,
+  }))
   .handleAction(clearMap, (state) => ({
     ...initialState,
     dirtySeq: state.dirtySeq,
