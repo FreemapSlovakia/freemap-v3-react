@@ -11,11 +11,12 @@ interface TrackingPointProps {
   language: string;
   onActivePointSet: (tp: TrackPoint | null) => void;
   onClick: () => void;
+  interactive?: boolean;
 }
 
 // TODO to separate file
 export const TrackingPoint = memo<TrackingPointProps>(
-  ({ tp, width, color, language, onActivePointSet, onClick }) => {
+  ({ tp, width, color, language, onActivePointSet, onClick, interactive }) => {
     const df = new Intl.DateTimeFormat(language, {
       month: 'short',
       day: 'numeric',
@@ -43,11 +44,13 @@ export const TrackingPoint = memo<TrackingPointProps>(
 
     return (
       <CircleMarker
+        interactive={interactive}
         stroke={false}
         center={toLatLng(tp)}
         radius={width}
         color={color}
         fillOpacity={1}
+        bubblingMouseEvents={false}
         eventHandlers={{
           mouseover: handleMouseOver,
           mouseout: handleMouseOut,

@@ -89,6 +89,7 @@ import { MapsMenu } from './MapsMenu';
 import { MoreMenuButton } from './MoreMenuButton';
 import { ObjectSelection } from './ObjectSelection';
 import { SelectionTool } from './SelectionTool';
+import { TrackingSelection } from './TrackingSelection';
 import { WikiLayer } from './WikiLayer';
 
 const embed = window.self !== window.top;
@@ -454,6 +455,7 @@ export function Main(): ReactElement {
                   selectionType === 'draw-points' ||
                   selectionType === 'draw-polygons') && <DrawingSelection />}
                 {selectionType === 'objects' && <ObjectSelection />}
+                {selectionType === 'tracking' && <TrackingSelection />}
               </ButtonToolbar>
             </Card>
           )}
