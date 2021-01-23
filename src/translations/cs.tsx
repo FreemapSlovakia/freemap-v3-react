@@ -78,6 +78,7 @@ const cs: Messages = {
     deleteError: ({ err }) => `Chyba pří mazání: ${err}`,
     deleted: 'Smazané.',
     saved: 'Uložené.',
+    visual: 'Zobrazení',
   },
 
   selections: {
@@ -366,7 +367,7 @@ const cs: Messages = {
 
   gallery: {
     filter: 'Filtr',
-    allPhotos: 'Všechny fotky',
+    showPhotosFrom: 'Prohlížet fotky',
     upload: 'Nahrát',
     f: {
       firstUploaded: 'od první nahrané',

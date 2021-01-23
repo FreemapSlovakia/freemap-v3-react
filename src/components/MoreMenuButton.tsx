@@ -541,13 +541,17 @@ export function MoreMenuButton(): ReactElement {
 
                 <Dropdown.Divider />
 
+                <Dropdown.Header>
+                  <FontAwesomeIcon icon="book" /> {m?.gallery.showPhotosFrom}
+                </Dropdown.Header>
+
                 <Dropdown.Item
                   onSelect={() => {
                     dispatch(galleryList('-createdAt'));
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" /> {m?.gallery.f.lastUploaded}
+                  {m?.gallery.f.lastUploaded}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -556,7 +560,7 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" /> {m?.gallery.f.lastCaptured}
+                  {m?.gallery.f.lastCaptured}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -565,7 +569,7 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" /> {m?.gallery.f.mostRated}
+                  {m?.gallery.f.mostRated}
                 </Dropdown.Item>
               </Fragment>
             ) : submenu === 'tracking' ? (
@@ -593,6 +597,10 @@ export function MoreMenuButton(): ReactElement {
 
                 <Dropdown.Divider />
 
+                <Dropdown.Header>
+                  <FontAwesomeIcon icon="paint-brush" /> {m?.general.visual}
+                </Dropdown.Header>
+
                 <Dropdown.Item
                   active={trackingDisplay === 'true,false'}
                   onSelect={() => {
@@ -600,7 +608,14 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(trackingActions.setShowLine(false));
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" /> {m?.tracking.visual.points}
+                  <FontAwesomeIcon
+                    icon={
+                      trackingDisplay === 'true,false'
+                        ? 'check-circle-o'
+                        : 'circle-o'
+                    }
+                  />{' '}
+                  {m?.tracking.visual.points}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -610,7 +625,14 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(trackingActions.setShowLine(true));
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" /> {m?.tracking.visual.line}
+                  <FontAwesomeIcon
+                    icon={
+                      trackingDisplay === 'false,true'
+                        ? 'check-circle-o'
+                        : 'circle-o'
+                    }
+                  />{' '}
+                  {m?.tracking.visual.line}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -620,7 +642,13 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(trackingActions.setShowLine(true));
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" />{' '}
+                  <FontAwesomeIcon
+                    icon={
+                      trackingDisplay === 'true,true'
+                        ? 'check-circle-o'
+                        : 'circle-o'
+                    }
+                  />{' '}
                   {m?.tracking.visual['line+points']}
                 </Dropdown.Item>
               </Fragment>

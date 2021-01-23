@@ -426,28 +426,43 @@ export function Main(): ReactElement {
                   {'/ '}
                   {selectionType === 'draw-lines' ? (
                     <>
-                      <FontAwesomeIcon icon="arrows-h" />{' '}
-                      {m?.selections.drawLines}
+                      <FontAwesomeIcon icon="arrows-h" />
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.selections.drawLines}
+                      </span>
                     </>
                   ) : selectionType === 'draw-polygons' ? (
                     <>
-                      <FontAwesomeIcon icon="square-o" />{' '}
-                      {m?.selections.drawPolygons}
+                      <FontAwesomeIcon icon="square-o" />
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.selections.drawPolygons}
+                      </span>
                     </>
                   ) : selectionType === 'draw-points' ? (
                     <>
-                      <FontAwesomeIcon icon="map-marker" />{' '}
-                      {m?.selections.drawPoints}
+                      <FontAwesomeIcon icon="map-marker" />
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.selections.drawPoints}
+                      </span>
                     </>
                   ) : selectionType === 'objects' ? (
                     <>
-                      <FontAwesomeIcon icon="map-marker" />{' '}
-                      {m?.selections.objects}
+                      <FontAwesomeIcon icon="map-marker" />
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.selections.objects}
+                      </span>
                     </>
                   ) : selectionType === 'tracking' ? (
                     <>
-                      <FontAwesomeIcon icon="bullseye" />{' '}
-                      {m?.selections.tracking}
+                      <FontAwesomeIcon icon="bullseye" />
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.selections.tracking}
+                      </span>
                     </>
                   ) : null}
                 </span>

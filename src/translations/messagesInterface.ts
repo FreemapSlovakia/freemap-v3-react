@@ -43,6 +43,7 @@ export type Messages = {
     deleteError: ({ err }: Err) => string;
     saved: string;
     deleted: string;
+    visual: string;
   };
   selections: {
     objects: string;
@@ -300,7 +301,7 @@ export type Messages = {
   };
   gallery: {
     filter: string;
-    allPhotos: string;
+    showPhotosFrom: string;
     upload: string;
     f: {
       firstUploaded: string;

@@ -77,6 +77,7 @@ const sk: Messages = {
     deleteError: ({ err }) => `Chyba mazania: ${err}`,
     deleted: 'Zmazané.',
     saved: 'Uložené.',
+    visual: 'Zobrazenie',
   },
 
   selections: {
@@ -375,7 +376,7 @@ const sk: Messages = {
 
   gallery: {
     filter: 'Filter',
-    allPhotos: 'Všetky fotky',
+    showPhotosFrom: 'Prezerať fotky',
     upload: 'Nahrať',
     f: {
       firstUploaded: 'od prvej nahranej',

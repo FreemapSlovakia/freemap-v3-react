@@ -76,6 +76,7 @@ const en: Messages = {
     deleteError: ({ err }) => `Deleting error: ${err}`,
     deleted: 'Deleted.',
     saved: 'Saved.',
+    visual: 'Display',
   },
 
   selections: {
@@ -362,7 +363,7 @@ const en: Messages = {
 
   gallery: {
     filter: 'Filter',
-    allPhotos: 'All photos',
+    showPhotosFrom: 'View photos',
     upload: 'Upload',
     f: {
       firstUploaded: 'from first uploaded',

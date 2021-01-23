@@ -77,6 +77,7 @@ const hu: Messages = {
     deleteError: ({ err }) => `Törlési hiba: ${err}`,
     deleted: 'Deleted.', // TODO translate
     saved: 'Saved.', // TODO translate
+    visual: 'Display', // TODO translate
   },
 
   // TODO translate
@@ -365,7 +366,7 @@ const hu: Messages = {
 
   gallery: {
     filter: 'Szűrő',
-    allPhotos: 'Minden fénykép',
+    showPhotosFrom: 'View photos', // TODO translate
     upload: 'Feltöltés',
     f: {
       firstUploaded: 'az először feltöltöttől',
