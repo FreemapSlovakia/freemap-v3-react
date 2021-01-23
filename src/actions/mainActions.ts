@@ -11,7 +11,6 @@ export type Tool =
   | 'draw-points'
   | 'changesets'
   | 'map-details'
-  | 'tracking'
   | 'maps';
 
 export const setTool = createAction('SET_TOOL')<Tool | null>();
@@ -88,42 +87,31 @@ export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
-export const deleteFeature = createAction('DELETE_FEATURE')<Selection>();
+export const deleteFeature = createAction('DELETE_FEATURE')();
 
 export interface DrawPointSelection {
   type: 'draw-points';
-  id?: number;
+  id: number;
 }
 
 export interface ObjectsSelection {
   type: 'objects';
-  id?: number;
+  id: number;
 }
 
 export interface DrawLinePolySelection {
   type: 'draw-lines' | 'draw-polygons';
-  id?: number;
-}
-
-export interface OtherSelection {
-  type:
-    | 'maps'
-    | 'map-details'
-    | 'track-viewer'
-    | 'changesets'
-    | 'route-planner';
-  id?: undefined;
+  id: number;
 }
 
 export interface TrackingSelection {
   type: 'tracking';
-  id?: string | number;
+  id: string | number;
 }
 
 export type Selection =
   | DrawPointSelection
   | ObjectsSelection
-  | OtherSelection
   | DrawLinePolySelection
   | TrackingSelection;
 

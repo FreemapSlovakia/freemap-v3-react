@@ -1,4 +1,4 @@
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import {
   routePlannerSetFinish,
   routePlannerSetStart,
@@ -292,7 +292,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             variant="secondary"
             title={m?.search.routeFrom}
             onClick={() => {
-              dispatch(selectFeature({ type: 'route-planner' }));
+              dispatch(setTool('route-planner'));
 
               dispatch(
                 routePlannerSetStart({
@@ -310,7 +310,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             variant="secondary"
             title={m?.search.routeTo}
             onClick={() => {
-              dispatch(selectFeature({ type: 'route-planner' }));
+              dispatch(setTool('route-planner'));
 
               dispatch(
                 routePlannerSetFinish({

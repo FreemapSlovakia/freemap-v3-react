@@ -9,10 +9,11 @@ import { useDispatch, useSelector } from 'react-redux';
 export function DrawingLinesTool(): null {
   const selection = useSelector((state: RootState) => state.main.selection);
 
+  const tool = useSelector((state: RootState) => state.main.tool);
+
   const linePoints = useSelector((state: RootState) =>
-    (state.main.selection?.type !== 'draw-lines' &&
-      state.main.selection?.type !== 'draw-polygons') ||
-    state.main.selection.id === undefined
+    state.main.selection?.type !== 'draw-lines' &&
+    state.main.selection?.type !== 'draw-polygons'
       ? []
       : state.drawingLines.lines[state.main.selection.id].points,
   );
@@ -53,13 +54,13 @@ export function DrawingLinesTool(): null {
               : undefined,
           point: { lat: latlng.lat, lon: latlng.lng, id },
           position: pos,
-          type: selection?.type === 'draw-lines' ? 'line' : 'polygon',
+          type: tool === 'draw-lines' ? 'line' : 'polygon',
         }),
       );
 
       dispatch(drawingPointMeasure(true));
     },
-    [selection, linePoints, dispatch],
+    [linePoints, dispatch, selection, tool],
   );
 
   useMapEvent('click', handleMapClick);

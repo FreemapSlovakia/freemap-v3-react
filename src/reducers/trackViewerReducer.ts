@@ -1,6 +1,6 @@
 import { FeatureCollection, Geometries } from '@turf/helpers';
 import { RootAction } from 'fm3/actions';
-import { clearMap, deleteFeature, setAppState } from 'fm3/actions/mainActions';
+import { clearMap, setAppState } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   osmClear,
@@ -47,7 +47,7 @@ export const cleanState = {
   gpxUrl: null, // TODO to separate reducer (?)
 };
 
-const initialState: TrackViewerState = {
+export const initialState: TrackViewerState = {
   colorizeTrackBy: null,
   eleSmoothingFactor: undefined, // TODO to settings reducer
 
@@ -94,16 +94,6 @@ export const trackViewerReducer = createReducer<TrackViewerState, RootAction>(
     ...state,
     osmRelationId: action.payload,
   }))
-  .handleAction(deleteFeature, (state, action) =>
-    action.payload.type === 'map-details' ||
-    action.payload.type === 'track-viewer'
-      ? {
-          ...initialState,
-          colorizeTrackBy: state.colorizeTrackBy,
-          eleSmoothingFactor: state.eleSmoothingFactor,
-        }
-      : state,
-  )
   .handleAction(searchSelectResult, (state, action) =>
     produce(state, (draft) => {
       draft.osmNodeId = null;

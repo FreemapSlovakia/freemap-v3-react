@@ -43,7 +43,7 @@ export const showGalleryPickerSelector = createSelector(
     !selectingHomeLocation,
 );
 
-export const showGalleryViewer = (state: RootState): boolean =>
+export const showGalleryViewerSelector = (state: RootState): boolean =>
   state.gallery.pickingPositionForId === null &&
   state.gallery.activeImageId !== null &&
   !state.gallery.showPosition;
@@ -90,3 +90,9 @@ export const trackingTrackSelector = createSelector(
       ? trackingTracks.find((t) => t.id === trackingActiveTrackId)
       : undefined,
 );
+
+export const selectingModeSelector = (state: RootState): boolean =>
+  state.main.tool === null ||
+  state.main.tool === 'changesets' ||
+  state.main.tool === 'maps' ||
+  state.main.tool === 'objects';

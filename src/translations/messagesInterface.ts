@@ -51,6 +51,9 @@ export type Messages = {
     objects: string;
     photos: string;
     measurement: string;
+    drawPoints: string;
+    drawLines: string;
+    drawPolygons: string;
     trackViewer: string;
     changesets: string;
     mapDetails: string;

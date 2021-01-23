@@ -86,7 +86,7 @@ import { drawingLinesReducer } from './reducers/drawingLinesReducer';
 import { drawingPointsReducer } from './reducers/drawingPointsReducer';
 import { elevationChartReducer } from './reducers/elevationChartReducer';
 import { galleryReducer } from './reducers/galleryReducer';
-import { globalReducer } from './reducers/globalReducer';
+import { postGlobalReducer, preGlobalReducer } from './reducers/globalReducer';
 import { l10nReducer } from './reducers/l10nReducer';
 import { mainReducer } from './reducers/mainReducer';
 import { mapDetailsReducer } from './reducers/mapDetailsReducer';
@@ -135,8 +135,9 @@ const rootReducer = reduceReducers<RootState>(
   // TODO
   // eslint-disable-next-line
   // @ts-ignore
+  preGlobalReducer,
   combinedReducers,
-  globalReducer,
+  postGlobalReducer,
 );
 
 processors.push(

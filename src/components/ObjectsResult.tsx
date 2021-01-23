@@ -3,6 +3,7 @@ import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { getPoiType } from 'fm3/poiTypes';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import { Popup } from 'react-leaflet';
@@ -12,6 +13,8 @@ export function ObjectsResult(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
+  const interactive = useSelector(selectingModeSelector);
 
   const objects = useSelector((state: RootState) => state.objects.objects);
 
@@ -39,7 +42,8 @@ export function ObjectsResult(): ReactElement {
 
         return (
           <RichMarker
-            key={`poi-${id}`}
+            key={`poi-${id}-${interactive ? 'a' : 'b'}`}
+            interactive={interactive}
             position={{ lat, lng: lon }}
             image={img}
             eventHandlers={{

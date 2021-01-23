@@ -86,7 +86,7 @@ export function MapsMenu(): ReactElement {
           className="ml-1"
           variant="danger"
           onClick={() => {
-            dispatch(deleteFeature({ type: 'maps' }));
+            dispatch(deleteFeature());
           }}
         >
           <FontAwesomeIcon icon="trash" />

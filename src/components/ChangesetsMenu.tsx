@@ -12,6 +12,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { useDispatch, useSelector } from 'react-redux';
+import { DeleteButton } from './DeleteButton';
 
 export function ChangesetsMenu(): ReactElement {
   const m = useMessages();
@@ -32,6 +33,10 @@ export function ChangesetsMenu(): ReactElement {
       (amountOfDays === 14 && zoom >= 11)
     );
   };
+
+  const canDelete = useSelector(
+    (state: RootState) => state.changesets.changesets.length > 0,
+  );
 
   const dispatch = useDispatch();
 
@@ -99,6 +104,7 @@ export function ChangesetsMenu(): ReactElement {
         <FontAwesomeIcon icon="refresh" />
         <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
       </Button>
+      {canDelete && <DeleteButton />}
     </>
   );
 }

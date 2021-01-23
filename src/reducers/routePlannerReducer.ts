@@ -1,10 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import {
-  clearMap,
-  deleteFeature,
-  selectFeature,
-  setAppState,
-} from 'fm3/actions/mainActions';
+import { clearMap, selectFeature, setAppState } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -63,7 +58,7 @@ export const cleanState = {
   ...clearResult,
 };
 
-const initialState: RoutePlannerState = {
+export const initialState: RoutePlannerState = {
   transportType: null,
   mode: 'route',
   milestones: false,
@@ -202,16 +197,6 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
     ...state,
     activeAlternativeIndex: action.payload,
   }))
-  .handleAction(deleteFeature, (state, action) =>
-    action.payload.type === 'route-planner'
-      ? {
-          ...initialState,
-          transportType: state.transportType,
-          mode: state.mode,
-          milestones: state.milestones,
-        }
-      : state,
-  )
   .handleAction(mapsDataLoaded, (_state, { payload: { routePlanner } }) => {
     return {
       ...initialState,

@@ -28,6 +28,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import FormCheck from 'react-bootstrap/FormCheck';
 import { useDispatch, useSelector } from 'react-redux';
+import { DeleteButton } from './DeleteButton';
 
 export function RoutePlannerMenu(): ReactElement {
   const m = useMessages();
@@ -81,6 +82,15 @@ export function RoutePlannerMenu(): ReactElement {
       !!(state.routePlanner.start && state.routePlanner.finish),
   );
 
+  const canDelete = useSelector(
+    (state: RootState) =>
+      !!(
+        state.routePlanner.start ||
+        state.routePlanner.finish ||
+        state.routePlanner.midpoints.length > 0
+      ),
+  );
+
   function setFromHomeLocation(pointType: PickMode) {
     if (!homeLocation) {
       dispatch(
@@ -130,98 +140,6 @@ export function RoutePlannerMenu(): ReactElement {
 
   return (
     <>
-      <ButtonGroup>
-        <DropdownButton
-          variant={pickPointMode === 'start' ? 'dark' : 'secondary'}
-          as={ButtonGroup}
-          title={
-            <span>
-              <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
-              <span className="d-none d-md-inline">
-                {' '}
-                {m?.routePlanner.start ?? '…'}
-              </span>
-            </span>
-          }
-          id="set-start-dropdown"
-          onClick={() => {
-            dispatch(routePlannerSetPickMode('start'));
-          }}
-        >
-          <Dropdown.Item>
-            <FontAwesomeIcon icon="map-marker" />{' '}
-            {m?.routePlanner.point.pick ?? '…'}
-          </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => {
-              dispatch(routePlannerSetFromCurrentPosition('start'));
-            }}
-          >
-            <FontAwesomeIcon icon="bullseye" />{' '}
-            {m?.routePlanner.point.current ?? '…'}
-          </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => {
-              setFromHomeLocation('start');
-            }}
-          >
-            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home ?? '…'}
-          </Dropdown.Item>
-        </DropdownButton>
-        {mode !== 'roundtrip' && (
-          <>
-            <Button
-              as={ButtonGroup}
-              variant="secondary"
-              onClick={() => {
-                dispatch(routePlannerSwapEnds());
-              }}
-              disabled={!canSwap}
-              title={m?.routePlanner.swap ?? '…'}
-            >
-              ⇆
-            </Button>
-            <DropdownButton
-              as={ButtonGroup}
-              variant={pickPointMode === 'finish' ? 'dark' : 'secondary'}
-              title={
-                <span>
-                  <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
-                  <span className="d-none d-md-inline">
-                    {' '}
-                    {m?.routePlanner.finish ?? '…'}
-                  </span>
-                </span>
-              }
-              id="set-finish-dropdown"
-              onClick={() => {
-                dispatch(routePlannerSetPickMode('finish'));
-              }}
-            >
-              <Dropdown.Item>
-                <FontAwesomeIcon icon="map-marker" />
-                {m?.routePlanner.point.pick ?? '…'}
-              </Dropdown.Item>
-              <Dropdown.Item
-                onSelect={() => {
-                  dispatch(routePlannerSetFromCurrentPosition('finish'));
-                }}
-              >
-                <FontAwesomeIcon icon="bullseye" />
-                {m?.routePlanner.point.current ?? '…'}
-              </Dropdown.Item>
-              <Dropdown.Item
-                onSelect={() => {
-                  setFromHomeLocation('finish');
-                }}
-              >
-                <FontAwesomeIcon icon="home" />{' '}
-                {m?.routePlanner.point.home ?? '…'}
-              </Dropdown.Item>
-            </DropdownButton>
-          </>
-        )}
-      </ButtonGroup>
       <DropdownButton
         className="ml-1"
         variant="secondary"
@@ -311,6 +229,100 @@ export function RoutePlannerMenu(): ReactElement {
           </Dropdown.Item>
         ))}
       </DropdownButton>
+      {'\xa0'}
+      <ButtonGroup>
+        <DropdownButton
+          variant={pickPointMode === 'start' ? 'dark' : 'secondary'}
+          as={ButtonGroup}
+          title={
+            <span>
+              <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
+              <span className="d-none d-md-inline">
+                {' '}
+                {m?.routePlanner.start ?? '…'}
+              </span>
+            </span>
+          }
+          id="set-start-dropdown"
+          onClick={() => {
+            dispatch(routePlannerSetPickMode('start'));
+          }}
+        >
+          <Dropdown.Item>
+            <FontAwesomeIcon icon="map-marker" />{' '}
+            {m?.routePlanner.point.pick ?? '…'}
+          </Dropdown.Item>
+          <Dropdown.Item
+            onSelect={() => {
+              dispatch(routePlannerSetFromCurrentPosition('start'));
+            }}
+          >
+            <FontAwesomeIcon icon="bullseye" />{' '}
+            {m?.routePlanner.point.current ?? '…'}
+          </Dropdown.Item>
+          <Dropdown.Item
+            onSelect={() => {
+              setFromHomeLocation('start');
+            }}
+          >
+            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home ?? '…'}
+          </Dropdown.Item>
+        </DropdownButton>
+
+        {mode !== 'roundtrip' && (
+          <>
+            <Button
+              as={ButtonGroup}
+              variant="secondary"
+              onClick={() => {
+                dispatch(routePlannerSwapEnds());
+              }}
+              disabled={!canSwap}
+              title={m?.routePlanner.swap ?? '…'}
+            >
+              ⇆
+            </Button>
+            <DropdownButton
+              as={ButtonGroup}
+              variant={pickPointMode === 'finish' ? 'dark' : 'secondary'}
+              title={
+                <span>
+                  <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
+                  <span className="d-none d-md-inline">
+                    {' '}
+                    {m?.routePlanner.finish ?? '…'}
+                  </span>
+                </span>
+              }
+              id="set-finish-dropdown"
+              onClick={() => {
+                dispatch(routePlannerSetPickMode('finish'));
+              }}
+            >
+              <Dropdown.Item>
+                <FontAwesomeIcon icon="map-marker" />
+                {m?.routePlanner.point.pick ?? '…'}
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() => {
+                  dispatch(routePlannerSetFromCurrentPosition('finish'));
+                }}
+              >
+                <FontAwesomeIcon icon="bullseye" />
+                {m?.routePlanner.point.current ?? '…'}
+              </Dropdown.Item>
+              <Dropdown.Item
+                onSelect={() => {
+                  setFromHomeLocation('finish');
+                }}
+              >
+                <FontAwesomeIcon icon="home" />{' '}
+                {m?.routePlanner.point.home ?? '…'}
+              </Dropdown.Item>
+            </DropdownButton>
+          </>
+        )}
+      </ButtonGroup>
       {alternatives.length > 1 && (
         <DropdownButton
           className="ml-1"
@@ -365,46 +377,49 @@ export function RoutePlannerMenu(): ReactElement {
         <FontAwesomeIcon icon="list-ol" /><span className="d-none d-md-inline"> Itinerár</span>
       </Button>
       */}{' '}
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={() => {
-          dispatch(routePlannerToggleElevationChart());
-        }}
-        active={elevationProfileIsVisible}
-        disabled={!routeFound}
-        title={m?.general.elevationProfile ?? '…'}
-      >
-        <FontAwesomeIcon icon="bar-chart" />
-        <span className="d-none d-md-inline">
-          {' '}
-          {m?.general.elevationProfile ?? '…'}
-        </span>
-      </Button>
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={handleConvertToDrawing}
-        disabled={!routeFound}
-        title={m?.general.convertToDrawing ?? '…'}
-      >
-        <FontAwesomeIcon icon="pencil" />
-        <span className="d-none d-md-inline">
-          {' '}
-          {m?.general.convertToDrawing ?? '…'}
-        </span>
-      </Button>
-      <FormCheck
-        id="chk-milestones"
-        className="ml-1"
-        type="checkbox"
-        inline
-        onChange={() => {
-          dispatch(routePlannerToggleMilestones(undefined));
-        }}
-        checked={milestones}
-        label={m?.routePlanner.milestones ?? '…'}
-      />
+      {!!routeFound && (
+        <>
+          <Button
+            className="ml-1"
+            variant="secondary"
+            onClick={() => {
+              dispatch(routePlannerToggleElevationChart());
+            }}
+            active={elevationProfileIsVisible}
+            title={m?.general.elevationProfile ?? '…'}
+          >
+            <FontAwesomeIcon icon="bar-chart" />
+            <span className="d-none d-md-inline">
+              {' '}
+              {m?.general.elevationProfile ?? '…'}
+            </span>
+          </Button>
+          <Button
+            className="ml-1"
+            variant="secondary"
+            onClick={handleConvertToDrawing}
+            title={m?.general.convertToDrawing ?? '…'}
+          >
+            <FontAwesomeIcon icon="pencil" />
+            <span className="d-none d-md-inline">
+              {' '}
+              {m?.general.convertToDrawing ?? '…'}
+            </span>
+          </Button>
+          <FormCheck
+            id="chk-milestones"
+            className="ml-1"
+            type="checkbox"
+            inline
+            onChange={() => {
+              dispatch(routePlannerToggleMilestones(undefined));
+            }}
+            checked={milestones}
+            label={m?.routePlanner.milestones ?? '…'}
+          />
+          {canDelete && <DeleteButton />}
+        </>
+      )}
     </>
   );
 }

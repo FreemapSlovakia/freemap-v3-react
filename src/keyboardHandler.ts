@@ -12,10 +12,11 @@ import {
   selectFeature,
   setActiveModal,
   setSelectingHomeLocation,
+  setTool,
 } from './actions/mainActions';
 import { mapRefocus } from './actions/mapActions';
 import { tipsShow } from './actions/tipsActions';
-import { showGalleryViewer } from './selectors/mainSelectors';
+import { showGalleryViewerSelector } from './selectors/mainSelectors';
 import { MyStore } from './storeCreator';
 import { toolDefinitions } from './toolDefinitions';
 
@@ -42,13 +43,15 @@ export function attachKeyboardHandler(store: MyStore): void {
         state.gallery.showUploadModal ||
         state.gallery.activeImageId);
 
-    if (showGalleryViewer(state) && event.code === 'Escape') {
+    if (showGalleryViewerSelector(state) && event.code === 'Escape') {
       if (state.gallery.editModel) {
         store.dispatch(galleryEditPicture());
       } else {
         store.dispatch(galleryClear());
       }
+
       event.preventDefault();
+
       return;
     }
 
@@ -59,26 +62,40 @@ export function attachKeyboardHandler(store: MyStore): void {
     ) {
       if (state.main.selectingHomeLocation) {
         store.dispatch(setSelectingHomeLocation(false));
+
         event.preventDefault();
+
         return;
       } else if (state.gallery.pickingPositionForId) {
         store.dispatch(gallerySetItemForPositionPicking(null));
+
         event.preventDefault();
+
         return;
       } else if (
         !showingModal &&
         !state.gallery.showPosition &&
         state.main.selection
       ) {
-        store.dispatch(
-          selectFeature(
-            state.main.selection.type === 'tracking' ||
-              state.main.selection.id === undefined
-              ? null
-              : { type: state.main.selection.type },
-          ),
-        );
+        // store.dispatch(
+        //   selectFeature(
+        //     state.main.selection.type === 'tracking' ||
+        //       state.main.selection.id === undefined
+        //       ? null
+        //       : { type: state.main.selection.type },
+        //   ),
+        // );
+
+        store.dispatch(selectFeature(null));
+
         event.preventDefault();
+
+        return;
+      } else if (state.main.tool) {
+        store.dispatch(setTool(null));
+
+        event.preventDefault();
+
         return;
       }
     }
@@ -92,7 +109,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       return;
     }
 
-    if (showGalleryViewer(state)) {
+    if (showGalleryViewerSelector(state)) {
       if (event.code === 'KeyS') {
         store.dispatch(galleryShowOnTheMap());
         event.preventDefault();
@@ -105,7 +122,7 @@ export function attachKeyboardHandler(store: MyStore): void {
     }
 
     if (
-      showGalleryViewer(state) &&
+      showGalleryViewerSelector(state) &&
       state.gallery.imageIds &&
       state.gallery.imageIds.length > 1
     ) {
@@ -179,10 +196,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       !state.main.selectingHomeLocation
     ) {
       if (event.code === 'Delete') {
-        const { selection } = store.getState().main;
-        if (selection) {
-          store.dispatch(deleteFeature(selection));
-        }
+        store.dispatch(deleteFeature());
       }
     }
 
@@ -224,7 +238,7 @@ export function attachKeyboardHandler(store: MyStore): void {
         );
 
         if (toolDefinition?.kbd) {
-          store.dispatch(selectFeature({ type: toolDefinition.tool }));
+          store.dispatch(setTool(toolDefinition.tool));
           event.preventDefault();
           return;
         }

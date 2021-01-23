@@ -86,6 +86,9 @@ const hu: Messages = {
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
     measurement: 'Rajzolás és mérés',
+    drawPoints: 'Point drawing', // TODO translate
+    drawLines: 'Line drawing', // TODO translate
+    drawPolygons: 'Polygon drawing', // TODO translate
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',

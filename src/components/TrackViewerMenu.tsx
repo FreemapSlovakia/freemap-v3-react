@@ -22,6 +22,7 @@ import DropdownButton from 'react-bootstrap/DropdownButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
+import { DeleteButton } from './DeleteButton';
 
 export function TrackViewerMenu(): ReactElement {
   const m = useMessages();
@@ -148,6 +149,7 @@ export function TrackViewerMenu(): ReactElement {
           {m?.general.convertToDrawing}
         </span>
       </Button>
+      {hasTrack && <DeleteButton />}
     </>
   );
 }

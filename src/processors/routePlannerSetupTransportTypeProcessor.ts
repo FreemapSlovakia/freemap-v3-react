@@ -6,11 +6,11 @@ export const routePlannerSetupTransportTypeProcessor: Processor = {
   actionCreator: selectFeature,
   handle: async ({ dispatch, getState }) => {
     const {
-      main: { selection },
+      main: { tool },
       routePlanner: { start, finish },
     } = getState();
 
-    if (selection?.type === 'route-planner' && !(start && finish)) {
+    if (tool === 'route-planner' && !(start && finish)) {
       const { mapType } = getState().map;
       dispatch(
         routePlannerSetTransportType(

@@ -7,9 +7,9 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 export const mapsDeleteProcessor: Processor<typeof deleteFeature> = {
   actionCreator: deleteFeature,
   errorKey: 'maps.deleteError',
-  handle: async ({ getState, dispatch, action }) => {
+  handle: async ({ getState, dispatch }) => {
     if (
-      action.payload.type !== 'maps' ||
+      getState().main.tool !== 'maps' ||
       !window.confirm(window.translations?.maps.deleteConfirm)
     ) {
       return;

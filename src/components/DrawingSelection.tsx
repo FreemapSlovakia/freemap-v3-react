@@ -10,6 +10,7 @@ import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
+import { DeleteButton } from './DeleteButton';
 
 export function DrawingSelection(): ReactElement {
   const dispatch = useDispatch();
@@ -44,13 +45,13 @@ export function DrawingSelection(): ReactElement {
     }
   }, [linePoints, elevationChartTrackGeojson, dispatch]);
 
-  const tool = selection?.type;
+  const selectionType = selection?.type;
 
   const isActive =
     selection?.id !== undefined &&
-    (tool === 'draw-points' ||
-      (tool === 'draw-lines' && linePoints.length > 1) ||
-      (tool === 'draw-polygons' && linePoints.length > 2));
+    (selectionType === 'draw-points' ||
+      (selectionType === 'draw-lines' && linePoints.length > 1) ||
+      (selectionType === 'draw-polygons' && linePoints.length > 2));
 
   return (
     <>
@@ -65,7 +66,7 @@ export function DrawingSelection(): ReactElement {
           <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
         </Button>
       )}
-      {tool === 'draw-lines' && linePoints.length >= 2 && (
+      {selectionType === 'draw-lines' && linePoints.length >= 2 && (
         <Button
           className="ml-1"
           variant="secondary"
@@ -79,6 +80,7 @@ export function DrawingSelection(): ReactElement {
           </span>
         </Button>
       )}
+      {isActive && <DeleteButton />}
     </>
   );
 }

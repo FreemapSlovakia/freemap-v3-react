@@ -2,7 +2,7 @@ import {
   Changeset,
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { RootState } from 'fm3/storeCreator';
@@ -57,7 +57,7 @@ export function ChangesetsResult(): ReactElement {
       }),
     );
 
-    dispatch(selectFeature({ type: 'changesets' }));
+    dispatch(setTool('changesets'));
   }
 
   return (

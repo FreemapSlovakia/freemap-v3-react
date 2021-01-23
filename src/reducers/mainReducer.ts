@@ -3,6 +3,7 @@ import { authLogout, authSetUser } from 'fm3/actions/authActions';
 import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
 import {
   clearMap,
+  convertToDrawing,
   deleteFeature,
   enableUpdatingUrl,
   selectFeature,
@@ -74,10 +75,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(clearMap, (state) => {
     return {
       ...state,
-      selection:
-        state.selection && state.selection.type !== 'tracking'
-          ? { type: state.selection.type }
-          : null,
+      selection: null,
     };
   })
   .handleAction(setAppState, (state, action) => {
@@ -169,7 +167,11 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
           selection: action.payload,
         },
   )
+  .handleAction(convertToDrawing, (state) => ({
+    ...state,
+    tool: null,
+  }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
-    selection: state.selection ? { type: state.selection.type } : null,
+    selection: null,
   }));

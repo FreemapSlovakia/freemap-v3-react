@@ -10,6 +10,7 @@ import { LeafletMouseEvent } from 'leaflet';
 import { ReactElement, useEffect } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
+import { DeleteButton } from './DeleteButton';
 
 export function MapDetailsMenu(): ReactElement {
   const m = useMessages();
@@ -17,6 +18,10 @@ export function MapDetailsMenu(): ReactElement {
   const dispatch = useDispatch();
 
   const subtool = useSelector((state: RootState) => state.mapDetails.subtool);
+
+  const canDelete = useSelector(
+    (state: RootState) => !!state.trackViewer.trackGeojson,
+  );
 
   useEffect(() => {
     const map = getMapLeafletElement();
@@ -44,16 +49,19 @@ export function MapDetailsMenu(): ReactElement {
   }, [dispatch, subtool]);
 
   return (
-    <Button
-      variant="secondary"
-      onClick={() => {
-        dispatch(mapDetailsSetSubtool('track-info'));
-      }}
-      active={subtool === 'track-info'}
-      title={m?.mapDetails.road}
-    >
-      <FontAwesomeIcon icon="road" />
-      <span className="d-none d-sm-inline"> {m?.mapDetails.road}</span>
-    </Button>
+    <>
+      <Button
+        variant="secondary"
+        onClick={() => {
+          dispatch(mapDetailsSetSubtool('track-info'));
+        }}
+        active={subtool === 'track-info'}
+        title={m?.mapDetails.road}
+      >
+        <FontAwesomeIcon icon="road" />
+        <span className="d-none d-sm-inline"> {m?.mapDetails.road}</span>
+      </Button>
+      {canDelete && <DeleteButton />}
+    </>
   );
 }

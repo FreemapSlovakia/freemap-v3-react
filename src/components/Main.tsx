@@ -5,7 +5,7 @@ import {
   galleryMergeItem,
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
-import { deleteFeature, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
@@ -62,6 +62,7 @@ import {
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
+import { toolDefinitions } from 'fm3/toolDefinitions';
 import Leaflet from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import {
@@ -85,7 +86,8 @@ import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { GalleryModals } from './gallery/GalleryModals';
 import { MapsMenu } from './MapsMenu';
 import { MoreMenuButton } from './MoreMenuButton';
-import { ToolLabel } from './ToolsMenuButton';
+import { ObjectSelection } from './ObjectSelection';
+import { SelectionTool } from './SelectionTool';
 import { WikiLayer } from './WikiLayer';
 
 const embed = window.self !== window.top;
@@ -107,7 +109,7 @@ export function Main(): ReactElement {
     (state: RootState) => !state.map.overlays.includes('i'),
   );
 
-  const selectedType = useSelector(
+  const selectionType = useSelector(
     (state: RootState) => state.main.selection?.type,
   );
 
@@ -123,9 +125,7 @@ export function Main(): ReactElement {
     (state: RootState) => !!state.main.progress.length,
   );
 
-  const mouseCursor = useSelector((state: RootState) =>
-    mouseCursorSelector(state),
-  );
+  const mouseCursor = useSelector(mouseCursorSelector);
 
   const authenticated = useSelector((state: RootState) => !!state.auth.user);
 
@@ -156,22 +156,6 @@ export function Main(): ReactElement {
 
   const isUserValidated = useSelector(
     (state: RootState) => state.auth.user && !state.auth.user.notValidated,
-  );
-
-  const selection = useSelector((state: RootState) => state.main.selection);
-
-  const canDelete = useSelector(
-    (state: RootState) =>
-      state.main.selection?.id !== undefined ||
-      (state.main.selection?.type === 'route-planner' &&
-        (state.routePlanner.start ||
-          state.routePlanner.finish ||
-          state.routePlanner.midpoints.length > 0)) ||
-      ((state.main.selection?.type === 'map-details' ||
-        state.main.selection?.type === 'track-viewer') &&
-        state.trackViewer.trackGeojson) ||
-      (state.main.selection?.type === 'changesets' &&
-        state.changesets.changesets.length > 0),
   );
 
   // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
@@ -319,12 +303,6 @@ export function Main(): ReactElement {
     e.stopPropagation();
   }, []);
 
-  const handleDeleteClick = useCallback(() => {
-    if (selection) {
-      dispatch(deleteFeature(selection));
-    }
-  }, [dispatch, selection]);
-
   // this is workaround to prevent map click events if popper is active (Overlay is shown)
   useEffect(() => {
     const mo = new MutationObserver(() => {
@@ -346,6 +324,8 @@ export function Main(): ReactElement {
       mo.disconnect();
     };
   }, []);
+
+  const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
 
   return (
     <>
@@ -393,39 +373,41 @@ export function Main(): ReactElement {
           {showMenu && tool && (
             <Card className="fm-toolbar">
               <ButtonToolbar>
-                <ToolLabel />
+                {toolDef && (
+                  <span className="align-self-center ml-1 mr-2">
+                    <FontAwesomeIcon icon={toolDef.icon} />
+                    <span className="d-none d-sm-inline">
+                      {' '}
+                      {m?.tools[toolDef.msgKey]}
+                    </span>
+                  </span>
+                )}
                 {tool === 'objects' && <ObjectsMenu />}
                 {tool === 'route-planner' && <RoutePlannerMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
                 {tool === 'maps' && <MapsMenu />}
+                {'\xa0'}
+                <Button
+                  variant="secondary"
+                  onClick={() => dispatch(setTool(null))}
+                >
+                  {m?.general.close}
+                </Button>
               </ButtonToolbar>
             </Card>
           )}
 
           {/* selections */}
-          {showMenu && selectedType && (
+          {showMenu && selectionType && (
             <Card className="fm-toolbar">
               <ButtonToolbar>
-                [{selectedType}]
-                {(tool === 'draw-lines' ||
-                  tool === 'draw-points' ||
-                  tool === 'draw-polygons') && <DrawingSelection />}
-                {canDelete && (
-                  <Button
-                    className="ml-1"
-                    variant="danger"
-                    title={m?.general.delete}
-                    onClick={handleDeleteClick}
-                  >
-                    <FontAwesomeIcon icon="trash" />
-                    <span className="d-none d-sm-inline">
-                      {' '}
-                      {m?.general.delete} <kbd>Del</kbd>
-                    </span>
-                  </Button>
-                )}
+                [sel:{selectionType}]
+                {(selectionType === 'draw-lines' ||
+                  selectionType === 'draw-points' ||
+                  selectionType === 'draw-polygons') && <DrawingSelection />}
+                {selectionType === 'objects' && <ObjectSelection />}
               </ButtonToolbar>
             </Card>
           )}
@@ -480,6 +462,7 @@ export function Main(): ReactElement {
               {(tool === 'draw-lines' || tool === 'draw-polygons') && (
                 <DrawingLinesTool />
               )}
+              {!tool && <SelectionTool />}
 
               {showInteractiveLayer && (
                 <>

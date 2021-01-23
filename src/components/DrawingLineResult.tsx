@@ -9,6 +9,7 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
@@ -44,6 +45,8 @@ type Props = {
 export function DrawingLineResult({ index }: Props): ReactElement {
   const dispatch = useDispatch();
 
+  const tool = useSelector((state: RootState) => state.main.tool);
+
   const line = useSelector(
     (state: RootState) => state.drawingLines.lines[index],
   );
@@ -56,6 +59,8 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         state.main.selection?.type === 'draw-polygons') &&
       index === state.main.selection?.id,
   );
+
+  const interactive = useSelector(selectingModeSelector) || selected;
 
   const { points } = line;
 
@@ -219,9 +224,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
+            key={`line-${interactive ? 'a' : 'b'}`}
             weight={12}
             opacity={0}
-            interactive
+            interactive={interactive}
             bubblingMouseEvents={false}
             eventHandlers={{
               click: handleSelect,
@@ -252,11 +258,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
+          key={`polygon-${interactive ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
             color: selected ? colors.selected : colors.normal,
           }}
-          interactive
+          interactive={interactive}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
@@ -280,7 +287,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         </Polygon>
       )}
 
-      {!!(ps.length > 0 && coords && !window.preventMapClick) && (
+      {!!(
+        ps.length > 0 &&
+        coords &&
+        !window.preventMapClick &&
+        (tool === 'draw-lines' || tool === 'draw-polygons')
+      ) && (
         <Polyline
           color={colors.selected}
           weight={4}

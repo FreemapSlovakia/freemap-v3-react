@@ -1,7 +1,7 @@
 import along from '@turf/along';
 import { Feature, lineString, Point, Properties } from '@turf/helpers';
 import length from '@turf/length';
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import {
   Alternative,
   RouteAlternativeExtra,
@@ -113,7 +113,11 @@ export function RoutePlannerResult(): ReactElement {
     (state: RootState) => state.routePlanner.pickMode,
   );
 
-  const selection = useSelector((state: RootState) => state.main.selection);
+  const tool = useSelector((state: RootState) => state.main.tool);
+
+  const interactive = tool === 'route-planner';
+
+  const interactive1 = interactive || tool === null;
 
   const [dragging, setDragging] = useState(false);
 
@@ -121,7 +125,7 @@ export function RoutePlannerResult(): ReactElement {
     ({ latlng }: LeafletMouseEvent) => {
       if (embed || dragging) {
         // nothing
-      } else if (selection?.type !== 'route-planner') {
+      } else if (tool !== 'route-planner') {
         // nothing
       } else if (pickMode === 'start') {
         dispatch(
@@ -135,7 +139,7 @@ export function RoutePlannerResult(): ReactElement {
         );
       }
     },
-    [pickMode, dispatch, selection, dragging],
+    [pickMode, dispatch, tool, dragging],
   );
 
   useMapEvent('click', handlePoiAdd);
@@ -332,16 +336,16 @@ export function RoutePlannerResult(): ReactElement {
   const handleStartPointClick = useCallback(() => {
     // also prevent default
 
-    dispatch(selectFeature({ type: 'route-planner' }));
+    dispatch(setTool('route-planner'));
   }, [dispatch]);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
       dispatch(routePlannerSetFinish({ finish: null, move: true }));
-      dispatch(selectFeature({ type: 'route-planner' }));
+      dispatch(setTool('route-planner'));
     }
 
-    dispatch(selectFeature({ type: 'route-planner' }));
+    dispatch(setTool('route-planner'));
   }, [mode, dispatch]);
 
   const [endPointHovering, setEndPointHovering] = useState(false);
@@ -450,7 +454,7 @@ export function RoutePlannerResult(): ReactElement {
             position: dragSegment,
           }),
         );
-        dispatch(selectFeature({ type: 'route-planner' }));
+        dispatch(setTool('route-planner'));
       }
     },
     [dispatch, dragSegment],
@@ -459,7 +463,7 @@ export function RoutePlannerResult(): ReactElement {
   const changeAlternative = useCallback(
     (index: number) => {
       dispatch(routePlannerSetActiveAlternativeIndex(index));
-      dispatch(selectFeature({ type: 'route-planner' }));
+      dispatch(setTool('route-planner'));
     },
     [dispatch],
   );
@@ -487,11 +491,11 @@ export function RoutePlannerResult(): ReactElement {
       switch (movedPointType) {
         case 'start':
           dispatch(routePlannerSetStart({ start: { lat, lon }, move: true }));
-          dispatch(selectFeature({ type: 'route-planner' }));
+          dispatch(setTool('route-planner'));
           break;
         case 'finish':
           dispatch(routePlannerSetFinish({ finish: { lat, lon }, move: true }));
-          dispatch(selectFeature({ type: 'route-planner' }));
+          dispatch(setTool('route-planner'));
 
           break;
         case 'midpoint':
@@ -499,7 +503,7 @@ export function RoutePlannerResult(): ReactElement {
             dispatch(
               routePlannerSetMidpoint({ position, midpoint: { lat, lon } }),
             );
-            dispatch(selectFeature({ type: 'route-planner' }));
+            dispatch(setTool('route-planner'));
           }
           break;
         default:
@@ -512,7 +516,7 @@ export function RoutePlannerResult(): ReactElement {
   const handleMidpointClick = useCallback(
     (position) => {
       dispatch(routePlannerRemoveMidpoint(position));
-      dispatch(selectFeature({ type: 'route-planner' }));
+      dispatch(setTool('route-planner'));
     },
     [dispatch],
   );
@@ -641,7 +645,8 @@ export function RoutePlannerResult(): ReactElement {
               )
               .map((routeSlice, i: number) => (
                 <Polyline
-                  key={`slice-${i}`}
+                  key={`slice-${i}-${interactive1 ? 'a' : 'b'}`}
+                  interactive={interactive1}
                   ref={bringToFront}
                   positions={routeSlice.geometry.coordinates.map(reverse)}
                   weight={10}
@@ -651,12 +656,12 @@ export function RoutePlannerResult(): ReactElement {
                     click() {
                       changeAlternative(alt);
                     },
-                    mousemove: special
-                      ? undefined
-                      : (e: LeafletMouseEvent) =>
-                          handlePolyMouseMove(e, routeSlice.legIndex, alt),
+                    // mousemove: special
+                    //   ? undefined
+                    //   : (e: LeafletMouseEvent) =>
+                    //       handlePolyMouseMove(e, routeSlice.legIndex, alt),
 
-                    mouseout: handlePolyMouseOut,
+                    // mouseout: handlePolyMouseOut,
                   }}
                 />
               ))}
@@ -692,16 +697,15 @@ export function RoutePlannerResult(): ReactElement {
           </Fragment>
         )),
     [
-      activeAlternativeIndex,
-      alternatives,
-      bringToFront,
-      changeAlternative,
-      handlePolyMouseMove,
-      handlePolyMouseOut,
-      maneuverToText,
       special,
+      alternatives,
+      activeAlternativeIndex,
       timestamp,
       dragging,
+      maneuverToText,
+      interactive1,
+      bringToFront,
+      changeAlternative,
     ],
   );
 
@@ -795,7 +799,7 @@ function reverse(c: [number, number]) {
   return [c[1], c[0]] as [number, number];
 }
 
-// TODO instead of calling dispatch(selectFeature({ type: 'route-planner' })) implement selecting feature in globalReducer
+// TODO instead of calling dispatch(setTool('route-planner')) implement selecting feature in globalReducer
 
 // TODO do it in processor so that GPX export is the same
 // adds missing foot segments (between bus-stop and footway)

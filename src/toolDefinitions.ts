@@ -1,17 +1,10 @@
 import { Tool } from './actions/mainActions';
+import { Messages } from './translations/messagesInterface';
 
 export interface ToolDefinition {
   tool: Tool;
   icon: string;
-  msgKey:
-    | 'maps'
-    | 'routePlanner'
-    | 'objects'
-    | 'measurement'
-    | 'trackViewer'
-    | 'mapDetails'
-    | 'tracking'
-    | 'changesets';
+  msgKey: keyof Messages['tools'];
   kbd?: string;
   expertOnly?: boolean;
 }
@@ -27,13 +20,24 @@ export const toolDefinitions: ToolDefinition[] = [
   { tool: 'objects', icon: 'map-marker', msgKey: 'objects', kbd: 'KeyO' },
   {
     tool: 'draw-lines',
-    icon: 'object-ungroup',
-    msgKey: 'measurement',
-    kbd: 'KeyD',
+    icon: 'arrows-h',
+    msgKey: 'drawLines',
+    kbd: 'KeyL',
+  },
+  {
+    tool: 'draw-polygons',
+    icon: 'square-o',
+    msgKey: 'drawPolygons',
+    kbd: 'KeyN',
+  },
+  {
+    tool: 'draw-points',
+    icon: 'map-marker',
+    msgKey: 'drawPoints',
+    kbd: 'KeyP',
   },
   { tool: 'track-viewer', icon: 'road', msgKey: 'trackViewer', kbd: 'KeyG' },
   { tool: 'map-details', icon: 'info', msgKey: 'mapDetails', kbd: 'KeyI' },
-  { tool: 'tracking', icon: 'bullseye', msgKey: 'tracking', kbd: 'KeyL' },
   {
     tool: 'changesets',
     icon: 'pencil',
