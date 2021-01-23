@@ -214,7 +214,7 @@ export const baseLayers: BaseLayerDef[] = [
       OSM_DATA_ATTR,
       SRTM_ATTR,
     ],
-    key: ['Key1', true],
+    key: ['Digit1', true],
   },
   {
     type: 'p',
