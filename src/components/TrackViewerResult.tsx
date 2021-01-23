@@ -3,24 +3,22 @@
 import turfFlatten from '@turf/flatten';
 import { Feature, LineString, Point, Properties } from '@turf/helpers';
 import { getCoords } from '@turf/invariant';
+import { setTool } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
 import { distance, smoothElevations } from 'fm3/geoutils';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
 import { Polyline, Tooltip } from 'react-leaflet';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 interface GetFeatures {
   (type: 'LineString'): Feature<LineString, Properties>[];
   (type: 'Point'): Feature<Point, Properties>[];
 }
-
-const handlePointClick = () => {
-  // just to prevent click propagation to map
-};
 
 export function TrackViewerResult(): ReactElement | null {
   const trackGeojson = useSelector(
@@ -147,6 +145,14 @@ export function TrackViewerResult(): ReactElement | null {
   //   return turfLength(turfLineSlice(p1, p2, geojsonLineString));
   // };
 
+  const interactive = useSelector(selectingModeSelector);
+
+  const dispatch = useDispatch();
+
+  const setThisTool = () => {
+    dispatch(setTool('track-viewer'));
+  };
+
   if (!trackGeojson) {
     return null;
   }
@@ -178,11 +184,15 @@ export function TrackViewerResult(): ReactElement | null {
     <Fragment key={keyToAssureProperRefresh}>
       {xxx.map(({ lineData, name }, i) => (
         <Polyline
-          key={`outline-${i}`}
+          key={`outline-${i}-${interactive ? 'a' : 'b'}`}
           weight={10}
-          interactive={false}
+          interactive={interactive}
           positions={lineData}
           color="#fff"
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            click: setThisTool,
+          }}
         >
           {name && (
             <Tooltip className="compact" direction="top" permanent>
@@ -212,24 +222,29 @@ export function TrackViewerResult(): ReactElement | null {
 
       {colorizeTrackBy === null && (
         <Polyline
+          key={`poly-${interactive ? 'a' : 'b'}`}
           weight={6}
-          interactive={false}
+          interactive={interactive}
           positions={xxx.map(({ lineData }) => lineData)}
           color="#838"
+          bubblingMouseEvents={false}
+          eventHandlers={{
+            click: setThisTool,
+          }}
         />
       )}
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <RichMarker
           faIcon="flag"
-          key={`point-${i}`}
-          interactive={false}
+          key={`point-${i}-${interactive ? 'a' : 'b'}`}
+          interactive={interactive}
           position={{
             lat: geometry.coordinates[1],
             lng: geometry.coordinates[0],
           }}
           eventHandlers={{
-            click: handlePointClick,
+            click: setThisTool,
           }}
         >
           {properties && properties.name && (
@@ -248,12 +263,12 @@ export function TrackViewerResult(): ReactElement | null {
       {startPoints.map((p, i) => (
         <RichMarker
           faIcon="play"
-          key={`5rZwATEZfM-${i}`}
+          key={`sp-${i}-${interactive ? 'a' : 'b'}`}
           color="#409a40"
-          interactive={false}
+          interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
           eventHandlers={{
-            click: handlePointClick,
+            click: setThisTool,
           }}
         >
           {p.startTime && (
@@ -272,12 +287,12 @@ export function TrackViewerResult(): ReactElement | null {
       {finishPoints.map((p, i) => (
         <RichMarker
           faIcon="stop"
-          key={`GWT1OzhnV1-${i}`}
+          key={`fp-${i}-${interactive ? 'a' : 'b'}`}
           color="#d9534f"
-          interactive={false}
+          interactive={interactive}
           position={{ lat: p.lat, lng: p.lon }}
           eventHandlers={{
-            click: handlePointClick,
+            click: setThisTool,
           }}
         >
           <Tooltip
@@ -297,12 +312,13 @@ export function TrackViewerResult(): ReactElement | null {
 
       {infoLat && infoLon && infoDistanceKm && (
         <RichMarker
+          key={`info-${interactive ? 'a' : 'b'}`}
           faIcon="info"
           color="grey"
-          interactive={false}
+          interactive={interactive}
           position={{ lat: infoLat, lng: infoLon }}
           eventHandlers={{
-            click: handlePointClick,
+            click: setThisTool,
           }}
         >
           <Tooltip

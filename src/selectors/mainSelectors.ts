@@ -93,6 +93,7 @@ export const trackingTrackSelector = createSelector(
 
 export const selectingModeSelector = (state: RootState): boolean =>
   state.main.tool === null ||
+  state.main.tool === 'track-viewer' ||
   state.main.tool === 'changesets' ||
   state.main.tool === 'maps' ||
   state.main.tool === 'objects';

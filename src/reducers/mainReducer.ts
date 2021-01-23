@@ -70,7 +70,10 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     return {
       ...state,
       tool: action.payload,
-      selection: action.payload === 'route-planner' ? null : state.selection,
+      selection:
+        action.payload === 'route-planner' || action.payload === 'track-viewer'
+          ? null
+          : state.selection,
     };
   })
   .handleAction(clearMap, (state) => {
@@ -166,6 +169,8 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
       : {
           ...state,
           selection: action.payload,
+          tool:
+            action.payload && state.tool === 'track-viewer' ? null : state.tool,
         },
   )
   .handleAction(convertToDrawing, (state) => ({

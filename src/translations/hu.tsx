@@ -79,6 +79,15 @@ const hu: Messages = {
     saved: 'Saved.', // TODO translate
   },
 
+  // TODO translate
+  selections: {
+    objects: 'Object (POI)',
+    drawPoints: 'Point',
+    drawLines: 'Line',
+    drawPolygons: 'Polygon',
+    tracking: 'Tracking',
+  },
+
   tools: {
     none: 'Eszköz bezárása',
     tools: 'Eszközök',

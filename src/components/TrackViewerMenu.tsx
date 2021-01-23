@@ -64,91 +64,97 @@ export function TrackViewerMenu(): ReactElement {
         <FontAwesomeIcon icon="upload" />
         <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
       </Button>
-      <Button
-        className="ml-1"
-        variant="secondary"
-        active={elevationChartActive}
-        onClick={() => {
-          dispatch(trackViewerToggleElevationChart());
-        }}
-        disabled={!trackGeojsonIsSuitableForElevationChart}
-      >
-        <FontAwesomeIcon icon="bar-chart" />
-        <span className="d-none d-sm-inline">
-          {' '}
-          {m?.general.elevationProfile}
-        </span>
-      </Button>
-      <DropdownButton
-        className="ml-1"
-        variant="secondary"
-        id="colorizing_mode"
-        onSelect={(approach) => {
-          dispatch(
-            trackViewerColorizeTrackBy(
-              assertType<ColorizingMode | null>(approach),
-            ),
-          );
-        }}
-        title={
-          <>
-            <FontAwesomeIcon icon="paint-brush" />
-            {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
-          </>
-        }
-      >
-        {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
-          <Dropdown.Item
-            eventKey={mode}
-            key={mode || 'none'}
-            active={mode === colorizeTrackBy}
-          >
-            {m?.trackViewer.colorizingMode[mode ?? 'none']}
-          </Dropdown.Item>
-        ))}
-      </DropdownButton>
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={() => {
-          dispatch(
-            toastsAdd({
-              id: 'trackViewer.trackInfo',
-              messageKey: 'trackViewer.info',
-              cancelType: [getType(clearMap), getType(trackViewerSetData)],
-              style: 'info',
-            }),
-          );
-        }}
-        disabled={!trackGeojsonIsSuitableForElevationChart}
-      >
-        <FontAwesomeIcon icon="info-circle" />
-        <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
-      </Button>
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={() => {
-          dispatch(trackViewerUploadTrack());
-        }}
-        disabled={!hasTrack}
-      >
-        <FontAwesomeIcon icon="cloud-upload" />
-        <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
-      </Button>
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={handleConvertToDrawing}
-        disabled={!hasTrack}
-        title={m?.general.convertToDrawing}
-      >
-        <FontAwesomeIcon icon="pencil" />
-        <span className="d-none d-sm-inline">
-          {' '}
-          {m?.general.convertToDrawing}
-        </span>
-      </Button>
+      {trackGeojsonIsSuitableForElevationChart && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          active={elevationChartActive}
+          onClick={() => {
+            dispatch(trackViewerToggleElevationChart());
+          }}
+        >
+          <FontAwesomeIcon icon="bar-chart" />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.general.elevationProfile}
+          </span>
+        </Button>
+      )}
+      {trackGeojsonIsSuitableForElevationChart && (
+        <DropdownButton
+          className="ml-1"
+          variant="secondary"
+          id="colorizing_mode"
+          onSelect={(approach) => {
+            dispatch(
+              trackViewerColorizeTrackBy(
+                assertType<ColorizingMode | null>(approach),
+              ),
+            );
+          }}
+          title={
+            <>
+              <FontAwesomeIcon icon="paint-brush" />
+              {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
+            </>
+          }
+        >
+          {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
+            <Dropdown.Item
+              eventKey={mode}
+              key={mode || 'none'}
+              active={mode === colorizeTrackBy}
+            >
+              {m?.trackViewer.colorizingMode[mode ?? 'none']}
+            </Dropdown.Item>
+          ))}
+        </DropdownButton>
+      )}
+      {trackGeojsonIsSuitableForElevationChart && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(
+              toastsAdd({
+                id: 'trackViewer.trackInfo',
+                messageKey: 'trackViewer.info',
+                cancelType: [getType(clearMap), getType(trackViewerSetData)],
+                style: 'info',
+              }),
+            );
+          }}
+        >
+          <FontAwesomeIcon icon="info-circle" />
+          <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
+        </Button>
+      )}
+      {hasTrack && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={() => {
+            dispatch(trackViewerUploadTrack());
+          }}
+        >
+          <FontAwesomeIcon icon="cloud-upload" />
+          <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
+        </Button>
+      )}
+      {hasTrack && (
+        <Button
+          className="ml-1"
+          variant="secondary"
+          onClick={handleConvertToDrawing}
+          title={m?.general.convertToDrawing}
+        >
+          <FontAwesomeIcon icon="pencil" />
+          <span className="d-none d-sm-inline">
+            {' '}
+            {m?.general.convertToDrawing}
+          </span>
+        </Button>
+      )}
       {hasTrack && <DeleteButton />}
     </>
   );

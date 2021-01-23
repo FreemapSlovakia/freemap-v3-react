@@ -42,7 +42,7 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
     ...state,
     overlayPaneOpacity: action.payload,
   }))
-  .handleAction(gallerySetFilter, (state, action) => {
+  .handleAction(gallerySetFilter, (state) => {
     return {
       ...state,
       overlays: state.overlays.includes('I')
