@@ -14,6 +14,7 @@ import {
   setTool,
   Tool,
 } from 'fm3/actions/mainActions';
+import { mapRefocus } from 'fm3/actions/mapActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
@@ -56,6 +57,8 @@ export function MoreMenuButton(): ReactElement {
   const language = useSelector((state: RootState) => state.l10n.language);
 
   const mapType = useSelector((state: RootState) => state.map.mapType);
+
+  const overlays = useSelector((state: RootState) => state.map.overlays);
 
   const lat = useSelector((state: RootState) => state.map.lat);
 
@@ -537,6 +540,27 @@ export function MoreMenuButton(): ReactElement {
                   }}
                 >
                   <FontAwesomeIcon icon="upload" /> {m?.gallery.upload}
+                </Dropdown.Item>
+
+                <Dropdown.Item
+                  onSelect={() => {
+                    dispatch(
+                      mapRefocus({
+                        overlays: overlays.includes('I')
+                          ? overlays.filter((o) => o !== 'I')
+                          : [...overlays, 'I'],
+                      }),
+                    );
+                    close();
+                  }}
+                  active={overlays.includes('I')}
+                >
+                  <FontAwesomeIcon
+                    icon={
+                      overlays.includes('I') ? 'check-square-o' : 'square-o'
+                    }
+                  />{' '}
+                  {m?.gallery.showLayer}
                 </Dropdown.Item>
 
                 <Dropdown.Divider />

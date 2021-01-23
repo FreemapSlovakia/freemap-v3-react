@@ -364,6 +364,7 @@ const en: Messages = {
   gallery: {
     filter: 'Filter',
     showPhotosFrom: 'View photos',
+    showLayer: 'Zobrazit vrstvu',
     upload: 'Upload',
     f: {
       firstUploaded: 'from first uploaded',

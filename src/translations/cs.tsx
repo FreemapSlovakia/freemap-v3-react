@@ -368,6 +368,7 @@ const cs: Messages = {
   gallery: {
     filter: 'Filtr',
     showPhotosFrom: 'Prohlížet fotky',
+    showLayer: 'Zobrazit vrstvu',
     upload: 'Nahrát',
     f: {
       firstUploaded: 'od první nahrané',

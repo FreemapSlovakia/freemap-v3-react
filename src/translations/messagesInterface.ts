@@ -302,6 +302,7 @@ export type Messages = {
   gallery: {
     filter: string;
     showPhotosFrom: string;
+    showLayer: string;
     upload: string;
     f: {
       firstUploaded: string;

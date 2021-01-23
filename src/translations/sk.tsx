@@ -377,6 +377,7 @@ const sk: Messages = {
   gallery: {
     filter: 'Filter',
     showPhotosFrom: 'Prezerať fotky',
+    showLayer: 'Zobraziť vrstvu',
     upload: 'Nahrať',
     f: {
       firstUploaded: 'od prvej nahranej',

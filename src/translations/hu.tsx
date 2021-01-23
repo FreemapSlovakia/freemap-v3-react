@@ -367,6 +367,7 @@ const hu: Messages = {
   gallery: {
     filter: 'Szűrő',
     showPhotosFrom: 'View photos', // TODO translate
+    showLayer: 'Show layer', // TODO translate
     upload: 'Feltöltés',
     f: {
       firstUploaded: 'az először feltöltöttől',
