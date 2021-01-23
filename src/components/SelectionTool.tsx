@@ -9,8 +9,9 @@ export function SelectionTool(): null {
   useMapEvent(
     'click',
     useCallback(() => {
-      dispatch(selectFeature(null));
-      return;
+      if (!window.preventMapClick) {
+        dispatch(selectFeature(null));
+      }
     }, [dispatch]),
   );
   return null;

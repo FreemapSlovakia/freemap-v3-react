@@ -224,10 +224,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
-            key={`line-${interactive && !selected ? 'a' : 'b'}`}
+            key={`line-${interactive ? 'a' : 'b'}`}
             weight={12}
             opacity={0}
-            interactive={interactive && !selected}
+            interactive={interactive}
             bubblingMouseEvents={false}
             eventHandlers={{
               click: handleSelect,
@@ -258,12 +258,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
-          key={`polygon-${interactive && !selected ? 'a' : 'b'}`}
+          key={`polygon-${interactive ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
             color: selected ? colors.selected : colors.normal,
           }}
-          interactive={interactive && !selected}
+          interactive={interactive}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
