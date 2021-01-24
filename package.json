@@ -52,6 +52,7 @@
     "trackjs": "3.7.6",
     "typesafe-actions": "5.1.0",
     "typescript-is": "0.17.0",
+    "use-debounce": "5.2.0",
     "use-media": "1.4.0"
   },
   "devDependencies": {

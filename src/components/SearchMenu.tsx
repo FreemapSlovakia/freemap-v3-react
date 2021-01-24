@@ -32,6 +32,7 @@ import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SafeAnchor from 'react-bootstrap/SafeAnchor';
 import { useDispatch, useSelector } from 'react-redux';
+import { useDebouncedCallback } from 'use-debounce';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = {
@@ -74,24 +75,34 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
+  const { callback, flush } = useDebouncedCallback((query: string) => {
+    if (query.length < 3) {
+      if (results.length > 0) {
+        dispatch(searchSetResults([]));
+      }
+    } else {
+      dispatch(searchSetQuery({ query }));
+    }
+  }, 1000);
+
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLFormElement>) => {
       e.preventDefault();
 
-      dispatch(searchSetQuery({ query: value }));
+      flush();
     },
-    [dispatch, value],
+    [flush],
   );
 
   const handleChange = useCallback(
     (e: ChangeEvent<HTMLInputElement>) => {
-      setValue(e.currentTarget.value);
+      const { value } = e.currentTarget;
 
-      if (results.length > 0) {
-        dispatch(searchSetResults([]));
-      }
+      setValue(value);
+
+      callback(value);
     },
-    [setValue, dispatch, results],
+    [callback],
   );
 
   const handleSelect = useCallback(
@@ -168,8 +179,11 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   const handleClearClick = useCallback(
     (e: MouseEvent<HTMLInputElement>) => {
       e.stopPropagation();
+
       dispatch(searchSelectResult(null));
+
       dispatch(searchSetResults([]));
+
       setValue('');
     },
     [dispatch],
