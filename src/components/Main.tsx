@@ -85,6 +85,7 @@ import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { GalleryModals } from './gallery/GalleryModals';
+import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
 import { MoreMenuButton } from './MoreMenuButton';
 import { ObjectSelection } from './ObjectSelection';
@@ -521,6 +522,7 @@ export function Main(): ReactElement {
 
           {showMenu && (
             <>
+              {tool === 'map-details' && <MapDetailsTool />}
               {tool === 'draw-points' && <DrawingPointsTool />}
               {(tool === 'draw-lines' || tool === 'draw-polygons') && (
                 <DrawingLinesTool />
