@@ -25,7 +25,7 @@ function getKbdShortcut(key?: [string, boolean]) {
       <>
         {' '}
         <kbd>
-          {key[1] ? 'shift + ' : ''}
+          {key[1] ? '⇧' : ''}
           {key[0].replace(/Key|Digit/, '').toLowerCase()}
         </kbd>
       </>
