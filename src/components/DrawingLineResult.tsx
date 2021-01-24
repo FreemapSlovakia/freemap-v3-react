@@ -13,14 +13,7 @@ import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
-import {
-  Fragment,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Fragment, ReactElement, useEffect, useMemo, useState } from 'react';
 import {
   Marker,
   Polygon,
@@ -76,43 +69,36 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     }
   }, [removeCoords]);
 
-  const handleMouseMove = useCallback(
-    ({ latlng, originalEvent }: LeafletMouseEvent) => {
-      if (!touching && selected) {
-        setCoords(
-          (originalEvent.target as any)?.classList.contains('leaflet-container')
-            ? { lat: latlng.lat, lon: latlng.lng }
-            : undefined,
-        );
-      }
-    },
-    [touching, selected],
-  );
+  const map = useMap();
 
-  const handleMouseOut = useCallback(() => {
+  useMapEvent('mousemove', ({ latlng, originalEvent }: LeafletMouseEvent) => {
+    if (!touching && selected) {
+      setCoords(
+        (originalEvent.target as any)?.classList.contains('leaflet-container')
+          ? { lat: latlng.lat, lon: latlng.lng }
+          : undefined,
+      );
+    }
+  });
+
+  useMapEvent('mouseout', () => {
     if (selected) {
       setCoords(undefined);
     }
-  }, [selected]);
-
-  const handleTouchStart = useCallback(() => {
-    setTouching(true);
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    setTouching(false);
-  }, []);
-
-  const map = useMap();
-
-  useMapEvent('mousemove', handleMouseMove);
-
-  useMapEvent('mouseout', handleMouseOut);
+  });
 
   useEffect(() => {
     const mapContainer = selected && map.getContainer();
 
     if (mapContainer) {
+      const handleTouchStart = () => {
+        setTouching(true);
+      };
+
+      const handleTouchEnd = () => {
+        setTouching(false);
+      };
+
       DomEvent.on(mapContainer, 'touchstart', handleTouchStart);
       DomEvent.on(mapContainer, 'touchend', handleTouchEnd);
 
@@ -121,59 +107,33 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         DomEvent.off(mapContainer, 'touchend', handleTouchEnd);
       };
     }
-  }, [
-    map,
-    selected,
-    handleMouseMove,
-    handleMouseOut,
-    handleTouchStart,
-    handleTouchEnd,
-  ]);
+  }, [map, selected]);
 
-  const handlePoiAdd = useCallback(
-    (lat: number, lon: number, position: number, id0: number) => {
-      handleDragStart();
-      const pos = position ? Math.ceil(position / 2) : points.length;
+  function addPoint(lat: number, lon: number, position: number, id0: number) {
+    handleDragStart();
+    const pos = position ? Math.ceil(position / 2) : points.length;
 
-      let id: number | undefined;
+    let id: number | undefined;
 
-      if (id0) {
-        id = id0;
-      } else if (pos === 0) {
-        id = points.length ? points[pos].id - 1 : 0;
-      } else if (pos === points.length) {
-        id = points[pos - 1].id + 1;
-      } else {
-        id = (points[pos - 1].id + points[pos].id) / 2;
-      }
+    if (id0) {
+      id = id0;
+    } else if (pos === 0) {
+      id = points.length ? points[pos].id - 1 : 0;
+    } else if (pos === points.length) {
+      id = points[pos - 1].id + 1;
+    } else {
+      id = (points[pos - 1].id + points[pos].id) / 2;
+    }
 
-      dispatch(
-        drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
-      );
+    dispatch(
+      drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
+    );
 
-      dispatch(drawingPointMeasure(true));
-    },
-    [points, dispatch, index],
-  );
-
-  const handleMeasureMarkerDrag = useCallback(
-    ({ latlng: { lat, lng: lon } }, id: number) => {
-      dispatch(drawingLineUpdatePoint({ index, point: { lat, lon, id } }));
-
-      dispatch(drawingPointMeasure(true));
-    },
-    [dispatch, index],
-  );
-
-  const handleMarkerClick = useCallback(
-    (id: number) => {
-      dispatch(drawingLineRemovePoint({ index, id }));
-      dispatch(drawingPointMeasure(true));
-    },
-    [dispatch, index],
-  );
+    dispatch(drawingPointMeasure(true));
+  }
 
   let prev: Point | null = null;
+
   let dist = 0;
 
   const nf = useMemo(
@@ -185,7 +145,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     [language],
   );
 
-  const handleSelect = useCallback(() => {
+  function handleSelect() {
     dispatch(
       selectFeature({
         type: line.type === 'polygon' ? 'draw-polygons' : 'draw-lines',
@@ -194,7 +154,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     );
 
     dispatch(drawingPointMeasure(true));
-  }, [dispatch, line.type, index]);
+  }
 
   const ps = useMemo(() => {
     const ps: Point[] = [];
@@ -330,10 +290,20 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               opacity={1}
               eventHandlers={{
                 drag(e) {
-                  handleMeasureMarkerDrag(e, p.id);
+                  const coord = e.target.getLatLng();
+
+                  dispatch(
+                    drawingLineUpdatePoint({
+                      index,
+                      point: { lat: coord.lat, lon: coord.lng, id: p.id },
+                    }),
+                  );
+
+                  dispatch(drawingPointMeasure(true));
                 },
                 click() {
-                  handleMarkerClick(p.id);
+                  dispatch(drawingLineRemovePoint({ index, id: p.id }));
+                  dispatch(drawingPointMeasure(true));
                 },
                 dragstart: handleDragStart,
                 dragend: handleDragEnd,
@@ -359,7 +329,15 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               opacity={0.5}
               eventHandlers={{
                 dragstart(e) {
-                  handlePoiAdd(
+                  addPoint(
+                    e.target.getLatLng().lat,
+                    e.target.getLatLng().lng,
+                    i,
+                    p.id,
+                  );
+                },
+                click(e) {
+                  addPoint(
                     e.target.getLatLng().lat,
                     e.target.getLatLng().lng,
                     i,
