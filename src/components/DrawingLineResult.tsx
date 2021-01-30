@@ -48,8 +48,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   const selected = useSelector(
     (state: RootState) =>
-      (state.main.selection?.type === 'draw-lines' ||
-        state.main.selection?.type === 'draw-polygons') &&
+      state.main.selection?.type === 'draw-line-poly' &&
       index === state.main.selection?.id,
   );
 
@@ -148,7 +147,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   function handleSelect() {
     dispatch(
       selectFeature({
-        type: line.type === 'polygon' ? 'draw-polygons' : 'draw-lines',
+        type: 'draw-line-poly',
         id: index,
       }),
     );

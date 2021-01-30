@@ -1,7 +1,7 @@
 import area from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import length from '@turf/length';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingPointMeasure as drawingMeasure } from 'fm3/actions/drawingPointActions';
 import {
   clearMap,
   deleteFeature,
@@ -13,8 +13,8 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
 
-export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
-  actionCreator: drawingPointMeasure,
+export const measurementProcessor: Processor<typeof drawingMeasure> = {
+  actionCreator: drawingMeasure,
   errorKey: 'measurement.elevationFetchError',
   handle: async ({ getState, dispatch, action }) => {
     const { selection } = getState().main;
@@ -23,10 +23,10 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
       return;
     }
 
-    if (selection?.type === 'draw-polygons') {
-      const { points } = getState().drawingLines.lines[selection.id];
+    if (selection?.type === 'draw-line-poly') {
+      const { points, type } = getState().drawingLines.lines[selection.id];
 
-      if (points.length > 2) {
+      if (type === 'polygon' && points.length > 2) {
         dispatch(
           toastsAdd({
             messageKey: 'measurement.areaInfo',
@@ -48,11 +48,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
             cancelType: [getType(selectFeature), getType(deleteFeature)],
           }),
         );
-      }
-    } else if (selection?.type === 'draw-lines') {
-      const { points } = getState().drawingLines.lines[selection.id];
-
-      if (points.length > 1) {
+      } else if (type === 'line' && points.length > 1) {
         dispatch(
           toastsAdd({
             messageKey: 'measurement.distanceInfo',
@@ -90,7 +86,7 @@ export const measurementProcessor: Processor<typeof drawingPointMeasure> = {
           params: {
             coordinates: `${point.lat},${point.lon}`,
           },
-          cancelActions: [drawingPointMeasure, clearMap],
+          cancelActions: [drawingMeasure, clearMap],
         });
 
         elevation = assertType<[number]>(data)[0];

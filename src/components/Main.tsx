@@ -31,9 +31,10 @@ import {
 import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
+import { DrawingLineSelection } from 'fm3/components/DrawingLineSelection';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
+import { DrawingPointSelection } from 'fm3/components/DrawingPointSelection';
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-import { DrawingSelection } from 'fm3/components/DrawingSelection';
 import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
 import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
@@ -112,16 +113,8 @@ export function Main(): ReactElement {
     (state: RootState) => !state.map.overlays.includes('i'),
   );
 
-  const selectionType = useSelector((state: RootState) =>
-    state.main.selection?.type === 'draw-lines' &&
-    state.drawingLines.lines[state.drawingLines.lines.length - 1].points
-      .length < 2
-      ? null
-      : state.main.selection?.type === 'draw-polygons' &&
-        state.drawingLines.lines[state.drawingLines.lines.length - 1].points
-          .length < 3
-      ? null
-      : state.main.selection?.type,
+  const selectionType = useSelector(
+    (state: RootState) => state.main.selection?.type,
   );
 
   const tool = useSelector((state: RootState) => state.main.tool);
@@ -340,6 +333,8 @@ export function Main(): ReactElement {
 
   const isSelecting = useSelector(selectingModeSelector);
 
+  const selectionMenu = showMenu ? selectionType : null;
+
   return (
     <>
       <style>
@@ -419,62 +414,10 @@ export function Main(): ReactElement {
           )}
 
           {/* selections */}
-          {showMenu && selectionType && (
-            <Card className="fm-toolbar">
-              <ButtonToolbar>
-                <span className="align-self-center ml-1 mr-2">
-                  <FontAwesomeIcon icon="mouse-pointer" />
-                  {'/ '}
-                  {selectionType === 'draw-lines' ? (
-                    <>
-                      <FontAwesomeIcon icon="arrows-h" />
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.selections.drawLines}
-                      </span>
-                    </>
-                  ) : selectionType === 'draw-polygons' ? (
-                    <>
-                      <FontAwesomeIcon icon="square-o" />
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.selections.drawPolygons}
-                      </span>
-                    </>
-                  ) : selectionType === 'draw-points' ? (
-                    <>
-                      <FontAwesomeIcon icon="map-marker" />
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.selections.drawPoints}
-                      </span>
-                    </>
-                  ) : selectionType === 'objects' ? (
-                    <>
-                      <FontAwesomeIcon icon="map-marker" />
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.selections.objects}
-                      </span>
-                    </>
-                  ) : selectionType === 'tracking' ? (
-                    <>
-                      <FontAwesomeIcon icon="bullseye" />
-                      <span className="d-none d-sm-inline">
-                        {' '}
-                        {m?.selections.tracking}
-                      </span>
-                    </>
-                  ) : null}
-                </span>
-                {(selectionType === 'draw-lines' ||
-                  selectionType === 'draw-points' ||
-                  selectionType === 'draw-polygons') && <DrawingSelection />}
-                {selectionType === 'objects' && <ObjectSelection />}
-                {selectionType === 'tracking' && <TrackingSelection />}
-              </ButtonToolbar>
-            </Card>
-          )}
+          {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
+          {selectionMenu === 'draw-points' && <DrawingPointSelection />}
+          {selectionMenu === 'objects' && <ObjectSelection />}
+          {selectionMenu === 'tracking' && <TrackingSelection />}
 
           <GalleryPositionPickingMenu />
           <GalleryShowPositionMenu />

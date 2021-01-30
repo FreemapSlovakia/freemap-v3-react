@@ -100,7 +100,7 @@ export interface ObjectsSelection {
 }
 
 export interface DrawLinePolySelection {
-  type: 'draw-lines' | 'draw-polygons';
+  type: 'draw-line-poly';
   id: number;
 }
 

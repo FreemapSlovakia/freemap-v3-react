@@ -4,7 +4,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useDispatch } from 'react-redux';
-import { DeleteButton } from './DeleteButton';
+import { Selection } from './Selection';
 
 export function ObjectSelection(): ReactElement {
   const dispatch = useDispatch();
@@ -12,7 +12,7 @@ export function ObjectSelection(): ReactElement {
   const m = useMessages();
 
   return (
-    <>
+    <Selection icon="map-marker" title={m?.selections.objects} deletable>
       <Button
         className="ml-1"
         variant="secondary"
@@ -27,7 +27,6 @@ export function ObjectSelection(): ReactElement {
           {m?.general.convertToDrawing}
         </span>
       </Button>
-      <DeleteButton />
-    </>
+    </Selection>
   );
 }

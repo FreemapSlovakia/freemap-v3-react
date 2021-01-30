@@ -1,6 +1,9 @@
+import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
-import { DeleteButton } from './DeleteButton';
+import { Selection } from './Selection';
 
 export function TrackingSelection(): ReactElement {
-  return <DeleteButton />;
+  const m = useMessages();
+
+  return <Selection icon="bullseye" title={m?.selections.tracking} deletable />;
 }

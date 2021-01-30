@@ -12,8 +12,7 @@ export function DrawingLinesTool(): null {
   const tool = useSelector((state: RootState) => state.main.tool);
 
   const linePoints = useSelector((state: RootState) =>
-    state.main.selection?.type !== 'draw-lines' &&
-    state.main.selection?.type !== 'draw-polygons'
+    state.main.selection?.type !== 'draw-line-poly'
       ? []
       : state.drawingLines.lines[state.main.selection.id].points,
   );
@@ -48,10 +47,7 @@ export function DrawingLinesTool(): null {
       dispatch(
         drawingLineAddPoint({
           index:
-            selection?.type === 'draw-lines' ||
-            selection?.type === 'draw-polygons'
-              ? selection.id
-              : undefined,
+            selection?.type === 'draw-line-poly' ? selection.id : undefined,
           point: { lat: latlng.lat, lon: latlng.lng, id },
           position: pos,
           type: tool === 'draw-lines' ? 'line' : 'polygon',

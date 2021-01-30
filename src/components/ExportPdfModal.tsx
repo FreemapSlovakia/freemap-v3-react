@@ -29,7 +29,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
 
   const canExportByPolygon = useSelector(
     (state: RootState) =>
-      state.main.selection?.type === 'draw-polygons' &&
+      state.main.selection?.type === 'draw-line-poly' &&
       state.main.selection.id !== undefined,
   );
 

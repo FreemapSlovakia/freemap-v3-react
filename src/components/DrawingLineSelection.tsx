@@ -10,21 +10,18 @@ import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import { useDispatch, useSelector } from 'react-redux';
-import { DeleteButton } from './DeleteButton';
+import { Selection } from './Selection';
 
-export function DrawingSelection(): ReactElement {
+export function DrawingLineSelection(): ReactElement | null {
   const dispatch = useDispatch();
 
   const m = useMessages();
 
-  const selection = useSelector((state: RootState) => state.main.selection);
-
-  const linePoints = useSelector((state: RootState) =>
-    (state.main.selection?.type !== 'draw-lines' &&
-      state.main.selection?.type !== 'draw-polygons') ||
+  const line = useSelector((state: RootState) =>
+    state.main.selection?.type !== 'draw-line-poly' ||
     state.main.selection.id === undefined
-      ? []
-      : state.drawingLines.lines[state.main.selection.id].points,
+      ? undefined
+      : state.drawingLines.lines[state.main.selection.id],
   );
 
   const elevationChartTrackGeojson = useSelector(
@@ -36,37 +33,35 @@ export function DrawingSelection(): ReactElement {
 
     if (elevationChartTrackGeojson) {
       dispatch(elevationChartClose());
-    } else {
+    } else if (line) {
       dispatch(
         elevationChartSetTrackGeojson(
-          lineString(linePoints.map((p) => [p.lon, p.lat])),
+          lineString(line.points.map((p) => [p.lon, p.lat])),
         ),
       );
     }
-  }, [linePoints, elevationChartTrackGeojson, dispatch]);
+  }, [line, elevationChartTrackGeojson, dispatch]);
 
-  const selectionType = selection?.type;
+  return !line ? null : (
+    <Selection
+      icon={line.type === 'line' ? 'arrows-h' : 'square-o'}
+      title={
+        line.type === 'line'
+          ? m?.selections.drawLines
+          : m?.selections.drawPolygons
+      }
+      deletable
+    >
+      <Button
+        className="ml-1"
+        variant="secondary"
+        onClick={() => dispatch(setActiveModal('edit-label'))}
+      >
+        <FontAwesomeIcon icon="tag" />
+        <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
+      </Button>
 
-  const isActive =
-    selection?.id !== undefined &&
-    (selectionType === 'draw-points' ||
-      (selectionType === 'draw-lines' && linePoints.length > 1) ||
-      (selectionType === 'draw-polygons' && linePoints.length > 2));
-
-  return (
-    <>
-      {isActive && (
-        <Button
-          className="ml-1"
-          variant="secondary"
-          onClick={() => dispatch(setActiveModal('edit-label'))}
-          disabled={!isActive}
-        >
-          <FontAwesomeIcon icon="tag" />
-          <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
-        </Button>
-      )}
-      {selectionType === 'draw-lines' && linePoints.length >= 2 && (
+      {line.type === 'line' && line.points.length > 1 && (
         <Button
           className="ml-1"
           variant="secondary"
@@ -80,7 +75,6 @@ export function DrawingSelection(): ReactElement {
           </span>
         </Button>
       )}
-      {isActive && <DeleteButton />}
-    </>
+    </Selection>
   );
 }
