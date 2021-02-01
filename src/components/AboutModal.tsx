@@ -76,7 +76,7 @@ export function AboutModal({ show }: Props): ReactElement {
             {m?.contacts.vicepresident}
             {': '}
             <a href="mailto:martin.zdila@freemap.sk">Ing. Martin Ždila</a>{' '}
-            (Žilina)
+            (Košice)
           </li>
           <li>
             {m?.contacts.secretary}
@@ -84,7 +84,7 @@ export function AboutModal({ show }: Props): ReactElement {
             <a href="mailto:tibor.jamecny@freemap.sk">
               Ing. Tibor Jamečný
             </a>{' '}
-            (Košice)
+            (Žilina)
           </li>
         </ul>
       </Modal.Body>
