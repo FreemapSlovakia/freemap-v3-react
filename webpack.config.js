@@ -41,9 +41,21 @@ module.exports = {
   devtool: prod ? 'source-map' : 'cheap-module-eval-source-map',
   module: {
     rules: [
+      // see https://github.com/Leaflet/Leaflet/issues/7403
+      {
+        enforce: 'pre',
+        test: /\bnode_modules\/leaflet\/dist\/leaflet-src\.js/,
+        loader: 'string-replace-loader',
+        options: {
+          search: '(win && chrome) ? 2 * window.devicePixelRatio :',
+          replace:
+            "(win && chrome) ? 2 * window.devicePixelRatio : (navigator.platform.indexOf('Linux') === 0 && chrome) ? window.devicePixelRatio :",
+          strict: true,
+        },
+      },
       {
         // babelify some very modern libraries
-        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first)\/.*\.js$/,
+        test: /\bnode_modules\/.*\b(exifreader|strict-uri-encode|query-string|split-on-first|leaflet)\/.*\.js$/,
         loader: 'babel-loader',
         options: {
           presets: [
