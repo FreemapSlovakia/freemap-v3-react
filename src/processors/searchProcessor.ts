@@ -102,7 +102,7 @@ export const searchProcessor: Processor<typeof searchSetQuery> = {
 
     dispatch(searchSetResults(results));
 
-    if (action.payload.fromUrl && results.length) {
+    if (action.payload.fromUrl && results[0]) {
       dispatch(searchSelectResult(results[0]));
     }
   },

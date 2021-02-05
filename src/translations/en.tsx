@@ -1197,7 +1197,7 @@ const en: Messages = {
             </a>{' '}
             or OsmAnd):{' '}
             <code>
-              {process.env.API_URL}/tracking/track/<i>token</i>
+              {process.env['API_URL']}/tracking/track/<i>token</i>
             </code>{' '}
             where <i>token</i> is listed in the table below.
           </p>
@@ -1248,10 +1248,9 @@ const en: Messages = {
           <p>
             In the case of tracker TK102B, configure it's address to{' '}
             <code>
-              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
-                /:\d+$/,
-                '',
-              )}
+              {process.env['API_URL']
+                ?.replace(/https?:\/\//, '')
+                ?.replace(/:\d+$/, '')}
               :3030
             </code>
           </p>

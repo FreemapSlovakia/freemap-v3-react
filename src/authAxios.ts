@@ -11,7 +11,7 @@ import { RootState } from './storeCreator';
 
 export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
   const cfg: AxiosRequestConfig = {
-    baseURL: process.env.API_URL,
+    baseURL: process.env['API_URL'],
   };
 
   if (expectedStatus) {

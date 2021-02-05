@@ -117,9 +117,9 @@ export const wikiLayerProcessor: Processor = {
     const wikidatas: string[] = [];
 
     for (const e of okData.elements) {
-      if (e.tags.wikipedia) {
-        e.tags.wikipedia = decodeURIComponent(
-          e.tags.wikipedia.replace(/_/g, ' '),
+      if (e.tags['wikipedia']) {
+        e.tags['wikipedia'] = decodeURIComponent(
+          e.tags['wikipedia'].replace(/_/g, ' '),
         );
       }
 
@@ -136,7 +136,7 @@ export const wikiLayerProcessor: Processor = {
           m.set(wikipedia, e);
         }
       } else {
-        wikidatas.push(e.tags.wikidata);
+        wikidatas.push(e.tags['wikidata']);
       }
     }
 
@@ -174,11 +174,11 @@ export const wikiLayerProcessor: Processor = {
     const okData1 = assertType<WikiResponse>(data1);
 
     for (const e of okData.elements) {
-      if (e.tags.wikipedia) {
+      if (e.tags['wikipedia']) {
         continue;
       }
 
-      const sitelinks = okData1.entities?.[e.tags.wikidata]?.sitelinks;
+      const sitelinks = okData1.entities?.[e.tags['wikidata']]?.sitelinks;
 
       if (!sitelinks) {
         continue;
@@ -202,7 +202,7 @@ export const wikiLayerProcessor: Processor = {
         e1.type === 'relation' ||
         (e1.type === 'way' && e.type === 'relation')
       ) {
-        e.tags.wikipedia = wikipedia;
+        e.tags['wikipedia'] = wikipedia;
         m.set(wikipedia, e);
       }
     }
@@ -213,8 +213,8 @@ export const wikiLayerProcessor: Processor = {
           id: e.id,
           lat: e.type === 'node' ? e.lat : e.center.lat,
           lon: e.type === 'node' ? e.lon : e.center.lon,
-          name: e.tags.name,
-          wikipedia: e.tags.wikipedia,
+          name: e.tags['name'],
+          wikipedia: e.tags['wikipedia'],
         })),
       ),
     );

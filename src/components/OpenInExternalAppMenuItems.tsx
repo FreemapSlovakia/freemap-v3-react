@@ -152,8 +152,8 @@ export function OpenInExternalAppDropdownItems({
           };
 
           if (includePoint) {
-            params.x = lon;
-            params.y = lat;
+            params['x'] = lon;
+            params['y'] = lat;
           }
 
           window.open(`https://mapy.hiking.sk/?${qs.stringify(params)}`);

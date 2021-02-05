@@ -64,7 +64,7 @@ export function sendError(errDetails: ErrorDetails): void {
 
   axios
     .post(
-      `${process.env.API_URL}/logger`,
+      `${process.env['API_URL']}/logger`,
       {
         level: 'error',
         message: 'Webapp error.',

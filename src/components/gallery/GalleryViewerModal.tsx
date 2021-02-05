@@ -198,7 +198,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
   });
 
   const getImageUrl = (id: number) =>
-    `${process.env.API_URL}/gallery/pictures/${id}/image?width=${Math.round(
+    `${process.env['API_URL']}/gallery/pictures/${id}/image?width=${Math.round(
       window.devicePixelRatio *
         (isFullscreen
           ? window.innerWidth
@@ -509,7 +509,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
             includePoint
             pointTitle={title ?? undefined}
             pointDescription={description ?? undefined}
-            url={`${process.env.API_URL}/gallery/pictures/${activeImageId}/image`}
+            url={`${process.env['API_URL']}/gallery/pictures/${activeImageId}/image`}
           >
             <FontAwesomeIcon icon="external-link" />
             <span className="d-none d-md-inline">

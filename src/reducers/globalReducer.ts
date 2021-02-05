@@ -68,7 +68,7 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
           draft.drawingPoints.points.push({
             lat: object.lat,
             lon: object.lon,
-            label: object.tags?.name, // TODO put object type and some other tags to name
+            label: object.tags?.['name'], // TODO put object type and some other tags to name
           });
         }
 
@@ -98,7 +98,7 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
 
           if (geometry?.type === 'Point') {
             draft.drawingPoints.points.push({
-              label: feature.properties?.name,
+              label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
@@ -117,7 +117,7 @@ export function globalReducer(state: RootState, action: RootAction): RootState {
 
             draft.drawingLines.lines.push({
               type: 'line',
-              label: feature.properties?.name,
+              label: feature.properties?.['name'],
               points,
             });
           }

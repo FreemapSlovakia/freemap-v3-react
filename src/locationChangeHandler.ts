@@ -76,8 +76,8 @@ export const handleLocationChange = (
   const parsedQuery = queryString.parse(search);
 
   const id =
-    (typeof parsedQuery.id === 'string'
-      ? parseInt(parsedQuery.id, 10)
+    (typeof parsedQuery['id'] === 'string'
+      ? parseInt(parsedQuery['id'], 10)
       : undefined) || undefined;
 
   if (id !== getState().maps.id) {
@@ -104,8 +104,8 @@ export const handleLocationChange = (
 
   {
     const points =
-      typeof query.points === 'string'
-        ? query.points
+      typeof query['points'] === 'string'
+        ? query['points']
             .split(',')
             .map((point) =>
               point ? point.split('/').map((coord) => parseFloat(coord)) : null,
@@ -124,8 +124,8 @@ export const handleLocationChange = (
       );
 
     if (
-      typeof query.transport === 'string' &&
-      isTransportType(query.transport) &&
+      typeof query['transport'] === 'string' &&
+      isTransportType(query['transport']) &&
       pointsOk
     ) {
       const {
@@ -149,7 +149,7 @@ export const handleLocationChange = (
         latLons.length > 1 ? latLons[latLons.length - 1] : null;
 
       if (
-        query.transport !== transportType ||
+        query['transport'] !== transportType ||
         serializePoint(start) !== serializePoint(nextStart) ||
         serializePoint(finish) !== serializePoint(nextFinish) ||
         midpoints.length !== nextMidpoints.length ||
@@ -167,7 +167,7 @@ export const handleLocationChange = (
             start: nextStart,
             finish: nextFinish,
             midpoints: nextMidpoints,
-            transportType: query.transport,
+            transportType: query['transport'],
             mode:
               routeMode === 'trip' || routeMode === 'roundtrip'
                 ? routeMode
@@ -193,18 +193,18 @@ export const handleLocationChange = (
   }
 
   const tool =
-    !query.tool || typeof query.tool !== 'string'
+    !query['tool'] || typeof query['tool'] !== 'string'
       ? null
-      : query.tool === 'info-point'
+      : query['tool'] === 'info-point'
       ? 'draw-points'
-      : query.tool === 'measure-area'
+      : query['tool'] === 'measure-area'
       ? 'draw-polygons'
-      : query.tool === 'measure-dist'
+      : query['tool'] === 'measure-dist'
       ? 'draw-lines'
-      : query.tool === 'gallery'
+      : query['tool'] === 'gallery'
       ? 'photos'
-      : is<Tool>(query.tool)
-      ? query.tool
+      : is<Tool>(query['tool'])
+      ? query['tool']
       : null;
 
   if ((getState().main.selection?.type ?? null) !== tool) {
@@ -314,7 +314,7 @@ export const handleLocationChange = (
     dispatch(drawingPointAdd({ lat, lon, label }));
   }
 
-  const gpxUrl = query['gpx-url'] || query.load; /* backward compatibility */
+  const gpxUrl = query['gpx-url'] || query['load']; /* backward compatibility */
   if (typeof gpxUrl === 'string' && gpxUrl !== getState().trackViewer.gpxUrl) {
     dispatch(trackViewerGpxLoad(gpxUrl));
   }
@@ -363,9 +363,9 @@ export const handleLocationChange = (
   }
 
   const activeModal = getState().main.activeModal;
-  if (typeof query.show === 'string' && refModals.includes(query.show)) {
-    if (query.show !== activeModal) {
-      dispatch(setActiveModal(query.show));
+  if (typeof query['show'] === 'string' && refModals.includes(query['show'])) {
+    if (query['show'] !== activeModal) {
+      dispatch(setActiveModal(query['show']));
     }
   } else if (
     typeof activeModal === 'string' &&
@@ -374,18 +374,18 @@ export const handleLocationChange = (
     dispatch(setActiveModal(null));
   }
 
-  if (typeof query.tip === 'string' && tipKeys.includes(query.tip)) {
+  if (typeof query['tip'] === 'string' && tipKeys.includes(query['tip'])) {
     if (
       getState().main.activeModal !== 'tips' ||
-      getState().tips.tip !== query.tip
+      getState().tips.tip !== query['tip']
     ) {
-      dispatch(tipsShow(query.tip));
+      dispatch(tipsShow(query['tip']));
     }
   } else if (getState().main.activeModal === 'tips') {
     dispatch(setActiveModal(null));
   }
 
-  if (query.show === 'login') {
+  if (query['show'] === 'login') {
     if (!getState().auth.chooseLoginMethod) {
       dispatch(authChooseLoginMethod());
     }
@@ -393,12 +393,12 @@ export const handleLocationChange = (
     dispatch(authLoginClose());
   }
 
-  if ((query.embed ?? '') !== getState().main.embedFeatures.join(',')) {
+  if ((query['embed'] ?? '') !== getState().main.embedFeatures.join(',')) {
     dispatch(
       setEmbedFeatures(
-        !query.embed || typeof query.embed !== 'string'
+        !query['embed'] || typeof query['embed'] !== 'string'
           ? []
-          : query.embed.split(','),
+          : query['embed'].split(','),
       ),
     );
   }
@@ -478,15 +478,20 @@ export const handleLocationChange = (
         continue outer;
       }
     }
+
     dispatch(trackingActions.setTrackedDevices(parsedTd));
+
     break;
   }
 
   // eslint-disable-next-line
-  const fq = query.follow;
+  const fq = query['follow'];
+
   if (typeof fq === 'string') {
     const follow = /^\d+$/.test(fq) ? Number.parseInt(fq) : fq;
+
     const { selection } = getState().main;
+
     if (
       (selection?.type === 'tracking' ? selection?.id : undefined) !== follow
     ) {
@@ -585,8 +590,8 @@ function handleGallery(
     }
   }
 
-  if (typeof query.image === 'string') {
-    const imageId = parseInt(query.image, 10);
+  if (typeof query['image'] === 'string') {
+    const imageId = parseInt(query['image'], 10);
     if (getState().gallery.activeImageId !== imageId) {
       dispatch(galleryRequestImage(imageId));
     }
@@ -594,7 +599,7 @@ function handleGallery(
     dispatch(galleryClear());
   }
 
-  if (query.show === 'gallery-filter') {
+  if (query['show'] === 'gallery-filter') {
     if (!getState().gallery.showFilter) {
       dispatch(galleryShowFilter());
     }
@@ -602,7 +607,7 @@ function handleGallery(
     dispatch(galleryHideFilter());
   }
 
-  if (query.show === 'gallery-upload') {
+  if (query['show'] === 'gallery-upload') {
     if (!getState().gallery.showUploadModal) {
       dispatch(galleryShowUploadModal());
     }
@@ -660,8 +665,8 @@ function handleInfoPoint(
     dispatch(drawingPointSetAll(ips));
   }
 
-  if (typeof query.q === 'string') {
-    dispatch(searchSetQuery({ query: query.q, fromUrl: true }));
+  if (typeof query['q'] === 'string') {
+    dispatch(searchSetQuery({ query: query['q'], fromUrl: true }));
   }
 }
 

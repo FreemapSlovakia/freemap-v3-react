@@ -51,7 +51,7 @@ import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
-import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu.tsx';
+import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
@@ -200,11 +200,11 @@ export function Main(): ReactElement {
       const newZoom = m.getZoom();
 
       if (
-        [
+        ([
           [lat, newLat],
           [lon, newLon],
           [zoom, newZoom],
-        ].some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
+        ] as const).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
       ) {
         dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
       }

@@ -14,7 +14,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 const fmMapserverUrl =
-  process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
+  process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk';
 
 const geometryTypeMapping = {
   Polygon: 'polygon',
@@ -68,8 +68,10 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
       if (selection?.type === 'draw-polygons' && selection.id !== undefined) {
         // selected polygon
 
-        for (const { lat, lon } of getState().drawingLines.lines[selection.id]
-          .points) {
+        const points =
+          getState().drawingLines.lines[selection.id]?.points ?? [];
+
+        for (const { lat, lon } of points) {
           w = Math.min(w === undefined ? 1000 : w, lon);
           n = Math.max(n === undefined ? -1000 : n, lat);
           e = Math.max(e === undefined ? -1000 : e, lon);
@@ -87,9 +89,10 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
         const line = lines[i];
 
         if (
-          area === 'selected' &&
-          selection?.type === 'draw-polygons' &&
-          selection.id === i
+          !line?.points[0] ||
+          (area === 'selected' &&
+            selection?.type === 'draw-polygons' &&
+            selection.id === i)
         ) {
           continue;
         }

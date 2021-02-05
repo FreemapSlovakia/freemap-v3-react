@@ -1,9 +1,10 @@
 import { is } from 'typescript-is';
 
 export function resolveTrackSurface(tags: Record<string, string>): string {
-  if (tags.surface) {
-    return tags.surface;
+  if (tags['surface']) {
+    return tags['surface'];
   }
+
   if (
     [
       'motorway',
@@ -14,20 +15,21 @@ export function resolveTrackSurface(tags: Record<string, string>): string {
       'service',
       'unclassified',
       'residential',
-    ].indexOf(tags.highway) >= 0
+    ].indexOf(tags['highway']) >= 0
   ) {
     return 'asphalt';
   }
+
   return 'unknown';
 }
 
 export function resolveTrackClass(tags: Record<string, string>): string {
-  if (tags.highway) {
-    if (tags.highway === 'track') {
-      return tags.tracktype || 'unknown';
+  if (tags['highway']) {
+    if (tags['highway'] === 'track') {
+      return tags['tracktype'] || 'unknown';
     }
 
-    return tags.highway;
+    return tags['highway'];
   }
 
   return 'unknown';
@@ -46,7 +48,7 @@ type Grades = keyof typeof trackGradeToBike;
 export function resolveBicycleTypeSuitableForTrack(
   tags: Record<string, string>,
 ): typeof trackGradeToBike[Grades] | 'unknown' {
-  if (['motorway', 'trunk'].indexOf(tags.highway) >= 0) {
+  if (['motorway', 'trunk'].includes(tags['highway'])) {
     return 'no-bike';
   }
 
@@ -54,7 +56,7 @@ export function resolveBicycleTypeSuitableForTrack(
     return 'road-bike';
   }
 
-  return is<Grades>(tags.tracktype)
-    ? trackGradeToBike[tags.tracktype]
+  return is<Grades>(tags['tracktype'])
+    ? trackGradeToBike[tags['tracktype']]
     : 'unknown';
 }

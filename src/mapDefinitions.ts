@@ -135,7 +135,7 @@ export const baseLayers: BaseLayerDef[] = [
     type: 'X',
     icon: 'tree',
     url: `${
-      process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk'
+      process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk'
     }/{z}/{x}/{y}`,
     extraScales: [2, 3],
     attribution: [

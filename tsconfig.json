@@ -9,6 +9,8 @@
     "moduleResolution": "node",
     "lib": ["es2019", "dom"],
     "allowSyntheticDefaultImports": true,
+    // "noUncheckedIndexedAccess": true, // TODO one day
+    "noPropertyAccessFromIndexSignature": true,
     "baseUrl": "src",
     "paths": {
       "fm3/*": ["./*"]

@@ -372,7 +372,7 @@ function addPictures(doc: Document, pictures: Picture[]) {
     }
 
     const link = createElement(wptEle, 'link', undefined, {
-      href: `${process.env.API_URL}/gallery/pictures/${id}/image`,
+      href: `${process.env['API_URL']}/gallery/pictures/${id}/image`,
     });
 
     createElement(link, 'type', 'image/jpeg');
@@ -434,12 +434,12 @@ function addObjects(doc: Document, { objects }: ObjectsState) {
       }),
     );
 
-    if (!Number.isNaN(parseFloat(tags.ele))) {
-      createElement(wptEle, 'ele', tags.ele);
+    if (!Number.isNaN(parseFloat(tags['ele']))) {
+      createElement(wptEle, 'ele', tags['ele']);
     }
 
-    if (tags.name) {
-      createElement(wptEle, 'name', tags.name);
+    if (tags['name']) {
+      createElement(wptEle, 'name', tags['name']);
     }
   });
 }
@@ -629,12 +629,12 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                 }),
               );
 
-              if (feature.properties?.ele) {
-                createElement(wptEle, 'ele', feature.properties.ele);
+              if (feature.properties?.['ele']) {
+                createElement(wptEle, 'ele', feature.properties['ele']);
               }
 
-              if (feature.properties?.name) {
-                createElement(wptEle, 'name', feature.properties.name);
+              if (feature.properties?.['name']) {
+                createElement(wptEle, 'name', feature.properties['name']);
               }
             }
             break;
@@ -651,12 +651,12 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
                   }),
                 );
 
-                if (feature.properties?.ele) {
-                  createElement(wptEle, 'ele', feature.properties.ele);
+                if (feature.properties?.['ele']) {
+                  createElement(wptEle, 'ele', feature.properties['ele']);
                 }
 
-                if (feature.properties?.name) {
-                  createElement(wptEle, 'name', feature.properties.name);
+                if (feature.properties?.['name']) {
+                  createElement(wptEle, 'name', feature.properties['name']);
                 }
               }
             }
@@ -667,8 +667,8 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
 
-              if (feature.properties?.name) {
-                createElement(trkEle, 'name', feature.properties.name);
+              if (feature.properties?.['name']) {
+                createElement(trkEle, 'name', feature.properties['name']);
               }
 
               const trksegEle = createElement(trkEle, 'trkseg');
@@ -690,8 +690,8 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
 
-              if (feature.properties?.name) {
-                createElement(trkEle, 'name', feature.properties.name);
+              if (feature.properties?.['name']) {
+                createElement(trkEle, 'name', feature.properties['name']);
               }
 
               for (const seg of g.coordinates) {
@@ -713,8 +713,8 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
             if (pass === 'trk') {
               const trkEle = createElement(doc.documentElement, 'trk');
 
-              if (feature.properties?.name) {
-                createElement(trkEle, 'name', feature.properties.name);
+              if (feature.properties?.['name']) {
+                createElement(trkEle, 'name', feature.properties['name']);
               }
 
               for (const seg0 of g.coordinates) {

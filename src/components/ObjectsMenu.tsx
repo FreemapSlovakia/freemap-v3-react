@@ -114,11 +114,10 @@ export function ObjectsMenu(): ReactElement {
 
             const items = poiTypes
               .filter(({ group }) => group === gid)
-              .filter(
-                ({ id }) =>
-                  m?.objects.subcategories[id]
-                    ?.toLowerCase()
-                    .indexOf(filter.toLowerCase()) !== -1,
+              .filter(({ id }) =>
+                m?.objects.subcategories[id]
+                  ?.toLowerCase()
+                  .includes(filter.toLowerCase()),
               )
               .map(({ group, id, icon }) => (
                 <Dropdown.Item key={id} eventKey={String(id)}>

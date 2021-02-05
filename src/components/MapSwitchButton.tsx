@@ -102,7 +102,7 @@ export function MapSwitchButton(): ReactElement {
   const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
     dispatch(
       mapRefocus({
-        mapType: e.currentTarget.dataset.type as BaseLayerLetters,
+        mapType: e.currentTarget.dataset['type'] as BaseLayerLetters,
       }),
     );
   };

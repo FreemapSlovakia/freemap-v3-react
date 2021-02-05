@@ -70,7 +70,7 @@ export function Device({ device }: Props): ReactElement {
 
   const handleCopyClick = useCallback(() => {
     navigator.clipboard.writeText(
-      `${process.env.API_URL}/tracking/track/${device.token}`,
+      `${process.env['API_URL']}/tracking/track/${device.token}`,
     );
   }, [device.token]);
 
@@ -92,7 +92,7 @@ export function Device({ device }: Props): ReactElement {
               overlay={
                 <Tooltip id={device.token}>
                   <span style={{ overflowWrap: 'break-word' }}>
-                    {process.env.API_URL}/tracking/track/{device.token}
+                    {process.env['API_URL']}/tracking/track/{device.token}
                   </span>
                 </Tooltip>
               }
