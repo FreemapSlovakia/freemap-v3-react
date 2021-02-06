@@ -31,7 +31,7 @@ export const galleryRequestImagesByOrderProcessor: Processor<
 
     dispatch(gallerySetImageIds(ids));
 
-    if (ids.length) {
+    if (ids[0] !== undefined) {
       dispatch(galleryRequestImage(ids[0]));
     }
   },

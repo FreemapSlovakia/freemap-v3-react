@@ -18,8 +18,8 @@ export const trackViewerUploadTrackProcessor: Processor = {
     }
 
     if (!trackUID) {
-      const maxSize = process.env.MAX_GPX_TRACK_SIZE_IN_MB
-        ? parseInt(process.env.MAX_GPX_TRACK_SIZE_IN_MB, 10)
+      const maxSize = process.env['MAX_GPX_TRACK_SIZE_IN_MB']
+        ? parseInt(process.env['MAX_GPX_TRACK_SIZE_IN_MB'], 10)
         : -1;
 
       if (trackGpx.length > maxSize * 1000000) {

@@ -1048,7 +1048,6 @@ const hu: Messages = {
       s3: 'Strava (vízi tevékenységek)',
       s4: 'Strava (téli tevékenységek)',
       w: 'Wikipedia',
-      e: 'Hillshading DMR5.0 (SK)', // TODO translate
     },
     type: {
       map: 'térkép',
@@ -1229,7 +1228,7 @@ const hu: Messages = {
             </a>{' '}
             vagy OsmAnd):{' '}
             <code>
-              {process.env.API_URL}/tracking/track/<i>kód</i>
+              {process.env['API_URL']}/tracking/track/<i>kód</i>
             </code>{' '}
             ahol a <i>kód</i> az alábbi táblázatban található.
           </p>
@@ -1282,10 +1281,9 @@ const hu: Messages = {
           <p>
             In the case of tracker TK102B, configure it's address to{' '}
             <code>
-              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
-                /:\d+$/,
-                '',
-              )}
+              {process.env['API_URL']
+                ?.replace(/https?:\/\//, '')
+                ?.replace(/:\d+$/, '')}
               :3030
             </code>
           </p>

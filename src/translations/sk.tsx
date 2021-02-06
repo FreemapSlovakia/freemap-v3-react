@@ -1052,7 +1052,6 @@ const sk: Messages = {
       s3: 'Strava (Vodné aktivity)',
       s4: 'Strava (Zimné aktivity)',
       w: 'Wikipedia',
-      e: 'Tieňovanie DMR5.0 (SK)',
     },
     type: {
       map: 'mapa',
@@ -1231,7 +1230,7 @@ const sk: Messages = {
             </a>{' '}
             alebo OsmAnd) vložte nasledujúcu URL:{' '}
             <code>
-              {process.env.API_URL}/tracking/track/<i>token</i>
+              {process.env['API_URL']}/tracking/track/<i>token</i>
             </code>{' '}
             kde <i>token</i> je vypísaný v tabuľke nižšie.
           </p>
@@ -1284,10 +1283,9 @@ const sk: Messages = {
           <p>
             V prípade trackera TK102B, nakonfigurujte ho na adresu{' '}
             <code>
-              {process.env?.API_URL?.replace(/https?:\/\//, '')?.replace(
-                /:\d+$/,
-                '',
-              )}
+              {process.env['API_URL']
+                ?.replace(/https?:\/\//, '')
+                ?.replace(/:\d+$/, '')}
               :3030
             </code>
           </p>

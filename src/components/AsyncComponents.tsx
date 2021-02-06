@@ -1,11 +1,5 @@
 import { AsyncLoadingIndicator } from 'fm3/components/AsyncLoadingIndicator';
-import React, {
-  lazy,
-  ReactElement,
-  Suspense,
-  useEffect,
-  useState,
-} from 'react';
+import { lazy, ReactElement, Suspense, useEffect, useState } from 'react';
 
 type ShowProps = { show: boolean };
 

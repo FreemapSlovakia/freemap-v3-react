@@ -75,7 +75,6 @@ export const overlayLetters = [
   's3',
   's4',
   'w',
-  'e',
 ] as const;
 
 export type BaseLayerLetters = typeof baseLayerLetters[number];
@@ -136,10 +135,19 @@ export const baseLayers: BaseLayerDef[] = [
     type: 'X',
     icon: 'tree',
     url: `${
-      process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk'
+      process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk'
     }/{z}/{x}/{y}`,
     extraScales: [2, 3],
-    attribution: [FM_ATTR, OSM_DATA_ATTR, SRTM_ATTR],
+    attribution: [
+      FM_ATTR,
+      OSM_DATA_ATTR,
+      SRTM_ATTR,
+      {
+        type: 'data',
+        name: 'LLS: ÚGKK SR',
+        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
+      },
+    ],
     minZoom: 6,
     maxNativeZoom: 19,
     key: ['KeyX', false],
@@ -393,25 +401,6 @@ export const overlayLayers: OverlayLayerDef[] = [
     showOnlyInExpertMode: true,
     zIndex: 3,
   })),
-  {
-    type: 'e',
-    icon: 'rss',
-    url: '//dmr5.tiles.freemap.sk/{z}/{x}/{y}.png',
-    minZoom: 8,
-    maxNativeZoom: isHdpi ? 16 : 17,
-    key: ['KeyE', true],
-    showOnlyInExpertMode: true,
-    zIndex: 2,
-    attribution: [
-      {
-        type: 'data',
-        url: 'https://www.geoportal.sk/sk/udaje/lls-dmr/',
-        name: '©\xa0Úrad geodézie, kartografie a katastra SR',
-      },
-    ],
-    tileSize: isHdpi ? 128 : 256,
-    zoomOffset: isHdpi ? 1 : 0,
-  },
   {
     type: 'r',
     icon: 'pencil-square-o',

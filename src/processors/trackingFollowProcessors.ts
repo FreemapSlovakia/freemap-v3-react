@@ -13,16 +13,20 @@ export const trackingFollowProcessor: Processor = {
     const track = trackingTrackSelector(getState());
 
     const differs = prevTrack !== track;
+
     prevTrack = track;
+
+    let tp;
 
     if (
       track &&
       (!isActionOf(selectFeature, action) ||
         action.payload?.type !== 'tracking') &&
       differs &&
-      track.trackPoints.length
+      (tp = track.trackPoints[track.trackPoints.length - 1])
     ) {
-      const { lat, lon } = track.trackPoints[track.trackPoints.length - 1];
+      const { lat, lon } = tp;
+
       dispatch(mapRefocus({ lat, lon }));
     }
   },

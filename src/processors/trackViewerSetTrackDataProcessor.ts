@@ -46,7 +46,7 @@ export const trackViewerSetTrackDataProcessor: Processor<
         let finishTime: Date | undefined;
 
         const times = assertType<string[] | undefined>(
-          feature.properties && feature.properties.coordTimes,
+          feature.properties && feature.properties['coordTimes'],
         );
 
         if (times) {

@@ -83,7 +83,7 @@ export function preGlobalReducer(
           draft.drawingPoints.points.push({
             lat: object.lat,
             lon: object.lon,
-            label: object.tags?.name, // TODO put object type and some other tags to name
+            label: object.tags?.['name'], // TODO put object type and some other tags to name
           });
 
           draft.drawingPoints.change++;
@@ -120,7 +120,7 @@ export function preGlobalReducer(
 
           if (geometry?.type === 'Point') {
             draft.drawingPoints.points.push({
-              label: feature.properties?.name,
+              label: feature.properties?.['name'],
               lat: geometry.coordinates[1],
               lon: geometry.coordinates[0],
             });
@@ -139,7 +139,7 @@ export function preGlobalReducer(
 
             draft.drawingLines.lines.push({
               type: 'line',
-              label: feature.properties?.name,
+              label: feature.properties?.['name'],
               points,
             });
           }

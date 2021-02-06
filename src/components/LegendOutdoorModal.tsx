@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 type Item = { name: string; items: { name: string; id: number }[] };
 
 const fmMapserverUrl =
-  process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
+  process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk';
 
 type Props = { show: boolean };
 

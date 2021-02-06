@@ -24,15 +24,15 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
     ? rawUrlParamsToHash(location.hash, ',') // #m=T,p=48.21836|17.4166|16|T -> {'m': 'T', 'p' : '48.21836|17.4166|16|T'}
     : rawUrlParamsToHash(location.search, '&'); // ?m=A&p=48.1855|17.4029|14
 
-  if (oldFreemapUrlParams.p) {
+  if (oldFreemapUrlParams['p']) {
     const [
       latFrag,
       lonFrag,
       zoomFrag,
       anotherMapTypeParam,
-    ] = oldFreemapUrlParams.p.split(/\||%7C/);
+    ] = oldFreemapUrlParams['p'].split(/\||%7C/);
 
-    const mapType = oldFreemapUrlParams.m || anotherMapTypeParam || 'X';
+    const mapType = oldFreemapUrlParams['m'] || anotherMapTypeParam || 'X';
 
     return is<BaseLayerLetters>(mapType)
       ? {
@@ -43,8 +43,8 @@ export function getTrasformedParamsIfIsOldFreemapUrl(
           overlays: [],
         }
       : undefined;
-  } else if (is<BaseLayerLetters>(oldFreemapUrlParams.m)) {
-    return { mapType: oldFreemapUrlParams.m, overlays: [] };
+  } else if (is<BaseLayerLetters>(oldFreemapUrlParams['m'])) {
+    return { mapType: oldFreemapUrlParams['m'], overlays: [] };
   } else {
     return { mapType: 'X', overlays: [] };
   }
@@ -62,12 +62,12 @@ export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
   ) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
 
-    if (is<BaseLayerLetters>(oldFreemapUrlParams.layers)) {
+    if (is<BaseLayerLetters>(oldFreemapUrlParams['layers'])) {
       return {
-        lat: parseFloat(oldFreemapUrlParams.lat),
-        lon: parseFloat(oldFreemapUrlParams.lon),
-        zoom: parseInt(oldFreemapUrlParams.zoom, 10),
-        mapType: oldFreemapUrlParams.layers,
+        lat: parseFloat(oldFreemapUrlParams['lat']),
+        lon: parseFloat(oldFreemapUrlParams['lon']),
+        zoom: parseInt(oldFreemapUrlParams['zoom'], 10),
+        mapType: oldFreemapUrlParams['layers'],
         overlays: [],
       };
     }
@@ -80,13 +80,13 @@ export function getTrasformedParamsIfIsOldEmbeddedFreemapUrl(
 export function getInfoPointDetailsIfIsOldEmbeddedFreemapUrlFormat2(
   location: Location,
 ): { lat: number; lon: number; label: string } | null {
-  if (location.search && location.search.indexOf('markerLat') >= 0) {
+  if (location.search && location.search.includes('markerLat')) {
     const oldFreemapUrlParams = rawUrlParamsToHash(location.search, '&');
 
     return {
-      lat: parseFloat(oldFreemapUrlParams.markerLat),
-      lon: parseFloat(oldFreemapUrlParams.markerLon),
-      label: oldFreemapUrlParams.markerHtml,
+      lat: parseFloat(oldFreemapUrlParams['markerLat']),
+      lon: parseFloat(oldFreemapUrlParams['markerLon']),
+      label: oldFreemapUrlParams['markerHtml'],
     };
   }
 

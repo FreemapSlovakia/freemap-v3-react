@@ -163,7 +163,7 @@ export function TrackViewerResult(): ReactElement | null {
   }`; // otherwise GeoJSON will still display the first data
 
   const xxx = getFeatures('LineString').map((feature) => ({
-    name: feature.properties && feature.properties.name,
+    name: feature.properties && feature.properties['name'],
     lineData: feature.geometry.coordinates.map(([lng, lat]) => ({
       lat,
       lng,
@@ -247,14 +247,14 @@ export function TrackViewerResult(): ReactElement | null {
             click: setThisTool,
           }}
         >
-          {properties && properties.name && (
+          {properties?.['name'] && (
             <Tooltip
               className="compact"
               offset={new LPoint(10, -25)}
               direction="right"
               permanent
             >
-              <span>{properties.name}</span>
+              <span>{properties['name']}</span>
             </Tooltip>
           )}
         </RichMarker>

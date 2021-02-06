@@ -63,15 +63,27 @@ function loadPreview(
         if (o === 1) {
           canvas2 = canvas;
         } else {
-          canvas2 = document.createElement('canvas');
-          const ctx = canvas2.getContext('2d');
-          if (!ctx) {
-            throw new Error('context is null');
+          const transformation = transformations[o - 1];
+
+          if (transformation) {
+            canvas2 = document.createElement('canvas');
+
+            const ctx = canvas2.getContext('2d');
+
+            if (!ctx) {
+              throw new Error('context is null');
+            }
+
+            canvas2.width = o > 4 ? height : width;
+
+            canvas2.height = o > 4 ? width : height;
+
+            ctx.transform(...transformation);
+
+            ctx.drawImage(canvas, 0, 0);
+          } else {
+            canvas2 = canvas;
           }
-          canvas2.width = o > 4 ? height : width;
-          canvas2.height = o > 4 ? width : height;
-          ctx.transform(...transformations[o - 1]);
-          ctx.drawImage(canvas, 0, 0);
         }
 
         // TODO play with toBlob (not supported in safari)
@@ -129,15 +141,15 @@ export function usePictureDropHandler(
         const id = nextId;
         nextId += 1;
 
-        const description = tags.description
-          ? tags.description.description
-          : tags.ImageDescription
-          ? tags.ImageDescription.description
+        const description = tags['description']
+          ? tags['description'].description
+          : tags['ImageDescription']
+          ? tags['ImageDescription'].description
           : '';
 
-        const takenAtRaw = tags.DateTimeOriginal || tags.DateTime;
+        const takenAtRaw = tags['DateTimeOriginal'] || tags['DateTime'];
 
-        const [rawLat, latRef] = adaptGpsCoordinate(tags.GPSLatitude);
+        const [rawLat, latRef] = adaptGpsCoordinate(tags['GPSLatitude']);
 
         const NS: Record<string, number> = { S: -1, N: 1 };
 
@@ -146,12 +158,12 @@ export function usePictureDropHandler(
           (NS[
             (
               latRef ||
-              (tags.GPSLatitudeRef || { value: [] }).value[0] ||
+              (tags['GPSLatitudeRef'] || { value: [] }).value[0] ||
               ''
             ).toUpperCase()
           ] || Number.NaN);
 
-        const [rawLon, lonRef] = adaptGpsCoordinate(tags.GPSLongitude);
+        const [rawLon, lonRef] = adaptGpsCoordinate(tags['GPSLongitude']);
 
         const EW: Record<string, number> = { W: -1, E: 1 };
 
@@ -160,7 +172,7 @@ export function usePictureDropHandler(
           (EW[
             (
               lonRef ||
-              (tags.GPSLongitudeRef || { value: [] }).value[0] ||
+              (tags['GPSLongitudeRef'] || { value: [] }).value[0] ||
               ''
             ).toUpperCase()
           ] || Number.NaN);
@@ -172,10 +184,10 @@ export function usePictureDropHandler(
             Number.isNaN(lat) || Number.isNaN(lon)
               ? ''
               : latLonToString({ lat, lon }, language),
-          title: tags.title
-            ? tags.title.description
-            : tags.DocumentName
-            ? tags.DocumentName.description
+          title: tags['title']
+            ? tags['title'].description
+            : tags['DocumentName']
+            ? tags['DocumentName'].description
             : '',
           description: /CAMERA|^DCIM/.test(description) ? '' : description,
           takenAt: takenAtRaw && parseExifDateTime(takenAtRaw.description),

@@ -68,7 +68,7 @@ class LGalleryLayer extends LGridLayer {
     const k = 2 ** coords.z;
 
     axios
-      .get(`${process.env.API_URL}/gallery/pictures`, {
+      .get(`${process.env['API_URL']}/gallery/pictures`, {
         params: {
           by: 'bbox',
           bbox: `${pointAa.lng},${pointBa.lat},${pointBa.lng},${pointAa.lat}`,

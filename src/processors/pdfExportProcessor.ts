@@ -14,7 +14,7 @@ import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { assertType } from 'typescript-is';
 
 const fmMapserverUrl =
-  process.env.FM_MAPSERVER_URL || 'https://outdoor.tiles.freemap.sk';
+  process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk';
 
 const geometryTypeMapping = {
   Polygon: 'polygon',

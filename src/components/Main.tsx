@@ -191,11 +191,11 @@ export function Main(): ReactElement {
       const newZoom = m.getZoom();
 
       if (
-        [
+        ([
           [lat, newLat],
           [lon, newLon],
           [zoom, newZoom],
-        ].some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
+        ] as const).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
       ) {
         dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
       }

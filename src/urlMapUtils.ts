@@ -31,8 +31,8 @@ export function getMapStateFromUrl(
 
   const query = queryString.parse(location.search);
 
-  const [zoomFrag, latFrag, lonFrag] = (typeof query.map === 'string'
-    ? query.map
+  const [zoomFrag, latFrag, lonFrag] = (typeof query['map'] === 'string'
+    ? query['map']
     : ''
   ).split('/');
 
@@ -42,7 +42,7 @@ export function getMapStateFromUrl(
 
   const zoom = undefineNaN(parseInt(zoomFrag, 10));
 
-  const layers = typeof query.layers === 'string' ? query.layers : '';
+  const layers = typeof query['layers'] === 'string' ? query['layers'] : '';
 
   const base = layers.charAt(0);
 
