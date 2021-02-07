@@ -45,7 +45,7 @@ export function ChangesetsMenu(): ReactElement {
             dispatch(changesetsSetDays(Number(d)));
           }
         }}
-        title={m?.changesets.olderThanFull({ days })}
+        title={m?.changesets.olderThanFull({ days }) ?? '…'}
       >
         {[3, 7, 14, 30].map((d) => (
           <Dropdown.Item
@@ -59,7 +59,7 @@ export function ChangesetsMenu(): ReactElement {
         ))}
       </DropdownButton>
       <Form
-        className="ml-1"
+        className="ml-1 d-flex"
         inline
         onSubmit={(e) => {
           e.preventDefault();
@@ -88,17 +88,17 @@ export function ChangesetsMenu(): ReactElement {
             </Button>
           </InputGroup.Append>
         </InputGroup>
+        <Button
+          className="ml-1"
+          variant="secondary"
+          type="submit"
+          disabled={!canSearchWithThisAmountOfDays(days)}
+          title={m?.changesets.download}
+        >
+          <FontAwesomeIcon icon="refresh" />
+          <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
+        </Button>
       </Form>
-      <Button
-        className="ml-1"
-        variant="secondary"
-        type="submit"
-        disabled={!canSearchWithThisAmountOfDays(days)}
-        title={m?.changesets.download}
-      >
-        <FontAwesomeIcon icon="refresh" />
-        <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
-      </Button>
     </>
   );
 }
