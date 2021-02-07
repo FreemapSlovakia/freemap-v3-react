@@ -19,13 +19,12 @@ export function Selection({
   return (
     <Card className="fm-toolbar">
       <ButtonToolbar>
-        <span className="align-self-center ml-1 mr-2">
+        <span className="align-self-center ml-1">
           <FaMousePointer />
           {'/ '}
           <FontAwesomeIcon icon={icon} />
           <span className="d-none d-sm-inline"> {title}</span>
           {children}
-
           {deletable && <DeleteButton />}
         </span>
       </ButtonToolbar>

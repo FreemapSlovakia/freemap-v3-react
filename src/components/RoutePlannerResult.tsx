@@ -337,18 +337,24 @@ export function RoutePlannerResult(): ReactElement {
   const handleStartPointClick = useCallback(() => {
     // also prevent default
 
-    dispatch(setTool('route-planner'));
-    dispatch(routePlannerSetPickMode('start'));
-  }, [dispatch]);
+    if (tool === 'route-planner') {
+      dispatch(routePlannerSetPickMode('start'));
+    } else {
+      dispatch(setTool('route-planner'));
+    }
+  }, [dispatch, tool]);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
       dispatch(routePlannerSetFinish({ finish: null, move: true }));
     }
 
-    dispatch(setTool('route-planner'));
-    dispatch(routePlannerSetPickMode('finish'));
-  }, [mode, dispatch]);
+    if (tool === 'route-planner') {
+      dispatch(routePlannerSetPickMode('finish'));
+    } else {
+      dispatch(setTool('route-planner'));
+    }
+  }, [mode, tool, dispatch]);
 
   const [endPointHovering, setEndPointHovering] = useState(false);
 
