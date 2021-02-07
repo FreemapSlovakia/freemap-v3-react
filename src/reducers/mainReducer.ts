@@ -166,7 +166,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
       : {
           ...state,
           selection: action.payload,
-          tool: null,
+          tool: action.payload === null ? state.tool : null,
         },
   )
   .handleAction(convertToDrawing, (state) => ({
