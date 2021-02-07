@@ -62,9 +62,10 @@ export const mouseCursorSelector = createSelector(
       case 'draw-lines':
       case 'draw-polygons':
       case 'map-details':
-      case 'route-planner':
       case 'draw-points':
-        return routePlannerPickMode ? 'crosshair' : 'auto';
+        return routePlannerPickMode ? 'auto' : 'crosshair';
+      case 'route-planner':
+        return !routePlannerPickMode ? 'auto' : 'crosshair';
       default:
         return showGalleryPicker ? 'crosshair' : 'auto';
     }

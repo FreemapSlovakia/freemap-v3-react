@@ -1,5 +1,10 @@
 import { RootAction } from 'fm3/actions';
-import { clearMap, setAppState, setTool } from 'fm3/actions/mainActions';
+import {
+  clearMap,
+  selectFeature,
+  setAppState,
+  setTool,
+} from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -78,6 +83,10 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.routePlanner };
   })
+  .handleAction(selectFeature, (state) => ({
+    ...state,
+    pickMode: null,
+  }))
   .handleAction(setTool, (state, action) => ({
     ...state,
     pickMode: !state.start
