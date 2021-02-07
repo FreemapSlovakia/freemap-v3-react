@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('cs', {
@@ -105,7 +105,7 @@ const cs: Messages = {
     tracking: 'Sledování',
     maps: (
       <>
-        Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
+        Moje mapy <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -1205,8 +1205,7 @@ const cs: Messages = {
         <>
           <p>
             Spravujte svá zařízení, aby vaši polohu mohli sledovat lidé, kterým
-            dáte sledovací token (ten lze vygenerovat tlačítkem{' '}
-            <FontAwesomeIcon icon="key" />
+            dáte sledovací token (ten lze vygenerovat tlačítkem <FaKey />
             ).
           </p>
           <hr />

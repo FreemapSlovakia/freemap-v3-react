@@ -78,13 +78,13 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import { useDropzone } from 'react-dropzone';
+import { FaBriefcase, FaTimes } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 import { GalleryModals } from './gallery/GalleryModals';
 import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
@@ -383,32 +383,29 @@ export function Main(): ReactElement {
               <ButtonToolbar>
                 {toolDef && (
                   <span className="align-self-center ml-1 mr-2">
-                    <FontAwesomeIcon icon="briefcase" />
+                    <FaBriefcase />
                     {' / '}
-                    <FontAwesomeIcon icon={toolDef.icon} />
+                    {toolDef.icon}
                     <span className="d-none d-sm-inline">
                       {' '}
                       {m?.tools[toolDef.msgKey]}
                     </span>
                   </span>
                 )}
+                <Button
+                  variant="light"
+                  size="sm"
+                  onClick={() => dispatch(setTool(null))}
+                  title={m?.general.close + ' [Esc]'}
+                >
+                  <FaTimes />
+                </Button>
                 {tool === 'objects' && <ObjectsMenu />}
                 {tool === 'route-planner' && <RoutePlannerMenu />}
                 {tool === 'track-viewer' && <TrackViewerMenu />}
                 {tool === 'changesets' && <ChangesetsMenu />}
                 {tool === 'map-details' && <MapDetailsMenu />}
                 {tool === 'maps' && <MapsMenu />}
-                {'\xa0'}
-                <Button
-                  variant="secondary"
-                  onClick={() => dispatch(setTool(null))}
-                >
-                  <FontAwesomeIcon icon="times" />
-                  <span className="d-none d-sm-inline">
-                    {' '}
-                    {m?.general.close} <kbd>Esc</kbd>
-                  </span>
-                </Button>
               </ButtonToolbar>
             </Card>
           )}

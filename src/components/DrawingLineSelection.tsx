@@ -4,11 +4,11 @@ import {
   elevationChartSetTrackGeojson,
 } from 'fm3/actions/elevationChartActions';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
+import { FaChartArea, FaTag } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
@@ -57,7 +57,7 @@ export function DrawingLineSelection(): ReactElement | null {
         variant="secondary"
         onClick={() => dispatch(setActiveModal('edit-label'))}
       >
-        <FontAwesomeIcon icon="tag" />
+        <FaTag />
         <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
       </Button>
 
@@ -68,7 +68,7 @@ export function DrawingLineSelection(): ReactElement | null {
           active={elevationChartTrackGeojson !== null}
           onClick={toggleElevationChart}
         >
-          <FontAwesomeIcon icon="bar-chart" />
+          <FaChartArea />
           <span className="d-none d-sm-inline">
             {' '}
             {m?.general.elevationProfile}

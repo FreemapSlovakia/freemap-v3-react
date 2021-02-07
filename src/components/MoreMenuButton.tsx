@@ -34,6 +34,44 @@ import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
+import {
+  FaBars,
+  FaBook,
+  FaBug,
+  FaBullseye,
+  FaCamera,
+  FaChevronLeft,
+  FaChevronRight,
+  FaCode,
+  FaCog,
+  FaDownload,
+  FaDrawPolygon,
+  FaEraser,
+  FaExclamationTriangle,
+  FaExternalLinkAlt,
+  FaFacebook,
+  FaFilter,
+  FaGithub,
+  FaHeart,
+  FaLanguage,
+  FaMapMarkerAlt,
+  FaMobileAlt,
+  FaPaintBrush,
+  FaPencilRuler,
+  FaRegAddressCard,
+  FaRegCheckSquare,
+  FaRegEye,
+  FaRegFilePdf,
+  FaRegLightbulb,
+  FaRegMap,
+  FaRegSquare,
+  FaSignInAlt,
+  FaSignOutAlt,
+  FaTwitter,
+  FaUpload,
+  FaYoutube,
+} from 'react-icons/fa';
+import { MdTimeline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 import { OpenInExternalAppDropdownItems } from './OpenInExternalAppMenuItems';
@@ -165,14 +203,20 @@ export function MoreMenuButton(): ReactElement {
         .length > 0,
   );
 
-  function SubmenuHeader({ icon, title }: { icon: string; title?: string }) {
+  function SubmenuHeader({
+    icon,
+    title,
+  }: {
+    icon: ReactElement;
+    title?: string;
+  }) {
     return (
       <>
         <Dropdown.Header>
-          <FontAwesomeIcon icon={icon} /> {title}
+          {icon} {title}
         </Dropdown.Header>
         <Dropdown.Item onSelect={handleBackClick}>
-          <FontAwesomeIcon icon="chevron-left" /> {m?.more.back} <kbd>Esc</kbd>
+          <FaChevronLeft /> {m?.more.back} <kbd>Esc</kbd>
         </Dropdown.Item>
         <Dropdown.Divider />
       </>
@@ -201,7 +245,7 @@ export function MoreMenuButton(): ReactElement {
         title={m?.more.more}
         variant="primary"
       >
-        <FontAwesomeIcon icon="bars" />
+        <FaBars />
       </Button>
       <Overlay
         rootClose
@@ -219,8 +263,7 @@ export function MoreMenuButton(): ReactElement {
                     setSubmenu('language');
                   }}
                 >
-                  <FontAwesomeIcon icon="language" /> Language / Jazyk / Nyelv{' '}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FaLanguage /> Language / Jazyk / Nyelv <FaChevronRight />
                 </Dropdown.Item>
 
                 {user ? (
@@ -230,8 +273,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(authStartLogout());
                     }}
                   >
-                    <FontAwesomeIcon icon="sign-out" />{' '}
-                    {m?.more.logOut(user.name)}
+                    <FaSignOutAlt /> {m?.more.logOut(user.name)}
                   </Dropdown.Item>
                 ) : (
                   <Dropdown.Item
@@ -240,7 +282,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(authChooseLoginMethod());
                     }}
                   >
-                    <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
+                    <FaSignInAlt /> {m?.more.logIn}
                   </Dropdown.Item>
                 )}
 
@@ -250,8 +292,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('settings'));
                   }}
                 >
-                  <FontAwesomeIcon icon="cog" /> {m?.more.settings} <kbd>e</kbd>{' '}
-                  <kbd>s</kbd>
+                  <FaCog /> {m?.more.settings} <kbd>e</kbd> <kbd>s</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
@@ -262,8 +303,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(clearMap());
                   }}
                 >
-                  <FontAwesomeIcon icon="eraser" /> {m?.main.clearMap}{' '}
-                  <kbd>g</kbd> <kbd>c</kbd>
+                  <FaEraser /> {m?.main.clearMap} <kbd>g</kbd> <kbd>c</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -271,9 +311,8 @@ export function MoreMenuButton(): ReactElement {
                     setSubmenu('drawing');
                   }}
                 >
-                  <FontAwesomeIcon icon="object-ungroup" />{' '}
-                  {m?.tools.measurement}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FaPencilRuler /> {m?.tools.measurement}
+                  <FaChevronRight />
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -281,8 +320,8 @@ export function MoreMenuButton(): ReactElement {
                     setSubmenu('photos');
                   }}
                 >
-                  <FontAwesomeIcon icon="picture-o" /> {m?.tools.photos}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FaCamera /> {m?.tools.photos}
+                  <FaChevronRight />
                 </Dropdown.Item>
 
                 {toolDefinitions
@@ -299,7 +338,7 @@ export function MoreMenuButton(): ReactElement {
                           onSelect={handleToolSelect}
                           active={toolDef?.tool === newTool}
                         >
-                          <FontAwesomeIcon icon={icon} /> {m?.tools[msgKey]}{' '}
+                          {icon} {m?.tools[msgKey]}{' '}
                           {kbd && (
                             <>
                               <kbd>g</kbd>{' '}
@@ -315,8 +354,8 @@ export function MoreMenuButton(): ReactElement {
                     setSubmenu('tracking');
                   }}
                 >
-                  <FontAwesomeIcon icon="bullseye" /> {m?.tools.tracking}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FaBullseye /> {m?.tools.tracking}
+                  <FaChevronRight />
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
@@ -326,9 +365,8 @@ export function MoreMenuButton(): ReactElement {
                     setSubmenu('openExternally');
                   }}
                 >
-                  <FontAwesomeIcon icon="external-link" />{' '}
-                  {m?.external.openInExternal}{' '}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FaExternalLinkAlt /> {m?.external.openInExternal}{' '}
+                  <FaChevronRight />
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -337,8 +375,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('export-pdf'));
                   }}
                 >
-                  <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}{' '}
-                  <kbd>e</kbd> <kbd>p</kbd>
+                  <FaRegFilePdf /> {m?.more.pdfExport} <kbd>e</kbd> <kbd>p</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -347,8 +384,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('export-gpx'));
                   }}
                 >
-                  <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}{' '}
-                  <kbd>e</kbd> <kbd>g</kbd>
+                  <FaDownload /> {m?.more.gpxExport} <kbd>e</kbd> <kbd>g</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -366,8 +402,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('embed'));
                   }}
                 >
-                  <FontAwesomeIcon icon="code" /> {m?.more.embedMap}{' '}
-                  <kbd>e</kbd> <kbd>e</kbd>
+                  <FaCode /> {m?.more.embedMap} <kbd>e</kbd> <kbd>e</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
@@ -377,8 +412,7 @@ export function MoreMenuButton(): ReactElement {
                     setSubmenu('help');
                   }}
                 >
-                  <FontAwesomeIcon icon="book" /> {m?.more.help}{' '}
-                  <FontAwesomeIcon icon="chevron-right" />
+                  <FaBook /> {m?.more.help} <FaChevronRight />
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -387,14 +421,13 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('supportUs'));
                   }}
                 >
-                  <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />{' '}
-                  {m?.more.supportUs}{' '}
-                  <FontAwesomeIcon icon="heart" style={{ color: 'red' }} />
+                  <FaHeart color="red" /> {m?.more.supportUs}{' '}
+                  <FaHeart color="red" />
                 </Dropdown.Item>
               </Fragment>
             ) : submenu === 'help' ? (
               <Fragment key="help">
-                <SubmenuHeader icon="book" title={m?.more.help} />
+                <SubmenuHeader icon={<FaBook />} title={m?.more.help} />
 
                 {(skCz ? ['A', 'K', 'T', 'C', 'X', 'O'] : ['X', 'O']).includes(
                   mapType,
@@ -405,7 +438,7 @@ export function MoreMenuButton(): ReactElement {
                       dispatch(setActiveModal('legend'));
                     }}
                   >
-                    <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
+                    <FaRegMap /> {m?.more.mapLegend}
                   </Dropdown.Item>
                 )}
 
@@ -415,7 +448,7 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(setActiveModal('about'));
                   }}
                 >
-                  <FontAwesomeIcon icon="address-card-o" /> {m?.more.contacts}
+                  <FaRegAddressCard /> {m?.more.contacts}
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
@@ -425,8 +458,7 @@ export function MoreMenuButton(): ReactElement {
                   href="http://wiki.freemap.sk/NahlasenieChyby"
                   target="_blank"
                 >
-                  <FontAwesomeIcon icon="exclamation-triangle" />{' '}
-                  {m?.more.reportMapError}
+                  <FaExclamationTriangle /> {m?.more.reportMapError}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -434,14 +466,14 @@ export function MoreMenuButton(): ReactElement {
                   href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
                   target="_blank"
                 >
-                  <FontAwesomeIcon icon="!icon-bug" /> {m?.more.reportAppError}
+                  <FaBug /> {m?.more.reportAppError}
                 </Dropdown.Item>
 
                 {skCz && (
                   <>
                     <Dropdown.Divider />
                     <Dropdown.Header>
-                      <FontAwesomeIcon icon="lightbulb-o" /> {m?.more.tips}
+                      <FaRegLightbulb /> {m?.more.tips}
                     </Dropdown.Header>
                     {tips.map(([key, name, icon]) => (
                       <Dropdown.Item
@@ -458,7 +490,7 @@ export function MoreMenuButton(): ReactElement {
             ) : submenu === 'openExternally' ? (
               <Fragment key="openExternally">
                 <SubmenuHeader
-                  icon="external-link"
+                  icon={<FaExternalLinkAlt />}
                   title={m?.external.openInExternal}
                 />
 
@@ -476,7 +508,7 @@ export function MoreMenuButton(): ReactElement {
             ) : submenu === 'language' ? (
               <Fragment key="language">
                 <SubmenuHeader
-                  icon="language"
+                  icon={<FaLanguage />}
                   title="Language / Jazyk / Nyelv"
                 />
 
@@ -521,7 +553,7 @@ export function MoreMenuButton(): ReactElement {
               </Fragment>
             ) : submenu === 'photos' ? (
               <Fragment key="photos">
-                <SubmenuHeader icon="picture-o" title={m?.tools.photos} />
+                <SubmenuHeader icon={<FaCamera />} title={m?.tools.photos} />
 
                 <Dropdown.Item
                   onSelect={() => {
@@ -530,8 +562,7 @@ export function MoreMenuButton(): ReactElement {
                   }}
                   active={filterIsActive}
                 >
-                  <FontAwesomeIcon icon="filter" /> {m?.gallery.filter}{' '}
-                  <kbd>p</kbd> <kbd>f</kbd>
+                  <FaFilter /> {m?.gallery.filter} <kbd>p</kbd> <kbd>f</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -540,8 +571,7 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="upload" /> {m?.gallery.upload}{' '}
-                  <kbd>p</kbd> <kbd>u</kbd>
+                  <FaUpload /> {m?.gallery.upload} <kbd>p</kbd> <kbd>u</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -557,18 +587,18 @@ export function MoreMenuButton(): ReactElement {
                   }}
                   active={overlays.includes('I')}
                 >
-                  <FontAwesomeIcon
-                    icon={
-                      overlays.includes('I') ? 'check-square-o' : 'square-o'
-                    }
-                  />{' '}
+                  {overlays.includes('I') ? (
+                    <FaRegCheckSquare />
+                  ) : (
+                    <FaRegSquare />
+                  )}{' '}
                   {m?.gallery.showLayer} <kbd>shift + p</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
 
                 <Dropdown.Header>
-                  <FontAwesomeIcon icon="book" /> {m?.gallery.showPhotosFrom}
+                  <FaBook /> {m?.gallery.showPhotosFrom}
                 </Dropdown.Header>
 
                 <Dropdown.Item
@@ -600,7 +630,10 @@ export function MoreMenuButton(): ReactElement {
               </Fragment>
             ) : submenu === 'tracking' ? (
               <Fragment key="tracking">
-                <SubmenuHeader icon="bullseye" title={m?.tools.tracking} />
+                <SubmenuHeader
+                  icon={<FaBullseye />}
+                  title={m?.tools.tracking}
+                />
 
                 <Dropdown.Item
                   onSelect={() => {
@@ -608,8 +641,7 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="eye" />{' '}
-                  {m?.tracking.trackedDevices.button}
+                  <FaRegEye /> {m?.tracking.trackedDevices.button}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -618,13 +650,13 @@ export function MoreMenuButton(): ReactElement {
                     close();
                   }}
                 >
-                  <FontAwesomeIcon icon="mobile" /> {m?.tracking.devices.button}
+                  <FaMobileAlt /> {m?.tracking.devices.button}
                 </Dropdown.Item>
 
                 <Dropdown.Divider />
 
                 <Dropdown.Header>
-                  <FontAwesomeIcon icon="paint-brush" /> {m?.general.visual}
+                  <FaPaintBrush /> {m?.general.visual}
                 </Dropdown.Header>
 
                 <Dropdown.Item
@@ -681,7 +713,7 @@ export function MoreMenuButton(): ReactElement {
             ) : submenu === 'drawing' ? (
               <Fragment key="drawing">
                 <SubmenuHeader
-                  icon="object-ungroup"
+                  icon={<FaPencilRuler />}
                   title={m?.tools.measurement}
                 />
 
@@ -689,24 +721,24 @@ export function MoreMenuButton(): ReactElement {
                   onSelect={() => setToolAndClose('draw-points')}
                   active={tool === 'draw-points'}
                 >
-                  <FontAwesomeIcon icon="map-marker" />{' '}
-                  {m?.measurement.elevation} <kbd>g</kbd> <kbd>p</kbd>
+                  <FaMapMarkerAlt /> {m?.measurement.elevation} <kbd>g</kbd>{' '}
+                  <kbd>p</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
                   onSelect={() => setToolAndClose('draw-lines')}
                   active={tool === 'draw-lines'}
                 >
-                  <FontAwesomeIcon icon="arrows-h" /> {m?.measurement.distance}{' '}
-                  <kbd>g</kbd> <kbd>l</kbd>
+                  <MdTimeline /> {m?.measurement.distance} <kbd>g</kbd>{' '}
+                  <kbd>l</kbd>
                 </Dropdown.Item>
 
                 <Dropdown.Item
                   onSelect={() => setToolAndClose('draw-polygons')}
                   active={tool === 'draw-polygons'}
                 >
-                  <FontAwesomeIcon icon="square-o" /> {m?.measurement.area}{' '}
-                  <kbd>g</kbd> <kbd>n</kbd>
+                  <FaDrawPolygon /> {m?.measurement.area} <kbd>g</kbd>{' '}
+                  <kbd>n</kbd>
                 </Dropdown.Item>
               </Fragment>
             ) : null}
@@ -722,7 +754,7 @@ export function MoreMenuButton(): ReactElement {
                 style={{ color: '#3b5998' }}
                 title={m?.more.facebook}
               >
-                <FontAwesomeIcon icon="facebook-official" />
+                <FaFacebook />
               </a>{' '}
               <a
                 onSelect={close}
@@ -732,7 +764,7 @@ export function MoreMenuButton(): ReactElement {
                 style={{ color: '#0084b4' }}
                 title={m?.more.twitter}
               >
-                <FontAwesomeIcon icon="twitter" />
+                <FaTwitter />
               </a>{' '}
               <a
                 onSelect={close}
@@ -742,7 +774,7 @@ export function MoreMenuButton(): ReactElement {
                 style={{ color: '#ff0000' }}
                 title={m?.more.youtube}
               >
-                <FontAwesomeIcon icon="youtube-play" />
+                <FaYoutube />
               </a>{' '}
               <a
                 onSelect={close}
@@ -752,7 +784,7 @@ export function MoreMenuButton(): ReactElement {
                 style={{ color: '#333' }}
                 title={m?.more.github}
               >
-                <FontAwesomeIcon icon="github" />
+                <FaGithub />
               </a>
             </div>
           )}

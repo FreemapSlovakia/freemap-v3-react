@@ -24,6 +24,18 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import FormCheck from 'react-bootstrap/FormCheck';
+import {
+  FaBullseye,
+  FaChartArea,
+  FaFlask,
+  FaHome,
+  FaInfoCircle,
+  FaMapMarkerAlt,
+  FaMoneyBill,
+  FaPencilAlt,
+  FaPlay,
+  FaStop,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { DeleteButton } from './DeleteButton';
 
@@ -130,7 +142,7 @@ export function RoutePlannerMenu(): ReactElement {
             <>
               <FontAwesomeIcon icon={activeTransportType.icon} />
               {['car', 'bikesharing'].includes(activeTransportType.type) && (
-                <FontAwesomeIcon icon="money" />
+                <FaMoneyBill />
               )}
               <span className="d-none d-md-inline">
                 {' '}
@@ -154,15 +166,12 @@ export function RoutePlannerMenu(): ReactElement {
               active={transportType === type}
             >
               <FontAwesomeIcon icon={icon} />
-              {['car', 'bikesharing'].includes(type) && (
-                <FontAwesomeIcon icon="money" />
-              )}{' '}
+              {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
               {m?.routePlanner.transportType[type] ?? '…'}
               {development && (
                 <>
                   {' '}
-                  <FontAwesomeIcon
-                    icon="flask"
+                  <FaFlask
                     title={m?.routePlanner.development ?? '…'}
                     className="text-warning"
                   />
@@ -177,7 +186,7 @@ export function RoutePlannerMenu(): ReactElement {
                     rel="noopener noreferrer"
                     onClick={stopPropagation}
                   >
-                    <FontAwesomeIcon icon="info-circle" />
+                    <FaInfoCircle />
                   </a>
                 </>
               )}
@@ -207,43 +216,44 @@ export function RoutePlannerMenu(): ReactElement {
       </DropdownButton>
       {'\xa0'}
       <ButtonGroup>
-        <DropdownButton
-          variant={pickPointMode === 'start' ? 'dark' : 'secondary'}
+        <Dropdown
           as={ButtonGroup}
-          title={
-            <span>
-              <FontAwesomeIcon icon="play" style={{ color: '#409a40' }} />
-              <span className="d-none d-md-inline">
-                {' '}
-                {m?.routePlanner.start ?? '…'}
-              </span>
-            </span>
-          }
           id="set-start-dropdown"
           onClick={() => {
             dispatch(routePlannerSetPickMode('start'));
           }}
         >
-          <Dropdown.Item>
-            <FontAwesomeIcon icon="map-marker" />{' '}
-            {m?.routePlanner.point.pick ?? '…'}
-          </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => {
-              dispatch(routePlannerSetFromCurrentPosition('start'));
-            }}
+          <Dropdown.Toggle
+            variant="secondary"
+            className={pickPointMode === 'start' ? 'active' : ''}
           >
-            <FontAwesomeIcon icon="bullseye" />{' '}
-            {m?.routePlanner.point.current ?? '…'}
-          </Dropdown.Item>
-          <Dropdown.Item
-            onSelect={() => {
-              setFromHomeLocation('start');
-            }}
-          >
-            <FontAwesomeIcon icon="home" /> {m?.routePlanner.point.home ?? '…'}
-          </Dropdown.Item>
-        </DropdownButton>
+            <FaPlay color="#409a40" />
+            <span className="d-none d-md-inline">
+              {' '}
+              {m?.routePlanner.start ?? '…'}
+            </span>
+          </Dropdown.Toggle>
+          <Dropdown.Menu>
+            <Dropdown.Item>
+              <FaMapMarkerAlt /> {m?.routePlanner.point.pick ?? '…'}
+            </Dropdown.Item>
+            <Dropdown.Item
+              onSelect={() => {
+                dispatch(routePlannerSetFromCurrentPosition('start'));
+              }}
+            >
+              <FaBullseye /> {m?.routePlanner.point.current ?? '…'}
+            </Dropdown.Item>
+            <Dropdown.Item
+              onSelect={() => {
+                setFromHomeLocation('start');
+              }}
+            >
+              <FontAwesomeIcon icon="home" />{' '}
+              {m?.routePlanner.point.home ?? '…'}
+            </Dropdown.Item>
+          </Dropdown.Menu>
+        </Dropdown>
 
         {mode !== 'roundtrip' && (
           <>
@@ -258,44 +268,47 @@ export function RoutePlannerMenu(): ReactElement {
             >
               ⇆
             </Button>
-            <DropdownButton
+            <Dropdown
               as={ButtonGroup}
-              variant={pickPointMode === 'finish' ? 'dark' : 'secondary'}
-              title={
-                <span>
-                  <FontAwesomeIcon icon="stop" style={{ color: '#d9534f' }} />
-                  <span className="d-none d-md-inline">
-                    {' '}
-                    {m?.routePlanner.finish ?? '…'}
-                  </span>
-                </span>
-              }
+              variant="secondary"
+              className={pickPointMode === 'finish' ? 'active' : ''}
               id="set-finish-dropdown"
               onClick={() => {
                 dispatch(routePlannerSetPickMode('finish'));
               }}
             >
-              <Dropdown.Item>
-                <FontAwesomeIcon icon="map-marker" />
-                {m?.routePlanner.point.pick ?? '…'}
-              </Dropdown.Item>
-              <Dropdown.Item
-                onSelect={() => {
-                  dispatch(routePlannerSetFromCurrentPosition('finish'));
-                }}
+              <Dropdown.Toggle
+                variant="secondary"
+                className={pickPointMode === 'finish' ? 'active' : ''}
               >
-                <FontAwesomeIcon icon="bullseye" />
-                {m?.routePlanner.point.current ?? '…'}
-              </Dropdown.Item>
-              <Dropdown.Item
-                onSelect={() => {
-                  setFromHomeLocation('finish');
-                }}
-              >
-                <FontAwesomeIcon icon="home" />{' '}
-                {m?.routePlanner.point.home ?? '…'}
-              </Dropdown.Item>
-            </DropdownButton>
+                <FaStop color="#d9534f" />
+                <span className="d-none d-md-inline">
+                  {' '}
+                  {m?.routePlanner.finish ?? '…'}
+                </span>
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                <Dropdown.Item>
+                  <FaMapMarkerAlt />
+                  {m?.routePlanner.point.pick ?? '…'}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    dispatch(routePlannerSetFromCurrentPosition('finish'));
+                  }}
+                >
+                  <FaBullseye />
+                  {m?.routePlanner.point.current ?? '…'}
+                </Dropdown.Item>
+                <Dropdown.Item
+                  onSelect={() => {
+                    setFromHomeLocation('finish');
+                  }}
+                >
+                  <FaHome /> {m?.routePlanner.point.home ?? '…'}
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
           </>
         )}
       </ButtonGroup>
@@ -364,7 +377,7 @@ export function RoutePlannerMenu(): ReactElement {
             active={elevationProfileIsVisible}
             title={m?.general.elevationProfile ?? '…'}
           >
-            <FontAwesomeIcon icon="bar-chart" />
+            <FaChartArea />
             <span className="d-none d-md-inline">
               {' '}
               {m?.general.elevationProfile ?? '…'}
@@ -376,7 +389,7 @@ export function RoutePlannerMenu(): ReactElement {
             onClick={handleConvertToDrawing}
             title={m?.general.convertToDrawing ?? '…'}
           >
-            <FontAwesomeIcon icon="pencil" />
+            <FaPencilAlt />
             <span className="d-none d-md-inline">
               {' '}
               {m?.general.convertToDrawing ?? '…'}

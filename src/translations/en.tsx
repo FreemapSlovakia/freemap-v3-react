@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('en', {
@@ -103,7 +103,7 @@ const en: Messages = {
     tracking: 'Live tracking',
     maps: (
       <>
-        My maps <FontAwesomeIcon icon="flask" className="text-warning" />
+        My maps <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -1197,8 +1197,7 @@ const en: Messages = {
         <>
           <p>
             Manage your devices so that others can watch your position if you
-            give them watch token (you can create it through{' '}
-            <FontAwesomeIcon icon="key" /> icon).
+            give them watch token (you can create it through <FaKey /> icon).
           </p>
           <hr />
           <p>

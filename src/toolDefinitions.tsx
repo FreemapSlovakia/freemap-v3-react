@@ -1,9 +1,20 @@
+import { ReactElement } from 'react';
+import {
+  FaDrawPolygon,
+  FaInfo,
+  FaMapMarkerAlt,
+  FaMapSigns,
+  FaPencilAlt,
+  FaRegMap,
+  FaRoad,
+} from 'react-icons/fa';
+import { MdTimeline } from 'react-icons/md';
 import { Tool } from './actions/mainActions';
 import { Messages } from './translations/messagesInterface';
 
 export interface ToolDefinition {
   tool: Tool;
-  icon: string;
+  icon: ReactElement;
   msgKey: keyof Messages['tools'];
   kbd?: string;
   expertOnly?: boolean;
@@ -11,40 +22,60 @@ export interface ToolDefinition {
 }
 
 export const toolDefinitions: ToolDefinition[] = [
-  { tool: 'maps', icon: 'map', msgKey: 'maps', kbd: 'KeyM' },
+  {
+    tool: 'maps',
+    icon: <FaRegMap />,
+    msgKey: 'maps',
+    kbd: 'KeyM',
+  },
   {
     tool: 'route-planner',
-    icon: 'map-signs',
+    icon: <FaMapSigns />,
     msgKey: 'routePlanner',
     kbd: 'KeyR',
   },
-  { tool: 'objects', icon: 'map-marker', msgKey: 'objects', kbd: 'KeyO' },
+  {
+    tool: 'objects',
+    icon: <FaMapMarkerAlt />,
+    msgKey: 'objects',
+    kbd: 'KeyO',
+  },
   {
     tool: 'draw-lines',
-    icon: 'arrows-h',
+    icon: <MdTimeline />,
     msgKey: 'drawLines',
     kbd: 'KeyL',
     draw: true,
   },
   {
     tool: 'draw-polygons',
-    icon: 'square-o',
+    icon: <FaDrawPolygon />,
     msgKey: 'drawPolygons',
     kbd: 'KeyN',
     draw: true,
   },
   {
     tool: 'draw-points',
-    icon: 'map-marker',
+    icon: <FaMapMarkerAlt />,
     msgKey: 'drawPoints',
     kbd: 'KeyP',
     draw: true,
   },
-  { tool: 'track-viewer', icon: 'road', msgKey: 'trackViewer', kbd: 'KeyG' },
-  { tool: 'map-details', icon: 'info', msgKey: 'mapDetails', kbd: 'KeyI' },
+  {
+    tool: 'track-viewer',
+    icon: <FaRoad />,
+    msgKey: 'trackViewer',
+    kbd: 'KeyG',
+  },
+  {
+    tool: 'map-details',
+    icon: <FaInfo />,
+    msgKey: 'mapDetails',
+    kbd: 'KeyI',
+  },
   {
     tool: 'changesets',
-    icon: 'pencil',
+    icon: <FaPencilAlt />,
     msgKey: 'changesets',
     kbd: 'KeyX',
     expertOnly: true,

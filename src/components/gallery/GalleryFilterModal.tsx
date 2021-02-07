@@ -18,8 +18,8 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import { FaCheck, FaEraser, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from '../FontAwesomeIcon';
 
 type Props = { show: boolean };
 
@@ -287,13 +287,13 @@ export function GalleryFilterModal({ show }: Props): ReactElement {
         </Modal.Body>
         <Modal.Footer>
           <Button type="submit">
-            <FontAwesomeIcon icon="check" /> {m?.general.apply}
+            <FaCheck /> {m?.general.apply}
           </Button>
           <Button variant="warning" type="button" onClick={handleEraseClick}>
-            <FontAwesomeIcon icon="eraser" /> {m?.general.clear}
+            <FaEraser /> {m?.general.clear}
           </Button>
           <Button variant="dark" type="button" onClick={close}>
-            <FontAwesomeIcon icon="close" /> {m?.general.cancel}
+            <FaTimes /> {m?.general.cancel}
           </Button>
         </Modal.Footer>
       </form>

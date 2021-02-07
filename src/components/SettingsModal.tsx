@@ -3,7 +3,6 @@ import {
   setActiveModal,
   setSelectingHomeLocation,
 } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { latLonToString } from 'fm3/geoutils';
 import { useMessages } from 'fm3/l10nInjector';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -24,6 +23,13 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import Tooltip from 'react-bootstrap/Tooltip';
+import {
+  FaCheck,
+  FaCog,
+  FaCrosshairs,
+  FaRegQuestionCircle,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
@@ -146,7 +152,7 @@ export function SettingsModal({ show }: Props): ReactElement {
       >
         <Modal.Header closeButton>
           <Modal.Title>
-            <FontAwesomeIcon icon="cog" /> {m?.more.settings}
+            <FaCog /> {m?.more.settings}
           </Modal.Title>
         </Modal.Header>
         <Modal.Body>
@@ -173,7 +179,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                       </Tooltip>
                     }
                   >
-                    <FontAwesomeIcon icon="question-circle-o" />
+                    <FaRegQuestionCircle />
                   </OverlayTrigger>
                 </>
               }
@@ -215,9 +221,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                         }}
                         title={
                           <>
-                            <FontAwesomeIcon
-                              icon={selectedOverlayDetails.icon}
-                            />{' '}
+                            {selectedOverlayDetails.icon}{' '}
                             {m?.mapLayers.letters[selectedOverlayDetails.type]}{' '}
                             {nf0.format(
                               (overlayOpacity[selectedOverlay] || 1) * 100,
@@ -228,8 +232,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                       >
                         {overlayLayers.map(({ type, icon }) => (
                           <Dropdown.Item key={type} eventKey={type}>
-                            {icon && <FontAwesomeIcon icon={icon} />}{' '}
-                            {m?.mapLayers.letters[type]}{' '}
+                            {icon} {m?.mapLayers.letters[type]}{' '}
                             {nf0.format((overlayOpacity[type] || 1) * 100)} %
                           </Dropdown.Item>
                         ))}
@@ -293,8 +296,7 @@ export function SettingsModal({ show }: Props): ReactElement {
                     dispatch(setSelectingHomeLocation(true));
                   }}
                 >
-                  <FontAwesomeIcon icon="crosshairs" />{' '}
-                  {m?.settings.map.homeLocation.select}
+                  <FaCrosshairs /> {m?.settings.map.homeLocation.select}
                 </Button>
               </FormGroup>
             </Tab>
@@ -345,10 +347,10 @@ export function SettingsModal({ show }: Props): ReactElement {
         </Modal.Body>
         <Modal.Footer>
           <Button variant="primary" type="submit" disabled={!userMadeChanges}>
-            <FontAwesomeIcon icon="floppy-o" /> {m?.general.save}
+            <FaCheck /> {m?.general.save}
           </Button>
           <Button variant="dark" type="button" onClick={close}>
-            <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
+            <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
           </Button>
         </Modal.Footer>
       </form>

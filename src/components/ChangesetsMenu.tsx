@@ -2,7 +2,6 @@ import {
   changesetsSetAuthorName,
   changesetsSetDays,
 } from 'fm3/actions/changesetsActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useState } from 'react';
@@ -11,6 +10,7 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { FaEraser, FaSync } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 export function ChangesetsMenu(): ReactElement {
@@ -84,7 +84,7 @@ export function ChangesetsMenu(): ReactElement {
                 setAuthorName(null);
               }}
             >
-              <FontAwesomeIcon icon="times" />
+              <FaEraser />
             </Button>
           </InputGroup.Append>
         </InputGroup>
@@ -95,7 +95,7 @@ export function ChangesetsMenu(): ReactElement {
           disabled={!canSearchWithThisAmountOfDays(days)}
           title={m?.changesets.download}
         >
-          <FontAwesomeIcon icon="refresh" />
+          <FaSync />
           <span className="d-none d-sm-inline"> {m?.changesets.download}</span>
         </Button>
       </Form>

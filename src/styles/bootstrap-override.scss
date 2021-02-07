@@ -67,8 +67,19 @@
   }
 }
 
+// let active looks like dark variant
 .btn-secondary:not(:disabled):not(.disabled).active {
-  background-color: #17a2b8;
+  background-color: #343a40;
+  border-color: #343a40;
+
+  &:hover,
+  &:focus {
+    background-color: #23272b;
+    border-color: #1d2124;
+  }
+  // color: #5a6268;
+  // background-color: #fff;
+  // border-color: #5a6268;
 }
 
 kbd {

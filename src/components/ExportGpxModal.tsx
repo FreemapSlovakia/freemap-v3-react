@@ -11,6 +11,7 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
 import Modal from 'react-bootstrap/Modal';
+import { FaDownload, FaDropbox, FaGoogle, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 const exportableDefinitions = [
@@ -150,7 +151,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
         <>
           <Modal.Header closeButton>
             <Modal.Title>
-              <FontAwesomeIcon icon="download" /> {m?.more.gpxExport}
+              <FaDownload /> {m?.more.gpxExport}
             </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -174,24 +175,24 @@ export function ExportGpxModal({ show }: Props): ReactElement {
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={handleExportClick} disabled={!exportables.length}>
-              <FontAwesomeIcon icon="download" /> {m?.gpxExport.export}
+              <FaDownload /> {m?.gpxExport.export}
             </Button>
             <Button
               variant="secondary"
               onClick={handleExportToDriveClick}
               disabled={!exportables.length}
             >
-              <FontAwesomeIcon icon="google" /> {m?.gpxExport.exportToDrive}
+              <FaGoogle /> {m?.gpxExport.exportToDrive}
             </Button>
             <Button
               variant="secondary"
               onClick={handleExportToDropbox}
               disabled={!exportables.length}
             >
-              <FontAwesomeIcon icon="dropbox" /> {m?.gpxExport.exportToDropbox}
+              <FaDropbox /> {m?.gpxExport.exportToDropbox}
             </Button>
             <Button variant="dark" onClick={close}>
-              <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+              <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
             </Button>
           </Modal.Footer>
         </>

@@ -11,7 +11,6 @@ import {
   trackViewerToggleElevationChart,
   trackViewerUploadTrack,
 } from 'fm3/actions/trackViewerActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/trackViewer.scss';
@@ -19,6 +18,14 @@ import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import {
+  FaChartArea,
+  FaCloudUploadAlt,
+  FaInfoCircle,
+  FaPaintBrush,
+  FaPencilAlt,
+  FaUpload,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
@@ -61,7 +68,7 @@ export function TrackViewerMenu(): ReactElement {
           dispatch(setActiveModal('upload-track'));
         }}
       >
-        <FontAwesomeIcon icon="upload" />
+        <FaUpload />
         <span className="d-none d-sm-inline"> {m?.trackViewer.upload}</span>
       </Button>
       {trackGeojsonIsSuitableForElevationChart && (
@@ -73,7 +80,7 @@ export function TrackViewerMenu(): ReactElement {
             dispatch(trackViewerToggleElevationChart());
           }}
         >
-          <FontAwesomeIcon icon="bar-chart" />
+          <FaChartArea />
           <span className="d-none d-sm-inline">
             {' '}
             {m?.general.elevationProfile}
@@ -94,7 +101,7 @@ export function TrackViewerMenu(): ReactElement {
           }}
           title={
             <>
-              <FontAwesomeIcon icon="paint-brush" />
+              <FaPaintBrush />
               {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
             </>
           }
@@ -125,7 +132,7 @@ export function TrackViewerMenu(): ReactElement {
             );
           }}
         >
-          <FontAwesomeIcon icon="info-circle" />
+          <FaInfoCircle />
           <span className="d-none d-sm-inline"> {m?.trackViewer.moreInfo}</span>
         </Button>
       )}
@@ -137,7 +144,7 @@ export function TrackViewerMenu(): ReactElement {
             dispatch(trackViewerUploadTrack());
           }}
         >
-          <FontAwesomeIcon icon="cloud-upload" />
+          <FaCloudUploadAlt />
           <span className="d-none d-sm-inline"> {m?.trackViewer.share}</span>
         </Button>
       )}
@@ -148,7 +155,7 @@ export function TrackViewerMenu(): ReactElement {
           onClick={handleConvertToDrawing}
           title={m?.general.convertToDrawing}
         >
-          <FontAwesomeIcon icon="pencil" />
+          <FaPencilAlt />
           <span className="d-none d-sm-inline">
             {' '}
             {m?.general.convertToDrawing}

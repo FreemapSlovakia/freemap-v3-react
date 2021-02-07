@@ -2,6 +2,7 @@ import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { toLatLng } from 'fm3/geoutils';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, memo, useCallback } from 'react';
+import { FaClock, FaRegComment } from 'react-icons/fa';
 import { CircleMarker, Tooltip } from 'react-leaflet';
 
 interface TrackingPointProps {
@@ -112,7 +113,7 @@ export function tooltipText(
         </div>
       )}
       <div>
-        <FontAwesomeIcon icon="clock-o" /> {df.format(ts)}
+        <FaClock /> {df.format(ts)}
       </div>
       <div>
         {items.map(([icon, text], i) => (
@@ -124,7 +125,7 @@ export function tooltipText(
       </div>
       {message && (
         <div>
-          <FontAwesomeIcon icon="bubble-o" /> {message}
+          <FaRegComment /> {message}
         </div>
       )}
     </div>

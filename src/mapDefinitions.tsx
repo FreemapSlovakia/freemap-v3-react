@@ -1,3 +1,24 @@
+import { ReactElement } from 'react';
+import { AiFillBank } from 'react-icons/ai';
+import { BsPencilSquare } from 'react-icons/bs';
+import {
+  FaBicycle,
+  FaBus,
+  FaCamera,
+  FaCar,
+  FaFont,
+  FaHiking,
+  FaPencilAlt,
+  FaPlane,
+  FaSkiingNordic,
+  FaSnowflake,
+  FaStrava,
+  FaTractor,
+  FaTree,
+  FaWikipediaW,
+} from 'react-icons/fa';
+import { SiOpenstreetmap } from 'react-icons/si';
+import { FontAwesomeIcon } from './components/FontAwesomeIcon';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
 
@@ -82,7 +103,7 @@ export type BaseLayerLetters = typeof baseLayerLetters[number];
 export type OverlayLetters = typeof overlayLetters[number];
 
 export interface LayerDef {
-  icon: string;
+  icon: ReactElement;
   url?: string;
   attribution: AttributionDef[];
   minZoom?: number;
@@ -115,7 +136,7 @@ const isHdpi = (window.devicePixelRatio || 1) > 1.4;
 
 function legacyFreemap(
   type: BaseLayerLetters,
-  icon: string,
+  icon: ReactElement,
   showOnlyInExpertMode: boolean,
 ): BaseLayerDef {
   return {
@@ -133,7 +154,7 @@ function legacyFreemap(
 export const baseLayers: BaseLayerDef[] = [
   {
     type: 'X',
-    icon: 'tree',
+    icon: <FaTree />,
     url: `${
       process.env['FM_MAPSERVER_URL'] || 'https://outdoor.tiles.freemap.sk'
     }/{z}/{x}/{y}`,
@@ -153,13 +174,13 @@ export const baseLayers: BaseLayerDef[] = [
     key: ['KeyX', false],
     primary: true,
   },
-  legacyFreemap('A', 'car', true),
-  legacyFreemap('T', '!icon-hiking', false),
-  legacyFreemap('C', 'bicycle', false),
-  legacyFreemap('K', '!icon-skier-skiing', true),
+  legacyFreemap('A', <FaCar />, true),
+  legacyFreemap('T', <FaHiking />, false),
+  legacyFreemap('C', <FaBicycle />, false),
+  legacyFreemap('K', <FaSkiingNordic />, true),
   {
     type: 'O',
-    icon: 'globe',
+    icon: <SiOpenstreetmap />,
     url: '//{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 19,
@@ -172,7 +193,7 @@ export const baseLayers: BaseLayerDef[] = [
     url:
       'https://{s}.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
     subdomains: ['server', 'services'],
-    icon: 'plane',
+    icon: <FaPlane />,
     minZoom: 0,
     maxNativeZoom: isHdpi ? 18 : 19,
     tileSize: isHdpi ? 128 : 256,
@@ -192,7 +213,7 @@ export const baseLayers: BaseLayerDef[] = [
     url: 'https://ofmozaika.tiles.freemap.sk/{z}/{x}/{y}.jpg',
     minNativeZoom: 0,
     maxNativeZoom: isHdpi ? 18 : 19,
-    icon: 'plane',
+    icon: <FaPlane />,
     attribution: [
       {
         type: 'map',
@@ -211,7 +232,7 @@ export const baseLayers: BaseLayerDef[] = [
     url: 'http://tile.mtbmap.cz/mtbmap_tiles/{z}/{x}/{y}.png',
     minZoom: 3,
     maxNativeZoom: 18,
-    icon: 'bicycle',
+    icon: <FaBicycle />,
     showOnlyInExpertMode: true,
     attribution: [
       {
@@ -229,7 +250,7 @@ export const baseLayers: BaseLayerDef[] = [
     url: '//tile.opentopomap.org/{z}/{x}/{y}.png',
     minZoom: 3,
     maxNativeZoom: 17,
-    icon: 'tree',
+    icon: <FaTree />,
     showOnlyInExpertMode: true,
     attribution: [
       {
@@ -247,7 +268,7 @@ export const baseLayers: BaseLayerDef[] = [
     url: '//tile.memomaps.de/tilegen/{z}/{x}/{y}.png',
     minZoom: 0,
     maxNativeZoom: 18,
-    icon: 'bus',
+    icon: <FaBus />,
     showOnlyInExpertMode: true,
     attribution: [
       {
@@ -264,7 +285,7 @@ export const baseLayers: BaseLayerDef[] = [
     url: '//tms.freemap.sk/historicke/{z}/{x}/{y}.png',
     minNativeZoom: 8,
     maxNativeZoom: 12,
-    icon: 'institution',
+    icon: <AiFillBank />,
     showOnlyInExpertMode: true,
     attribution: [],
     key: ['Digit9', true],
@@ -274,14 +295,14 @@ export const baseLayers: BaseLayerDef[] = [
 export const overlayLayers: OverlayLayerDef[] = [
   {
     type: 'i',
-    icon: 'pencil',
+    icon: <FaPencilAlt />,
     key: ['KeyI', true],
     attribution: [],
     showOnlyInExpertMode: true,
   },
   {
     type: 'I',
-    icon: 'picture-o',
+    icon: <FaCamera />,
     minZoom: 0,
     key: ['KeyF', true],
     zIndex: 4,
@@ -295,7 +316,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   {
     type: 'w',
-    icon: 'wikipedia-w',
+    icon: <FaWikipediaW />,
     minZoom: 12,
     key: ['KeyW', true],
     zIndex: 4,
@@ -303,7 +324,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   {
     type: 'l',
-    icon: 'tree',
+    icon: <FaTractor />,
     url: 'https://nlc.tiles.freemap.sk/{z}/{x}/{y}.png',
     attribution: [NLC_ATTR],
     minZoom: 11,
@@ -321,7 +342,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     ['s4', 'winter'],
   ] as const).map(([type, stravaType]) => ({
     type,
-    icon: 'scribd', // TODO use correct logo
+    icon: <FaStrava />,
     url: `//strava-heatmap.tiles.freemap.sk/${stravaType}/bluered/{z}/{x}/{y}.png?px=${
       isHdpi ? 512 : 256
     }`,
@@ -338,7 +359,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   })),
   {
     type: 'g',
-    icon: '!icon-gps-device',
+    icon: <FontAwesomeIcon icon="!icon-gps-device" />,
     url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     minZoom: 0,
@@ -349,7 +370,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   {
     type: 't',
-    icon: '!icon-hiking',
+    icon: <FaHiking />,
     url: '//tiles.freemap.sk/trails/{z}/{x}/{y}.png',
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
@@ -360,7 +381,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   {
     type: 'c',
-    icon: 'bicycle',
+    icon: <FaBicycle />,
     url: '//tiles.freemap.sk/cycle/{z}/{x}/{y}.png',
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
@@ -371,7 +392,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   },
   {
     type: 'q',
-    icon: 'snowflake-o',
+    icon: <FaSnowflake />,
     url: '//www.opensnowmap.org/pistes/{z}/{x}/{y}.png',
     attribution: [
       {
@@ -392,7 +413,7 @@ export const overlayLayers: OverlayLayerDef[] = [
     ['n3', ['Digit3', false], 'c'],
   ] as const).map(([type, key, suffix]) => ({
     type,
-    icon: 'font',
+    icon: <FaFont />,
     url: `//tiles.freemap.sk/names${suffix}/{z}/{x}/{y}.png`,
     attribution: [FM_ATTR, OSM_DATA_ATTR],
     minZoom: 8,
@@ -403,7 +424,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   })),
   {
     type: 'r',
-    icon: 'pencil-square-o',
+    icon: <BsPencilSquare />,
     url: '//dev.freemap.sk/layers/renderedby/?/{z}/{x}/{y}',
     minZoom: 8,
     maxNativeZoom: 12,

@@ -1,9 +1,9 @@
 import { wikiLoadPreview } from 'fm3/actions/wikiActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { divIcon } from 'leaflet';
 import { ReactElement } from 'react';
+import { FaExternalLinkAlt } from 'react-icons/fa';
 import { Marker, Popup, Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -78,7 +78,7 @@ export function WikiLayer(): ReactElement {
                 target="wikipedia"
               >
                 {preview ? preview.title : wikipedia.replace(/.*:/, '')}{' '}
-                <FontAwesomeIcon icon="external-link" />
+                <FaExternalLinkAlt />
               </a>
             </h4>
             {preview ? (

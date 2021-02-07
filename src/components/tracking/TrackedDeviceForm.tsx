@@ -1,7 +1,6 @@
 import { selectFeature } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
 import { DateTime } from 'fm3/components/DateTime';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useTextInputState } from 'fm3/hooks/inputHooks';
 import { useMessages } from 'fm3/l10nInjector';
@@ -14,6 +13,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import { FaBullseye } from 'react-icons/fa';
 import { shallowEqual, useDispatch, useSelector } from 'react-redux';
 
 export function TrackedDeviceForm(): ReactElement {
@@ -100,7 +100,7 @@ export function TrackedDeviceForm(): ReactElement {
     <form onSubmit={handleSubmit}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />{' '}
+          <FaBullseye />{' '}
           {device && !forceNew
             ? m?.tracking.trackedDevices.modifyTitle(device.label || device.id)
             : m?.tracking.trackedDevices.createTitle(

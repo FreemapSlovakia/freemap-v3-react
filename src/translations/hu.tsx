@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('hu', {
@@ -105,8 +105,7 @@ const hu: Messages = {
     tracking: 'Live tracking',
     maps: (
       <>
-        Saját térképeim{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
+        Saját térképeim <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -1217,8 +1216,8 @@ const hu: Messages = {
         <>
           <p>
             Kezelje készülékeit, hogy mások is láthassák pozícióját, ha megad
-            nekik egy figyelési kódot (amelyet a <FontAwesomeIcon icon="key" />{' '}
-            ikonnal hozhat létre).
+            nekik egy figyelési kódot (amelyet a <FaKey /> ikonnal hozhat
+            létre).
           </p>
           <hr />
           <p>

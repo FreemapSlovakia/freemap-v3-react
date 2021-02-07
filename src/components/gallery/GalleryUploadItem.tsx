@@ -1,5 +1,4 @@
 import { GalleryTag } from 'fm3/actions/galleryActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import {
   GalleryEditForm,
   PictureModel,
@@ -9,6 +8,7 @@ import 'fm3/styles/react-tag-autocomplete.css';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { Fragment, ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
+import { FaTimes } from 'react-icons/fa';
 
 interface Props {
   id: number;
@@ -73,7 +73,7 @@ export function GalleryUploadItem({
           onModelChange={handleModelChange}
         />{' '}
         <Button onClick={handleRemove} variant="danger">
-          <FontAwesomeIcon icon="times" /> {m?.general.remove}
+          <FaTimes /> {m?.general.remove}
         </Button>
       </fieldset>
       <hr />

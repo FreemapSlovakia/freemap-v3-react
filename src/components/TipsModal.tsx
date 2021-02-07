@@ -15,6 +15,12 @@ import {
 import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
 import Modal from 'react-bootstrap/Modal';
+import {
+  FaChevronLeft,
+  FaChevronRight,
+  FaRegLightbulb,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
@@ -70,7 +76,7 @@ export function TipsModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="lightbulb-o" />
+          <FaRegLightbulb />
           {m?.more.tips}
           {'\u00A0 | \u00A0'}
           {title && icon ? (
@@ -99,7 +105,7 @@ export function TipsModal({ show }: Props): ReactElement {
             dispatch(tipsShow('prev'));
           }}
         >
-          <FontAwesomeIcon icon="chevron-left" /> {m?.tips.previous}
+          <FaChevronLeft /> {m?.tips.previous}
         </Button>
         <Button
           variant="secondary"
@@ -107,7 +113,7 @@ export function TipsModal({ show }: Props): ReactElement {
             dispatch(tipsShow('next'));
           }}
         >
-          <FontAwesomeIcon icon="chevron-right" /> {m?.tips.next}
+          <FaChevronRight /> {m?.tips.next}
         </Button>
         <FormCheck
           id="chk-prevent"
@@ -117,7 +123,7 @@ export function TipsModal({ show }: Props): ReactElement {
           label={m?.tips.prevent}
         />
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

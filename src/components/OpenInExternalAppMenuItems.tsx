@@ -4,9 +4,16 @@ import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { ReactElement, useCallback } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
+import {
+  FaClipboard,
+  FaFacebook,
+  FaLink,
+  FaShareAlt,
+  FaTwitter,
+  FaWindowMaximize,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 interface Props extends LatLon {
   lat: number;
@@ -83,16 +90,16 @@ export function OpenInExternalAppDropdownItems({
       {url && (
         <>
           <Dropdown.Item eventKey="window" onSelect={handleDropdownItemSelect}>
-            <FontAwesomeIcon icon="window-maximize" /> {m?.external.window}
+            <FaWindowMaximize /> {m?.external.window}
           </Dropdown.Item>
           {hasShare && (
             <Dropdown.Item eventKey="url" onSelect={handleDropdownItemSelect}>
-              <FontAwesomeIcon icon="link" /> {m?.external.url}
+              <FaLink /> {m?.external.url}
             </Dropdown.Item>
           )}
           {(navigator as any).canShare && (
             <Dropdown.Item eventKey="image" onSelect={handleDropdownItemSelect}>
-              <FontAwesomeIcon icon="share-alt" /> {m?.external.image}
+              <FaShareAlt /> {m?.external.image}
             </Dropdown.Item>
           )}
           <Dropdown.Divider />
@@ -100,7 +107,7 @@ export function OpenInExternalAppDropdownItems({
       )}
       {!url && hasClipboard && (
         <Dropdown.Item eventKey="copy" onSelect={handleDropdownItemSelect}>
-          <FontAwesomeIcon icon="clipboard" /> {m?.general.copyUrl}
+          <FaClipboard /> {m?.general.copyUrl}
           {showKbdShortcut && (
             <>
               {' '}
@@ -111,12 +118,12 @@ export function OpenInExternalAppDropdownItems({
       )}
       {!url && hasShare && (
         <Dropdown.Item eventKey="url" onSelect={handleDropdownItemSelect}>
-          <FontAwesomeIcon icon="link" /> {m?.external.url}
+          <FaLink /> {m?.external.url}
         </Dropdown.Item>
       )}
       {!url && (hasClipboard || hasShare) && <Dropdown.Divider />}
       <Dropdown.Item eventKey="facebook" onSelect={handleDropdownItemSelect}>
-        <FontAwesomeIcon icon="facebook-official" /> Facebook
+        <FaFacebook /> Facebook
         {showKbdShortcut && (
           <>
             {' '}
@@ -125,7 +132,7 @@ export function OpenInExternalAppDropdownItems({
         )}
       </Dropdown.Item>
       <Dropdown.Item eventKey="twitter" onSelect={handleDropdownItemSelect}>
-        <FontAwesomeIcon icon="twitter" /> Twitter
+        <FaTwitter /> Twitter
         {showKbdShortcut && (
           <>
             {' '}

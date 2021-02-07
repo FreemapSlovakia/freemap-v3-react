@@ -5,13 +5,13 @@ import {
   mapsRename,
   mapsSave,
 } from 'fm3/actions/mapsActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
+import { FaPencilAlt, FaPlus, FaSave, FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 export function MapsMenu(): ReactElement {
@@ -54,7 +54,7 @@ export function MapsMenu(): ReactElement {
             dispatch(mapsSave());
           }}
         >
-          <FontAwesomeIcon icon="floppy-o" />
+          <FaSave />
           <span className="d-none d-md-inline"> {m?.maps.save}</span>
         </Button>
       )}
@@ -66,7 +66,7 @@ export function MapsMenu(): ReactElement {
         }}
         disabled={!authenticated}
       >
-        <FontAwesomeIcon icon="plus" />
+        <FaPlus />
         <span className="d-none d-md-inline"> {m?.maps.create}</span>
       </Button>
       {authenticated && id !== undefined && (
@@ -77,7 +77,7 @@ export function MapsMenu(): ReactElement {
             dispatch(mapsRename());
           }}
         >
-          <FontAwesomeIcon icon="pencil" />
+          <FaPencilAlt />
           <span className="d-none d-md-inline"> {m?.maps.rename}</span>
         </Button>
       )}
@@ -89,7 +89,7 @@ export function MapsMenu(): ReactElement {
             dispatch(deleteFeature());
           }}
         >
-          <FontAwesomeIcon icon="trash" />
+          <FaTrash />
           <span className="d-none d-md-inline">
             {' '}
             {m?.maps.delete} <kbd>Del</kbd>

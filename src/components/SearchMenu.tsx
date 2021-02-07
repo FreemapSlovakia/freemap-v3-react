@@ -31,9 +31,9 @@ import Form from 'react-bootstrap/Form';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
 import SafeAnchor from 'react-bootstrap/SafeAnchor';
+import { FaPlay, FaSearch, FaStop, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { useDebouncedCallback } from 'use-debounce';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 type Props = {
   hidden?: boolean;
@@ -264,7 +264,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                     title={m?.general.clear}
                     onClick={handleClearClick}
                   >
-                    <FontAwesomeIcon icon="times" />
+                    <FaTimes />
                   </Button>
                 )}
                 <Button
@@ -273,7 +273,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                   title={m?.search.buttonTitle}
                   disabled={!value}
                 >
-                  <FontAwesomeIcon icon="search" />
+                  <FaSearch />
                 </Button>
               </InputGroup.Append>
             </InputGroup>
@@ -318,7 +318,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               );
             }}
           >
-            <FontAwesomeIcon icon="play" style={{ color: '#32CD32' }} />
+            <FaPlay color="#32CD32" />
           </Button>
           <Button
             variant="secondary"
@@ -336,7 +336,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               );
             }}
           >
-            <FontAwesomeIcon icon="stop" style={{ color: '#FF6347' }} />
+            <FaStop color="#FF6347" />
           </Button>
         </ButtonGroup>
       )}

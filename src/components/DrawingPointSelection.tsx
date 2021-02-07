@@ -1,8 +1,8 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
+import { FaTag } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { Selection } from './Selection';
 
@@ -18,7 +18,7 @@ export function DrawingPointSelection(): ReactElement {
         variant="secondary"
         onClick={() => dispatch(setActiveModal('edit-label'))}
       >
-        <FontAwesomeIcon icon="tag" />
+        <FaTag />
         <span className="d-none d-sm-inline"> {m?.drawing.modify}</span>
       </Button>
     </Selection>

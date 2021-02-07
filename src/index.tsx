@@ -20,6 +20,7 @@ import 'fm3/styles/index.scss';
 import 'font-awesome/scss/font-awesome.scss';
 import 'fullscreen-api-polyfill';
 import { render } from 'react-dom';
+import { IconContext } from 'react-icons/lib';
 import { Provider } from 'react-redux';
 import { assertType, setDefaultGetErrorObject } from 'typescript-is';
 import { authCheckLogin, authInit } from './actions/authActions';
@@ -59,11 +60,17 @@ store.dispatch(enableUpdatingUrl());
 
 render(
   <Provider store={store}>
-    <MessagesProvider>
-      <ErrorCatcher>
-        <Main />
-      </ErrorCatcher>
-    </MessagesProvider>
+    <IconContext.Provider
+      value={{
+        style: { verticalAlign: 'middle', position: 'relative', top: '-1px' },
+      }}
+    >
+      <MessagesProvider>
+        <ErrorCatcher>
+          <Main />
+        </ErrorCatcher>
+      </MessagesProvider>
+    </IconContext.Provider>
   </Provider>,
   document.getElementById('app'),
 );

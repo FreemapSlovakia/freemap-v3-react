@@ -9,8 +9,8 @@ import 'fm3/styles/elevationChart.scss';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import { Line } from 'react-chartjs-2';
+import { FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 export function ElevationChart(): ReactElement | null {
   const m = useMessages();
@@ -48,7 +48,7 @@ export function ElevationChart(): ReactElement | null {
         size="sm"
         onClick={() => dispatch(elevationChartClose())}
       >
-        <FontAwesomeIcon icon="times" />
+        <FaTimes />
       </Button>
 
       <Line
