@@ -78,7 +78,7 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import { useDropzone } from 'react-dropzone';
-import { FaBriefcase, FaTimes } from 'react-icons/fa';
+import { FaTimes } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
@@ -395,8 +395,6 @@ export function Main(): ReactElement {
               <ButtonToolbar>
                 {toolDef && (
                   <span className="align-self-center ml-1 mr-2">
-                    <FaBriefcase />
-                    {' / '}
                     {toolDef.icon}
                     <span className="d-none d-sm-inline">
                       {' '}
