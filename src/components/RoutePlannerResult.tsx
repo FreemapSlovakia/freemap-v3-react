@@ -10,6 +10,7 @@ import {
   routePlannerSetActiveAlternativeIndex,
   routePlannerSetFinish,
   routePlannerSetMidpoint,
+  routePlannerSetPickMode,
   routePlannerSetStart,
   RouteStepExtra,
   Step,
@@ -337,15 +338,16 @@ export function RoutePlannerResult(): ReactElement {
     // also prevent default
 
     dispatch(setTool('route-planner'));
+    dispatch(routePlannerSetPickMode('start'));
   }, [dispatch]);
 
   const handleEndPointClick = useCallback(() => {
     if (mode === 'roundtrip') {
       dispatch(routePlannerSetFinish({ finish: null, move: true }));
-      dispatch(setTool('route-planner'));
     }
 
     dispatch(setTool('route-planner'));
+    dispatch(routePlannerSetPickMode('finish'));
   }, [mode, dispatch]);
 
   const [endPointHovering, setEndPointHovering] = useState(false);
@@ -732,7 +734,9 @@ export function RoutePlannerResult(): ReactElement {
                     handleRouteMarkerDragEnd('midpoint', i, e);
                   },
                   click() {
-                    dispatch(routePlannerRemoveMidpoint(i));
+                    if (tool === 'route-planner') {
+                      dispatch(routePlannerRemoveMidpoint(i));
+                    }
 
                     dispatch(setTool('route-planner'));
                   },
@@ -762,6 +766,7 @@ export function RoutePlannerResult(): ReactElement {
       dragging,
       getPointDetails,
       handleRouteMarkerDragEnd,
+      tool,
       dispatch,
     ],
   );

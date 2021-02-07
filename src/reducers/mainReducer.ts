@@ -166,8 +166,7 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
       : {
           ...state,
           selection: action.payload,
-          tool:
-            action.payload && state.tool === 'track-viewer' ? null : state.tool,
+          tool: null,
         },
   )
   .handleAction(convertToDrawing, (state) => ({

@@ -1,5 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import { clearMap, selectFeature, setAppState } from 'fm3/actions/mainActions';
+import { clearMap, setAppState, setTool } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import {
   Alternative,
@@ -36,7 +36,7 @@ export interface RoutePlannerState {
   start: LatLon | null;
   midpoints: LatLon[];
   finish: LatLon | null;
-  pickMode: PickMode;
+  pickMode: PickMode | null;
   itineraryIsVisible: boolean;
   mode: RouteMode;
   milestones: boolean;
@@ -78,9 +78,13 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
   .handleAction(setAppState, (state, action) => {
     return { ...state, ...action.payload.routePlanner };
   })
-  .handleAction(selectFeature, (state) => ({
+  .handleAction(setTool, (state, action) => ({
     ...state,
-    pickMode: !state.start ? 'start' : 'finish',
+    pickMode: !state.start
+      ? 'start'
+      : action.payload === 'route-planner'
+      ? state.pickMode
+      : null,
   }))
   .handleAction(clearMap, (state) => ({
     ...initialState,
@@ -114,7 +118,7 @@ export const routePlannerReducer = createReducer<RoutePlannerState, RootAction>(
       !isSpecial(state.transportType) && !action.payload.move && state.start
         ? [state.start, ...state.midpoints]
         : state.midpoints,
-    pickMode: 'finish',
+    pickMode: state.finish ? state.pickMode : 'finish',
   }))
   .handleAction(routePlannerSetFinish, (state, action) =>
     action.payload.finish === null
