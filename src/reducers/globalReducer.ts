@@ -188,6 +188,7 @@ export function preGlobalReducer(
           transportType: routePlanner.transportType,
           mode: routePlanner.mode,
           milestones: routePlanner.milestones,
+          pickMode: 'start',
         },
       };
     } else if (state.main.selection?.type === 'draw-line-poly') {

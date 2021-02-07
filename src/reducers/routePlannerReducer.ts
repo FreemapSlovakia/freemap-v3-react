@@ -58,7 +58,7 @@ export const cleanState = {
   start: null,
   midpoints: [],
   finish: null,
-  pickMode: 'start' as PickMode,
+  pickMode: null,
   itineraryIsVisible: false,
   ...clearResult,
 };
