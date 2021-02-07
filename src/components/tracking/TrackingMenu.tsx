@@ -77,7 +77,7 @@ export function TrackingMenu(): ReactElement {
         className="ml-1"
         variant="secondary"
         id="tracking-visual-dropdown"
-        title={visual && m?.tracking.visual[visual]}
+        title={(visual && m?.tracking.visual[visual]) ?? '…'}
       >
         <Dropdown.Item eventKey="points" onSelect={handleVisualChange}>
           {m?.tracking.visual.points}
