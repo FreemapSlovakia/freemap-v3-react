@@ -70,7 +70,10 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
     return {
       ...state,
       tool: action.payload,
-      selection: state.tool !== action.payload ? null : state.selection,
+      selection:
+        action.payload === state.tool || action.payload === null
+          ? state.selection
+          : null,
     };
   })
   .handleAction(clearMap, (state) => {
