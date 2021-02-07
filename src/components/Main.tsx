@@ -185,26 +185,38 @@ export function Main(): ReactElement {
 
     const m = map;
 
+    let t: number | undefined;
+
     function handleMapMoveEnd() {
-      const { lat: newLat, lng: newLon } = m.getCenter();
-
-      const newZoom = m.getZoom();
-
-      if (
-        ([
-          [lat, newLat],
-          [lon, newLon],
-          [zoom, newZoom],
-        ] as const).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
-      ) {
-        dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+      if (t) {
+        window.clearTimeout(t);
       }
+
+      t = window.setTimeout(() => {
+        const { lat: newLat, lng: newLon } = m.getCenter();
+
+        const newZoom = m.getZoom();
+
+        if (
+          ([
+            [lat, newLat],
+            [lon, newLon],
+            [zoom, newZoom],
+          ] as const).some(([a, b]) => a.toFixed(6) !== b.toFixed(6))
+        ) {
+          dispatch(mapRefocus({ lat: newLat, lon: newLon, zoom: newZoom }));
+        }
+      }, 250);
     }
 
     m.on('moveend', handleMapMoveEnd);
 
     return () => {
       m.off('moveend', handleMapMoveEnd);
+
+      if (t) {
+        window.clearTimeout(t);
+      }
     };
   }, [dispatch, lat, lon, map, zoom]);
 
@@ -392,6 +404,13 @@ export function Main(): ReactElement {
                     </span>
                   </span>
                 )}
+                {tool === 'objects' && <ObjectsMenu />}
+                {tool === 'route-planner' && <RoutePlannerMenu />}
+                {tool === 'track-viewer' && <TrackViewerMenu />}
+                {tool === 'changesets' && <ChangesetsMenu />}
+                {tool === 'map-details' && <MapDetailsMenu />}
+                {tool === 'maps' && <MapsMenu />}
+                {'\xa0'}
                 <Button
                   variant="light"
                   size="sm"
@@ -400,12 +419,6 @@ export function Main(): ReactElement {
                 >
                   <FaTimes />
                 </Button>
-                {tool === 'objects' && <ObjectsMenu />}
-                {tool === 'route-planner' && <RoutePlannerMenu />}
-                {tool === 'track-viewer' && <TrackViewerMenu />}
-                {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'map-details' && <MapDetailsMenu />}
-                {tool === 'maps' && <MapsMenu />}
               </ButtonToolbar>
             </Card>
           )}
