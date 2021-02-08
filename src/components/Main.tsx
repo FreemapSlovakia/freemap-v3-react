@@ -411,7 +411,7 @@ export function Main(): ReactElement {
                 {'\xa0'}
                 <Button
                   variant="light"
-                  size="sm"
+                  // size="sm"
                   onClick={() => dispatch(setTool(null))}
                   title={m?.general.close + ' [Esc]'}
                 >
