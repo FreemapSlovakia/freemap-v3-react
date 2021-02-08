@@ -19,6 +19,7 @@ import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePo
 import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { Messages } from 'fm3/translations/messagesInterface';
 import { isSpecial } from 'fm3/transportTypeDefs';
@@ -118,7 +119,7 @@ export function RoutePlannerResult(): ReactElement {
 
   const interactive = tool === 'route-planner';
 
-  const interactive1 = interactive || tool === null;
+  const interactive1 = useSelector(selectingModeSelector);
 
   const [dragging, setDragging] = useState(false);
 

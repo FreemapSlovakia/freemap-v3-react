@@ -6,12 +6,20 @@ import {
   clearMap,
   deleteFeature,
   selectFeature,
+  setTool,
 } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { httpRequest } from 'fm3/authAxios';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { getType } from 'typesafe-actions';
 import { assertType } from 'typescript-is';
+
+const cancelType = [
+  getType(clearMap),
+  getType(selectFeature),
+  getType(deleteFeature),
+  getType(setTool),
+];
 
 export const measurementProcessor: Processor<typeof drawingMeasure> = {
   actionCreator: drawingMeasure,
@@ -45,7 +53,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             },
             timeout: 500000,
             id: 'measurementInfo',
-            cancelType: [getType(selectFeature), getType(deleteFeature)],
+            cancelType,
           }),
         );
       } else if (type === 'line' && points.length > 1) {
@@ -59,7 +67,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             },
             timeout: 500000,
             id: 'measurementInfo',
-            cancelType: [getType(selectFeature), getType(deleteFeature)],
+            cancelType,
           }),
         );
       }
@@ -75,7 +83,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
             messageParams: { point, elevation: null },
             timeout: 500000,
             id: 'measurementInfo',
-            cancelType: [getType(selectFeature), getType(deleteFeature)],
+            cancelType,
           }),
         );
 
@@ -98,7 +106,7 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
           messageKey: 'measurement.elevationInfo',
           messageParams: { point, elevation },
           timeout: 500000,
-          cancelType: [getType(selectFeature), getType(deleteFeature)],
+          cancelType,
         }),
       );
     }

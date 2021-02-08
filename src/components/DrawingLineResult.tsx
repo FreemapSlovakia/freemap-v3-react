@@ -237,8 +237,6 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               offset={[-4, 0]}
               direction="center"
               permanent
-              interactive
-              key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}
             >
               <span>{line.label}</span>
             </Tooltip>
@@ -309,12 +307,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               }}
             >
               {line.type === 'line' && (
-                <Tooltip
-                  key={`${p.id}-${ps.length}`}
-                  className="compact"
-                  offset={[-4, 0]}
-                  direction="right"
-                >
+                <Tooltip className="compact" offset={[-4, 0]} direction="right">
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
               )}

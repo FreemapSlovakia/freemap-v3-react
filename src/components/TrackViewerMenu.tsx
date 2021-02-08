@@ -101,7 +101,7 @@ export function TrackViewerMenu(): ReactElement {
           }}
           title={
             <>
-              <FaPaintBrush />
+              <FaPaintBrush />{' '}
               {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
             </>
           }
