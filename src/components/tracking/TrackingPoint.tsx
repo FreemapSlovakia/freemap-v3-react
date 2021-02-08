@@ -1,8 +1,18 @@
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { toLatLng } from 'fm3/geoutils';
 import { TrackPoint } from 'fm3/types/trackingTypes';
-import { Fragment, memo, useCallback } from 'react';
-import { FaClock, FaRegComment } from 'react-icons/fa';
+import { Fragment, memo, ReactElement, useCallback } from 'react';
+import {
+  FaBatteryEmpty,
+  FaBatteryFull,
+  FaBatteryHalf,
+  FaBatteryQuarter,
+  FaBatteryThreeQuarters,
+  FaClock,
+  FaLongArrowAltUp,
+  FaRegComment,
+  FaSignal,
+  FaTachometerAlt,
+} from 'react-icons/fa';
 import { CircleMarker, Tooltip } from 'react-leaflet';
 
 interface TrackingPointProps {
@@ -74,33 +84,41 @@ export function tooltipText(
 ): JSX.Element {
   // TODO bearing
 
-  const items: string[][] = [];
+  const items: [string, ReactElement, string][] = [];
 
   if (typeof altitude === 'number') {
-    items.push(['long-arrow-up', `${nf.format(altitude)} m`]);
+    // eslint-disable-next-line react/jsx-key
+    items.push(['alt', <FaLongArrowAltUp />, `${nf.format(altitude)} m`]);
   }
 
   if (typeof speed === 'number') {
-    items.push(['dashboard', `${nf.format(speed * 3.6)} km/h`]);
+    items.push([
+      'speed',
+      // eslint-disable-next-line react/jsx-key
+      <FaTachometerAlt />,
+      `${nf.format(speed * 3.6)} km/h`,
+    ]);
   }
 
   if (typeof gsmSignal === 'number') {
-    items.push(['signal', `${gsmSignal} %`]);
+    // eslint-disable-next-line react/jsx-key
+    items.push(['signal', <FaSignal />, `${gsmSignal} %`]);
   }
 
   if (typeof battery === 'number') {
     items.push([
-      `battery-${
-        battery < 12.5
-          ? 0
-          : battery < 25 + 12.5
-          ? 1
-          : battery < 50 + 12.5
-          ? 2
-          : battery < 75 + 12.5
-          ? 3
-          : 4
-      }`,
+      'battery',
+      battery < 12.5 ? (
+        <FaBatteryEmpty />
+      ) : battery < 25 + 12.5 ? (
+        <FaBatteryQuarter />
+      ) : battery < 50 + 12.5 ? (
+        <FaBatteryHalf />
+      ) : battery < 75 + 12.5 ? (
+        <FaBatteryThreeQuarters />
+      ) : (
+        <FaBatteryFull />
+      ),
       `${battery} %`,
     ]);
   }
@@ -116,9 +134,9 @@ export function tooltipText(
         <FaClock /> {df.format(ts)}
       </div>
       <div>
-        {items.map(([icon, text], i) => (
-          <Fragment key={icon}>
-            <FontAwesomeIcon key={icon} icon={icon} /> {text}
+        {items.map(([key, icon, text], i) => (
+          <Fragment key={key}>
+            {icon} {text}
             {i < items.length - 1 ? '｜' : null}
           </Fragment>
         ))}

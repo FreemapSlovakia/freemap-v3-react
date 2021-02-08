@@ -8,7 +8,8 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
-import { FaChartArea, FaTag } from 'react-icons/fa';
+import { FaChartArea, FaDrawPolygon, FaTag } from 'react-icons/fa';
+import { MdTimeline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
@@ -44,7 +45,7 @@ export function DrawingLineSelection(): ReactElement | null {
 
   return !line ? null : (
     <Selection
-      icon={line.type === 'line' ? 'arrows-h' : 'square-o'}
+      icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
       title={
         line.type === 'line'
           ? m?.selections.drawLines

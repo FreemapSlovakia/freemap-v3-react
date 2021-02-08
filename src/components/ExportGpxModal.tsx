@@ -3,7 +3,6 @@ import {
   exportGpx,
   setActiveModal,
 } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -11,20 +10,32 @@ import Alert from 'react-bootstrap/Alert';
 import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
 import Modal from 'react-bootstrap/Modal';
-import { FaDownload, FaDropbox, FaGoogle, FaTimes } from 'react-icons/fa';
+import {
+  FaBullseye,
+  FaCamera,
+  FaDownload,
+  FaDrawPolygon,
+  FaDropbox,
+  FaGoogle,
+  FaMapMarkerAlt,
+  FaMapSigns,
+  FaRoad,
+  FaTimes,
+} from 'react-icons/fa';
+import { MdTimeline } from 'react-icons/md';
 import { useDispatch, useSelector } from 'react-redux';
 
 const exportableDefinitions = [
   // { type: 'search', icon: 'search', name: 'výsledok hľadania' },
-  { type: 'plannedRoute', icon: 'map-signs' },
-  { type: 'plannedRouteWithStops', icon: 'map-signs' },
-  { type: 'objects', icon: 'map-marker' },
-  { type: 'pictures', icon: 'picture-o' },
-  { type: 'drawingLines', icon: 'arrows-h' },
-  { type: 'areaMeasurement', icon: 'square-o' },
-  { type: 'drawingPoints', icon: 'map-marker' },
-  { type: 'tracking', icon: 'bullseye' },
-  { type: 'gpx', icon: 'road' },
+  { type: 'plannedRoute', icon: <FaMapSigns /> },
+  { type: 'plannedRouteWithStops', icon: <FaMapSigns /> },
+  { type: 'objects', icon: <FaMapMarkerAlt /> },
+  { type: 'pictures', icon: <FaCamera /> },
+  { type: 'drawingLines', icon: <MdTimeline /> },
+  { type: 'areaMeasurement', icon: <FaDrawPolygon /> },
+  { type: 'drawingPoints', icon: <FaMapMarkerAlt /> },
+  { type: 'tracking', icon: <FaBullseye /> },
+  { type: 'gpx', icon: <FaRoad /> },
   // { type: 'changesets', icon: 'pencil', name: 'zmeny v mape' },
   // { type: 'mapDetils', icon: 'info', name: 'detaily v mape' },
 ] as const;
@@ -39,9 +50,9 @@ export function ExportGpxModal({ show }: Props): ReactElement {
   const initExportables = useSelector((state: RootState) => {
     const exportables: string[] = [];
 
-    if (state.search.selectedResult) {
-      // exportables.push('search');
-    }
+    // if (state.search.selectedResult) {
+    //   exportables.push('search');
+    // }
 
     if (state.routePlanner.alternatives.length) {
       exportables.push('plannedRoute');
@@ -166,8 +177,7 @@ export function ExportGpxModal({ show }: Props): ReactElement {
                 onChange={() => handleCheckboxChange(type)}
                 label={
                   <>
-                    {m?.gpxExport.export} <FontAwesomeIcon icon={icon} />{' '}
-                    {m?.gpxExport.what[type]}
+                    {m?.gpxExport.export} {icon} {m?.gpxExport.what[type]}
                   </>
                 }
               />

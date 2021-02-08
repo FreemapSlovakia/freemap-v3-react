@@ -6,7 +6,6 @@ import Card from 'react-bootstrap/Card';
 import { FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { DeleteButton } from './DeleteButton';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
 
 export function Selection({
   title,
@@ -15,7 +14,7 @@ export function Selection({
   children,
 }: {
   title?: string;
-  icon: string;
+  icon: ReactElement;
   deletable?: boolean;
   children?: ReactNode;
 }): ReactElement {
@@ -25,7 +24,7 @@ export function Selection({
     <Card className="fm-toolbar">
       <ButtonToolbar>
         <span className="align-self-center ml-1">
-          <FontAwesomeIcon icon={icon} />
+          {icon}
           <span className="d-none d-sm-inline"> {title}</span> {children}
           {deletable && <DeleteButton />}{' '}
           <Button

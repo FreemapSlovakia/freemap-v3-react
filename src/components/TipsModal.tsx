@@ -1,9 +1,8 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { tipsPreventNextTime, tipsShow } from 'fm3/actions/tipsActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import tips from 'fm3/tips/index.json';
+import { tips } from 'fm3/tips';
 import {
   FormEvent,
   ReactElement,
@@ -58,13 +57,9 @@ export function TipsModal({ show }: Props): ReactElement {
     [dispatch],
   );
 
-  const [, title, icon] = useMemo<
-    [unknown, string | undefined, string | undefined]
-  >(
+  const [, title, icon] = useMemo(
     () =>
-      tip
-        ? (tips.find(([key]) => key === tip) as [unknown, string, string])
-        : [undefined, undefined, undefined],
+      tips.find(([key]) => key === tip) ?? [undefined, undefined, undefined],
     [tip],
   );
 
@@ -81,7 +76,7 @@ export function TipsModal({ show }: Props): ReactElement {
           {'\u00A0 | \u00A0'}
           {title && icon ? (
             <>
-              <FontAwesomeIcon icon={icon} /> {title}
+              {icon} {title}
             </>
           ) : (
             m?.general.loading
@@ -99,6 +94,14 @@ export function TipsModal({ show }: Props): ReactElement {
         )}
       </Modal.Body>
       <Modal.Footer>
+        <FormCheck
+          className="w-100"
+          id="chk-prevent"
+          onChange={handleNextTimePrevent}
+          type="checkbox"
+          label={m?.tips.prevent}
+        />
+
         <Button
           variant="secondary"
           onClick={() => {
@@ -115,13 +118,6 @@ export function TipsModal({ show }: Props): ReactElement {
         >
           <FaChevronRight /> {m?.tips.next}
         </Button>
-        <FormCheck
-          id="chk-prevent"
-          inline
-          onChange={handleNextTimePrevent}
-          type="checkbox"
-          label={m?.tips.prevent}
-        />
         <Button variant="dark" onClick={close}>
           <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>

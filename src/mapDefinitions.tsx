@@ -17,8 +17,8 @@ import {
   FaTree,
   FaWikipediaW,
 } from 'react-icons/fa';
+import { GiPathDistance } from 'react-icons/gi';
 import { SiOpenstreetmap } from 'react-icons/si';
-import { FontAwesomeIcon } from './components/FontAwesomeIcon';
 import transparent1x1 from './images/1x1-transparent.png';
 import white1x1 from './images/1x1-white.png';
 
@@ -359,7 +359,7 @@ export const overlayLayers: OverlayLayerDef[] = [
   })),
   {
     type: 'g',
-    icon: <FontAwesomeIcon icon="!icon-gps-device" />,
+    icon: <GiPathDistance />,
     url: '//gps-{s}.tile.openstreetmap.org/lines/{z}/{x}/{y}.png',
     attribution: [OSM_MAP_ATTR, OSM_DATA_ATTR],
     minZoom: 0,

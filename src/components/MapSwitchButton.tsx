@@ -1,5 +1,4 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
@@ -17,6 +16,7 @@ import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
 import {
   FaExclamationTriangle,
+  FaFilter,
   FaRegCheckCircle,
   FaRegCheckSquare,
   FaRegCircle,
@@ -268,8 +268,7 @@ export function MapSwitchButton(): ReactElement {
                   {minZoom !== undefined && zoom < minZoom && (
                     <>
                       {' '}
-                      <FontAwesomeIcon
-                        icon="exclamation-triangle"
+                      <FaExclamationTriangle
                         title={m?.mapLayers.minZoomWarning(minZoom)}
                         className="text-warning"
                       />
@@ -278,8 +277,7 @@ export function MapSwitchButton(): ReactElement {
                   {type === 'I' && pictureFilterIsActive && (
                     <>
                       {' '}
-                      <FontAwesomeIcon
-                        icon="filter"
+                      <FaFilter
                         title={m?.mapLayers.photoFilterWarning}
                         className="text-warning"
                       />

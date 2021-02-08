@@ -47,7 +47,7 @@ import {
   getTrasformedParamsIfIsOldEmbeddedFreemapUrl,
 } from 'fm3/oldFreemapUtils';
 import refModals from 'fm3/refModals.json';
-import tips from 'fm3/tips/index.json';
+import { tips } from 'fm3/tips';
 import { getMapStateDiffFromUrl, getMapStateFromUrl } from 'fm3/urlMapUtils';
 import { Location } from 'history';
 import queryString, { ParsedQuery } from 'query-string';
@@ -61,8 +61,6 @@ import { MyStore, RootState } from './storeCreator';
 import { isTransportType } from './transportTypeDefs';
 import { LatLon } from './types/common';
 import { TrackedDevice } from './types/trackingTypes';
-
-const tipKeys = tips.map(([key]) => key);
 
 export const handleLocationChange = (
   store: MyStore,
@@ -373,7 +371,10 @@ export const handleLocationChange = (
     dispatch(setActiveModal(null));
   }
 
-  if (typeof query['tip'] === 'string' && tipKeys.includes(query['tip'])) {
+  if (
+    typeof query['tip'] === 'string' &&
+    is<typeof tips[number][0]>(query['tip'])
+  ) {
     if (
       getState().main.activeModal !== 'tips' ||
       getState().tips.tip !== query['tip']

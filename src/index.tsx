@@ -17,7 +17,6 @@ import { attachOsmLoginMessageHandler } from 'fm3/osmLoginMessageHandler';
 import { storage } from 'fm3/storage';
 import { createReduxStore } from 'fm3/storeCreator';
 import 'fm3/styles/index.scss';
-import 'font-awesome/scss/font-awesome.scss';
 import 'fullscreen-api-polyfill';
 import { render } from 'react-dom';
 import { IconContext } from 'react-icons/lib';

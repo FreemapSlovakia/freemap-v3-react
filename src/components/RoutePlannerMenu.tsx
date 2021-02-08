@@ -14,7 +14,6 @@ import {
   RoutingMode,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
@@ -140,7 +139,7 @@ export function RoutePlannerMenu(): ReactElement {
         title={
           activeTransportType ? (
             <>
-              <FontAwesomeIcon icon={activeTransportType.icon} />
+              {activeTransportType.icon}{' '}
               {['car', 'bikesharing'].includes(activeTransportType.type) && (
                 <FaMoneyBill />
               )}
@@ -165,8 +164,7 @@ export function RoutePlannerMenu(): ReactElement {
               title={m?.routePlanner.transportType[type] ?? '…'}
               active={transportType === type}
             >
-              <FontAwesomeIcon icon={icon} />
-              {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
+              {icon} {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
               {m?.routePlanner.transportType[type] ?? '…'}
               {development && (
                 <>
@@ -249,8 +247,7 @@ export function RoutePlannerMenu(): ReactElement {
                 setFromHomeLocation('start');
               }}
             >
-              <FontAwesomeIcon icon="home" />{' '}
-              {m?.routePlanner.point.home ?? '…'}
+              <FaHome /> {m?.routePlanner.point.home ?? '…'}
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>

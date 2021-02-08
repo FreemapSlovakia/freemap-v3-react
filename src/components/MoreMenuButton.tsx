@@ -17,10 +17,9 @@ import {
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
-import tips from 'fm3/tips/index.json';
+import { tips } from 'fm3/tips';
 import { toolDefinitions } from 'fm3/toolDefinitions';
 import {
   Fragment,
@@ -59,7 +58,9 @@ import {
   FaPaintBrush,
   FaPencilRuler,
   FaRegAddressCard,
+  FaRegCheckCircle,
   FaRegCheckSquare,
+  FaRegCircle,
   FaRegEye,
   FaRegFilePdf,
   FaRegLightbulb,
@@ -392,8 +393,7 @@ export function MoreMenuButton(): ReactElement {
                   href="http://wiki.freemap.sk/FileDownload"
                   target="_blank"
                 >
-                  <FontAwesomeIcon icon="!icon-gps-device" />{' '}
-                  {m?.more.mapExports}
+                  <FaMobileAlt /> {m?.more.mapExports}
                 </Dropdown.Item>
 
                 <Dropdown.Item
@@ -481,7 +481,7 @@ export function MoreMenuButton(): ReactElement {
                         onSelect={handleTipSelect}
                         eventKey={key}
                       >
-                        <FontAwesomeIcon icon={icon} /> {name}
+                        {icon} {name}
                       </Dropdown.Item>
                     ))}
                   </>
@@ -666,13 +666,11 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(trackingActions.setShowLine(false));
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={
-                      trackingDisplay === 'true,false'
-                        ? 'check-circle-o'
-                        : 'circle-o'
-                    }
-                  />{' '}
+                  {trackingDisplay === 'true,false' ? (
+                    <FaRegCheckCircle />
+                  ) : (
+                    <FaRegCircle />
+                  )}{' '}
                   {m?.tracking.visual.points}
                 </Dropdown.Item>
 
@@ -683,13 +681,11 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(trackingActions.setShowLine(true));
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={
-                      trackingDisplay === 'false,true'
-                        ? 'check-circle-o'
-                        : 'circle-o'
-                    }
-                  />{' '}
+                  {trackingDisplay === 'false,true' ? (
+                    <FaRegCheckCircle />
+                  ) : (
+                    <FaRegCircle />
+                  )}{' '}
                   {m?.tracking.visual.line}
                 </Dropdown.Item>
 
@@ -700,13 +696,11 @@ export function MoreMenuButton(): ReactElement {
                     dispatch(trackingActions.setShowLine(true));
                   }}
                 >
-                  <FontAwesomeIcon
-                    icon={
-                      trackingDisplay === 'true,true'
-                        ? 'check-circle-o'
-                        : 'circle-o'
-                    }
-                  />{' '}
+                  {trackingDisplay === 'true,true' ? (
+                    <FaRegCheckCircle />
+                  ) : (
+                    <FaRegCircle />
+                  )}{' '}
                   {m?.tracking.visual['line+points']}
                 </Dropdown.Item>
               </Fragment>

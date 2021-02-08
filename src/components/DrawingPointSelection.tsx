@@ -2,7 +2,7 @@ import { setActiveModal } from 'fm3/actions/mainActions';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
-import { FaTag } from 'react-icons/fa';
+import { FaMapMarkerAlt, FaTag } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 import { Selection } from './Selection';
 
@@ -12,7 +12,11 @@ export function DrawingPointSelection(): ReactElement {
   const m = useMessages();
 
   return (
-    <Selection icon="map-marker" title={m?.selections.drawPoints} deletable>
+    <Selection
+      icon={<FaMapMarkerAlt />}
+      title={m?.selections.drawPoints}
+      deletable
+    >
       <Button
         className="ml-1"
         variant="secondary"
