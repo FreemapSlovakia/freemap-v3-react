@@ -51,3 +51,18 @@ a.leaflet-control-layers-toggle {
     z-index: 200;
   }
 }
+
+.leaflet-marker-wiki-icon {
+  background-color: white;
+  border-radius: 9px;
+  border: 1px solid black;
+
+  & > * {
+    position: absolute;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 3px;
+    left: 0;
+    right: 0;
+  }
+}
