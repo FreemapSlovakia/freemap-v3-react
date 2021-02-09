@@ -33,9 +33,7 @@ export function MapsMenu(): ReactElement {
         title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
         disabled={!authenticated}
         onSelect={(id) => {
-          if (id !== null) {
-            dispatch(mapsLoad({ id: Number(id) }));
-          }
+          dispatch(mapsLoad({ id: id ? Number(id) : undefined }));
         }}
       >
         <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
