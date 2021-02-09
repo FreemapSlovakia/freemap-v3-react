@@ -40,7 +40,7 @@ export function RichMarker({
         popupAnchor: [0, -34],
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [cacheKey ?? 'default'],
+    [cacheKey ?? 'default', restProps.color, restProps.image, restProps.label],
   );
 
   return <Marker {...restProps} icon={icon} ref={markerRef} />;
