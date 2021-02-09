@@ -29,7 +29,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
   return (
     elevationChartActivePoint && (
       <RichMarker
-        faIcon={<FaInfo />}
+        faIcon={<FaInfo color="grey" />}
         color="grey"
         interactive={false}
         position={{

@@ -4,6 +4,7 @@ import {
 } from 'fm3/actions/changesetsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { RichMarker } from 'fm3/components/RichMarker';
+import { colors } from 'fm3/constants';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
@@ -65,7 +66,7 @@ export function ChangesetsResult(): ReactElement {
 
         return (
           <RichMarker
-            faIcon={<FaPencilAlt />}
+            faIcon={<FaPencilAlt color={colors.normal} />}
             opacity={opacity}
             key={changeset.id}
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}

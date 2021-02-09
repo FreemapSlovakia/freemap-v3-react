@@ -92,14 +92,8 @@ export function MarkerIcon({
               r="132"
               gradientTransform="matrix(0.9, 0, 0, 0.9, 13.8, 17.9)"
             >
-              <stop
-                offset="0"
-                style={{ stopColor: 'rgba(255, 255, 255, 1)' }}
-              />
-              <stop
-                offset="0.799"
-                style={{ stopColor: ' rgb(245, 245, 245)' }}
-              />
+              <stop offset="0" style={{ stopColor: '#fff' }} />
+              <stop offset="0.799" style={{ stopColor: ' #ddd' }} />
               <stop offset="1" style={{ stopColor: color }} />
             </radialGradient>
           </defs>
@@ -134,7 +128,7 @@ export function MarkerIcon({
             x={150}
             y={227.615}
             style={{
-              fill: 'rgba(0, 0, 0, 0.66)',
+              fill: 'rgba(0, 0, 0, 0.5)',
               fontSize: '184px',
               fontWeight: 'bold',
               whiteSpace: 'pre',

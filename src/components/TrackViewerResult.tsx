@@ -7,6 +7,7 @@ import { setTool } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { Hotline } from 'fm3/components/Hotline';
 import { RichMarker } from 'fm3/components/RichMarker';
+import { colors } from 'fm3/constants';
 import { distance, smoothElevations } from 'fm3/geoutils';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
@@ -237,7 +238,7 @@ export function TrackViewerResult(): ReactElement | null {
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <RichMarker
-          faIcon={<FaFlag />}
+          faIcon={<FaFlag color={colors.normal} />}
           key={`point-${i}-${interactive ? 'a' : 'b'}`}
           interactive={interactive}
           position={{
@@ -314,7 +315,7 @@ export function TrackViewerResult(): ReactElement | null {
       {infoLat && infoLon && infoDistanceKm && (
         <RichMarker
           key={`info-${interactive ? 'a' : 'b'}`}
-          faIcon={<FaInfo />}
+          faIcon={<FaInfo color="grey" />}
           color="grey"
           interactive={interactive}
           position={{ lat: infoLat, lng: infoLon }}
