@@ -16,7 +16,11 @@ interface Props extends MarkerProps, IconProps {
   autoOpenPopup?: boolean;
 }
 
-// It looks like the React-rendered content of this container was removed without using React. This is not supported and will cause errors. Instead, call ReactDOM.unmountComponentAtNode to empty a container.
+export const markerIconOptions = {
+  iconSize: [24, 40] as [number, number],
+  iconAnchor: [12, 37] as [number, number],
+  popupAnchor: [0, -34] as [number, number],
+};
 
 export function RichMarker({
   autoOpenPopup,
@@ -34,10 +38,8 @@ export function RichMarker({
   const icon = useMemo(
     () =>
       new MarkerLeafletIcon({
+        ...markerIconOptions,
         icon: <MarkerIcon {...restProps} />,
-        iconSize: [24, 40],
-        iconAnchor: [12, 37],
-        popupAnchor: [0, -34],
       }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [cacheKey ?? 'default', restProps.color, restProps.image, restProps.label],
@@ -148,6 +150,10 @@ export function MarkerIcon({
           <image x={74} y={84} width={160} height={160} xlinkHref={image} />
         )}
       </svg>
+
+      {/* {image && (
+        <img className="fa-icon-inside-leaflet-icon-holder" src={image} />
+      )} */}
 
       {faIcon && (
         <div className="fa-icon-inside-leaflet-icon-holder">{faIcon}</div>

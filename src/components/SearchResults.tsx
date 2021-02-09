@@ -4,10 +4,15 @@ import { LatLng, marker } from 'leaflet';
 import { ReactElement } from 'react';
 import { GeoJSON } from 'react-leaflet';
 import { useSelector } from 'react-redux';
-import { createMarkerIcon } from './RichMarker';
+import { MarkerIcon, markerIconOptions, MarkerLeafletIcon } from './RichMarker';
 
-const ptl = (_: Feature, latLng: LatLng) =>
-  marker(latLng, { icon: createMarkerIcon() });
+const pointToLayer = (_: Feature, latLng: LatLng) =>
+  marker(latLng, {
+    icon: new MarkerLeafletIcon({
+      ...markerIconOptions,
+      icon: <MarkerIcon />,
+    }),
+  });
 
 export function SearchResults(): ReactElement | null {
   const selectedResult = useSelector(
@@ -20,7 +25,7 @@ export function SearchResults(): ReactElement | null {
       key={selectedResult.id}
       data={selectedResult.geojson}
       style={{ weight: 5 }}
-      pointToLayer={ptl}
+      pointToLayer={pointToLayer}
     />
   );
 }
