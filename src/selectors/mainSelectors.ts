@@ -55,19 +55,20 @@ export const mouseCursorSelector = createSelector(
   routePlannerPickModeSelector,
   showGalleryPickerSelector,
   (selectingHomeLocation, tool, routePlannerPickMode, showGalleryPicker) => {
-    if (selectingHomeLocation) {
+    if (selectingHomeLocation || showGalleryPicker) {
       return 'crosshair';
     }
+
     switch (tool) {
       case 'draw-lines':
       case 'draw-polygons':
       case 'map-details':
       case 'draw-points':
-        return routePlannerPickMode ? 'auto' : 'crosshair';
+        return 'crosshair';
       case 'route-planner':
-        return !routePlannerPickMode ? 'auto' : 'crosshair';
+        return routePlannerPickMode ? 'crosshair' : 'auto';
       default:
-        return showGalleryPicker ? 'crosshair' : 'auto';
+        return 'auto';
     }
   },
 );
