@@ -1,9 +1,9 @@
-import { selectFeature } from 'fm3/actions/mainActions';
+import { setTool } from 'fm3/actions/mainActions';
 import { routePlannerSetTransportType } from 'fm3/actions/routePlannerActions';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 
 export const routePlannerSetupTransportTypeProcessor: Processor = {
-  actionCreator: selectFeature,
+  actionCreator: setTool,
   handle: async ({ dispatch, getState }) => {
     const {
       main: { tool },
