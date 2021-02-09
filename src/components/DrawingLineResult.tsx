@@ -52,7 +52,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       index === state.main.selection?.id,
   );
 
-  const interactive = useSelector(selectingModeSelector) || selected;
+  const interactive = useSelector(selectingModeSelector);
 
   const { points } = line;
 
