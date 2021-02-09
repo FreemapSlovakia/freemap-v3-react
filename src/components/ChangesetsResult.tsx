@@ -8,6 +8,7 @@ import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
+import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
@@ -64,10 +65,9 @@ export function ChangesetsResult(): ReactElement {
 
         return (
           <RichMarker
-            faIcon="pencil"
+            faIcon={<FaPencilAlt />}
             opacity={opacity}
             key={changeset.id}
-            faIconLeftPadding="2px"
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
             eventHandlers={{
               click() {

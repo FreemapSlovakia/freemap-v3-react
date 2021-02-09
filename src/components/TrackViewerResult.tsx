@@ -12,6 +12,7 @@ import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { Point as LPoint } from 'leaflet';
 import { Fragment, ReactElement, useState } from 'react';
+import { FaFlag, FaInfo, FaPlay, FaStop } from 'react-icons/fa';
 import { Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -236,7 +237,7 @@ export function TrackViewerResult(): ReactElement | null {
 
       {getFeatures('Point').map(({ geometry, properties }, i) => (
         <RichMarker
-          faIcon="flag"
+          faIcon={<FaFlag />}
           key={`point-${i}-${interactive ? 'a' : 'b'}`}
           interactive={interactive}
           position={{
@@ -262,7 +263,7 @@ export function TrackViewerResult(): ReactElement | null {
 
       {startPoints.map((p, i) => (
         <RichMarker
-          faIcon="play"
+          faIcon={<FaPlay color="#409a40" />}
           key={`sp-${i}-${interactive ? 'a' : 'b'}`}
           color="#409a40"
           interactive={interactive}
@@ -286,7 +287,7 @@ export function TrackViewerResult(): ReactElement | null {
 
       {finishPoints.map((p, i) => (
         <RichMarker
-          faIcon="stop"
+          faIcon={<FaStop color="#d9534f" />}
           key={`fp-${i}-${interactive ? 'a' : 'b'}`}
           color="#d9534f"
           interactive={interactive}
@@ -313,7 +314,7 @@ export function TrackViewerResult(): ReactElement | null {
       {infoLat && infoLon && infoDistanceKm && (
         <RichMarker
           key={`info-${interactive ? 'a' : 'b'}`}
-          faIcon="info"
+          faIcon={<FaInfo />}
           color="grey"
           interactive={interactive}
           position={{ lat: infoLat, lng: infoLon }}

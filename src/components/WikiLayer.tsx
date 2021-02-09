@@ -19,10 +19,6 @@ class WikiIcon extends Icon {
     (this as any)._setIconStyles(div, 'icon');
 
     if (WikiIcon.template) {
-      if (reuse) {
-        div.innerHTML = ''; // never saw that
-      }
-
       div.appendChild(WikiIcon.template.cloneNode());
     } else {
       render(<FaWikipediaW />, div);

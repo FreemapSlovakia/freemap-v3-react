@@ -39,6 +39,7 @@ import {
   useRef,
   useState,
 } from 'react';
+import { FaPlay, FaStop } from 'react-icons/fa';
 import {
   CircleMarker,
   Marker,
@@ -532,9 +533,8 @@ export function RoutePlannerResult(): ReactElement {
             'start-' + (interactive ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
           }
           interactive={interactive1}
-          faIcon="play"
+          faIcon={<FaPlay color="#409a40" />}
           zIndexOffset={10}
-          faIconLeftPadding="2px"
           color="#409a40"
           draggable={interactive && !embed}
           position={{ lat: start.lat, lng: start.lon }}
@@ -575,7 +575,7 @@ export function RoutePlannerResult(): ReactElement {
             'finish-' + (interactive ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
           }
           interactive={interactive1}
-          faIcon={mode === 'roundtrip' ? undefined : 'stop'}
+          faIcon={mode === 'roundtrip' ? undefined : <FaStop color="#d9534f" />}
           label={
             mode === 'roundtrip'
               ? waypoints[waypoints.length - 1]?.waypoint_index

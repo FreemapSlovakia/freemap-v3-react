@@ -3,7 +3,6 @@ import {
   drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
-import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
@@ -11,6 +10,7 @@ import { DragEndEvent, Point } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
+import { RichMarker } from './RichMarker';
 
 const embed = window.self !== window.top;
 
@@ -75,7 +75,6 @@ export function DrawingPointsResult(): ReactElement {
         return (
           <RichMarker
             key={`${change}-${i}-${interactive ? 'a' : 'b'}`}
-            faIconLeftPadding="2px"
             eventHandlers={{
               dragstart: onSelects[i],
               dragend: handleDragEnd,

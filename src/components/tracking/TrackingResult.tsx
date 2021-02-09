@@ -9,6 +9,7 @@ import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
+import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -170,7 +171,13 @@ export function TrackingResult(): ReactElement {
                   eventHandlers={{
                     click: handleClick,
                   }}
-                  faIcon={track.id === activeTrackId ? 'user' : 'user-o'}
+                  faIcon={
+                    track.id === activeTrackId ? (
+                      <FaUser color={color} />
+                    ) : (
+                      <FaRegUser color={color} />
+                    )
+                  }
                 >
                   <Tooltip direction="top" offset={[0, -36]} permanent>
                     {tooltipText(df, nf, tp, track.label)}
