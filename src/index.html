@@ -53,7 +53,10 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="application-name" content="Freemap Slovakia" />
 
-    <%= htmlWebpackPlugin.tags.headTags %>
+    <link rel="icon" href="/logo.jpg" />
+
+    <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
+    'script').join('') %>
 
     <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
 
