@@ -67,14 +67,16 @@ const initialState: MainState = {
 
 export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(setTool, (state, action) => {
-    return {
-      ...state,
-      tool: action.payload,
-      selection:
-        action.payload === state.tool || action.payload === null
-          ? state.selection
-          : null,
-    };
+    return embed
+      ? state
+      : {
+          ...state,
+          tool: action.payload,
+          selection:
+            action.payload === state.tool || action.payload === null
+              ? state.selection
+              : null,
+        };
   })
   .handleAction(clearMap, (state) => {
     return {
