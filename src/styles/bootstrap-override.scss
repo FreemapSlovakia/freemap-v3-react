@@ -21,11 +21,9 @@
   z-index: 10000;
 }
 
-@media (min-width: 768px) {
-  .dropdown-long .dropdown-menu {
-    overflow-x: auto;
-    height: calc(100vh - 64px);
-  }
+.dropdown-long .dropdown-menu {
+  overflow-x: auto;
+  height: calc(100vh - 120px);
 }
 
 .accordion > .card > .card-header {
