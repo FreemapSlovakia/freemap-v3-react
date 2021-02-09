@@ -118,9 +118,9 @@ export function RoutePlannerResult(): ReactElement {
 
   const tool = useSelector((state: RootState) => state.main.tool);
 
-  const interactive = tool === 'route-planner';
+  const interactive0 = tool === 'route-planner'; // draggable
 
-  const interactive1 = useSelector(selectingModeSelector);
+  const interactive1 = useSelector(selectingModeSelector) || interactive0; // markers, lines
 
   const [dragging, setDragging] = useState(false);
 
@@ -386,9 +386,10 @@ export function RoutePlannerResult(): ReactElement {
 
   const handlePolyMouseMove = useCallback(
     (e: LeafletMouseEvent, segment: number, alt: number) => {
-      if (draggingRef.current) {
+      if (!interactive0 || draggingRef.current) {
         return;
       }
+
       if (tRef.current) {
         clearTimeout(tRef.current);
         tRef.current = undefined;
@@ -399,7 +400,7 @@ export function RoutePlannerResult(): ReactElement {
       setDragSegment(segment);
       setDragAlt(alt);
     },
-    [],
+    [interactive0],
   );
 
   const resetOnTimeout = useCallback(() => {
@@ -530,13 +531,13 @@ export function RoutePlannerResult(): ReactElement {
       start && (
         <RichMarker
           key={
-            'start-' + (interactive ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
+            'start-' + (interactive0 ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
           }
           interactive={interactive1}
           faIcon={<FaPlay color="#409a40" />}
           zIndexOffset={10}
           color="#409a40"
-          draggable={interactive && !embed}
+          draggable={interactive0 && !embed}
           position={{ lat: start.lat, lng: start.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -554,7 +555,7 @@ export function RoutePlannerResult(): ReactElement {
     [
       start,
       interactive1,
-      interactive,
+      interactive0,
       handleDragStart,
       handleStartPointClick,
       handleStartPointMouseOver,
@@ -572,7 +573,7 @@ export function RoutePlannerResult(): ReactElement {
       finish && (
         <RichMarker
           key={
-            'finish-' + (interactive ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
+            'finish-' + (interactive0 ? 'a' : 'b') + (interactive1 ? 'a' : 'b')
           }
           interactive={interactive1}
           faIcon={mode === 'roundtrip' ? undefined : <FaStop color="#d9534f" />}
@@ -583,7 +584,7 @@ export function RoutePlannerResult(): ReactElement {
           }
           color={mode !== 'roundtrip' ? '#d9534f' : undefined}
           zIndexOffset={10}
-          draggable={interactive && !embed}
+          draggable={interactive0 && !embed}
           position={{ lat: finish.lat, lng: finish.lon }}
           eventHandlers={{
             dragstart: handleDragStart,
@@ -615,7 +616,7 @@ export function RoutePlannerResult(): ReactElement {
       handleEndPointMouseOut,
       handleEndPointMouseOver,
       handleRouteMarkerDragEnd,
-      interactive,
+      interactive0,
       interactive1,
       midpoints.length,
       mode,
@@ -731,7 +732,7 @@ export function RoutePlannerResult(): ReactElement {
       midpoints.map(({ lat, lon }, i) => (
         <RichMarker
           interactive={interactive1}
-          draggable={interactive && !embed}
+          draggable={interactive0 && !embed}
           eventHandlers={
             embed
               ? {}
@@ -749,7 +750,7 @@ export function RoutePlannerResult(): ReactElement {
                   },
                 }
           }
-          key={`midpoint-${i}-${interactive ? 'a' : 'b'}-${
+          key={`midpoint-${i}-${interactive0 ? 'a' : 'b'}-${
             interactive1 ? 'a' : 'b'
           }`}
           zIndexOffset={9}
@@ -766,7 +767,7 @@ export function RoutePlannerResult(): ReactElement {
     [
       midpoints,
       interactive1,
-      interactive,
+      interactive0,
       handleDragStart,
       mode,
       waypoints,
@@ -782,20 +783,23 @@ export function RoutePlannerResult(): ReactElement {
     <>
       {startMarker}
 
-      {!embed && interactive && dragLat !== undefined && dragLon !== undefined && (
-        <Marker
-          draggable={!embed}
-          icon={circularIcon}
-          eventHandlers={{
-            dragstart: handleDragStart,
-            dragend: handleFutureDragEnd,
-            mouseover: handleFutureMouseOver,
-            mouseout: handleFutureMouseOut,
-            click: handleFutureClick,
-          }}
-          position={{ lat: dragLat, lng: dragLon }}
-        />
-      )}
+      {!embed &&
+        interactive0 &&
+        dragLat !== undefined &&
+        dragLon !== undefined && (
+          <Marker
+            draggable={!embed}
+            icon={circularIcon}
+            eventHandlers={{
+              dragstart: handleDragStart,
+              dragend: handleFutureDragEnd,
+              mouseover: handleFutureMouseOver,
+              mouseout: handleFutureMouseOut,
+              click: handleFutureClick,
+            }}
+            position={{ lat: dragLat, lng: dragLon }}
+          />
+        )}
 
       {midpointElements}
 
