@@ -21,25 +21,27 @@ export function Selection({
   const dispatch = useDispatch();
 
   return (
-    <Card className="fm-toolbar">
-      <ButtonToolbar>
-        <span className="align-self-center ml-1">
-          {icon}
-          <span className="d-none d-sm-inline"> {title}</span> {children}
-          {deletable && <DeleteButton />}{' '}
-          <Button
-            variant="light"
-            // size="sm"
-            onClick={() => dispatch(selectFeature(null))}
-            title={
-              // TODO m?.general.close +
-              '[Esc]'
-            }
-          >
-            <FaTimes />
-          </Button>
-        </span>
-      </ButtonToolbar>
-    </Card>
+    <div className="fm-ib-scroller">
+      <Card className="fm-toolbar">
+        <ButtonToolbar>
+          <span className="align-self-center ml-1">
+            {icon}
+            <span className="d-none d-sm-inline"> {title}</span> {children}
+            {deletable && <DeleteButton />}{' '}
+            <Button
+              variant="light"
+              // size="sm"
+              onClick={() => dispatch(selectFeature(null))}
+              title={
+                // TODO m?.general.close +
+                '[Esc]'
+              }
+            >
+              <FaTimes />
+            </Button>
+          </span>
+        </ButtonToolbar>
+      </Card>
+    </div>
   );
 }

@@ -7,7 +7,6 @@ import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useState } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import Form from 'react-bootstrap/Form';
 import InputGroup from 'react-bootstrap/InputGroup';
 import { FaEraser, FaSync } from 'react-icons/fa';
@@ -37,29 +36,35 @@ export function ChangesetsMenu(): ReactElement {
 
   return (
     <>
-      <DropdownButton
-        variant="secondary"
-        id="days"
+      <Dropdown
         onSelect={(d) => {
           if (canSearchWithThisAmountOfDays(Number(d))) {
             dispatch(changesetsSetDays(Number(d)));
           }
         }}
-        title={m?.changesets.olderThanFull({ days })}
       >
-        {[3, 7, 14, 30].map((d) => (
-          <Dropdown.Item
-            key={d}
-            eventKey={String(d)}
-            disabled={!canSearchWithThisAmountOfDays(d)}
-            active={d === days}
-          >
-            {m?.changesets.olderThan({ days: d })}
-          </Dropdown.Item>
-        ))}
-      </DropdownButton>
+        <Dropdown.Toggle variant="secondary" id="days">
+          {m?.changesets.olderThanFull({ days })}
+        </Dropdown.Toggle>
+        <Dropdown.Menu
+          popperConfig={{
+            strategy: 'fixed',
+          }}
+        >
+          {[3, 7, 14, 30].map((d) => (
+            <Dropdown.Item
+              key={d}
+              eventKey={String(d)}
+              disabled={!canSearchWithThisAmountOfDays(d)}
+              active={d === days}
+            >
+              {m?.changesets.olderThan({ days: d })}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
       <Form
-        className="ml-1 d-flex"
+        className="ml-1 d-flex flex-nowrap"
         inline
         onSubmit={(e) => {
           e.preventDefault();
@@ -67,7 +72,7 @@ export function ChangesetsMenu(): ReactElement {
           dispatch(changesetsSetAuthorName(authorName));
         }}
       >
-        <InputGroup>
+        <InputGroup className="flex-nowrap">
           <Form.Control
             type="text"
             placeholder={m?.changesets.allAuthors}

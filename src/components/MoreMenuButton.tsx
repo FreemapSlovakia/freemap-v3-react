@@ -245,6 +245,7 @@ export function MoreMenuButton(): ReactElement {
         onClick={handleButtonClick}
         title={m?.more.more}
         variant="primary"
+        className="mr-1"
       >
         <FaBars />
       </Button>

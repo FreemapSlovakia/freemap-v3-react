@@ -21,7 +21,6 @@ import { MouseEvent, ReactElement, useCallback, useMemo } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import FormCheck from 'react-bootstrap/FormCheck';
 import {
   FaBullseye,
@@ -127,17 +126,17 @@ export function RoutePlannerMenu(): ReactElement {
 
   return (
     <>
-      <DropdownButton
+      <Dropdown
         className="ml-1"
-        variant="secondary"
         id="transport-type"
         onSelect={(transportType) => {
           dispatch(
             routePlannerSetTransportType(transportType as TransportType),
           );
         }}
-        title={
-          activeTransportType ? (
+      >
+        <Dropdown.Toggle variant="secondary">
+          {activeTransportType ? (
             <>
               {activeTransportType.icon}{' '}
               {['car', 'bikesharing'].includes(activeTransportType.type) && (
@@ -152,72 +151,87 @@ export function RoutePlannerMenu(): ReactElement {
             </>
           ) : (
             ''
-          )
-        }
-      >
-        {transportTypeDefs
-          .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
-          .map(({ type, icon, development }) => (
-            <Dropdown.Item
-              eventKey={type}
-              key={type}
-              title={m?.routePlanner.transportType[type] ?? '…'}
-              active={transportType === type}
-            >
-              {icon} {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
-              {m?.routePlanner.transportType[type] ?? '…'}
-              {development && (
-                <>
-                  {' '}
-                  <FaFlask
-                    title={m?.routePlanner.development ?? '…'}
-                    className="text-warning"
-                  />
-                </>
-              )}
-              {type === 'bikesharing' && (
-                <>
-                  {' '}
-                  <a
-                    href="http://routing.epsilon.sk/bikesharing.php"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    onClick={stopPropagation}
-                  >
-                    <FaInfoCircle />
-                  </a>
-                </>
-              )}
-            </Dropdown.Item>
-          ))}
-      </DropdownButton>
-      <DropdownButton
+          )}{' '}
+        </Dropdown.Toggle>
+        <Dropdown.Menu
+          popperConfig={{
+            strategy: 'fixed',
+          }}
+        >
+          {transportTypeDefs
+            .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
+            .map(({ type, icon, development }) => (
+              <Dropdown.Item
+                as="button"
+                eventKey={type}
+                key={type}
+                title={m?.routePlanner.transportType[type] ?? '…'}
+                active={transportType === type}
+              >
+                {icon}{' '}
+                {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
+                {m?.routePlanner.transportType[type] ?? '…'}
+                {development && (
+                  <>
+                    {' '}
+                    <FaFlask
+                      title={m?.routePlanner.development ?? '…'}
+                      className="text-warning"
+                    />
+                  </>
+                )}
+                {type === 'bikesharing' && (
+                  <>
+                    {' '}
+                    <a
+                      href="http://routing.epsilon.sk/bikesharing.php"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={stopPropagation}
+                    >
+                      <FaInfoCircle />
+                    </a>
+                  </>
+                )}
+              </Dropdown.Item>
+            ))}
+        </Dropdown.Menu>
+      </Dropdown>
+      <Dropdown
         className="ml-1"
-        variant="secondary"
-        id="mode"
         onSelect={(mode) => {
           dispatch(routePlannerSetMode(mode as RoutingMode));
         }}
-        title={m?.routePlanner.mode[mode] ?? '…'}
-        disabled={transportType === 'imhd' || transportType === 'bikesharing'}
       >
-        {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
-          <Dropdown.Item
-            eventKey={mode1}
-            key={mode1}
-            title={m?.routePlanner.mode[mode1] ?? '…'}
-            active={mode === mode1}
-          >
-            {m?.routePlanner.mode[mode1] ?? '…'}
-          </Dropdown.Item>
-        ))}
-      </DropdownButton>
-      {'\xa0'}
-      <ButtonGroup>
+        <Dropdown.Toggle
+          id="mode"
+          variant="secondary"
+          disabled={transportType === 'imhd' || transportType === 'bikesharing'}
+        >
+          {m?.routePlanner.mode[mode] ?? '…'}
+        </Dropdown.Toggle>
+        <Dropdown.Menu
+          popperConfig={{
+            strategy: 'fixed',
+          }}
+        >
+          {(['route', 'trip', 'roundtrip'] as const).map((mode1) => (
+            <Dropdown.Item
+              eventKey={mode1}
+              key={mode1}
+              title={m?.routePlanner.mode[mode1] ?? '…'}
+              active={mode === mode1}
+            >
+              {m?.routePlanner.mode[mode1] ?? '…'}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
+      <ButtonGroup className="ml-1">
         <Dropdown
           as={ButtonGroup}
           id="set-start-dropdown"
-          onClick={() => {
+          onSelect={() => {
             dispatch(routePlannerSetPickMode('start'));
           }}
         >
@@ -231,7 +245,11 @@ export function RoutePlannerMenu(): ReactElement {
               {m?.routePlanner.start ?? '…'}
             </span>
           </Dropdown.Toggle>
-          <Dropdown.Menu>
+          <Dropdown.Menu
+            popperConfig={{
+              strategy: 'fixed',
+            }}
+          >
             <Dropdown.Item>
               <FaMapMarkerAlt /> {m?.routePlanner.point.pick ?? '…'}
             </Dropdown.Item>
@@ -270,7 +288,7 @@ export function RoutePlannerMenu(): ReactElement {
               variant="secondary"
               className={pickPointMode === 'finish' ? 'active' : ''}
               id="set-finish-dropdown"
-              onClick={() => {
+              onSelect={() => {
                 dispatch(routePlannerSetPickMode('finish'));
               }}
             >
@@ -284,7 +302,11 @@ export function RoutePlannerMenu(): ReactElement {
                   {m?.routePlanner.finish ?? '…'}
                 </span>
               </Dropdown.Toggle>
-              <Dropdown.Menu>
+              <Dropdown.Menu
+                popperConfig={{
+                  strategy: 'fixed',
+                }}
+              >
                 <Dropdown.Item>
                   <FaMapMarkerAlt />
                   {m?.routePlanner.point.pick ?? '…'}
@@ -309,60 +331,7 @@ export function RoutePlannerMenu(): ReactElement {
           </>
         )}
       </ButtonGroup>
-      {/* {alternatives.length > 1 && (
-        <DropdownButton
-          className="ml-1"
-          variant="secondary"
-          id="transport-type"
-          onSelect={(index) => {
-            if (index !== null) {
-              dispatch(routePlannerSetActiveAlternativeIndex(Number(index)));
-            }
-          }}
-          title={
-            transportType === 'imhd' &&
-            activeAlternative.extra &&
-            activeAlternative.extra.price
-              ? imhdSummary(m, language, activeAlternative.extra)
-              : m?.routePlanner.summary({
-                  distance: nf.format(activeAlternative.distance / 1000),
-                  h: Math.floor(
-                    Math.round(activeAlternative.duration / 60) / 60,
-                  ),
-                  m: Math.round(activeAlternative.duration / 60) % 60,
-                }) ?? '…'
-          }
-        >
-          {alternatives.map(({ duration, distance, extra }, i) => (
-            <Dropdown.Item
-              eventKey={String(i)}
-              key={i}
-              active={i === activeAlternativeIndex}
-            >
-              {transportType === 'imhd' && extra?.price
-                ? imhdSummary(m, language, extra)
-                : m?.routePlanner.summary({
-                    distance: nf.format(distance / 1000),
-                    h: Math.floor(Math.round(duration / 60) / 60),
-                    m: Math.round(duration / 60) % 60,
-                  }) ?? '…'}
-            </Dropdown.Item>
-          ))}
-        </DropdownButton>
-      )} */}
-      {/* ' '}
-      <Button
-        className="ml-1"
-        variant="secondary"
-        onClick={() => {
-          dispatch(routePlannerToggleItineraryVisibility());
-        }}
-        active={itineraryIsVisible}
-        title="Itinerár"
-      >
-        <FontAwesomeIcon icon="list-ol" /><span className="d-none d-md-inline"> Itinerár</span>
-      </Button>
-      */}{' '}
+
       {!!routeFound && (
         <>
           <Button

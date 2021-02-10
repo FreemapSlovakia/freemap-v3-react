@@ -373,52 +373,55 @@ export function Main(): ReactElement {
           </div>
         )} */}
         <div className="menus">
-          <Card className="fm-toolbar">
-            <Button
-              id="freemap-logo"
-              className={progress ? 'in-progress' : 'idle'}
-              onClick={handleLogoClick}
-            />
-            {!embed && showMenu && (
-              <>
-                <MoreMenuButton />{' '}
-              </>
-            )}
-            {(!embed || embedFeatures.includes('search')) && (
-              <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
-            )}
-          </Card>
+          <div className="fm-ib-scroller">
+            <Card className="fm-toolbar">
+              <Button
+                id="freemap-logo"
+                className={progress ? 'in-progress' : 'idle'}
+                onClick={handleLogoClick}
+              />
+              {!embed && showMenu && <MoreMenuButton />}
+              {(!embed || embedFeatures.includes('search')) && (
+                <SearchMenu
+                  hidden={!showMenu}
+                  preventShortcut={!!activeModal}
+                />
+              )}
+            </Card>
+          </div>
 
           {/* tool menus */}
           {showMenu && tool && (
-            <Card className="fm-toolbar">
-              <ButtonToolbar>
-                {toolDef && (
-                  <span className="align-self-center ml-1 mr-2">
-                    {toolDef.icon}
-                    <span className="d-none d-sm-inline">
-                      {' '}
-                      {m?.tools[toolDef.msgKey]}
+            <div className="fm-ib-scroller">
+              <Card className="fm-toolbar">
+                <ButtonToolbar>
+                  {toolDef && (
+                    <span className="align-self-center ml-1 mr-2">
+                      {toolDef.icon}
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.tools[toolDef.msgKey]}
+                      </span>
                     </span>
-                  </span>
-                )}
-                {tool === 'objects' && <ObjectsMenu />}
-                {tool === 'route-planner' && <RoutePlannerMenu />}
-                {tool === 'track-viewer' && <TrackViewerMenu />}
-                {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'map-details' && <MapDetailsMenu />}
-                {tool === 'maps' && <MapsMenu />}
-                {'\xa0'}
-                <Button
-                  variant="light"
-                  // size="sm"
-                  onClick={() => dispatch(setTool(null))}
-                  title={m?.general.close + ' [Esc]'}
-                >
-                  <FaTimes />
-                </Button>
-              </ButtonToolbar>
-            </Card>
+                  )}
+                  <Button
+                    className="ml-1"
+                    variant="light"
+                    // size="sm"
+                    onClick={() => dispatch(setTool(null))}
+                    title={m?.general.close + ' [Esc]'}
+                  >
+                    <FaTimes />
+                  </Button>
+                  {tool === 'objects' && <ObjectsMenu />}
+                  {tool === 'route-planner' && <RoutePlannerMenu />}
+                  {tool === 'track-viewer' && <TrackViewerMenu />}
+                  {tool === 'changesets' && <ChangesetsMenu />}
+                  {tool === 'map-details' && <MapDetailsMenu />}
+                  {tool === 'maps' && <MapsMenu />}
+                </ButtonToolbar>
+              </Card>
+            </div>
           )}
 
           {/* selections */}
@@ -434,8 +437,10 @@ export function Main(): ReactElement {
       </div>
 
       <div className="fm-type-zoom-control">
+        <div>
+          <MapControls />
+        </div>
         <Copyright />
-        <MapControls />
       </div>
 
       <div

@@ -17,7 +17,6 @@ import 'fm3/styles/trackViewer.scss';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import {
   FaChartArea,
   FaCloudUploadAlt,
@@ -88,10 +87,8 @@ export function TrackViewerMenu(): ReactElement {
         </Button>
       )}
       {trackGeojsonIsSuitableForElevationChart && (
-        <DropdownButton
+        <Dropdown
           className="ml-1"
-          variant="secondary"
-          id="colorizing_mode"
           onSelect={(approach) => {
             dispatch(
               trackViewerColorizeTrackBy(
@@ -99,23 +96,27 @@ export function TrackViewerMenu(): ReactElement {
               ),
             );
           }}
-          title={
-            <>
-              <FaPaintBrush />{' '}
-              {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
-            </>
-          }
         >
-          {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
-            <Dropdown.Item
-              eventKey={mode}
-              key={mode || 'none'}
-              active={mode === colorizeTrackBy}
-            >
-              {m?.trackViewer.colorizingMode[mode ?? 'none']}
-            </Dropdown.Item>
-          ))}
-        </DropdownButton>
+          <Dropdown.Toggle id="colorizing_mode" variant="secondary">
+            <FaPaintBrush />{' '}
+            {m?.trackViewer.colorizingMode[colorizeTrackBy ?? 'none']}
+          </Dropdown.Toggle>
+          <Dropdown.Menu
+            popperConfig={{
+              strategy: 'fixed',
+            }}
+          >
+            {([undefined, 'elevation', 'steepness'] as const).map((mode) => (
+              <Dropdown.Item
+                eventKey={mode}
+                key={mode || 'none'}
+                active={mode === colorizeTrackBy}
+              >
+                {m?.trackViewer.colorizingMode[mode ?? 'none']}
+              </Dropdown.Item>
+            ))}
+          </Dropdown.Menu>
+        </Dropdown>
       )}
       {trackGeojsonIsSuitableForElevationChart && (
         <Button

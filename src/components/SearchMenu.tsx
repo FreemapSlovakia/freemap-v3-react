@@ -237,8 +237,12 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
   };
 
   return (
-    <span style={{ display: hidden ? 'none' : 'inline' }}>
-      <Form inline onSubmit={handleSearch}>
+    <>
+      <Form
+        inline
+        onSubmit={handleSearch}
+        style={{ display: hidden ? 'none' : '' }}
+      >
         <Dropdown
           as={ButtonGroup}
           // className="dropdown-long"
@@ -247,7 +251,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           onToggle={handleToggle}
         >
           <Dropdown.Toggle as={HideArrow}>
-            <InputGroup>
+            <InputGroup className="flex-nowrap">
               <FormControl
                 className="fm-search-input"
                 onChange={handleChange}
@@ -278,7 +282,13 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               </InputGroup.Append>
             </InputGroup>
           </Dropdown.Toggle>
-          <Dropdown.Menu key={searchSeq} className="fm-search-dropdown">
+          <Dropdown.Menu
+            key={searchSeq}
+            className="fm-search-dropdown"
+            popperConfig={{
+              strategy: 'fixed',
+            }}
+          >
             {results.map((result) => (
               <Dropdown.Item
                 key={result.id}
@@ -299,9 +309,9 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
             ))}
           </Dropdown.Menu>
         </Dropdown>
-      </Form>{' '}
-      {selectedResult && !embed && (
-        <ButtonGroup>
+      </Form>
+      {selectedResult && !embed && !hidden && (
+        <ButtonGroup className="ml-1">
           <Button
             variant="secondary"
             title={m?.search.routeFrom}
@@ -340,6 +350,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
           </Button>
         </ButtonGroup>
       )}
-    </span>
+    </>
   );
 }

@@ -10,7 +10,6 @@ import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
 import { FaPencilAlt, FaPlus, FaSave, FaTrash } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -27,23 +26,32 @@ export function MapsMenu(): ReactElement {
 
   return (
     <>
-      <DropdownButton
-        id="maps-dropdown"
-        variant="secondary"
-        title={maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
-        disabled={!authenticated}
+      <Dropdown
         onSelect={(id) => {
           dispatch(mapsLoad({ id: id ? Number(id) : undefined }));
         }}
       >
-        <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
+        <Dropdown.Toggle
+          id="maps-dropdown"
+          variant="secondary"
+          disabled={!authenticated}
+        >
+          {maps.find((map) => map.id === id)?.name ?? m?.maps.noMap}
+        </Dropdown.Toggle>
+        <Dropdown.Menu
+          popperConfig={{
+            strategy: 'fixed',
+          }}
+        >
+          <Dropdown.Item eventKey={undefined}>{m?.maps.noMap}</Dropdown.Item>
 
-        {maps.map((map) => (
-          <Dropdown.Item key={map.id} eventKey={String(map.id)}>
-            {map.name}
-          </Dropdown.Item>
-        ))}
-      </DropdownButton>
+          {maps.map((map) => (
+            <Dropdown.Item key={map.id} eventKey={String(map.id)}>
+              {map.name}
+            </Dropdown.Item>
+          ))}
+        </Dropdown.Menu>
+      </Dropdown>
       {authenticated && id !== undefined && (
         <Button
           className="ml-1"
