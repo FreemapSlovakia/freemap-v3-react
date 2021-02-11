@@ -826,7 +826,7 @@ const en: Messages = {
       199: 'Cricket nets',
       200: 'Croquet',
       201: 'Cycling',
-      202: 'Diving',
+      202: 'Scuba diving',
       203: 'Dog racing',
       204: 'Horse riding',
       205: 'Soccer',
