@@ -1,5 +1,4 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
@@ -15,6 +14,15 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
 import Overlay from 'react-bootstrap/Overlay';
 import Popover from 'react-bootstrap/Popover';
+import {
+  FaExclamationTriangle,
+  FaFilter,
+  FaRegCheckCircle,
+  FaRegCheckSquare,
+  FaRegCircle,
+  FaRegMap,
+  FaRegSquare,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { is } from 'typescript-is';
 import useMedia from 'use-media';
@@ -25,7 +33,7 @@ function getKbdShortcut(key?: [string, boolean]) {
       <>
         {' '}
         <kbd>
-          {key[1] ? 'shift + ' : ''}
+          {key[1] ? '⇧' : ''}
           {key[0].replace(/Key|Digit/, '').toLowerCase()}
         </kbd>
       </>
@@ -146,7 +154,7 @@ export function MapSwitchButton(): ReactElement {
             active={mapType === type}
             onClick={handleBaseClick}
           >
-            <FontAwesomeIcon icon={icon} />
+            {icon}
           </Button>
         ))}
         {overlayLayers.filter(isPrimary).map(({ type, icon }) => (
@@ -158,7 +166,7 @@ export function MapSwitchButton(): ReactElement {
             active={overlays.includes(type)}
             onClick={handleOverlayClick}
           >
-            <FontAwesomeIcon icon={icon} />
+            {icon}
           </Button>
         ))}
         <Button
@@ -176,7 +184,7 @@ export function MapSwitchButton(): ReactElement {
         title={m?.mapLayers.layers}
         variant="primary"
       >
-        <FontAwesomeIcon icon="map-o" />
+        <FaRegMap />
       </Button>
       <Overlay
         rootClose
@@ -200,10 +208,8 @@ export function MapSwitchButton(): ReactElement {
                     key={type}
                     onClick={() => handleMapSelect(type)}
                   >
-                    <FontAwesomeIcon
-                      icon={mapType === type ? 'check-circle-o' : 'circle-o'}
-                    />{' '}
-                    <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                    {mapType === type ? <FaRegCheckCircle /> : <FaRegCircle />}{' '}
+                    {icon}{' '}
                     <span
                       style={{
                         textDecoration:
@@ -218,8 +224,7 @@ export function MapSwitchButton(): ReactElement {
                     {minZoom !== undefined && zoom < minZoom && (
                       <>
                         {' '}
-                        <FontAwesomeIcon
-                          icon="exclamation-triangle"
+                        <FaExclamationTriangle
                           title={m?.mapLayers.minZoomWarning(minZoom)}
                           className="text-warning"
                         />
@@ -241,18 +246,14 @@ export function MapSwitchButton(): ReactElement {
                   eventKey={type}
                   onSelect={handleOverlaySelect}
                 >
-                  <FontAwesomeIcon
-                    icon={
-                      (
-                        type === 'i'
-                          ? !overlays.includes(type)
-                          : overlays.includes(type)
-                      )
-                        ? 'check-square-o'
-                        : 'square-o'
-                    }
-                  />{' '}
-                  <FontAwesomeIcon icon={icon || 'map-o'} />{' '}
+                  {type === 'i' ? (
+                    !overlays.includes(type)
+                  ) : overlays.includes(type) ? (
+                    <FaRegCheckSquare />
+                  ) : (
+                    <FaRegSquare />
+                  )}{' '}
+                  {icon}{' '}
                   <span
                     style={{
                       textDecoration:
@@ -267,8 +268,7 @@ export function MapSwitchButton(): ReactElement {
                   {minZoom !== undefined && zoom < minZoom && (
                     <>
                       {' '}
-                      <FontAwesomeIcon
-                        icon="exclamation-triangle"
+                      <FaExclamationTriangle
                         title={m?.mapLayers.minZoomWarning(minZoom)}
                         className="text-warning"
                       />
@@ -277,8 +277,7 @@ export function MapSwitchButton(): ReactElement {
                   {type === 'I' && pictureFilterIsActive && (
                     <>
                       {' '}
-                      <FontAwesomeIcon
-                        icon="filter"
+                      <FaFilter
                         title={m?.mapLayers.photoFilterWarning}
                         className="text-warning"
                       />

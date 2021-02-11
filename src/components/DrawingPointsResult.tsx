@@ -1,40 +1,23 @@
 import {
-  drawingPointAdd,
   drawingPointChangePosition,
   drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
-import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
-import { DragEndEvent, LeafletMouseEvent, Point } from 'leaflet';
+import { DragEndEvent, Point } from 'leaflet';
 import { ReactElement, useCallback, useMemo } from 'react';
-import { Tooltip, useMapEvent } from 'react-leaflet';
+import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
+import { RichMarker } from './RichMarker';
 
 const embed = window.self !== window.top;
 
 export function DrawingPointsResult(): ReactElement {
   const dispatch = useDispatch();
 
-  const selection = useSelector((state: RootState) => state.main.selection);
-
-  const handlePoiAdd = useCallback(
-    ({ latlng }: LeafletMouseEvent) => {
-      const tool = selection?.type;
-
-      if (tool === 'draw-points') {
-        dispatch(
-          drawingPointAdd({ lat: latlng.lat, lon: latlng.lng, label: '' }),
-        );
-        dispatch(drawingPointMeasure(true));
-        return;
-      }
-    },
-    [selection?.type, dispatch],
-  );
-
-  useMapEvent('click', handlePoiAdd);
+  const interactive0 = useSelector(selectingModeSelector);
 
   const activeIndex = useSelector((state: RootState) =>
     state.main.selection?.type === 'draw-points'
@@ -86,32 +69,36 @@ export function DrawingPointsResult(): ReactElement {
 
   return (
     <>
-      {points.map(({ lat, lon, label }, i) => (
-        <RichMarker
-          key={`${change}-${i}`}
-          faIconLeftPadding="2px"
-          eventHandlers={{
-            dragstart: onSelects[i],
-            dragend: handleDragEnd,
-            drag: handleDrag,
-            click: onSelects[i],
-          }}
-          position={{ lat, lng: lon }}
-          color={activeIndex === i ? colors.selected : undefined}
-          draggable={!embed}
-        >
-          {label && (
-            <Tooltip
-              className="compact"
-              offset={new Point(0, -36)}
-              direction="top"
-              permanent
-            >
-              <span>{label}</span>
-            </Tooltip>
-          )}
-        </RichMarker>
-      ))}
+      {points.map(({ lat, lon, label }, i) => {
+        const interactive = interactive0 || activeIndex === i;
+
+        return (
+          <RichMarker
+            key={`${change}-${i}-${interactive ? 'a' : 'b'}`}
+            eventHandlers={{
+              dragstart: onSelects[i],
+              dragend: handleDragEnd,
+              drag: handleDrag,
+              click: onSelects[i],
+            }}
+            position={{ lat, lng: lon }}
+            color={activeIndex === i ? colors.selected : undefined}
+            draggable={!embed && activeIndex === i}
+            interactive={interactive}
+          >
+            {label && (
+              <Tooltip
+                className="compact"
+                offset={new Point(0, -36)}
+                direction="top"
+                permanent
+              >
+                <span>{label}</span>
+              </Tooltip>
+            )}
+          </RichMarker>
+        );
+      })}
     </>
   );
 }

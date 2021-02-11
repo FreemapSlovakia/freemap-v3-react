@@ -5,7 +5,7 @@ import {
   galleryMergeItem,
   galleryShowUploadModal,
 } from 'fm3/actions/galleryActions';
-import { deleteFeature, setActiveModal } from 'fm3/actions/mainActions';
+import { setActiveModal, setTool } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import {
@@ -31,10 +31,10 @@ import {
 import { ChangesetsMenu } from 'fm3/components/ChangesetsMenu';
 import { ChangesetsResult } from 'fm3/components/ChangesetsResult';
 import { Copyright } from 'fm3/components/Copyright';
+import { DrawingLineSelection } from 'fm3/components/DrawingLineSelection';
 import { DrawingLinesResult } from 'fm3/components/DrawingLinesResult';
-import { DrawingMenu } from 'fm3/components/DrawingMenu';
+import { DrawingPointSelection } from 'fm3/components/DrawingPointSelection';
 import { DrawingPointsResult } from 'fm3/components/DrawingPointsResult';
-import { GalleryMenu } from 'fm3/components/gallery/GalleryMenu';
 import { GalleryPicker } from 'fm3/components/gallery/GalleryPicker';
 import { GalleryPositionPickingMenu } from 'fm3/components/gallery/GalleryPositionPickingMenu';
 import { GalleryResult } from 'fm3/components/gallery/GalleryResult';
@@ -51,7 +51,6 @@ import { RoutePlannerResult } from 'fm3/components/RoutePlannerResult';
 import { SearchMenu } from 'fm3/components/SearchMenu';
 import { SearchResults } from 'fm3/components/SearchResults';
 import { Toasts } from 'fm3/components/Toasts';
-import { TrackingMenu } from 'fm3/components/tracking/TrackingMenu';
 import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
@@ -61,6 +60,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
   mouseCursorSelector,
+  selectingModeSelector,
   showGalleryPickerSelector,
 } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
@@ -78,15 +78,20 @@ import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
 import { useDropzone } from 'react-dropzone';
+import { FaTimes } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
-import { FontAwesomeIcon } from './FontAwesomeIcon';
+import { DrawingLinesTool } from './DrawingLinesTool';
+import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
+import { MapDetailsTool } from './MapDetailsTool';
 import { MapsMenu } from './MapsMenu';
 import { MoreMenuButton } from './MoreMenuButton';
-import { ToolsMenuButton } from './ToolsMenuButton';
+import { ObjectSelection } from './ObjectSelection';
+import { SelectionTool } from './SelectionTool';
+import { TrackingSelection } from './TrackingSelection';
 import { WikiLayer } from './WikiLayer';
 
 const embed = window.self !== window.top;
@@ -108,7 +113,11 @@ export function Main(): ReactElement {
     (state: RootState) => !state.map.overlays.includes('i'),
   );
 
-  const tool = useSelector((state: RootState) => state.main.selection?.type);
+  const selectionType = useSelector(
+    (state: RootState) => state.main.selection?.type,
+  );
+
+  const tool = useSelector((state: RootState) => state.main.tool);
 
   const embedFeatures = useSelector(
     (state: RootState) => state.main.embedFeatures,
@@ -120,9 +129,7 @@ export function Main(): ReactElement {
     (state: RootState) => !!state.main.progress.length,
   );
 
-  const mouseCursor = useSelector((state: RootState) =>
-    mouseCursorSelector(state),
-  );
+  const mouseCursor = useSelector(mouseCursorSelector);
 
   const authenticated = useSelector((state: RootState) => !!state.auth.user);
 
@@ -153,22 +160,6 @@ export function Main(): ReactElement {
 
   const isUserValidated = useSelector(
     (state: RootState) => state.auth.user && !state.auth.user.notValidated,
-  );
-
-  const selection = useSelector((state: RootState) => state.main.selection);
-
-  const canDelete = useSelector(
-    (state: RootState) =>
-      state.main.selection?.id !== undefined ||
-      (state.main.selection?.type === 'route-planner' &&
-        (state.routePlanner.start ||
-          state.routePlanner.finish ||
-          state.routePlanner.midpoints.length > 0)) ||
-      ((state.main.selection?.type === 'map-details' ||
-        state.main.selection?.type === 'track-viewer') &&
-        state.trackViewer.trackGeojson) ||
-      (state.main.selection?.type === 'changesets' &&
-        state.changesets.changesets.length > 0),
   );
 
   // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
@@ -328,14 +319,6 @@ export function Main(): ReactElement {
     e.stopPropagation();
   }, []);
 
-  const handleDeleteClick = useCallback(() => {
-    if (selection) {
-      dispatch(deleteFeature(selection));
-    }
-  }, [dispatch, selection]);
-
-  const embedToolDef = embed && toolDefinitions.find((td) => td.tool === tool);
-
   // this is workaround to prevent map click events if popper is active (Overlay is shown)
   useEffect(() => {
     const mo = new MutationObserver(() => {
@@ -357,6 +340,12 @@ export function Main(): ReactElement {
       mo.disconnect();
     };
   }, []);
+
+  const toolDef = tool && toolDefinitions.find((td) => td.tool === tool);
+
+  const isSelecting = useSelector(selectingModeSelector);
+
+  const selectionMenu = showMenu ? selectionType : null;
 
   return (
     <>
@@ -384,64 +373,62 @@ export function Main(): ReactElement {
           </div>
         )} */}
         <div className="menus">
-          <Card className="fm-toolbar">
-            <Button
-              id="freemap-logo"
-              className={progress ? 'in-progress' : 'idle'}
-              onClick={handleLogoClick}
-            />
-            {!embed && showMenu && (
-              <>
-                <MoreMenuButton />{' '}
-              </>
-            )}
-            {(!embed || embedFeatures.includes('search')) && (
-              <SearchMenu hidden={!showMenu} preventShortcut={!!activeModal} />
-            )}
-          </Card>
-
-          {showMenu && (!embed || tool) && (
+          <div className="fm-ib-scroller">
             <Card className="fm-toolbar">
-              <ButtonToolbar>
-                {embed ? (
-                  embedToolDef && (
-                    <>
-                      <FontAwesomeIcon icon={embedToolDef.icon} />{' '}
-                      {m?.tools[embedToolDef.msgKey]}{' '}
-                    </>
-                  )
-                ) : (
-                  <ToolsMenuButton />
-                )}
-                {tool === 'objects' && <ObjectsMenu />}
-                {tool === 'route-planner' && <RoutePlannerMenu />}
-                {tool &&
-                  ['draw-lines', 'draw-points', 'draw-polygons'].includes(
-                    tool,
-                  ) && <DrawingMenu />}
-                {tool === 'track-viewer' && <TrackViewerMenu />}
-                {tool === 'changesets' && <ChangesetsMenu />}
-                {tool === 'photos' && <GalleryMenu />}
-                {tool === 'map-details' && <MapDetailsMenu />}
-                {tool === 'tracking' && <TrackingMenu />}
-                {tool === 'maps' && <MapsMenu />}{' '}
-                {canDelete && (
+              <Button
+                id="freemap-logo"
+                className={progress ? 'in-progress' : 'idle'}
+                onClick={handleLogoClick}
+              />
+              {!embed && showMenu && <MoreMenuButton />}
+              {(!embed || embedFeatures.includes('search')) && (
+                <SearchMenu
+                  hidden={!showMenu}
+                  preventShortcut={!!activeModal}
+                />
+              )}
+            </Card>
+          </div>
+
+          {/* tool menus */}
+          {showMenu && tool && (
+            <div className="fm-ib-scroller">
+              <Card className="fm-toolbar">
+                <ButtonToolbar>
+                  {toolDef && (
+                    <span className="align-self-center ml-1 mr-2">
+                      {toolDef.icon}
+                      <span className="d-none d-sm-inline">
+                        {' '}
+                        {m?.tools[toolDef.msgKey]}
+                      </span>
+                    </span>
+                  )}
                   <Button
                     className="ml-1"
-                    variant="danger"
-                    title={m?.general.delete}
-                    onClick={handleDeleteClick}
+                    variant="light"
+                    // size="sm"
+                    onClick={() => dispatch(setTool(null))}
+                    title={m?.general.close + ' [Esc]'}
                   >
-                    <FontAwesomeIcon icon="trash" />
-                    <span className="d-none d-sm-inline">
-                      {' '}
-                      {m?.general.delete} <kbd>Del</kbd>
-                    </span>
+                    <FaTimes />
                   </Button>
-                )}
-              </ButtonToolbar>
-            </Card>
+                  {tool === 'objects' && <ObjectsMenu />}
+                  {tool === 'route-planner' && <RoutePlannerMenu />}
+                  {tool === 'track-viewer' && <TrackViewerMenu />}
+                  {tool === 'changesets' && <ChangesetsMenu />}
+                  {tool === 'map-details' && <MapDetailsMenu />}
+                  {tool === 'maps' && <MapsMenu />}
+                </ButtonToolbar>
+              </Card>
+            </div>
           )}
+
+          {/* selections */}
+          {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
+          {selectionMenu === 'draw-points' && <DrawingPointSelection />}
+          {selectionMenu === 'objects' && <ObjectSelection />}
+          {selectionMenu === 'tracking' && <TrackingSelection />}
 
           <GalleryPositionPickingMenu />
           <GalleryShowPositionMenu />
@@ -450,8 +437,10 @@ export function Main(): ReactElement {
       </div>
 
       <div className="fm-type-zoom-control">
+        <div>
+          <MapControls />
+        </div>
         <Copyright />
-        <MapControls />
       </div>
 
       <div
@@ -487,22 +476,29 @@ export function Main(): ReactElement {
 
           <Layers />
 
-          {showMenu && showInteractiveLayer && (
-            <>
-              <SearchResults />
-              <ObjectsResult />
-              <RoutePlannerResult />
-              <DrawingLinesResult />
-              <LocationResult />
-              <TrackViewerResult />
-              <DrawingPointsResult />
-              <ChangesetsResult />
-              <TrackingResult />
-            </>
-          )}
-
           {showMenu && (
             <>
+              {tool === 'map-details' && <MapDetailsTool />}
+              {tool === 'draw-points' && <DrawingPointsTool />}
+              {(tool === 'draw-lines' || tool === 'draw-polygons') && (
+                <DrawingLinesTool />
+              )}
+              {isSelecting && <SelectionTool />}
+
+              {showInteractiveLayer && (
+                <>
+                  <SearchResults />
+                  <ObjectsResult />
+                  <RoutePlannerResult />
+                  <DrawingLinesResult />
+                  <DrawingPointsResult />
+                  <LocationResult />
+                  <TrackViewerResult />
+                  <ChangesetsResult />
+                  <TrackingResult />
+                </>
+              )}
+
               {showGalleryPicker && <GalleryPicker />}
               <WikiLayer />
             </>

@@ -5,7 +5,7 @@ import {
   drawingPointChangePosition,
   drawingPointSetAll,
 } from 'fm3/actions/drawingPointActions';
-import { clearMap, deleteFeature } from 'fm3/actions/mainActions';
+import { clearMap } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
@@ -41,15 +41,6 @@ export const drawingPointsReducer = createReducer<
     ...state,
     points: action.payload,
   }))
-  .handleAction(deleteFeature, (state, action) =>
-    produce(state, (draft) => {
-      if (
-        action.payload.type === 'draw-points' &&
-        action.payload.id !== undefined
-      )
-        draft.points.splice(action.payload.id, 1);
-    }),
-  )
   .handleAction(mapsDataLoaded, (_state, action) => {
     return {
       ...initialState,

@@ -5,9 +5,11 @@ import {
   TrackingPoint,
 } from 'fm3/components/tracking/TrackingPoint';
 import { distance, toLatLng, toLatLngArr } from 'fm3/geoutils';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { TrackPoint } from 'fm3/types/trackingTypes';
 import { Fragment, ReactElement, useMemo, useRef, useState } from 'react';
+import { FaRegUser, FaUser } from 'react-icons/fa';
 import { Circle, Polyline, Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -64,6 +66,8 @@ export function TrackingResult(): ReactElement {
     minimumFractionDigits: 1,
     maximumFractionDigits: 1,
   });
+
+  const interactive = useSelector(selectingModeSelector);
 
   return (
     <>
@@ -140,13 +144,15 @@ export function TrackingResult(): ReactElement {
               track.trackPoints.length > 1 &&
               segments.map((segment, i) => (
                 <Polyline
-                  key={`seg-${i}`}
+                  key={`seg-${i}-${interactive ? 'a' : 'b'}`}
                   positions={toLatLngArr(segment)}
                   weight={width}
                   color={color}
+                  bubblingMouseEvents={false}
                   eventHandlers={{
                     click: handleClick,
                   }}
+                  interactive={interactive}
                 />
               ))}
 
@@ -156,7 +162,8 @@ export function TrackingResult(): ReactElement {
             ).map((tp, i) =>
               !showPoints || i === track.trackPoints.length - 1 ? (
                 <RichMarker
-                  key={tp.id}
+                  key={`rm-${tp.id}-${interactive ? 'a' : 'b'}`}
+                  interactive={interactive}
                   position={toLatLon(
                     track.trackPoints[track.trackPoints.length - 1],
                   )}
@@ -164,7 +171,13 @@ export function TrackingResult(): ReactElement {
                   eventHandlers={{
                     click: handleClick,
                   }}
-                  faIcon={track.id === activeTrackId ? 'user' : 'user-o'}
+                  faIcon={
+                    track.id === activeTrackId ? (
+                      <FaUser color={color} />
+                    ) : (
+                      <FaRegUser color={color} />
+                    )
+                  }
                 >
                   <Tooltip direction="top" offset={[0, -36]} permanent>
                     {tooltipText(df, nf, tp, track.label)}
@@ -172,7 +185,8 @@ export function TrackingResult(): ReactElement {
                 </RichMarker>
               ) : (
                 <TrackingPoint
-                  key={tp.id}
+                  key={`tp-${tp.id}-${interactive ? 'a' : 'b'}`}
+                  interactive={interactive}
                   tp={tp}
                   width={width}
                   color={color}

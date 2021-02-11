@@ -3,6 +3,7 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { Point } from 'leaflet';
 import { ReactElement } from 'react';
+import { FaInfo } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useSelector } from 'react-redux';
 
@@ -28,8 +29,7 @@ export function ElevationChartActivePoint(): ReactElement | null {
   return (
     elevationChartActivePoint && (
       <RichMarker
-        faIcon="info"
-        faIconLeftPadding="2px"
+        faIcon={<FaInfo color="grey" />}
         color="grey"
         interactive={false}
         position={{

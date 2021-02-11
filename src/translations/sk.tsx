@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('sk', {
@@ -77,6 +77,15 @@ const sk: Messages = {
     deleteError: ({ err }) => `Chyba mazania: ${err}`,
     deleted: 'Zmazané.',
     saved: 'Uložené.',
+    visual: 'Zobrazenie',
+  },
+
+  selections: {
+    objects: 'Objekt (POI)',
+    drawPoints: 'Bod',
+    drawLines: 'Čiara',
+    drawPolygons: 'Polygón',
+    tracking: 'Sledovanie',
   },
 
   tools: {
@@ -86,13 +95,16 @@ const sk: Messages = {
     objects: 'Objekty (POI)',
     photos: 'Fotografie',
     measurement: 'Kreslenie a meranie',
+    drawPoints: 'Kreslenie bodov',
+    drawLines: 'Kreslenie čiar',
+    drawPolygons: 'Kreslenie polygónov',
     trackViewer: 'Prehliadač trás (GPX)',
     changesets: 'Zmeny v mape',
     mapDetails: 'Detaily v mape',
     tracking: 'Sledovanie',
     maps: (
       <>
-        Moje mapy <FontAwesomeIcon icon="flask" className="text-warning" />
+        Moje mapy <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -364,7 +376,8 @@ const sk: Messages = {
 
   gallery: {
     filter: 'Filter',
-    allPhotos: 'Všetky fotky',
+    showPhotosFrom: 'Prezerať fotky',
+    showLayer: 'Zobraziť vrstvu',
     upload: 'Nahrať',
     f: {
       firstUploaded: 'od prvej nahranej',
@@ -425,8 +438,6 @@ const sk: Messages = {
     locationPicking: {
       title: 'Zvoľte pozíciu fotografie',
     },
-    layerHint:
-      'Pre zapnutie vrstvy s fotografiami zvoľte Fotografie z ponuky vrstiev (alebo stlačte klávesy Shift+F).',
     deletingError: ({ err }) => `Nastala chyba pri mazaní obrázka: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Nastala chyba pri načítavaní tagov: ${err}`,
@@ -1209,7 +1220,7 @@ const sk: Messages = {
           <p>
             Tu môžete spravovať svoje zariadenia. Ostatní môžu sledovať ich
             pozíciu, ak k nim vytvoríte sledovacie tokeny, pomocou tlačidla{' '}
-            <FontAwesomeIcon icon="key" />.
+            <FaKey />.
           </p>
           <hr />
           <p>

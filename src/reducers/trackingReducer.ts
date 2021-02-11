@@ -1,9 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import {
-  clearMap,
-  deleteFeature,
-  setActiveModal,
-} from 'fm3/actions/mainActions';
+import { clearMap, setActiveModal } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import { rpcEvent, rpcResponse } from 'fm3/actions/rpcActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
@@ -204,13 +200,6 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
 
     return state;
   })
-  .handleAction(deleteFeature, (state, action) => ({
-    ...state,
-    trackedDevices:
-      action.payload.type === 'tracking'
-        ? state.trackedDevices.filter((td) => td.id !== action.payload.id)
-        : state.trackedDevices,
-  }))
   .handleAction(mapsDataLoaded, (state, { payload: { tracking } }) => {
     return {
       ...state,

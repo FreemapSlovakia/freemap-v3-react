@@ -43,6 +43,14 @@ export type Messages = {
     deleteError: ({ err }: Err) => string;
     saved: string;
     deleted: string;
+    visual: string;
+  };
+  selections: {
+    objects: string;
+    drawPoints: string;
+    drawLines: string;
+    drawPolygons: string;
+    tracking: string;
   };
   tools: {
     none: string;
@@ -51,6 +59,9 @@ export type Messages = {
     objects: string;
     photos: string;
     measurement: string;
+    drawPoints: string;
+    drawLines: string;
+    drawPolygons: string;
     trackViewer: string;
     changesets: string;
     mapDetails: string;
@@ -290,7 +301,8 @@ export type Messages = {
   };
   gallery: {
     filter: string;
-    allPhotos: string;
+    showPhotosFrom: string;
+    showLayer: string;
     upload: string;
     f: {
       firstUploaded: string;
@@ -342,7 +354,6 @@ export type Messages = {
     locationPicking: {
       title: string;
     };
-    layerHint: string;
     deletingError: ({ err }: Err) => string;
     tagsFetchingError: ({ err }: Err) => string;
     pictureFetchingError: ({ err }: Err) => string;

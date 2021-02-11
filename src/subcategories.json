@@ -385,7 +385,8 @@
       },
       {
         "key": "building",
-        "value": "church"
+        "operation": "~",
+        "value": "^(church|cathedral)$"
       }
     ]
   },
@@ -2238,7 +2239,7 @@
     "filter": [
       {
         "key": "sport",
-        "value": "diving"
+        "value": "scuba_diving"
       }
     ]
   },

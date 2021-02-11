@@ -9,7 +9,6 @@ import {
   galleryUpload,
 } from 'fm3/actions/galleryActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { GalleryUploadItem } from 'fm3/components/gallery/GalleryUploadItem';
 import { toDatetimeLocal } from 'fm3/dateUtils';
 import { useMessages } from 'fm3/l10nInjector';
@@ -19,6 +18,7 @@ import Button from 'react-bootstrap/Button';
 import FormCheck from 'react-bootstrap/FormCheck';
 import Modal from 'react-bootstrap/Modal';
 import { useDropzone } from 'react-dropzone';
+import { FaTimes, FaUpload } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../../hooks/pictureDropHandlerHook';
 import { PictureModel } from './GalleryEditForm';
@@ -194,13 +194,13 @@ export function GalleryUploadModal({ show }: Props): ReactElement {
           }}
           disabled={uploading}
         >
-          <FontAwesomeIcon icon="upload" />{' '}
+          <FaUpload />{' '}
           {uploading
             ? m?.gallery.uploadModal.uploading(items.length)
             : m?.gallery.uploadModal.upload}
         </Button>
         <Button onClick={handleClose} variant="dark">
-          <FontAwesomeIcon icon="close" /> {m?.general.cancel} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.cancel} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

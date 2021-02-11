@@ -10,10 +10,10 @@ export type Tool =
   | 'track-viewer'
   | 'draw-points'
   | 'changesets'
-  | 'photos'
   | 'map-details'
-  | 'tracking'
   | 'maps';
+
+export const setTool = createAction('SET_TOOL')<Tool | null>();
 
 export const setActiveModal = createAction('SET_ACTIVE_MODAL')<string | null>();
 
@@ -87,43 +87,31 @@ export const setErrorTicketId = createAction('SET_ERROR_TICKET_ID')<
 
 export const setEmbedFeatures = createAction('SET_EMBED_FEATURES')<string[]>();
 
-export const deleteFeature = createAction('DELETE_FEATURE')<Selection>();
+export const deleteFeature = createAction('DELETE_FEATURE')();
 
 export interface DrawPointSelection {
   type: 'draw-points';
-  id?: number;
+  id: number;
 }
 
 export interface ObjectsSelection {
   type: 'objects';
-  id?: number;
+  id: number;
 }
 
 export interface DrawLinePolySelection {
-  type: 'draw-lines' | 'draw-polygons';
-  id?: number;
-}
-
-export interface OtherSelection {
-  type:
-    | 'maps'
-    | 'map-details'
-    | 'track-viewer'
-    | 'changesets'
-    | 'photos'
-    | 'route-planner';
-  id?: undefined;
+  type: 'draw-line-poly';
+  id: number;
 }
 
 export interface TrackingSelection {
   type: 'tracking';
-  id?: string | number;
+  id: string | number;
 }
 
 export type Selection =
   | DrawPointSelection
   | ObjectsSelection
-  | OtherSelection
   | DrawLinePolySelection
   | TrackingSelection;
 
@@ -132,3 +120,33 @@ export const selectFeature = createAction('SELECT_FEATURE')<Selection | null>();
 export const convertToDrawing = createAction('CONVERT_TO_DRAWING')<
   number | undefined
 >();
+
+export type ExternalTargets =
+  | 'window'
+  | 'facebook'
+  | 'twitter'
+  | 'copy'
+  | 'osm.org'
+  | 'osm.org/id'
+  | 'josm'
+  | 'zbgis'
+  | 'hiking.sk'
+  | 'google'
+  | 'mapy.cz'
+  | 'oma.sk'
+  | 'openstreetcam'
+  | 'mapillary'
+  | 'url'
+  | 'image';
+
+export const openInExternalApp = createAction('OPEN_IN_EXTERNAL')<{
+  where: ExternalTargets;
+  lat?: number;
+  lon?: number;
+  zoom?: number;
+  mapType?: string;
+  includePoint?: boolean;
+  pointTitle?: string;
+  pointDescription?: string;
+  url?: string;
+}>();

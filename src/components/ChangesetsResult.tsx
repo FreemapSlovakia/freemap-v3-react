@@ -2,13 +2,14 @@ import {
   Changeset,
   changesetsSetAuthorName,
 } from 'fm3/actions/changesetsActions';
-import { selectFeature } from 'fm3/actions/mainActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
 import { RichMarker } from 'fm3/components/RichMarker';
+import { colors } from 'fm3/constants';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/changesets.scss';
 import { Point } from 'leaflet';
 import { ReactElement, useCallback } from 'react';
+import { FaPencilAlt } from 'react-icons/fa';
 import { Tooltip } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { getType } from 'typesafe-actions';
@@ -56,8 +57,6 @@ export function ChangesetsResult(): ReactElement {
         style: 'info',
       }),
     );
-
-    dispatch(selectFeature({ type: 'changesets' }));
   }
 
   return (
@@ -67,10 +66,9 @@ export function ChangesetsResult(): ReactElement {
 
         return (
           <RichMarker
-            faIcon="pencil"
+            faIcon={<FaPencilAlt color={colors.normal} />}
             opacity={opacity}
             key={changeset.id}
-            faIconLeftPadding="2px"
             position={{ lat: changeset.centerLat, lng: changeset.centerLon }}
             eventHandlers={{
               click() {

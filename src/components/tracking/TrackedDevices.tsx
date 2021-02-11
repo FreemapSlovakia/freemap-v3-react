@@ -1,12 +1,12 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Table from 'react-bootstrap/Table';
+import { FaBullseye } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 import { TrackedDevice } from './TrackedDevice';
 
@@ -23,8 +23,7 @@ export function TrackedDevices(): ReactElement {
     <>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="bullseye" />{' '}
-          {m?.tracking.trackedDevices.modalTitle}
+          <FaBullseye /> {m?.tracking.trackedDevices.modalTitle}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>

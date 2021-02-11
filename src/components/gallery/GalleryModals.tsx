@@ -5,7 +5,7 @@ import {
   AsyncGalleryViewerModal,
 } from 'fm3/components/AsyncComponents';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
-import { showGalleryViewer as shouldShowGalleryViewer } from 'fm3/selectors/mainSelectors';
+import { showGalleryViewerSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/gallery.scss';
 import { LeafletMouseEvent } from 'leaflet';
@@ -23,9 +23,7 @@ export function GalleryModals(): ReactElement {
     (state: RootState) => state.gallery.showFilter,
   );
 
-  const showGalleryViewer = useSelector((state: RootState) =>
-    shouldShowGalleryViewer(state),
-  );
+  const showGalleryViewer = useSelector(showGalleryViewerSelector);
 
   const showUploadModal = useSelector(
     (state: RootState) =>

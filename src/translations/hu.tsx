@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('hu', {
@@ -77,6 +77,16 @@ const hu: Messages = {
     deleteError: ({ err }) => `Törlési hiba: ${err}`,
     deleted: 'Deleted.', // TODO translate
     saved: 'Saved.', // TODO translate
+    visual: 'Display', // TODO translate
+  },
+
+  // TODO translate
+  selections: {
+    objects: 'Object (POI)',
+    drawPoints: 'Point',
+    drawLines: 'Line',
+    drawPolygons: 'Polygon',
+    tracking: 'Tracking',
   },
 
   tools: {
@@ -86,14 +96,16 @@ const hu: Messages = {
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
     measurement: 'Rajzolás és mérés',
+    drawPoints: 'Point drawing', // TODO translate
+    drawLines: 'Line drawing', // TODO translate
+    drawPolygons: 'Polygon drawing', // TODO translate
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
     tracking: 'Live tracking',
     maps: (
       <>
-        Saját térképeim{' '}
-        <FontAwesomeIcon icon="flask" className="text-warning" />
+        Saját térképeim <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -353,7 +365,8 @@ const hu: Messages = {
 
   gallery: {
     filter: 'Szűrő',
-    allPhotos: 'Minden fénykép',
+    showPhotosFrom: 'View photos', // TODO translate
+    showLayer: 'Show layer', // TODO translate
     upload: 'Feltöltés',
     f: {
       firstUploaded: 'az először feltöltöttől',
@@ -415,8 +428,6 @@ const hu: Messages = {
     locationPicking: {
       title: 'Fénykép helyének kijelölése',
     },
-    layerHint:
-      'A fényképeket tartalmazó rátétréteg megjelenítéséhez jelölje ki a Térképrétegek menüből a Fényképeket (vagy nyomja meg a Shift + F billentyűket.',
     deletingError: ({ err }) => `Hiba történt a fénykép törlésénél: ${err}`,
     tagsFetchingError: ({ err }) =>
       `Hiba történt a címkék beolvasásánál: ${err}`,
@@ -1205,8 +1216,8 @@ const hu: Messages = {
         <>
           <p>
             Kezelje készülékeit, hogy mások is láthassák pozícióját, ha megad
-            nekik egy figyelési kódot (amelyet a <FontAwesomeIcon icon="key" />{' '}
-            ikonnal hozhat létre).
+            nekik egy figyelési kódot (amelyet a <FaKey /> ikonnal hozhat
+            létre).
           </p>
           <hr />
           <p>

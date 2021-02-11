@@ -6,18 +6,6 @@
 
 @import './leaflet.scss';
 
-html {
-  font-size: 14px;
-}
-
-#app {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  top: 0;
-}
-
 .hidden {
   display: none !important;
 }
@@ -28,7 +16,7 @@ html {
 
 .header {
   position: absolute;
-  z-index: 1010;
+  z-index: 1020;
   top: 0px;
   left: 0px;
   right: 0px;
@@ -60,6 +48,8 @@ html {
   & > * {
     pointer-events: all;
   }
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .tool-panel {
@@ -186,7 +176,9 @@ button#freemap-logo {
   @media screen {
     margin: 0 3px 8px;
     background-color: rgba(255, 255, 255, 0.8);
-    display: inline-block;
+    display: inline-flex;
+    // flex-wrap: wrap;
+    flex-direction: row;
     vertical-align: top;
 
     padding: 4px;
@@ -199,6 +191,20 @@ button#freemap-logo {
   @media print {
     display: none !important;
   }
+
+  & > .btn-toolbar {
+    flex-wrap: nowrap;
+
+    & * {
+      white-space: nowrap;
+    }
+  }
+}
+
+.fm-ib-scroller {
+  overflow: auto;
+  // display: inline-block;
+  // width: 100%;
 }
 
 .fm-label {
@@ -211,16 +217,29 @@ button#freemap-logo {
 }
 
 .fm-type-zoom-control {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
   pointer-events: none;
   position: absolute;
   z-index: 1010;
   bottom: 10px;
   left: 0;
   right: 0;
+
   & > div {
     pointer-events: all;
-    display: table;
-    margin: 0 auto;
+  }
+
+  & > div:first-child {
+    flex-grow: 1;
+    display: flex;
+    justify-content: center;
+    overflow: auto;
+  }
+
+  & > div:last-child {
+    align-self: flex-end;
   }
 }
 
@@ -257,4 +276,8 @@ body.fm-overlay-backdrop-enable {
     opacity: 0;
     z-index: 1000;
   }
+}
+
+.input-group > input.form-control {
+  min-width: 3em !important;
 }

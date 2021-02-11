@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement, useCallback, useEffect, useState } from 'react';
@@ -9,6 +8,7 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 import FormGroup from 'react-bootstrap/FormGroup';
 import Modal from 'react-bootstrap/Modal';
+import { FaRegMap, FaTimes } from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Item = { name: string; items: { name: string; id: number }[] };
@@ -57,7 +57,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="map-o" /> {m?.more.mapLegend}
+          <FaRegMap /> {m?.more.mapLegend}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -97,7 +97,7 @@ export function LegendOutdoorModal({ show }: Props): ReactElement {
       <Modal.Footer>
         <FormGroup>
           <Button variant="dark" onClick={close}>
-            <FontAwesomeIcon icon="times" /> {m?.general.close}
+            <FaTimes /> {m?.general.close}
           </Button>
         </FormGroup>
       </Modal.Footer>

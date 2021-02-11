@@ -9,17 +9,11 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
-import {
-  Fragment,
-  ReactElement,
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-} from 'react';
+import { Fragment, ReactElement, useEffect, useMemo, useState } from 'react';
 import {
   Marker,
   Polygon,
@@ -44,6 +38,8 @@ type Props = {
 export function DrawingLineResult({ index }: Props): ReactElement {
   const dispatch = useDispatch();
 
+  const tool = useSelector((state: RootState) => state.main.tool);
+
   const line = useSelector(
     (state: RootState) => state.drawingLines.lines[index],
   );
@@ -52,10 +48,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
   const selected = useSelector(
     (state: RootState) =>
-      (state.main.selection?.type === 'draw-lines' ||
-        state.main.selection?.type === 'draw-polygons') &&
+      state.main.selection?.type === 'draw-line-poly' &&
       index === state.main.selection?.id,
   );
+
+  const interactive = useSelector(selectingModeSelector);
 
   const { points } = line;
 
@@ -71,43 +68,36 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     }
   }, [removeCoords]);
 
-  const handleMouseMove = useCallback(
-    ({ latlng, originalEvent }: LeafletMouseEvent) => {
-      if (!touching && selected) {
-        setCoords(
-          (originalEvent.target as any)?.classList.contains('leaflet-container')
-            ? { lat: latlng.lat, lon: latlng.lng }
-            : undefined,
-        );
-      }
-    },
-    [touching, selected],
-  );
+  const map = useMap();
 
-  const handleMouseOut = useCallback(() => {
+  useMapEvent('mousemove', ({ latlng, originalEvent }: LeafletMouseEvent) => {
+    if (!touching && selected) {
+      setCoords(
+        (originalEvent.target as any)?.classList.contains('leaflet-container')
+          ? { lat: latlng.lat, lon: latlng.lng }
+          : undefined,
+      );
+    }
+  });
+
+  useMapEvent('mouseout', () => {
     if (selected) {
       setCoords(undefined);
     }
-  }, [selected]);
-
-  const handleTouchStart = useCallback(() => {
-    setTouching(true);
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    setTouching(false);
-  }, []);
-
-  const map = useMap();
-
-  useMapEvent('mousemove', handleMouseMove);
-
-  useMapEvent('mouseout', handleMouseOut);
+  });
 
   useEffect(() => {
     const mapContainer = selected && map.getContainer();
 
     if (mapContainer) {
+      const handleTouchStart = () => {
+        setTouching(true);
+      };
+
+      const handleTouchEnd = () => {
+        setTouching(false);
+      };
+
       DomEvent.on(mapContainer, 'touchstart', handleTouchStart);
       DomEvent.on(mapContainer, 'touchend', handleTouchEnd);
 
@@ -116,59 +106,33 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         DomEvent.off(mapContainer, 'touchend', handleTouchEnd);
       };
     }
-  }, [
-    map,
-    selected,
-    handleMouseMove,
-    handleMouseOut,
-    handleTouchStart,
-    handleTouchEnd,
-  ]);
+  }, [map, selected]);
 
-  const handlePoiAdd = useCallback(
-    (lat: number, lon: number, position: number, id0: number) => {
-      handleDragStart();
-      const pos = position ? Math.ceil(position / 2) : points.length;
+  function addPoint(lat: number, lon: number, position: number, id0: number) {
+    handleDragStart();
+    const pos = position ? Math.ceil(position / 2) : points.length;
 
-      let id: number | undefined;
+    let id: number | undefined;
 
-      if (id0) {
-        id = id0;
-      } else if (pos === 0) {
-        id = points.length ? points[pos].id - 1 : 0;
-      } else if (pos === points.length) {
-        id = points[pos - 1].id + 1;
-      } else {
-        id = (points[pos - 1].id + points[pos].id) / 2;
-      }
+    if (id0) {
+      id = id0;
+    } else if (pos === 0) {
+      id = points.length ? points[pos].id - 1 : 0;
+    } else if (pos === points.length) {
+      id = points[pos - 1].id + 1;
+    } else {
+      id = (points[pos - 1].id + points[pos].id) / 2;
+    }
 
-      dispatch(
-        drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
-      );
+    dispatch(
+      drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
+    );
 
-      dispatch(drawingPointMeasure(true));
-    },
-    [points, dispatch, index],
-  );
-
-  const handleMeasureMarkerDrag = useCallback(
-    ({ latlng: { lat, lng: lon } }, id: number) => {
-      dispatch(drawingLineUpdatePoint({ index, point: { lat, lon, id } }));
-
-      dispatch(drawingPointMeasure(true));
-    },
-    [dispatch, index],
-  );
-
-  const handleMarkerClick = useCallback(
-    (id: number) => {
-      dispatch(drawingLineRemovePoint({ index, id }));
-      dispatch(drawingPointMeasure(true));
-    },
-    [dispatch, index],
-  );
+    dispatch(drawingPointMeasure(true));
+  }
 
   let prev: Point | null = null;
+
   let dist = 0;
 
   const nf = useMemo(
@@ -180,16 +144,16 @@ export function DrawingLineResult({ index }: Props): ReactElement {
     [language],
   );
 
-  const handleSelect = useCallback(() => {
+  function handleSelect() {
     dispatch(
       selectFeature({
-        type: line.type === 'polygon' ? 'draw-polygons' : 'draw-lines',
+        type: 'draw-line-poly',
         id: index,
       }),
     );
 
     dispatch(drawingPointMeasure(true));
-  }, [dispatch, line.type, index]);
+  }
 
   const ps = useMemo(() => {
     const ps: Point[] = [];
@@ -219,9 +183,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
+            key={`line-${interactive ? 'a' : 'b'}`}
             weight={12}
             opacity={0}
-            interactive
+            interactive={interactive}
             bubblingMouseEvents={false}
             eventHandlers={{
               click: handleSelect,
@@ -252,11 +217,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
+          key={`polygon-${interactive ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
             color: selected ? colors.selected : colors.normal,
           }}
-          interactive
+          interactive={interactive}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
@@ -271,8 +237,6 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               offset={[-4, 0]}
               direction="center"
               permanent
-              interactive
-              key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}
             >
               <span>{line.label}</span>
             </Tooltip>
@@ -280,7 +244,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         </Polygon>
       )}
 
-      {!!(ps.length > 0 && coords && !window.preventMapClick) && (
+      {!!(
+        ps.length > 0 &&
+        coords &&
+        !window.preventMapClick &&
+        (tool === 'draw-lines' || tool === 'draw-polygons')
+      ) && (
         <Polyline
           color={colors.selected}
           weight={4}
@@ -318,22 +287,27 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               opacity={1}
               eventHandlers={{
                 drag(e) {
-                  handleMeasureMarkerDrag(e, p.id);
+                  const coord = e.target.getLatLng();
+
+                  dispatch(
+                    drawingLineUpdatePoint({
+                      index,
+                      point: { lat: coord.lat, lon: coord.lng, id: p.id },
+                    }),
+                  );
+
+                  dispatch(drawingPointMeasure(true));
                 },
                 click() {
-                  handleMarkerClick(p.id);
+                  dispatch(drawingLineRemovePoint({ index, id: p.id }));
+                  dispatch(drawingPointMeasure(true));
                 },
                 dragstart: handleDragStart,
                 dragend: handleDragEnd,
               }}
             >
               {line.type === 'line' && (
-                <Tooltip
-                  key={`${p.id}-${ps.length}`}
-                  className="compact"
-                  offset={[-4, 0]}
-                  direction="right"
-                >
+                <Tooltip className="compact" offset={[-4, 0]} direction="right">
                   <span>{nf.format(dist / 1000)} km</span>
                 </Tooltip>
               )}
@@ -347,7 +321,15 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               opacity={0.5}
               eventHandlers={{
                 dragstart(e) {
-                  handlePoiAdd(
+                  addPoint(
+                    e.target.getLatLng().lat,
+                    e.target.getLatLng().lng,
+                    i,
+                    p.id,
+                  );
+                },
+                click(e) {
+                  addPoint(
                     e.target.getLatLng().lat,
                     e.target.getLatLng().lng,
                     i,

@@ -53,9 +53,10 @@
     <meta name="theme-color" content="#ffffff" />
     <meta name="application-name" content="Freemap Slovakia" />
 
-    <%= htmlWebpackPlugin.tags.headTags %>
+    <link rel="icon" href="/logo.jpg" />
 
-    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+    <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
+    'script').join('') %>
 
     <script>
       window.TrackJS &&
@@ -78,9 +79,6 @@
       async
       src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"
     ></script> -->
-    <% for (const css of htmlWebpackPlugin.files.css) { %>
-    <link rel="stylesheet" href="<%= css %>" />
-    <% } %>
 
     <!-- Facebook Pixel Code -->
     <!-- prettier-ignore -->
@@ -104,36 +102,120 @@
       src="https://www.facebook.com/tr?id=681854635902254&ev=PageView&noscript=1"
     /></noscript>
     <!-- End Facebook Pixel Code -->
+
+    <style>
+      #app,
+      .init-loader {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        top: 0;
+      }
+    </style>
+
+    <script>
+      var langs = navigator.languages || [navigator.language];
+
+      var lang = langs
+        .map((lang) => lang.replace(/-.*/, ''))
+        .find((lang) => /^(en|sk|cs|hu)$/.test(lang));
+    </script>
   </head>
 
   <body>
-    <div id="app"></div>
+    <div id="app">
+      <div
+        id="init-loader"
+        style="
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          height: 100vh;
+        "
+      >
+        <div style="display: flex; flex-direction: column; align-items: center">
+          <div style="max-width: 200px; padding-bottom: 30px">
+            <img
+              src="freemap-logo.jpg"
+              style="width: 100%; vertical-align: center"
+            />
+          </div>
+          <div
+            style="
+              max-width: 400px;
+              text-align: center;
+              font-family: Arial, Helvetica, sans-serif;
+              line-height: 1;
+              margin-top: 0;
+            "
+          >
+            <script>
+              document.write(
+                lang === 'sk'
+                  ? 'Načítavam…'
+                  : lang === 'cs'
+                  ? 'Načítám…'
+                  : 'Loading…',
+              );
+            </script>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+
+    <% for (const css of htmlWebpackPlugin.files.css) { %>
+    <link itemprop="" rel="stylesheet" href="<%= css %>" />
+    <% } %>
+
     <script>
       var fm_seh = function (e) {
-        e.preventDefault();
+        if (e) {
+          e.preventDefault();
+        }
 
         console.error('Startup error.', e);
 
         var app = document.getElementById('app');
 
-        if (!app.children || !app.children.length) {
+        if (
+          !app.children ||
+          !app.children[0] ||
+          app.children[0].id === 'init-loader'
+        ) {
+          var html;
+
+          if (lang === 'hu') {
+            html =
+              '  <h1>Hiba történt az alkalmazás elindításánál</h1>\n' +
+              '  <p>\n' +
+              '    Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …) friss verzióját használja.\n' +
+              '  </p>\n';
+          } else if (lang === 'sk') {
+            html =
+              '  <h1>Aplikáciu sa nepodarilo spustiť</h1>\n' +
+              '  <p>\n' +
+              '    Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).\n' +
+              '  <p>\n';
+          } else if (lang === 'cs') {
+            html =
+              '  <h1>Aplikaci se nepodařilo spustit</h1>\n' +
+              '  <p>\n' +
+              '    Ujistěte se, že používáte aktuální verzi některého ze současných prohlížečů (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).\n' +
+              '  <p>\n';
+          } else {
+            html =
+              '  <h1>Problem starting application</h1>\n' +
+              '  <p>\n' +
+              '    Please make sure you are using recent version of a modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium, Vivaldi, Brave, …).\n' +
+              '  </p>\n';
+          }
+
           app.innerHTML =
-            '<div style="margin: 20px; padding: 20px; border: 6px solid red">\n' +
-            '  <h1>Aplikáciu sa nepodarilo spustiť</h1>\n' +
-            '  <p>\n' +
-            '    Uistite sa, že používate aktuálnu verziu niektorého zo súčasných prehliadačov (Google Chrome, Firefox, Safari, Opera, Edge, Chromium).\n' +
-            '    Praveký Internet Explorer už viac podporovaný nie je.\n' +
-            '  <p>\n' +
-            '  <h1>Problem starting application</h1>\n' +
-            '  <p>\n' +
-            '    Please make sure you are using recent version of some modern browser (Google Chrome, Firefox, Safari, Opera, Edge, Chromium).\n' +
-            '    Ancient Internet Explorer is no more supported.\n' +
-            '  </p>\n' +
-            '  <h1>Hiba történt az alkalmazás elindításánál</h1>\n' +
-            '  <p>\n' +
-            '    Győződjék meg arról, hogy egy modern böngésző (Google Chrome, Firefox, Safari, Opera, Edge, Chromium) friss verzióját használja.\n' +
-            '    Az ősi Internet Explorer már nem támogatott.\n' +
-            '  </p>\n' +
+            '<div style="margin: 20px; padding: 20px; border: 6px solid red; font-family: Arial, Helvetica, sans-serif;">\n' +
+            html +
             '</div>';
         }
       };
@@ -143,18 +225,23 @@
       window.addEventListener('load', function () {
         console.log('Page loaded.');
         window.removeEventListener('error', fm_seh);
+        fm_seh();
         delete fm_seh;
       });
 
       console.log('Pre-entry.');
     </script>
+
     <% for (const js of htmlWebpackPlugin.files.js) { %>
     <script src="<%= js %>"></script>
     <% } %>
+
     <script>
       console.log('Post-entry.');
     </script>
+
     <script async src="https://www.google-analytics.com/analytics.js"></script>
+
     <noscript>
       Aplikácia vyžaduje prehliadač so zapnutou podporou JavaScriptu.
       <br />

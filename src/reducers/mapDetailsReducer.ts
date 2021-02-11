@@ -1,5 +1,5 @@
 import { RootAction } from 'fm3/actions';
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { clearMap, setTool } from 'fm3/actions/mainActions';
 import {
   mapDetailsSetSubtool,
   mapDetailsSetTrackInfoPoints,
@@ -38,8 +38,8 @@ export const mapDetailsReducer = createReducer<MapDetailsState, RootAction>(
     ...state,
     trackInfoPoints: action.payload,
   }))
-  .handleAction(selectFeature, (state, action) =>
-    action.payload?.type === 'map-details'
+  .handleAction(setTool, (state, action) =>
+    action.payload === 'map-details'
       ? { ...state, subtool: 'track-info' }
       : initialState,
   );

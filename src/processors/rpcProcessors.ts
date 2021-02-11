@@ -99,7 +99,11 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
       // ignore
     }
 
-    if (is<JsonRpcRequest>(object) && object.id === undefined) {
+    if (
+      is<JsonRpcRequest>(object) &&
+      'method' in object /* for dev */ &&
+      object.id === undefined
+    ) {
       dispatch(rpcEvent({ method: object.method, params: object.params }));
     } else if (
       is<JsonRpcOkResponse | JsonRpcErrorResponse>(object) &&
@@ -109,6 +113,7 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
 
       if (call) {
         callMap.delete(object.id);
+
         const base = {
           method: call.method,
           params: call.params,
@@ -117,7 +122,7 @@ export const wsReceivedProcessor: Processor<typeof wsReceived> = {
 
         dispatch(
           rpcResponse(
-            is<JsonRpcErrorResponse>(object)
+            is<JsonRpcErrorResponse>(object) && 'error' in object /* for dev */
               ? {
                   type: 'error',
                   ...base,

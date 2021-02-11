@@ -1,5 +1,4 @@
 import { setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback, useEffect, useRef, useState } from 'react';
 import Button from 'react-bootstrap/Button';
@@ -9,6 +8,7 @@ import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import InputGroup from 'react-bootstrap/InputGroup';
 import Modal from 'react-bootstrap/Modal';
+import { FaClipboard, FaCode, FaTimes } from 'react-icons/fa';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -116,7 +116,7 @@ export function EmbedMapModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close} className="dynamic">
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="code" /> {m?.more.embedMap}
+          <FaCode /> {m?.more.embedMap}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -211,10 +211,10 @@ export function EmbedMapModal({ show }: Props): ReactElement {
       </Modal.Body>
       <Modal.Footer>
         <Button onClick={handleCopyClick}>
-          <FontAwesomeIcon icon="clipboard" /> {m?.general.copyCode}
+          <FaClipboard /> {m?.general.copyCode}
         </Button>{' '}
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

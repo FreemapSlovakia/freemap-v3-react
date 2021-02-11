@@ -1,5 +1,4 @@
 import { exportPdf, setActiveModal } from 'fm3/actions/mainActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
@@ -18,6 +17,13 @@ import FormControl from 'react-bootstrap/FormControl';
 import FormGroup from 'react-bootstrap/FormGroup';
 import FormLabel from 'react-bootstrap/FormLabel';
 import Modal from 'react-bootstrap/Modal';
+import {
+  FaDownload,
+  FaDrawPolygon,
+  FaRegFilePdf,
+  FaRegQuestionCircle,
+  FaTimes,
+} from 'react-icons/fa';
 import { useDispatch, useSelector } from 'react-redux';
 
 type Props = { show: boolean };
@@ -29,7 +35,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
 
   const canExportByPolygon = useSelector(
     (state: RootState) =>
-      state.main.selection?.type === 'draw-polygons' &&
+      state.main.selection?.type === 'draw-line-poly' &&
       state.main.selection.id !== undefined,
   );
 
@@ -193,7 +199,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="file-pdf-o" /> {m?.more.pdfExport}
+          <FaRegFilePdf /> {m?.more.pdfExport}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -213,7 +219,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             onClick={() => setArea('selected')}
             disabled={!canExportByPolygon}
           >
-            {m?.pdfExport.areas.pinned} <FontAwesomeIcon icon="square-o" />
+            {m?.pdfExport.areas.pinned} <FaDrawPolygon />
           </Button>
         </ButtonGroup>
         <hr />
@@ -353,7 +359,7 @@ export function ExportPdfModal({ show }: Props): ReactElement {
                   href="http://mapnik.org/mapnik-reference/"
                   target="mapnik_reference"
                 >
-                  <FontAwesomeIcon icon="question-circle" />
+                  <FaRegQuestionCircle />
                 </a>
               </FormLabel>
               <FormControl
@@ -389,10 +395,10 @@ export function ExportPdfModal({ show }: Props): ReactElement {
             );
           }}
         >
-          <FontAwesomeIcon icon="download" /> {m?.pdfExport.export}
+          <FaDownload /> {m?.pdfExport.export}
         </Button>
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

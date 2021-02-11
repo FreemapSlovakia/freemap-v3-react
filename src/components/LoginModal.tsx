@@ -4,11 +4,12 @@ import {
   authLoginWithGoogle,
   authLoginWithOsm,
 } from 'fm3/actions/authActions';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { useMessages } from 'fm3/l10nInjector';
 import { ReactElement, useCallback } from 'react';
 import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
+import { FaFacebook, FaGoogle, FaSignInAlt, FaTimes } from 'react-icons/fa';
+import { SiOpenstreetmap } from 'react-icons/si';
 import { useDispatch } from 'react-redux';
 
 type Props = { show: boolean };
@@ -38,7 +39,7 @@ export function LoginModal({ show }: Props): ReactElement {
     <Modal show={show} onHide={close}>
       <Modal.Header closeButton>
         <Modal.Title>
-          <FontAwesomeIcon icon="sign-in" /> {m?.more.logIn}
+          <FaSignInAlt /> {m?.more.logIn}
         </Modal.Title>
       </Modal.Header>
       <Modal.Body>
@@ -48,7 +49,7 @@ export function LoginModal({ show }: Props): ReactElement {
           block
           style={{ backgroundColor: '#3b5998', color: '#fff' }}
         >
-          <FontAwesomeIcon icon="facebook-official" /> {m?.logIn.with.facebook}
+          <FaFacebook /> {m?.logIn.with.facebook}
         </Button>
         <Button
           onClick={loginWithGoogle}
@@ -56,7 +57,7 @@ export function LoginModal({ show }: Props): ReactElement {
           block
           style={{ backgroundColor: '#DB4437', color: '#fff' }}
         >
-          <FontAwesomeIcon icon="google" /> {m?.logIn.with.google}
+          <FaGoogle /> {m?.logIn.with.google}
         </Button>
         <Button
           onClick={loginWithOsm}
@@ -64,12 +65,12 @@ export function LoginModal({ show }: Props): ReactElement {
           block
           style={{ backgroundColor: '#8bdc81', color: '#585858' }}
         >
-          <FontAwesomeIcon icon="map-o" /> {m?.logIn.with.osm}
+          <SiOpenstreetmap /> {m?.logIn.with.osm}
         </Button>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="dark" onClick={close}>
-          <FontAwesomeIcon icon="close" /> {m?.general.close} <kbd>Esc</kbd>
+          <FaTimes /> {m?.general.close} <kbd>Esc</kbd>
         </Button>
       </Modal.Footer>
     </Modal>

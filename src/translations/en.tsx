@@ -1,12 +1,12 @@
 /* eslint-disable */
 
 import { ChangesetDetails } from 'fm3/components/ChangesetDetails';
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { RoadDetails } from 'fm3/components/RoadDetails';
 import { TrackViewerDetails } from 'fm3/components/TrackViewerDetails';
 import { latLonToString } from 'fm3/geoutils';
 import { Fragment } from 'react';
 import Alert from 'react-bootstrap/Alert';
+import { FaFlask, FaKey } from 'react-icons/fa';
 import { Messages } from './messagesInterface';
 
 const nf01 = Intl.NumberFormat('en', {
@@ -76,6 +76,15 @@ const en: Messages = {
     deleteError: ({ err }) => `Deleting error: ${err}`,
     deleted: 'Deleted.',
     saved: 'Saved.',
+    visual: 'Display',
+  },
+
+  selections: {
+    objects: 'Object (POI)',
+    drawPoints: 'Point',
+    drawLines: 'Line',
+    drawPolygons: 'Polygon',
+    tracking: 'Tracking',
   },
 
   tools: {
@@ -85,13 +94,16 @@ const en: Messages = {
     objects: 'Objects (POIs)',
     photos: 'Photos',
     measurement: 'Drawing and measurement',
+    drawPoints: 'Point drawing',
+    drawLines: 'Line drawing',
+    drawPolygons: 'Polygon drawing',
     trackViewer: 'Track viewer (GPX)',
     changesets: 'Map changes',
     mapDetails: 'Map details',
     tracking: 'Live tracking',
     maps: (
       <>
-        My maps <FontAwesomeIcon icon="flask" className="text-warning" />
+        My maps <FaFlask className="text-warning" />
       </>
     ),
   },
@@ -351,7 +363,8 @@ const en: Messages = {
 
   gallery: {
     filter: 'Filter',
-    allPhotos: 'All photos',
+    showPhotosFrom: 'View photos',
+    showLayer: 'Zobrazit vrstvu',
     upload: 'Upload',
     f: {
       firstUploaded: 'from first uploaded',
@@ -412,8 +425,6 @@ const en: Messages = {
     locationPicking: {
       title: 'Select photo location',
     },
-    layerHint:
-      'To show map photo overlay please select Photos from Map layers menu (or press keys Shift+F).',
     deletingError: ({ err }) => `Error deleting photo: ${err}`,
     tagsFetchingError: ({ err }) => `Error fetching tags: ${err}`,
     pictureFetchingError: ({ err }) => `Error fetching photo: ${err}`,
@@ -815,7 +826,7 @@ const en: Messages = {
       199: 'Cricket nets',
       200: 'Croquet',
       201: 'Cycling',
-      202: 'Diving',
+      202: 'Scuba diving',
       203: 'Dog racing',
       204: 'Horse riding',
       205: 'Soccer',
@@ -1186,8 +1197,7 @@ const en: Messages = {
         <>
           <p>
             Manage your devices so that others can watch your position if you
-            give them watch token (you can create it through{' '}
-            <FontAwesomeIcon icon="key" /> icon).
+            give them watch token (you can create it through <FaKey /> icon).
           </p>
           <hr />
           <p>

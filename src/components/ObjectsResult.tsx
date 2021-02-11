@@ -3,6 +3,7 @@ import { RichMarker } from 'fm3/components/RichMarker';
 import { colors } from 'fm3/constants';
 import { useMessages } from 'fm3/l10nInjector';
 import { getPoiType } from 'fm3/poiTypes';
+import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import { Popup } from 'react-leaflet';
@@ -12,6 +13,8 @@ export function ObjectsResult(): ReactElement {
   const m = useMessages();
 
   const dispatch = useDispatch();
+
+  const interactive = useSelector(selectingModeSelector);
 
   const objects = useSelector((state: RootState) => state.objects.objects);
 
@@ -30,7 +33,7 @@ export function ObjectsResult(): ReactElement {
 
         const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
-        const { name, ele } = tags;
+        const { name, ele, operator } = tags;
 
         const nf = Intl.NumberFormat(language, {
           minimumFractionDigits: 0,
@@ -39,7 +42,8 @@ export function ObjectsResult(): ReactElement {
 
         return (
           <RichMarker
-            key={`poi-${id}`}
+            key={`poi-${id}-${interactive ? 'a' : 'b'}`}
+            interactive={interactive}
             position={{ lat, lng: lon }}
             image={img}
             eventHandlers={{
@@ -54,8 +58,8 @@ export function ObjectsResult(): ReactElement {
                 {pt ? (
                   <>
                     {m?.objects.subcategories[pt.id]}
-                    {name && <br />}
-                    {name}
+                    {(name || operator) && <br />}
+                    {name || operator}
                     {ele && <br />}
                     {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
                   </>

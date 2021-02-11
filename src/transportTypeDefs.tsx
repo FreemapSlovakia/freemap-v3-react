@@ -1,3 +1,15 @@
+import { ReactElement } from 'react';
+import {
+  FaBicycle,
+  FaBus,
+  FaCar,
+  FaHiking,
+  FaSkiing,
+  FaSkiingNordic,
+  FaWalking,
+  FaWheelchair,
+} from 'react-icons/fa';
+
 export type TransportType =
   | 'car-free'
   | 'foot-stroller'
@@ -16,7 +28,7 @@ const EPS_URL = 'https://routing.epsilon.sk/';
 
 export const transportTypeDefs: {
   type: TransportType;
-  icon: string;
+  icon: ReactElement;
   expert?: boolean;
   special?: boolean;
   url: string;
@@ -24,57 +36,57 @@ export const transportTypeDefs: {
   development?: boolean;
   hidden?: boolean;
 }[] = [
-  { type: 'car', icon: 'car', url: `${FM_URL}$MODE/v1/car` },
+  { type: 'car', icon: <FaCar />, url: `${FM_URL}$MODE/v1/car` },
   {
     type: 'car-free',
-    icon: 'car',
+    icon: <FaCar />,
     url: `${FM_URL}$MODE/v1/car`,
     exclude: 'toll',
   },
   {
     type: 'imhd',
-    icon: 'bus',
+    icon: <FaBus />,
     special: true,
     url: `${EPS_URL}$MODE/v1/imhd`,
   },
-  { type: 'bike', icon: 'bicycle', url: `${FM_URL}$MODE/v1/bike` },
+  { type: 'bike', icon: <FaBicycle />, url: `${FM_URL}$MODE/v1/bike` },
   {
     type: 'bike-osm',
-    icon: 'bicycle',
+    icon: <FaBicycle />,
     url: 'https://routing.openstreetmap.de/routed-bike/$MODE/v1/driving',
   },
   {
     type: 'bikesharing',
-    icon: 'bicycle',
+    icon: <FaBicycle />,
     special: true,
     url: `${EPS_URL}$MODE/v1/bikesharing`,
     development: true,
   },
   {
     type: 'foot',
-    icon: '!icon-hiking',
+    icon: <FaHiking />,
     url: `${FM_URL}$MODE/v1/foot`,
   },
   {
     type: 'foot-osm',
-    icon: '!icon-hiking',
+    icon: <FaWalking />,
     url: 'https://routing.openstreetmap.de/routed-foot/$MODE/v1/driving',
   },
   {
     type: 'foot-stroller',
-    icon: 'wheelchair-alt',
+    icon: <FaWheelchair />,
     url: `${FM_URL}$MODE/v1/foot`,
     exclude: 'stroller',
     expert: true,
   },
   {
     type: 'nordic',
-    icon: '!icon-skier-skiing',
+    icon: <FaSkiingNordic />,
     url: `${FM_URL}$MODE/v1/nordic`,
   },
   {
     type: 'ski',
-    icon: '!icon-skiing',
+    icon: <FaSkiing />,
     url: `${FM_URL}$MODE/v1/ski`,
     expert: true,
   },

@@ -1,7 +1,7 @@
-import { FontAwesomeIcon } from 'fm3/components/FontAwesomeIcon';
 import { ChangeEvent, ReactElement, useCallback } from 'react';
 import FormControl from 'react-bootstrap/FormControl';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { FaCalendar, FaClock } from 'react-icons/fa';
 
 function checkDatetimeLocalInput(): boolean {
   const input = document.createElement('input');
@@ -71,7 +71,7 @@ export function DateTime({
     <InputGroup>
       <InputGroup.Append>
         <InputGroup.Text>
-          <FontAwesomeIcon icon="calendar" />
+          <FaCalendar />
         </InputGroup.Text>
       </InputGroup.Append>
       <FormControl
@@ -84,7 +84,7 @@ export function DateTime({
       />
       <InputGroup.Append>
         <InputGroup.Text>
-          <FontAwesomeIcon icon="clock-o" />
+          <FaClock />
         </InputGroup.Text>
       </InputGroup.Append>
       <FormControl
