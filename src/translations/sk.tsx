@@ -25,7 +25,7 @@ const getErrorMarkup = (ticketId?: string) => `<h1>Chyba aplikácie</h1>
 <p>
   ${
     ticketId
-      ? `Chyba nám bola automaticky reportovaná pod ID <b>${ticketId}</b>.`
+      ? `Chyba nám bola automaticky nahlásená pod ID <b>${ticketId}</b>.`
       : ''
   }
   Chybu môžeš nahlásiť ${
@@ -185,11 +185,11 @@ const sk: Messages = {
         turn: 'odbočte',
         'new name': 'choďte',
         depart: 'začnite',
-        arrive: 'ukončte',
+        arrive: 'ukončite',
         merge: 'pokračujte',
         // 'ramp':
         'on ramp': 'choďte na príjazdovú cestu',
-        'off ramp': 'opusťte príjazdovú cestu',
+        'off ramp': 'opustite príjazdovú cestu',
         fork: 'zvoľte cestu',
         'end of road': 'pokračujte',
         // 'use lane':
@@ -198,10 +198,10 @@ const sk: Messages = {
         rotary: 'vojdite na okružnú cestu',
         'roundabout turn': 'na kruhovom objazde odbočte',
         // 'notification':
-        'exit rotary': 'opusťte okružnú cestu', // undocumented
-        'exit roundabout': 'opusťte kruhový objazd', // undocumented
+        'exit rotary': 'opustite okružnú cestu', // undocumented
+        'exit roundabout': 'opustite kruhový objazd', // undocumented
         notification: 'poznámka',
-        'use lane': 'použi jazdný pruh',
+        'use lane': 'použite jazdný pruh',
       },
 
       modifiers: {
@@ -384,14 +384,14 @@ const sk: Messages = {
       lastUploaded: 'od poslednej nahranej',
       firstCaptured: 'od najstaršie odfotenej',
       lastCaptured: 'od najnovšie odfotenej',
-      leastRated: 'od najmenšieho hodnotenia',
-      mostRated: 'od najväčšieho hodnotenia',
+      leastRated: 'od najnižšieho hodnotenia',
+      mostRated: 'od najvyššieho hodnotenia',
     },
     viewer: {
       title: 'Fotografia',
       comments: 'Komentáre',
       newComment: 'Nový komentár',
-      addComment: 'Pridaj',
+      addComment: 'Pridať',
       yourRating: 'Tvoje hodnotenie:',
       showOnTheMap: 'Ukázať na mape',
       openInNewWindow: 'Otvoriť v…',
@@ -421,14 +421,14 @@ const sk: Messages = {
       uploading: (n) => `Nahrávam (${n})`,
       upload: 'Nahrať',
       rules: `
-        <p>Potiahnite sem fotky, alebo sem kliknite pre ich výber.</p>
+        <p>Potiahnite sem fotky alebo kliknite sem pre ich výber.</p>
         <ul>
-          <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10MB. Väčšie súbory server odmietne.</li>
-          <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania vymazané.</li>
+          <li>Nevkladajte príliš malé obrázky (miniatúry). Maximálny rozmer nie je obmedzený, je však obmedzená veľkosť súboru na max. 10 MB. Väčšie súbory server odmietne.</li>
+          <li>Vkladajte len fotografie krajiny, vrátane dokumentačných fotografií. Portréty a makro-fotografie sú považované za nevhodný obsah a budú bez varovania odstránené.</li>
           <li>Zvýšenú pozornosť venujte tomu, aby ste nahrávali výlučne vlastnú tvorbu.</li>
           <li>Nahraté fotografie sú ďalej šírené pod licenciou CC-BY-SA 2.0.</li>
           <li>Prevádzkovateľ Freemap.sk sa týmto zbavuje akejkoľvek zodpovednosti a nezodpovedá za priame ani nepriame škody vzniknuté uverejnením fotografie v galérii, za fotografiu nesie plnú zodpovednosť osoba, ktorá fotografiu na server uložila.</li>
-          <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu vymazať, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
+          <li>Prevádzkovateľ si vyhradzuje právo upraviť popis, názov, pozíciu a tagy fotografie, alebo fotografiu odstrániť, ak je jej obsah nevhodný (porušuje tieto pravidlá).</li>
           <li>Prevádzkovateľ si vyhradzuje právo zrušiť konto v prípade, že používateľ opakovane porušuje pravidlá galérie uverejňovaním nevhodného obsahu.</li>
         </ul>
       `,
@@ -453,7 +453,7 @@ const sk: Messages = {
       'Pre nahrávanie fotiek do galérie musíte byť prihlásený.',
     missingPositionError: 'Chýba pozícia.',
     invalidPositionError: 'Nesprávny formát súradníc.',
-    invalidTakenAt: 'Nevalidný dátum a čas fotenia.',
+    invalidTakenAt: 'Neplatný dátum a čas fotenia.',
     filterModal: {
       title: 'Filter fotografií',
       tag: 'Tag',
@@ -528,7 +528,7 @@ const sk: Messages = {
     },
     uploadModal: {
       title: 'Nahrať trasu',
-      drop: 'Potiahnite sem .gpx súbor, alebo sem kliknite pre jeho výber.',
+      drop: 'Potiahnite sem .gpx súbor alebo kliknite sem pre jeho výber.',
     },
     shareToast: 'Trasa bola uložená na server a môžete ju zdieľať.',
     fetchingError: ({ err }) =>
@@ -590,7 +590,7 @@ const sk: Messages = {
         label: (value) =>
           `Úroveň vyhladzovania pri výpočte celkovej nastúpanej/naklesanej nadmorskej výšky v prehliadači trás: ${value}`,
         info:
-          'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna ktorým sa vyhladzujú nadmorské výšky.',
+          'Pri hodnote 1 sa berú do úvahy všetky nadmorské výšky samostatne. Vyššie hodnoty zodpovedajú šírke plávajúceho okna, ktorým sa vyhladzujú nadmorské výšky.',
       },
     },
     saveSuccess: 'Zmeny boli uložené.',
@@ -642,7 +642,7 @@ const sk: Messages = {
       5: 'Zdravotníctvo',
       6: 'Obchody',
       7: 'Energetika',
-      8: 'Ubytovanie a Stravovanie',
+      8: 'Ubytovanie a stravovanie',
       9: 'Turizmus, turistika',
       10: 'Územné členenie',
       11: 'Ostatné',
@@ -744,19 +744,19 @@ const sk: Messages = {
       94: 'Farmárske produkty',
       95: 'Kvetinárstvo',
       96: 'Obrazy',
-      98: 'funeral_directors',
+      98: 'Pohrebný ústav',
       99: 'Nábytok',
       100: 'Záhradné centrum',
       101: 'Rozličný tovar',
       102: 'Darčeková predajňa',
-      103: 'glaziery',
+      103: 'Sklenárstvo',
       104: 'Ovocie, zelenina',
       105: 'Kaderníctvo',
       106: 'Železiarstvo',
       107: 'Načúvacie pomôcky',
       108: 'HI-FI',
       109: 'Zmrzlina',
-      110: 'interior_decoration',
+      110: 'Bytové doplnky',
       111: 'Zlatníctvo',
       112: 'Kiosk',
       113: 'Kuchynské potreby',
@@ -781,7 +781,7 @@ const sk: Messages = {
       133: 'Tetovanie',
       134: 'Hračkárstvo',
       135: 'Stavebniny',
-      136: 'vacant',
+      136: 'Prázdne priestory',
       137: 'Vysávače',
       138: 'variety_store',
       139: 'Video/DVD',
@@ -836,7 +836,7 @@ const sk: Messages = {
       189: 'Basketball',
       190: 'Plážový volejbal',
       191: 'Bmx',
-      192: 'Boules',
+      192: 'Guľové športy',
       193: 'Bowls',
       194: 'canadian_football',
       195: 'Kanoe',
@@ -844,7 +844,7 @@ const sk: Messages = {
       197: 'Lezenie',
       198: 'Kriket',
       199: 'cricket_nets',
-      200: 'croquet',
+      200: 'Kroket',
       201: 'Bicyklovanie',
       202: 'Potápanie',
       203: 'Preteky psov',
@@ -860,7 +860,7 @@ const sk: Messages = {
       213: 'korfball',
       214: 'Motorky',
       215: 'Multi',
-      216: 'orienteering',
+      216: 'Orientačné preteky',
       217: 'paddle_tennis',
       218: 'Paragliding',
       219: 'pelota',
@@ -950,7 +950,7 @@ const sk: Messages = {
 
   embed: {
     code: 'Vložte na vašu stránku tento html kód:',
-    example: 'Výsledok bude vyzerať následovne:',
+    example: 'Výsledok bude vyzerať nasledovne:',
     dimensions: 'Veľkosť:',
     height: 'Výška:',
     width: 'Šírka:',
@@ -969,17 +969,17 @@ const sk: Messages = {
 
   supportUs: {
     explanation:
-      'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardware a služby komerčných spoločností.',
+      'Mapový portál Freemap tvoria ľudia bezodplatne vo svojom voľnom čase. Na fungovanie a prevádzku je však potrebný hardvér a služby komerčných spoločností.',
     account: 'Bankové spojenie:',
     paypal: 'Prispieť cez PayPal',
     thanks: 'Za každý príspevok vám budeme veľmi vďační.',
-    registration: 'Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009',
+    registration: 'Registrované na MV/VVS/1-900/90-34343 dňa 2. 10. 2009',
   },
 
   gpxExport: {
     export: 'Stiahnuť',
     exportToDrive: 'Uložiť do Google Drive',
-    exportToDropbox: 'Uložit do Dropboxu',
+    exportToDropbox: 'Uložiť do Dropboxu',
     exportError: ({ err }) => `Chyba exportovania GPX: ${err}`,
     what: {
       plannedRoute: 'vyhľadanú trasu',
@@ -1006,7 +1006,7 @@ const sk: Messages = {
       osm: 'Prihlásiť sa pomocou OpenStreetMap',
     },
     enablePopup:
-      'Prosím, povoľte vo vašom prehliadači pop-up okná pre túto stránku.',
+      'Prosím, povoľte vo vašom prehliadači vyskakovacie (pop-up) okná pre túto stránku.',
     success: 'Boli ste úspešne prihlásený.',
     logInError: ({ err }) => `Nepodarilo sa prihlásiť: ${err}`,
     logInError2: 'Nepodarilo sa prihlásiť.',
@@ -1209,7 +1209,7 @@ const sk: Messages = {
       watchTokens: 'Sledovacie tokeny',
       watchPrivately: 'Sledovať privátne',
       watch: 'Sledovať',
-      delete: 'Zmazať zariadenie?',
+      delete: 'Odstrániť zariadenie?',
       modifyTitle: ({ name }) => (
         <>
           Upraviť zariadenie <i>{name}</i>
@@ -1281,7 +1281,7 @@ const sk: Messages = {
           </ul>
           <hr />
           <p>
-            V prípade trackera TK102B, nakonfigurujte ho na adresu{' '}
+            V prípade trackera TK102B ho nakonfigurujte na adresu{' '}
             <code>
               {process.env['API_URL']
                 ?.replace(/https?:\/\//, '')
@@ -1340,7 +1340,7 @@ const sk: Messages = {
       shading: 'Tieňovaný reliéf',
       hikingTrails: 'Turistické trasy',
       bicycleTrails: 'Cyklotrasy',
-      skiTrails: 'Lyžiarské trasy',
+      skiTrails: 'Lyžiarske trasy',
       horseTrails: 'Jazdecké trasy',
       drawing: 'Kreslenie',
       plannedRoute: 'Vyhľadanú trasu',
@@ -1351,7 +1351,7 @@ const sk: Messages = {
       <>
         Upozornenia:
         <ul>
-          <li>Exportuje sa nová outdoorova mapa.</li>
+          <li>Exportuje sa nová outdoorová mapa.</li>
           <li>Export mapy môže trvať aj desiatky sekúnd.</li>
           <li>
             Pri publikovaní mapy je nutné uviesť jej licenciu:
@@ -1389,10 +1389,10 @@ const sk: Messages = {
     delete: 'Zmazať',
     namePrompt: 'Názov mapy:',
     deleteConfirm: 'Naozaj si prajete vymazať túto mapu?',
-    fetchError: ({ err }) => `Nastala chyba pri načítavani mapy: ${err}`,
-    fetchListError: ({ err }) => `Nastala chyba pri načítavani máp: ${err}`,
+    fetchError: ({ err }) => `Nastala chyba pri načítavaní mapy: ${err}`,
+    fetchListError: ({ err }) => `Nastala chyba pri načítavaní máp: ${err}`,
     deleteError: ({ err }) => `Nastala chyba pri mazaní mapy: ${err}`,
-    renameError: ({ err }) => `Nastala chyba pri premenovávani mapy: ${err}`,
+    renameError: ({ err }) => `Nastala chyba pri premenovávaní mapy: ${err}`,
     createError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
     saveError: ({ err }) => `Nastala chyba pri ukladaní mapy: ${err}`,
   },
@@ -1407,7 +1407,7 @@ const sk: Messages = {
 
   contacts: {
     ngo: 'Občianske združenie',
-    registered: 'Registrované na MV/VVS/1-900/90-34343 dňa 2.10.2009',
+    registered: 'Registrované na MV/VVS/1-900/90-34343 dňa 2. 10. 2009',
     bankAccount: 'Bankové spojenie',
     generalContact: 'Všeobecné kontakty',
     board: 'Predstavenstvo',
