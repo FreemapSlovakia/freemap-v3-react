@@ -385,7 +385,8 @@
       },
       {
         "key": "building",
-        "value": "church"
+        "operation": "~",
+        "value": "^(church|cathedral)$"
       }
     ]
   },
