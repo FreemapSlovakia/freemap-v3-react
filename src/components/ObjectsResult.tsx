@@ -33,7 +33,7 @@ export function ObjectsResult(): ReactElement {
 
         const img = pt ? require(`../images/mapIcons/${pt.icon}.png`) : null;
 
-        const { name, ele } = tags;
+        const { name, ele, operator } = tags;
 
         const nf = Intl.NumberFormat(language, {
           minimumFractionDigits: 0,
@@ -58,8 +58,8 @@ export function ObjectsResult(): ReactElement {
                 {pt ? (
                   <>
                     {m?.objects.subcategories[pt.id]}
-                    {name && <br />}
-                    {name}
+                    {(name || operator) && <br />}
+                    {name || operator}
                     {ele && <br />}
                     {ele && `${nf.format(parseFloat(ele))} ${m?.general.masl}`}
                   </>
