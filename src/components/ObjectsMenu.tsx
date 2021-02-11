@@ -101,7 +101,11 @@ export function ObjectsMenu(): ReactElement {
             ref={inputRef}
           />
         </Dropdown.Toggle>
-        <Dropdown.Menu>
+        <Dropdown.Menu
+          popperConfig={{
+            strategy: 'fixed',
+          }}
+        >
           {poiTypeGroups.map((pointTypeGroup, i) => {
             const gid = pointTypeGroup.id;
 
