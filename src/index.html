@@ -235,6 +235,8 @@
     <%= htmlWebpackPlugin.tags.headTags.filter((tag) => tag.tagName !==
     'script').join('') %>
 
+    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
+
     <script>
       window.TrackJS &&
         TrackJS.install({
@@ -341,19 +343,15 @@
       </div>
     </div>
 
-    <script src="https://cdn.trackjs.com/agent/v3/latest/t.js"></script>
-
     <% for (const css of htmlWebpackPlugin.files.css) { %>
     <link itemprop="" rel="stylesheet" href="<%= css %>" />
     <% } %>
 
     <script>
-      var fm_seh = function (e) {
+      var validate_startup = function (e) {
         if (e) {
           e.preventDefault();
         }
-
-        console.error('Startup error.', e);
 
         var app = document.getElementById('app');
 
@@ -362,6 +360,8 @@
           !app.children[0] ||
           app.children[0].id === 'init-loader'
         ) {
+          console.error('Startup error.', e);
+
           var html;
 
           if (lang === 'hu') {
@@ -397,13 +397,15 @@
         }
       };
 
-      window.addEventListener('error', fm_seh);
+      window.addEventListener('error', validate_startup);
 
       window.addEventListener('load', function () {
         console.log('Page loaded.');
-        window.removeEventListener('error', fm_seh);
-        fm_seh();
-        delete fm_seh;
+
+        window.removeEventListener('error', validate_startup);
+
+        validate_startup();
+        delete validate_startup;
       });
 
       console.log('Pre-entry.');
