@@ -744,9 +744,9 @@ export function RoutePlannerResult(): ReactElement {
                   click() {
                     if (tool === 'route-planner') {
                       dispatch(routePlannerRemoveMidpoint(i));
+                    } else {
+                      dispatch(setTool('route-planner'));
                     }
-
-                    dispatch(setTool('route-planner'));
                   },
                 }
           }
