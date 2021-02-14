@@ -1,4 +1,5 @@
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import { elevationChartClose } from './actions/elevationChartActions';
 import {
   galleryClear,
   galleryEditPicture,
@@ -67,6 +68,15 @@ export function attachKeyboardHandler(store: MyStore): void {
       }
 
       event.preventDefault();
+
+      return;
+    }
+
+    if (
+      event.code === 'Escape' &&
+      state.elevationChart.elevationProfilePoints
+    ) {
+      store.dispatch(elevationChartClose());
 
       return;
     }
