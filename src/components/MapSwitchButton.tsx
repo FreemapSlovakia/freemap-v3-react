@@ -1,3 +1,4 @@
+import { galleryShowFilter } from 'fm3/actions/galleryActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { useMessages } from 'fm3/l10nInjector';
 import {
@@ -8,7 +9,14 @@ import {
   OverlayLetters,
 } from 'fm3/mapDefinitions';
 import { RootState } from 'fm3/storeCreator';
-import { MouseEvent, ReactElement, useCallback, useRef, useState } from 'react';
+import {
+  MouseEvent,
+  ReactElement,
+  SyntheticEvent,
+  useCallback,
+  useRef,
+  useState,
+} from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonGroup from 'react-bootstrap/ButtonGroup';
 import Dropdown from 'react-bootstrap/Dropdown';
@@ -30,13 +38,10 @@ import useMedia from 'use-media';
 function getKbdShortcut(key?: [string, boolean]) {
   return (
     key && (
-      <>
-        {' '}
-        <kbd>
-          {key[1] ? '⇧' : ''}
-          {key[0].replace(/Key|Digit/, '').toLowerCase()}
-        </kbd>
-      </>
+      <kbd className="ml-1">
+        {key[1] ? '⇧' : ''}
+        {key[0].replace(/Key|Digit/, '').toLowerCase()}
+      </kbd>
     )
   );
 }
@@ -90,8 +95,35 @@ export function MapSwitchButton(): ReactElement {
     [dispatch, mapType],
   );
 
+  const handlePossibleFilterClick = useCallback(
+    (e: SyntheticEvent<unknown, unknown>) => {
+      let x: unknown = e.target;
+
+      while (x instanceof Element) {
+        if (x === e.currentTarget) {
+          break;
+        }
+
+        if (x instanceof SVGElement && x.dataset['filter']) {
+          dispatch(galleryShowFilter());
+          return true;
+        }
+
+        x = x.parentNode;
+      }
+
+      return false;
+    },
+    [dispatch],
+  );
+
   const handleOverlaySelect = useCallback(
-    (overlay) => {
+    (overlay, e: SyntheticEvent<unknown>) => {
+      if (handlePossibleFilterClick(e)) {
+        setShow(false);
+        return;
+      }
+
       const s = new Set(overlays);
 
       if (!is<OverlayLetters>(overlay)) {
@@ -104,7 +136,7 @@ export function MapSwitchButton(): ReactElement {
 
       dispatch(mapRefocus({ overlays: [...s] }));
     },
-    [dispatch, overlays],
+    [dispatch, handlePossibleFilterClick, overlays],
   );
 
   const handleBaseClick = (e: MouseEvent<HTMLButtonElement>) => {
@@ -116,6 +148,10 @@ export function MapSwitchButton(): ReactElement {
   };
 
   const handleOverlayClick = (e: MouseEvent<HTMLButtonElement>) => {
+    if (handlePossibleFilterClick(e)) {
+      return;
+    }
+
     const { type } = e.currentTarget.dataset;
 
     if (!is<OverlayLetters>(type)) {
@@ -167,6 +203,13 @@ export function MapSwitchButton(): ReactElement {
             onClick={handleOverlayClick}
           >
             {icon}
+            {pictureFilterIsActive && type === 'I' && (
+              <FaFilter
+                data-filter="1"
+                title={m?.mapLayers.photoFilterWarning}
+                className="text-warning ml-2"
+              />
+            )}
           </Button>
         ))}
         <Button
@@ -222,13 +265,10 @@ export function MapSwitchButton(): ReactElement {
                     </span>
                     {getKbdShortcut(key)}
                     {minZoom !== undefined && zoom < minZoom && (
-                      <>
-                        {' '}
-                        <FaExclamationTriangle
-                          title={m?.mapLayers.minZoomWarning(minZoom)}
-                          className="text-warning"
-                        />
-                      </>
+                      <FaExclamationTriangle
+                        title={m?.mapLayers.minZoomWarning(minZoom)}
+                        className="text-warning ml-1"
+                      />
                     )}
                   </Dropdown.Item>
                 ))
@@ -266,22 +306,17 @@ export function MapSwitchButton(): ReactElement {
                   </span>
                   {getKbdShortcut(key)}
                   {minZoom !== undefined && zoom < minZoom && (
-                    <>
-                      {' '}
-                      <FaExclamationTriangle
-                        title={m?.mapLayers.minZoomWarning(minZoom)}
-                        className="text-warning"
-                      />
-                    </>
+                    <FaExclamationTriangle
+                      title={m?.mapLayers.minZoomWarning(minZoom)}
+                      className="text-warning ml-1"
+                    />
                   )}
                   {type === 'I' && pictureFilterIsActive && (
-                    <>
-                      {' '}
-                      <FaFilter
-                        title={m?.mapLayers.photoFilterWarning}
-                        className="text-warning"
-                      />
-                    </>
+                    <FaFilter
+                      data-filter="1"
+                      title={m?.mapLayers.photoFilterWarning}
+                      className="text-warning ml-1"
+                    />
                   )}
                 </Dropdown.Item>
               ))}

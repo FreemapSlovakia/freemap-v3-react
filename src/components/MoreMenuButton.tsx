@@ -584,7 +584,6 @@ export function MoreMenuButton(): ReactElement {
                           : [...overlays, 'I'],
                       }),
                     );
-                    close();
                   }}
                   active={overlays.includes('I')}
                 >
