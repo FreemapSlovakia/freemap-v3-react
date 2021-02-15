@@ -1,17 +1,11 @@
 @import '~bootstrap/scss/bootstrap';
 
-@import 'variables';
-
 @import './bootstrap-override.scss';
 
 @import './leaflet.scss';
 
 .hidden {
   display: none !important;
-}
-
-.rangeslider-horizontal .rangeslider__fill {
-  background-color: lighten($theme-primary-color, 25%);
 }
 
 .header {
@@ -100,7 +94,7 @@ button#freemap-logo {
   }
 }
 
-@media ($smartphone-screen) {
+@media (max-width: calc(var(--breakpoint-md) - 1px)) {
   .full {
     button#freemap-logo {
       background-image: url(../images/freemap-logo-small.png);

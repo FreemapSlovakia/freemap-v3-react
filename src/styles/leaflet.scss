@@ -66,3 +66,15 @@ a.leaflet-control-layers-toggle {
     right: 0;
   }
 }
+
+@media (max-width: 720px) {
+  .leaflet-control-scale {
+    margin-bottom: 4rem !important;
+  }
+}
+
+@media (max-width: 352px) {
+  .leaflet-control-scale {
+    margin-bottom: 7.5rem !important;
+  }
+}

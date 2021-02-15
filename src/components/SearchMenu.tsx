@@ -8,6 +8,7 @@ import {
   searchSetQuery,
   searchSetResults,
 } from 'fm3/actions/searchActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import 'fm3/styles/search.scss';
@@ -236,6 +237,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
     }
   };
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <>
       <Form
@@ -288,24 +291,27 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
               strategy: 'fixed',
             }}
           >
-            {results.map((result) => (
-              <Dropdown.Item
-                key={result.id}
-                eventKey={String(result.id)}
-                active={!!selectedResult && result.id === selectedResult.id}
-                as={HoverableMenuItem}
-              >
-                <span data-id={result.id}>
-                  {result.label}
-                  <br />
-                  {!!(result.class && result.type) && (
-                    <small>
-                      {result.class}={result.type}
-                    </small>
-                  )}
-                </span>
-              </Dropdown.Item>
-            ))}
+            <div className="dropdown-long" ref={sc}>
+              <div />
+              {results.map((result) => (
+                <Dropdown.Item
+                  key={result.id}
+                  eventKey={String(result.id)}
+                  active={!!selectedResult && result.id === selectedResult.id}
+                  as={HoverableMenuItem}
+                >
+                  <span data-id={result.id}>
+                    {result.label}
+                    <br />
+                    {!!(result.class && result.type) && (
+                      <small>
+                        {result.class}={result.type}
+                      </small>
+                    )}
+                  </span>
+                </Dropdown.Item>
+              ))}
+            </div>
           </Dropdown.Menu>
         </Dropdown>
       </Form>
