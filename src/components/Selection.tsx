@@ -1,4 +1,5 @@
 import { selectFeature } from 'fm3/actions/mainActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { ReactElement, ReactNode } from 'react';
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
@@ -20,9 +21,13 @@ export function Selection({
 }): ReactElement {
   const dispatch = useDispatch();
 
+  const sc = useScrollClasses('horizontal');
+
   return (
-    <div className="fm-ib-scroller">
-      <Card className="fm-toolbar">
+    <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc}>
+      <div />
+
+      <Card className="fm-toolbar mt-2 mx-2">
         <ButtonToolbar>
           <span className="align-self-center ml-1">
             {icon}

@@ -245,7 +245,6 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       >
         <Dropdown
           as={ButtonGroup}
-          // className="dropdown-long"
           show={open}
           onSelect={handleSelect}
           onToggle={handleToggle}
@@ -260,7 +259,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 ref={inputRef}
                 onFocus={handleInputFocus}
               />
-              <InputGroup.Append style={{ width: 'auto' }}>
+              <InputGroup.Append className="w-auto">
                 {!!selectedResult && (
                   <Button
                     variant="secondary"

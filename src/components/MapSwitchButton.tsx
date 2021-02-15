@@ -1,5 +1,6 @@
 import { galleryShowFilter } from 'fm3/actions/galleryActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import {
   BaseLayerLetters,
@@ -178,6 +179,8 @@ export function MapSwitchButton(): ReactElement {
       layer.primary.startsWith('!') &&
       layer.primary !== `!${language}`);
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <>
       <ButtonGroup className="dropup d-none d-sm-inline-flex">
@@ -237,7 +240,9 @@ export function MapSwitchButton(): ReactElement {
         target={(isWide ? buttonRef.current : button2Ref.current) ?? null}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <Popover.Content>
+          <Popover.Content className="fm-menu-scroller" ref={sc}>
+            <div />
+
             {
               // TODO base and overlay layers have too much duplicate code
               baseLayers

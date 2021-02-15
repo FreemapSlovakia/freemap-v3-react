@@ -21,9 +21,9 @@
   z-index: 10000;
 }
 
-.dropdown-long .dropdown-menu {
+.dropdown-long {
   overflow-x: auto;
-  height: calc(100vh - 120px);
+  height: calc(100vh - 150px);
 }
 
 .accordion > .card > .card-header {

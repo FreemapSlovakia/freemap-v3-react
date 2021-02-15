@@ -55,6 +55,7 @@ import { TrackingResult } from 'fm3/components/tracking/TrackingResult';
 import { TrackViewerMenu } from 'fm3/components/TrackViewerMenu';
 import { TrackViewerResult } from 'fm3/components/TrackViewerResult';
 import { useGpxDropHandler } from 'fm3/hooks/gpxDropHandlerHook';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
@@ -347,6 +348,12 @@ export function Main(): ReactElement {
 
   const selectionMenu = showMenu ? selectionType : null;
 
+  const sc1 = useScrollClasses('horizontal');
+
+  const sc2 = useScrollClasses('horizontal');
+
+  const sc3 = useScrollClasses('horizontal');
+
   return (
     <>
       <style>
@@ -373,8 +380,10 @@ export function Main(): ReactElement {
           </div>
         )} */}
         <div className="menus">
-          <div className="fm-ib-scroller">
-            <Card className="fm-toolbar">
+          <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc2}>
+            <div />
+
+            <Card className="fm-toolbar mx-2 mt-2">
               <Button
                 id="freemap-logo"
                 className={progress ? 'in-progress' : 'idle'}
@@ -392,8 +401,10 @@ export function Main(): ReactElement {
 
           {/* tool menus */}
           {showMenu && tool && (
-            <div className="fm-ib-scroller">
-              <Card className="fm-toolbar">
+            <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc1}>
+              <div />
+
+              <Card className="fm-toolbar mx-2 mt-2">
                 <ButtonToolbar>
                   {toolDef && (
                     <span className="align-self-center ml-1 mr-2">
@@ -438,7 +449,10 @@ export function Main(): ReactElement {
 
       <div className="fm-type-zoom-control">
         <div>
-          <MapControls />
+          <div className="fm-ib-scroller fm-ib-scroller-bottom" ref={sc3}>
+            <div />
+            <MapControls />
+          </div>
         </div>
         <Copyright />
       </div>

@@ -31,10 +31,7 @@ export function Copyright(): ReactElement {
   );
 
   return (
-    <Card
-      className="fm-toolbar"
-      style={{ float: 'right', marginRight: '10px' }}
-    >
+    <Card className="fm-toolbar mr-2 mb-2">
       {showLegendButton && (
         <Button
           className="mr-1"

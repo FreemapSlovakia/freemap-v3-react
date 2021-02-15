@@ -1,6 +1,7 @@
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { objectsSetFilter } from 'fm3/actions/objectsActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { poiTypeGroups, poiTypes } from 'fm3/poiTypes';
 import { RootState } from 'fm3/storeCreator';
@@ -79,10 +80,12 @@ export function ObjectsMenu(): ReactElement {
     }
   };
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <>
       <Dropdown
-        className="dropdown-long"
+        className="ml-1"
         id="objectsMenuDropdown"
         show={dropdownOpened}
         onSelect={handleSelect}
@@ -106,34 +109,40 @@ export function ObjectsMenu(): ReactElement {
             strategy: 'fixed',
           }}
         >
-          {poiTypeGroups.map((pointTypeGroup, i) => {
-            const gid = pointTypeGroup.id;
+          <div className="dropdown-long" ref={sc}>
+            <div />
 
-            const items = poiTypes
-              .filter(({ group }) => group === gid)
-              .filter(({ id }) =>
-                m?.objects.subcategories[id]
-                  ?.toLowerCase()
-                  .includes(filter.toLowerCase()),
-              )
-              .map(({ group, id, icon }) => (
-                <Dropdown.Item key={id} eventKey={String(id)}>
-                  <img
-                    src={require(`../images/mapIcons/${icon}.png`)}
-                    alt={`${group}-${icon}`}
-                  />{' '}
-                  {m?.objects.subcategories[id]}
-                </Dropdown.Item>
-              ));
+            {poiTypeGroups.map((pointTypeGroup, i) => {
+              const gid = pointTypeGroup.id;
 
-            return items.length === 0 ? null : (
-              <Fragment key={gid}>
-                {i > 0 && <Dropdown.Divider />}
-                <Dropdown.Header>{m?.objects.categories[gid]}</Dropdown.Header>
-                {items}
-              </Fragment>
-            );
-          })}
+              const items = poiTypes
+                .filter(({ group }) => group === gid)
+                .filter(({ id }) =>
+                  m?.objects.subcategories[id]
+                    ?.toLowerCase()
+                    .includes(filter.toLowerCase()),
+                )
+                .map(({ group, id, icon }) => (
+                  <Dropdown.Item key={id} eventKey={String(id)}>
+                    <img
+                      src={require(`../images/mapIcons/${icon}.png`)}
+                      alt={`${group}-${icon}`}
+                    />{' '}
+                    {m?.objects.subcategories[id]}
+                  </Dropdown.Item>
+                ));
+
+              return items.length === 0 ? null : (
+                <Fragment key={gid}>
+                  {i > 0 && <Dropdown.Divider />}
+                  <Dropdown.Header>
+                    {m?.objects.categories[gid]}
+                  </Dropdown.Header>
+                  {items}
+                </Fragment>
+              );
+            })}
+          </div>
         </Dropdown.Menu>
       </Dropdown>
     </>

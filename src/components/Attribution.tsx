@@ -22,7 +22,7 @@ export function Attribution({
 }: // imhd,
 Props): ReactElement {
   return (
-    <ul style={{ padding: '10px 0 0 20px' }}>
+    <ul className="pl-4 pt-3">
       {categorize(
         [
           ...baseLayers.filter(({ type }) => mapType === type),

@@ -67,7 +67,7 @@ export function MapControls(): ReactElement | null {
   const embed = window.self !== window.top;
 
   return (
-    <Card className="fm-toolbar">
+    <Card className="fm-toolbar mx-2 mb-2">
       {(!embed || !embedFeatures.includes('noMapSwitch')) && (
         <MapSwitchButton />
       )}

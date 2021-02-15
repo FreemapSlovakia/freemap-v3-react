@@ -14,9 +14,10 @@ export function HomeLocationPickingMenu(): ReactElement | null {
   );
 
   return !selectingHomeLocation ? null : (
-    <Card className="fm-toolbar">
-      <span>Zvoľte domovskú pozíciu</span>{' '}
+    <Card className="fm-toolbar mx-2 mt-2">
+      <div className="m-1">Zvoľte domovskú pozíciu</div>
       <Button
+        className="ml-1"
         variant="dark"
         onClick={() => {
           dispatch(setSelectingHomeLocation(false));

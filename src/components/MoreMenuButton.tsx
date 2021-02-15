@@ -17,6 +17,7 @@ import {
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { tipsShow } from 'fm3/actions/tipsActions';
 import { trackingActions } from 'fm3/actions/trackingActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { tips } from 'fm3/tips';
@@ -238,6 +239,8 @@ export function MoreMenuButton(): ReactElement {
       state.tracking.showPoints + ',' + state.tracking.showLine,
   );
 
+  const sc = useScrollClasses('vertical');
+
   return (
     <>
       <Button
@@ -257,7 +260,9 @@ export function MoreMenuButton(): ReactElement {
         target={button.current}
       >
         <Popover id="popover-trigger-click-root-close" className="fm-menu">
-          <Popover.Content>
+          <Popover.Content className="fm-menu-scroller" ref={sc}>
+            <div />
+
             {submenu === null ? (
               <Fragment key="main">
                 <Dropdown.Item
@@ -736,52 +741,55 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
               </Fragment>
             ) : null}
-          </Popover.Content>
 
-          {submenu === null && (
-            <div style={{ margin: '4px 18px', fontSize: '18px' }}>
-              <a
-                onSelect={close}
-                href="https://www.facebook.com/FreemapSlovakia"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#3b5998' }}
-                title={m?.more.facebook}
-              >
-                <FaFacebook />
-              </a>{' '}
-              <a
-                onSelect={close}
-                href="https://twitter.com/FreemapSlovakia"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#0084b4' }}
-                title={m?.more.twitter}
-              >
-                <FaTwitter />
-              </a>{' '}
-              <a
-                onSelect={close}
-                href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#ff0000' }}
-                title={m?.more.youtube}
-              >
-                <FaYoutube />
-              </a>{' '}
-              <a
-                onSelect={close}
-                href="https://github.com/FreemapSlovakia"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ color: '#333' }}
-                title={m?.more.github}
-              >
-                <FaGithub />
-              </a>
-            </div>
-          )}
+            {submenu === null && (
+              <>
+                <Dropdown.Divider />
+                <div style={{ fontSize: '1.2rem' }} className="mx-2">
+                  <a
+                    onSelect={close}
+                    href="https://www.facebook.com/FreemapSlovakia"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#3b5998' }}
+                    title={m?.more.facebook}
+                  >
+                    <FaFacebook />
+                  </a>{' '}
+                  <a
+                    onSelect={close}
+                    href="https://twitter.com/FreemapSlovakia"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#0084b4' }}
+                    title={m?.more.twitter}
+                  >
+                    <FaTwitter />
+                  </a>{' '}
+                  <a
+                    onSelect={close}
+                    href="https://www.youtube.com/channel/UCy0FrRnqJlc96dEpDIpNhIQ"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#ff0000' }}
+                    title={m?.more.youtube}
+                  >
+                    <FaYoutube />
+                  </a>{' '}
+                  <a
+                    onSelect={close}
+                    href="https://github.com/FreemapSlovakia"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: '#333' }}
+                    title={m?.more.github}
+                  >
+                    <FaGithub />
+                  </a>
+                </div>
+              </>
+            )}
+          </Popover.Content>
         </Popover>
       </Overlay>
     </>

@@ -240,7 +240,7 @@ export function GalleryViewerModal({ show }: Props): ReactElement {
               as="select"
               value={index}
               onChange={handleIndexChange}
-              style={{ width: 'auto', display: 'inline-block' }}
+              className="w-auto d-inline-block"
             >
               {imageIds.map((_, i) => (
                 <option key={i} value={i}>

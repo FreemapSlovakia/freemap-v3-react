@@ -44,7 +44,7 @@
 
 .menus {
   pointer-events: none;
-  margin: 8px 4px;
+  // margin: 0.25rem;
   & > * {
     pointer-events: all;
   }
@@ -174,14 +174,14 @@ button#freemap-logo {
 
 .fm-toolbar {
   @media screen {
-    margin: 0 3px 8px;
+    min-height: 3rem;
     background-color: rgba(255, 255, 255, 0.8);
     display: inline-flex;
     // flex-wrap: wrap;
     flex-direction: row;
     vertical-align: top;
 
-    padding: 4px;
+    padding: 0.25rem;
 
     form {
       display: inline;
@@ -203,8 +203,6 @@ button#freemap-logo {
 
 .fm-ib-scroller {
   overflow: auto;
-  // display: inline-block;
-  // width: 100%;
 }
 
 .fm-label {
@@ -223,7 +221,7 @@ button#freemap-logo {
   pointer-events: none;
   position: absolute;
   z-index: 1010;
-  bottom: 10px;
+  bottom: 0;
   left: 0;
   right: 0;
 
@@ -235,7 +233,7 @@ button#freemap-logo {
     flex-grow: 1;
     display: flex;
     justify-content: center;
-    overflow: auto;
+    max-width: 100vw;
   }
 
   & > div:last-child {
@@ -288,4 +286,97 @@ body.fm-overlay-backdrop-enable {
 
 .picker-dialog {
   z-index: 10001 !important;
+}
+
+.fm-ib-scroller::before,
+.fm-ib-scroller > div:first-child::before,
+.fm-menu-scroller::before,
+.fm-menu-scroller > div:first-child::before,
+.dropdown-long::before,
+.dropdown-long > div:first-child::before {
+  content: '';
+  position: fixed;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.5s;
+}
+
+.fm-ib-scroller::before {
+  width: 2rem;
+  height: 3rem;
+  background: linear-gradient(
+    to right,
+    rgba(224, 224, 224, 1) 5%,
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.fm-ib-scroller > div:first-child::before {
+  width: 2rem;
+  height: 3rem;
+  right: 0;
+  background: linear-gradient(
+    to right,
+    rgba(255, 255, 255, 0) 5%,
+    rgba(224, 224, 224, 1)
+  );
+}
+
+.fm-ib-scroller-top::before {
+  width: 2rem;
+  height: 3rem;
+  background: linear-gradient(
+    to right,
+    rgba(224, 224, 224, 1) 5%,
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.fm-ib-scroller-top::before,
+.fm-ib-scroller-top > div:first-child::before {
+  margin-top: 0.5rem;
+}
+
+.fm-menu-scroller::before,
+.dropdown-long::before {
+  width: 100%;
+  height: 2rem;
+  background: linear-gradient(
+    to bottom,
+    rgba(224, 224, 224, 1) 5%,
+    rgba(255, 255, 255, 0)
+  );
+}
+
+.fm-menu-scroller > div:first-child::before,
+.dropdown-long > div:first-child::before {
+  width: 100%;
+  height: 2rem;
+  bottom: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0) 5%,
+    rgba(224, 224, 224, 1)
+  );
+}
+
+.fm-menu-scroller::before,
+.fm-menu-scroller > div:first-child::before {
+  margin-left: -0.75rem;
+  margin-top: -0.5rem;
+}
+
+.dropdown-long::before,
+.dropdown-long > div:first-child::before {
+  margin-top: -0.5rem;
+  // margin-bottom: -0.5rem;
+}
+
+.scroll-left::before,
+.scroll-right > div:first-child::before,
+.scroll-top::before,
+.scroll-bottom > div:first-child::before {
+  opacity: 1;
+  transition: opacity 0.5s;
 }

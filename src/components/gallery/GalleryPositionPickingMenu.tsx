@@ -20,16 +20,17 @@ export function GalleryPositionPickingMenu(): ReactElement | null {
   );
 
   return !pickingPosition ? null : (
-    <Card className="fm-toolbar">
-      {m?.gallery.locationPicking.title}{' '}
+    <Card className="fm-toolbar mx-2 mt-2">
+      <div className="m-2">{m?.gallery.locationPicking.title}</div>
       <Button
+        className="mr-1"
         onClick={() => {
           dispatch(galleryConfirmPickedPosition());
         }}
       >
         <FaCheck />
         <span className="d-none d-sm-inline"> {m?.general.ok}</span>
-      </Button>{' '}
+      </Button>
       <Button
         onClick={() => {
           dispatch(gallerySetItemForPositionPicking(null));
