@@ -125,7 +125,7 @@ export function RoutePlannerMenu(): ReactElement {
     }
   }, [dispatch, m]);
 
-  const sc = useScrollClasses();
+  const sc = useScrollClasses('vertical');
 
   return (
     <>
