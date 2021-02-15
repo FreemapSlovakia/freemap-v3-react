@@ -305,10 +305,11 @@ body.fm-overlay-backdrop-enable {
 .fm-ib-scroller::before {
   width: 2rem;
   height: 3rem;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to right,
-    rgba(224, 224, 224, 1) 5%,
-    rgba(255, 255, 255, 0)
+    rgba(128, 128, 128, 1) 5%,
+    rgba(128, 128, 128, 0)
   );
 }
 
@@ -316,20 +317,22 @@ body.fm-overlay-backdrop-enable {
   width: 2rem;
   height: 3rem;
   right: 0;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to right,
-    rgba(255, 255, 255, 0) 5%,
-    rgba(224, 224, 224, 1)
+    rgba(128, 128, 128, 0) 5%,
+    rgb(128, 128, 128)
   );
 }
 
 .fm-ib-scroller-top::before {
   width: 2rem;
   height: 3rem;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to right,
-    rgba(224, 224, 224, 1) 5%,
-    rgba(255, 255, 255, 0)
+    rgb(128, 128, 128) 5%,
+    rgba(128, 128, 128, 0)
   );
 }
 
@@ -342,10 +345,11 @@ body.fm-overlay-backdrop-enable {
 .dropdown-long::before {
   width: 100%;
   height: 2rem;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to bottom,
-    rgba(224, 224, 224, 1) 5%,
-    rgba(255, 255, 255, 0)
+    rgb(177, 171, 171) 5%,
+    rgba(128, 128, 128, 0)
   );
 }
 
@@ -354,10 +358,11 @@ body.fm-overlay-backdrop-enable {
   width: 100%;
   height: 2rem;
   bottom: 0;
+  mix-blend-mode: multiply;
   background: linear-gradient(
     to bottom,
-    rgba(255, 255, 255, 0) 5%,
-    rgba(224, 224, 224, 1)
+    rgba(128, 128, 128, 0) 5%,
+    rgb(128, 128, 128)
   );
 }
 

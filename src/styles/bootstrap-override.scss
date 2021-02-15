@@ -1,7 +1,7 @@
 .popover-body {
   // max-width: 290px;
   max-height: calc(
-    100vh - 120px
+    var(--vh, 100vh) - 120px
   ); // hack to prevent popovers go outside view on mobiles
   overflow-y: auto;
 }
@@ -23,7 +23,7 @@
 
 .dropdown-long {
   overflow-x: auto;
-  height: calc(100vh - 150px);
+  max-height: calc(var(--vh, 100vh) - 150px);
 }
 
 .accordion > .card > .card-header {

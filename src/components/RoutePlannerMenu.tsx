@@ -14,6 +14,7 @@ import {
   RoutingMode,
 } from 'fm3/actions/routePlannerActions';
 import { toastsAdd } from 'fm3/actions/toastsActions';
+import { useScrollClasses } from 'fm3/hooks/scrollClassesHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { TransportType, transportTypeDefs } from 'fm3/transportTypeDefs';
@@ -124,6 +125,8 @@ export function RoutePlannerMenu(): ReactElement {
     }
   }, [dispatch, m]);
 
+  const sc = useScrollClasses();
+
   return (
     <>
       <Dropdown
@@ -158,43 +161,48 @@ export function RoutePlannerMenu(): ReactElement {
             strategy: 'fixed',
           }}
         >
-          {transportTypeDefs
-            .filter(({ expert, hidden }) => !hidden && (expertMode || !expert))
-            .map(({ type, icon, development }) => (
-              <Dropdown.Item
-                as="button"
-                eventKey={type}
-                key={type}
-                title={m?.routePlanner.transportType[type] ?? '…'}
-                active={transportType === type}
-              >
-                {icon}{' '}
-                {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
-                {m?.routePlanner.transportType[type] ?? '…'}
-                {development && (
-                  <>
-                    {' '}
-                    <FaFlask
-                      title={m?.routePlanner.development ?? '…'}
-                      className="text-warning"
-                    />
-                  </>
-                )}
-                {type === 'bikesharing' && (
-                  <>
-                    {' '}
-                    <a
-                      href="http://routing.epsilon.sk/bikesharing.php"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      onClick={stopPropagation}
-                    >
-                      <FaInfoCircle />
-                    </a>
-                  </>
-                )}
-              </Dropdown.Item>
-            ))}
+          <div className="dropdown-long" ref={sc}>
+            <div />
+            {transportTypeDefs
+              .filter(
+                ({ expert, hidden }) => !hidden && (expertMode || !expert),
+              )
+              .map(({ type, icon, development }) => (
+                <Dropdown.Item
+                  as="button"
+                  eventKey={type}
+                  key={type}
+                  title={m?.routePlanner.transportType[type] ?? '…'}
+                  active={transportType === type}
+                >
+                  {icon}{' '}
+                  {['car', 'bikesharing'].includes(type) && <FaMoneyBill />}{' '}
+                  {m?.routePlanner.transportType[type] ?? '…'}
+                  {development && (
+                    <>
+                      {' '}
+                      <FaFlask
+                        title={m?.routePlanner.development ?? '…'}
+                        className="text-warning"
+                      />
+                    </>
+                  )}
+                  {type === 'bikesharing' && (
+                    <>
+                      {' '}
+                      <a
+                        href="http://routing.epsilon.sk/bikesharing.php"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        onClick={stopPropagation}
+                      >
+                        <FaInfoCircle />
+                      </a>
+                    </>
+                  )}
+                </Dropdown.Item>
+              ))}
+          </div>
         </Dropdown.Menu>
       </Dropdown>
       <Dropdown

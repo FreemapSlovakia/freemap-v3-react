@@ -57,6 +57,13 @@ attachOsmLoginMessageHandler(store);
 
 store.dispatch(enableUpdatingUrl());
 
+// see https://chanind.github.io/javascript/2019/09/28/avoid-100vh-on-mobile-web.html#comment-4634921967
+function setVh() {
+  document.documentElement.style.setProperty('--vh', window.innerHeight + 'px');
+}
+
+window.addEventListener('resize', setVh);
+
 render(
   <Provider store={store}>
     <IconContext.Provider
