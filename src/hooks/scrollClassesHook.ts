@@ -1,5 +1,7 @@
 import { useCallback, useRef } from 'react';
 
+const rem = parseFloat(getComputedStyle(document.documentElement).fontSize);
+
 export function useScrollClasses(
   direction: 'horizontal' | 'vertical',
 ): (e: HTMLDivElement | null) => void {
@@ -21,14 +23,14 @@ export function useScrollClasses(
 
             el.classList.toggle(
               direction === 'horizontal' ? 'scroll-left' : 'scroll-top',
-              scrollPosition > 0,
+              scrollPosition > (direction === 'horizontal' ? rem / 2 : 0),
             );
 
             el.classList.toggle(
               direction === 'horizontal' ? 'scroll-right' : 'scroll-bottom',
               scrollPosition + 1 <
                 (direction === 'horizontal'
-                  ? el.scrollWidth - el.clientWidth
+                  ? el.scrollWidth - el.clientWidth - rem / 2
                   : el.scrollHeight - el.clientHeight),
             );
 

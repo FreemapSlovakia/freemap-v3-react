@@ -21,6 +21,7 @@ export function MapDetailsMenu(): ReactElement {
   return (
     <>
       <Button
+        className="ml-1"
         variant="secondary"
         onClick={() => {
           dispatch(mapDetailsSetSubtool('track-info'));

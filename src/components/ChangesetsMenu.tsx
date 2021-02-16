@@ -37,6 +37,7 @@ export function ChangesetsMenu(): ReactElement {
   return (
     <>
       <Dropdown
+        className="ml-1"
         onSelect={(d) => {
           if (canSearchWithThisAmountOfDays(Number(d))) {
             dispatch(changesetsSetDays(Number(d)));

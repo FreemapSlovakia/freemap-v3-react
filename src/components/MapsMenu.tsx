@@ -27,6 +27,7 @@ export function MapsMenu(): ReactElement {
   return (
     <>
       <Dropdown
+        className="ml-1"
         onSelect={(id) => {
           dispatch(mapsLoad({ id: id ? Number(id) : undefined }));
         }}

@@ -62,6 +62,7 @@ export function TrackViewerMenu(): ReactElement {
   return (
     <>
       <Button
+        className="ml-1"
         variant="secondary"
         onClick={() => {
           dispatch(setActiveModal('upload-track'));
