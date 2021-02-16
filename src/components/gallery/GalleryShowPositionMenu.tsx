@@ -38,7 +38,7 @@ export function GalleryShowPositionMenu(): ReactElement | null {
   }, [close, showPosition]);
 
   return !showPosition ? null : (
-    <Card className="fm-toolbar">
+    <Card className="fm-toolbar mx-2 mt-2">
       <Button onClick={close}>
         <FaChevronLeft />
         <span className="d-none d-sm-inline"> {m?.general.back}</span>{' '}

@@ -936,6 +936,7 @@ const cs: Messages = {
     fetchingError: ({ err }) =>
       `Nastala chyba při zpracování výsledků vyhledávání: ${err}`,
     buttonTitle: 'Hledat',
+    placeholder: 'Hledat v mapě',
   },
 
   embed: {

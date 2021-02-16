@@ -925,6 +925,7 @@ const en: Messages = {
     routeTo: 'Route to here',
     fetchingError: ({ err }) => `Searching error: ${err}`,
     buttonTitle: 'Search',
+    placeholder: 'Search in the map',
   },
 
   embed: {

@@ -946,6 +946,7 @@ const sk: Messages = {
     fetchingError: ({ err }) =>
       `Nastala chyba pri spracovaní výsledkov vyhľadávania: ${err}`,
     buttonTitle: 'Hľadať',
+    placeholder: 'Hľadať v mape',
   },
 
   embed: {

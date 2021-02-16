@@ -941,6 +941,7 @@ const hu: Messages = {
     routeTo: 'Útvonal ide',
     fetchingError: ({ err }) => `Keresési hiba: ${err}`,
     buttonTitle: 'Keresés',
+    placeholder: 'Keresés az mpap-ban', // TODO google-translated
   },
 
   embed: {

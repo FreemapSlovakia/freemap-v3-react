@@ -258,7 +258,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
                 className="fm-search-input"
                 onChange={handleChange}
                 value={value}
-                placeholder="Brusno"
+                placeholder={m?.search.placeholder}
                 ref={inputRef}
                 onFocus={handleInputFocus}
               />

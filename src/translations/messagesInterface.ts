@@ -527,6 +527,7 @@ export type Messages = {
     routeTo: string;
     fetchingError: ({ err }: Err) => string;
     buttonTitle: string;
+    placeholder: string;
   };
   embed: {
     code: string;
