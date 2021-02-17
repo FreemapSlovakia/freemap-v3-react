@@ -54,11 +54,13 @@ export function useScrollClasses(
   );
 
   const resizeObserver = useRef(
-    new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        handleScroll(entry.target);
-      }
-    }),
+    window.ResizeObserver
+      ? new ResizeObserver((entries) => {
+          for (const entry of entries) {
+            handleScroll(entry.target);
+          }
+        })
+      : undefined,
   );
 
   const refSetter = useCallback(
@@ -74,9 +76,9 @@ export function useScrollClasses(
 
         handleScroll(e);
 
-        resizeObserver.current.observe(e);
+        resizeObserver.current?.observe(e);
       } else {
-        resizeObserver.current.disconnect();
+        resizeObserver.current?.disconnect();
       }
 
       ref.current = e;
