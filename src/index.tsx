@@ -64,6 +64,8 @@ function setVh() {
 
 window.addEventListener('resize', setVh);
 
+setVh();
+
 render(
   <Provider store={store}>
     <IconContext.Provider
