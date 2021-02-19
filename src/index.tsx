@@ -41,7 +41,9 @@ const store = createReduxStore();
 
 setErrorHandlerStore(store);
 
-loadAppState();
+if (window.self === window.top) {
+  loadAppState();
+}
 
 store.dispatch(authInit());
 
