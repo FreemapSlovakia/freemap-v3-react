@@ -331,8 +331,6 @@ const sk: Messages = {
     gpxExport: 'Exportovať do GPX',
     mapExports: 'Mapa pre GPS zariadenia',
     embedMap: 'Vložiť do webstránky',
-    reportMapError: 'Nahlásiť chybu zobrazenia v mape',
-    reportAppError: 'Nahlásiť chybu v portáli',
     supportUs: 'Podporiť Freemap',
     help: 'Pomoc',
     back: 'Naspäť',
@@ -1374,7 +1372,14 @@ const sk: Messages = {
               >
                 © prispievatelia OpenStreetMap
               </Alert.Link>
-              , © SRTM
+              {', SRTM, '}
+              <Alert.Link
+                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LLS: ÚGKK SR
+              </Alert.Link>
             </em>
           </li>
         </ul>{' '}

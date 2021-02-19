@@ -330,8 +330,6 @@ const hu: Messages = {
     gpxExport: 'Exportálás GPX-be',
     mapExports: 'Térkép a GPS-készülékek számára', // TODO google-translated
     embedMap: 'Térkép beágyazása',
-    reportMapError: 'Térképhiba bejelentése',
-    reportAppError: 'Alkalmazáshiba bejelentése',
     supportUs: 'A Freemap támogatása',
     help: 'Súgó',
     back: 'Vissza',
@@ -1373,7 +1371,14 @@ const hu: Messages = {
               >
                 © OpenStreetMap közreműködők
               </Alert.Link>
-              , © SRTM
+              {', SRTM, '}
+              <Alert.Link
+                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LLS: ÚGKK SR
+              </Alert.Link>
             </em>
           </li>
         </ul>{' '}

@@ -272,8 +272,6 @@ export type Messages = {
     gpxExport: string;
     mapExports: string;
     embedMap: string;
-    reportMapError: string;
-    reportAppError: string;
     supportUs: string;
     help: string;
     back: string;

@@ -1,7 +1,6 @@
 /* eslint-disable react/jsx-key */
 
 import {
-  FaBus,
   FaCamera,
   FaCertificate,
   FaExternalLinkAlt,
@@ -23,5 +22,4 @@ export const tips = [
   ['galleryUpload', 'Galéria fotografií', <FaCamera />],
   ['gpxViewer', 'Prehliadač trás GPX', <FaRoad />],
   ['planner', 'Vyhľadávač trás', <FaMapSigns />],
-  ['publicTransport', 'MHD', <FaBus />],
 ] as const;

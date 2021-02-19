@@ -37,7 +37,6 @@ import Popover from 'react-bootstrap/Popover';
 import {
   FaBars,
   FaBook,
-  FaBug,
   FaBullseye,
   FaCamera,
   FaChevronLeft,
@@ -47,7 +46,6 @@ import {
   FaDownload,
   FaDrawPolygon,
   FaEraser,
-  FaExclamationTriangle,
   FaExternalLinkAlt,
   FaFacebook,
   FaFilter,
@@ -71,6 +69,7 @@ import {
   FaSignOutAlt,
   FaTwitter,
   FaUpload,
+  FaUsers,
   FaYoutube,
 } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
@@ -395,9 +394,10 @@ export function MoreMenuButton(): ReactElement {
                 </Dropdown.Item>
 
                 <Dropdown.Item
-                  onSelect={close}
-                  href="http://wiki.freemap.sk/FileDownload"
-                  target="_blank"
+                  onSelect={() => {
+                    dispatch(tipsShow('exports'));
+                    close();
+                  }}
                 >
                   <FaMobileAlt /> {m?.more.mapExports}
                 </Dropdown.Item>
@@ -457,23 +457,15 @@ export function MoreMenuButton(): ReactElement {
                   <FaRegAddressCard /> {m?.more.contacts}
                 </Dropdown.Item>
 
-                <Dropdown.Divider />
-
-                <Dropdown.Item
-                  onSelect={close}
-                  href="http://wiki.freemap.sk/NahlasenieChyby"
-                  target="_blank"
-                >
-                  <FaExclamationTriangle /> {m?.more.reportMapError}
-                </Dropdown.Item>
-
-                <Dropdown.Item
-                  onSelect={close}
-                  href="https://github.com/FreemapSlovakia/freemap-v3-react/issues/new"
-                  target="_blank"
-                >
-                  <FaBug /> {m?.more.reportAppError}
-                </Dropdown.Item>
+                {skCz && (
+                  <Dropdown.Item
+                    onSelect={close}
+                    href="https://groups.google.com/forum/#!forum/osm_sk"
+                    target="_blank"
+                  >
+                    <FaUsers /> Fórum slovenskej OSM komunity
+                  </Dropdown.Item>
+                )}
 
                 {skCz && (
                   <>

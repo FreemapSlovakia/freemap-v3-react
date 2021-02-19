@@ -328,8 +328,6 @@ const en: Messages = {
     gpxExport: 'Export to GPX',
     mapExports: 'Map for GPS devices',
     embedMap: 'Embed map',
-    reportMapError: 'Report map problem',
-    reportAppError: 'Report application problem',
     supportUs: 'Support Freemap',
     help: 'Help',
     back: 'Back',
@@ -1350,7 +1348,14 @@ const en: Messages = {
               >
                 © OpenStreetMap contributors
               </Alert.Link>
-              , © SRTM
+              {', SRTM, '}
+              <Alert.Link
+                href="https://www.geoportal.sk/sk/udaje/lls-dmr/"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                LLS: ÚGKK SR
+              </Alert.Link>
             </em>
           </li>
         </ul>{' '}
