@@ -1,7 +1,6 @@
 import { ReactElement } from 'react';
 import {
   FaBicycle,
-  FaBus,
   FaCar,
   FaHiking,
   FaSkiing,
@@ -43,12 +42,12 @@ export const transportTypeDefs: {
     url: `${FM_URL}$MODE/v1/car`,
     exclude: 'toll',
   },
-  {
-    type: 'imhd',
-    icon: <FaBus />,
-    special: true,
-    url: `${EPS_URL}$MODE/v1/imhd`,
-  },
+  // {
+  //   type: 'imhd',
+  //   icon: <FaBus />,
+  //   special: true,
+  //   url: `${EPS_URL}$MODE/v1/imhd`,
+  // },
   { type: 'bike', icon: <FaBicycle />, url: `${FM_URL}$MODE/v1/bike` },
   {
     type: 'bike-osm',
