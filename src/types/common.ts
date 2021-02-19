@@ -39,6 +39,7 @@ declare global {
 }
 
 export interface AppState {
+  version?: number;
   main: Pick<MainState, 'homeLocation' | 'expertMode'>;
   map: MapStateBase;
   trackViewer: Pick<TrackViewerState, 'eleSmoothingFactor'>;

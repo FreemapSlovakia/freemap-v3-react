@@ -14,6 +14,7 @@ export const storageProcessor: Processor = {
     const mapState = state.map;
 
     const appState: AppState = {
+      version: 1,
       main: {
         homeLocation: state.main.homeLocation,
         expertMode: state.main.expertMode,

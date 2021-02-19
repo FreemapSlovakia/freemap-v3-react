@@ -97,6 +97,11 @@ function loadAppState() {
   if (as) {
     try {
       appState = assertType<AppState>(JSON.parse(as));
+
+      // let's reset map to outdoor
+      if (!appState.version && appState.map) {
+        appState.map.mapType = 'X';
+      }
     } catch (e) {
       storage.removeItem('appState');
       throw e;
