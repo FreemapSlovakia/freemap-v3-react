@@ -46,7 +46,7 @@ const hu: Messages = {
     delete: 'Törlés',
     remove: 'Eltávolítás',
     close: 'Bezárás',
-    apply: 'Apply', // TODO
+    apply: 'Alkalmaz',
     exitFullscreen: 'Kilépés a teljes képernyős módból',
     fullscreen: 'Teljes képernyő',
     yes: 'Igen',
@@ -70,22 +70,22 @@ const hu: Messages = {
     clear: 'Törlés',
     convertToDrawing: 'Átalakítás rajzzá',
     simplifyPrompt:
-      'Please enter simplification factor. Set to zero for no simplification.', // TODO translate
+      'Adja meg az egyszerűsítés mértékét. Az egyszerűsítés mellőzéséhez írjon be nullát.',
     copyUrl: 'URL másolása',
     savingError: ({ err }) => `Mentési hiba: ${err}`,
     loadError: ({ err }) => `Betöltési hiba: ${err}`,
     deleteError: ({ err }) => `Törlési hiba: ${err}`,
-    deleted: 'Deleted.', // TODO translate
-    saved: 'Saved.', // TODO translate
+    deleted: 'Törölve.',
+    saved: 'Elmentve.',
     visual: 'Display', // TODO translate
   },
 
   // TODO translate
   selections: {
-    objects: 'Object (POI)',
-    drawPoints: 'Point',
-    drawLines: 'Line',
-    drawPolygons: 'Polygon',
+    objects: 'Objektum (érdekes pont, POI)',
+    drawPoints: 'Pont',
+    drawLines: 'Vonal',
+    drawPolygons: 'Sokszög',
     tracking: 'Tracking',
   },
 
@@ -96,9 +96,9 @@ const hu: Messages = {
     objects: 'Objektumok (érdekes pontok, POI-k)',
     photos: 'Fényképek',
     measurement: 'Rajzolás és mérés',
-    drawPoints: 'Point drawing', // TODO translate
-    drawLines: 'Line drawing', // TODO translate
-    drawPolygons: 'Polygon drawing', // TODO translate
+    drawPoints: 'Pont rajzolása',
+    drawLines: 'Vonal rajzolása',
+    drawPolygons: 'Sokszög rajzolása',
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
@@ -200,8 +200,8 @@ const hu: Messages = {
         // 'notification':
         'exit rotary': 'hajtson ki a körforgalomból', // undocumented
         'exit roundabout': 'hajtson ki a körforgalomból', // undocumented
-        notification: 'notification', // TODO translate
-        'use lane': 'use lane', // TODO translate
+        notification: 'értesítés',
+        'use lane': 'ezt a sávot használja:',
       },
 
       modifiers: {
@@ -241,13 +241,13 @@ const hu: Messages = {
             ))}{' '}
             | Időtartam{' '}
             <b>
-              {total} {numberize(total, ['minutes', 'minute' /*TODO*/])}
+              {total} {numberize(total, ['perc', 'perc'])}
             </b>
             <br />
             Az indulásig van: <b>{home}</b>, séta: <b>{foot}</b>,
             tömegközlekedés: <b>{bus}</b>, várakozás :{' '}
             <b>
-              {wait} {numberize(wait, ['minutes', 'minute' /*TODO*/])}
+              {wait} {numberize(wait, ['perc', 'perc'])}
             </b>
           </>
         ),
@@ -259,7 +259,7 @@ const hu: Messages = {
             <b>{departure}</b> sétáljon{' '}
             {duration !== undefined && (
               <b>
-                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+                {duration} {numberize(duration, ['perc', 'perc'])}
               </b>
             )}{' '}
             {destination === 'TARGET' ? (
@@ -293,7 +293,7 @@ const hu: Messages = {
             sétáljon{' '}
             {duration !== undefined && (
               <b>
-                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+                {duration} {numberize(duration, ['perc', 'perc'])}
               </b>
             )}{' '}
             {destination === 'TARGET' ? (
@@ -311,7 +311,7 @@ const hu: Messages = {
             kerékpározzék{' '}
             {duration !== undefined && (
               <b>
-                {duration} {numberize(duration, ['minutes', 'minute' /*TODO*/])}
+                {duration} {numberize(duration, ['perc', 'perc'])}
               </b>
             )}{' '}
             ide: <b>{destination}</b>
@@ -319,7 +319,7 @@ const hu: Messages = {
         ),
       },
     },
-    imhdAttribution: 'public transport routes', // TODO
+    imhdAttribution: 'tömegközlekedési útvonalak',
   },
 
   more: {
@@ -341,7 +341,7 @@ const hu: Messages = {
     youtube: 'Freemap a YouTubeon',
     github: 'Freemap a GitHubon',
     automaticLanguage: 'Automatikus',
-    pdfExport: 'Térkép exportálása', // TODO google-translated
+    pdfExport: 'Térkép exportálása',
   },
 
   main: {
@@ -363,8 +363,8 @@ const hu: Messages = {
 
   gallery: {
     filter: 'Szűrő',
-    showPhotosFrom: 'View photos', // TODO translate
-    showLayer: 'Show layer', // TODO translate
+    showPhotosFrom: 'Fényképek megtekintése',
+    showLayer: 'Réteg megjelenítése',
     upload: 'Feltöltés',
     f: {
       firstUploaded: 'az először feltöltöttől',
@@ -443,13 +443,13 @@ const hu: Messages = {
     invalidPositionError: 'A hely koordinátáinak formátuma érvénytelen.',
     invalidTakenAt: 'A fénykép készítésének dátuma és időpontja érvénytelen.',
     filterModal: {
-      title: 'Photo filtering', // TODO
-      tag: 'Tag', // TODO
-      createdAt: 'Upload date', // TODO
-      takenAt: 'Capture date', // TODO
-      author: 'Author', // TODO
-      rating: 'Rating', // TODO
-      noTags: 'no tags', // TODO
+      title: 'Fényképek szűrése',
+      tag: 'Címke',
+      createdAt: 'Feltöltés dátuma',
+      takenAt: 'Készítés dátuma',
+      author: 'Szerző',
+      rating: 'Értékelés',
+      noTags: 'nincs címke',
     },
   },
 
@@ -939,7 +939,7 @@ const hu: Messages = {
     routeTo: 'Útvonal ide',
     fetchingError: ({ err }) => `Keresési hiba: ${err}`,
     buttonTitle: 'Keresés',
-    placeholder: 'Keresés az mpap-ban', // TODO google-translated
+    placeholder: 'Keresés a térképen',
   },
 
   embed: {
