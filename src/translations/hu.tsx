@@ -101,7 +101,7 @@ const hu: Messages = {
     trackViewer: 'Nyomvonalmegtekintő (GPX)',
     changesets: 'Térkép változásai',
     mapDetails: 'Térképadatok',
-    tracking: 'Live tracking',
+    tracking: 'Élő követés',
     maps: (
       <>
         Saját térképeim <FaFlask className="text-warning" />
@@ -123,7 +123,7 @@ const hu: Messages = {
       car: 'Gépkocsi',
       'car-free': 'Gépkocsi (útdíj nélkül)',
       bikesharing: 'Kerékpármegosztás',
-      imhd: 'Tömegközlekedés (SK/Bratislava)',
+      imhd: 'Tömegközlekedés (Pozsony)',
       'bike-osm': 'Kerékpár (OSM)',
       bike: 'Kerékpártúrázás',
       'foot-stroller': 'Babakocsi / kerekesszék',
@@ -132,7 +132,7 @@ const hu: Messages = {
       foot: 'Gyaloglás',
       'foot-osm': 'Gyaloglás (OSM)',
     },
-    development: 'fejl. alatt',
+    development: 'fejlesztés alatt',
     mode: {
       route: 'Megadott sorrendben',
       trip: 'Legrövidebb úton',
@@ -307,7 +307,7 @@ const hu: Messages = {
         // eslint-disable-next-line
         bicycle: ({ duration, destination }) => (
           <>
-            kerékpározzék{' '}
+            kerékpározzon{' '}
             {duration !== undefined && (
               <b>
                 {duration} {numberize(duration, ['perc', 'perc'])}
@@ -353,7 +353,7 @@ const hu: Messages = {
     zoomOut: 'Kicsinyítés',
     devInfo: () => (
       <div>
-        Ez a Freemap Slovakia tesztverziója. A termelési verziót itt találja:{' '}
+        Ez a Freemap Slovakia tesztverziója. A felhasználói verziót itt találja:{' '}
         <a href="https://www.freemap.sk/">www.freemap.sk</a>.
       </div>
     ),
@@ -367,9 +367,9 @@ const hu: Messages = {
     upload: 'Feltöltés',
     f: {
       firstUploaded: 'az először feltöltöttől',
-      lastUploaded: 'az utoljára feltöltöttől',
-      firstCaptured: 'a legrégebbitől',
-      lastCaptured: 'a legújabbtól',
+      lastUploaded: 'a legutóbb feltöltöttől',
+      firstCaptured: 'a legrégebben készülttől',
+      lastCaptured: 'a legutóbb készülttől',
       leastRated: 'a leggyöngébbre értékelttől',
       mostRated: 'a legjobbra értékelttől',
     },
@@ -1128,7 +1128,7 @@ const hu: Messages = {
     bicycleTypes: {
       'road-bike': 'országúti kerékpár',
       'trekking-bike': 'túrakerékpár',
-      'mtb-bike': 'hegyikerékpár (MTB)',
+      'mtb-bike': 'hegyi kerékpár (MTB)',
       'no-bike': 'kerékpárral tilos',
       unknown: 'ismeretlen',
     },
@@ -1152,7 +1152,7 @@ const hu: Messages = {
       ),
     },
     accessToken: {
-      token: 'Figyelési kód',
+      token: 'Figyelőkód',
       timeFrom: 'Ettől',
       timeTo: 'Eddig',
       listingLabel: 'Felsorolási felirat',
@@ -1162,29 +1162,29 @@ const hu: Messages = {
     accessTokens: {
       modalTitle: (deviceName) => (
         <>
-          <i>{deviceName}</i> készülék figyelési kódjai
+          <i>{deviceName}</i> készülék figyelőkódjai
         </>
       ),
       desc: (deviceName) => (
         <p>
-          Határozzon meg figyelési kódokat, hogy <i>{deviceName}</i> készüléke
+          Határozzon meg figyelőkódokat, hogy <i>{deviceName}</i> készüléke
           pozícióját megoszthassa ismerőseivel.
         </p>
       ),
       createTitle: (deviceName) => (
         <>
-          Figyelési kód hozzáadása a(z) <i>{deviceName}</i> készülékhez
+          Figyelőkód hozzáadása a(z) <i>{deviceName}</i> készülékhez
         </>
       ),
       modifyTitle: ({ token, deviceName }) => (
         <>
-          A(z) <i>{deviceName}</i> készülék <i>{token}</i> figyelési kódjának
+          A(z) <i>{deviceName}</i> készülék <i>{token}</i> figyelőkódjának
           módosítása
         </>
       ),
     },
     trackedDevice: {
-      token: 'Figyelési kód',
+      token: 'Figyelőkód',
       label: 'Felirat',
       fromTime: 'Kezdő időpont',
       maxAge: 'Legmagasabb életkor',
@@ -1211,7 +1211,7 @@ const hu: Messages = {
         <>
           <p>
             Kezelje készülékeit, hogy mások is láthassák pozícióját, ha megad
-            nekik egy figyelési kódot (amelyet a <FaKey /> ikonnal hozhat
+            nekik egy figyelőkódot (amelyet a <FaKey /> ikonnal hozhat
             létre).
           </p>
           <hr />
@@ -1273,7 +1273,7 @@ const hu: Messages = {
           </ul>
           <hr />
           <p>
-            In the case of tracker TK102B, configure it's address to{' '}
+            TK102B GPS tracker nyomvonalrögzítő készülék esetén a következőre állítsa be a címét: {' '}
             <code>
               {process.env['API_URL']
                 ?.replace(/https?:\/\//, '')
@@ -1299,7 +1299,7 @@ const hu: Messages = {
     },
     subscribeNotFound: ({ id }) => (
       <>
-        A(z) <i>{id}</i> figyelési kód nem létezik.
+        A(z) <i>{id}</i> figyelőkód nem létezik.
       </>
     ),
     subscribeError: ({ id }) => (
