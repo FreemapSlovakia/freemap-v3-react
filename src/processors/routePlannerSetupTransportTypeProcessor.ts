@@ -15,7 +15,7 @@ export const routePlannerSetupTransportTypeProcessor: Processor = {
       dispatch(
         routePlannerSetTransportType(
           ['T', 'p', 'X'].includes(mapType)
-            ? 'foot'
+            ? 'foot-osm'
             : mapType === 'K'
             ? 'nordic'
             : ['C', 'M'].includes(mapType)
