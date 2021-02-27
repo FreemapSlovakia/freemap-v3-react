@@ -50,8 +50,8 @@ export function SupportUsModal({ show }: Props): ReactElement {
         <p>
           Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie
           informácie a tlačivá potrebné k poukázaniu 2% z dane nájdete na{' '}
-          <a href="http://wiki.freemap.sk/dvepercenta">
-            wiki.freemap.sk/dvepercenta
+          <a href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia">
+            tejto stránke
           </a>
           .
         </p>

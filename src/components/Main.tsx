@@ -78,6 +78,7 @@ import {
 import Button from 'react-bootstrap/Button';
 import ButtonToolbar from 'react-bootstrap/ButtonToolbar';
 import Card from 'react-bootstrap/Card';
+import CloseButton from 'react-bootstrap/CloseButton';
 import { useDropzone } from 'react-dropzone';
 import { FaTimes } from 'react-icons/fa';
 import { MapContainer, ScaleControl } from 'react-leaflet';
@@ -163,7 +164,7 @@ export function Main(): ReactElement {
     (state: RootState) => state.auth.user && !state.auth.user.notValidated,
   );
 
-  // const [showInfoBar, setShowInfoBar] = useState<boolean>(false);
+  const [showInfoBar, setShowInfoBar] = useState(true);
 
   const [map, setMap] = useState<Leaflet.Map | null>(null);
 
@@ -236,9 +237,9 @@ export function Main(): ReactElement {
     }
   }, [dispatch]);
 
-  // const handleInfoBarCloseClick = useCallback(() => {
-  //   setShowInfoBar(false);
-  // }, [setShowInfoBar]);
+  const handleInfoBarCloseClick = useCallback(() => {
+    setShowInfoBar(false);
+  }, [setShowInfoBar]);
 
   const handlePictureAdded = useCallback(
     (item: GalleryItem) => {
@@ -373,12 +374,12 @@ export function Main(): ReactElement {
       <Toasts />
 
       <div className="header">
-        {/* {showInfoBar && language === 'sk' && !embed && (
+        {showInfoBar && language === 'sk' && !embed && (
           <div className="info-bar">
             <CloseButton onClick={handleInfoBarCloseClick} />
-            {m?.main.p2}
+            {m?.main.p2?.()}
           </div>
-        )} */}
+        )}
         <div className="menus">
           <div className="fm-ib-scroller fm-ib-scroller-top" ref={sc2}>
             <div />

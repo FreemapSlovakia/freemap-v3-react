@@ -364,8 +364,8 @@ const sk: Messages = {
       <>
         Podporiť prevádzku Freemap môžete aj Vašimi 2% z dane. Bližšie
         informácie a tlačivá nájdete na{' '}
-        <a href="http://wiki.freemap.sk/dvepercenta">
-          wiki.freemap.sk/dvepercenta
+        <a href="https://github.com/FreemapSlovakia/freemap-operations/wiki/2%25-z-dan%C3%AD-pre-OZ-Freemap-Slovakia">
+          tejto stránke
         </a>
         .
       </>
