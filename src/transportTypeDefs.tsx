@@ -65,6 +65,7 @@ export const transportTypeDefs: {
     type: 'foot',
     icon: <FaHiking />,
     url: `${FM_URL}$MODE/v1/foot`,
+    hidden: true,
   },
   {
     type: 'foot-osm',
