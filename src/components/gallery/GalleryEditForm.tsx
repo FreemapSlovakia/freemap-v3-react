@@ -147,8 +147,7 @@ export function GalleryEditForm({
           />
           <InputGroup.Append>
             <Button onClick={onPositionPick}>
-              <FaRegDotCircle />
-              {m?.gallery.editForm.setLocation}
+              <FaRegDotCircle /> {m?.gallery.editForm.setLocation}
             </Button>
           </InputGroup.Append>
         </InputGroup>

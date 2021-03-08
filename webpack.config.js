@@ -244,7 +244,7 @@ module.exports = {
       patterns: [
         {
           from: 'static/**/*',
-          to: '[name].[ext]',
+          to: '[name][ext]',
           globOptions: { dot: true },
         },
       ],

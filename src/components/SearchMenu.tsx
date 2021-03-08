@@ -76,7 +76,7 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
 
   const inputRef = useRef<HTMLInputElement | null>(null);
 
-  const { callback, flush } = useDebouncedCallback((query: string) => {
+  const callback = useDebouncedCallback((query: string) => {
     if (query.length < 3) {
       if (results.length > 0) {
         dispatch(searchSetResults([]));
@@ -85,6 +85,8 @@ export function SearchMenu({ hidden, preventShortcut }: Props): ReactElement {
       dispatch(searchSetQuery({ query }));
     }
   }, 1000);
+
+  const flush = callback.flush;
 
   const handleSearch = useCallback(
     (e: ChangeEvent<HTMLFormElement>) => {
