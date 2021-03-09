@@ -3085,8 +3085,7 @@ export const subcategories: Subcategory[] = [
     filter: [
       {
         key: 'sport',
-        operation: '~',
-        value: '^(badminton|squash)$',
+        value: 'tennis',
       },
     ],
   },
