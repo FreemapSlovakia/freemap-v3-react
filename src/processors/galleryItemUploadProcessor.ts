@@ -30,6 +30,7 @@ export const galleryItemUploadProcessor: Processor = {
 
         dispatch(galleryHideUploadModal());
       }
+
       return;
     }
 

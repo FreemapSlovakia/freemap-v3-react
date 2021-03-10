@@ -12,6 +12,7 @@ export const routePlannerSetupTransportTypeProcessor: Processor = {
 
     if (tool === 'route-planner' && !(start && finish)) {
       const { mapType } = getState().map;
+
       dispatch(
         routePlannerSetTransportType(
           ['T', 'p', 'X'].includes(mapType)

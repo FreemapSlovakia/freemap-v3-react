@@ -12,6 +12,7 @@ export const gallerySavePictureProcessor: Processor = {
   errorKey: 'gallery.savingError',
   handle: async ({ getState, dispatch }) => {
     const { image, editModel, saveErrors } = getState().gallery;
+
     if (!image || !editModel || saveErrors.length) {
       return;
     }
@@ -31,6 +32,7 @@ export const gallerySavePictureProcessor: Processor = {
     });
 
     dispatch(gallerySetLayerDirty());
+
     dispatch(galleryRequestImage(id));
   },
 };

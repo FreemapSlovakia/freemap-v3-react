@@ -27,6 +27,7 @@ export const osmLoadRelationProcessor: Processor = {
     });
 
     const nodes: Record<number, OsmNode> = {};
+
     const ways: Record<number, OsmWay> = {};
 
     for (const item of assertType<OsmResult>(data).elements) {

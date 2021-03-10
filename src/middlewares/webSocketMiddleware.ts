@@ -12,6 +12,7 @@ import { Dispatch, Middleware } from 'redux';
 import { isActionOf } from 'typesafe-actions';
 
 let ws: WebSocket | null = null;
+
 let restarter: number | null = null;
 
 function resetRestarter() {

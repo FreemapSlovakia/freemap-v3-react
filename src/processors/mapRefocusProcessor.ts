@@ -13,9 +13,7 @@ export const mapRefocusProcessor: Processor<typeof mapRefocus> = {
       return;
     }
 
-    const {
-      map: { zoom, lat, lon },
-    } = getState();
+    const { zoom, lat, lon } = getState().map;
 
     const map = getMapLeafletElement();
 

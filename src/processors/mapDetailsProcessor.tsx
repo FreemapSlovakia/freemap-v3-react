@@ -60,6 +60,7 @@ export const mapDetailsProcessor: Processor = {
   errorKey: 'mapDetails.fetchingError',
   handle: async ({ dispatch, getState }) => {
     const { subtool, userSelectedLat, userSelectedLon } = getState().mapDetails;
+
     if (subtool !== 'track-info') {
       return;
     }

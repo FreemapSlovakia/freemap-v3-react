@@ -34,29 +34,42 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     const doc = document.implementation.createDocument(GPX_NS, 'gpx', null);
 
     addAttribute(doc.documentElement, 'version', '1.1');
+
     addAttribute(doc.documentElement, 'creator', 'https://www.freemap.sk/');
+
     const meta = createElement(doc.documentElement, 'metadata');
+
     createElement(meta, 'desc', 'Exported from https://www.freemap.sk/');
+
     const author = createElement(meta, 'author');
+
     createElement(author, 'name', 'Freemap Slovakia');
+
     createElement(author, 'email', undefined, {
       id: 'freemap',
       domain: 'freemap.sk',
     });
+
     const link = createElement(author, 'link', undefined, {
       href: 'https://www.freemap.sk/',
     });
+
     createElement(link, 'text', 'Freemap Slovakia');
+
     createElement(link, 'type', 'text/html');
+
     const copyright = createElement(meta, 'copyright', undefined, {
       author: 'OpenStreetMap contributors',
     });
+
     createElement(
       copyright,
       'license',
       'http://www.openstreetmap.org/copyright',
     );
+
     createElement(meta, 'time', new Date().toISOString());
+
     createElement(meta, 'keywords', action.payload.exportables.join(' '));
 
     const {
@@ -69,6 +82,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     } = getState();
 
     const set = new Set(action.payload.exportables);
+
     const le = getMapLeafletElement();
 
     if (le && set.has('pictures')) {
@@ -130,6 +144,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
     };
 
     let curr: Node | null;
+
     while ((curr = r.iterateNext())) {
       q[curr.nodeName].push(curr);
     }
@@ -178,6 +193,7 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
               const { access_token: accessToken, error } = qs.parse(
                 e.data.freemap.payload.slice(1),
               );
+
               if (accessToken) {
                 resolve(
                   Array.isArray(accessToken) ? accessToken[0] : accessToken,
@@ -193,7 +209,9 @@ export const gpxExportProcessor: Processor<typeof exportGpx> = {
           const timer = window.setInterval(() => {
             if (w.closed) {
               window.clearInterval(timer);
+
               window.removeEventListener('message', msgListener);
+
               resolve();
             }
           }, 500);
@@ -515,6 +533,7 @@ const FM_NS = 'https://www.freemap.sk/GPX/1/0';
 
 function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
   const tdMap = new Map(trackedDevices.map((td) => [td.id, td]));
+
   const tracks1 = tracks.map((track) => ({
     ...track,
     ...(tdMap.get(track.id) || {}),
@@ -598,6 +617,7 @@ function addTracking(doc: Document, { tracks, trackedDevices }: TrackingState) {
 function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
   if (trackGpx) {
     const domParser = new DOMParser();
+
     const gpxDoc: XMLDocument = domParser.parseFromString(trackGpx, 'text/xml');
 
     const r = getSupportedGpxElements(gpxDoc);
@@ -605,6 +625,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
     const nodes: Node[] = [];
 
     let curr: Node | null;
+
     while ((curr = r.iterateNext())) {
       nodes.push(curr);
     }
@@ -616,6 +637,7 @@ function addGpx(doc: Document, { trackGpx, trackGeojson }: TrackViewerState) {
     for (const pass of ['wpt', 'trk'] as const) {
       for (const feature of trackGeojson.features) {
         const g = feature.geometry;
+
         switch (g.type) {
           case 'Point':
             if (pass === 'wpt') {

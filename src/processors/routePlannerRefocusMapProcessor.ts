@@ -18,6 +18,7 @@ export const routePlannerRefocusMapProcessor: Processor<
     } = getState();
 
     let focusPoint: LatLon | null | undefined;
+
     if (isActionOf(routePlannerSetStart, action)) {
       focusPoint = start;
     } else if (isActionOf(routePlannerSetFinish, action)) {

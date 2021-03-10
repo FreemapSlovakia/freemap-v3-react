@@ -31,6 +31,7 @@ export const exportPdfProcessor: Processor<typeof exportPdf> = {
   id: 'pdfExport.export',
   handle: async ({ dispatch, getState, action }) => {
     const le = getMapLeafletElement();
+
     if (!le) {
       return;
     }

@@ -117,6 +117,7 @@ export const changesetsProcessor: Processor = {
         const toTimeOfOldestChangeset = arrayOfrawChangesets[
           arrayOfrawChangesets.length - 1
         ].getAttribute('closed_at');
+
         return loadChangesets(toTimeOfOldestChangeset, allChangesetsSoFar);
       }
 

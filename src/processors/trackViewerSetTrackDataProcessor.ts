@@ -28,21 +28,28 @@ export const trackViewerSetTrackDataProcessor: Processor<
 
     if (action.payload.focus) {
       const geojsonBounds = geoJSON(trackGeojson).getBounds();
+
       const le = getMapLeafletElement();
+
       if (le && geojsonBounds.isValid()) {
         le.fitBounds(geojsonBounds);
       }
     }
 
     const startPoints: TrackPoint[] = []; // TODO
+
     const finishPoints: TrackPoint[] = []; // TODO
 
     for (const feature of trackGeojson.features) {
       if (feature.geometry.type === 'LineString') {
         const lengthInKm = turfLength(feature);
+
         const coords = feature.geometry.coordinates;
+
         const startLonlat = coords[0];
+
         let startTime: Date | undefined;
+
         let finishTime: Date | undefined;
 
         const times = assertType<string[] | undefined>(
@@ -51,6 +58,7 @@ export const trackViewerSetTrackDataProcessor: Processor<
 
         if (times) {
           startTime = new Date(times[0]);
+
           finishTime = new Date(times[times.length - 1]);
         }
 

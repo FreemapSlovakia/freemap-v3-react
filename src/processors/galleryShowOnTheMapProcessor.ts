@@ -6,6 +6,7 @@ export const galleryShowOnTheMapProcessor: Processor = {
   actionCreator: galleryShowOnTheMap,
   handle: async ({ getState, dispatch }) => {
     const { image } = getState().gallery;
+
     if (image) {
       dispatch(mapRefocus({ lat: image.lat, lon: image.lon }));
     }

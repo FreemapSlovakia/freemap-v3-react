@@ -44,10 +44,13 @@ export const rpcWsStateProcessor: Processor = {
     const oldState = prevState.websocket.state;
 
     const { state } = getState().websocket;
+
     if (oldState !== state) {
       if (state !== 1) {
         const values = callMap.values();
+
         callMap.clear();
+
         for (const call of values) {
           dispatch(
             rpcResponse({

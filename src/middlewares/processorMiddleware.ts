@@ -156,6 +156,7 @@ export const processorMiddleware: Middleware<
                     console.log('Canceled: ' + errorKey);
                   } else {
                     console.log('Error key: ' + errorKey);
+
                     console.error(err);
 
                     dispatch(

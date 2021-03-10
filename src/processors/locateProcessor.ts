@@ -28,6 +28,7 @@ export const locateProcessor: Processor = {
           );
 
           const map = getMapLeafletElement();
+
           if (!map) {
             return;
           }
@@ -64,7 +65,9 @@ export const locateProcessor: Processor = {
       );
     } else if (navigator.geolocation && typeof watch === 'number') {
       dispatch(mapRefocus({ gpsTracked: false }));
+
       navigator.geolocation.clearWatch(watch);
+
       watch = undefined;
     }
   },

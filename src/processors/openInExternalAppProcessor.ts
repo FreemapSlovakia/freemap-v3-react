@@ -98,6 +98,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
             );
           } else {
             const bounds = leaflet.getBounds();
+
             left = bounds.getWest();
             right = bounds.getEast();
             top = bounds.getNorth();
@@ -129,6 +130,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         break;
       case 'hiking.sk': {
         const point = CRS.EPSG3857.project({ lat, lng: lon });
+
         const params: StringifiableRecord = {
           zoom: zoom > 15 ? 15 : zoom,
           lon: point.x,
@@ -142,6 +144,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         }
 
         window.open(`https://mapy.hiking.sk/?${qs.stringify(params)}`);
+
         break;
       }
       case 'google':
@@ -152,6 +155,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
         } else {
           window.open(`https://www.google.com/maps/@${lat},${lon},${zoom}z`);
         }
+
         break;
       case 'mapy.cz':
         window.open(
@@ -159,19 +163,23 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
             zoom > 19 ? 19 : zoom
           }${includePoint ? `&source=coor&id=${lon}%2C${lat}` : ''}`,
         );
+
         break;
       case 'oma.sk':
         window.open(
           `http://redirect.oma.sk/?lat=${lat}&lon=${lon}&zoom=${zoom}&mapa=${mapType}`,
         );
+
         break;
       case 'openstreetcam':
         window.open(`https://openstreetcam.org/map/@${lat},${lon},${zoom}z`);
+
         break;
       case 'mapillary':
         window.open(
           `https://www.mapillary.com/app/?lat=${lat}&lng=${lon}&z=${zoom}`,
         );
+
         break;
       case 'url':
         (navigator as any)
@@ -183,6 +191,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
           .catch((error: unknown) => {
             console.error(error);
           }); // TODO toast
+
         break;
       case 'image':
         {
@@ -216,6 +225,7 @@ export const openInExternalAppProcessor: Processor<typeof openInExternalApp> = {
             console.error(err); // TODO toast
           });
         }
+
         break;
       default:
         break;

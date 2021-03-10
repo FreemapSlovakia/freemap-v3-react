@@ -14,6 +14,7 @@ export const authInitProcessor: Processor = {
   handle: async ({ getState, dispatch }) => {
     try {
       const user = JSON.parse(storage.getItem('user') ?? '');
+
       dispatch(authSetUser({ ...user, notValidated: true }));
     } catch (e) {
       // ignore JSON parsing error
@@ -54,6 +55,7 @@ export const authInitProcessor: Processor = {
         ['sk', 'cs'].includes(getState().l10n.language)
       ) {
         dispatch(tipsShow(storage.getItem('tip') || 'freemap'));
+
         dispatch(setActiveModal('tips'));
       }
     }
