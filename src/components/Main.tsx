@@ -85,6 +85,7 @@ import { MapContainer, ScaleControl } from 'react-leaflet';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePictureDropHandler } from '../hooks/pictureDropHandlerHook';
 import fmLogo from '../images/freemap-logo-print.png';
+import { DrawingLinePointSelection } from './DrawingLinePointSelection';
 import { DrawingLinesTool } from './DrawingLinesTool';
 import { DrawingPointsTool } from './DrawingPointsTool';
 import { GalleryModals } from './gallery/GalleryModals';
@@ -438,6 +439,7 @@ export function Main(): ReactElement {
 
           {/* selections */}
           {selectionMenu === 'draw-line-poly' && <DrawingLineSelection />}
+          {selectionMenu === 'line-point' && <DrawingLinePointSelection />}
           {selectionMenu === 'draw-points' && <DrawingPointSelection />}
           {selectionMenu === 'objects' && <ObjectSelection />}
           {selectionMenu === 'tracking' && <TrackingSelection />}

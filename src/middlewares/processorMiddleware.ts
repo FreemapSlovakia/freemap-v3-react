@@ -123,6 +123,7 @@ export const processorMiddleware: Middleware<
 
     promise = loader().then(({ default: processor }) => {
       processors.push(processor);
+
       return Promise.all(runProcessors());
     });
   } else {
@@ -184,10 +185,12 @@ export const processorMiddleware: Middleware<
   const p = promise.then(
     (res) => {
       isDone = true;
+
       return res;
     },
     (err) => {
       isDone = true;
+
       throw err;
     },
   );

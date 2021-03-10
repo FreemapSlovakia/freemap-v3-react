@@ -27,7 +27,11 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
   handle: async ({ getState, dispatch, action }) => {
     const { selection } = getState().main;
 
-    if (selection?.id === undefined) {
+    if (
+      (selection?.type !== 'draw-line-poly' &&
+        selection?.type !== 'draw-points') ||
+      selection?.id === undefined
+    ) {
       return;
     }
 

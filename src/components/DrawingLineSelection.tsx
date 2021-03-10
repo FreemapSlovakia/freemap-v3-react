@@ -19,10 +19,9 @@ export function DrawingLineSelection(): ReactElement | null {
   const m = useMessages();
 
   const line = useSelector((state: RootState) =>
-    state.main.selection?.type !== 'draw-line-poly' ||
-    state.main.selection.id === undefined
-      ? undefined
-      : state.drawingLines.lines[state.main.selection.id],
+    state.main.selection?.type === 'draw-line-poly'
+      ? state.drawingLines.lines[state.main.selection.id]
+      : undefined,
   );
 
   const elevationChartTrackGeojson = useSelector(

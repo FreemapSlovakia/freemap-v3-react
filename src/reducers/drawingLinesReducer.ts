@@ -3,6 +3,7 @@ import {
   drawingLineAddPoint,
   drawingLineRemovePoint,
   drawingLineSetLines,
+  drawingLineSplit,
   drawingLineUpdatePoint,
   Line,
 } from 'fm3/actions/drawingLineActions';
@@ -56,6 +57,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     (state, { payload: { index, point } }) =>
       produce(state, (draft) => {
         const p = draft.lines[index].points.find((pt) => pt.id === point.id);
+
         if (p) {
           Object.assign(p, point);
         }
@@ -64,11 +66,27 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   .handleAction(drawingLineRemovePoint, (state, action) =>
     produce(state, (draft) => {
       const line = draft.lines[action.payload.index];
+
       line.points = line.points.filter(
         (point) => point.id !== action.payload.id,
       );
     }),
   )
+  .handleAction(drawingLineSplit, (state, action) => {
+    const line = state.lines[action.payload.lineIndex];
+
+    return {
+      ...state,
+      lines: [
+        ...state.lines.filter((lin) => line !== lin),
+        {
+          ...line,
+          points: line.points.slice(0, action.payload.pointIndex + 1),
+        },
+        { ...line, points: line.points.slice(action.payload.pointIndex) },
+      ],
+    };
+  })
   .handleAction(drawingLineSetLines, (state, action) => ({
     ...state,
     lines: action.payload.filter(linefilter),

@@ -86,6 +86,8 @@ const hu: Messages = {
     drawLines: 'Vonal',
     drawPolygons: 'Sokszög',
     tracking: 'Követés',
+    linePoint: 'Line point', // TODO translate
+    polygonPoint: 'Polygon point', // TODO translate
   },
 
   tools: {
@@ -535,6 +537,9 @@ const hu: Messages = {
       label: 'Felirat:',
       hint: 'Felirat eltávolításához hagyja üresen ezt a mezőt.',
     },
+    continue: 'Continue', // TODO translate
+    join: 'Join', // TODO translate
+    split: 'Split', // TODO translate
   },
 
   settings: {
@@ -995,7 +1000,8 @@ const hu: Messages = {
       google: 'Belépés Google-fiókkal',
       osm: 'Belépés OpenStreetMap-fiókkal',
     },
-    enablePopup: 'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
+    enablePopup:
+      'Kérjük, engedélyezze a böngészőben az előugró ablakokat ehhez a webhelyhez.',
     success: 'Sikeresen bejelentkezett.',
     logInError: ({ err }) => `Hiba történt a bejelentkezésnél: ${err}`,
     logInError2: 'Hiba történt a bejelentkezésnél.',
@@ -1211,8 +1217,7 @@ const hu: Messages = {
         <>
           <p>
             Kezelje készülékeit, hogy mások is láthassák pozícióját, ha megad
-            nekik egy figyelőkódot (amelyet a <FaKey /> ikonnal hozhat
-            létre).
+            nekik egy figyelőkódot (amelyet a <FaKey /> ikonnal hozhat létre).
           </p>
           <hr />
           <p>
@@ -1273,7 +1278,8 @@ const hu: Messages = {
           </ul>
           <hr />
           <p>
-            TK102B GPS tracker nyomvonalrögzítő készülék esetén a következőre állítsa be a címét: {' '}
+            TK102B GPS tracker nyomvonalrögzítő készülék esetén a következőre
+            állítsa be a címét:{' '}
             <code>
               {process.env['API_URL']
                 ?.replace(/https?:\/\//, '')
@@ -1407,7 +1413,8 @@ const hu: Messages = {
 
   contacts: {
     ngo: 'Önkéntes egyesület',
-    registered: 'Nyilvántartásba véve 2009. október 2-án, MV/VVS/1-900/90-34343 számmal',
+    registered:
+      'Nyilvántartásba véve 2009. október 2-án, MV/VVS/1-900/90-34343 számmal',
     bankAccount: 'Bankszámlaszám',
     generalContact: 'Általános elérhetőség',
     board: 'Elnökség',

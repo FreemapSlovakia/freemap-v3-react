@@ -1,6 +1,5 @@
 import {
   drawingLineAddPoint,
-  drawingLineRemovePoint,
   drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
@@ -49,7 +48,13 @@ export function DrawingLineResult({ index }: Props): ReactElement {
   const selected = useSelector(
     (state: RootState) =>
       state.main.selection?.type === 'draw-line-poly' &&
-      index === state.main.selection?.id,
+      index === state.main.selection.id,
+  );
+
+  const pointSelected = useSelector(
+    (state: RootState) =>
+      state.main.selection?.type === 'line-point' &&
+      index === state.main.selection.lineIndex,
   );
 
   const interactive = useSelector(selectingModeSelector);
@@ -268,7 +273,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         />
       )}
 
-      {selected &&
+      {(selected || pointSelected) &&
         ps.map((p, i: number) => {
           if (i % 2 === 0) {
             if (prev) {
@@ -299,8 +304,17 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                   dispatch(drawingPointMeasure(true));
                 },
                 click() {
-                  dispatch(drawingLineRemovePoint({ index, id: p.id }));
-                  dispatch(drawingPointMeasure(true));
+                  dispatch(
+                    selectFeature({
+                      type: 'line-point',
+                      lineIndex: index,
+                      pointIndex: p.id,
+                    }),
+                  );
+
+                  // dispatch(drawingLineRemovePoint({ index, id: p.id }));
+
+                  // dispatch(drawingPointMeasure(true));
                 },
                 dragstart: handleDragStart,
                 dragend: handleDragEnd,

@@ -51,6 +51,8 @@ export type Messages = {
     drawLines: string;
     drawPolygons: string;
     tracking: string;
+    linePoint: string;
+    polygonPoint: string;
   };
   tools: {
     none: string;
@@ -429,6 +431,9 @@ export type Messages = {
       label: string;
       hint: string;
     };
+    split: string;
+    join: string;
+    continue: string;
   };
   settings: {
     tab: {

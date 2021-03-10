@@ -104,12 +104,19 @@ export interface DrawLinePolySelection {
   id: number;
 }
 
+export interface LinePointSelection {
+  type: 'line-point';
+  lineIndex: number;
+  pointIndex: number;
+}
+
 export interface TrackingSelection {
   type: 'tracking';
   id: string | number;
 }
 
 export type Selection =
+  | LinePointSelection
   | DrawPointSelection
   | ObjectsSelection
   | DrawLinePolySelection

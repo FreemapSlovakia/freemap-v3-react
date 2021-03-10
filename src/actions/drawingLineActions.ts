@@ -30,3 +30,23 @@ export const drawingLineRemovePoint = createAction(
 export const drawingLineSetLines = createAction('DRAWING_LINE_SET_LINES')<
   Line[]
 >();
+
+export const drawingLineSplit = createAction('DRAWING_LINE_SPLIT')<{
+  lineIndex: number;
+  pointIndex: number;
+}>();
+
+export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<{
+  lineIndex: number;
+  pointIndex: number;
+}>();
+
+export const drawingLineJoinFinish = createAction('DRAWING_LINE_JOIN_FINISH')<{
+  lineIndex: number;
+  pointIndex: number;
+}>();
+
+export const drawingLineContinue = createAction('DRAWING_LINE_CONTINUE')<{
+  lineIndex: number;
+  pointIndex: number;
+}>();
