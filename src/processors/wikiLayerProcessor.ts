@@ -1,7 +1,8 @@
 import { enableUpdatingUrl } from 'fm3/actions/mainActions';
 import { mapRefocus } from 'fm3/actions/mapActions';
 import { wikiSetPoints } from 'fm3/actions/wikiActions';
-import { cancelRegister, httpRequest } from 'fm3/authAxios';
+import { httpRequest } from 'fm3/authAxios';
+import { cancelRegister } from 'fm3/cancelRegister';
 import { getMapLeafletElement } from 'fm3/leafletElementHolder';
 import { Processor } from 'fm3/middlewares/processorMiddleware';
 import { OverpassElement, OverpassResult } from 'fm3/types/common';

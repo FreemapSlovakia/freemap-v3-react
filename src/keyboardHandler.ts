@@ -183,6 +183,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       const baseLayer = baseLayers.find(
         (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
       );
+
       if (
         baseLayer &&
         (!baseLayer.adminOnly || state.auth.user?.isAdmin) &&
@@ -196,6 +197,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       const overlayLayer = overlayLayers.find(
         (l) => l.key && l.key[0] === event.code && l.key[1] === event.shiftKey,
       );
+
       if (
         overlayLayer &&
         (!overlayLayer.adminOnly || state.auth.user?.isAdmin) &&

@@ -2,11 +2,11 @@ import axios, {
   AxiosInstance,
   AxiosRequestConfig,
   AxiosResponse,
-  Canceler,
   CancelTokenSource,
 } from 'axios';
 import { ActionCreator } from 'typesafe-actions';
 import { clearMap } from './actions/mainActions';
+import { CancelItem, cancelRegister } from './cancelRegister';
 import { RootState } from './storeCreator';
 
 export function getAxios(expectedStatus?: number | number[]): AxiosInstance {
@@ -48,13 +48,6 @@ interface HttpRequestParams extends Omit<AxiosRequestConfig, 'cancelToken'> {
   expectedStatus?: number | number[];
   cancelActions?: ActionCreator<string>[];
 }
-
-export interface CancelItem {
-  cancelActions: ActionCreator<string>[];
-  cancel: Canceler;
-}
-
-export const cancelRegister = new Set<CancelItem>(); // TODO move elsewhere as it is reused in other places
 
 export async function httpRequest({
   getState,
