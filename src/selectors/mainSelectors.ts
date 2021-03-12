@@ -98,6 +98,7 @@ const embed = window.self !== window.top;
 
 export const selectingModeSelector = (state: RootState): boolean =>
   !embed &&
+  !state.drawingLines.drawing &&
   (state.main.tool === null ||
     state.main.tool === 'track-viewer' ||
     state.main.tool === 'changesets' ||
@@ -105,3 +106,8 @@ export const selectingModeSelector = (state: RootState): boolean =>
     state.main.tool === 'objects' ||
     (state.main.tool === 'route-planner' &&
       state.routePlanner.pickMode === null));
+
+export const drawingLinePolys = (state: RootState): boolean =>
+  state.drawingLines.drawing ||
+  state.main.tool === 'draw-lines' ||
+  state.main.tool === 'draw-polygons';

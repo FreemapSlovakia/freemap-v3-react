@@ -8,7 +8,10 @@ import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
 import { distance } from 'fm3/geoutils';
-import { selectingModeSelector } from 'fm3/selectors/mainSelectors';
+import {
+  drawingLinePolys,
+  selectingModeSelector,
+} from 'fm3/selectors/mainSelectors';
 import { RootState } from 'fm3/storeCreator';
 import { LatLon } from 'fm3/types/common';
 import { divIcon, DomEvent, LeafletMouseEvent } from 'leaflet';
@@ -37,7 +40,7 @@ type Props = {
 export function DrawingLineResult({ index }: Props): ReactElement {
   const dispatch = useDispatch();
 
-  const tool = useSelector((state: RootState) => state.main.tool);
+  const drawing = useSelector(drawingLinePolys);
 
   const line = useSelector(
     (state: RootState) => state.drawingLines.lines[index],
@@ -249,29 +252,27 @@ export function DrawingLineResult({ index }: Props): ReactElement {
         </Polygon>
       )}
 
-      {!!(
+      {drawing &&
         ps.length > 0 &&
-        coords &&
-        !window.preventMapClick &&
-        (tool === 'draw-lines' || tool === 'draw-polygons')
-      ) && (
-        <Polyline
-          color={colors.selected}
-          weight={4}
-          dashArray="6,8"
-          interactive={false}
-          positions={[
-            {
-              lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
-              lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
-            },
-            { lat: coords.lat, lng: coords.lon },
-            ...(line.type === 'line' || ps.length < 3
-              ? []
-              : [{ lat: ps[0].lat, lng: ps[0].lon }]),
-          ]}
-        />
-      )}
+        coords !== undefined &&
+        !window.preventMapClick && (
+          <Polyline
+            color={colors.selected}
+            weight={4}
+            dashArray="6,8"
+            interactive={false}
+            positions={[
+              {
+                lat: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lat,
+                lng: ps[ps.length - (line.type === 'polygon' ? 2 : 1)].lon,
+              },
+              { lat: coords.lat, lng: coords.lon },
+              ...(line.type === 'line' || ps.length < 3
+                ? []
+                : [{ lat: ps[0].lat, lng: ps[0].lon }]),
+            ]}
+          />
+        )}
 
       {(selected || pointSelected) &&
         ps.map((p, i: number) => {
@@ -308,7 +309,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                     selectFeature({
                       type: 'line-point',
                       lineIndex: index,
-                      pointIndex: p.id,
+                      pointId: p.id,
                     }),
                   );
 

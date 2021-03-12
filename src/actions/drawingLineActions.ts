@@ -33,20 +33,20 @@ export const drawingLineSetLines = createAction('DRAWING_LINE_SET_LINES')<
 
 export const drawingLineSplit = createAction('DRAWING_LINE_SPLIT')<{
   lineIndex: number;
-  pointIndex: number;
+  pointId: number;
 }>();
 
 export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<{
   lineIndex: number;
-  pointIndex: number;
+  pointId: number;
 }>();
 
 export const drawingLineJoinFinish = createAction('DRAWING_LINE_JOIN_FINISH')<{
   lineIndex: number;
-  pointIndex: number;
+  pointId: number;
 }>();
 
 export const drawingLineContinue = createAction('DRAWING_LINE_CONTINUE')<{
   lineIndex: number;
-  pointIndex: number;
+  pointId: number;
 }>();

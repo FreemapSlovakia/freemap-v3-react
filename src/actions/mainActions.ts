@@ -107,7 +107,7 @@ export interface DrawLinePolySelection {
 export interface LinePointSelection {
   type: 'line-point';
   lineIndex: number;
-  pointIndex: number;
+  pointId: number;
 }
 
 export interface TrackingSelection {

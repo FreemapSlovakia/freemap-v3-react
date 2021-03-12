@@ -60,6 +60,7 @@ import { useShareFile } from 'fm3/hooks/shareFileHook';
 import { useMessages } from 'fm3/l10nInjector';
 import { setMapLeafletElement } from 'fm3/leafletElementHolder';
 import {
+  drawingLinePolys,
   mouseCursorSelector,
   selectingModeSelector,
   showGalleryPickerSelector,
@@ -356,6 +357,8 @@ export function Main(): ReactElement {
 
   const sc3 = useScrollClasses('horizontal');
 
+  const drawingLines = useSelector(drawingLinePolys);
+
   return (
     <>
       <style>
@@ -497,9 +500,7 @@ export function Main(): ReactElement {
             <>
               {tool === 'map-details' && <MapDetailsTool />}
               {tool === 'draw-points' && <DrawingPointsTool />}
-              {(tool === 'draw-lines' || tool === 'draw-polygons') && (
-                <DrawingLinesTool />
-              )}
+              {drawingLines && <DrawingLinesTool />}
               {isSelecting && <SelectionTool />}
 
               {showInteractiveLayer && (

@@ -1,6 +1,9 @@
 import { RootAction } from 'fm3/actions';
 import { authLogout, authSetUser } from 'fm3/actions/authActions';
-import { drawingLineSetLines } from 'fm3/actions/drawingLineActions';
+import {
+  drawingLineContinue,
+  drawingLineSetLines,
+} from 'fm3/actions/drawingLineActions';
 import {
   clearMap,
   convertToDrawing,
@@ -164,6 +167,10 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   .handleAction(setEmbedFeatures, (state, action) => ({
     ...state,
     embedFeatures: action.payload,
+  }))
+  .handleAction(drawingLineContinue, (state, action) => ({
+    ...state,
+    selection: { type: 'draw-line-poly', id: action.payload.lineIndex },
   }))
   .handleAction(selectFeature, (state, action) =>
     embed

@@ -1,22 +1,25 @@
 import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
+  drawingLineContinue,
   drawingLineRemovePoint,
   drawingLineSetLines,
   drawingLineSplit,
   drawingLineUpdatePoint,
   Line,
 } from 'fm3/actions/drawingLineActions';
-import { clearMap, selectFeature } from 'fm3/actions/mainActions';
+import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
 import produce from 'immer';
 import { createReducer } from 'typesafe-actions';
 
 export interface DrawingLinesState {
+  drawing: boolean;
   lines: Line[];
 }
 
 export const initialState: DrawingLinesState = {
+  drawing: false,
   lines: [],
 };
 
@@ -24,9 +27,14 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
+  .handleAction(setTool, (state) => ({
+    ...state,
+    drawing: false,
+  }))
   .handleAction(selectFeature, (state) => ({
     ...state,
     lines: state.lines.filter(linefilter),
+    drawing: false,
   }))
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, (draft) => {
@@ -81,9 +89,9 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         ...state.lines.filter((lin) => line !== lin),
         {
           ...line,
-          points: line.points.slice(0, action.payload.pointIndex + 1),
+          points: line.points.slice(0, action.payload.pointId + 1),
         },
-        { ...line, points: line.points.slice(action.payload.pointIndex) },
+        { ...line, points: line.points.slice(action.payload.pointId) },
       ],
     };
   })
@@ -91,20 +99,38 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     ...state,
     lines: action.payload.filter(linefilter),
   }))
-  .handleAction(mapsDataLoaded, (_state, action) => {
-    return {
-      lines: (action.payload.lines ?? initialState.lines).map((line) => ({
-        ...line,
-        type:
-          // compatibility
-          (line.type as string) === 'area'
-            ? 'polygon'
-            : (line.type as string) === 'distance'
-            ? 'line'
-            : line.type,
-      })),
-    };
-  });
+  .handleAction(
+    drawingLineContinue,
+    (state, { payload: { pointId, lineIndex } }) =>
+      produce(state, (draft) => {
+        draft.drawing = true;
+
+        const { points } = draft.lines[lineIndex];
+
+        if (points[0].id === pointId) {
+          const ids = points.map((p) => p.id);
+
+          points.reverse();
+
+          for (let i = 0; i < ids.length; i++) {
+            points[i].id = ids[i];
+          }
+        }
+      }),
+  )
+  .handleAction(mapsDataLoaded, (_state, action) => ({
+    drawing: false,
+    lines: (action.payload.lines ?? initialState.lines).map((line) => ({
+      ...line,
+      type:
+        // compatibility
+        (line.type as string) === 'area'
+          ? 'polygon'
+          : (line.type as string) === 'distance'
+          ? 'line'
+          : line.type,
+    })),
+  }));
 
 function linefilter(line: Line) {
   return (

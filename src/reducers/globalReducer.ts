@@ -198,7 +198,7 @@ export function preGlobalReducer(
         const line = draft.drawingLines.lines[selection.lineIndex];
 
         line.points = line.points.filter(
-          (point) => point.id !== selection.pointIndex,
+          (point) => point.id !== selection.pointId,
         );
       });
     } else if (state.main.selection?.type === 'draw-line-poly') {

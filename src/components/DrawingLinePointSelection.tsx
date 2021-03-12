@@ -31,12 +31,12 @@ export function DrawingLinePointSelection(): ReactElement | null {
 
   const pt = {
     lineIndex: selection.lineIndex,
-    pointIndex: selection.pointIndex,
+    pointId: selection.pointId,
   };
 
   const end =
-    selection.pointIndex === 0 ||
-    selection.pointIndex === line.points.length - 1;
+    selection.pointId === line.points[0].id ||
+    selection.pointId === line.points[line.points.length - 1].id;
 
   return (
     <Selection
