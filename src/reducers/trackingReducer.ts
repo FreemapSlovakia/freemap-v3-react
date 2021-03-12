@@ -125,11 +125,11 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
   .handleAction(rpcResponse, (state, action) => {
     const { payload } = action;
 
-    if (!is<HasTokenOrDeviceId>(payload.params)) {
+    const { params } = payload;
+
+    if (!is<HasTokenOrDeviceId>(params)) {
       return state;
     }
-
-    const params = payload.params;
 
     if (
       payload.method === 'tracking.subscribe' &&
@@ -176,7 +176,6 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
       action.payload.method === 'tracking.addPoint' &&
       is<TrackPoint & HasTokenOrDeviceId>(action.payload.params)
     ) {
-      // rest: id, lat, lon, altitude, speed, accuracy, bearing, battery, gsmSignal, message, ts
       const { token, deviceId, ts, ...rest } = action.payload.params;
 
       return produce(state, (draft) => {
@@ -190,10 +189,12 @@ export const trackingReducer = createReducer<TrackingState, RootAction>(
 
         if (!track) {
           track = { id: key, trackPoints: [] };
+
           draft.tracks.push(track);
         }
 
         track.trackPoints.push({ ts: new Date(ts), ...rest });
+
         // TODO apply limits from trackedDevices
       });
     }

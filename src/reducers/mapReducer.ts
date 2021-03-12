@@ -52,20 +52,25 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
   })
   .handleAction(mapRefocus, (state, action) => {
     const newState: MapState = { ...state };
+
     const { zoom, lat, lon, mapType, overlays } = action.payload;
 
     if (zoom) {
       newState.zoom = zoom;
     }
+
     if (lat !== undefined) {
       newState.lat = lat;
     }
+
     if (lon !== undefined) {
       newState.lon = lon;
     }
+
     if (mapType) {
       newState.mapType = mapType;
     }
+
     if (overlays) {
       newState.overlays = overlays;
     }
@@ -81,6 +86,7 @@ export const mapReducer = createReducer<MapState, RootAction>(initialState)
   })
   .handleAction(authSetUser, (state, action) => {
     const settings = action.payload && action.payload.settings;
+
     return settings
       ? {
           ...state,
