@@ -434,6 +434,7 @@ export type Messages = {
     split: string;
     join: string;
     continue: string;
+    stopDrawing: string;
   };
   settings: {
     tab: {

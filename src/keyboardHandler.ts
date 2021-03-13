@@ -1,4 +1,5 @@
 import { baseLayers, overlayLayers } from 'fm3/mapDefinitions';
+import { drawingLineStopDrawing } from './actions/drawingLineActions';
 import { elevationChartClose } from './actions/elevationChartActions';
 import {
   galleryClear,
@@ -78,6 +79,11 @@ export function attachKeyboardHandler(store: MyStore): void {
     ) {
       store.dispatch(elevationChartClose());
 
+      return;
+    }
+
+    if (state.drawingLines.drawing) {
+      store.dispatch(drawingLineStopDrawing());
       return;
     }
 

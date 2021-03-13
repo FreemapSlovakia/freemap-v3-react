@@ -5,6 +5,7 @@ import {
   drawingLineRemovePoint,
   drawingLineSetLines,
   drawingLineSplit,
+  drawingLineStopDrawing,
   drawingLineUpdatePoint,
   Line,
 } from 'fm3/actions/drawingLineActions';
@@ -27,7 +28,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   initialState,
 )
   .handleAction(clearMap, () => initialState)
-  .handleAction(setTool, (state) => ({
+  .handleAction([setTool, drawingLineStopDrawing], (state) => ({
     ...state,
     drawing: false,
   }))
@@ -40,7 +41,7 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     produce(state, (draft) => {
       let line: Line;
 
-      if (action.payload.index == null) {
+      if (action.payload.index === undefined) {
         if (action.payload.type === undefined) {
           throw new Error();
         }

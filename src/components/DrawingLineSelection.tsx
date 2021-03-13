@@ -1,4 +1,5 @@
 import { lineString } from '@turf/helpers';
+import { drawingLineStopDrawing } from 'fm3/actions/drawingLineActions';
 import {
   elevationChartClose,
   elevationChartSetTrackGeojson,
@@ -42,6 +43,8 @@ export function DrawingLineSelection(): ReactElement | null {
     }
   }, [line, elevationChartTrackGeojson, dispatch]);
 
+  const drawing = useSelector((state: RootState) => state.drawingLines.drawing);
+
   return !line ? null : (
     <Selection
       icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
@@ -52,6 +55,18 @@ export function DrawingLineSelection(): ReactElement | null {
       }
       deletable
     >
+      <Button
+        className="ml-1"
+        variant="secondary"
+        onClick={() => dispatch(drawingLineStopDrawing())}
+      >
+        <FaTag />
+        <span className="d-none d-sm-inline">
+          {' '}
+          {m?.drawing.stopDrawing} <kbd>Esc</kbd>
+        </span>
+      </Button>
+
       <Button
         className="ml-1"
         variant="secondary"

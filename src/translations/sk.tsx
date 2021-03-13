@@ -551,6 +551,7 @@ const sk: Messages = {
     continue: 'Pokračovať',
     join: 'Spojiť',
     split: 'Rozdeliť',
+    stopDrawing: 'Ukončiť kreslenie',
   },
 
   settings: {

@@ -50,3 +50,7 @@ export const drawingLineContinue = createAction('DRAWING_LINE_CONTINUE')<{
   lineIndex: number;
   pointId: number;
 }>();
+
+export const drawingLineStopDrawing = createAction(
+  'DRAWING_LINE_STOP_DRAWING',
+)();

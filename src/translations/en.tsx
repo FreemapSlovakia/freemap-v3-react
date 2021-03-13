@@ -531,6 +531,7 @@ const en: Messages = {
     continue: 'Continue',
     join: 'Join',
     split: 'Split',
+    stopDrawing: 'Stop drawing',
   },
 
   settings: {

@@ -540,6 +540,7 @@ const hu: Messages = {
     continue: 'Continue', // TODO translate
     join: 'Join', // TODO translate
     split: 'Split', // TODO translate
+    stopDrawing: 'Stop drawing', // TODO translate
   },
 
   settings: {
