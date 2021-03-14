@@ -1,4 +1,4 @@
 export const colors = {
   normal: '#d00000',
-  selected: '#e06060',
+  selected: '#f07b5d',
 };

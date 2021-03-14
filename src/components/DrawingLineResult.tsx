@@ -33,6 +33,13 @@ const circularIcon = divIcon({
   html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.normal}"></div>`,
 });
 
+const selectedCircularIcon = divIcon({
+  iconSize: [14, 14],
+  iconAnchor: [7, 7],
+  tooltipAnchor: [10, 0],
+  html: `<div class="circular-leaflet-marker-icon" style="background-color: ${colors.selected}"></div>`,
+});
+
 type Props = {
   index: number;
 };
@@ -54,10 +61,11 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       index === state.main.selection.id,
   );
 
-  const pointSelected = useSelector(
-    (state: RootState) =>
-      state.main.selection?.type === 'line-point' &&
-      index === state.main.selection.lineIndex,
+  const selectedPointId = useSelector((state: RootState) =>
+    state.main.selection?.type === 'line-point' &&
+    index === state.main.selection.lineIndex
+      ? state.main.selection.pointId
+      : undefined,
   );
 
   const interactive = useSelector(selectingModeSelector);
@@ -274,7 +282,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           />
         )}
 
-      {(selected || pointSelected) &&
+      {(selected || selectedPointId !== undefined) &&
         ps.map((p, i: number) => {
           if (i % 2 === 0) {
             if (prev) {
@@ -289,7 +297,9 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               draggable
               position={{ lat: p.lat, lng: p.lon }}
               // icon={defaultIcon} // NOTE changing icon doesn't work: https://github.com/Leaflet/Leaflet/issues/4484
-              icon={circularIcon}
+              icon={
+                selectedPointId === p.id ? selectedCircularIcon : circularIcon
+              }
               opacity={1}
               eventHandlers={{
                 drag(e) {

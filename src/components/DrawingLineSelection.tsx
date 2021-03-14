@@ -43,8 +43,6 @@ export function DrawingLineSelection(): ReactElement | null {
     }
   }, [line, elevationChartTrackGeojson, dispatch]);
 
-  const drawing = useSelector((state: RootState) => state.drawingLines.drawing);
-
   return !line ? null : (
     <Selection
       icon={line.type === 'line' ? <MdTimeline /> : <FaDrawPolygon />}
