@@ -27,7 +27,15 @@ export function DrawingLinePointSelection(): ReactElement | null {
       : undefined,
   );
 
-  if (!line || selection?.type !== 'line-point') {
+  const joining = useSelector(
+    (state: RootState) => state.drawingLines.joinWith !== undefined,
+  );
+
+  if (
+    !line ||
+    selection?.type !== 'line-point' ||
+    joining /* TODO show joining toolbar */
+  ) {
     return null;
   }
 

@@ -2,12 +2,15 @@ import { RootAction } from 'fm3/actions';
 import {
   drawingLineAddPoint,
   drawingLineContinue,
+  drawingLineJoinFinish,
+  drawingLineJoinStart,
   drawingLineRemovePoint,
   drawingLineSetLines,
   drawingLineSplit,
   drawingLineStopDrawing,
   drawingLineUpdatePoint,
   Line,
+  Point,
 } from 'fm3/actions/drawingLineActions';
 import { clearMap, selectFeature, setTool } from 'fm3/actions/mainActions';
 import { mapsDataLoaded } from 'fm3/actions/mapsActions';
@@ -17,11 +20,13 @@ import { createReducer } from 'typesafe-actions';
 export interface DrawingLinesState {
   drawing: boolean;
   lines: Line[];
+  joinWith: undefined | { lineIndex: number; pointId: number };
 }
 
 export const initialState: DrawingLinesState = {
   drawing: false,
   lines: [],
+  joinWith: undefined,
 };
 
 export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
@@ -31,11 +36,13 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
   .handleAction([setTool, drawingLineStopDrawing], (state) => ({
     ...state,
     drawing: false,
+    joinWith: undefined,
   }))
   .handleAction(selectFeature, (state) => ({
     ...state,
     lines: state.lines.filter(linefilter),
     drawing: false,
+    joinWith: undefined,
   }))
   .handleAction(drawingLineAddPoint, (state, action) =>
     produce(state, (draft) => {
@@ -109,17 +116,12 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
         const { points } = draft.lines[lineIndex];
 
         if (points[0].id === pointId) {
-          const ids = points.map((p) => p.id);
-
-          points.reverse();
-
-          for (let i = 0; i < ids.length; i++) {
-            points[i].id = ids[i];
-          }
+          reverse(points);
         }
       }),
   )
   .handleAction(mapsDataLoaded, (_state, action) => ({
+    joinWith: undefined,
     drawing: false,
     lines: (action.payload.lines ?? initialState.lines).map((line) => ({
       ...line,
@@ -131,11 +133,60 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
           ? 'line'
           : line.type,
     })),
-  }));
+  }))
+  .handleAction(drawingLineJoinStart, (state, action) => ({
+    ...state,
+    joinWith: action.payload,
+  }))
+  .handleAction(drawingLineJoinFinish, (state, action) =>
+    produce(state, (draft) => {
+      const { joinWith } = draft;
+
+      if (!joinWith) {
+        return;
+      }
+
+      const line1 = draft.lines[joinWith.lineIndex];
+
+      if (line1.points[0].id === joinWith.pointId) {
+        reverse(line1.points);
+      }
+
+      const line2 = draft.lines[action.payload.lineIndex];
+
+      if (line2.points[0].id !== action.payload.pointId) {
+        reverse(line2.points);
+      }
+
+      draft.lines[joinWith.lineIndex].label = [line1.label, line2.label]
+        .filter((l) => l)
+        .join(', ');
+
+      const maxId = line1.points.reduce((a, b) => Math.max(a, b.id), -1) + 1;
+
+      line1.points.push(
+        ...line2.points.map((pt) => ({ ...pt, id: pt.id + maxId })),
+      );
+
+      draft.lines.splice(action.payload.lineIndex, 1);
+
+      draft.joinWith = undefined;
+    }),
+  );
 
 function linefilter(line: Line) {
   return (
     (line.type === 'line' && line.points.length > 1) ||
     (line.type === 'polygon' && line.points.length > 2)
   );
+}
+
+function reverse(points: Point[]) {
+  const ids = points.map((p) => p.id);
+
+  points.reverse();
+
+  for (let i = 0; i < ids.length; i++) {
+    points[i].id = ids[i];
+  }
 }

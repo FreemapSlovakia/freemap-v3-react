@@ -1,5 +1,6 @@
 import {
   drawingLineAddPoint,
+  drawingLineJoinFinish,
   drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
@@ -68,7 +69,13 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       : undefined,
   );
 
+  const joinWithLineIndex = useSelector(
+    (state: RootState) => state.drawingLines.joinWith?.lineIndex,
+  );
+
   const interactive = useSelector(selectingModeSelector);
+
+  const interactiveLine = interactive && joinWithLineIndex === undefined;
 
   const { points } = line;
 
@@ -199,10 +206,10 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       {ps.length > 2 && line.type === 'line' && (
         <Fragment key={ps.map((p) => `${p.lat},${p.lon}`).join(',')}>
           <Polyline
-            key={`line-${interactive ? 'a' : 'b'}`}
+            key={`line-${interactiveLine ? 'a' : 'b'}`}
             weight={12}
             opacity={0}
-            interactive={interactive}
+            interactive={interactiveLine}
             bubblingMouseEvents={false}
             eventHandlers={{
               click: handleSelect,
@@ -233,12 +240,12 @@ export function DrawingLineResult({ index }: Props): ReactElement {
 
       {ps.length > 1 && line.type === 'polygon' && (
         <Polygon
-          key={`polygon-${interactive ? 'a' : 'b'}`}
+          key={`polygon-${interactiveLine ? 'a' : 'b'}`}
           weight={4}
           pathOptions={{
             color: selected ? colors.selected : colors.normal,
           }}
-          interactive={interactive}
+          interactive={interactiveLine}
           bubblingMouseEvents={false}
           eventHandlers={{
             click: handleSelect,
@@ -282,13 +289,23 @@ export function DrawingLineResult({ index }: Props): ReactElement {
           />
         )}
 
-      {(selected || selectedPointId !== undefined) &&
-        ps.map((p, i: number) => {
+      {(selected ||
+        selectedPointId !== undefined ||
+        joinWithLineIndex !== undefined) &&
+        ps.map((p, i) => {
           if (i % 2 === 0) {
             if (prev) {
               dist += distance(p.lat, p.lon, prev.lat, prev.lon);
             }
+
             prev = p;
+          }
+
+          if (
+            joinWithLineIndex !== undefined &&
+            ((i !== 0 && i !== ps.length - 1) || joinWithLineIndex === index)
+          ) {
+            return null;
           }
 
           return i % 2 === 0 ? (
@@ -315,17 +332,24 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                   dispatch(drawingPointMeasure(true));
                 },
                 click() {
-                  dispatch(
-                    selectFeature({
-                      type: 'line-point',
-                      lineIndex: index,
-                      pointId: p.id,
-                    }),
-                  );
+                  if (joinWithLineIndex !== undefined) {
+                    dispatch(
+                      drawingLineJoinFinish({
+                        lineIndex: index,
+                        pointId: p.id,
+                      }),
+                    );
 
-                  // dispatch(drawingLineRemovePoint({ index, id: p.id }));
-
-                  // dispatch(drawingPointMeasure(true));
+                    dispatch(drawingPointMeasure(true));
+                  } else {
+                    dispatch(
+                      selectFeature({
+                        type: 'line-point',
+                        lineIndex: index,
+                        pointId: p.id,
+                      }),
+                    );
+                  }
                 },
                 dragstart: handleDragStart,
                 dragend: handleDragEnd,
