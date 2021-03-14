@@ -36,10 +36,13 @@ export const drawingLineSplit = createAction('DRAWING_LINE_SPLIT')<{
   pointId: number;
 }>();
 
-export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<{
-  lineIndex: number;
-  pointId: number;
-}>();
+export const drawingLineJoinStart = createAction('DRAWING_LINE_JOIN_START')<
+  | undefined
+  | {
+      lineIndex: number;
+      pointId: number;
+    }
+>();
 
 export const drawingLineJoinFinish = createAction('DRAWING_LINE_JOIN_FINISH')<{
   lineIndex: number;
