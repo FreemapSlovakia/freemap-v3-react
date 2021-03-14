@@ -343,7 +343,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
               draggable
               position={{ lat: p.lat, lng: p.lon }}
               icon={circularIcon}
-              opacity={0.5}
+              opacity={0.33}
               eventHandlers={{
                 dragstart(e) {
                   addPoint(

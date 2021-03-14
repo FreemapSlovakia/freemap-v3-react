@@ -27,16 +27,28 @@ export const measurementProcessor: Processor<typeof drawingMeasure> = {
   handle: async ({ getState, dispatch, action }) => {
     const { selection } = getState().main;
 
+    let id;
+
     if (
-      (selection?.type !== 'draw-line-poly' &&
-        selection?.type !== 'draw-points') ||
-      selection?.id === undefined
+      selection?.type === 'draw-line-poly' ||
+      selection?.type === 'draw-points'
     ) {
+      id = selection.id;
+
+      if (id === undefined) {
+        return;
+      }
+    } else if (selection?.type === 'line-point') {
+      id = selection.lineIndex;
+    } else {
       return;
     }
 
-    if (selection?.type === 'draw-line-poly') {
-      const { points, type } = getState().drawingLines.lines[selection.id];
+    if (
+      selection.type === 'draw-line-poly' ||
+      selection.type === 'line-point'
+    ) {
+      const { points, type } = getState().drawingLines.lines[id];
 
       if (type === 'polygon' && points.length > 2) {
         dispatch(

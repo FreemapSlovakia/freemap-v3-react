@@ -7,8 +7,10 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
-import { FaDrawPolygon, FaTag } from 'react-icons/fa';
+import { CgArrowsMergeAltH } from 'react-icons/cg';
+import { FaDrawPolygon, FaRegPlayCircle } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
+import { RiScissorsFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
 import { Selection } from './Selection';
 
@@ -48,35 +50,35 @@ export function DrawingLinePointSelection(): ReactElement | null {
       }
       deletable
     >
-      {!end && (
+      {line.type === 'line' && !end && (
         <Button
           className="ml-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineSplit(pt))}
         >
-          <FaTag />
+          <RiScissorsFill />
           <span className="d-none d-sm-inline"> {m?.drawing.split}</span>
         </Button>
       )}
 
-      {end && (
+      {line.type === 'line' && end && (
         <Button
           className="ml-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineJoinStart(pt))}
         >
-          <FaTag />
+          <CgArrowsMergeAltH />
           <span className="d-none d-sm-inline"> {m?.drawing.join}</span>
         </Button>
       )}
 
-      {end && (
+      {line.type === 'line' && end && (
         <Button
           className="ml-1"
           variant="secondary"
           onClick={() => dispatch(drawingLineContinue(pt))}
         >
-          <FaTag />
+          <FaRegPlayCircle />
           <span className="d-none d-sm-inline"> {m?.drawing.continue}</span>
         </Button>
       )}

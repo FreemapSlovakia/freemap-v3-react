@@ -82,7 +82,7 @@ export function attachKeyboardHandler(store: MyStore): void {
       return;
     }
 
-    if (state.drawingLines.drawing) {
+    if (event.code === 'Escape' && state.drawingLines.drawing) {
       store.dispatch(drawingLineStopDrawing());
       return;
     }

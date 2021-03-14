@@ -2,12 +2,7 @@ import turfFlatten from '@turf/flatten';
 import { AllGeoJSON, lineString } from '@turf/helpers';
 import simplify from '@turf/simplify';
 import { RootAction } from 'fm3/actions';
-import {
-  drawingLineAddPoint,
-  drawingLineRemovePoint,
-  drawingLineUpdatePoint,
-  Point,
-} from 'fm3/actions/drawingLineActions';
+import { drawingLineAddPoint, Point } from 'fm3/actions/drawingLineActions';
 import {
   drawingChangeLabel,
   drawingPointAdd,
@@ -259,15 +254,6 @@ export function postGlobalReducer(
       draft.main.selection = {
         type: 'draw-line-poly',
         id: index,
-      };
-    });
-  } else if (
-    isActionOf([drawingLineUpdatePoint, drawingLineRemovePoint], action)
-  ) {
-    return produce(state, (draft) => {
-      draft.main.selection = {
-        type: 'draw-line-poly',
-        id: action.payload.index,
       };
     });
   } else if (isActionOf(drawingPointAdd, action)) {

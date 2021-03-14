@@ -3,6 +3,7 @@ import { authLogout, authSetUser } from 'fm3/actions/authActions';
 import {
   drawingLineContinue,
   drawingLineSetLines,
+  drawingLineStopDrawing,
 } from 'fm3/actions/drawingLineActions';
 import {
   clearMap,
@@ -80,6 +81,12 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
               ? state.selection
               : null,
         };
+  })
+  .handleAction(drawingLineStopDrawing, (state) => {
+    return {
+      ...state,
+      tool: null,
+    };
   })
   .handleAction(clearMap, (state) => {
     return {
