@@ -1,6 +1,6 @@
 import {
+  drawingMeasure,
   drawingPointAdd,
-  drawingPointMeasure,
 } from 'fm3/actions/drawingPointActions';
 import { LeafletMouseEvent } from 'leaflet';
 import { useCallback } from 'react';
@@ -18,7 +18,7 @@ export function DrawingPointsTool(): null {
           drawingPointAdd({ lat: latlng.lat, lon: latlng.lng, label: '' }),
         );
 
-        dispatch(drawingPointMeasure(true));
+        dispatch(drawingMeasure(true));
         return;
       },
       [dispatch],

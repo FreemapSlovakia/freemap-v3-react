@@ -4,7 +4,7 @@ import {
   drawingLineUpdatePoint,
   Point,
 } from 'fm3/actions/drawingLineActions';
-import { drawingPointMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingMeasure } from 'fm3/actions/drawingPointActions';
 import { selectFeature } from 'fm3/actions/mainActions';
 import { ElevationChartActivePoint } from 'fm3/components/ElevationChartActivePoint';
 import { colors } from 'fm3/constants';
@@ -151,7 +151,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       drawingLineAddPoint({ index, point: { lat, lon, id }, position: pos }),
     );
 
-    dispatch(drawingPointMeasure(true));
+    dispatch(drawingMeasure(true));
   }
 
   let prev: Point | null = null;
@@ -175,7 +175,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
       }),
     );
 
-    dispatch(drawingPointMeasure(true));
+    dispatch(drawingMeasure(true));
   }
 
   const ps = useMemo(() => {
@@ -329,7 +329,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                     }),
                   );
 
-                  dispatch(drawingPointMeasure(true));
+                  dispatch(drawingMeasure(true));
                 },
                 click() {
                   if (joinWithLineIndex !== undefined) {
@@ -340,7 +340,7 @@ export function DrawingLineResult({ index }: Props): ReactElement {
                       }),
                     );
 
-                    dispatch(drawingPointMeasure(true));
+                    dispatch(drawingMeasure(true));
                   } else {
                     dispatch(
                       selectFeature({

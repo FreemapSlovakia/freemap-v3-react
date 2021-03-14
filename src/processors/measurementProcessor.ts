@@ -1,7 +1,7 @@
 import area from '@turf/area';
 import { lineString, polygon } from '@turf/helpers';
 import length from '@turf/length';
-import { drawingPointMeasure as drawingMeasure } from 'fm3/actions/drawingPointActions';
+import { drawingMeasure as drawingMeasure } from 'fm3/actions/drawingPointActions';
 import {
   clearMap,
   deleteFeature,
