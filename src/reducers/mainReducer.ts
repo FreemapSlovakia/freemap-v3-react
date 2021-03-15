@@ -199,5 +199,8 @@ export const mainReducer = createReducer<MainState, RootAction>(initialState)
   }))
   .handleAction([drawingLineSetLines, deleteFeature], (state) => ({
     ...state,
-    selection: null,
+    selection:
+      state.selection?.type === 'line-point'
+        ? { type: 'draw-line-poly', id: state.selection.lineIndex }
+        : null,
   }));

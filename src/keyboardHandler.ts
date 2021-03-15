@@ -209,7 +209,13 @@ export function attachKeyboardHandler(store: MyStore): void {
       !showingModal &&
       !state.gallery.showPosition &&
       !state.gallery.pickingPositionForId &&
-      !state.main.selectingHomeLocation
+      !state.main.selectingHomeLocation &&
+      (state.main.selection?.type !== 'line-point' ||
+        state.drawingLines.lines[state.main.selection.lineIndex].points.length >
+          (state.drawingLines.lines[state.main.selection.lineIndex].type ===
+          'line'
+            ? 2
+            : 3))
     ) {
       store.dispatch(deleteFeature());
     }

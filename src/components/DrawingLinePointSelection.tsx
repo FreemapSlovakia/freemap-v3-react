@@ -71,7 +71,7 @@ export function DrawingLinePointSelection(): ReactElement | null {
           ? m?.selections.linePoint
           : m?.selections.polygonPoint
       }
-      deletable
+      deletable={line.points.length > (line.type === 'line' ? 2 : 3)}
     >
       {line.type === 'line' && !end && (
         <Button
