@@ -532,6 +532,7 @@ const en: Messages = {
     join: 'Join',
     split: 'Split',
     stopDrawing: 'Stop drawing',
+    selectPointToJoin: 'Select point to join lines',
   },
 
   settings: {

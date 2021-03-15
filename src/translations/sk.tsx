@@ -552,6 +552,7 @@ const sk: Messages = {
     join: 'Spojiť',
     split: 'Rozdeliť',
     stopDrawing: 'Ukončiť kreslenie',
+    selectPointToJoin: 'Zvoľte bod pre spojenie čiar',
   },
 
   settings: {

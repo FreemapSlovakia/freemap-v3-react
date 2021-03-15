@@ -2,7 +2,11 @@ import turfFlatten from '@turf/flatten';
 import { AllGeoJSON, lineString } from '@turf/helpers';
 import simplify from '@turf/simplify';
 import { RootAction } from 'fm3/actions';
-import { drawingLineAddPoint, Point } from 'fm3/actions/drawingLineActions';
+import {
+  drawingLineAddPoint,
+  drawingLineJoinFinish,
+  Point,
+} from 'fm3/actions/drawingLineActions';
 import {
   drawingChangeLabel,
   drawingPointAdd,
@@ -143,6 +147,26 @@ export function preGlobalReducer(
         Object.assign(draft.trackViewer, trackViewerCleanState);
       });
     }
+  } else if (
+    isActionOf(drawingLineJoinFinish, action) &&
+    state.drawingLines.joinWith
+  ) {
+    // this is to fix selection on join
+
+    return {
+      ...state,
+      main: {
+        ...state.main,
+        selection: {
+          type: 'draw-line-poly',
+          id:
+            state.drawingLines.joinWith.lineIndex -
+            (action.payload.lineIndex > state.drawingLines.joinWith.lineIndex
+              ? 0
+              : 1),
+        },
+      },
+    };
   } else if (isActionOf(deleteFeature, action)) {
     if (
       state.main.tool === 'track-viewer' ||

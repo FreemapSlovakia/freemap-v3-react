@@ -435,6 +435,7 @@ export type Messages = {
     join: string;
     continue: string;
     stopDrawing: string;
+    selectPointToJoin: string;
   };
   settings: {
     tab: {

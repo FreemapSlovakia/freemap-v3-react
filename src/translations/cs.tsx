@@ -542,6 +542,7 @@ const cs: Messages = {
     join: 'Join', // TODO translate
     split: 'Split', // TODO translate
     stopDrawing: 'Stop drawing', // TODO translate
+    selectPointToJoin: 'Select point to join lines', // TODO translate
   },
 
   settings: {

@@ -89,17 +89,22 @@ export const drawingLinesReducer = createReducer<DrawingLinesState, RootAction>(
     }),
   )
   .handleAction(drawingLineSplit, (state, action) => {
-    const line = state.lines[action.payload.lineIndex];
+    const { lineIndex, pointId } = action.payload;
+
+    const line = state.lines[lineIndex];
+
+    const pos = line.points.findIndex((pt) => pt.id === pointId);
 
     return {
       ...state,
       lines: [
-        ...state.lines.filter((lin) => line !== lin),
+        ...state.lines.slice(0, lineIndex),
         {
           ...line,
-          points: line.points.slice(0, action.payload.pointId + 1),
+          points: line.points.slice(0, pos + 1),
         },
-        { ...line, points: line.points.slice(action.payload.pointId) },
+        { ...line, points: line.points.slice(pos) },
+        ...state.lines.slice(lineIndex + 1),
       ],
     };
   })

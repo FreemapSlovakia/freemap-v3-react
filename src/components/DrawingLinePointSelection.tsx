@@ -7,8 +7,9 @@ import { useMessages } from 'fm3/l10nInjector';
 import { RootState } from 'fm3/storeCreator';
 import { ReactElement } from 'react';
 import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/esm/Card';
 import { CgArrowsMergeAltH } from 'react-icons/cg';
-import { FaDrawPolygon, FaRegPlayCircle } from 'react-icons/fa';
+import { FaDrawPolygon, FaRegPlayCircle, FaTimes } from 'react-icons/fa';
 import { MdTimeline } from 'react-icons/md';
 import { RiScissorsFill } from 'react-icons/ri';
 import { useDispatch, useSelector } from 'react-redux';
@@ -36,7 +37,21 @@ export function DrawingLinePointSelection(): ReactElement | null {
     selection?.type !== 'line-point' ||
     joining /* TODO show joining toolbar */
   ) {
-    return null;
+    return (
+      <Card className="fm-toolbar mx-2 mt-2">
+        <span className="mr-2">{m?.drawing.selectPointToJoin}</span>
+        <Button
+          variant="secondary"
+          onClick={() => {
+            dispatch(drawingLineJoinStart(undefined));
+          }}
+        >
+          <FaTimes />
+          <span className="d-none d-sm-inline"> {m?.general.cancel}</span>{' '}
+          <kbd>Esc</kbd>
+        </Button>
+      </Card>
+    );
   }
 
   const pt = {
